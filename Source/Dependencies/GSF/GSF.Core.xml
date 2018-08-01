@@ -7728,15 +7728,25 @@
             ignored if applied to properties of other types.
             </remarks>
         </member>
+        <member name="F:GSF.Data.Model.EncryptDataAttribute.DefaultKeyReference">
+            <summary>
+            Default key reference value.
+            </summary>
+        </member>
         <member name="P:GSF.Data.Model.EncryptDataAttribute.KeyReference">
             <summary>
             Gets reference name used to lookup encryption key and initialization vector;
             new keys will be created for reference if it does not exist.
             </summary>
         </member>
-        <member name="M:GSF.Data.Model.EncryptDataAttribute.#ctor(System.String)">
+        <member name="M:GSF.Data.Model.EncryptDataAttribute.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.EncryptDataAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> with a specified <paramref name="keyReference"/> value.
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
         </member>
@@ -7796,6 +7806,24 @@
             <summary>
             Gets or sets root record restriction that applies to query table operations.
             </summary>
+            <remarks>
+            <para>
+            Defining a root query restriction creates a base query filter that gets applied to all query operations,
+            even when another restriction is applied - in this case the root restriction will be pre-pended to the
+            specified query, e.g.:
+            <code>
+            restriction = RootQueryRestriction + restriction;
+            </code>
+            A root query restriction is useful to apply a common state to the query operations, e.g., always
+            filtering records for a specific user or context.
+            </para>
+            <para>
+            If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.NewRecord">
             <summary>
@@ -7834,6 +7862,12 @@
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/>
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter with a limit of 1 record.
             </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecord(System.String,GSF.Data.Model.RecordRestriction)">
@@ -7851,6 +7885,12 @@
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/>
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter with a limit of 1 record.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -7876,10 +7916,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -7900,7 +7940,15 @@
             <param name="limit">Limit of number of record to return.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
+            <para>
             If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(GSF.Data.Model.RecordRestriction)">
@@ -7913,6 +7961,12 @@
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/> only
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -7935,10 +7989,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -7984,6 +8038,12 @@
             This function is used for record paging. Primary keys are cached server-side, typically per user session,
             to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> to manually clear cache
             when table contents are known to have changed.
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(System.String)">
@@ -8007,6 +8067,12 @@
             Record count for the specified <paramref name="restriction"/> - or - total record count
             for the modeled table if <paramref name="restriction"/> is <c>null</c>.
             </returns>
+            <remarks>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCountWhere(System.String,System.Object[])">
             <summary>
@@ -8026,10 +8092,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8039,6 +8105,55 @@
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecordCount(GSF.Data.Model.RecordRestriction)"/>.
             </para>
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.SearchRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.StringComparison)">
+            <summary>
+            Locally searches retrieved table records as queried from database for the specified sorting and paging parameters
+            against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            </summary>
+            <param name="sortField">Field name to order-by.</param>
+            <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
+            <param name="page">Page number of records to return (1-based).</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="searchText">Text to search.</param>
+            <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields; defaults to ordinal ignore case.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            This function is used for record paging. Records are searched locally after query from database, this way
+            <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work even with fields that are modeled with the
+            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>. Primary keys for
+            this function will not be cached server-side and this function will be slower and more expensive than similar
+            calls to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases
+            where searching field data that has been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.IsSearchMatch(System.Object,System.String[])">
+            <summary>
+            Determines if any <paramref name="record"/> fields modeled with the <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>.
+            </summary>
+            <param name="record">Modeled table record.</param>
+            <param name="searchValues">Values to search.</param>
+            <returns>
+            <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            String comparisons will be ordinal ignoring case.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.IsSearchMatch(System.Object,System.StringComparison,System.String[])">
+            <summary>
+            Determines if any <paramref name="record"/> fields modeled with the <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>.
+            </summary>
+            <param name="record">Modeled table record.</param>
+            <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields.</param>
+            <param name="searchValues">Values to search.</param>
+            <returns>
+            <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.LoadRecord(System.Object[])">
             <summary>
@@ -8088,6 +8203,12 @@
             </summary>
             <param name="restriction">Record restriction to apply</param>
             <returns>Number of rows affected.</returns>
+            <remarks>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.DeleteRecordWhere(System.String,System.Object[])">
@@ -8108,10 +8229,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8132,8 +8253,16 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>Number of rows affected.</returns>
             <remarks>
+            <para>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Object,System.String,System.Object[])">
@@ -8162,10 +8291,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8186,8 +8315,16 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>Number of rows affected.</returns>
             <remarks>
+            <para>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.UpdateRecordWhere(System.Data.DataRow,System.String,System.Object[])">
@@ -8216,10 +8353,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -8314,13 +8451,14 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)">
             <summary>
-            Gets the value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
-            values as needed.
+            Gets the interpreted value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
+            value as needed.
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <param name="value">Field value to use.</param>
             <returns>
-            Value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            Interpreted value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> value
+            as needed.
             </returns>
             <remarks>
             <para>
@@ -8329,18 +8467,18 @@
             on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
             with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
             expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
-            will need to be aware of calling this function when using record restriction that references fields that are either marked
+            will need to be aware to call this function when using record restriction that references fields that are either marked
             for encryption or use a specific field data-type attribute.
             </para>
             <para>
-            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
             this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
-            type will be properly encrypted prior to executing the database function.
+            value will be properly encrypted prior to executing the database function.
             </para>
             <para>
             If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
-            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
+            type will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -8465,6 +8603,11 @@
             <summary>
             Gets or sets type of search that should be used for field queried.
             </summary>
+            <remarks>
+            Modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
+            will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of specified value
+            as encryption is handled locally by <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.SearchableAttribute.#ctor">
             <summary>
@@ -8476,6 +8619,11 @@
             Creates a new <see cref="T:GSF.Data.Model.SearchableAttribute"/> with specified <paramref name="searchType"/>.
             </summary>
             <param name="searchType">Type of search that should be used for field queried.</param>
+            <remarks>
+            Modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
+            will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any specified
+            <paramref name="searchType"/> as encryption is handled locally by <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </remarks>
         </member>
         <member name="T:GSF.Data.Model.StatementTypes">
             <summary>
@@ -8871,6 +9019,13 @@
             <summary>
             Defines restriction parameter values.
             </summary>
+            <remarks>
+            If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with either an
+            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the
+            target parameter with the returned value so that the field value will be properly set prior
+            to executing any database function.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.RecordRestriction.#ctor(System.String,System.Object[])">
             <summary>
@@ -8890,10 +9045,11 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/>
-            function will need to be called, replacing the target parameter with the returned value, so that
-            the field data type will be properly set prior to executing any database function.
+            If any of the <paramref name="parameters"/> reference a table field that is modeled with either
+            an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the
+            target parameter with the returned value so that the field value will be properly set prior to
+            executing any database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9154,6 +9310,24 @@
             <summary>
             Gets or sets root record restriction that applies to query table operations.
             </summary>
+            <remarks>
+            <para>
+            Defining a root query restriction creates a base query filter that gets applied to all query operations,
+            even when another restriction is applied - in this case the root restriction will be pre-pended to the
+            specified query, e.g.:
+            <code>
+            restriction = RootQueryRestriction + restriction;
+            </code>
+            A root query restriction is useful to apply a common state to the query operations, e.g., always
+            filtering records for a specific user or context.
+            </para>
+            <para>
+            If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
@@ -9192,6 +9366,12 @@
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/>
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter with a limit of 1 record.
             </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecord(System.String,GSF.Data.Model.RecordRestriction)">
@@ -9209,6 +9389,12 @@
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/>
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter with a limit of 1 record.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -9234,10 +9420,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9258,7 +9444,15 @@
             <param name="limit">Limit of number of record to return.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
+            <para>
             If no record <paramref name="restriction"/> or <paramref name="limit"/> is provided, all rows will be returned.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(GSF.Data.Model.RecordRestriction)">
@@ -9271,6 +9465,12 @@
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,GSF.Data.Model.RecordRestriction,System.Int32)"/> only
             specifying the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -9293,10 +9493,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9346,6 +9546,12 @@
             to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> to manually clear cache
             when table contents are known to have changed.
             </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(System.String)">
@@ -9369,6 +9575,12 @@
             Record count for the specified <paramref name="restriction"/> - or - total record count
             for the modeled table if <paramref name="restriction"/> is <c>null</c>.
             </returns>
+            <remarks>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCountWhere(System.String,System.Object[])">
             <summary>
@@ -9388,10 +9600,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9401,6 +9613,55 @@
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(GSF.Data.Model.RecordRestriction)"/>.
             </para>
             </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.StringComparison)">
+            <summary>
+            Locally searches retrieved table records as queried from database for the specified sorting and paging parameters
+            against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            </summary>
+            <param name="sortField">Field name to order-by.</param>
+            <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
+            <param name="page">Page number of records to return (1-based).</param>
+            <param name="pageSize">Current page size.</param>
+            <param name="searchText">Text to search.</param>
+            <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields; defaults to ordinal ignore case.</param>
+            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
+            This function is used for record paging. Records are searched locally after query from database, this way
+            <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work even with fields that are modeled with the
+            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>. Primary keys for
+            this function will not be cached server-side and this function will be slower and more expensive than similar
+            calls to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases
+            where searching field data that has been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.IsSearchMatch(`0,System.String[])">
+            <summary>
+            Determines if any <paramref name="record"/> fields modeled with the <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>.
+            </summary>
+            <param name="record">Modeled table record.</param>
+            <param name="searchValues">Values to search.</param>
+            <returns>
+            <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            String comparisons will be ordinal ignoring case.
+            </remarks>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.IsSearchMatch(`0,System.StringComparison,System.String[])">
+            <summary>
+            Determines if any <paramref name="record"/> fields modeled with the <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>.
+            </summary>
+            <param name="record">Modeled table record.</param>
+            <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields.</param>
+            <param name="searchValues">Values to search.</param>
+            <returns>
+            <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
+            specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.LoadRecord(System.Object[])">
             <summary>
@@ -9450,6 +9711,12 @@
             </summary>
             <param name="restriction">Record restriction to apply</param>
             <returns>Number of rows affected.</returns>
+            <remarks>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="restriction"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecordWhere(System.String,System.Object[])">
@@ -9470,10 +9737,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9494,8 +9761,16 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>Number of rows affected.</returns>
             <remarks>
+            <para>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecordWhere(`0,System.String,System.Object[])">
@@ -9524,10 +9799,10 @@
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9548,8 +9823,16 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>Number of rows affected.</returns>
             <remarks>
+            <para>
             Record restriction is only used for custom update expressions or in cases where modeled
             table has no defined primary keys.
+            </para>
+            <para>
+            If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecordWhere(System.Data.DataRow,System.String,System.Object[])">
@@ -9572,16 +9855,16 @@
             table has no defined primary keys.
             </para>
             <para>
-            If any of the <paramref name="parameters"/> reference a table field that is modeled with a
-            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, the <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> function will need
-            to be called, replacing the target parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
-            </para>
-            <para>
             Each indexed parameter, e.g., "{0}", in the composite format <paramref name="filterExpression"/>
             will be converted into query parameters where each of the corresponding values in the
             <paramref name="parameters"/> collection will be applied as <see cref="T:System.Data.IDbDataParameter"/>
             values to an executed <see cref="T:System.Data.IDbCommand"/> query.
+            </para>
+            <para>
+            If any of the specified <paramref name="parameters"/> reference a table field that is modeled with
+            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
+            returned value so that the field value will be properly set prior to executing the database function.
             </para>
             <para>
             If needed, field names that are escaped with standard ANSI quotes in the filter expression
@@ -9695,13 +9978,14 @@
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)">
             <summary>
-            Gets the value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
-            values as needed.
+            Gets the interpreted value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/>
+            value as needed.
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <param name="value">Field value to use.</param>
             <returns>
-            Value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> values as needed.
+            Interpreted value for the specified field, encrypting or returning any intermediate <see cref="T:System.Data.IDbDataParameter"/> value
+            as needed.
             </returns>
             <remarks>
             <para>
@@ -9710,18 +9994,18 @@
             on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
             with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
             expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
-            will need to be aware of calling this function when using record restriction that references fields that are either marked
+            will need to be aware to call this function when using record restriction that references fields that are either marked
             for encryption or use a specific field data-type attribute.
             </para>
             <para>
-            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
             this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
-            type will be properly encrypted prior to executing the database function.
+            value will be properly encrypted prior to executing the database function.
             </para>
             <para>
             If a <see cref="T:GSF.Data.Model.RecordRestriction"/> parameter references a field that is modeled with a <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>,
-            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data type
-            will be properly set prior to executing the database function.
+            this function will need to be called, replacing the restriction parameter with the returned value, so that the field data
+            type will be properly set prior to executing the database function.
             </para>
             </remarks>
         </member>
@@ -9738,6 +10022,12 @@
             </summary>
             <param name="searchText">Text to search.</param>
             <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
+            <remarks>
+            Any fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> will be automatically managed, i.e.,
+            the returned <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters will already apply any field based encryption as needed. Note that fields marked
+            for encryption will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any otherwise specified value in the
+            <see cref="T:GSF.Data.Model.SearchableAttribute"/> as encryption is handled locally.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyCacheSize">
             <summary>
@@ -33010,6 +33300,11 @@
             </summary>
             <param name="value">The word to be analyzed.</param>
             <returns><c>true</c> if the word is plural; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.GetComparer(System.StringComparison)">
+            <summary>
+            Gets appropriate <see cref="T:System.StringComparer"/> for the specified <see cref="T:System.StringComparison"/>.
+            </summary>
         </member>
         <member name="M:GSF.StringExtensions.ParseBoolean(System.String)">
             <summary>
