@@ -2128,13 +2128,19 @@
             also provides the calculated page count based on input parameters.
             </remarks>
         </member>
-        <member name="M:GSF.Collections.PagedList`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Int32,System.Int32)">
+        <member name="M:GSF.Collections.PagedList`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Int32,System.Int32,System.Int32)">
             <summary>
             Creates a new <see cref="T:GSF.Collections.PagedList`1"/>.
             </summary>
             <param name="source">Source enumeration to paginate.</param>
             <param name="page">Page number (1-based).</param>
             <param name="pageSize">Page size.</param>
+            <param name="count">Total records in source if known.</param>
+            <remarks>
+            If count is known or can be calculated early, specify the value in the
+            <paramref name="count"/> parameter as an optimization to prevent a full
+            enumeration on <paramref name="source"/> to get a count.
+            </remarks>
         </member>
         <member name="P:GSF.Collections.PagedList`1.TotalCount">
             <summary>
@@ -2716,7 +2722,7 @@
             Defines extension functions related to manipulation of arrays and collections.
             </summary>
         </member>
-        <member name="M:GSF.Collections.CollectionExtensions.ToPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32)">
+        <member name="M:GSF.Collections.CollectionExtensions.ToPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32,System.Int32)">
             <summary>
             Gets a <see cref="T:GSF.Collections.PagedList`1"/> to paginate <paramref name="source"/> enumeration for
             a given <paramref name="page"/> and specified <paramref name="pageSize"/>.
@@ -2725,7 +2731,13 @@
             <param name="source">Source enumeration to paginate.</param>
             <param name="page">Page number (1-based).</param>
             <param name="pageSize">Page size.</param>
+            <param name="count">Total records in source if known.</param>
             <returns>Set of items on a given <paramref name="page"/> for specified <paramref name="pageSize"/>.</returns>
+            <remarks>
+            If count is known or can be calculated early, specify the value in the
+            <paramref name="count"/> parameter as an optimization to prevent a full
+            enumeration on <paramref name="source"/> to get a count.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.CollectionExtensions.Merge``3(``0,System.Collections.Generic.IDictionary{``1,``2}[])">
             <summary>
@@ -7801,6 +7813,11 @@
             <summary>
             Gets or sets primary key cache.
             </summary>
+            <remarks>
+            Primary keys values are stored in data table without interpretation. It may be necessary to call
+            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key fields that are marked with
+            either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> before use.
+            </remarks>
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.RootQueryRestriction">
             <summary>
@@ -8007,6 +8024,7 @@
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
             <summary>
             Queries database and returns modeled table records for the specified sorting, paging and search parameters.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
@@ -8014,15 +8032,22 @@
             <param name="pageSize">Current page size.</param>
             <param name="searchText">Text to search.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <remarks>
             <para>
             This function is used for record paging. Primary keys are cached server-side, typically per user session,
             to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> to manually clear cache
             when table contents are known to have changed.
             </para>
             <para>
+            If the specified <paramref name="sortField"/> has been marked with <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            establishing the primary key cache operation will take longer to execute since query data will need to
+            be downloaded locally and decrypted so the proper sort order can be determined.
+            </para>
+            <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> where restriction
             is generated by <see cref="M:GSF.Data.Model.ITableOperations.GetSearchRestriction(System.String)"/> using <paramref name="searchText"/>.
             </para>
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)">
             <summary>
@@ -8035,20 +8060,28 @@
             <param name="restriction">Record restriction to apply, if any.</param>
             <returns>An enumerable of modeled table row instances for queried records.</returns>
             <remarks>
+            <para>
             This function is used for record paging. Primary keys are cached server-side, typically per user session,
             to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> to manually clear cache
             when table contents are known to have changed.
+            </para>
             <para>
             If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
             either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
             <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
             returned value so that the field value will be properly set prior to executing the database function.
             </para>
+            <para>
+            If the specified <paramref name="sortField"/> has been marked with <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            establishing the primary key cache operation will take longer to execute since query data will need to
+            be downloaded locally and decrypted so the proper sort order can be determined.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.QueryRecordCount(System.String)">
             <summary>
             Gets the record count for the modeled table based on search parameter.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
             </summary>
             <param name="searchText">Text to search.</param>
             <returns>Record count for the modeled table based on search parameter.</returns>
@@ -8106,25 +8139,28 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.SearchRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.StringComparison)">
+        <member name="M:GSF.Data.Model.ITableOperations.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)">
             <summary>
-            Locally searches retrieved table records as queried from database for the specified sorting and paging parameters
-            against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            Locally searches retrieved table records after queried from database for the specified sorting and search parameters.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
-            <param name="page">Page number of records to return (1-based).</param>
-            <param name="pageSize">Current page size.</param>
             <param name="searchText">Text to search.</param>
             <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields; defaults to ordinal ignore case.</param>
-            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <returns>An array of modeled table row instances for the queried records that match the search.</returns>
             <remarks>
-            This function is used for record paging. Records are searched locally after query from database, this way
-            <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work even with fields that are modeled with the
-            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>. Primary keys for
-            this function will not be cached server-side and this function will be slower and more expensive than similar
-            calls to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases
-            where searching field data that has been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            <para>
+            This function searches records locally after query from database, this way <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work
+            even with fields that are modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
+            Primary keys for this function will not be cached server-side and this function will be slower and more expensive than similar calls
+            to <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases searching for field data that has
+            been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </para>
+            <para>
+            This function does not paginate records, instead a full list of search records is returned. User can cache returned records and page
+            through them using the <see cref="M:GSF.Data.Model.ITableOperations.GetPageOfRecords(System.Object[],System.Int32,System.Int32)"/> function. As a result, usage should be restricted to smaller data sets. 
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.IsSearchMatch(System.Object,System.String[])">
@@ -8154,6 +8190,15 @@
             <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
             specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.GetPageOfRecords(System.Object[],System.Int32,System.Int32)">
+            <summary>
+            Gets the specified <paramref name="page"/> of records from the provided source <paramref name="records"/> array.
+            </summary>
+            <param name="records">Source records array.</param>
+            <param name="page">Desired page of records.</param>
+            <param name="pageSize">Desired page size.</param>
+            <returns>A page of records.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.LoadRecord(System.Object[])">
             <summary>
@@ -8403,12 +8448,18 @@
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data.</param>
             <returns>Primary key values from the specified <paramref name="row"/>.</returns>
+            <remarks>
+            Function returns raw data from <paramref name="row"/> without interpretation, it may be
+            necessary to call <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key
+            fields that are marked with either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetFieldNames(System.Boolean)">
             <summary>
             Gets the field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
-            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model.</param>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model; defaults to <c>true</c>.</param>
             <returns>Array of field names.</returns>
             <remarks>
             A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
@@ -8418,7 +8469,7 @@
             <summary>
             Get the primary key field names for the table; if <paramref name="escaped"/> is <c>true</c>, also includes any escaping as defined in model.
             </summary>
-            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model.</param>
+            <param name="escaped">Flag that determines if field names should include any escaping as defined in the model; defaults to <c>true</c>.</param>
             <returns>Array of primary key field names.</returns>
             <remarks>
             A field name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
@@ -8430,8 +8481,18 @@
             </summary>
             <typeparam name="TAttribute">Type of attribute to attempt to get.</typeparam>
             <param name="fieldName">Name of field to use for attribute lookup.</param>
-            <param name="attribute">Type of attribute to lookup.</param>
+            <param name="attribute">Attribute that was found, if any.</param>
             <returns><c>true</c> if attribute was found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.TryGetFieldAttribute(System.String,System.Type,System.Attribute@)">
+            <summary>
+            Attempts to get the specified <paramref name="attributeType"/> for a field.
+            </summary>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <param name="attributeType">Type of attribute to attempt to get.</param>
+            <param name="attribute">Attribute that was found, if any.</param>
+            <returns><c>true</c> if attribute was found; otherwise, <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/>.</exception>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.FieldHasAttribute``1(System.String)">
             <summary>
@@ -8440,6 +8501,15 @@
             <typeparam name="TAttribute">Type of attribute to search for.</typeparam>
             <param name="fieldName">Name of field to use for attribute lookup.</param>
             <returns><c>true</c> if field has attribute; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.ITableOperations.FieldHasAttribute(System.String,System.Type)">
+            <summary>
+            Determines if the specified field has an associated attribute.
+            </summary>
+            <param name="fieldName">Name of field to use for attribute lookup.</param>
+            <param name="attributeType">Type of attribute to search for.</param>
+            <returns><c>true</c> if field has attribute; otherwise, <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/>.</exception>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetFieldValue(System.Object,System.String)">
             <summary>
@@ -8491,14 +8561,17 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetSearchRestriction(System.String)">
             <summary>
-            Generates a <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with
-            <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
+            Generates a <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
             </summary>
             <param name="searchText">Text to search.</param>
-            <returns>
-            <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with
-            <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
-            </returns>
+            <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
+            <remarks>
+            Any fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> will be automatically managed, i.e.,
+            the returned <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters will already apply any field based encryption as needed. Database query functions
+            executed for fields marked for encryption will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any otherwise
+            specified value in the <see cref="T:GSF.Data.Model.SearchableAttribute"/> as encryption is handled locally. However, the <see cref="M:GSF.Data.Model.ITableOperations.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)"/> function
+            can be used to find data in encrypted fields that are marked for search with a <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyCacheSize">
             <summary>
@@ -8604,9 +8677,11 @@
             Gets or sets type of search that should be used for field queried.
             </summary>
             <remarks>
-            Modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
-            will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of specified value
-            as encryption is handled locally by <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            Database query functions executed against modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and
+            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>,
+            regardless of specified value as encryption is handled locally by <see cref="T:GSF.Data.Model.TableOperations`1"/>. However, the
+            <see cref="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)"/> function can be used to find data in encrypted fields that are
+            marked for search with a <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.SearchableAttribute.#ctor">
@@ -8620,9 +8695,11 @@
             </summary>
             <param name="searchType">Type of search that should be used for field queried.</param>
             <remarks>
-            Modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
-            will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any specified
-            <paramref name="searchType"/> as encryption is handled locally by <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            Database query functions executed against modeled fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and
+            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>,
+            regardless of specified <paramref name="searchType"/> as encryption is handled locally by instances of the
+            <see cref="T:GSF.Data.Model.TableOperations`1"/>. However, the <see cref="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)"/> function can be used
+            to find data in encrypted fields that are marked for search with a <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
             </remarks>
         </member>
         <member name="T:GSF.Data.Model.StatementTypes">
@@ -9305,6 +9382,11 @@
             <summary>
             Gets or sets primary key cache.
             </summary>
+            <remarks>
+            Primary keys values are stored in data table without interpretation. It may be necessary to call
+            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key fields that are marked with
+            either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> before use.
+            </remarks>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction">
             <summary>
@@ -9511,6 +9593,7 @@
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)">
             <summary>
             Queries database and returns modeled table records for the specified sorting, paging and search parameters.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
@@ -9523,6 +9606,11 @@
             This function is used for record paging. Primary keys are cached server-side, typically per user session,
             to maintain desired per-page sort order. Call <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> to manually clear cache
             when table contents are known to have changed.
+            </para>
+            <para>
+            If the specified <paramref name="sortField"/> has been marked with <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            establishing the primary key cache operation will take longer to execute since query data will need to
+            be downloaded locally and decrypted so the proper sort order can be determined.
             </para>
             <para>
             This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)"/> where restriction
@@ -9552,11 +9640,17 @@
             <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
             returned value so that the field value will be properly set prior to executing the database function.
             </para>
+            <para>
+            If the specified <paramref name="sortField"/> has been marked with <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>,
+            establishing the primary key cache operation will take longer to execute since query data will need to
+            be downloaded locally and decrypted so the proper sort order can be determined.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.QueryRecordCount(System.String)">
             <summary>
             Gets the record count for the modeled table based on search parameter.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
             </summary>
             <param name="searchText">Text to search.</param>
             <returns>Record count for the modeled table based on search parameter.</returns>
@@ -9614,25 +9708,29 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String,System.StringComparison)">
+        <member name="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)">
             <summary>
-            Locally searches retrieved table records as queried from database for the specified sorting and paging parameters
-            against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            Locally searches retrieved table records after queried from database for the specified sorting and search parameters.
+            Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            Function only typically used for record models that apply the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
-            <param name="page">Page number of records to return (1-based).</param>
-            <param name="pageSize">Current page size.</param>
             <param name="searchText">Text to search.</param>
             <param name="comparison"><see cref="T:System.StringComparison"/> to use when searching string fields; defaults to ordinal ignore case.</param>
-            <returns>An enumerable of modeled table row instances for queried records.</returns>
+            <returns>An array of modeled table row instances for the queried records that match the search.</returns>
             <remarks>
-            This function is used for record paging. Records are searched locally after query from database, this way
-            <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work even with fields that are modeled with the
-            <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>. Primary keys for
-            this function will not be cached server-side and this function will be slower and more expensive than similar
-            calls to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases
-            where searching field data that has been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            <para>
+            This function searches records locally after query from database, this way <see cref="T:GSF.Data.Model.SearchableAttribute"/> functionality will work
+            even with fields that are modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> and use the <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
+            Primary keys for this function will not be cached server-side and this function will be slower and more expensive than similar calls
+            to <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/>. Usage should be restricted to cases searching for field data that has
+            been modeled with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
+            </para>
+            <para>
+            This function does not paginate records, instead a full list of search records is returned. User can cache returned records and page
+            through them using the <see cref="M:GSF.Data.Model.TableOperations`1.GetPageOfRecords(`0[],System.Int32,System.Int32)"/> function. As a result, usage should be restricted to smaller data sets. 
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.IsSearchMatch(`0,System.String[])">
@@ -9662,6 +9760,15 @@
             <c>true</c> if any <paramref name="record"/> fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/> match any of the
             specified <paramref name="searchValues"/>; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetPageOfRecords(`0[],System.Int32,System.Int32)">
+            <summary>
+            Gets the specified <paramref name="page"/> of records from the provided source <paramref name="records"/> array.
+            </summary>
+            <param name="records">Source records array.</param>
+            <param name="page">Desired page of records.</param>
+            <param name="pageSize">Desired page size.</param>
+            <returns>A page of records.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.LoadRecord(System.Object[])">
             <summary>
@@ -9911,6 +10018,12 @@
             </summary>
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data.</param>
             <returns>Primary key values from the specified <paramref name="row"/>.</returns>
+            <remarks>
+            Function returns raw data from <paramref name="row"/> without interpretation, it may be
+            necessary to call <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key
+            fields that are marked with either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or
+            <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetFieldNames(System.Boolean)">
             <summary>
@@ -10024,9 +10137,10 @@
             <returns><see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.</returns>
             <remarks>
             Any fields marked with both <see cref="T:GSF.Data.Model.SearchableAttribute"/> and <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> will be automatically managed, i.e.,
-            the returned <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters will already apply any field based encryption as needed. Note that fields marked
-            for encryption will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any otherwise specified value in the
-            <see cref="T:GSF.Data.Model.SearchableAttribute"/> as encryption is handled locally.
+            the returned <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters will already apply any field based encryption as needed. Database query functions
+            executed for fields marked for encryption will only be searched using <see cref="F:GSF.Data.Model.SearchType.FullValueMatch"/>, regardless of any otherwise
+            specified value in the <see cref="T:GSF.Data.Model.SearchableAttribute"/> as encryption is handled locally. However, the <see cref="M:GSF.Data.Model.TableOperations`1.SearchRecords(System.String,System.Boolean,System.String,System.StringComparison)"/> function
+            can be used to find data in encrypted fields that are marked for search with a <see cref="F:GSF.Data.Model.SearchType.LikeExpression"/>.
             </remarks>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetPrimaryKeyCacheSize">
