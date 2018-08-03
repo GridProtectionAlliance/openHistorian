@@ -9404,6 +9404,10 @@
             filtering records for a specific user or context.
             </para>
             <para>
+            A root query restriction can be manually assigned to a <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or
+            automatically assigned by marking a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/>.
+            </para>
+            <para>
             If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
             either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
             <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the

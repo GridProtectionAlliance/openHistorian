@@ -132,6 +132,11 @@
             Default error message displayed when databases users fail regular expression test.
             </summary>
         </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultUseDatabaseLogging">
+            <summary>
+            Default value for <see cref="P:GSF.Security.AdoSecurityProvider.UseDatabaseLogging"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Security.AdoSecurityProvider.ProviderID">
             <summary>
             Defines the provider ID for the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
@@ -156,6 +161,16 @@
             <summary>
             Gets last exception reported by the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
             </summary>
+        </member>
+        <member name="P:GSF.Security.AdoSecurityProvider.UseDatabaseLogging">
+            <summary>
+            Gets or sets flag that determines if <see cref="M:GSF.Security.AdoSecurityProvider.LogAuthenticationAttempt(System.Boolean)"/> and <see cref="M:GSF.Security.AdoSecurityProvider.LogError(System.String,System.String)"/> should
+            write to the database. Defaults to <c>true</c>.
+            </summary>
+            <remarks>
+            Setting this flag to <c>false</c> may be necessary in cases where a database has been setup to use authentication
+            but does not include an "AccessLog" or "ErrorLog" table.
+            </remarks>
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.LoadSettings">
             <summary>
@@ -516,6 +531,11 @@
             Updated by field.
             </summary>
         </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.AccountName">
+            <summary>
+            Group account name, converted from security ID as needed.
+            </summary>
+        </member>
         <member name="T:GSF.Security.Model.UserAccount">
             <summary>
             Model for UserAccount table.
@@ -602,7 +622,7 @@
         </member>
         <member name="P:GSF.Security.Model.UserAccount.AccountName">
             <summary>
-            Determined when loading into memory.
+            User account name, converted from security ID as needed.
             </summary>
         </member>
         <member name="T:GSF.Security.UserRoleCache">
