@@ -35051,6 +35051,56 @@
             Executes the action on a separate thread.
             </summary>
         </member>
+        <member name="T:GSF.Threading.DelayedSynchronizedOperation">
+            <summary>
+            Represents a short-running synchronized operation that cannot run while it is already
+            in progress. Async operations will execute on the thread-pool after the specified
+            <see cref="P:GSF.Threading.DelayedSynchronizedOperation.Delay"/> in milliseconds.
+            </summary>
+            <remarks>
+            The action performed by the <see cref="T:GSF.Threading.DelayedSynchronizedOperation"/> is executed on
+            the <see cref="T:System.Threading.ThreadPool"/> when running the operation asynchronously. When the
+            operation is set to pending, the action is executed in an asynchronous loop on the
+            thread pool until all pending operations have been completed. Since the action is
+            executed on the thread pool, it is best if it can be executed quickly, without
+            blocking the thread or putting it to sleep. If completion of the operation is
+            critical, such as when saving data to a file, this type of operation should not
+            be used since thread pool threads are background threads and will not prevent the
+            program from ending before the operation is complete.
+            </remarks>
+        </member>
+        <member name="F:GSF.Threading.DelayedSynchronizedOperation.DefaultDelay">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.Threading.DelayedSynchronizedOperation.Delay"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.DelayedSynchronizedOperation.#ctor(System.Action)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.DelayedSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.DelayedSynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.DelayedSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="P:GSF.Threading.DelayedSynchronizedOperation.Delay">
+            <summary>
+            Gets or sets the amount of time to wait before execution, in milliseconds,
+            for any asynchronous calls. Zero value will execute immediately.
+            </summary>
+            <remarks>
+            Non asynchronous calls will not be delayed.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.DelayedSynchronizedOperation.ExecuteActionAsync">
+            <summary>
+            Executes the action on a separate thread after the specified <see cref="P:GSF.Threading.DelayedSynchronizedOperation.Delay"/>.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.DisposableCallback">
             <summary>
             A struct that executes a certain action upon disposing.
@@ -44891,144 +44941,144 @@
             <summary>
             Returns true if <paramref name="value1"/> is equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_Equality(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_Equality(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_Inequality(GSF.TimeTagBase,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is not equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is not equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_Inequality(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is not equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is not equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_Inequality(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is not equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is not equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThan(GSF.TimeTagBase,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is less than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThan(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is less than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThan(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is less than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThanOrEqual(GSF.TimeTagBase,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThanOrEqual(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_LessThanOrEqual(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is less than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThan(GSF.TimeTagBase,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThan(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThan(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThanOrEqual(GSF.TimeTagBase,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThanOrEqual(System.DateTime,GSF.TimeTagBase)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="M:GSF.TimeTagBase.op_GreaterThanOrEqual(GSF.TimeTagBase,System.DateTime)">
             <summary>
             Returns true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>.
             </summary>
-            <param name="value1">Value 1 in the comparision.</param>
-            <param name="value2">Value 2 in the comparision.</param>
+            <param name="value1">Value 1 in the comparison.</param>
+            <param name="value2">Value 2 in the comparison.</param>
             <returns>true if <paramref name="value1"/> is greater than or equal to <paramref name="value2"/>; otherwise false.</returns>
         </member>
         <member name="T:GSF.UInt24">

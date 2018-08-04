@@ -4,6 +4,68 @@
         <name>DynamicCalculator</name>
     </assembly>
     <members>
+        <member name="T:DynamicCalculator.DatabaseNotifier">
+            <summary>
+            The DatabaseNotifier is an action adapter which takes multiple input measurements and defines
+            a boolean expression such that when the expression is true a database operation is triggered.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.ExpressionText">
+            <summary>
+            Gets or sets the boolean expression used to determine if the database operation should be executed.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseConnnectionString">
+            <summary>
+            Gets or sets the connection string used for database operation.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseProviderString">
+            <summary>
+            Gets or sets the provider string used for database operation. Defaults to a SQL Server provider string.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseCommand">
+            <summary>
+            Gets or sets the command used for database operation, e.g., a stored procedure name or SQL expression like "INSERT".
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseCommandParameters">
+            <summary>
+            Gets or sets the parameters for the command that includes any desired value substitutions used for database operation. Available substitutions: {Acronym} and {Timestamp}.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseMaximumWriteInterval">
+            <summary>
+            Gets or sets the maximum interval, in seconds, at which the adapter can execute database operations. Set to zero for no delay.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.TimestampSource">
+            <summary>
+            Gets or sets the source of the timestamps of the calculated values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DatabaseNotifier.Initialize">
+            <summary>
+            Initializes <see cref="T:DynamicCalculator.DatabaseNotifier"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DatabaseNotifier.HandleCalculatedValue(System.Object)">
+            <summary>
+            Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+            <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
+        </member>
+        <member name="M:DynamicCalculator.DatabaseNotifier.QueueOperation">
+            <summary>
+            Queues database operation for execution. Operation will execute immediately if not already running.
+            </summary>
+        </member>
         <member name="T:DynamicCalculator.EmailNotifier">
             <summary>
             The EmailNotifier is an action adapter which takes multiple input measurements and defines
@@ -81,6 +143,11 @@
         <member name="P:DynamicCalculator.EmailNotifier.TimestampSource">
             <summary>
             Gets or sets the source of the timestamps of the calculated values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.Status">
+            <summary>
+            Returns the detailed status of the data input source.
             </summary>
         </member>
         <member name="M:DynamicCalculator.EmailNotifier.Initialize">
