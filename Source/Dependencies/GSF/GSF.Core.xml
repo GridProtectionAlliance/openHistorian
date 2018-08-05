@@ -7806,7 +7806,8 @@
             </summary>
             <remarks>
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive.
+            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
+            are case sensitive. This value is typically <c>false</c>.
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.PrimaryKeyCache">
@@ -7814,9 +7815,24 @@
             Gets or sets primary key cache.
             </summary>
             <remarks>
-            Primary keys values are stored in data table without interpretation. It may be necessary to call
-            <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key fields that are marked with
-            either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> before use.
+            <para>
+            The <see cref="M:GSF.Data.Model.ITableOperations.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/> overloads that include paging parameters
+            cache the sorted and filtered primary keys of queried records between calls so that paging is fast and
+            efficient. Since the primary keys are cached, an instance of the <see cref="T:GSF.Data.Model.TableOperations`1"/> should
+            exist per user session when using query functions that support pagination. In web based implementations,
+            the primary cache should be stored with user session state data and then restored between instances of
+            the <see cref="T:GSF.Data.Model.TableOperations`1"/> that are created along with a connection that is opened per page.
+            </para>
+            <para>
+            The function <see cref="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache"/> should be called to manually clear cache when table
+            contents are known to have changed. Note that calls to any <see cref="M:GSF.Data.Model.ITableOperations.DeleteRecord(System.Object)"/> overload
+            will automatically clear any existing primary key cache.
+            </para>
+            <para>
+            Primary keys values are stored in data table without interpretation, i.e., in their raw form as queried
+            from the database. Primary key data in cache will be encrypted for models with primary key fields that
+            are marked with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
+            </para>
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.RootQueryRestriction">
@@ -7835,10 +7851,46 @@
             filtering records for a specific user or context.
             </para>
             <para>
+            A root query restriction can be manually assigned to a <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or
+            automatically assigned by marking a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/>.
+            </para>
+            <para>
             If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
             either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
             <see cref="M:GSF.Data.Model.ITableOperations.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
             returned value so that the field value will be properly set prior to executing the database function.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.ApplyRootQueryRestrictionToUpdates">
+            <summary>
+            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> should be applied to update operations.
+            </summary>
+            <remarks>
+            <para>
+            If <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> only references primary key fields, then this property value should be set
+            to <c>false</c> since default update operations for a modeled record already work against primary key fields.
+            </para>
+            <para>
+            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
+            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
+            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToUpdates"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.ITableOperations.ApplyRootQueryRestrictionToDeletes">
+            <summary>
+            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> should be applied to delete operations.
+            </summary>
+            <remarks>
+            <para>
+            If <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> only references primary key fields, then this property value should be set
+            to <c>false</c> since default delete operations for a modeled record already work against primary key fields.
+            </para>
+            <para>
+            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
+            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
+            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToDeletes"/>.
             </para>
             </remarks>
         </member>
@@ -8143,6 +8195,7 @@
             <summary>
             Locally searches retrieved table records after queried from database for the specified sorting and search parameters.
             Search executed against fields modeled with <see cref="T:GSF.Data.Model.SearchableAttribute"/>.
+            Function only typically used for record models that apply the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>.
             </summary>
             <param name="sortField">Field name to order-by.</param>
             <param name="ascending">Sort ascending flag; set to <c>false</c> for descending.</param>
@@ -8242,11 +8295,15 @@
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be deleted.</param>
             <returns>Number of rows affected.</returns>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})">
             <summary>
             Deletes the records referenced by the specified <paramref name="restriction"/>.
             </summary>
             <param name="restriction">Record restriction to apply</param>
+            <param name="applyRootQueryRestriction">
+            Flag that determines if any existing <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> should be applied. Defaults to
+            <see cref="P:GSF.Data.Model.ITableOperations.ApplyRootQueryRestrictionToDeletes"/> setting.
+            </param>
             <returns>Number of rows affected.</returns>
             <remarks>
             If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
@@ -8284,11 +8341,11 @@
             will be updated to reflect what is defined in the user model.
             </para>
             <para>
-            This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction)"/>.
+            This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.DeleteRecord(GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})"/>.
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>,
             any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
@@ -8296,6 +8353,10 @@
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="applyRootQueryRestriction">
+            Flag that determines if any existing <see cref="P:GSF.Data.Model.ITableOperations.RootQueryRestriction"/> should be applied. Defaults to
+            <see cref="P:GSF.Data.Model.ITableOperations.ApplyRootQueryRestrictionToUpdates"/> setting.
+            </param>
             <returns>Number of rows affected.</returns>
             <remarks>
             <para>
@@ -8346,7 +8407,7 @@
             will be updated to reflect what is defined in the user model.
             </para>
             <para>
-            This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction)"/>.
+            This is a convenience call to <see cref="M:GSF.Data.Model.ITableOperations.UpdateRecord(System.Object,GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})"/>.
             </para>
             </remarks>
         </member>
@@ -8575,9 +8636,9 @@
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetPrimaryKeyCacheSize">
             <summary>
-            Calculates the size of the current primary key cache.
+            Calculates the size of the current primary key cache, in number of records.
             </summary>
-            <returns></returns>
+            <returns>Number of records in the current primary key cache.</returns>
         </member>
         <member name="M:GSF.Data.Model.ITableOperations.ClearPrimaryKeyCache">
             <summary>
@@ -8623,6 +8684,26 @@
             <summary>
             Defines restriction parameter values.
             </summary>
+        </member>
+        <member name="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToUpdates">
+            <summary>
+            Gets or sets flag that determines if root query restriction should be applied to update operations.
+            </summary>
+            <remarks>
+            If root query restriction only references primary key fields, then this property value should
+            be set to <c>false</c> since default update operations for a modeled record already work against
+            primary key fields.
+            </remarks>
+        </member>
+        <member name="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToDeletes">
+            <summary>
+            Gets or sets flag that determines if root query restriction should be applied to delete operations.
+            </summary>
+            <remarks>
+            If root query restriction only references primary key fields, then this property value should
+            be set to <c>false</c> since default delete operations for a modeled record already work against
+            primary key fields.
+            </remarks>
         </member>
         <member name="M:GSF.Data.Model.RootQueryRestrictionAttribute.#ctor(System.String,System.Object[])">
             <summary>
@@ -9375,7 +9456,8 @@
             </summary>
             <remarks>
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive.
+            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
+            are case sensitive. This value is typically <c>false</c>.
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.PrimaryKeyCache">
@@ -9383,9 +9465,24 @@
             Gets or sets primary key cache.
             </summary>
             <remarks>
-            Primary keys values are stored in data table without interpretation. It may be necessary to call
-            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> for models with primary key fields that are marked with
-            either <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> before use.
+            <para>
+            The <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/> overloads that include paging parameters
+            cache the sorted and filtered primary keys of queried records between calls so that paging is fast and
+            efficient. Since the primary keys are cached, an instance of the <see cref="T:GSF.Data.Model.TableOperations`1"/> should
+            exist per user session when using query functions that support pagination. In web based implementations,
+            the primary cache should be stored with user session state data and then restored between instances of
+            the <see cref="T:GSF.Data.Model.TableOperations`1"/> that are created along with a connection that is opened per page.
+            </para>
+            <para>
+            The function <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> should be called to manually clear cache when table
+            contents are known to have changed. Note that calls to any <see cref="M:GSF.Data.Model.TableOperations`1.DeleteRecord(`0)"/> overloads will
+            automatically clear any existing primary key cache.
+            </para>
+            <para>
+            Primary keys values are stored in data table without interpretation, i.e., in their raw form as queried
+            from the database. Primary key data in cache will be encrypted for models with primary key fields that
+            are marked with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
+            </para>
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction">
@@ -9412,6 +9509,38 @@
             either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
             <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
             returned value so that the field value will be properly set prior to executing the database function.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToUpdates">
+            <summary>
+            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to update operations.
+            </summary>
+            <remarks>
+            <para>
+            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
+            to <c>false</c> since default update operations for a modeled record already work against primary key fields.
+            </para>
+            <para>
+            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
+            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
+            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToUpdates"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToDeletes">
+            <summary>
+            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to delete operations.
+            </summary>
+            <remarks>
+            <para>
+            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
+            to <c>false</c> since default delete operations for a modeled record already work against primary key fields.
+            </para>
+            <para>
+            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
+            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
+            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToDeletes"/>.
             </para>
             </remarks>
         </member>
@@ -9816,11 +9945,15 @@
             <param name="row"><see cref="T:System.Data.DataRow"/> of queried data to be deleted.</param>
             <returns>Number of rows affected.</returns>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.TableOperations`1.DeleteRecord(GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})">
             <summary>
             Deletes the records referenced by the specified <paramref name="restriction"/>.
             </summary>
             <param name="restriction">Record restriction to apply</param>
+            <param name="applyRootQueryRestriction">
+            Flag that determines if any existing <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied. Defaults to
+            <see cref="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToDeletes"/> setting.
+            </param>
             <returns>Number of rows affected.</returns>
             <remarks>
             If any of the <paramref name="restriction"/> parameters reference a table field that is modeled with
@@ -9858,11 +9991,11 @@
             will be updated to reflect what is defined in the user model.
             </para>
             <para>
-            This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.DeleteRecord(GSF.Data.Model.RecordRestriction)"/>.
+            This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.DeleteRecord(GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})"/>.
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction)">
+        <member name="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})">
             <summary>
             Updates the database with the specified modeled table <paramref name="record"/>,
             any model properties marked with <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> will
@@ -9870,6 +10003,10 @@
             </summary>
             <param name="record">Record to update.</param>
             <param name="restriction">Record restriction to apply, if any.</param>
+            <param name="applyRootQueryRestriction">
+            Flag that determines if any existing <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied. Defaults to
+            <see cref="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToUpdates"/> setting.
+            </param>
             <returns>Number of rows affected.</returns>
             <remarks>
             <para>
@@ -9920,7 +10057,7 @@
             will be updated to reflect what is defined in the user model.
             </para>
             <para>
-            This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction)"/>.
+            This is a convenience call to <see cref="M:GSF.Data.Model.TableOperations`1.UpdateRecord(`0,GSF.Data.Model.RecordRestriction,System.Nullable{System.Boolean})"/>.
             </para>
             </remarks>
         </member>
