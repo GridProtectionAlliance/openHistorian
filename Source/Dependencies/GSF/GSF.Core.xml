@@ -9124,7 +9124,7 @@
         </member>
         <member name="T:GSF.Data.Model.RecordOperationAttribute">
             <summary>
-            Marks a method as a specific <see cref="T:GSF.Data.Model.RecordOperation"/> for a modeled table.
+            Defines an attribute that marks a method as a specific <see cref="T:GSF.Data.Model.RecordOperation"/> for a modeled table.
             </summary>
         </member>
         <member name="P:GSF.Data.Model.RecordOperationAttribute.ModelType">
