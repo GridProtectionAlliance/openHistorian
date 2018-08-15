@@ -44,7 +44,7 @@ namespace ConfigurationSetupUtility.Screens
         #region [ Members ]
 
         // Constants
-        private const string DataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.108.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+        private const string DataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
 
         // Fields
         private Dictionary<string, object> m_state;
