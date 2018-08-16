@@ -29967,6 +29967,18 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
         </member>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Double},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Double"/> values.
+            </summary>
+            <param name="source">Source data sample.</param>
+            <param name="selector">Used to map value from enumerable of <typeparamref name="T"/> to enumerable of <see cref="T:System.Double"/>.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
+            <returns>The standard deviation of the sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
+            <typeparam name="T">Type of source used to extract double.</typeparam>
+        </member>
         <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Decimal},System.Boolean)">
             <summary>
             Computes the standard deviation over a sequence of <see cref="T:System.Decimal"/> values.
@@ -29977,6 +29989,18 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
         </member>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Decimal},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Decimal"/> values.
+            </summary>
+            <param name="source">Source data sample.</param>
+            <param name="selector">Used to map value from enumerable of <typeparamref name="T"/> to enumerable of <see cref="T:System.Decimal"/>.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
+            <returns>The standard deviation of the sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
+            <typeparam name="T">Type of source used to extract decimal.</typeparam>
+        </member>
         <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation(System.Collections.Generic.IEnumerable{System.Single},System.Boolean)">
             <summary>
             Computes the standard deviation over a sequence of <see cref="T:System.Single"/> values.
@@ -29986,6 +30010,18 @@
             <returns>The standard deviation of the sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.NumericalAnalysisExtensions.StandardDeviation``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Single},System.Boolean)">
+            <summary>
+            Computes the standard deviation over a sequence of <see cref="T:System.Single"/> values.
+            </summary>
+            <param name="source">Source data sample.</param>
+            <param name="selector">Used to map value from enumerable of <typeparamref name="T"/> to enumerable of <see cref="T:System.Single"/>.</param>
+            <param name="calculateForSample">Set to <c>true</c> to calculate for estimated population size, or <c>false</c> for full population.</param>
+            <returns>The standard deviation of the sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="source"/> does not contain enough values to produce a result.</exception>
+            <typeparam name="T">Type of source used to extract float.</typeparam>
         </member>
         <member name="T:GSF.NumericExtensions">
             <summary>Defines extension functions related to numbers.</summary>
