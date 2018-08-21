@@ -1278,6 +1278,93 @@
             </summary>
             <param name="vendorDevice">The record to update.</param>
         </member>
+        <member name="M:GSF.Web.Shared.SharedHub.GetStatistic(System.Object)">
+            <summary>
+            If measurement is a statistic, returns the associated Statistic record; otherwise, returns <c>null</c>.
+            </summary>
+            <param name="measurementMetadata">Record of measurement metadata used to lookup Statistic record.</param>
+            <returns>Associated Statistic record, if measurement is a statistic; otherwise, returns <c>null</c>.</returns>
+        </member>
+        <member name="T:GSF.Web.Shared.SubscriberHub">
+            <summary>
+            SignalR hub that exposes server-side functions for the subscriber API.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.Connect(System.String)">
+            <summary>
+            Initiates the subscriber connection.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber to be connected.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.SendCommand(System.String,GSF.TimeSeries.Transport.ServerCommand,System.String)">
+            <summary>
+            Sends a command to the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="commandCode">The command to be sent.</param>
+            <param name="message">The message to be sent to the publisher.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.GetMetadata(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Filters metadata and returns the result.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="tableName">The metadata table from which to return rows.</param>
+            <param name="filter">The filter to apply to the metadata table.</param>
+            <param name="sortField">The field by which to sort the result set.</param>
+            <param name="takeCount">The maximum number of records to be returned from the result set.</param>
+            <returns>The result of the metadata query.</returns>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.SetMeasurementFormat(System.String,System.Guid,System.String,System.String)">
+            <summary>
+            Defines a string format to apply for a given measurement.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="signalID">Measurement Signal ID to which to apply the format.</param>
+            <param name="format">String format to apply, e.g., "{0:N3} seconds".</param>
+            <param name="dataType">Fully qualified data type for measurement, defaults to "System.Double" if <c>null</c>.</param>
+            <remarks>
+            <para>
+            Set <paramref name="format"/> to <c>null</c> to remove any existing formatting.
+            </para>
+            <para>
+            Conversion of double-precision measurement floating point value to specified
+            <paramref name="dataType"/> will be attempted when type is provided.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.Subscribe(System.String,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Subscribes to the internal data publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="data">Data from the client describing the subscription.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.Unsubscribe(System.String)">
+            <summary>
+            Unsubscribes from the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.Disconnect(System.String)">
+            <summary>
+            Disconnects from the publisher.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.Dispose(System.String)">
+            <summary>
+            Closes the connection and releases all resources retained by the subscriber with this ID.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.OnDisconnected(System.Boolean)">
+            <summary>
+            Handles when a client disconnects from the hub.
+            </summary>
+            <param name="stopCalled">Indicates whether the client called stop.</param>
+            <returns>The task to handle the disconnect.</returns>
+        </member>
         <member name="T:GSF.Web.Embedded.EmbeddedResourceProvider">
             <summary>
             Represents a <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows access to embedded resources.
@@ -5374,68 +5461,6 @@
             <param name="assemblyBindingsSource">Stream to assembly bindings to add; defaults to embedded "GSF.Web.AssemblyBindings.xml" resource.</param>
             <returns><c>true</c> if assembly bindings were updated; otherwise, <c>false</c>.</returns>
             <remarks>Any stream passed in via <paramref name="assemblyBindingsSource"/> will be closed if function succeeds.</remarks>
-        </member>
-        <member name="T:openPDC.SubscriberHub">
-            <summary>
-            SignalR hub that exposes server-side functions for the subscriber API.
-            </summary>
-        </member>
-        <member name="M:openPDC.SubscriberHub.Connect(System.String)">
-            <summary>
-            Initiates the subscriber connection.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber to be connected.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.SendCommand(System.String,GSF.TimeSeries.Transport.ServerCommand,System.String)">
-            <summary>
-            Sends a command to the publisher.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-            <param name="commandCode">The command to be sent.</param>
-            <param name="message">The message to be sent to the publisher.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.GetMetadata(System.String,System.String,System.String,System.String,System.Int32)">
-            <summary>
-            Filters metadata and returns the result.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-            <param name="tableName">The metadata table from which to return rows.</param>
-            <param name="filter">The filter to apply to the metadata table.</param>
-            <param name="sortField">The field by which to sort the result set.</param>
-            <param name="takeCount">The maximum number of records to be returned from the result set.</param>
-            <returns>The result of the metadata query.</returns>
-        </member>
-        <member name="M:openPDC.SubscriberHub.Subscribe(System.String,Newtonsoft.Json.Linq.JObject)">
-            <summary>
-            Subscribes to the internal data publisher.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-            <param name="data">Data from the client describing the subscription.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.Unsubscribe(System.String)">
-            <summary>
-            Unsubscribes from the publisher.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.Disconnect(System.String)">
-            <summary>
-            Disconnects from the publisher.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.Dispose(System.String)">
-            <summary>
-            Closes the connection and releases all resources retained by the subscriber with this ID.
-            </summary>
-            <param name="subscriberID">The ID of the subscriber.</param>
-        </member>
-        <member name="M:openPDC.SubscriberHub.OnDisconnected(System.Boolean)">
-            <summary>
-            Handles when a client disconnects from the hub.
-            </summary>
-            <param name="stopCalled">Indicates whether the client called stop.</param>
-            <returns>The task to handle the disconnect.</returns>
         </member>
     </members>
 </doc>

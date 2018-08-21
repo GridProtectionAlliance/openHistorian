@@ -40,6 +40,11 @@
             Gets or sets the maximum interval, in seconds, at which the adapter can execute database operations. Set to zero for no delay.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.TimestampSource">
             <summary>
             Gets or sets the source of the timestamps of the calculated values.
@@ -138,6 +143,11 @@
         <member name="P:DynamicCalculator.EmailNotifier.EnableSSL">
             <summary>
             Gets or sets the flag that determines whether to use SSL when communicating with the SMTP server.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.EmailNotifier.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the action adapter will produce, if any.
             </summary>
         </member>
         <member name="P:DynamicCalculator.EmailNotifier.TimestampSource">

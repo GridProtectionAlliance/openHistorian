@@ -7521,6 +7521,22 @@
             <see cref="E:GSF.ISupportLifecycle.Disposed"/> event.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.TryLookupStatisticSource(System.String,System.String@,System.Int32@)">
+            <summary>
+            Attempts to lookup statistic source and signal index from a measurement <paramref name="signalReference"/>.
+            </summary>
+            <param name="signalReference">Signal reference.</param>
+            <param name="sourceCategory">Statistic source category as defined in Statistics table Source column.</param>
+            <param name="signalIndex">Statistic signal index as defined in Statistics table SignalIndex column.</param>
+            <returns><c>true</c> if lookup succeeds; otherwise, <c>false</c>.</returns>
+            <remarks>
+            The statistic source acronyms used in measurement signal references are defined dynamically by
+            statistic sources during registration. This function returns the source category, as defined in
+            the Statistic table, for a given signal reference to allow for reverse lookups. As a result,
+            user will need to make sure that all statistic sources have been registered before calling
+            this function in order to receive accurate results.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.RegexMatch(System.String,System.String)">
             <summary>
             Determines whether the given signal reference matches the
