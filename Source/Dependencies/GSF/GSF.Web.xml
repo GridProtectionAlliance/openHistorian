@@ -1282,8 +1282,24 @@
             <summary>
             If measurement is a statistic, returns the associated Statistic record; otherwise, returns <c>null</c>.
             </summary>
-            <param name="measurementMetadata">Record of measurement metadata used to lookup Statistic record.</param>
+            <param name="metadataRecord">Record of measurement metadata used to lookup Statistic record.</param>
             <returns>Associated Statistic record, if measurement is a statistic; otherwise, returns <c>null</c>.</returns>
+            <remarks>
+            For best results, this function should be called after all statistic engine sources have been registered.
+            <paramref name="metadataRecord"/> object expected to contain a "SignalID" and "SignalReference" property.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Shared.SharedHub.GetStatisticFormatRecords(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Gets the format records for statistics associated with the <paramref name="metadata"/>.
+            </summary>
+            <param name="metadata">Collection of measurement metadata.</param>
+            <returns>Array of statistical records for the <paramref name="metadata"/>.</returns>
+            <remarks>
+            This is usually used in conjunction with a call to <see cref="M:GSF.Web.Shared.SubscriberHub.SetMeasurementFormats(System.String,System.Collections.Generic.IEnumerable{System.Object})"/>
+            or applied to the "FormatRecords" property of a Json <c>subscriptionInfo</c> object.
+            Records in <paramref name="metadata"/> array expected to contain a "SignalID" and "SignalReference" property.
+            </remarks>
         </member>
         <member name="T:GSF.Web.Shared.SubscriberHub">
             <summary>
@@ -1320,7 +1336,7 @@
             Defines a string format to apply for a given measurement.
             </summary>
             <param name="subscriberID">The ID of the subscriber.</param>
-            <param name="signalID">Measurement Signal ID to which to apply the format.</param>
+            <param name="signalID">Measurement signal ID to which to apply the format.</param>
             <param name="format">String format to apply, e.g., "{0:N3} seconds".</param>
             <param name="dataType">Fully qualified data type for measurement, defaults to "System.Double" if <c>null</c>.</param>
             <remarks>
@@ -1331,6 +1347,28 @@
             Conversion of double-precision measurement floating point value to specified
             <paramref name="dataType"/> will be attempted when type is provided.
             </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Shared.SubscriberHub.SetMeasurementFormats(System.String,System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Defines string formats to apply for the collection of format records.
+            </summary>
+            <param name="subscriberID">The ID of the subscriber.</param>
+            <param name="formatRecords">Collection of format records.</param>
+            <remarks>
+            This is simply a bulk operation for <see cref="M:GSF.Web.Shared.SubscriberHub.SetMeasurementFormat(System.String,System.Guid,System.String,System.String)"/>.
+            Each format record should be a Json object similar to the following:
+            <code>
+            {
+                "signalID":"4B1DEE7C-72EC-41EA-AAF3-7E8094355740",
+                "format":"{0:N3} seconds",
+                "dataType":"System.Double"
+            }
+            </code>
+            Where
+             - "signalID" is the measurement signal ID to which to apply the format
+             - "format" is the string format to apply, and
+             - "dataType" is the fully qualified data type for measurement
             </remarks>
         </member>
         <member name="M:GSF.Web.Shared.SubscriberHub.Subscribe(System.String,Newtonsoft.Json.Linq.JObject)">
