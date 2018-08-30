@@ -39110,6 +39110,26 @@
             <param name="reader"><see cref="T:System.IO.BinaryReader"/> positioned at desired structure.</param>
             <returns>A structure read from <see cref="T:System.IO.BinaryReader"/>.</returns>
         </member>
+        <member name="T:GSF.EnabledState">
+            <summary>
+            Enumeration that represents a state of either "automatic", "on" or "off".
+            </summary>
+        </member>
+        <member name="F:GSF.EnabledState.Auto">
+            <summary>
+            Represents the automatic, i.e., default, state.
+            </summary>
+        </member>
+        <member name="F:GSF.EnabledState.On">
+            <summary>
+            Represents the on, i.e., enabled, state.
+            </summary>
+        </member>
+        <member name="F:GSF.EnabledState.Off">
+            <summary>
+            Represents the off, i.e., disabled, state.
+            </summary>
+        </member>
         <member name="T:GSF.RadixCodec">
             <summary>
             Represents a radix value codec for conversion of base-10 integer values to and from other base values.
