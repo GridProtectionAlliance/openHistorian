@@ -13703,6 +13703,27 @@
             Sample all defined counters.
             </summary>
         </member>
+        <member name="T:GSF.Diagnostics.LogFileWriterInMemory">
+            <summary>
+            A log subscriber that will log messages to a file.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogFileWriterInMemory.#ctor">
+            <summary>
+            Creates a LogFileWriter that initially queues message
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.LogFileWriterInMemory.LogCount">
+            <summary>
+            The number of logs that have been written to this file.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.LogFileWriterInMemory.Write(GSF.Diagnostics.LogMessage)">
+            <summary>
+            Writes the specified log to the file
+            </summary>
+            <param name="log"></param>
+        </member>
         <member name="T:GSF.Diagnostics.DisposableLoggingClassBase">
             <summary>
             A helper class that implements <see cref="T:System.IDisposable"/> that will raise log messages
