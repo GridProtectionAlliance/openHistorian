@@ -35,6 +35,12 @@
             Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
             </summary>
         </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.TimestampDifferentiation">
+            <summary>
+            Gets or sets the time interval, in milliseconds, to insert between consecutive
+            data points for a given signal that were received at the exact same time.
+            </summary>
+        </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
