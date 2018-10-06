@@ -11904,6 +11904,12 @@
             </summary>
             <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ManageCertificateHandler(GSF.ServiceProcess.ClientRequestInfo)">
+            <summary>
+            Manages the certificate used by the service.
+            </summary>
+            <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.AuthenticateRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
             <summary>
             Attempts to authenticate or re-authenticate to network shares.
