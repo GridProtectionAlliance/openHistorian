@@ -4249,6 +4249,33 @@
             <param name="noRecordText">Text for no records option when select query returns no values; defaults to "No records".</param>
             <returns>Generated HTML for new text field based on specified parameters.</returns>
         </member>
+        <member name="M:GSF.Web.Model.DataContext.AddSelectField``1(System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.Boolean,System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Generates template based select field based on a dictionary of field attributes.
+            </summary>
+            <typeparam name="TModel">Modeled table for select field.</typeparam>
+            <param name="options">Dictionary generated to be used for the options.</param>
+            <param name="fieldName">Field name for value of select field.</param>
+            <param name="required">Determines if field name is required.</param>
+            <param name="fieldLabel">Label name for select field, defaults to <paramref name="fieldName"/>.</param>
+            <param name="fieldID">ID to use for select field; defaults to select + <paramref name="fieldName"/>.</param>
+            <param name="groupDataBinding">Data-bind operations to apply to outer form-group div, if any.</param>
+            <param name="labelDataBinding">Data-bind operations to apply to label, if any.</param>
+            <param name="requiredDataBinding">Boolean data-bind operation to apply to required state, if any.</param>
+            <param name="customDataBinding">Extra custom data-binding operations to apply to field, if any.</param>
+            <param name="dependencyFieldName">Defines default "enabled" subordinate data-bindings based a single boolean field, e.g., a check-box.</param>
+            <param name="optionDataBinding">Data-bind operations to apply to each option value, if any.</param>
+            <param name="toolTip">Tool tip text to apply to field, if any.</param>
+            <param name="initialFocus">Use field for initial focus.</param>
+            <param name="allowUnset">Flag that determines if select can have no selected value.</param>
+            <param name="unsetCaption">Label to show when no value is selected; defaults to "Select value...".</param>
+            <param name="addEmptyRow">Flag that determines if an empty row should be added to options list.</param>
+            <param name="emptyRowValue">Value to use for empty row; defaults to empty string.</param>
+            <param name="showNoRecordOption">Flag that determines if an option representing no records should be shown if select query returns no values.</param>
+            <param name="noRecordValue">Value for no records option when select query returns no values; defaults to "-1".</param>
+            <param name="noRecordText">Text for no records option when select query returns no values; defaults to "No records".</param>
+            <returns>Generated HTML for new text field based on specified parameters.</returns>
+        </member>
         <member name="M:GSF.Web.Model.DataContext.AddCheckBoxField``1(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             Generates template based check box field based on reflected modeled table field attributes.
