@@ -287,6 +287,11 @@
             Creates the adapter
             </summary>
         </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.TableName">
+            <summary>
+            Gets or sets the name of the table this adapter will use to obtain its metadata.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AlwaysProduceResult">
             <summary>
             Gets or sets flag indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,

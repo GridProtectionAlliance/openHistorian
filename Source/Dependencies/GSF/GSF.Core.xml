@@ -30159,6 +30159,13 @@
             <remarks>To optimize performance, this function does not validate that the notGreaterThanOrEqualToValue
             is not greater than or equal to the alternateValue.</remarks>
         </member>
+        <member name="M:GSF.NumericExtensions.Normalize(System.Decimal)">
+            <summary>
+            Removes trailing zeros from the given decimal <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to be normalized.</param>
+            <returns>The normalized decimal value.</returns>
+        </member>
         <member name="T:GSF.ObjectState`1">
             <summary>
             A serializable class that can be used to track the current and previous state of an object.
