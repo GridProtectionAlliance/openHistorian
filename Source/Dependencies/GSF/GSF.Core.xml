@@ -7731,6 +7731,374 @@
             Contains classes used for parsing command line parameters and managing console applications.
             </summary>
         </member>
+        <member name="T:GSF.Data.IBulkDataOperation">
+            <summary>
+            This is the common interface for any bulk data operation
+            </summary>
+        </member>
+        <member name="E:GSF.Data.IBulkDataOperation.TableProgress">
+            <summary>
+            Get the status information of table progress
+            </summary>
+        </member>
+        <member name="E:GSF.Data.IBulkDataOperation.RowProgress">
+            <summary>
+            Get the information of Row progress of table
+            </summary>
+        </member>
+        <member name="E:GSF.Data.IBulkDataOperation.OverallProgress">
+            <summary>
+            Get the information of overall progress of Migration utility
+            </summary>
+        </member>
+        <member name="E:GSF.Data.IBulkDataOperation.SQLFailure">
+            <summary>
+            Get the information of exception while processing SQL statement
+            </summary>
+        </member>
+        <member name="P:GSF.Data.IBulkDataOperation.WorkTables">
+            <summary>
+            Get the work table information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.IBulkDataOperation.FromSchema">
+            <summary>
+            From schema information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.IBulkDataOperation.ToSchema">
+            <summary>
+            To Schema information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.IBulkDataOperation.RowReportInterval">
+            <summary>
+            Get the row report interval information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.IBulkDataOperation.Timeout">
+            <summary>
+            Get or set time out for SQL statement
+            </summary>
+        </member>
+        <member name="M:GSF.Data.IBulkDataOperation.Execute">
+            <summary>
+            Execute a method of object
+            </summary>
+        </member>
+        <member name="M:GSF.Data.IBulkDataOperation.Close">
+            <summary>
+            Close the object connection
+            </summary>
+        </member>
+        <member name="T:GSF.Data.BulkDataOperationBase">
+            <summary>
+            This class defines a common set of functionality that any bulk data operation implementation can use 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_overallProgress">
+            <summary>
+            Implementer can use this variable to track overall progress 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_overallTotal">
+            <summary>
+            This is initialized to the overall total number of records to be processed 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_rowReportInterval">
+            <summary>
+            Defines interval for reporting row progress 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_timeout">
+            <summary>
+            Timeout value for SQL operation 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_tableCollection">
+            <summary>
+            Tables value 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_useFromSchemaRI">
+            <summary>
+            Flag to check referential integrity
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_excludedTables">
+            <summary>
+            List of exclude tables
+            </summary>
+        </member>
+        <member name="E:GSF.Data.BulkDataOperationBase.TableProgress">
+            <summary>
+            Get the status information of table progress
+            </summary>
+        </member>
+        <member name="E:GSF.Data.BulkDataOperationBase.RowProgress">
+            <summary>
+            Get the information of Row progress of table
+            </summary>
+        </member>
+        <member name="E:GSF.Data.BulkDataOperationBase.OverallProgress">
+            <summary>
+            Get the information of overall progress of Migration utility
+            </summary>
+        </member>
+        <member name="E:GSF.Data.BulkDataOperationBase.SQLFailure">
+            <summary>
+            Get the information of exception while processing SQL statement
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.#ctor(System.String,System.String)">
+            <summary>
+            Constructor with parameters
+            </summary>
+            <param name="fromConnectString">Source database connection string</param>
+            <param name="toConnectString">Destination database connection string</param>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.#ctor(GSF.Data.Schema,GSF.Data.Schema)">
+            <summary>
+            Constructor with parameters
+            </summary>
+            <param name="fromSchema">Source Schema</param>
+            <param name="toSchema">Destination Schema</param>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.FromSchema">
+            <summary>
+            Get or set Source schema
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.ToSchema">
+            <summary>
+            Get or set destination schema
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.RowReportInterval">
+            <summary>
+            Get or set number of rows to process before raising progress events
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.Timeout">
+            <summary>
+            Get or set Maximum number of seconds to wait when processing a SQL command before timing out.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.UseFromSchemaReferentialIntegrity">
+            <summary>
+            Get or set - use referential integrity information from source/to destination database during data processing
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.WorkTables">
+            <summary>
+            These are the tables that were found in both source and destination to be used for data operation...
+            </summary>
+        </member>
+        <member name="P:GSF.Data.BulkDataOperationBase.ExcludedTables">
+            <summary>
+            Get list of tables to be excluded during data processing
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.Dispose(System.Boolean)">
+            <summary>
+            Dispose
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.Close">
+            <summary>
+            Close source and destination schema
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.System#IDisposable#Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.Analyze">
+            <summary>
+            Analyze data schema before data processing
+            </summary>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.OnTableProgress(System.String,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Raise an event if table change in data processing
+            </summary>
+            <param name="TableName">Table name in data processing</param>
+            <param name="Executed">Status of data processing on table</param>
+            <param name="CurrentTable">current table index in data processing</param>
+            <param name="TotalTables">total table count in data processing</param>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.OnRowProgress(System.String,System.Int32,System.Int32)">
+            <summary>
+            Raise an event while change row in data processing
+            </summary>
+            <param name="TableName">Table name in data processing</param>
+            <param name="CurrentRow">current row index in data processing</param>
+            <param name="TotalRows">total rows needs to be process in data processing</param>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.OnOverallProgress(System.Int32,System.Int32)">
+            <summary>
+            Raise an event to show overall progress of data processing
+            </summary>
+            <param name="Current">Current index of tables in data processing</param>
+            <param name="Total">Total table count in data processing</param>
+        </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.OnSQLFailure(System.String,System.Exception)">
+            <summary>
+            Raise an event if SQL statement fail
+            </summary>
+            <param name="SQL">SQL statement information</param>
+            <param name="ex">exception information</param>
+        </member>
+        <member name="T:GSF.Data.DataDeleter">
+            <summary>
+            This class defines a common set of functionality that any data operation implementation can use 
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.Close">
+            <summary>
+            Close
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.Execute">
+            <summary>
+            Execute this <see cref="T:GSF.Data.DataDeleter"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.ExecuteDeletes(GSF.Data.Table,GSF.Data.Table)">
+            <summary>
+            Execute a command to delete data from source to destination table
+            </summary>
+            <param name="fromTable">Source table</param>
+            <param name="toTable">Destination table</param>
+        </member>
+        <member name="T:GSF.Data.DataInserter">
+            <summary>
+            This class defines a common set of functionality that any data operation implementation can use 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.AttemptBulkInsert">
+            <summary>
+            Get or set to attempt use of a BULK INSERT on a destination SQL Server connection
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.ForceBulkInsert">
+            <summary>
+            Get or set to force use of a BULK INSERT on a destination SQL Server connection regardless of whether or not it looks
+            like the referential integrity definition supports this.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.BulkInsertSettings">
+            <summary>
+            This setting defines the SQL Server BULK INSERT settings that will be used if a BULK INSERT is performed. 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.BulkInsertEncoding">
+            <summary>
+            This setting defines the text encoding that will be used when writing a temporary BULK INSERT file that will be needed
+            if a SQL Server BULK INSERT is performed - make sure the encoding output matches the specified CODEPAGE value in the
+            BulkInsertSettings property.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.BulkInsertFilePath">
+            <summary>
+            This setting defines the file path that will be used when writing a temporary BULK INSERT file that will be needed if a
+            SQL Server BULK INSERT is performed - make sure the destination SQL Server has rights to this path.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.DelimiterReplacement">
+            <summary>
+            This specifies the string that will be substituted for the field terminator or row terminator if encountered in a database
+            value while creating a BULK INSERT file.  The field terminator and row terminator values are defined in the BulkInsertSettings
+            property specified by the FIELDTERMINATOR and ROWTERMINATOR keywords respectively.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.ClearDestinationTables">
+            <summary>
+            Set to True to clear all data from the destination database before processing data inserts.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.AttemptTruncateTable">
+            <summary>
+            Set to True to attempt use of a TRUNCATE TABLE on a destination SQL Server connection if ClearDestinationTables is True
+            and it looks like the referential integrity definition supports this.  Your SQL Server connection will need the rights
+            to perform this operation.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.ForceTruncateTable">
+            <summary>
+            Set to True to force use of a TRUNCATE TABLE on a destination SQL Server connection if ClearDestinationTables is True regardless
+            of whether or not it looks like the referential integrity definition supports this.  Your SQL Server connection will need the
+            rights to perform this operation
+            </summary>
+        </member>
+        <member name="P:GSF.Data.DataInserter.PreserveAutoIncValues">
+            <summary>
+            Set to True to preserve primary key value data to the destination database before processing data inserts.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.Close">
+            <summary>
+            Close
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.Execute">
+            <summary>
+            Execute this <see cref="T:GSF.Data.DataInserter"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.ClearTable(GSF.Data.Table)">
+            <summary>
+            Clear destination schema table
+            </summary>
+            <param name="table">schema table</param>
+        </member>
+        <member name="M:GSF.Data.DataInserter.ExecuteInserts(GSF.Data.Table,GSF.Data.Table)">
+            <summary>
+            Execute a command to insert or update data from source to destination table
+            </summary>
+            <param name="fromTable">Source table</param>
+            <param name="toTable">Destination table</param>
+        </member>
+        <member name="M:GSF.Data.DataInserter.DereferenceValue(GSF.Data.Table,System.String,System.Object,System.Collections.ArrayList)">
+            <summary>
+            Lookup referential value for source table and update their information
+            </summary>
+            <param name="sourceTable"></param>
+            <param name="fieldName"></param>
+            <param name="value"></param>
+            <param name="fieldStack"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.DataUpdater">
+            <summary>
+            This class defines a common set of functionality that any data operation implementation can use 
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.Close">
+            <summary>
+            Close
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.Execute">
+            <summary>
+            Execute this <see cref="T:GSF.Data.DataUpdater"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.ExecuteUpdates(GSF.Data.Table,GSF.Data.Table)">
+            <summary>
+            Execute a command to update data from source to destination table
+            </summary>
+            <param name="fromTable">Source table</param>
+            <param name="toTable">Destination table</param>
+        </member>
         <member name="T:GSF.Data.Model.EncryptDataAttribute">
             <summary>
             Defines an attribute that provides encryption of text field contents for a modeled table.
@@ -10359,6 +10727,699 @@
             connection is available, applying any modeled update values as specified by instances of the
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> on the model properties.
             </remarks>
+        </member>
+        <member name="T:GSF.Data.TableType">
+            <summary>
+            Specifies the type of object in database
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.Table">
+            <summary>
+            Database object is DataTable
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.View">
+            <summary>
+            Database object is View
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.SystemTable">
+            <summary>
+            Database object is System Defined Table
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.SystemView">
+            <summary>
+            Database object is System Defined View
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.Alias">
+            <summary>
+            Database object is Alias
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.Synonym">
+            <summary>
+            Database object is Synonym
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.GlobalTemp">
+            <summary>
+            Database object is Global Temp 
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.LocalTemp">
+            <summary>
+            Database object is local Temp
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.Link">
+            <summary>
+            Database object is Link
+            </summary>
+        </member>
+        <member name="F:GSF.Data.TableType.Undetermined">
+            <summary>
+            Database object is not defined
+            </summary>
+        </member>
+        <member name="T:GSF.Data.ReferentialAction">
+            <summary>
+            Specified the type of referential action on database object/Tables
+            </summary>
+        </member>
+        <member name="F:GSF.Data.ReferentialAction.Cascade">
+            <summary>
+            Action Type is cascade
+            </summary>
+        </member>
+        <member name="F:GSF.Data.ReferentialAction.SetNull">
+            <summary>
+            Action Type is to set null
+            </summary>
+        </member>
+        <member name="F:GSF.Data.ReferentialAction.SetDefault">
+            <summary>
+            Action Type is to set default
+            </summary>
+        </member>
+        <member name="F:GSF.Data.ReferentialAction.NoAction">
+            <summary>
+            No Action
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Field">
+            <summary>
+            Represents a database field.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Name">
+            <summary>
+            Get Field Name 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.SQLEscapedName">
+            <summary>
+            Get SQL escaped name of <see cref="P:GSF.Data.Field.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Type">
+            <summary>
+            Get <see cref="T:System.Data.OleDb.OleDbType"/> Type
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Ordinal">
+            <summary>
+            Get or set file ordinal
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.AllowsNulls">
+            <summary>
+            Get or set Allow Null flag
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.AutoIncrement">
+            <summary>
+            Get or set Auto increment flag
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.AutoIncrementSeed">
+            <summary>
+            Get or set Auto increment seed
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.AutoIncrementStep">
+            <summary>
+            Get or set Auto increment step
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.HasDefault">
+            <summary>
+            Get or set has default value flag
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.DefaultValue">
+            <summary>
+            Get or set default value
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.MaxLength">
+            <summary>
+            Get or set maximum length of field
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.NumericPrecision">
+            <summary>
+            Get or set numeric precision
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.NumericScale">
+            <summary>
+            Get or set Numeric scale
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.DateTimePrecision">
+            <summary>
+            Get or set date time precision
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.ReadOnly">
+            <summary>
+            Get or set read-only flag
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Unique">
+            <summary>
+            Get or set for unique
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Description">
+            <summary>
+            Get or set description
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.AutoIncrementTranslations">
+            <summary>
+            Get or set auto increment translation
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Value">
+            <summary>
+            Get or set value of <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.IsPrimaryKey">
+            <summary>
+            Get or set flag to check <see cref="T:GSF.Data.Field"/> is primary key or not
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.PrimaryKeyOrdinal">
+            <summary>
+            Get or set ordinal for Primary key field
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.PrimaryKeyName">
+            <summary>
+            Get or set primary key name
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.ForeignKeys">
+            <summary>
+            Get or set list of <see cref="T:GSF.Data.ForeignKeyFields"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.ReferencedBy">
+            <summary>
+            Get or set - check <see cref="T:GSF.Data.Field"/> is reference by
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.IsForeignKey">
+            <summary>
+            Get or set foreign key flag. if <see cref="T:GSF.Data.Field"/> is <see cref="P:GSF.Data.Field.ReferencedBy"/> then true else false
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Parent">
+            <summary>
+            Get or set <see cref="T:GSF.Data.Fields"/> parent
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.Table">
+            <summary>
+            Get or set <see cref="T:GSF.Data.Field"/>'s parent <see cref="P:GSF.Data.Field.Table"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Field.CompareTo(System.Object)">
+            <summary>
+            Compare <paramref name="obj"/> ordinal to current field <see cref="P:GSF.Data.Field.Ordinal"/>
+            </summary>
+            <param name="obj">Check <paramref name="obj"/> type <see cref="T:System.Object"/>, if it is type of <see cref="T:GSF.Data.Field"/> then compare to <see cref="P:GSF.Data.Field.Ordinal"/> of <paramref name="obj"/> else throw <see cref="T:System.ArgumentException"/></param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Data.Field.SQLEncodedValue">
+            <summary>
+            Change <see cref="T:GSF.Data.Field"/> value to encoded string. It will check <see cref="P:GSF.Data.Field.Type"/>  and <see cref="P:GSF.Data.Field.Parent"/> value before convert to <see cref="T:System.Data.OleDb.OleDbType"/> compatible value
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Field.NonNullNativeValue">
+            <summary>
+            Gets the native value for the field (SQL Encoded).
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Field.GetReferentialAction(System.String)">
+            <summary>
+            Get information about referential action
+            </summary>
+            <param name="action">check <paramref name="action"/> and return to appropriate <see cref="T:GSF.Data.ReferentialAction"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.ForeignKeyField">
+            <summary>
+            Represents a database foreign key field.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.Parent">
+            <summary>
+            Get foreign key parent information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.PrimaryKey">
+            <summary>
+            Get or set Primary key field
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.ForeignKey">
+            <summary>
+            Get or set Foreign key field
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.Ordinal">
+            <summary>
+            Get or set ordinal of <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.KeyName">
+            <summary>
+            Get or set name of key
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.UpdateRule">
+            <summary>
+            Get or set update rule for <see cref="T:GSF.Data.ReferentialAction"/> for <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyField.DeleteRule">
+            <summary>
+            Get or set delete rule for <see cref="T:GSF.Data.ReferentialAction"/> for <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="T:GSF.Data.ForeignKeyFields">
+            <summary>
+            Represents a collection of <see cref="T:GSF.Data.ForeignKeyField"/> values.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.Parent">
+            <summary>
+            Get or set field parent information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.FieldDictionary">
+            <summary>
+            Get of Set Fields names to lookups
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.FieldsList">
+            <summary>
+            Get or set field indexes to lookups
+            </summary>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.Item(System.Int32)">
+            <summary>
+            Get the current index of foreign key field information
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.Item(System.String)">
+            <summary>
+            Get the current <see cref="T:GSF.Data.ForeignKeyField"/> information by name
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Data.ForeignKeyFields.Count">
+            <summary>
+            Get count of <see cref="T:GSF.Data.ForeignKeyFields"/> list
+            </summary>
+        </member>
+        <member name="M:GSF.Data.ForeignKeyFields.GetEnumerator">
+            <summary>
+            Get <see cref="T:System.Collections.IEnumerator"/> of field lists
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.ForeignKeyFields.Add(GSF.Data.ForeignKeyField)">
+            <summary>
+            Add a <see cref="T:GSF.Data.ForeignKeyField"/> to list object
+            </summary>
+            <param name="newField"><paramref name="newField"/> is type of <see cref="T:GSF.Data.ForeignKeyField"/></param>
+        </member>
+        <member name="M:GSF.Data.ForeignKeyFields.GetList">
+            <summary>
+            Get comma separated <see cref="T:System.String"/> of <see cref="T:GSF.Data.ForeignKeyField"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.Fields">
+            <summary>
+            Represents a collection of <see cref="T:GSF.Data.Field"/> values.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Fields.Parent">
+            <summary>
+            Get <see cref="T:GSF.Data.Field"/>'s parent <see cref="T:GSF.Data.Table"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Fields.FieldDictionary">
+            <summary>
+            Get or set to fields lookup 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Fields.FieldList">
+            <summary>
+            Get or set Fields index lookup
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Fields.Item(System.Int32)">
+            <summary>
+            Indexer property of Field
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Data.Fields.Item(System.String)">
+            <summary>
+            Indexer property of Field by Name
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:GSF.Data.Fields.Count">
+            <summary>
+            Get count of collection of <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Fields.Add(GSF.Data.Field)">
+            <summary>
+            Add new <see cref="T:GSF.Data.Field"/> to this collection.
+            </summary>
+            <param name="newField">Field to add.</param>
+        </member>
+        <member name="M:GSF.Data.Fields.Remove(GSF.Data.Field)">
+            <summary>
+            Removes <see cref="T:GSF.Data.Field"/> from the collection.
+            </summary>
+            <param name="field">Field to remove.</param>
+        </member>
+        <member name="M:GSF.Data.Fields.GetEnumerator">
+            <summary>
+            Get <see cref="T:System.Collections.IEnumerator"/> type of <see cref="T:GSF.Data.Field"/> list.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Fields.GetList(System.Boolean,System.Func{System.String,System.String})">
+            <summary>
+            Get comma separated list of <see cref="T:GSF.Data.Field"/>
+            </summary>
+            <param name="returnAutoInc"></param>
+            <param name="sqlEscapeFunction"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.Table">
+            <summary>
+            Get data table information for data processing
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Fields">
+            <summary>
+            Get or set list of <see cref="P:GSF.Data.Table.Fields"/> for <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.MapName">
+            <summary>
+            Get or set name of <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Process">
+            <summary>
+            Get or set process flag
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Priority">
+            <summary>
+            Get or set priority 
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IdentitySQL">
+            <summary>
+            Get or set identity SQL for <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Name">
+            <summary>
+            Get name of <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.SQLEscapedName">
+            <summary>
+            Get SQL escaped name of <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.FullName">
+            <summary>
+            Get or set full name of <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Catalog">
+            <summary>
+            Get or set catalog information for <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Schema">
+            <summary>
+            Get or set schema name
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Type">
+            <summary>
+            Get <see cref="T:GSF.Data.TableType"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Description">
+            <summary>
+            Get or set description
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.RowCount">
+            <summary>
+            Get row count in <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Parent">
+            <summary>
+            Get parent <see cref="T:GSF.Data.Table"/> information
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.Connection">
+            <summary>
+            Get <see cref="T:System.Data.IDbConnection"/> of object
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IsView">
+            <summary>
+            Check for object is view
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IsSystem">
+            <summary>
+            Check for system tables and system views
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IsTemporary">
+            <summary>
+            Get flag for <see cref="T:GSF.Data.TableType"/>  for temp
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IsLinked">
+            <summary>
+            Get flag for <see cref="T:GSF.Data.TableType"/> alias or link
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.PrimaryKeyFieldCount">
+            <summary>
+            Get count for primary key <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.ReferencedByForeignKeys">
+            <summary>
+            Get flag that determines if the table has any foreign keys.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.IsForeignKeyTable">
+            <summary>
+            Get flag of any foreign key <see cref="T:GSF.Data.Field"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.HasAutoIncField">
+            <summary>
+            Gets flag that determines if the <see cref="T:GSF.Data.Table"/> has an auto-increment field.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Table.AutoIncField">
+            <summary>
+            Gets auto-increment field for the <see cref="T:GSF.Data.Table"/>, if any.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.UsesDefaultSchema">
+            <summary>
+            Get schema information flag based on <see cref="T:GSF.Data.DatabaseType"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.ToString">
+            <summary>
+            Gets display name for table.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.CompareTo(System.Object)">
+            <summary>
+            Compare <see cref="T:System.Object"/> type of <paramref name="obj"/> with <see cref="T:GSF.Data.Table"/> object <see cref="P:GSF.Data.Table.Priority"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.CompareTo(GSF.Data.Table)">
+            <summary>
+            Compare Table with other <see cref="T:GSF.Data.Table"/> object <see cref="P:GSF.Data.Table.Priority"/>
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.IsReferencedBy(GSF.Data.Table,System.Collections.Generic.List{GSF.Data.Table})">
+            <summary>
+            Check for reference flag, whether table has reference in another table
+            </summary>
+            <param name="otherTable"></param>
+            <param name="tableStack"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.IsReferencedBy(GSF.Data.Table)">
+            <summary>
+            Check for table reference
+            </summary>
+            <param name="otherTable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.DefinePrimaryKey(System.String,System.Int32,System.String)">
+            <summary>
+            check for primary key field in <see cref="T:GSF.Data.Table"/>
+            </summary>
+            <param name="fieldName"></param>
+            <param name="primaryKeyOrdinal"></param>
+            <param name="primaryKeyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Table.DefineForeignKey(System.String,System.String,System.String,System.Int32,System.String,GSF.Data.ReferentialAction,GSF.Data.ReferentialAction)">
+            <summary>
+            Check for <see cref="T:GSF.Data.ForeignKeyField"/>
+            </summary>
+            <param name="primaryKeyFieldName"></param>
+            <param name="foreignKeyTableName"></param>
+            <param name="foreignKeyFieldName"></param>
+            <param name="foreignKeyOrdinal"></param>
+            <param name="foreignKeyName"></param>
+            <param name="foreignKeyUpdateRule"></param>
+            <param name="foreignKeyDeleteRule"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.Tables">
+            <summary>
+            List of <see cref="T:GSF.Data.Table"/> collection
+            </summary>
+        </member>
+        <member name="T:GSF.Data.Tables.ReferentialOrderComparer">
+            <summary>
+            Check for referential order of <see cref="T:GSF.Data.Table"/>
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Tables.ReferentialOrderComparer.Default">
+            <summary>
+            Default property of object
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Tables.ReferentialOrderComparer.Compare(GSF.Data.Table,GSF.Data.Table)">
+            <summary>
+            Allows tables to be sorted in proper referential integrity process object
+            </summary>
+            <param name="table1">First table to compare.</param>
+            <param name="table2">Second table to compare.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Tables.ReferentialOrderComparer.ForeignKeyCompare(GSF.Data.Table,GSF.Data.Table)">
+            <summary>
+            Compare foreign key comparison of tables
+            </summary>
+            <param name="table1"></param>
+            <param name="table2"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Data.Schema">
+            <summary>
+            Get information about database schema
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.Tables">
+            <summary>
+            Get or set - information to process <see cref="P:GSF.Data.Schema.Tables"/>
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.ConnectionString">
+            <summary>
+            OLEDB connection string to data source to analyze.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.TableTypeRestriction">
+            <summary>
+            Set this value to restrict the types of tables returned in your schema.  Table types can be OR'd together to create this table type restriction.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.ImmediateClose">
+            <summary>
+            Set this value to False to keep the schema connection used during analysis open after analysis is complete.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.DataSourceType">
+            <summary>
+            Type of database specified in connect string.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.AllowTextNulls">
+            <summary>
+            Set this value to False to convert all Null values encountered in character fields to empty strings.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.AllowNumericNulls">
+            <summary>
+            Set this value to False to convert all Null values encountered in numeric fields to zeros.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Schema.Connection">
+            <summary>
+            <see cref="T:System.Data.IDbConnection"/> to open a database connection
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Schema.SQLEscapeName(System.String)">
+            <summary>
+            Escapes a field or table name.
+            </summary>
+            <param name="name">Name to escape.</param>
+            <returns>Escaped <paramref name="name"/>.</returns>
+        </member>
+        <member name="M:GSF.Data.Schema.Analyze">
+            <summary>
+            Analyze data schema for processing data
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Schema.SchemaConnection_StateChange(System.Object,System.Data.StateChangeEventArgs)">
+            <summary>
+            <see cref="T:System.Data.IDbConnection"/> state change event will fire if it unexpectedly close connection while processing.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:GSF.Data.Schema.Close">
+            <summary>
+            Close <see cref="T:System.Data.IDbConnection"/> 
+            </summary>
         </member>
         <member name="T:GSF.Data.DatabaseType">
             <summary>
