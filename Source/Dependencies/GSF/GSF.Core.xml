@@ -11122,7 +11122,7 @@
         </member>
         <member name="M:GSF.Data.Fields.GetEnumerator">
             <summary>
-            Get <see cref="T:System.Collections.IEnumerator"/> type of <see cref="T:GSF.Data.Field"/> list.
+            Get <see cref="T:System.Collections.Generic.IEnumerator`1"/> type of <see cref="T:GSF.Data.Field"/> list.
             </summary>
             <returns></returns>
         </member>
@@ -11132,6 +11132,12 @@
             </summary>
             <param name="returnAutoInc"></param>
             <param name="sqlEscapeFunction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Fields.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Get <see cref="T:System.Collections.IEnumerator"/> type of <see cref="T:GSF.Data.Field"/> list.
+            </summary>
             <returns></returns>
         </member>
         <member name="T:GSF.Data.Table">
