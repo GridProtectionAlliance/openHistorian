@@ -173,6 +173,21 @@ namespace openHistorian.Net
         }
 
         /// <summary>
+        /// Determines whether the historian should import attached paths at startup.
+        /// </summary>
+        public bool ImportAttachedPathsAtStartup
+        {
+            get
+            {
+                return m_config.ImportAttachedPathsAtStartup;
+            }
+            set
+            {
+                m_config.ImportAttachedPathsAtStartup = value;
+            }
+        }
+
+        /// <summary>
         /// Gets all of the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>

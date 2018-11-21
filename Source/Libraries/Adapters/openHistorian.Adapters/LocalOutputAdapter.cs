@@ -702,6 +702,7 @@ namespace openHistorian.Adapters
             if ((object)m_attachedPaths != null)
                 m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
 
+            m_archiveInfo.ImportAttachedPathsAtStartup = false;
             m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
             m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
             m_archiveInfo.StagingCount = stagingCount;
@@ -876,6 +877,8 @@ namespace openHistorian.Adapters
             m_replicationProviders.Initialize();
 
             OnConnected();
+
+            new Thread(AttachArchiveDirectoriesAndAttachedPaths).Start();
         }
 
         /// <summary>
@@ -987,6 +990,30 @@ namespace openHistorian.Adapters
             }
 
             m_archivedMeasurements += measurements.Length;
+        }
+
+        private void AttachArchiveDirectoriesAndAttachedPaths()
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
+
+            string[] archivedirectories = m_archiveDirectories ?? new string[0];
+            string[] attachedPaths = m_attachedPaths ?? new string[0];
+
+            List<string> files = archivedirectories
+                .Concat(attachedPaths)
+                .SelectMany(dir => FilePath.EnumerateFiles(dir))
+                .ToList();
+
+            string[] filePtr = new string[1];
+
+            foreach (string file in files)
+            {
+                if (!Enabled)
+                    return;
+
+                filePtr[0] = file;
+                clientDatabase.AttachFilesOrPaths(filePtr);
+            }
         }
 
         private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e)

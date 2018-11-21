@@ -44,6 +44,7 @@ namespace GSF.Snap.Services.Configuration
         private string m_mainPath;
         private string m_finalFileExtension;
         private string m_intermediateFileExtension;
+        private bool m_importAttachedPathsAtStartup;
         private List<string> m_importPaths;
         private List<string> m_finalWritePaths;
         private EncodingDefinition m_archiveEncodingMethod;
@@ -64,6 +65,7 @@ namespace GSF.Snap.Services.Configuration
             m_mainPath = mainPath;
             m_intermediateFileExtension = ".d2i";
             m_finalFileExtension = ".d2";
+            m_importAttachedPathsAtStartup = true;
             m_importPaths = new List<string>();
             m_finalWritePaths = new List<string>();
             m_archiveEncodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
@@ -160,6 +162,21 @@ namespace GSF.Snap.Services.Configuration
             set
             {
                 m_finalFileExtension = PathHelpers.FormatExtension(value);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the server should import attached paths at startup.
+        /// </summary>
+        public bool ImportAttachedPathsAtStartup
+        {
+            get
+            {
+                return m_importAttachedPathsAtStartup;
+            }
+            set
+            {
+                m_importAttachedPathsAtStartup = value;
             }
         }
 
@@ -364,8 +381,11 @@ namespace GSF.Snap.Services.Configuration
             listSettings.AddExtension(finalFileFinalExtension);
             if (!string.IsNullOrWhiteSpace(m_mainPath))
                 listSettings.AddPath(m_mainPath);
-            listSettings.AddPaths(ImportPaths);
-            listSettings.AddPaths(FinalWritePaths);
+            if (ImportAttachedPathsAtStartup)
+            {
+                listSettings.AddPaths(ImportPaths);
+                listSettings.AddPaths(FinalWritePaths);
+            }
             listSettings.LogSettings.LogPath = m_mainPath;
         }
 
