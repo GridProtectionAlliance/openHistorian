@@ -128,10 +128,18 @@ namespace GSF.IO.FileStructure.Media
 
             if (isNewFile)
             {
-                byte[] headerBytes = header.GetBytes();
-                for (int x = 0; x < header.HeaderBlockCount; x++)
+                try
                 {
-                    m_queue.WriteRaw(0, headerBytes, headerBytes.Length);
+                    m_queue.Open();
+                    byte[] headerBytes = header.GetBytes();
+                    for (int x = 0; x < header.HeaderBlockCount; x++)
+                    {
+                        m_queue.WriteRaw(0, headerBytes, headerBytes.Length);
+                    }
+                }
+                finally
+                {
+                    m_queue.Close();
                 }
             }
             m_lengthOfCommittedData = (header.LastAllocatedBlock + 1) * (long)header.BlockSize;

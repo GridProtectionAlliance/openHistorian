@@ -42,6 +42,7 @@ namespace GSF.IO.FileStructure.Media
             /// The base stream
             /// </summary>
             private readonly BufferedFile m_stream;
+            private bool m_disposed;
 
             /// <summary>
             /// Creates a new <see cref="IoSession"/>
@@ -52,6 +53,7 @@ namespace GSF.IO.FileStructure.Media
                 : base(pageReplacement)
             {
                 m_stream = stream;
+                m_stream.m_queue.Open();
             }
 
 #if DEBUG
@@ -74,6 +76,17 @@ namespace GSF.IO.FileStructure.Media
                 if (IsDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 m_stream.GetBlock(this, args);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    m_disposed = true;
+                    if (disposing)
+                        m_stream.m_queue.Close();
+                }
+                base.Dispose(disposing);
             }
         }
     }

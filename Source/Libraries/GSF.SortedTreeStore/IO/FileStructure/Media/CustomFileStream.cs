@@ -53,6 +53,7 @@ namespace GSF.IO.FileStructure.Media
         private int m_ioSize;
         private readonly int m_fileStructureBlockSize;
         private FileStream m_stream;
+        private int m_streamUsers;
         private readonly ResourceQueue<byte[]> m_bufferQueue;
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="fileName">The filename</param>
         /// <param name="isReadOnly">If the file is read only</param>
         /// <param name="isSharingEnabled">if the file is exclusively opened</param>
-        private CustomFileStream(FileStream stream, int ioSize, int fileStructureBlockSize, string fileName, bool isReadOnly, bool isSharingEnabled)
+        private CustomFileStream(int ioSize, int fileStructureBlockSize, string fileName, bool isReadOnly, bool isSharingEnabled)
         {
             if (ioSize < 4096)
                 throw new ArgumentOutOfRangeException("ioSize", "Cannot be less than 4096");
@@ -93,8 +94,9 @@ namespace GSF.IO.FileStructure.Media
             m_fileStructureBlockSize = fileStructureBlockSize;
             m_bufferQueue = ResourceList.GetResourceQueue(ioSize);
             m_syncRoot = new object();
-            m_stream = stream;
-            m_length.Value = m_stream.Length;
+
+            FileInfo fileInfo = new FileInfo(fileName);
+            m_length.Value = fileInfo.Length;
         }
 
 #if DEBUG
@@ -177,6 +179,37 @@ namespace GSF.IO.FileStructure.Media
         #region [ Methods ]
 
         /// <summary>
+        /// Opens the underlying file stream
+        /// </summary>
+        public void Open()
+        {
+            using (m_isUsingStream.EnterWriteLock())
+            {
+                if (m_streamUsers == 0)
+                    m_stream = new FileStream(m_fileName, FileMode.Open, m_isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, m_isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+
+                m_streamUsers++;
+            }
+        }
+
+        /// <summary>
+        /// Closes the underlying file stream
+        /// </summary>
+        public void Close()
+        {
+            using (m_isUsingStream.EnterWriteLock())
+            {
+                m_streamUsers--;
+
+                if (m_streamUsers == 0)
+                {
+                    m_stream?.Dispose();
+                    m_stream = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads data from the disk
         /// </summary>
         /// <param name="position">The starting position</param>
@@ -185,39 +218,50 @@ namespace GSF.IO.FileStructure.Media
         /// <returns>the number of bytes read</returns>
         public int ReadRaw(long position, byte[] buffer, int length)
         {
-            int totalLengthRead = 0;
-            int len = 0;
-            while (length > 0)
+            bool needsOpen = m_stream == null;
+            try
             {
-                using (m_isUsingStream.EnterReadLock())
+                if (needsOpen)
+                    Open();
+
+                int totalLengthRead = 0;
+                int len = 0;
+                while (length > 0)
                 {
-                    Task<int> results;
-                    lock (m_syncRoot)
+                    using (m_isUsingStream.EnterReadLock())
                     {
-                        m_stream.Position = position;
-                        results = m_stream.ReadAsync(buffer, 0, length);
+                        Task<int> results;
+                        lock (m_syncRoot)
+                        {
+                            m_stream.Position = position;
+                            results = m_stream.ReadAsync(buffer, 0, length);
+                        }
+                        len = results.Result;
                     }
-                    len = results.Result;
+                    totalLengthRead += len;
+                    if (len == length)
+                        return totalLengthRead;
+                    if (len == 0 && position >= m_length)
+                        return totalLengthRead; //End of the stream has occurred
+                    if (len != 0)
+                    {
+                        position += len;
+                        length -= len; //Keep Reading
+                    }
+                    else
+                    {
+                        Log.Publish(MessageLevel.Warning, "File Read Error", $"The OS has closed the following file {m_stream.Name}. Attempting to reopen.");
+                        ReopenFile();
+                    }
                 }
-                totalLengthRead += len;
-                if (len == length)
-                    return totalLengthRead;
-                if (len == 0 && position >= m_length)
-                    return totalLengthRead; //End of the stream has occurred
-                if (len != 0)
-                {
-                    position += len;
-                    length -= len; //Keep Reading
-                }
-                else
-                {
-                    Log.Publish(MessageLevel.Warning, "File Read Error", $"The OS has closed the following file {m_stream.Name}. Attempting to reopen.");
-                    ReopenFile();
-                }
+
+                return length;
             }
-
-            return length;
-
+            finally
+            {
+                if (needsOpen)
+                    Close();
+            }
         }
 
         /// <summary>
@@ -228,16 +272,28 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="length">the number of bytes to write</param>
         public void WriteRaw(long position, byte[] buffer, int length)
         {
-            using (m_isUsingStream.EnterReadLock())
+            bool needsOpen = m_stream == null;
+            try
             {
-                Task results;
-                lock (m_syncRoot)
+                if (needsOpen)
+                    Open();
+
+                using (m_isUsingStream.EnterReadLock())
                 {
-                    m_stream.Position = position;
-                    results = m_stream.WriteAsync(buffer, 0, length);
+                    Task results;
+                    lock (m_syncRoot)
+                    {
+                        m_stream.Position = position;
+                        results = m_stream.WriteAsync(buffer, 0, length);
+                    }
+                    results.Wait();
+                    m_length.Value = m_stream.Length;
                 }
-                results.Wait();
-                m_length.Value = m_stream.Length;
+            }
+            finally
+            {
+                if (needsOpen)
+                    Close();
             }
         }
 
@@ -270,33 +326,45 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="waitForWriteToDisk">True to wait for a complete commit to disk before returning from this function.</param>
         public void Write(long currentEndOfCommitPosition, MemoryPoolStreamCore stream, long length, bool waitForWriteToDisk)
         {
-            byte[] buffer = m_bufferQueue.Dequeue();
-            long endPosition = currentEndOfCommitPosition + length;
-            long currentPosition = currentEndOfCommitPosition;
-            while (currentPosition < endPosition)
+            bool needsOpen = m_stream == null;
+            try
             {
-                IntPtr ptr;
-                int streamLength;
-                stream.ReadBlock(currentPosition, out ptr, out streamLength);
-                int subLength = (int)Math.Min(streamLength, endPosition - currentPosition);
-                Footer.ComputeChecksumAndClearFooter(ptr, m_fileStructureBlockSize, subLength);
-                Marshal.Copy(ptr, buffer, 0, subLength);
-                WriteRaw(currentPosition, buffer, subLength);
+                if (needsOpen)
+                    Open();
 
-                currentPosition += subLength;
-            }
-            m_bufferQueue.Enqueue(buffer);
-
-            if (waitForWriteToDisk)
-            {
-                FlushFileBuffers();
-            }
-            else
-            {
-                using (m_isUsingStream.EnterReadLock())
+                byte[] buffer = m_bufferQueue.Dequeue();
+                long endPosition = currentEndOfCommitPosition + length;
+                long currentPosition = currentEndOfCommitPosition;
+                while (currentPosition < endPosition)
                 {
-                    m_stream.Flush(false);
+                    IntPtr ptr;
+                    int streamLength;
+                    stream.ReadBlock(currentPosition, out ptr, out streamLength);
+                    int subLength = (int)Math.Min(streamLength, endPosition - currentPosition);
+                    Footer.ComputeChecksumAndClearFooter(ptr, m_fileStructureBlockSize, subLength);
+                    Marshal.Copy(ptr, buffer, 0, subLength);
+                    WriteRaw(currentPosition, buffer, subLength);
+
+                    currentPosition += subLength;
                 }
+                m_bufferQueue.Enqueue(buffer);
+
+                if (waitForWriteToDisk)
+                {
+                    FlushFileBuffers();
+                }
+                else
+                {
+                    using (m_isUsingStream.EnterReadLock())
+                    {
+                        m_stream.Flush(false);
+                    }
+                }
+            }
+            finally
+            {
+                if (needsOpen)
+                    Close();
             }
         }
 
@@ -311,8 +379,11 @@ namespace GSF.IO.FileStructure.Media
             //Therefore WinApi must be called.
             using (m_isUsingStream.EnterReadLock())
             {
-                m_stream.Flush(true);
-                WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
+                if (m_stream != null)
+                {
+                    m_stream.Flush(true);
+                    WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
+                }
             }
         }
 
@@ -326,15 +397,17 @@ namespace GSF.IO.FileStructure.Media
         {
             using (m_isUsingStream.EnterWriteLock())
             {
-                string oldFileName = m_stream.Name;
+                string oldFileName = m_fileName;
                 string newFileName = Path.ChangeExtension(oldFileName, extension);
                 if (File.Exists(newFileName))
                     throw new Exception("New file already exists with this extension");
 
-                m_stream.Dispose();
+                bool openStream = m_stream == null;
+                m_stream?.Dispose();
                 m_stream = null;
                 File.Move(oldFileName, newFileName);
-                m_stream = new FileStream(newFileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+                if (openStream)
+                    m_stream = new FileStream(newFileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
                 m_fileName = newFileName;
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
@@ -369,10 +442,11 @@ namespace GSF.IO.FileStructure.Media
         {
             using (m_isUsingStream.EnterWriteLock())
             {
-                string oldFileName = m_stream.Name;
-                m_stream.Dispose();
-                m_stream = null;
-                m_stream = new FileStream(oldFileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+                if (m_stream != null)
+                {
+                    m_stream.Dispose();
+                    m_stream = new FileStream(m_fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
+                }
                 m_isSharingEnabled = isSharingEnabled;
                 m_isReadOnly = isReadOnly;
             }
@@ -390,7 +464,7 @@ namespace GSF.IO.FileStructure.Media
                 {
                     using (m_isUsingStream.EnterWriteLock())
                     {
-                        m_stream.Dispose();
+                        m_stream?.Dispose();
                         m_stream = null;
                     }
                 }
@@ -415,9 +489,7 @@ namespace GSF.IO.FileStructure.Media
         /// <returns></returns>
         public static CustomFileStream CreateFile(string fileName, int ioBlockSize, int fileStructureBlockSize)
         {
-            //Exclusive opening to prevent duplicate opening.
-            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 2048, true);
-            return new CustomFileStream(fileStream, ioBlockSize, fileStructureBlockSize, fileName, false, false);
+            return new CustomFileStream(ioBlockSize, fileStructureBlockSize, fileName, false, false);
         }
 
         /// <summary>
@@ -431,19 +503,12 @@ namespace GSF.IO.FileStructure.Media
         /// <returns></returns>
         public static CustomFileStream OpenFile(string fileName, int ioBlockSize, out int fileStructureBlockSize, bool isReadOnly, bool isSharingEnabled)
         {
-            //Exclusive opening to prevent duplicate opening.
-
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true);
-            try
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, isSharingEnabled ? FileShare.Read : FileShare.None, 2048, true))
             {
                 fileStructureBlockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
             }
-            catch (Exception)
-            {
-                fileStream.Dispose();
-                throw;
-            }
-            return new CustomFileStream(fileStream, ioBlockSize, fileStructureBlockSize, fileName, isReadOnly, isSharingEnabled);
+
+            return new CustomFileStream(ioBlockSize, fileStructureBlockSize, fileName, isReadOnly, isSharingEnabled);
         }
 
         /// <summary>
