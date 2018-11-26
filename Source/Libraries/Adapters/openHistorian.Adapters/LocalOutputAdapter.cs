@@ -68,6 +68,11 @@ namespace openHistorian.Adapters
         public const int DefaultPort = 38402;
 
         /// <summary>
+        /// Defines default vlaue for <see cref="WatchAttachedPaths"/>.
+        /// </summary>
+        public const bool DefaultWatchAttachedPaths = false;
+
+        /// <summary>
         /// Defines default value for <see cref="DataChannel"/>.
         /// </summary>
         public const string DefaultDataChannel = "port=38402";
@@ -114,6 +119,7 @@ namespace openHistorian.Adapters
         private string m_workingDirectory;
         private string[] m_archiveDirectories;
         private string[] m_attachedPaths;
+        private bool m_watchAttachedPaths;
         private string m_dataChannel;
         private double m_targetFileSize;
         private int m_maximumArchiveDays;
@@ -132,6 +138,7 @@ namespace openHistorian.Adapters
         private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
         private Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
         private Timer m_dailyTimer;
+        private SafeFileWatcher[] m_attachedPathWatchers;
         private bool m_disposed;
 
         #endregion
@@ -327,6 +334,24 @@ namespace openHistorian.Adapters
                 {
                     m_attachedPaths = null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the flag which determines whether to set up file watchers to monitor the attached paths.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Determines whether to set up file watchers to monitor the attached paths."),
+        DefaultValue(DefaultWatchAttachedPaths)]
+        public bool WatchAttachedPaths
+        {
+            get
+            {
+                return m_watchAttachedPaths;
+            }
+            set
+            {
+                m_watchAttachedPaths = value;
             }
         }
 
@@ -562,6 +587,27 @@ namespace openHistorian.Adapters
         /// </summary>
         public Dictionary<ulong, DataRow> Measurements => m_measurements;
 
+        private SafeFileWatcher[] AttachedPathWatchers
+        {
+            get
+            {
+                return m_attachedPathWatchers;
+            }
+            set
+            {
+                if ((object)m_attachedPathWatchers != null)
+                {
+                    foreach (SafeFileWatcher watcher in m_attachedPathWatchers)
+                    {
+                        watcher.EnableRaisingEvents = false;
+                        watcher.Dispose();
+                    }
+                }
+
+                m_attachedPathWatchers = value;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
@@ -580,6 +626,8 @@ namespace openHistorian.Adapters
                     if (disposing)
                     {
                         // This will be done only when the object is disposed by calling Dispose().
+                        AttachedPathWatchers = null;
+
                         if ((object)m_dataServices != null)
                         {
                             m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
@@ -643,6 +691,11 @@ namespace openHistorian.Adapters
 
             if (settings.TryGetValue("AttachedPaths", out setting))
                 AttachedPaths = setting;
+
+            if (settings.TryGetValue("WatchAttachedPaths", out setting))
+                m_watchAttachedPaths = setting.ParseBoolean();
+            else
+                m_watchAttachedPaths = DefaultWatchAttachedPaths;
 
             if (!settings.TryGetValue("DataChannel", out m_dataChannel))
                 m_dataChannel = DefaultDataChannel;
@@ -730,6 +783,12 @@ namespace openHistorian.Adapters
                 m_dailyTimer.Elapsed += m_dailyTimer_Elapsed;
                 m_dailyTimer.Enabled = true;
             }
+
+            // Initialize the file watchers for attached paths
+            if (m_watchAttachedPaths)
+                AttachedPathWatchers = m_attachedPaths?.Select(WatchPath).ToArray();
+            else
+                AttachedPathWatchers = null;
         }
 
         /// <summary>
@@ -878,6 +937,12 @@ namespace openHistorian.Adapters
 
             OnConnected();
 
+            if ((object)m_attachedPathWatchers != null)
+            {
+                foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
+                    fileWatcher.EnableRaisingEvents = true;
+            }
+
             new Thread(AttachArchiveDirectoriesAndAttachedPaths).Start();
         }
 
@@ -886,6 +951,12 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
+            if ((object)m_attachedPathWatchers != null)
+            {
+                foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
+                    fileWatcher.EnableRaisingEvents = false;
+            }
+
             m_archive = null;
             m_server.Dispose();
             m_server = null;
@@ -1014,6 +1085,22 @@ namespace openHistorian.Adapters
                 filePtr[0] = file;
                 clientDatabase.AttachFilesOrPaths(filePtr);
             }
+        }
+
+        private SafeFileWatcher WatchPath(string path)
+        {
+            SafeFileWatcher fileWatcher = new SafeFileWatcher(path, "*.d2*");
+
+            fileWatcher.Created += (sender, args) => ThreadPool.QueueUserWorkItem(state =>
+            {
+                ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
+                string[] filePtr = { (string)state };
+                clientDatabase.AttachFilesOrPaths(filePtr);
+            }, args.FullPath);
+
+            fileWatcher.InternalBufferSize = 65536;
+
+            return fileWatcher;
         }
 
         private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e)
