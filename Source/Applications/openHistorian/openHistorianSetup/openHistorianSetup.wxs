@@ -58,6 +58,9 @@
         <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
           <ComponentGroupRef Id="ConfigurationEditorComponents" />
         </Feature>
+        <Feature Id="CSVDataManagerFeature" Title="CSV Data Manager">
+          <ComponentGroupRef Id="CSVDataManagerComponents" />
+        </Feature>
         <Feature Id="StatisticViewFeature" Title="Statistics Trending Tool">
           <ComponentGroupRef Id="StatisticViewComponents" />
         </Feature>
@@ -112,6 +115,7 @@
     <Icon Id="DataMigrationUtility.ico.exe" SourceFile="$(var.ProjectDir)\DataMigrationUtility.exe" />
     <Icon Id="ConfigCrypter.ico.exe" SourceFile="$(var.ProjectDir)\ConfigCrypter.exe" />
     <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
+    <Icon Id="CSVDataManager.ico.exe" SourceFile="$(var.ProjectDir)\CSVDataManager.exe" />
     <Icon Id="StatisticView.ico.exe" SourceFile="$(var.ProjectDir)\HistorianView.exe" />
     <Icon Id="HistorianView.ico.exe" SourceFile="$(var.HistorianView.TargetPath)" />
     <Icon Id="openVisN.ico.exe" SourceFile="$(var.openVisN.TargetPath)" />
@@ -365,6 +369,7 @@
     <ComponentGroup Id="openHistorianToolsComponents" Directory="INSTALLFOLDER">
       <ComponentGroupRef Id="ConfigCrypterComponents" />
       <ComponentGroupRef Id="ConfigurationEditorComponents" />
+      <ComponentGroupRef Id="CSVDataManagerComponents" />
       <ComponentGroupRef Id="StatisticViewComponents" />
       <ComponentGroupRef Id="HistorianViewComponents" />
       <ComponentGroupRef Id="LogFileViewerComponents" />
@@ -396,6 +401,16 @@
       </Component>
       <Component Id="ConfigurationEditorConfig">
         <File Id="ConfigurationEditor.exe.config" Name="ConfigurationEditor.exe.config" Source="$(var.ProjectDir)\ConfigurationEditor.exe.config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="CSVDataManagerComponents" Directory="INSTALLFOLDER">
+      <Component Id="CSVDataManager">
+        <File Id="CSVDataManager.exe" Name="CSVDataManager.exe" Source="$(var.ProjectDir)\CSVDataManager.exe" />
+        <Shortcut Id="CSVDataManagerStartMenuShortcut" Name="CSV Data Manager" Icon="CSVDataManager.ico.exe" Description="Tool used to manage database configuration through CSV files." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="CSVDataManagerConfig">
+        <File Id="CSVDataManager.exe.config" Name="CSVDataManager.exe.config" Source="$(var.ProjectDir)\CSVDataManager.exe.config" />
       </Component>
     </ComponentGroup>
 
