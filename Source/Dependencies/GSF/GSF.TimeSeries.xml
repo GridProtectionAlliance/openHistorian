@@ -11929,6 +11929,13 @@
             <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
             <returns>True if the requested adapter exists; false otherwise.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.PingRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
+            <summary>
+            Used to ping a device.
+            </summary>
+            <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
+            <returns>True if the requested adapter exists; false otherwise.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.SendResponse(GSF.ServiceProcess.ClientRequestInfo,System.Boolean)">
             <summary>
             Sends an actionable response to client.

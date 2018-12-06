@@ -1424,11 +1424,18 @@
             Number of minutes up to which <see cref="T:GSF.Security.ISecurityProvider"/>s are to be cached.
             </summary>
         </member>
-        <member name="M:GSF.Security.SecurityProviderCache.CreateProvider(System.String)">
+        <member name="F:GSF.Security.SecurityProviderCache.CacheMonitorTimerInterval">
+            <summary>
+            Number of milliseconds between calls to monitor the cache.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.SecurityProviderCache.CreateProvider(System.String,System.Security.Principal.IPrincipal,System.Boolean)">
             <summary>
             Creates a new provider from data cached by the <see cref="T:GSF.Security.SecurityProviderCache"/>.
             </summary>
             <param name="username">The username of the user for which to create a new provider.</param>
+            <param name="passthroughPrincipal"><see cref="T:System.Security.Principal.IPrincipal"/> obtained through alternative authentication mechanisms to provide authentication for the <see cref="T:GSF.Security.ISecurityProvider"/>.</param>
+            <param name="autoRefresh">Indicates whether the provider should be automatically refreshed on a timer.</param>
             <returns>A new provider initialized from cached data.</returns>
         </member>
         <member name="M:GSF.Security.SecurityProviderCache.Flush(System.String)">
@@ -1464,6 +1471,14 @@
             Creates a new <see cref="T:GSF.Security.ISecurityProvider"/> based on the settings in the config file.
             </summary>
             <param name="username">Username of the user for whom the <see cref="T:GSF.Security.ISecurityProvider"/> is to be created.</param>
+            <returns>An object that implements <see cref="T:GSF.Security.ISecurityProvider"/>.</returns>
+        </member>
+        <member name="M:GSF.Security.SecurityProviderUtility.CreateProvider(System.String,System.Security.Principal.IPrincipal)">
+            <summary>
+            Creates a new <see cref="T:GSF.Security.ISecurityProvider"/> based on the settings in the config file.
+            </summary>
+            <param name="username">Username of the user for whom the <see cref="T:GSF.Security.ISecurityProvider"/> is to be created.</param>
+            <param name="passthroughPrincipal"><see cref="T:System.Security.Principal.IPrincipal"/> obtained through alternative authentication mechanisms to provide authentication for the <see cref="T:GSF.Security.ISecurityProvider"/>.</param>
             <returns>An object that implements <see cref="T:GSF.Security.ISecurityProvider"/>.</returns>
         </member>
         <member name="M:GSF.Security.SecurityProviderUtility.CreateProvider(GSF.Security.UserData)">
