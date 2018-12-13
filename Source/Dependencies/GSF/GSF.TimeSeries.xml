@@ -9546,6 +9546,12 @@
             meta-data with its own database configuration.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.PersistConnectionForMetadata">
+            <summary>
+            Gets flag that indicates whether the connection will be persisted
+            even while the adapter is offline in order to synchronize metadata.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseSourcePrefixNames">
             <summary>
             Gets or sets flag that determines if child devices associated with a subscription
@@ -9569,6 +9575,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseMillisecondResolution">
             <summary>
             Gets or sets flag that informs publisher if base time-offsets can use millisecond resolution to conserve bandwidth.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.CommandChannelConnected">
+            <summary>
+            Gets flag that determines whether the command channel is connected.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Authenticated">
@@ -9703,6 +9714,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
             <summary>
             Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.RequestedOutputMeasurementKeys">
+            <summary>
+            Gets or sets output measurement keys that are requested by other adapters based on what adapter says it can provide.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.OutputMeasurements">
