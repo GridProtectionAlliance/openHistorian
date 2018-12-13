@@ -9654,6 +9654,17 @@
             <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.OperationalEncoding"/> of the communications stream.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.SupportsRealTimeProcessing">
+            <summary>
+            Gets flag indicating if this adapter supports real-time processing.
+            </summary>
+            <remarks>
+            Setting this value to false indicates that the adapter should not be enabled unless it exists within a temporal session.
+            As an example, this flag can be used in a gateway system to set up two separate subscribers: one to the PDC for real-time
+            data streams and one to the historian for historical data streams. In this scenario, the assumption is that the PDC is
+            the data source for the historian, implying that only local data is destined for archival.
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
