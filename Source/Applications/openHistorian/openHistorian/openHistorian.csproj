@@ -346,6 +346,10 @@
       <Project>{d170a1d6-834b-47bd-b05f-67dd4bc12f97}</Project>
       <Name>openHistorian.Adapters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.eDNAGrafanaController\openHistorian.eDNAGrafanaController.csproj">
+      <Project>{80459642-c42b-4e52-ac5c-bdd1181f6a1e}</Project>
+      <Name>openHistorian.eDNAGrafanaController</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>GSF.SortedTreeStore</Name>

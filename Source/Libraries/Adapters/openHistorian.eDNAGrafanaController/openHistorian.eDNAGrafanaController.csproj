@@ -17,10 +17,11 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Build\Output\Debug\Library\openHistorian.eDNAGrafanaController\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\..\Build\Output\Debug\Library\openHistorian.eDNAGrafanaController\openHistorian.eDNAGrafanaController.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -80,4 +81,8 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
+IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

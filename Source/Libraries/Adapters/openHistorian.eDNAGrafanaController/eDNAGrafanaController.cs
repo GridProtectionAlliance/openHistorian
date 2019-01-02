@@ -72,7 +72,7 @@ namespace openHistorian.eDNAGrafanaController
                         (int)eDNAHistoryReturnStatus.NO_HISTORY_FOR_TIME
                     };
 
-                    int result = History.DnaGetHistRaw(point, startTime, stopTime, out uint key);
+                    int result = History.DnaGetHistRaw(PointTagToShortID[point], startTime, stopTime, out uint key);
 
                     while (result == 0)
                     {
@@ -91,6 +91,7 @@ namespace openHistorian.eDNAGrafanaController
 
             #region [ Static ]
             public static DataSet MetaData { get; private set; }
+            public static Dictionary<string, string> PointTagToShortID {get;set;}
 
             static eDNADataSource()
             {
@@ -98,13 +99,20 @@ namespace openHistorian.eDNAGrafanaController
             }
 
             static private void RefreshMetaData() {
+                PointTagToShortID = new Dictionary<string, string>();
                 eDNAMetaData search = new eDNAMetaData();
                 IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(search);
 
                 DataTable dataTable = GetNewMetaDataTable();
 
                 foreach (eDNAMetaData result in results) {
-                    dataTable.Rows.Add(Guid.NewGuid(), Guid.NewGuid(), result.ShortID, Guid.NewGuid(), result.LongID, null, result.ExtendedID, true, false, null,result.ChannelNumber, 1, result.Units, null, null, null, 0, 1, null, null, null, result.Description, DateTime.UtcNow);
+                    string fqn = result.Site + "." + result.Service + "." + result.ShortID;
+                    if (!PointTagToShortID.ContainsKey(result.ExtendedDescription))
+                        PointTagToShortID.Add(result.ExtendedDescription, fqn);
+                    else
+                        PointTagToShortID[result.ExtendedDescription] = fqn;
+
+                    dataTable.Rows.Add(Guid.NewGuid(), Guid.NewGuid(), fqn, Guid.NewGuid(), result.ExtendedDescription, null, result.ExtendedID, true, false, null,result.ChannelNumber, 1, result.Units, null, null, null, 0, 1, null, null, null, result.Description, DateTime.UtcNow);
                 }
                 DataSet metaData = new DataSet();
                 metaData.Tables.Add(dataTable);
