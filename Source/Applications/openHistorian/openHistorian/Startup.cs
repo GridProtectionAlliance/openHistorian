@@ -37,6 +37,7 @@ using ModbusAdapters;
 using Newtonsoft.Json;
 using Owin;
 using openHistorian.Model;
+using openHistorian.EdnaGrafanaController;
 
 namespace openHistorian
 {
@@ -60,6 +61,9 @@ namespace openHistorian
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
             AppModel model = Program.Host.Model;
+
+            // Load external EdnaGrafanaController so route map can find it.
+            using (new EdnaGrafanaController.EdnaGrafanaController()) { }
 
             // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
             try

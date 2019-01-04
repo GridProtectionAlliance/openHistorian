@@ -23,6 +23,7 @@
 
 using GrafanaAdapters;
 using GSF;
+using GSF.Diagnostics;
 using GSF.TimeSeries;
 using InStep.eDNA.EzDNAApiNet;
 using Newtonsoft.Json;
@@ -30,7 +31,9 @@ using openHistorian.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -39,9 +42,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using eDNAMetaData = eDNAAdapters.Metadata;
-namespace openHistorian.eDNAGrafanaController
+namespace openHistorian.EdnaGrafanaController
 {
-    public class eDNAGrafanaController: ApiController
+    /// <summary>
+    /// Represents a REST based API for a simple JSON based Grafana "phasor" based data source,
+    /// accessible from Grafana data source as http://localhost:8180/api/ednagrafana
+    /// </summary>
+    public class EdnaGrafanaController: ApiController
     {
         #region [ Members ]
 
@@ -72,85 +79,31 @@ namespace openHistorian.eDNAGrafanaController
                         (int)eDNAHistoryReturnStatus.NO_HISTORY_FOR_TIME
                     };
 
-                    int result = History.DnaGetHistRaw(PointTagToShortID[point], startTime, stopTime, out uint key);
+                    int result = History.DnaGetHistRaw(point, startTime.ToLocalTime(), stopTime.ToLocalTime(), out uint key);
 
                     while (result == 0)
                     {
                         result = History.DnaGetNextHist(key, out double value, out DateTime time, out string status);
+                        DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
                         if (result == 0)
                             yield return new DataSourceValue() {
                                 Target = point,
-                                Time = time.Ticks / (double)Ticks.PerMillisecond,
+                                Time = time.Subtract(epoch).TotalMilliseconds,
                                 Value = value,
                                 Flags = MeasurementStateFlags.Normal
                             };
                     }
+
+                    // Assume that unexpected return status indicates an error
+                    // and therefore the analysis results should be trusted
+                    if (expectedResults.Contains(result))
+                    {
+                        Log.Publish(MessageLevel.Error, "eDNA Error", $"Unexpected eDNA return code: {result}");
+                        break;
+                    }
                 }
             }
-
-            #region [ Static ]
-            public static DataSet MetaData { get; private set; }
-            public static Dictionary<string, string> PointTagToShortID {get;set;}
-
-            static eDNADataSource()
-            {
-                RefreshMetaData();
-            }
-
-            static private void RefreshMetaData() {
-                PointTagToShortID = new Dictionary<string, string>();
-                eDNAMetaData search = new eDNAMetaData();
-                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(search);
-
-                DataTable dataTable = GetNewMetaDataTable();
-
-                foreach (eDNAMetaData result in results) {
-                    string fqn = result.Site + "." + result.Service + "." + result.ShortID;
-                    if (!PointTagToShortID.ContainsKey(result.ExtendedDescription))
-                        PointTagToShortID.Add(result.ExtendedDescription, fqn);
-                    else
-                        PointTagToShortID[result.ExtendedDescription] = fqn;
-
-                    dataTable.Rows.Add(Guid.NewGuid(), Guid.NewGuid(), fqn, Guid.NewGuid(), result.ExtendedDescription, null, result.ExtendedID, true, false, null,result.ChannelNumber, 1, result.Units, null, null, null, 0, 1, null, null, null, result.Description, DateTime.UtcNow);
-                }
-                DataSet metaData = new DataSet();
-                metaData.Tables.Add(dataTable);
-                MetaData = metaData;
-            }
-
-            static private DataTable GetNewMetaDataTable()
-            {
-                DataTable dataTable = new DataTable("ActiveMeasurements");
-                dataTable.Columns.Add("NodeID", typeof(Guid));
-                dataTable.Columns.Add("SourceNodeID", typeof(Guid));
-                dataTable.Columns.Add("ID", typeof(string));
-                dataTable.Columns.Add("SignalID", typeof(Guid));
-                dataTable.Columns.Add("PointTag", typeof(string));
-                dataTable.Columns.Add("AlternateTag", typeof(string));
-                dataTable.Columns.Add("SignalReference", typeof(string));
-                dataTable.Columns.Add("Internal", typeof(bool));
-                dataTable.Columns.Add("Subscribed", typeof(bool));
-                dataTable.Columns.Add("Device", typeof(string));
-                dataTable.Columns.Add("DeviceID", typeof(int?));
-                dataTable.Columns.Add("FramesPerSecond", typeof(int));
-                dataTable.Columns.Add("Protocol", typeof(string));
-                dataTable.Columns.Add("SignalType", typeof(string));
-                dataTable.Columns.Add("EngineeringUnits", typeof(string));
-                dataTable.Columns.Add("PhasorID", typeof(int?));
-                dataTable.Columns.Add("PhasorType", typeof(string));
-                dataTable.Columns.Add("Phase", typeof(string));
-                dataTable.Columns.Add("Adder", typeof(int));
-                dataTable.Columns.Add("Multiplier", typeof(int));
-                dataTable.Columns.Add("Company", typeof(string));
-                dataTable.Columns.Add("Longitude", typeof(double?));
-                dataTable.Columns.Add("Latitude", typeof(double?));
-                dataTable.Columns.Add("Description", typeof(string));
-                dataTable.Columns.Add("UpdatedOn", typeof(DateTime));
-
-                return dataTable;
-            }
-            #endregion
 
             #region [ Methods ]
 
@@ -159,9 +112,174 @@ namespace openHistorian.eDNAGrafanaController
 
 
         // Fields
-        private eDNADataSource m_dataSource;
         private string m_defaultApiPath;
 
+        #endregion
+
+        #region [ Static ]
+        /// <summary>
+        /// Used to store the metadata from enda
+        /// </summary>
+        public static DataSet MetaData { get; private set; }
+        //private static Dictionary<string, string> PointTagToShortID { get; set; }
+
+        static EdnaGrafanaController()
+        {
+            //PointTagToShortID = new Dictionary<string, string>();
+            InitializeMetaData();
+
+            Task.Run(() => RefreshMetaData());
+        }
+
+        static private void InitializeMetaData() {
+            DataTable dataTable = GetNewMetaDataTable();
+            DataSet metaData = new DataSet();
+            metaData.Tables.Add(dataTable);
+            MetaData = metaData;
+        }
+
+        static private void RefreshMetaData()
+        {
+
+                DataTable dataTable = GetNewMetaDataTable();
+                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = "TP", Service = "MAIN"});
+
+//                dataTable.Rows.Add(
+//                    Guid.NewGuid(), //node ID
+//                    Guid.NewGuid(),  // source node
+//                    "test:1",  // ID
+//                    Guid.NewGuid(), // signal id 
+//                    "test_1", // point tag
+//                    "NULL", // alternate tag
+//                    "NULL", // signal ref
+//                    "true", // internal
+//                    "false", // subscribed
+//                    "NULL", // device
+//                    "NULL", // deviceid
+//                    1, // frames per sec
+//                    "NULL", // protocol
+//                    "NULL", // signal type
+//                    "Vp;ts", // enineering units
+//                    "NULL", // phasor id
+//                    "NULL", // phasor type
+//                    "NULL", // phase
+//                    0, // adder
+//                    1, // multiplier
+//                    "NULL", // company
+//                    0.0F, // long
+//                    0.0F, // lat
+//                    "", //desc 
+//                    DateTime.UtcNow // updated on
+//                );
+
+//                dataTable.Rows.Add(
+//    Guid.NewGuid(), //node ID
+//    Guid.NewGuid(),  // source node
+//    "test:2",  // ID
+//    Guid.NewGuid(), // signal id 
+//    "test_2", // point tag
+//    "NULL", // alternate tag
+//    "NULL", // signal ref
+//    "true", // internal
+//    "false", // subscribed
+//    "NULL", // device
+//    "NULL", // deviceid
+//    1, // frames per sec
+//    "NULL", // protocol
+//    "NULL", // signal type
+//    "Vp;ts", // enineering units
+//    "NULL", // phasor id
+//    "NULL", // phasor type
+//    "NULL", // phase
+//    0, // adder
+//    1, // multiplier
+//    "NULL", // company
+//                    0.0F, // long
+//                    0.0F, // lat
+//    "", //desc 
+//    DateTime.UtcNow // updated on
+//);
+
+                foreach (eDNAMetaData result in results)
+                {
+                    if (result.ExtendedDescription == string.Empty) continue;
+    
+
+                    string fqn = $"{result.Site}.{result.Service}.{result.ShortID}";
+                    string id = $"edna_{result.Site}_{result.Service}:{result.ShortID}";
+
+                    try
+                    {
+                        dataTable.Rows.Add(
+                            Guid.NewGuid(), //node ID
+                            Guid.NewGuid(),  // source node
+                            id,  // ID
+                            Guid.NewGuid(), // signal id 
+                            fqn, // point tag
+                            "NULL", // alternate tag
+                            "NULL", // signal ref
+                            "true", // internal
+                            "false", // subscribed
+                            "NULL", // device
+                            "NULL", // deviceid
+                            1, // frames per sec
+                            "NULL", // protocol
+                            "NULL", // signal type
+                            result.Units, // enineering units
+                            "NULL", // phasor id
+                            "NULL", // phasor type
+                            "NULL", // phase
+                            0, // adder
+                            1, // multiplier
+                            "NULL", // company
+                            0.0F, // long
+                            0.0F, // lat
+                            result.ExtendedDescription, //desc 
+                            DateTime.UtcNow // updated on
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Publish(MessageLevel.Error, "eDNA Controller Metadata load error", exception: ex);
+                    }
+                }
+
+                DataSet metaData = new DataSet();
+                metaData.Tables.Add(dataTable);
+                MetaData = metaData;
+        }
+
+        static private DataTable GetNewMetaDataTable()
+        {
+            DataTable dataTable = new DataTable("ActiveMeasurements");
+            dataTable.Columns.Add("NodeID", typeof(Guid));
+            dataTable.Columns.Add("SourceNodeID", typeof(Guid));
+            dataTable.Columns.Add("ID", typeof(string));
+            dataTable.Columns.Add("SignalID", typeof(Guid));
+            dataTable.Columns.Add("PointTag", typeof(string));
+            dataTable.Columns.Add("AlternateTag", typeof(string));
+            dataTable.Columns.Add("SignalReference", typeof(string));
+            dataTable.Columns.Add("Internal", typeof(string));
+            dataTable.Columns.Add("Subscribed", typeof(string));
+            dataTable.Columns.Add("Device", typeof(string));
+            dataTable.Columns.Add("DeviceID", typeof(string));
+            dataTable.Columns.Add("FramesPerSecond", typeof(int));
+            dataTable.Columns.Add("Protocol", typeof(string));
+            dataTable.Columns.Add("SignalType", typeof(string));
+            dataTable.Columns.Add("EngineeringUnits", typeof(string));
+            dataTable.Columns.Add("PhasorID", typeof(string));
+            dataTable.Columns.Add("PhasorType", typeof(string));
+            dataTable.Columns.Add("Phase", typeof(string));
+            dataTable.Columns.Add("Adder", typeof(int));
+            dataTable.Columns.Add("Multiplier", typeof(int));
+            dataTable.Columns.Add("Company", typeof(string));
+            dataTable.Columns.Add("Longitude", typeof(float));
+            dataTable.Columns.Add("Latitude", typeof(float));
+            dataTable.Columns.Add("Description", typeof(string));
+            dataTable.Columns.Add("UpdatedOn", typeof(DateTime));
+
+            return dataTable;
+        }
         #endregion
 
         #region [ Properties ]
@@ -194,17 +312,11 @@ namespace openHistorian.eDNAGrafanaController
         {
             get
             {
-                if ((object)m_dataSource != null)
-                    return m_dataSource;
-
-
-                m_dataSource = new eDNADataSource
+                return new eDNADataSource
                 {
                     InstanceName = "eDNA",
-                    Metadata = eDNADataSource.MetaData
+                    Metadata = MetaData
                 };
-
-                return m_dataSource;
             }
         }
 
@@ -267,9 +379,10 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string[]> Search(Target request)
+        public string[] Search(Target request)
         {
-            return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
+            return DataSource.Metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSource.MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
+
         }
 
         /// <summary>
@@ -278,9 +391,9 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string[]> SearchFields(Target request)
+        public string[] SearchFields(Target request)
         {
-            return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
+            return DataSource.Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>
@@ -289,9 +402,9 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string[]> SearchFilters(Target request)
+        public string[] SearchFilters(Target request)
         {
-            return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+            return new List<string>() { "ActiveMeasurements"}.ToArray();
         }
 
         /// <summary>
@@ -300,9 +413,9 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string[]> SearchOrderBys(Target request)
+        public string[] SearchOrderBys(Target request)
         {
-            return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+            return DataSource.Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>
@@ -312,12 +425,15 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
+        public List<AnnotationResponse> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
+            return new List<AnnotationResponse>();
         }
 
         #endregion
 
+        #region [ static ]
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
+        #endregion
     }
 }
