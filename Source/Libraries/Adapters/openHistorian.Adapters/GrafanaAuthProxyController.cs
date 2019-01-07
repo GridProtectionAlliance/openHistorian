@@ -160,8 +160,31 @@ namespace openHistorian.Adapters
             if (Request.Method == HttpMethod.Get)
                 Request.Content = null;
 
-            HttpResponseMessage response = await s_http.SendAsync(Request, cancellationToken);
+            // HACK: Cannot reuse request objects, but we may need to tweak and resend the same request
+            Func<Task<HttpRequestMessage>> requestFactory = MakeRequestFactory();
+            HttpRequestMessage request = await requestFactory();
+            HttpResponseMessage response = await s_http.SendAsync(request, cancellationToken);
             HttpStatusCode statusCode = response.StatusCode;
+
+            if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
+            {
+                // HACK: Internet Explorer sometimes applies cached authorization headers to concurrent AJAX requests
+                if ((object)Request.Headers.Authorization != null)
+                {
+                    HttpRequestMessage retryRequest = await requestFactory();
+                    retryRequest.Headers.Authorization = null;
+
+                    HttpResponseMessage retryResponse = await s_http.SendAsync(retryRequest, cancellationToken);
+                    HttpStatusCode retryStatusCode = retryResponse.StatusCode;
+
+                    if (retryStatusCode != HttpStatusCode.NotFound && retryStatusCode != HttpStatusCode.Unauthorized)
+                    {
+                        request = retryRequest;
+                        response = retryResponse;
+                        statusCode = retryStatusCode;
+                    }
+                }
+            }
 
             if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
             {
@@ -194,6 +217,42 @@ namespace openHistorian.Adapters
             }
 
             return response;
+        }
+
+        private Func<Task<HttpRequestMessage>> MakeRequestFactory()
+        {
+            MemoryStream content = null;
+
+            return async () =>
+            {
+                HttpRequestMessage clone = new HttpRequestMessage(Request.Method, Request.RequestUri);
+
+                clone.Version = Request.Version;
+
+                foreach (KeyValuePair<string, object> property in Request.Properties)
+                    clone.Properties.Add(property);
+
+                foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
+                    clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+                if ((object)content == null && (object)Request.Content != null)
+                {
+                    content = new MemoryStream();
+                    await Request.Content.CopyToAsync(content);
+                    content.Position = 0;
+                }
+
+                if ((object)content != null)
+                {
+                    MemoryStream cloneContent = new MemoryStream();
+                    await content.CopyToAsync(cloneContent);
+                    content.Position = 0;
+                    cloneContent.Position = 0;
+                    clone.Content = new StreamContent(cloneContent);
+                }
+
+                return clone;
+            };
         }
 
         #endregion
