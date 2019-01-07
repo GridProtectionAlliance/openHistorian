@@ -23,6 +23,7 @@
 
 using GrafanaAdapters;
 using GSF;
+using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
 using InStep.eDNA.EzDNAApiNet;
@@ -121,11 +122,28 @@ namespace openHistorian.EdnaGrafanaController
         /// Used to store the metadata from enda
         /// </summary>
         public static DataSet MetaData { get; private set; }
-        //private static Dictionary<string, string> PointTagToShortID { get; set; }
+        private static CategorizedSettingsElementCollection SystemSettings { get {
+                return ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"];
+            }
+        }
+        private static string Site
+        {
+            get
+            {
+                return SystemSettings["GrafanaEdnaSite"]?.Value ?? "*";
+            }
+        }
+
+        private static string Service
+        {
+            get
+            {
+                return SystemSettings["GrafanaEdnaService"]?.Value ?? "*";
+            }
+        }
 
         static EdnaGrafanaController()
         {
-            //PointTagToShortID = new Dictionary<string, string>();
             InitializeMetaData();
 
             Task.Run(() => RefreshMetaData());
@@ -142,63 +160,7 @@ namespace openHistorian.EdnaGrafanaController
         {
 
                 DataTable dataTable = GetNewMetaDataTable();
-                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = "TP", Service = "MAIN"});
-
-//                dataTable.Rows.Add(
-//                    Guid.NewGuid(), //node ID
-//                    Guid.NewGuid(),  // source node
-//                    "test:1",  // ID
-//                    Guid.NewGuid(), // signal id 
-//                    "test_1", // point tag
-//                    "NULL", // alternate tag
-//                    "NULL", // signal ref
-//                    "true", // internal
-//                    "false", // subscribed
-//                    "NULL", // device
-//                    "NULL", // deviceid
-//                    1, // frames per sec
-//                    "NULL", // protocol
-//                    "NULL", // signal type
-//                    "Vp;ts", // enineering units
-//                    "NULL", // phasor id
-//                    "NULL", // phasor type
-//                    "NULL", // phase
-//                    0, // adder
-//                    1, // multiplier
-//                    "NULL", // company
-//                    0.0F, // long
-//                    0.0F, // lat
-//                    "", //desc 
-//                    DateTime.UtcNow // updated on
-//                );
-
-//                dataTable.Rows.Add(
-//    Guid.NewGuid(), //node ID
-//    Guid.NewGuid(),  // source node
-//    "test:2",  // ID
-//    Guid.NewGuid(), // signal id 
-//    "test_2", // point tag
-//    "NULL", // alternate tag
-//    "NULL", // signal ref
-//    "true", // internal
-//    "false", // subscribed
-//    "NULL", // device
-//    "NULL", // deviceid
-//    1, // frames per sec
-//    "NULL", // protocol
-//    "NULL", // signal type
-//    "Vp;ts", // enineering units
-//    "NULL", // phasor id
-//    "NULL", // phasor type
-//    "NULL", // phase
-//    0, // adder
-//    1, // multiplier
-//    "NULL", // company
-//                    0.0F, // long
-//                    0.0F, // lat
-//    "", //desc 
-//    DateTime.UtcNow // updated on
-//);
+                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = Site, Service = Service});
 
                 foreach (eDNAMetaData result in results)
                 {
@@ -319,6 +281,7 @@ namespace openHistorian.EdnaGrafanaController
                 };
             }
         }
+
 
         #endregion
 
