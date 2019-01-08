@@ -172,6 +172,7 @@ namespace openHistorian
             const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/favicon.ico$";
             const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|^/grafana(?!/api/).*$";
 
+
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
@@ -322,6 +323,8 @@ namespace openHistorian
         {
             base.ServiceStartedHandler(sender, e);
 
+            ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("RefreshEdnaMetadata", "Refreshes Edna metadata.", RefreshMetaDataHandler));
+
             if (!Model.Global.GrafanaServerInstalled)
                 return;
 
@@ -372,6 +375,8 @@ namespace openHistorian
             }
             .Start();
         }
+
+        private void RefreshMetaDataHandler(ClientRequestInfo requestInfo) => EdnaGrafanaController.EdnaGrafanaController.RefreshAllMetaData();
 
         private bool TryStartWebHosting(string webHostURL)
         {

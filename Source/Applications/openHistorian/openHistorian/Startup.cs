@@ -63,7 +63,14 @@ namespace openHistorian
             AppModel model = Program.Host.Model;
 
             // Load external EdnaGrafanaController so route map can find it.
-            using (new EdnaGrafanaController.EdnaGrafanaController()) { }
+            try
+            {
+                using (new EdnaGrafanaController.EdnaGrafanaController()) { }
+            }
+            catch (Exception ex) {
+                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+            }
+
 
             // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
             try
@@ -154,6 +161,20 @@ namespace openHistorian
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
             }
 
+            // Map edna Grafana authenticated proxy controller
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "EdnaGrafana",
+                    routeTemplate: "api/ednagrafana/{site}/{service}/{action}",
+                    defaults: new { action = "Index", controller ="EdnaGrafana" }
+                    );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
+            }
+
             // Map custom API controllers
             try
             {
@@ -174,12 +195,15 @@ namespace openHistorian
                 httpConfig.Routes.MapHttpRoute(
                     name: "GrafanaAuthProxy",
                     routeTemplate: "grafana/{*url}",
-                    defaults: new { controller = "GrafanaAuthProxy", url = RouteParameter.Optional });
+                    defaults: new { controller = "GrafanaAuthProxy", url = RouteParameter.Optional }
+                    );
             }
             catch (Exception ex)
             {
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
             }
+
+
 
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();

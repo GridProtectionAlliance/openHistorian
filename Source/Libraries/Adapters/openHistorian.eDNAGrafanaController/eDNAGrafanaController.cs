@@ -23,6 +23,7 @@
 
 using GrafanaAdapters;
 using GSF;
+using GSF.Collections;
 using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
@@ -30,6 +31,7 @@ using InStep.eDNA.EzDNAApiNet;
 using Newtonsoft.Json;
 using openHistorian.Adapters;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -58,8 +60,24 @@ namespace openHistorian.EdnaGrafanaController
         /// <summary>
         /// Represents a historian data source for the Grafana adapter.
         /// </summary>
+        [Serializable]
         protected class eDNADataSource : GrafanaDataSourceBase
         {
+            /// <summary>
+            /// eDNADataSource constructor
+            /// </summary>
+            /// <param name="site">Site search param</param>
+            /// <param name="service">Service search param</param>
+            public eDNADataSource(string site, string service)
+            {
+                InstanceName = $"{site}.{service}";
+                DataTable dataTable = GetNewMetaDataTable();
+                Metadata = new DataSet();
+                Metadata.Tables.Add(dataTable);
+
+            }
+
+            #region [ Methods ]
 
             /// <summary>
             /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
@@ -106,61 +124,66 @@ namespace openHistorian.EdnaGrafanaController
                 }
             }
 
-            #region [ Methods ]
 
             #endregion  
         }
 
-
-        // Fields
-        private string m_defaultApiPath;
-
         #endregion
 
         #region [ Static ]
-        /// <summary>
-        /// Used to store the metadata from enda
-        /// </summary>
-        public static DataSet MetaData { get; private set; }
-        private static CategorizedSettingsElementCollection SystemSettings { get {
-                return ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"];
-            }
-        }
-        private static string Site
-        {
-            get
-            {
-                return SystemSettings["GrafanaEdnaSite"]?.Value ?? "*";
-            }
-        }
-
-        private static string Service
-        {
-            get
-            {
-                return SystemSettings["GrafanaEdnaService"]?.Value ?? "*";
-            }
-        }
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
+        private const string FileBackedDictionary = "EdnaDataSources.bin";
+        private static ConcurrentDictionary<string, eDNADataSource> DataSources { get; }
 
         static EdnaGrafanaController()
         {
-            InitializeMetaData();
 
-            Task.Run(() => RefreshMetaData());
+            using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
+            {
+                DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
+            }
+
+            string settings = ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"]["GrafanaEdnaMetaData"]?.Value ?? "*.*";
+            List<Task> tasks = new List<Task>();
+
+            foreach (string setting in settings.Split(','))
+            {
+                string site = setting.Split('.')[0].ToUpper();
+                string service = setting.Split('.')[1].ToUpper();
+
+                if (!DataSources.ContainsKey($"{site}.{service}"))
+                    DataSources.AddOrUpdate($"{site}.{service}", new eDNADataSource(site, service));
+
+
+                tasks.Add(Task.Factory.StartNew(() => RefreshMetaData(site, service)));
+
+            }
+
+            
+
+            var finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            {
+                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary)){
+                    foreach(var kvp in DataSources)
+                    {
+                        FileBackedDataSources[kvp.Key] = kvp.Value;
+                    }
+                    FileBackedDataSources.Compact();
+                }
+
+            });
+
+
+
+
+
         }
 
-        static private void InitializeMetaData() {
-            DataTable dataTable = GetNewMetaDataTable();
-            DataSet metaData = new DataSet();
-            metaData.Tables.Add(dataTable);
-            MetaData = metaData;
-        }
-
-        static private void RefreshMetaData()
+        static private void RefreshMetaData(string site, string service)
         {
 
                 DataTable dataTable = GetNewMetaDataTable();
-                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = Site, Service = Service});
+                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = site.ToUpper(), Service = service.ToUpper() });
 
                 foreach (eDNAMetaData result in results)
                 {
@@ -202,13 +225,14 @@ namespace openHistorian.EdnaGrafanaController
                     }
                     catch (Exception ex)
                     {
-                        Log.Publish(MessageLevel.Error, "eDNA Controller Metadata load error", exception: ex);
+                        Log.Publish(MessageLevel.Error, $"eDNA Controller Metadata load error for {site}.{service}", exception: ex);
                     }
                 }
 
                 DataSet metaData = new DataSet();
                 metaData.Tables.Add(dataTable);
-                MetaData = metaData;
+
+                DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata = metaData;
         }
 
         static private DataTable GetNewMetaDataTable()
@@ -242,46 +266,38 @@ namespace openHistorian.EdnaGrafanaController
 
             return dataTable;
         }
+
+        /// <summary>
+        /// RefreshAllMetaData refreshes the metadata on command.
+        /// </summary>
+        static public void RefreshAllMetaData() {
+            List<Task> tasks = new List<Task>();
+
+            foreach (var kvp in DataSources)
+            {
+                string site = kvp.Key.Split('.')[0].ToUpper();
+                string service = kvp.Key.Split('.')[1].ToUpper();
+                tasks.Add(Task.Factory.StartNew(() => RefreshMetaData(site, service)));
+
+            }
+
+            var finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            {
+                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
+                {
+                    foreach (var kvp in DataSources)
+                    {
+                        FileBackedDataSources[kvp.Key] = kvp.Value;
+                    }
+                    FileBackedDataSources.Compact();
+                }
+
+            });
+
+        }
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets the default API path string for this controller.
-        /// </summary>
-        protected virtual string DefaultApiPath
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(m_defaultApiPath))
-                    return m_defaultApiPath;
-
-                string controllerName = GetType().Name.ToLowerInvariant();
-
-                if (controllerName.EndsWith("controller") && controllerName.Length > 10)
-                    controllerName = controllerName.Substring(0, controllerName.Length - 10);
-
-                m_defaultApiPath = $"/api/{controllerName}";
-
-                return m_defaultApiPath;
-            }
-        }
-
-        /// <summary>
-        /// Gets historian data source for this Grafana adapter.
-        /// </summary>
-        protected eDNADataSource DataSource
-        {
-            get
-            {
-                return new eDNADataSource
-                {
-                    InstanceName = "eDNA",
-                    Metadata = MetaData
-                };
-            }
-        }
-
 
         #endregion
 
@@ -291,7 +307,7 @@ namespace openHistorian.EdnaGrafanaController
         /// Validates that openHistorian Grafana data source is responding as expected.
         /// </summary>
         [HttpGet]
-        public HttpResponseMessage Index()
+        public HttpResponseMessage Index(string site, string service)
         {
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -299,26 +315,36 @@ namespace openHistorian.EdnaGrafanaController
         /// <summary>
         /// Queries openHistorian as a Grafana data source.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<TimeSeriesValues>> Query(string site, string service, QueryRequest request, CancellationToken cancellationToken)
         {
             if (request.targets.FirstOrDefault()?.target == null)
                 return Task.FromResult(new List<TimeSeriesValues>());
 
-            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+            {
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+            }
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+
         }
 
         /// <summary>
         /// Queries openHistorian as a Grafana Metadata source.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
+        public virtual Task<string> GetMetadata(string site, string service, Target request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -326,7 +352,12 @@ namespace openHistorian.EdnaGrafanaController
                     return string.Empty;
 
                 DataTable table = new DataTable();
-                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+                if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                {
+                    RefreshMetaData(site.ToUpper(), service.ToUpper());
+                }
+
+                DataRow[] rows = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
 
                 if (rows.Length > 0)
                     table = rows.CopyToDataTable();
@@ -339,64 +370,91 @@ namespace openHistorian.EdnaGrafanaController
         /// <summary>
         /// Search openHistorian for a target.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] Search(Target request)
+        public string[] Search(string site, string service, Target request)
         {
-            return DataSource.Metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSource.MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+            {
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+            }
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
 
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchFields(Target request)
+        public string[] SearchFields(string site, string service, Target request)
         {
-            return DataSource.Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+            {
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+            }
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>
         /// Search openHistorian for a table.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchFilters(Target request)
+        public string[] SearchFilters(string site, string service, Target request)
         {
-            return new List<string>() { "ActiveMeasurements"}.ToArray();
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+            {
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+            }
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables.Cast<DataTable>().Where(table => new[] { "ID", "SignalID", "PointTag", "Adder", "Multiplier" }.All(fieldName => table.Columns.Contains(fieldName))).Select(table => table.TableName).ToArray();
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Search target.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchOrderBys(Target request)
+        public string[] SearchOrderBys(string site, string service, Target request)
         {
-            return DataSource.Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+            {
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+            }
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>
         /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
         /// </summary>
+        /// <param name="site">Query request.</param>
+        /// <param name="service">Query request.</param>
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public List<AnnotationResponse> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
+        public List<AnnotationResponse> Annotations(string site, string service, AnnotationRequest request, CancellationToken cancellationToken)
         {
             return new List<AnnotationResponse>();
         }
 
         #endregion
 
-        #region [ static ]
-        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
-        #endregion
     }
 }
