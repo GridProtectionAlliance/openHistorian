@@ -249,6 +249,12 @@ namespace openHistorian.Adapters
                     content.Position = 0;
                     cloneContent.Position = 0;
                     clone.Content = new StreamContent(cloneContent);
+
+                    if ((object)Request.Content.Headers != null)
+                    {
+                        foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Content.Headers)
+                            clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
                 }
 
                 return clone;
