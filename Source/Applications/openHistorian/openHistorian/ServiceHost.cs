@@ -21,14 +21,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Security;
-using System.Security.Principal;
-using System.Threading;
 using GSF;
 using GSF.ComponentModel;
 using GSF.Configuration;
@@ -50,6 +42,14 @@ using Microsoft.Owin.Hosting;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Security;
+using System.Security.Principal;
+using System.Threading;
 
 namespace openHistorian
 {
@@ -323,7 +323,7 @@ namespace openHistorian
         {
             base.ServiceStartedHandler(sender, e);
 
-            ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("RefreshEdnaMetadata", "Refreshes Edna metadata.", RefreshMetaDataHandler));
+            ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("eDNARefreshMetadata", "Refreshes eDNA metadata.", RefreshMetaDataHandler, new[] { "eDNARefresh", "RefresheDNAMetadata" }));
 
             if (!Model.Global.GrafanaServerInstalled)
                 return;
@@ -376,7 +376,7 @@ namespace openHistorian
             .Start();
         }
 
-        private void RefreshMetaDataHandler(ClientRequestInfo requestInfo) => EdnaGrafanaController.EdnaGrafanaController.RefreshAllMetaData();
+        private void RefreshMetaDataHandler(ClientRequestInfo requestInfo) => eDNAGrafanaController.eDNAGrafanaController.RefreshAllMetaData();
 
         private bool TryStartWebHosting(string webHostURL)
         {

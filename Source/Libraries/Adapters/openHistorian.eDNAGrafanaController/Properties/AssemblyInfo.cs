@@ -6,12 +6,15 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("openHistorian.eDNAGrafanaController")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("openHistorian.eDNAGrafanaController")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyCompany("Grid Protection Alliance")]
+[assembly: AssemblyProduct("openHistorian")]
+[assembly: AssemblyCopyright("Copyright © GPA, 2019.  All Rights Reserved.")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug Build")]
+#else
+[assembly: AssemblyConfiguration("Release Build")]
+#endif
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

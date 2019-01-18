@@ -87,9 +87,9 @@ namespace openHistorian
                 Program.Host.LogException(new SecurityException($"Failed to load Shared Hub: {ex.Message}", ex));
             }
 
-            LoadModbusAssembly();
-            LoadOSIPIGrafanaController();
-            LoadEdnaGrafanaController();
+            Load_ModbusAssembly();
+            Load_OSIPIGrafanaController();
+            Load_eDNAGrafanaController();
 
             // Configure Windows Authentication for self-hosted web service
             HubConfiguration hubConfig = new HubConfiguration();
@@ -158,9 +158,9 @@ namespace openHistorian
             try
             {
                 httpConfig.Routes.MapHttpRoute(
-                    name: "EdnaGrafana",
+                    name: "eDNAGrafana",
                     routeTemplate: "api/ednagrafana/{site}/{service}/{action}",
-                    defaults: new { action = "Index", controller ="EdnaGrafana" }
+                    defaults: new { action = "Index", controller = "eDNAGrafana" }
                     );
             }
             catch (Exception ex)
@@ -196,8 +196,6 @@ namespace openHistorian
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
             }
 
-
-
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
 
@@ -208,7 +206,7 @@ namespace openHistorian
             httpConfig.EnsureInitialized();
         }
 
-        private void LoadModbusAssembly()
+        private void Load_ModbusAssembly()
         {
             try
             {
@@ -229,9 +227,9 @@ namespace openHistorian
             }
         }
 
-        private void LoadOSIPIGrafanaController()
+        private void Load_OSIPIGrafanaController()
         {
-            // Load external OSIPIGrafanaController so route map can find it.
+            // Load external OSIPIGrafanaController so route map can find it
             try
             {
                 // Wrap class reference in lambda function to force
@@ -243,25 +241,25 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                Program.Host.LogException(new SecurityException($"Failed to load OSIPIGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+                Program.Host.LogException(new SecurityException($"Failed to load OSIPIGrafanaController, validate DLL exists in program directory: {ex.Message}", ex));
             }
         }
 
-        private void LoadEdnaGrafanaController()
+        private void Load_eDNAGrafanaController()
         {
-            // Load external EdnaGrafanaController so route map can find it.
+            // Load external eDNAGrafanaController so route map can find it
             try
             {
                 // Wrap class reference in lambda function to force
                 // assembly load errors to occur within the try-catch
                 new Action(() =>
                 {
-                    using (new EdnaGrafanaController.EdnaGrafanaController()) { }
+                    using (new eDNAGrafanaController.eDNAGrafanaController()) { }
                 })();
             }
             catch (Exception ex)
             {
-                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+                Program.Host.LogException(new SecurityException($"Failed to load eDNAGrafanaController, validate DLL exists in program directory: {ex.Message}", ex));
             }
         }
 

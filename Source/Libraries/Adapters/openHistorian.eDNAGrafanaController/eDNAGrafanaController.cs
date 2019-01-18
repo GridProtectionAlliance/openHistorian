@@ -41,13 +41,13 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using eDNAMetaData = eDNAAdapters.Metadata;
 
-namespace openHistorian.EdnaGrafanaController
+namespace openHistorian.eDNAGrafanaController
 {
     /// <summary>
     /// Represents a REST based API for a simple JSON based Grafana data source for eDNA,
     /// accessible from Grafana data source as http://localhost:8180/api/ednagrafana
     /// </summary>
-    public class EdnaGrafanaController : ApiController
+    public class eDNAGrafanaController : ApiController
     {
         #region [ Members ]
 
@@ -121,7 +121,6 @@ namespace openHistorian.EdnaGrafanaController
                 }
             }
 
-
             #endregion  
         }
 
@@ -129,19 +128,19 @@ namespace openHistorian.EdnaGrafanaController
 
         #region [ Static ]
 
-        private const string FileBackedDictionary = "EdnaDataSources.bin";
+        private const string FileBackedDictionary = "eDNADataSources.bin";
 
-        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(eDNAGrafanaController), MessageClass.Component);
         private static ConcurrentDictionary<string, eDNADataSource> DataSources { get; }
 
-        static EdnaGrafanaController()
+        static eDNAGrafanaController()
         {
             using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
             {
                 DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
             }
 
-            string settings = ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"]["GrafanaEdnaMetaData"]?.Value ?? "*.*";
+            string settings = ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"]["eDNAMetaData"]?.Value ?? "*.*";
             List<Task> tasks = new List<Task>();
 
             foreach (string setting in settings.Split(','))

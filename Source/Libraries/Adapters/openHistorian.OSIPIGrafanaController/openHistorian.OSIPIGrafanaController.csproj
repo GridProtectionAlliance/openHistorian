@@ -18,18 +18,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Build\Output\Debug\Library\openHistorian.OSIPIGrafanaController\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\..\Build\Output\Debug\Library\openHistorian.OSIPIGrafanaController\openHistorian.OSIPIGrafanaController.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\Build\Output\Release\Library\openHistorian.OSIPIGrafanaController\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\..\Build\Output\Release\Library\openHistorian.OSIPIGrafanaController\openHistorian.OSIPIGrafanaController.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GrafanaAdapters">
