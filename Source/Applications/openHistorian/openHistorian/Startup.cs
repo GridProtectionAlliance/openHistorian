@@ -87,39 +87,9 @@ namespace openHistorian
                 Program.Host.LogException(new SecurityException($"Failed to load Shared Hub: {ex.Message}", ex));
             }
 
-            // Load Modbus assembly
-            try
-            {
-                // Make embedded resources of Modbus poller available to web server
-                using (ModbusPoller poller = new ModbusPoller())
-                    WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
-
-                ModbusPoller.RestoreConfigurations(FilePath.GetAbsolutePath("ModbusConfigs"));
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
-            }
-
-            // Load external OSIPIGrafanaController so route map can find it.
-            try
-            {
-                using (new openHistorian.OSIPIGrafanaController.OSIPIGrafanaController()) { }
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
-            }
-
-            // Load external EdnaGrafanaController so route map can find it.
-            try
-            {
-                using (new EdnaGrafanaController.EdnaGrafanaController()) { }
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
-            }
+            LoadModbusAssembly();
+            LoadOSIPIGrafanaController();
+            LoadEdnaGrafanaController();
 
             // Configure Windows Authentication for self-hosted web service
             HubConfiguration hubConfig = new HubConfiguration();
@@ -236,6 +206,63 @@ namespace openHistorian
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+        }
+
+        private void LoadModbusAssembly()
+        {
+            try
+            {
+                // Wrap class reference in lambda function to force
+                // assembly load errors to occur within the try-catch
+                new Action(() =>
+                {
+                    // Make embedded resources of Modbus poller available to web server
+                    using (ModbusPoller poller = new ModbusPoller())
+                        WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
+
+                    ModbusPoller.RestoreConfigurations(FilePath.GetAbsolutePath("ModbusConfigs"));
+                })();
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
+            }
+        }
+
+        private void LoadOSIPIGrafanaController()
+        {
+            // Load external OSIPIGrafanaController so route map can find it.
+            try
+            {
+                // Wrap class reference in lambda function to force
+                // assembly load errors to occur within the try-catch
+                new Action(() =>
+                {
+                    using (new OSIPIGrafanaController.OSIPIGrafanaController()) { }
+                })();
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+            }
+        }
+
+        private void LoadEdnaGrafanaController()
+        {
+            // Load external EdnaGrafanaController so route map can find it.
+            try
+            {
+                // Wrap class reference in lambda function to force
+                // assembly load errors to occur within the try-catch
+                new Action(() =>
+                {
+                    using (new EdnaGrafanaController.EdnaGrafanaController()) { }
+                })();
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+            }
         }
 
         // Static Properties
