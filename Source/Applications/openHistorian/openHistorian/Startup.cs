@@ -243,7 +243,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+                Program.Host.LogException(new SecurityException($"Failed to load OSIPIGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
             }
         }
 
