@@ -21,15 +21,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
 using GrafanaAdapters;
 using GSF;
 using GSF.Snap;
@@ -39,6 +30,15 @@ using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Snap;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
 using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
@@ -129,8 +129,6 @@ namespace openHistorian.Adapters
                     }
                 }
             }
-
-
         }
 
         // Fields

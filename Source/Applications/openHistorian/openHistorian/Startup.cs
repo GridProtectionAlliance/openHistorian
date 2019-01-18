@@ -21,11 +21,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Security;
-using System.Web.Http;
-using System.Web.Http.Cors;
-using System.Web.Http.ExceptionHandling;
 using GSF.IO;
 using GSF.Web;
 using GSF.Web.Hosting;
@@ -35,9 +30,13 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Json;
 using ModbusAdapters;
 using Newtonsoft.Json;
-using Owin;
 using openHistorian.Model;
-using openHistorian.EdnaGrafanaController;
+using Owin;
+using System;
+using System.Security;
+using System.Web.Http;
+using System.Web.Http.Cors;
+using System.Web.Http.ExceptionHandling;
 
 namespace openHistorian
 {
@@ -61,16 +60,6 @@ namespace openHistorian
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
             AppModel model = Program.Host.Model;
-
-            // Load external EdnaGrafanaController so route map can find it.
-            try
-            {
-                using (new EdnaGrafanaController.EdnaGrafanaController()) { }
-            }
-            catch (Exception ex) {
-                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
-            }
-
 
             // Load security hub into application domain before establishing SignalR hub configuration, initializing default status and exception handlers
             try
@@ -110,6 +99,26 @@ namespace openHistorian
             catch (Exception ex)
             {
                 Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
+            }
+
+            // Load external OSIPIGrafanaController so route map can find it.
+            try
+            {
+                using (new openHistorian.OSIPIGrafanaController.OSIPIGrafanaController()) { }
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
+            }
+
+            // Load external EdnaGrafanaController so route map can find it.
+            try
+            {
+                using (new EdnaGrafanaController.EdnaGrafanaController()) { }
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load EdnaGrafanaController, validate dll exists in program directory: {ex.Message}", ex));
             }
 
             // Configure Windows Authentication for self-hosted web service
@@ -161,7 +170,21 @@ namespace openHistorian
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
             }
 
-            // Map edna Grafana authenticated proxy controller
+            // Map OSI-PI Grafana controller
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "OsiPiGrafana",
+                    routeTemplate: "api/pigrafana/{instanceName}/{serverName}/{action}",
+                    defaults: new { action = "Index", controller = "OsiPiGrafana" }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
+            }
+
+            // Map eDNA Grafana controller
             try
             {
                 httpConfig.Routes.MapHttpRoute(

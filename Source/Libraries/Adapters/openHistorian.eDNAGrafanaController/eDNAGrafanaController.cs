@@ -22,43 +22,39 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
 using InStep.eDNA.EzDNAApiNet;
 using Newtonsoft.Json;
-using openHistorian.Adapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using eDNAMetaData = eDNAAdapters.Metadata;
+
 namespace openHistorian.EdnaGrafanaController
 {
     /// <summary>
-    /// Represents a REST based API for a simple JSON based Grafana "phasor" based data source,
+    /// Represents a REST based API for a simple JSON based Grafana data source for eDNA,
     /// accessible from Grafana data source as http://localhost:8180/api/ednagrafana
     /// </summary>
-    public class EdnaGrafanaController: ApiController
+    public class EdnaGrafanaController : ApiController
     {
         #region [ Members ]
 
         // Nested Types
 
         /// <summary>
-        /// Represents a historian data source for the Grafana adapter.
+        /// Represents an eDNA data source for the Grafana adapter.
         /// </summary>
         [Serializable]
         protected class eDNADataSource : GrafanaDataSourceBase
@@ -106,7 +102,8 @@ namespace openHistorian.EdnaGrafanaController
                         DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
                         if (result == 0)
-                            yield return new DataSourceValue() {
+                            yield return new DataSourceValue()
+                            {
                                 Target = point,
                                 Time = time.Subtract(epoch).TotalMilliseconds,
                                 Value = value,
@@ -131,13 +128,14 @@ namespace openHistorian.EdnaGrafanaController
         #endregion
 
         #region [ Static ]
-        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
+
         private const string FileBackedDictionary = "EdnaDataSources.bin";
+
+        private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(EdnaGrafanaController), MessageClass.Component);
         private static ConcurrentDictionary<string, eDNADataSource> DataSources { get; }
 
         static EdnaGrafanaController()
         {
-
             using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
             {
                 DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
@@ -159,83 +157,76 @@ namespace openHistorian.EdnaGrafanaController
 
             }
 
-            
-
-            var finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            Task finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
-                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary)){
-                    foreach(var kvp in DataSources)
+                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
+                {
+                    foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
                     {
                         FileBackedDataSources[kvp.Key] = kvp.Value;
                     }
                     FileBackedDataSources.Compact();
                 }
-
             });
-
-
-
-
-
         }
 
-        static private void RefreshMetaData(string site, string service)
+        private static void RefreshMetaData(string site, string service)
         {
 
-                DataTable dataTable = GetNewMetaDataTable();
-                IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = site.ToUpper(), Service = service.ToUpper() });
+            DataTable dataTable = GetNewMetaDataTable();
+            IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = site.ToUpper(), Service = service.ToUpper() });
 
-                foreach (eDNAMetaData result in results)
+            foreach (eDNAMetaData result in results)
+            {
+                if (result.ExtendedDescription == string.Empty) continue;
+
+
+                string fqn = $"{result.Site}.{result.Service}.{result.ShortID}";
+                string id = $"edna_{result.Site}_{result.Service}:{result.ShortID}";
+
+                try
                 {
-                    if (result.ExtendedDescription == string.Empty) continue;
-    
-
-                    string fqn = $"{result.Site}.{result.Service}.{result.ShortID}";
-                    string id = $"edna_{result.Site}_{result.Service}:{result.ShortID}";
-
-                    try
-                    {
-                        dataTable.Rows.Add(
-                            Guid.NewGuid(), //node ID
-                            Guid.NewGuid(),  // source node
-                            id,  // ID
-                            Guid.NewGuid(), // signal id 
-                            fqn, // point tag
-                            "NULL", // alternate tag
-                            "NULL", // signal ref
-                            "true", // internal
-                            "false", // subscribed
-                            "NULL", // device
-                            "NULL", // deviceid
-                            1, // frames per sec
-                            "NULL", // protocol
-                            "NULL", // signal type
-                            result.Units, // enineering units
-                            "NULL", // phasor id
-                            "NULL", // phasor type
-                            "NULL", // phase
-                            0, // adder
-                            1, // multiplier
-                            "NULL", // company
-                            0.0F, // long
-                            0.0F, // lat
-                            result.ExtendedDescription, //desc 
-                            DateTime.UtcNow // updated on
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Publish(MessageLevel.Error, $"eDNA Controller Metadata load error for {site}.{service}", exception: ex);
-                    }
+                    dataTable.Rows.Add(
+                        Guid.NewGuid(), //node ID
+                        Guid.NewGuid(),  // source node
+                        id,  // ID
+                        Guid.NewGuid(), // signal id 
+                        fqn, // point tag
+                        "NULL", // alternate tag
+                        "NULL", // signal ref
+                        "true", // internal
+                        "false", // subscribed
+                        "NULL", // device
+                        "NULL", // deviceid
+                        1, // frames per sec
+                        "NULL", // protocol
+                        "NULL", // signal type
+                        result.Units, // enineering units
+                        "NULL", // phasor id
+                        "NULL", // phasor type
+                        "NULL", // phase
+                        0, // adder
+                        1, // multiplier
+                        "NULL", // company
+                        0.0F, // long
+                        0.0F, // lat
+                        result.ExtendedDescription, //desc 
+                        DateTime.UtcNow // updated on
+                    );
                 }
+                catch (Exception ex)
+                {
+                    Log.Publish(MessageLevel.Error, $"eDNA Controller Metadata load error for {site}.{service}", exception: ex);
+                }
+            }
 
-                DataSet metaData = new DataSet();
-                metaData.Tables.Add(dataTable);
+            DataSet metaData = new DataSet();
+            metaData.Tables.Add(dataTable);
 
-                DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata = metaData;
+            DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata = metaData;
         }
 
-        static private DataTable GetNewMetaDataTable()
+        private static DataTable GetNewMetaDataTable()
         {
             DataTable dataTable = new DataTable("ActiveMeasurements");
             dataTable.Columns.Add("NodeID", typeof(Guid));
@@ -270,10 +261,11 @@ namespace openHistorian.EdnaGrafanaController
         /// <summary>
         /// RefreshAllMetaData refreshes the metadata on command.
         /// </summary>
-        static public void RefreshAllMetaData() {
+        public static void RefreshAllMetaData()
+        {
             List<Task> tasks = new List<Task>();
 
-            foreach (var kvp in DataSources)
+            foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
             {
                 string site = kvp.Key.Split('.')[0].ToUpper();
                 string service = kvp.Key.Split('.')[1].ToUpper();
@@ -281,20 +273,19 @@ namespace openHistorian.EdnaGrafanaController
 
             }
 
-            var finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            Task finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
                 using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
                 {
-                    foreach (var kvp in DataSources)
+                    foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
                     {
                         FileBackedDataSources[kvp.Key] = kvp.Value;
                     }
                     FileBackedDataSources.Compact();
                 }
-
             });
-
         }
+
         #endregion
 
         #region [ Properties ]
@@ -313,7 +304,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Queries openHistorian as a Grafana data source.
+        /// Queries eDNA as a Grafana data source.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -336,7 +327,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Queries openHistorian as a Grafana Metadata source.
+        /// Queries eDNA as a Grafana Metadata source.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -368,7 +359,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Search openHistorian for a target.
+        /// Search eDNA for a target.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -387,7 +378,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Search openHistorian for a field.
+        /// Search eDNA for a field.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -405,7 +396,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Search openHistorian for a table.
+        /// Search eDNA for a table.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -423,7 +414,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Search openHistorian for a field.
+        /// Search eDNA for a field.
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -441,7 +432,7 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         /// <summary>
-        /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
+        /// Queries eDNA for annotations in a time-range (e.g., Alarms).
         /// </summary>
         /// <param name="site">Query request.</param>
         /// <param name="service">Query request.</param>
@@ -455,6 +446,5 @@ namespace openHistorian.EdnaGrafanaController
         }
 
         #endregion
-
     }
 }

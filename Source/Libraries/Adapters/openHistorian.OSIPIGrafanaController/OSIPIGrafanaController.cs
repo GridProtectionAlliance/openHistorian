@@ -1,0 +1,406 @@
+﻿//******************************************************************************************************
+//  OSIPIGrafanaController.cs - Gbtc
+//
+//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  01/17/2019 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+
+using GrafanaAdapters;
+using GSF.TimeSeries;
+using Newtonsoft.Json;
+using OSIsoft.AF.Asset;
+using OSIsoft.AF.PI;
+using OSIsoft.AF.Time;
+using PIAdapters;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
+
+namespace openHistorian.OSIPIGrafanaController
+{
+    /// <summary>
+    /// Represents a REST based API for a simple JSON based Grafana data source for OSIsoft PI,
+    /// accessible from Grafana data source as http://localhost:8180/api/pigrafana
+    /// </summary>
+    public class OSIPIGrafanaController : ApiController
+    {
+        #region [ Members ]
+
+        // Nested Types
+
+        /// <summary>
+        /// Represents an OSI-PI data source for the Grafana adapter.
+        /// </summary>
+        [Serializable]
+        protected class OSIPIDataSource : GrafanaDataSourceBase
+        {
+            #region [ Members ]
+
+            public string KeyName;
+            public PIConnection Connection;
+
+            #endregion
+
+            #region [ Methods ]
+
+            /// <summary>
+            /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
+            /// </summary>
+            /// <param name="startTime">Start-time for query.</param>
+            /// <param name="stopTime">Stop-time for query.</param>
+            /// <param name="interval">Interval from Grafana request.</param>
+            /// <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            /// <param name="targetMap">Set of IDs with associated targets to query.</param>
+            /// <returns>Queried data source data in terms of value and time.</returns>
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool decimate, Dictionary<ulong, string> targetMap)
+            {
+                Dictionary<int, ulong> idMap = new Dictionary<int, ulong>();
+                PIPointList points = new PIPointList();
+
+                foreach (KeyValuePair<ulong, string> target in targetMap)
+                {
+                    ulong metadataID = target.Key;
+                    string pointTag = target.Value;
+
+                    if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
+                        if (TryFindPIPoint(Connection, Metadata, pointTag, out point))
+                            MetadataIDToPIPoint[metadataID] = point;
+
+                    if ((object)point != null)
+                    {
+                        points.Add(point);
+                        idMap[point.ID] = metadataID;
+                    }
+                }
+
+                // Start data read from historian
+                using (IEnumerator<AFValue> dataReader = ReadData(startTime, stopTime, points).GetEnumerator())
+                {
+                    while (dataReader.MoveNext())
+                    {
+                        AFValue currentPoint = dataReader.Current;
+
+                        if (currentPoint == null)
+                            continue;
+
+                        yield return new DataSourceValue
+                        {
+                            Target = targetMap[idMap[currentPoint.PIPoint.ID]],
+                            Time = currentPoint.Timestamp.UtcTime.Ticks,
+                            Value = Convert.ToDouble(currentPoint.Value),
+                            Flags = ConvertStatusFlags(currentPoint.Status)
+                        };
+                    }
+                }
+            }
+
+            private IEnumerable<AFValue> ReadData(AFTime startTime, AFTime endTime, PIPointList points)
+            {
+                try
+                {
+                    return new TimeSortedValueScanner
+                    {
+                        Points = points,
+                        StartTime = startTime,
+                        EndTime = endTime
+                        //DataReadExceptionHandler = ex => OnProcessException(MessageLevel.Warning, ex)
+                    }
+                    .Read();
+                }
+                catch
+                {
+                    // Removed cached data source on read failure
+                    if (DataSources.TryRemove(KeyName, out _))
+                        MetadataIDToPIPoint.Clear();
+
+                    throw;
+                }
+            }
+
+            private MeasurementStateFlags ConvertStatusFlags(AFValueStatus status)
+            {
+                MeasurementStateFlags flags = MeasurementStateFlags.Normal;
+
+                if ((status & AFValueStatus.Bad) > 0)
+                    flags |= MeasurementStateFlags.BadData;
+
+                if ((status & AFValueStatus.Questionable) > 0)
+                    flags |= MeasurementStateFlags.SuspectData;
+
+                if ((status & AFValueStatus.BadSubstituteValue) > 0)
+                    flags |= MeasurementStateFlags.CalculationError | MeasurementStateFlags.BadData;
+
+                if ((status & AFValueStatus.UncertainSubstituteValue) > 0)
+                    flags |= MeasurementStateFlags.CalculationError | MeasurementStateFlags.SuspectData;
+
+                if ((status & AFValueStatus.Substituted) > 0)
+                    flags |= MeasurementStateFlags.CalculatedValue;
+
+                return flags;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
+        /// <summary>
+        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage Index(string instanceName, string serverName)
+        {
+            if ((object)DataSource(instanceName, serverName) == null)
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        /// <summary>
+        /// Queries OSI-PI as a Grafana data source.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<List<TimeSeriesValues>> Query(string instanceName, string serverName, QueryRequest request, CancellationToken cancellationToken)
+        {
+            if (request.targets.FirstOrDefault()?.target == null)
+                return Task.FromResult(new List<TimeSeriesValues>());
+
+            return DataSource(instanceName, serverName)?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+        }
+
+        /// <summary>
+        /// Queries OSI-PI as a Grafana Metadata source.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<string> GetMetadata(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                if (string.IsNullOrWhiteSpace(request.target))
+                    return string.Empty;
+
+                DataTable table = new DataTable();
+                DataRow[] rows = DataSource(instanceName, serverName)?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+
+                if (rows.Length > 0)
+                    table = rows.CopyToDataTable();
+
+                return JsonConvert.SerializeObject(table);
+            },
+            cancellationToken);
+        }
+
+        /// <summary>
+        /// Search OSI-PI for a target.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public Task<string[]> Search(string instanceName, string serverName, Target request)
+        {
+            return DataSource(instanceName, serverName)?.Search(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search OSI-PI for a field.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public Task<string[]> SearchFields(string instanceName, string serverName, Target request)
+        {
+            return DataSource(instanceName, serverName)?.SearchFields(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search OSI-PI for a table.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public Task<string[]> SearchFilters(string instanceName, string serverName, Target request)
+        {
+            return DataSource(instanceName, serverName)?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Search OSI-PI for a field.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search target.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public Task<string[]> SearchOrderBys(string instanceName, string serverName, Target request)
+        {
+            return DataSource(instanceName, serverName)?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+        }
+
+        /// <summary>
+        /// Queries OSI-PI for annotations in a time-range (e.g., Alarms).
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Annotation request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public Task<List<AnnotationResponse>> Annotations(string instanceName, string serverName, AnnotationRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
+        }
+
+        /// <summary>
+        /// Gets OSI-PI data source for this Grafana adapter.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        private OSIPIDataSource DataSource(string instanceName, string serverName)
+        {
+            string keyName = $"{instanceName}.{serverName}";
+            OSIPIDataSource dataSource = DataSources.GetOrAdd(keyName, CreateNewDataSource);
+
+            if ((object)dataSource == null)
+            {
+                dataSource = CreateNewDataSource(keyName);
+
+                if ((object)dataSource != null)
+                    DataSources[keyName] = dataSource;
+            }
+
+            return dataSource;
+        }
+
+        private OSIPIDataSource CreateNewDataSource(string keyName)
+        {
+            string[] parts = keyName.Split('.');
+            string instanceName = parts[0];
+            string serverName = parts[1];
+
+            PIOutputAdapter adapterInstance = GetAdapterInstance(serverName);
+
+            if ((object)adapterInstance != null)
+            {
+                DataSet metadata = adapterInstance.DataSource;
+
+                OSIPIDataSource dataSource = new OSIPIDataSource
+                {
+                    InstanceName = instanceName,
+                    Metadata = metadata,
+                    KeyName = keyName,
+                    Connection = new PIConnection()
+                };
+
+                dataSource.Connection.ServerName = serverName;
+                dataSource.Connection.UserName = adapterInstance.UserName;
+                dataSource.Connection.Password = adapterInstance.Password;
+                dataSource.Connection.ConnectTimeout = adapterInstance.ConnectTimeout;
+                dataSource.Connection.Open();
+
+                // On successful connection, kick off a thread to start meta-data ID to OSI-PI point ID mapping
+                new Thread(_ =>
+                {
+                    foreach (DataRow row in metadata.Tables["ActiveMeasurements"].Rows)
+                    {
+                        string[] idParts = row["ID"].ToString().Split(':');
+
+                        if (idParts.Length != 2)
+                            continue;
+
+                        ulong metadataID = ulong.Parse(idParts[1]);
+
+                        if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
+                            if (TryFindPIPoint(dataSource.Connection, row["PointTag"].ToString(), row["AlternateTag"].ToString(), out point))
+                                MetadataIDToPIPoint[metadataID] = point;
+                    }
+                })
+                .Start();
+
+                return dataSource;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        private static readonly ConcurrentDictionary<string, OSIPIDataSource> DataSources = new ConcurrentDictionary<string, OSIPIDataSource>();
+        private static readonly ConcurrentDictionary<ulong, PIPoint> MetadataIDToPIPoint = new ConcurrentDictionary<ulong, PIPoint>();
+        
+        // Static Methods
+        private static PIOutputAdapter GetAdapterInstance(string serverName)
+        {
+            if (!string.IsNullOrWhiteSpace(serverName) && PIOutputAdapter.Instances.TryGetValue(serverName, out PIOutputAdapter adapterInstance))
+                return adapterInstance;
+
+            if (PIOutputAdapter.Instances.Count > 0)
+                return PIOutputAdapter.Instances.First().Value;
+
+            return null;
+        }
+
+        private static bool TryFindPIPoint(PIConnection connection, DataSet metadata, string pointTag, out PIPoint point)
+        {
+            DataRow[] rows = metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{pointTag}'");
+
+            if (rows.Length <= 0)
+            {
+                point = null;
+                return false;
+            }
+
+            return TryFindPIPoint(connection, pointTag, rows[0]["AlternateTag"].ToString(), out point);
+        }
+
+        private static bool TryFindPIPoint(PIConnection connection, string pointTag, string alternateTag, out PIPoint point)
+        {
+            return PIPoint.TryFindPIPoint(connection.Server, string.IsNullOrWhiteSpace(alternateTag) ? pointTag : alternateTag, out point);
+        }
+
+        #endregion
+    }
+}

@@ -297,6 +297,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UI", "Librari
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.eDNAGrafanaController", "Libraries\Adapters\openHistorian.eDNAGrafanaController\openHistorian.eDNAGrafanaController.csproj", "{80459642-C42B-4E52-AC5C-BDD1181F6A1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.OSIPIGrafanaController", "Libraries\Adapters\openHistorian.OSIPIGrafanaController\openHistorian.OSIPIGrafanaController.csproj", "{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -658,6 +660,18 @@ Global
 		{80459642-C42B-4E52-AC5C-BDD1181F6A1E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80459642-C42B-4E52-AC5C-BDD1181F6A1E}.Release|x86.ActiveCfg = Release|Any CPU
 		{80459642-C42B-4E52-AC5C-BDD1181F6A1E}.Release|x86.Build.0 = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Debug|x86.Build.0 = Debug|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Mono|x86.ActiveCfg = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Mono|x86.Build.0 = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Release|x86.ActiveCfg = Release|Any CPU
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -713,6 +727,7 @@ Global
 		{0BAE63D0-6B18-4E3B-A5E7-810CD6D13083} = {B21EB730-5DEC-431E-8366-BB3970140908}
 		{7FB4530A-3641-4A2E-B818-D3058A2F18EF} = {B21EB730-5DEC-431E-8366-BB3970140908}
 		{80459642-C42B-4E52-AC5C-BDD1181F6A1E} = {550621C3-C903-4405-971A-DC4BAA286BA0}
+		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806} = {550621C3-C903-4405-971A-DC4BAA286BA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA73B94E-45F7-4272-BCA2-4B4386CC92B2}
