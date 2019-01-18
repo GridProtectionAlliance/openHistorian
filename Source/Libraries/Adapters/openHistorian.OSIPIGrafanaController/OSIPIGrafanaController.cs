@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GSF;
 using GSF.TimeSeries;
 using Newtonsoft.Json;
 using OSIsoft.AF.Asset;
@@ -60,6 +61,7 @@ namespace openHistorian.OSIPIGrafanaController
         {
             #region [ Members ]
 
+            private readonly long m_baseTicks = UnixTimeTag.BaseTicks.Value;
             public string KeyName;
             public PIConnection Connection;
 
@@ -110,7 +112,7 @@ namespace openHistorian.OSIPIGrafanaController
                         yield return new DataSourceValue
                         {
                             Target = targetMap[idMap[currentPoint.PIPoint.ID]],
-                            Time = currentPoint.Timestamp.UtcTime.Ticks,
+                            Time = (currentPoint.Timestamp.UtcTime.Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
                             Value = Convert.ToDouble(currentPoint.Value),
                             Flags = ConvertStatusFlags(currentPoint.Status)
                         };
@@ -370,7 +372,7 @@ namespace openHistorian.OSIPIGrafanaController
 
         private static readonly ConcurrentDictionary<string, OSIPIDataSource> DataSources = new ConcurrentDictionary<string, OSIPIDataSource>();
         private static readonly ConcurrentDictionary<ulong, PIPoint> MetadataIDToPIPoint = new ConcurrentDictionary<ulong, PIPoint>();
-        
+
         // Static Methods
         private static PIOutputAdapter GetAdapterInstance(string serverName)
         {
