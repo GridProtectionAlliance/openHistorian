@@ -296,6 +296,11 @@
             Sends updated metadata to PI.
             </summary>
         </member>
+        <member name="F:PIAdapters.PIOutputAdapter.Instances">
+            <summary>
+            Accesses local output adapter instances (normally only one).
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
             <summary>
             Retrieves historical OSI-PI data using AF-SDK.
