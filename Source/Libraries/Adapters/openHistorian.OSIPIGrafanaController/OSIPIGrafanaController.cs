@@ -45,8 +45,28 @@ namespace openHistorian.OSIPIGrafanaController
 {
     /// <summary>
     /// Represents a REST based API for a simple JSON based Grafana data source for OSIsoft PI,
-    /// accessible from Grafana data source as http://localhost:8180/api/pigrafana
+    /// accessible from Grafana data source as http://localhost:8180/api/pigrafana/{instance}/{serverName}
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This adapter assumes that a PIOutputAdapter is being used to synchronize metadata and send data
+    /// to PI, this way the adapter does not query the PI database for its metadata - which can be slow.
+    /// Instead the adapter uses the locally accessible cached metadata, which is synchronized with PI,
+    /// for Grafana queries. Because of this, the OSIPIGrafanaController is linked to its parent
+    /// PIOutputAdapter instance by the "ServerName" connection string parameter, which becomes a query
+    /// parameter of the OSIPIGrafanaController URL route template.
+    /// </para>
+    /// <para>
+    /// One benefit of this pass-through architecture means that the openHistorian Grafana interface will
+    /// be utilized which includes all the time-series functions provided by the GrafanaDataSourceBase:
+    /// https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md
+    /// </para>
+    /// <para>
+    /// Future versions of this adapter could try querying OSI-PI metadata directly so that an independent,
+    /// i.e., a PI instance that is not being fed by PIOutputAdapter, could be used. However, the OSI-PI
+    /// Grafana adapter that uses PIWebAPI is already available for this purpose.
+    /// </para>
+    /// </remarks>
     public class OSIPIGrafanaController : ApiController
     {
         #region [ Members ]
@@ -62,7 +82,20 @@ namespace openHistorian.OSIPIGrafanaController
             #region [ Members ]
 
             private readonly long m_baseTicks = UnixTimeTag.BaseTicks.Value;
+
+            /// <summary>
+            /// KeyName for data source cache.
+            /// </summary>
             public string KeyName;
+
+            /// <summary>
+            /// Tag name prefix remove count.
+            /// </summary>
+            public int PrefixRemoveCount;
+
+            /// <summary>
+            /// Current OSI-PI connection.
+            /// </summary>
             public PIConnection Connection;
 
             #endregion
@@ -89,7 +122,7 @@ namespace openHistorian.OSIPIGrafanaController
                     string pointTag = target.Value;
 
                     if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
-                        if (TryFindPIPoint(Connection, Metadata, pointTag, out point))
+                        if (TryFindPIPoint(Connection, Metadata, GetPITagName(pointTag, PrefixRemoveCount), out point))
                             MetadataIDToPIPoint[metadataID] = point;
 
                     if ((object)point != null)
@@ -302,15 +335,16 @@ namespace openHistorian.OSIPIGrafanaController
         private OSIPIDataSource DataSource(string instanceName, string serverName)
         {
             string keyName = $"{instanceName}.{serverName}";
-            OSIPIDataSource dataSource = DataSources.GetOrAdd(keyName, CreateNewDataSource);
 
-            if ((object)dataSource == null)
-            {
-                dataSource = CreateNewDataSource(keyName);
+            // Don't GetOrAdd here - don't want a possible cached Null value
+            if (DataSources.TryGetValue(keyName, out OSIPIDataSource dataSource))
+                return dataSource;
 
-                if ((object)dataSource != null)
-                    DataSources[keyName] = dataSource;
-            }
+            // If PI is not connected, keep trying to connect by creating a new data source
+            dataSource = CreateNewDataSource(keyName);
+
+            if ((object)dataSource != null)
+                DataSources[keyName] = dataSource;
 
             return dataSource;
         }
@@ -321,49 +355,46 @@ namespace openHistorian.OSIPIGrafanaController
             string instanceName = parts[0];
             string serverName = parts[1];
 
-            PIOutputAdapter adapterInstance = GetAdapterInstance(serverName);
+            if (!PIOutputAdapter.Instances.TryGetValue(serverName, out PIOutputAdapter adapterInstance) || !adapterInstance.Initialized || adapterInstance.IsDisposed)
+                return null;
 
-            if ((object)adapterInstance != null)
+            DataSet metadata = adapterInstance.DataSource;
+
+            OSIPIDataSource dataSource = new OSIPIDataSource
             {
-                DataSet metadata = adapterInstance.DataSource;
+                InstanceName = instanceName,
+                Metadata = metadata,
+                KeyName = keyName,
+                PrefixRemoveCount = adapterInstance.TagNamePrefixRemoveCount,
+                Connection = new PIConnection()
+            };
 
-                OSIPIDataSource dataSource = new OSIPIDataSource
+            dataSource.Connection.ServerName = serverName;
+            dataSource.Connection.UserName = adapterInstance.UserName;
+            dataSource.Connection.Password = adapterInstance.Password;
+            dataSource.Connection.ConnectTimeout = adapterInstance.ConnectTimeout;
+            dataSource.Connection.Open();
+
+            // On successful connection, kick off a thread to start meta-data ID to OSI-PI point ID mapping
+            new Thread(_ =>
+            {
+                foreach (DataRow row in metadata.Tables["ActiveMeasurements"].Rows)
                 {
-                    InstanceName = instanceName,
-                    Metadata = metadata,
-                    KeyName = keyName,
-                    Connection = new PIConnection()
-                };
+                    string[] idParts = row["ID"].ToString().Split(':');
 
-                dataSource.Connection.ServerName = serverName;
-                dataSource.Connection.UserName = adapterInstance.UserName;
-                dataSource.Connection.Password = adapterInstance.Password;
-                dataSource.Connection.ConnectTimeout = adapterInstance.ConnectTimeout;
-                dataSource.Connection.Open();
+                    if (idParts.Length != 2)
+                        continue;
 
-                // On successful connection, kick off a thread to start meta-data ID to OSI-PI point ID mapping
-                new Thread(_ =>
-                {
-                    foreach (DataRow row in metadata.Tables["ActiveMeasurements"].Rows)
-                    {
-                        string[] idParts = row["ID"].ToString().Split(':');
+                    ulong metadataID = ulong.Parse(idParts[1]);
 
-                        if (idParts.Length != 2)
-                            continue;
+                    if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
+                        if (TryFindPIPoint(dataSource.Connection, GetPITagName(row["PointTag"].ToString(), dataSource.PrefixRemoveCount), row["AlternateTag"].ToString(), out point))
+                            MetadataIDToPIPoint[metadataID] = point;
+                }
+            })
+            .Start();
 
-                        ulong metadataID = ulong.Parse(idParts[1]);
-
-                        if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
-                            if (TryFindPIPoint(dataSource.Connection, row["PointTag"].ToString(), row["AlternateTag"].ToString(), out point))
-                                MetadataIDToPIPoint[metadataID] = point;
-                    }
-                })
-                .Start();
-
-                return dataSource;
-            }
-
-            return null;
+            return dataSource;
         }
 
         #endregion
@@ -374,17 +405,6 @@ namespace openHistorian.OSIPIGrafanaController
         private static readonly ConcurrentDictionary<ulong, PIPoint> MetadataIDToPIPoint = new ConcurrentDictionary<ulong, PIPoint>();
 
         // Static Methods
-        private static PIOutputAdapter GetAdapterInstance(string serverName)
-        {
-            if (!string.IsNullOrWhiteSpace(serverName) && PIOutputAdapter.Instances.TryGetValue(serverName, out PIOutputAdapter adapterInstance))
-                return adapterInstance;
-
-            if (PIOutputAdapter.Instances.Count > 0)
-                return PIOutputAdapter.Instances.First().Value;
-
-            return null;
-        }
-
         private static bool TryFindPIPoint(PIConnection connection, DataSet metadata, string pointTag, out PIPoint point)
         {
             DataRow[] rows = metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{pointTag}'");
@@ -401,6 +421,24 @@ namespace openHistorian.OSIPIGrafanaController
         private static bool TryFindPIPoint(PIConnection connection, string pointTag, string alternateTag, out PIPoint point)
         {
             return PIPoint.TryFindPIPoint(connection.Server, string.IsNullOrWhiteSpace(alternateTag) ? pointTag : alternateTag, out point);
+        }
+
+        private static string GetPITagName(string tagName, int prefixRemoveCount)
+        {
+            if (prefixRemoveCount < 1)
+                return tagName;
+
+            for (int i = 0; i < prefixRemoveCount; i++)
+            {
+                int prefixIndex = tagName.IndexOf('!');
+
+                if (prefixIndex > -1 && prefixIndex + 1 < tagName.Length)
+                    tagName = tagName.Substring(prefixIndex + 1);
+                else
+                    break;
+            }
+
+            return tagName;
         }
 
         #endregion
