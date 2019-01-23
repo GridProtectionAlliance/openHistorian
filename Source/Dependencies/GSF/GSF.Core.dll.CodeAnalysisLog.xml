@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#.cctor()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message Id="System.Collections.Generic.Dictionary`2&lt;System.StringComparison,System.StringComparer&gt;.set_Item(System.StringComparison,System.StringComparer)" TypeName="UseOrdinalStringComparison" Category="Microsoft.Globalization" CheckId="CA1309" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message Id="System.Collections.Generic.Dictionary`2&lt;System.StringComparison,System.StringComparer&gt;.set_Item(System.StringComparison,System.StringComparer)" TypeName="UseOrdinalStringComparison" Category="Microsoft.Globalization" CheckId="CA1309" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="StringComparer" Certainty="75" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="108">'StringExtensions.StringExtensions()' passes 'StringComparer.InvariantCulture' as the 'StringComparer' parameter to 'Dictionary&lt;StringComparison, StringComparer&gt;.this.set(StringComparison, StringComparer)'. To perform a non-linguistic comparison, specify 'StringComparer.Ordinal' or 'StringComparer.OrdinalIgnoreCase' instead.</Issue>
              <Issue Name="StringComparer" Certainty="75" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="108">'StringExtensions.StringExtensions()' passes 'StringComparer.InvariantCultureIgnoreCase' as the 'StringComparer' parameter to 'Dictionary&lt;StringComparison, StringComparer&gt;.this.set(StringComparison, StringComparer)'. To perform a non-linguistic comparison, specify 'StringComparer.Ordinal' or 'StringComparer.OrdinalIgnoreCase' instead.</Issue>
              <Issue Name="StringComparison" Certainty="75" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="StringExtensions.cs" Line="108">'StringExtensions.StringExtensions()' passes 'StringComparison.InvariantCulture' as the 'StringComparison' parameter to 'Dictionary&lt;StringComparison, StringComparer&gt;.this.set(StringComparison, StringComparer)'. To perform a non-linguistic comparison, specify 'StringComparison.Ordinal' or 'StringComparison.OrdinalIgnoreCase' instead.</Issue>
@@ -30,17 +30,17 @@
          <Members>
           <Member Name="#Close()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="OutsideDispose" Certainty="75" Level="CriticalWarning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="BulkDataOperationBase.cs" Line="357">'BulkDataOperationBase.Close()' calls 'GC.SuppressFinalize(object)', a method that is typically only called within an implementation of 'IDisposable.Dispose'. Refer to the IDisposable pattern for more information.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#System.IDisposable.Dispose()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="NotCalled" Certainty="75" Level="CriticalWarning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="BulkDataOperationBase.cs" Line="365">Change 'BulkDataOperationBase.IDisposable.Dispose()' to call 'GC.SuppressFinalize(object)'. This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.</Issue>
             </Message>
-            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="DisposeImplementation" Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="BulkDataOperationBase.cs" Line="365">Modify 'BulkDataOperationBase.IDisposable.Dispose()' so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Issue>
              <Issue Name="RenameDispose" Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="BulkDataOperationBase.cs" Line="365">Rename 'BulkDataOperationBase.IDisposable.Dispose()' to 'Dispose' and ensure that it is declared as public and sealed.</Issue>
             </Message>
@@ -52,14 +52,14 @@
          <Members>
           <Member Name="#ExecuteInserts(GSF.Data.Table,GSF.Data.Table)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="DataInserter.cs" Line="459">'DataInserter.ExecuteInserts(Table, Table)' has a cyclomatic complexity of 48. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#InsertDestinationRecord(GSF.Data.Table,GSF.Data.Fields,System.String,System.String,System.String,System.Boolean,GSF.Data.Table,GSF.Data.Field,System.Boolean,System.Data.IDataReader)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="DataInserter.cs" Line="679">'DataInserter.InsertDestinationRecord(Table, Fields, string, string, string, bool, Table, Field, bool, IDataReader)' has a cyclomatic complexity of 36. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -70,7 +70,7 @@
          <Members>
           <Member Name="#ExecuteUpdates(GSF.Data.Table,GSF.Data.Table)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="DataUpdater.cs" Line="162">'DataUpdater.ExecuteUpdates(Table, Table)' has a cyclomatic complexity of 27. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -79,7 +79,7 @@
         </Type>
         <Type Name="Field" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+          <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
            <Issue Name="Equals" Certainty="75" Level="Error">'Field' should override Equals since it implements IComparable.</Issue>
            <Issue Name="Operator" Certainty="75" Level="Error">'Field' should define operator '!=' since it implements IComparable.</Issue>
            <Issue Name="Operator" Certainty="75" Level="Error">'Field' should define operator '&lt;' since it implements IComparable.</Issue>
@@ -90,7 +90,7 @@
          <Members>
           <Member Name="#CompareTo(System.Object)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="589">'obj', a parameter, is cast to type 'Field' multiple times in method 'Field.CompareTo(object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction.</Issue>
             </Message>
            </Messages>
@@ -99,7 +99,7 @@
            <Accessors>
             <Accessor Name="#get_SQLEncodedValue()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
              <Messages>
-              <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+              <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
                <Issue Certainty="90" Level="CriticalWarning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="601">'Field.SQLEncodedValue.get()' has a cyclomatic complexity of 58. Rewrite or refactor the method to reduce complexity to 25.</Issue>
               </Message>
              </Messages>
@@ -108,7 +108,7 @@
           </Member>
           <Member Name="#Type" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="PropertyNamesShouldNotMatchGetMethods" Category="Microsoft.Naming" CheckId="CA1721" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="PropertyNamesShouldNotMatchGetMethods" Category="Microsoft.Naming" CheckId="CA1721" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="BaseType" Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="211">The property name 'Field.Type' is confusing given the existence of inherited method 'object.GetType()'. Rename or remove this property.</Issue>
             </Message>
            </Messages>
@@ -117,7 +117,7 @@
         </Type>
         <Type Name="ForeignKeyFields" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="CollectionsShouldImplementGenericInterface" Category="Microsoft.Design" CheckId="CA1010" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+          <Message TypeName="CollectionsShouldImplementGenericInterface" Category="Microsoft.Design" CheckId="CA1010" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
            <Issue Certainty="60" Level="Error">'ForeignKeyFields' appears to be a non-generic, strongly typed collection. Add an implementation to the instance of IEnumerable&lt;T&gt; where T is the underlying element type of 'ForeignKeyFields'.</Issue>
           </Message>
          </Messages>
@@ -126,10 +126,10 @@
          <Members>
           <Member Name="#AnalyzeOleDbSchema()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Method" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="2763">'Schema.AnalyzeOleDbSchema()' is coupled with 31 different types from 8 different namespaces. Rewrite or refactor the method to decrease its class coupling, or consider moving the method to one of the other types it is tightly coupled with. A class coupling above 40 indicates poor maintainability, a class coupling between 40 and 30 indicates moderate maintainability, and a class coupling below 30 indicates good maintainability.</Issue>
             </Message>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="2808">The query string passed to 'OleDbCommand.OleDbCommand(string, OleDbConnection)' in 'Schema.AnalyzeOleDbSchema()' could contain the following variables 'table.FullName'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="2815">The query string passed to 'OleDbCommand.OleDbCommand(string, OleDbConnection)' in 'Schema.AnalyzeOleDbSchema()' could contain the following variables 'table.FullName'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="2801">The query string passed to 'OleDbCommand.OleDbCommand(string, OleDbConnection)' in 'Schema.AnalyzeOleDbSchema()' could contain the following variables 'table.Name'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
@@ -140,7 +140,7 @@
         </Type>
         <Type Name="Table" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+          <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
            <Issue Name="Equals" Certainty="75" Level="Error">'Table' should override Equals since it implements IComparable.</Issue>
            <Issue Name="Operator" Certainty="75" Level="Error">'Table' should define operator '!=' since it implements IComparable.</Issue>
            <Issue Name="Operator" Certainty="75" Level="Error">'Table' should define operator '&lt;' since it implements IComparable.</Issue>
@@ -151,21 +151,21 @@
          <Members>
           <Member Name="#CalculateRowCount()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="2190">The query string passed to 'IDbCommand.CommandText.set(string)' in 'Table.CalculateRowCount()' could contain the following variables 'this.SQLEscapedName'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#CompareTo(System.Object)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="Parameter" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="1994">'obj', a parameter, is cast to type 'Table' multiple times in method 'Table.CompareTo(object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant isint instruction.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#Type" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="PropertyNamesShouldNotMatchGetMethods" Category="Microsoft.Naming" CheckId="CA1721" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="PropertyNamesShouldNotMatchGetMethods" Category="Microsoft.Naming" CheckId="CA1721" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="BaseType" Certainty="95" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data" File="Schema.cs" Line="1777">The property name 'Table.Type' is confusing given the existence of inherited method 'object.GetType()'. Rename or remove this property.</Issue>
             </Message>
            </Messages>
@@ -174,14 +174,14 @@
         </Type>
         <Type Name="Tables+ReferentialOrderComparer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+          <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
            <Issue Certainty="90" Level="Error">Do not nest type 'Tables.ReferentialOrderComparer'. Alternatively, change its accessibility so that it is not externally visible.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#Default" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="25" Level="Error">Remove the read-only designation from 'Tables.ReferentialOrderComparer.Default' or change the field to one that is an immutable reference type. If the reference type 'Tables.ReferentialOrderComparer' is, in fact, immutable, exclude this message.</Issue>
             </Message>
            </Messages>
@@ -190,7 +190,7 @@
         </Type>
         <Type Name="TableType" Kind="Enum" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="FlagsEnumsShouldHavePluralNames" Category="Microsoft.Naming" CheckId="CA1714" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+          <Message TypeName="FlagsEnumsShouldHavePluralNames" Category="Microsoft.Naming" CheckId="CA1714" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
            <Issue Certainty="75" Level="Error">If enumeration name 'TableType' is singular, change it to a plural form.</Issue>
           </Message>
          </Messages>
@@ -201,21 +201,21 @@
        <Types>
         <Type Name="TableOperations`1" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+          <Message TypeName="AvoidExcessiveClassCoupling" Category="Microsoft.Maintainability" CheckId="CA1506" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
            <Issue Name="Type" Certainty="75" Level="Warning">'TableOperations&lt;T&gt;' is coupled with 90 different types from 18 different namespaces. Rewrite or refactor this class's methods to decrease its class coupling, or consider moving some of the class's methods to some of the other types it is tightly coupled with. A class coupling above 95 indicates poor maintainability, a class coupling between 95 and 80 indicates moderate maintainability, and a class coupling below 80 indicates good maintainability.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#.cctor()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidUnmaintainableCode" Category="Microsoft.Maintainability" CheckId="CA1505" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Name="Method" Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data\Model" File="TableOperations.cs" Line="2220">'TableOperations&lt;T&gt;.TableOperations()' has a maintainability index of 20. Rewrite or refactor the method to increase its maintainability index (MI). An MI below 10 indicates poor maintainability, an MI between 10 and 20 indicates moderate maintainability, and an MI above 20 indicates good maintainability.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,GSF.Data.Model.RecordRestriction)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Data\Model" File="TableOperations.cs" Line="846">'TableOperations&lt;T&gt;.QueryRecords(string, bool, int, int, RecordRestriction)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
@@ -228,7 +228,7 @@
        <Types>
         <Type Name="LogFileWriterInMemory" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="DependsOnFix">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="DependsOnFix">
            <Issue Name="DependsOnFix" Certainty="95" Level="CriticalError">Implement IDisposable on 'LogFileWriterInMemory' because it creates members of the following IDisposable types: 'MemoryStream', 'DeflateStream'. If 'LogFileWriterInMemory' has previously shipped, adding new members that implement IDisposable to this type is considered a breaking change to existing consumers.</Issue>
           </Message>
          </Messages>
@@ -241,77 +241,77 @@
          <Members>
           <Member Name="#ECDSA_256_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_256_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ECDSA_384_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_384_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#ECDSA_521_SHA2_512" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.ECDSA_521_SHA2_512'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_1024_SHA_1" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_1024_SHA_1'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_15360_SHA2_512" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_15360_SHA2_512'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_2048_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_2048_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_3072_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_3072_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_3072_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_3072_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_4096_SHA2_256" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_4096_SHA2_256'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_4096_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_4096_SHA2_384'.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#RSA_7680_SHA2_384" Kind="Field" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="Breaking">
+            <Message TypeName="IdentifiersShouldNotContainUnderscores" Category="Microsoft.Naming" CheckId="CA1707" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="Breaking">
              <Issue Name="Member" Certainty="95" Level="Error">Remove the underscores from member name 'CertificateSigningMode.RSA_7680_SHA2_384'.</Issue>
             </Message>
            </Messages>
@@ -320,7 +320,7 @@
         </Type>
         <Type Name="DerWriter" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'DerWriter' because it creates members of the following IDisposable types: 'MemoryStream'.</Issue>
           </Message>
          </Messages>
@@ -329,7 +329,7 @@
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="231">'X509CertificateGenerator.ECDSAMode' contains field 'X509CertificateGenerator.ECDSAMode.m_cng' that is of IDisposable type: 'ECDsaCng'. Change the Dispose method on 'X509CertificateGenerator.ECDSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
@@ -340,10 +340,10 @@
          <Members>
           <Member Name="#Dispose()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message Id="m_cng" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="106">'X509CertificateGenerator.RSAMode' contains field 'X509CertificateGenerator.RSAMode.m_cng' that is of IDisposable type: 'RSACng'. Change the Dispose method on 'X509CertificateGenerator.RSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
-            <Message Id="m_csp" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-22 19:07:15Z" FixCategory="NonBreaking">
+            <Message Id="m_csp" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-01-23 05:00:52Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Security\Cryptography\X509" File="X509CertificateGenerator.cs" Line="106">'X509CertificateGenerator.RSAMode' contains field 'X509CertificateGenerator.RSAMode.m_csp' that is of IDisposable type: 'RSACryptoServiceProvider'. Change the Dispose method on 'X509CertificateGenerator.RSAMode' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
