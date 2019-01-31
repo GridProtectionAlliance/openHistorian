@@ -7796,6 +7796,16 @@
             This class defines a common set of functionality that any bulk data operation implementation can use 
             </summary>
         </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_fromSchema">
+            <summary>
+            From schema.
+            </summary>
+        </member>
+        <member name="F:GSF.Data.BulkDataOperationBase.m_toSchema">
+            <summary>
+            To schema.
+            </summary>
+        </member>
         <member name="F:GSF.Data.BulkDataOperationBase.m_overallProgress">
             <summary>
             Implementer can use this variable to track overall progress 
@@ -7926,6 +7936,11 @@
             Analyze data schema before data processing
             </summary>
         </member>
+        <member name="M:GSF.Data.BulkDataOperationBase.Execute">
+            <summary>
+            Executes bulk data operation.
+            </summary>
+        </member>
         <member name="M:GSF.Data.BulkDataOperationBase.OnTableProgress(System.String,System.Boolean,System.Int32,System.Int32)">
             <summary>
             Raise an event if table change in data processing
@@ -7962,6 +7977,26 @@
             This class defines a common set of functionality that any data operation implementation can use 
             </summary>
         </member>
+        <member name="E:GSF.Data.DataDeleter.Disposed">
+            <summary>
+            Disposed event.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataDeleter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataDeleter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataDeleter.#ctor(GSF.Data.Schema,GSF.Data.Schema)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataDeleter"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Data.DataDeleter.Close">
             <summary>
             Close
@@ -7982,6 +8017,46 @@
         <member name="T:GSF.Data.DataInserter">
             <summary>
             This class defines a common set of functionality that any data operation implementation can use 
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataInserter.TableCleared">
+            <summary>
+            Table cleared event.
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataInserter.BulkInsertExecuting">
+            <summary>
+            Bulk-insert executing event.
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataInserter.BulkInsertCompleted">
+            <summary>
+            Bulk-insert completed event.
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataInserter.BulkInsertException">
+            <summary>
+            Bulk-insert exception event.
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataInserter.Disposed">
+            <summary>
+            Disposed event.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataInserter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataInserter"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataInserter.#ctor(GSF.Data.Schema,GSF.Data.Schema)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataInserter"/>.
             </summary>
         </member>
         <member name="P:GSF.Data.DataInserter.AttemptBulkInsert">
@@ -8080,6 +8155,26 @@
         <member name="T:GSF.Data.DataUpdater">
             <summary>
             This class defines a common set of functionality that any data operation implementation can use 
+            </summary>
+        </member>
+        <member name="E:GSF.Data.DataUpdater.Disposed">
+            <summary>
+            Disposed event.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataUpdater"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataUpdater"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.DataUpdater.#ctor(GSF.Data.Schema,GSF.Data.Schema)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.DataUpdater"/>.
             </summary>
         </member>
         <member name="M:GSF.Data.DataUpdater.Close">
@@ -10813,6 +10908,13 @@
             Represents a database field.
             </summary>
         </member>
+        <member name="M:GSF.Data.Field.#ctor(System.String,System.Data.OleDb.OleDbType)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Field"/>.
+            </summary>
+            <param name="Name">Field name.</param>
+            <param name="Type">OLEDB data type for field.</param>
+        </member>
         <member name="P:GSF.Data.Field.Name">
             <summary>
             Get Field Name 
@@ -11120,6 +11222,11 @@
             </summary>
             <param name="field">Field to remove.</param>
         </member>
+        <member name="M:GSF.Data.Fields.Clear">
+            <summary>
+            Clears the field list.
+            </summary>
+        </member>
         <member name="M:GSF.Data.Fields.GetEnumerator">
             <summary>
             Get <see cref="T:System.Collections.Generic.IEnumerator`1"/> type of <see cref="T:GSF.Data.Field"/> list.
@@ -11143,6 +11250,21 @@
         <member name="T:GSF.Data.Table">
             <summary>
             Get data table information for data processing
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Table"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Table"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.#ctor(System.String,System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Table"/>.
             </summary>
         </member>
         <member name="P:GSF.Data.Table.Fields">
@@ -11300,10 +11422,17 @@
         </member>
         <member name="M:GSF.Data.Table.IsReferencedBy(GSF.Data.Table)">
             <summary>
-            Check for table reference
+            Check for direct table reference by <paramref name="otherTable"/>.
             </summary>
-            <param name="otherTable"></param>
-            <returns></returns>
+            <param name="otherTable">Table to check for relation.</param>
+            <returns><c>true</c> if directly referenced; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Data.Table.IsReferencedVia(GSF.Data.Table)">
+            <summary>
+            Checks for indirect table reference through <paramref name="otherTable"/>.
+            </summary>
+            <param name="otherTable">Table to check for relation.</param>
+            <returns><c>true</c> if indirectly referenced; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Data.Table.DefinePrimaryKey(System.String,System.Int32,System.String)">
             <summary>
@@ -11327,10 +11456,80 @@
             <param name="foreignKeyDeleteRule"></param>
             <returns></returns>
         </member>
+        <member name="M:GSF.Data.Table.ReevalulateIdentitySQL">
+            <summary>
+            Re-evaluates identity SQL for database type.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Table.CalculateRowCount">
+            <summary>
+            Calculates row count.
+            </summary>
+        </member>
         <member name="T:GSF.Data.Tables">
             <summary>
             List of <see cref="T:GSF.Data.Table"/> collection
             </summary>
+        </member>
+        <member name="P:GSF.Data.Tables.Count">
+            <summary>
+            Gets table count.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Tables.Parent">
+            <summary>
+            Gets or sets parent <see cref="T:GSF.Data.Schema"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Tables.Add(GSF.Data.Table)">
+            <summary>
+            Adds new table.
+            </summary>
+            <param name="table">Table to add.</param>
+        </member>
+        <member name="M:GSF.Data.Tables.Remove(GSF.Data.Table)">
+            <summary>
+            Removes table.
+            </summary>
+            <param name="table">Table to remove.</param>
+        </member>
+        <member name="M:GSF.Data.Tables.Clear">
+            <summary>
+            Clears all tables.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Tables.Item(System.Int32)">
+            <summary>
+            Gets table at index.
+            </summary>
+            <param name="index">Index of table</param>
+            <returns>Table at index.</returns>
+        </member>
+        <member name="P:GSF.Data.Tables.Item(System.String)">
+            <summary>
+            Gets table by name.
+            </summary>
+            <param name="name">Table name.</param>
+            <returns>Table with specified name.</returns>
+        </member>
+        <member name="M:GSF.Data.Tables.FindByMapName(System.String)">
+            <summary>
+            Finds table by mapped named.
+            </summary>
+            <param name="mapName">Mapped table name.</param>
+            <returns>Table with mapped name.</returns>
+        </member>
+        <member name="M:GSF.Data.Tables.GetEnumerator">
+            <summary>
+            Gets table enumerator.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Data.Tables.GetList">
+            <summary>
+            Gets table field list.
+            </summary>
+            <returns>Comma separated field list.</returns>
         </member>
         <member name="T:GSF.Data.Tables.ReferentialOrderComparer">
             <summary>
@@ -11361,6 +11560,21 @@
         <member name="T:GSF.Data.Schema">
             <summary>
             Get information about database schema
+            </summary>
+        </member>
+        <member name="F:GSF.Data.Schema.NoRestriction">
+            <summary>
+            Defines a table filter that specifies no restrictions.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Schema.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Schema"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Schema.#ctor(System.String,GSF.Data.TableType,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Schema"/>.
             </summary>
         </member>
         <member name="P:GSF.Data.Schema.Tables">
@@ -11426,6 +11640,23 @@
             <summary>
             Close <see cref="T:System.Data.IDbConnection"/> 
             </summary>
+        </member>
+        <member name="M:GSF.Data.Schema.OpenConnection(System.String)">
+            <summary>
+            Opens an ADO connection.
+            </summary>
+            <param name="connectionString">ADO connection string.</param>
+            <returns>Opened connection.</returns>
+        </member>
+        <member name="M:GSF.Data.Schema.OpenConnection(System.String,GSF.Data.DatabaseType@,GSF.Data.Schema@,System.Boolean@)">
+            <summary>
+            Opens an ADO connection.
+            </summary>
+            <param name="connectionString">ADO connection string.</param>
+            <param name="databaseType">Database type.</param>
+            <param name="deserializedSchema">The deserialized schema.</param>
+            <param name="isAdoConnection">Flag that determines if connection is ADO.</param>
+            <returns>Opened connection.</returns>
         </member>
         <member name="T:GSF.Data.DatabaseType">
             <summary>
@@ -14790,6 +15021,12 @@
             Writes the specified log to the file
             </summary>
             <param name="log"></param>
+        </member>
+        <member name="M:GSF.Diagnostics.LogFileWriterInMemory.ToByteArray">
+            <summary>
+            Returns a byte array of the log zip stream.
+            </summary>
+            <returns>Byte array of the log zip stream.</returns>
         </member>
         <member name="T:GSF.Diagnostics.DisposableLoggingClassBase">
             <summary>
