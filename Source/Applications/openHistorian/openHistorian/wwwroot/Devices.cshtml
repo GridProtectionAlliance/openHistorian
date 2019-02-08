@@ -90,7 +90,7 @@
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 @section Scripts {
     <script>
-        @Raw(dataContext.RenderViewModelConfiguration<Device, DataHub>(ViewBag, "Acronym"))
+        @Raw(dataContext.RenderViewModelConfiguration<Device, DataHub>(ViewBag, "Acronym", null, Model.Global.NodeID))
         
         var modbusProtocolID = 0;
         

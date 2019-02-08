@@ -176,21 +176,39 @@ namespace openHistorian
         public int GetComtradeProtocolID() => ComtradeProtocolID;
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
-        public int QueryDeviceCount(string filterText)
+        public int QueryDeviceCount(Guid nodeID, string filterText)
         {
-            return DataContext.Table<Device>().QueryRecordCount(filterText);
+            TableOperations<Device> deviceTable = DataContext.Table<Device>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0}", nodeID) +
+                deviceTable.GetSearchRestriction(filterText);
+
+            return deviceTable.QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(Device), RecordOperation.QueryRecords)]
-        public IEnumerable<Device> QueryDevices(string sortField, bool ascending, int page, int pageSize, string filterText)
-        {
-            return DataContext.Table<Device>().QueryRecords(sortField, ascending, page, pageSize, filterText);
-        }
-
-        public IEnumerable<Device> QueryEnabledDevices(int limit, string filterText)
+        public IEnumerable<Device> QueryDevices(Guid nodeID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
-            return deviceTable.QueryRecords("Acronym", "Enabled <> 0" + deviceTable.GetSearchRestriction(filterText), limit);
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0}", nodeID) +
+                deviceTable.GetSearchRestriction(filterText);
+
+            return deviceTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
+        }
+
+        public IEnumerable<Device> QueryEnabledDevices(Guid nodeID, int limit, string filterText)
+        {
+            TableOperations<Device> deviceTable = DataContext.Table<Device>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0}", nodeID) +
+                new RecordRestriction("Enabled <> 0") +
+                deviceTable.GetSearchRestriction(filterText);
+
+            return deviceTable.QueryRecords("Acronym", restriction, limit);
         }
 
         public Device QueryDevice(string acronym)

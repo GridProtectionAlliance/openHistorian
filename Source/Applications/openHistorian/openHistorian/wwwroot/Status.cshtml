@@ -24,6 +24,9 @@
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets{@Html.Raw(ViewBag.StyleSheetsSection.ToString())}
-@{Layout = "Layout.cshtml";}
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.NodeID = Model.Global.NodeID;
+}
 @Html.RenderResource("ModbusAdapters.Status.cshtml")
 @section Scripts{@Html.Raw(ViewBag.ScriptsSection.ToString())}
