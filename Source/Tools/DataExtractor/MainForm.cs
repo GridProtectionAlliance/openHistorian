@@ -21,16 +21,18 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using GSF;
 using GSF.ComponentModel;
 using GSF.Diagnostics;
 using GSF.IO;
+using GSF.TimeSeries;
 using GSF.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace DataExtractor
 {
@@ -42,6 +44,7 @@ namespace DataExtractor
         private Metadata m_metadata;
         private readonly LogPublisher m_log;
         private Settings m_settings;
+        private bool m_formLoaded;
         private bool m_formClosing;
 
         #endregion
@@ -53,9 +56,23 @@ namespace DataExtractor
 
             dataGridViewDevices.AutoGenerateColumns = true;
 
+            // Save string format of select count label in its tag
+            labelSelectCount.Tag = labelSelectCount.Text;
+            labelSelectCount.Text = "";
+
+            // Save string format of filter expression text box in its tag
+            textBoxFilterExpression.Tag = textBoxFilterExpression.Text;
+            textBoxFilterExpression.Text = "";
+
             // Create a new log publisher instance
             m_log = Logger.CreatePublisher(typeof(MainForm), MessageClass.Application);
         }
+
+        #endregion
+
+        #region [ Properties ]
+
+        private int SelectedDeviceCount => m_metadata.Devices.Count(device => device.Selected);
 
         #endregion
 
@@ -72,6 +89,8 @@ namespace DataExtractor
 
                 // Restore last window size/location
                 this.RestoreLayout();
+
+                m_formLoaded = true;
             }
             catch (Exception ex)
             {
@@ -107,49 +126,60 @@ namespace DataExtractor
 
         private void buttonConnect_Click(object sender, EventArgs e)
         {
-            //try
-            //{
+            try
+            {
                 Cursor.Current = Cursors.WaitCursor;
 
                 ShowUpdateMessage($"Loading meta-data from \"{m_settings.HostAddress}:{m_settings.Port}\"...");
                 m_metadata = new Metadata(m_settings);
                 tabControlOptions.TabIndex = 0;
 
-                // Unique data type list
                 ShowUpdateMessage("Metadata loaded, extracting data types from meta-data from...");
                 List<string> signals = m_metadata.Measurements.Select(row => row.SignalAcronym).Distinct().ToList();
                 checkedListBoxDataTypes.Items.Clear();
                 checkedListBoxDataTypes.Items.AddRange(signals.OrderByDescending(s => s).Cast<object>().ToArray());
 
                 RefreshDevicesDataGrid();
+                RefreshSelectedCount();
 
                 ShowUpdateMessage("Ready for user data type selection.");
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(this, $"Failed to connect to \"{m_settings.HostAddress}:{m_settings.Port}\": {ex.Message}", "Connection Exception", MessageBoxButtons.OK);
-            //}
-            //finally
-            //{
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Failed to connect to \"{m_settings.HostAddress}:{m_settings.Port}\": {ex.Message}", "Connection Exception", MessageBoxButtons.OK);
+            }
+            finally
+            {
                 Cursor.Current = Cursors.Arrow;
-            //}
+            }
         }
 
-        private void buttonGo_Click(object sender, EventArgs e)
+        private void buttonPreFilter_Click(object sender, EventArgs e)
         {
-            if (m_settings.AlignTimestamps || m_settings.ExportMissingAsNaN)
+            SetButtonsEnabledState(false);
+            ClearUpdateMessages();
+            UpdateProgressBar(0);
+            SetProgressBarMaximum(100);
+
+            // Kick off a thread to start archive read
+            new Thread(PreFilter) { IsBackground = true }.Start();
+        }
+
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(textBoxExportFileName.Text))
             {
-                SetGoButtonEnabledState(false);
+                SetButtonsEnabledState(false);
                 ClearUpdateMessages();
                 UpdateProgressBar(0);
                 SetProgressBarMaximum(100);
 
                 // Kick off a thread to start archive read
-                new Thread(ReadArchive) { IsBackground = true }.Start();
+                new Thread(ExportData) { IsBackground = true }.Start();
             }
             else
             {
-                MessageBox.Show("You must pick at least one algorithm to execute.", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("You must define an export file name before export.", "Error", MessageBoxButtons.OK);
             }
         }
 
@@ -180,6 +210,8 @@ namespace DataExtractor
                 m_metadata.Devices[e.RowIndex].Selected = !m_metadata.Devices[e.RowIndex].Selected;
                 dataGridViewDevices.RefreshEdit();
             }
+
+            RefreshSelectedCount();
         }
 
         private void dataGridViewDevices_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -197,19 +229,90 @@ namespace DataExtractor
         }
 
         private void checkBoxSelectAllDevices_CheckedChanged(object sender, EventArgs e)
-        {
+        {         
             bool selected = checkBoxSelectAllDevices.Checked;
 
             foreach (DeviceDetail device in m_metadata.Devices)
                 device.Selected = selected;
 
             RefreshDevicesDataGrid();
+            RefreshSelectedCount();
+        }
+
+        private void checkedListBoxDataTypes_SelectedIndexChanged(object sender, EventArgs e)
+        {            
+            if (!checkBoxExportFilePerDataType.Checked)
+                RefreshFilterExpression(-1);
+        }
+
+        private void checkBoxExportFilePerDataType_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!m_formLoaded)
+                return;
+
+            RefreshFilterExpression(-1);
+            FormElementChanged(sender, e);
+        }
+
+        private void textBoxExportFileName_TextChanged(object sender, EventArgs e)
+        {
+            buttonExport.Enabled = !string.IsNullOrEmpty(textBoxExportFileName.Text);
+        }
+
+        private void buttonSelectFile_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                textBoxExportFileName.Text = saveFileDialog.FileName;
+                textBoxExportFileName.SelectionStart = textBoxExportFileName.Text.Length;
+                textBoxExportFileName.SelectionLength = 0;
+            }
         }
 
         private void RefreshDevicesDataGrid()
         {
             dataGridViewDevices.DataSource = null;
             dataGridViewDevices.DataSource = m_metadata.Devices;
+        }
+
+        private void RefreshSelectedCount()
+        {
+            int selectedCount = SelectedDeviceCount;
+
+            labelSelectCount.Text = string.Format(labelSelectCount.Tag.ToString(), selectedCount);
+
+            if (selectedCount == m_metadata.Devices.Count && m_metadata.Devices.Count > 0)
+                checkBoxSelectAllDevices.Checked = true;
+            else if (selectedCount == 0)
+                checkBoxSelectAllDevices.Checked = false;
+
+            RefreshFilterExpression(selectedCount);
+
+            buttonPreFilter.Enabled = selectedCount > 0;
+        }
+
+        private void RefreshFilterExpression(int selectedCount)
+        {
+            StringBuilder filterExpression = new StringBuilder();
+
+            if (selectedCount == -1)
+                selectedCount = SelectedDeviceCount;
+
+            if (selectedCount > 0)
+                filterExpression.Append($"Device IN ({string.Join(", ", m_metadata.Devices.Where(device => device.Selected).Select(device => $"'{device.Name}'"))})");
+
+            if (!checkBoxExportFilePerDataType.Checked && checkedListBoxDataTypes.CheckedItems.Count > 0)
+            {
+                if (filterExpression.Length > 0)
+                    filterExpression.Append(" AND ");
+
+                filterExpression.Append($"SignalType IN ({string.Join(", ", checkedListBoxDataTypes.CheckedItems.Cast<string>().Select(item => $"'{item}'"))})");
+            }
+
+            if (filterExpression.Length > 0)
+                textBoxFilterExpression.Text = string.Format(textBoxFilterExpression.Tag.ToString(), filterExpression);
+            else
+                textBoxFilterExpression.Text = "";
         }
 
         private SortOrder InvertSortOrder(DataGridViewColumnHeaderCell headerCell)
@@ -234,7 +337,7 @@ namespace DataExtractor
             }
             else
             {
-                if (Visible)
+                if (Visible && m_formLoaded)
                     m_settings?.UpdateProperties();
             }
         }
@@ -273,15 +376,21 @@ namespace DataExtractor
             }
         }
 
-        private void SetGoButtonEnabledState(bool enabled)
+        private void SetButtonsEnabledState(bool enabled)
         {
             if (m_formClosing)
                 return;
 
             if (InvokeRequired)
-                BeginInvoke(new Action<bool>(SetGoButtonEnabledState), enabled);
+            {
+                BeginInvoke(new Action<bool>(SetButtonsEnabledState), enabled);
+            }
             else
-                buttonGo.Enabled = enabled;
+            {
+                buttonConnect.Enabled = enabled;
+                buttonPreFilter.Enabled = enabled && SelectedDeviceCount > 0;
+                buttonExport.Enabled = enabled && !string.IsNullOrEmpty(textBoxExportFileName.Text);
+            }
         }
 
         private void UpdateProgressBar(int value)
@@ -318,7 +427,100 @@ namespace DataExtractor
 
         // Internal Functions
 
-        private void ReadArchive(object state)
+        private void PreFilter(object state)
+        {
+            try
+            {
+                double timeRange = (m_settings.EndTime - m_settings.StartTime).TotalSeconds;
+                Dictionary<string, DeviceDetail> deviceMap = new Dictionary<string, DeviceDetail>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<Guid, DeviceDetail> signalMap = new Dictionary<Guid, DeviceDetail>();
+                Dictionary<DeviceDetail, DeviceStats> deviceStats = new Dictionary<DeviceDetail, DeviceStats>();
+                bool readComplete = false;
+                long receivedPoints = 0L;
+                Ticks operationTime;
+                Ticks operationStartTime;
+
+                void handleNewMeasurements(ICollection<IMeasurement> measurements)
+                {
+                    bool showMessage = (receivedPoints + measurements.Count >= (receivedPoints / m_settings.MessageInterval + 1) * m_settings.MessageInterval);
+
+                    receivedPoints += measurements.Count;
+
+                    foreach (IMeasurement measurement in measurements)
+                    {
+                        if (signalMap.TryGetValue(measurement.Key.SignalID, out DeviceDetail device) && deviceStats.TryGetValue(device, out DeviceStats stats))
+                        {
+                            stats.Total++;
+
+                            if (!measurement.ValueQualityIsGood())
+                                stats.BadDataCount++;
+
+                            if (!measurement.TimestampQualityIsGood())
+                                stats.BadTimeCount++;
+                        }
+                    }
+
+                    if (showMessage && measurements.Count > 0)
+                    {
+                        IMeasurement measurement = measurements.First();
+                        ShowUpdateMessage($"{Environment.NewLine}{receivedPoints:N0} points read so far averaging {receivedPoints / (DateTime.UtcNow.Ticks - operationStartTime).ToSeconds():N0} points per second.");
+                        UpdateProgressBar((int)((1.0D - new Ticks(m_settings.EndTime.Ticks - (long)measurement.Timestamp).ToSeconds() / timeRange) * 100.0D));
+                    }
+                }
+
+                void readCompleted(string message)
+                {
+                    readComplete = true;
+                    ShowUpdateMessage(message);
+                }
+
+                operationStartTime = DateTime.UtcNow.Ticks;
+
+                foreach (DeviceDetail device in m_metadata.Devices)
+                    deviceMap[device.Name] = device;
+
+                foreach (MeasurementDetail measurement in m_metadata.Measurements)
+                {
+                    if (deviceMap.TryGetValue(measurement.DeviceName, out DeviceDetail device))
+                        signalMap[measurement.SignalID] = device;
+                }
+
+                foreach (DeviceDetail device in m_metadata.Devices)
+                    deviceStats[device] = new DeviceStats();
+
+                using (DataReceiver receiver = new DataReceiver($"server={m_settings.HostAddress}; port={m_settings.Port}; interface=0.0.0.0", m_settings.FilterExpression, m_settings.StartTime, m_settings.EndTime, handleNewMeasurements, ShowUpdateMessage, ex => ShowUpdateMessage($"Error: {ex.Message}"), readCompleted))
+                {
+                    while (!m_formClosing && !readComplete)
+                        Thread.Sleep(1000);
+                }
+
+                operationTime = DateTime.UtcNow.Ticks - operationStartTime;
+
+                if (m_formClosing)
+                {
+                    ShowUpdateMessage("*** Data Pre-filter Canceled ***");
+                    UpdateProgressBar(0);
+                }
+                else
+                {
+                    ShowUpdateMessage("*** Data Pre-filter Complete ***");
+                    UpdateProgressBar(100);
+                }
+
+                ShowUpdateMessage($"Total pre-filter processing time {operationTime.ToElapsedTimeString(3)} at {receivedPoints / operationTime.ToSeconds():N0} points per second.{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateMessage($"!!! Failure during historian read: {ex.Message}");
+                m_log.Publish(MessageLevel.Error, "HistorianDataRead", "Failed while reading data from the historian", exception: ex);
+            }
+            finally
+            {
+                SetButtonsEnabledState(true);
+            }
+        }
+
+        private void ExportData(object state)
         {
             try
             {
@@ -343,13 +545,13 @@ namespace DataExtractor
             }
             finally
             {
-                SetGoButtonEnabledState(true);
+                SetButtonsEnabledState(true);
             }
         }
 
-#endregion
+        #endregion
 
-#region [ Static ]
+        #region [ Static ]
 
         // Static Constructor
         static MainForm()

@@ -21,10 +21,10 @@
 //
 //******************************************************************************************************
 
+using GSF.TimeSeries.Transport;
 using System;
 using System.Data;
 using System.Threading;
-using GSF.TimeSeries.Transport;
 using ServerCommand = GSF.TimeSeries.Transport.ServerCommand;
 
 namespace DataExtractor
@@ -58,7 +58,8 @@ namespace DataExtractor
                 ConnectionString = connectionString,
                 ReceiveInternalMetadata = true,
                 ReceiveExternalMetadata = true,
-                OperationalModes = OperationalModes.UseCommonSerializationFormat | OperationalModes.CompressMetadata
+                OperationalModes = OperationalModes.UseCommonSerializationFormat | OperationalModes.CompressMetadata,
+                CompressionModes = CompressionModes.GZip
             };
 
             // Attach to needed subscriber events
@@ -194,9 +195,9 @@ namespace DataExtractor
         /// <returns>The meta-data received from the GEP publisher in <see cref="DataSet"/> format.</returns>
         public static DataSet GetMetadata(string connectionString, int timeout = Timeout.Infinite)
         {
-            using (MetadataRetriever retriever = new MetadataRetriever(connectionString))
+            using (MetadataRetriever receiver = new MetadataRetriever(connectionString))
             {
-                return retriever.GetMetadata(timeout);
+                return receiver.GetMetadata(timeout);
             }
         }
 

@@ -21,12 +21,12 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.ComponentModel;
-using System.Configuration;
 using ExpressionEvaluator;
 using GSF.ComponentModel;
 using GSF.Configuration;
+using System;
+using System.ComponentModel;
+using System.Configuration;
 
 namespace DataExtractor
 {
@@ -124,12 +124,11 @@ namespace DataExtractor
         public DateTime EndTime { get; set; }
 
         /// <summary>
-        /// Gets or sets selected point list or filter expression for historian read.
+        /// Gets or sets filter expression used for historian read.
         /// </summary>
-        [TypeConvertedValueExpression("Form.textBoxPointList.Text")]
-        [Description("Selected point list or filter expression for historian read.")]
-        [UserScopedSetting]
-        public string PointList { get; set; }
+        [TypeConvertedValueExpression("Form.textBoxFilterExpression.Text")]
+        [SerializeSetting(false)] // <-- Do not synchronize to config file
+        public string FilterExpression { get; set; }
 
         /// <summary>
         /// Gets or sets message display interval.
@@ -170,5 +169,37 @@ namespace DataExtractor
         [Description("Flag that controls if the unbalance algorithm is processed.")]
         [UserScopedSetting]
         public bool FillInMissingTimestamps { get; set; }
+
+        /// <summary>
+        /// Gets or sets flag that controls if one export file should be created per data type.
+        /// </summary>
+        [TypeConvertedValueExpression("Form.checkBoxExportFilePerDataType.Checked")]
+        [Description("Flag that controls if one export file should be created per data type.")]
+        [UserScopedSetting]
+        public bool ExportFilePerDataType { get; set; }
+
+        /// <summary>
+        /// Gets or sets value that determines the acceptable amount of bad data for export.
+        /// </summary>
+        [TypeConvertedValueExpression("Form.maskedTextBoxAcceptableBadData.Text")]
+        [Description("Value that determines the acceptable amount of bad data for export.")]
+        [UserScopedSetting]
+        public int AcceptableBadData { get; set; }
+
+        /// <summary>
+        /// Gets or sets value that determines the acceptable amount of bad time for export.
+        /// </summary>
+        [TypeConvertedValueExpression("Form.maskedTextBoxAcceptableBadTime.Text")]
+        [Description("Value that determines the acceptable amount of bad time for export.")]
+        [UserScopedSetting]
+        public int AcceptableBadTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets value that determines the acceptable amount of missing data for export.
+        /// </summary>
+        [TypeConvertedValueExpression("Form.maskedTextBoxAcceptableMissingData.Text")]
+        [Description("Value that determines the acceptable amount of missing data for export.")]
+        [UserScopedSetting]
+        public int AcceptableMissingData { get; set; }
     }
 }

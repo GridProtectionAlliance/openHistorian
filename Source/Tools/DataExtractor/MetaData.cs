@@ -21,14 +21,14 @@
 //
 //******************************************************************************************************
 
+using GSF;
+using GSF.TimeSeries;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Windows.Forms;
-using GSF;
-using GSF.TimeSeries;
 
 namespace DataExtractor
 {
@@ -63,6 +63,7 @@ namespace DataExtractor
 
         public DeviceDetail(DataRow row)
         {
+            Selected = true;
             Name = row["Acronym"].ToString();
             Concentrator = row["IsConcentrator"].ToString().ParseBoolean();
             Company = row["CompanyAcronym"].ToString();
@@ -71,6 +72,14 @@ namespace DataExtractor
             Longitude = decimal.Parse(row["Longitude"].ToNonNullNorWhiteSpace("0.0"));
             Latitude = decimal.Parse(row["Latitude"].ToNonNullNorWhiteSpace("0.0"));
         }
+    }
+
+    public class DeviceStats
+    {
+        public long BadDataCount;
+        public long BadTimeCount;
+        public long MissingDataCount;
+        public long Total;
     }
 
     public class DeviceDetailComparer : IComparer<DeviceDetail>
@@ -135,11 +144,9 @@ namespace DataExtractor
             DataTable measurementTable = null;
             DataTable deviceTable = null;
 
-            string server = "Server=" + settings.HostAddress + "; Port=" + settings.Port + "; Interface=0.0.0.0";
-
             try
             {
-                DataSet metadata = MetadataRetriever.GetMetadata(server);
+                DataSet metadata = MetadataRetriever.GetMetadata($"server={settings.HostAddress}; port={settings.Port}; interface=0.0.0.0");
 
                 // Reference meta-data tables
                 measurementTable = metadata.Tables["MeasurementDetail"];
