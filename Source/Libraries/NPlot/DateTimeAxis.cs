@@ -318,6 +318,12 @@ namespace NPlot
 
             const int daysInMonth = 30;
 
+            if (WorldMin < DateTime.MinValue.Ticks)
+                WorldMin = DateTime.MinValue.Ticks;
+
+            if (WorldMax > DateTime.MaxValue.Ticks)
+                WorldMax = DateTime.MaxValue.Ticks;
+
             TimeSpan timeLength = new TimeSpan((long)(WorldMax - WorldMin));
             DateTime worldMinDate = new DateTime((long)this.WorldMin);
             DateTime worldMaxDate = new DateTime((long)this.WorldMax);

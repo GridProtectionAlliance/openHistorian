@@ -39,10 +39,10 @@ namespace DataExtractor
         // Fields
         private DataSubscriber m_subscriber;
         private readonly UnsynchronizedSubscriptionInfo m_subscriptionInfo;
-        private readonly Action<ICollection<IMeasurement>> m_newMeasurementsCallback;
-        private readonly Action<string> m_statusMessageCallback;
-        private readonly Action<Exception> m_processExceptionCallback;
-        private readonly Action<string> m_readCompletedCallback;
+        private Action<ICollection<IMeasurement>> m_newMeasurementsCallback;
+        private Action<string> m_statusMessageCallback;
+        private Action<Exception> m_processExceptionCallback;
+        private Action m_readCompletedCallback;
         private bool m_disposed;
 
         #endregion
@@ -56,11 +56,7 @@ namespace DataExtractor
         /// <param name="filterExpression">Filter expression defining measurements to query.</param>
         /// <param name="startTime">Temporal subscription start time.</param>
         /// <param name="stopTime">Temporal subscription stop time.</param>
-        /// <param name="newMeasurementsCallback">New measurements handler.</param>
-        /// <param name="statusMessageCallback">Status message handler.</param>
-        /// <param name="processExceptionCallback">Process exception handler.</param>
-        /// <param name="readCompletedCallback">Read complete handler.</param>
-        public DataReceiver(string connectionString, string filterExpression, DateTime startTime, DateTime stopTime, Action<ICollection<IMeasurement>> newMeasurementsCallback, Action<string> statusMessageCallback, Action<Exception> processExceptionCallback, Action<string> readCompletedCallback)
+        public DataReceiver(string connectionString, string filterExpression, DateTime startTime, DateTime stopTime)
         {
             m_subscriber = new DataSubscriber
             {
@@ -77,11 +73,6 @@ namespace DataExtractor
                 ProcessingInterval = 0,
                 UseMillisecondResolution = true
             };
-
-            m_newMeasurementsCallback = newMeasurementsCallback;
-            m_statusMessageCallback = statusMessageCallback;
-            m_processExceptionCallback = processExceptionCallback;
-            m_readCompletedCallback = readCompletedCallback;
 
             // Attach to needed subscriber events
             m_subscriber.ConnectionEstablished += m_subscriber_ConnectionEstablished;
@@ -103,6 +94,30 @@ namespace DataExtractor
         ~DataReceiver()
         {
             Dispose(false);
+        }
+
+        public Action<ICollection<IMeasurement>> NewMeasurementsCallback
+        {
+            get => m_newMeasurementsCallback;
+            set => m_newMeasurementsCallback = value;
+        }
+
+        public Action<string> StatusMessageCallback
+        {
+            get => m_statusMessageCallback;
+            set => m_statusMessageCallback = value;
+        }
+
+        public Action<Exception> ProcessExceptionCallback
+        {
+            get => m_processExceptionCallback;
+            set => m_processExceptionCallback = value;
+        }
+
+        public Action ReadCompletedCallback
+        {
+            get => m_readCompletedCallback;
+            set => m_readCompletedCallback = value;
         }
 
         #endregion
@@ -159,22 +174,22 @@ namespace DataExtractor
 
         private void m_subscriber_NewMeasurements(object sender, EventArgs<ICollection<IMeasurement>> e)
         {
-            m_newMeasurementsCallback(e.Argument);
+            m_newMeasurementsCallback?.Invoke(e.Argument);
         }
 
         private void m_subscriber_StatusMessage(object sender, EventArgs<string> e)
         {
-            m_statusMessageCallback(e.Argument);
+            m_statusMessageCallback?.Invoke(e.Argument);
         }
 
         private void m_subscriber_ProcessException(object sender, EventArgs<Exception> e)
         {
-            m_processExceptionCallback(e.Argument);
+            m_processExceptionCallback?.Invoke(e.Argument);
         }
 
         private void m_subscriber_ProcessingComplete(object sender, EventArgs<string> e)
         {
-            m_readCompletedCallback(e.Argument);
+            m_readCompletedCallback?.Invoke();
         }
 
         #endregion

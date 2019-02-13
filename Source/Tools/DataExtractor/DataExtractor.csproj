@@ -63,6 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataReceiver.cs" />
+    <Compile Include="GraphData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GraphData.Designer.cs">
+      <DependentUpon>GraphData.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="GraphData.resx">
+      <DependentUpon>GraphData.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -102,6 +111,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DataExtractor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\NPlot\NPlot45.csproj">
+      <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
+      <Name>NPlot45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

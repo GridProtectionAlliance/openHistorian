@@ -44,6 +44,7 @@
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.tabControlOptions = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.buttonCancelPreFilter = new System.Windows.Forms.Button();
             this.buttonPreFilter = new System.Windows.Forms.Button();
             this.dataGridViewDevices = new System.Windows.Forms.DataGridView();
             this.labelDevices = new System.Windows.Forms.Label();
@@ -59,6 +60,12 @@
             this.labelFilterExpression = new System.Windows.Forms.Label();
             this.textBoxFilterExpression = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.maskedTextBoxAcceptableMissingData = new System.Windows.Forms.MaskedTextBox();
+            this.labelAcceptableMissingData = new System.Windows.Forms.Label();
+            this.maskedTextBoxAcceptableBadTime = new System.Windows.Forms.MaskedTextBox();
+            this.labelAccetableBadTime = new System.Windows.Forms.Label();
+            this.maskedTextBoxAcceptableBadData = new System.Windows.Forms.MaskedTextBox();
+            this.labelAcceptableBadData = new System.Windows.Forms.Label();
             this.checkBoxFillInMissingTimestamps = new System.Windows.Forms.CheckBox();
             this.checkBoxAlignTimestamps = new System.Windows.Forms.CheckBox();
             this.checkBoxExportMissingAsNaN = new System.Windows.Forms.CheckBox();
@@ -75,6 +82,9 @@
             this.maskedTextBoxMetadataTimeout = new System.Windows.Forms.MaskedTextBox();
             this.labelFrameRate = new System.Windows.Forms.Label();
             this.labelMetaDataTimeout = new System.Windows.Forms.Label();
+            this.labelBadDataPercent = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBoxExportFilePerDataType = new System.Windows.Forms.CheckBox();
             this.labelExportFileName = new System.Windows.Forms.Label();
@@ -83,15 +93,8 @@
             this.radioButtonCOMTRADE = new System.Windows.Forms.RadioButton();
             this.radioButtonCSV = new System.Windows.Forms.RadioButton();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.maskedTextBoxAcceptableBadData = new System.Windows.Forms.MaskedTextBox();
-            this.labelAcceptableBadData = new System.Windows.Forms.Label();
-            this.maskedTextBoxAcceptableBadTime = new System.Windows.Forms.MaskedTextBox();
-            this.labelAccetableBadTime = new System.Windows.Forms.Label();
-            this.maskedTextBoxAcceptableMissingData = new System.Windows.Forms.MaskedTextBox();
-            this.labelAcceptableMissingData = new System.Windows.Forms.Label();
-            this.labelBadDataPercent = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.buttonCancelExport = new System.Windows.Forms.Button();
+            this.buttonShowGraph = new System.Windows.Forms.Button();
             this.groupBoxServerConnection.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -201,7 +204,7 @@
             this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonExport.Enabled = false;
             this.buttonExport.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonExport.Location = new System.Drawing.Point(703, 533);
+            this.buttonExport.Location = new System.Drawing.Point(703, 522);
             this.buttonExport.Margin = new System.Windows.Forms.Padding(2);
             this.buttonExport.Name = "buttonExport";
             this.buttonExport.Size = new System.Drawing.Size(88, 27);
@@ -216,11 +219,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxMessages.Controls.Add(this.textBoxMessageOutput);
-            this.groupBoxMessages.Location = new System.Drawing.Point(12, 293);
+            this.groupBoxMessages.Location = new System.Drawing.Point(10, 294);
             this.groupBoxMessages.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMessages.Name = "groupBoxMessages";
             this.groupBoxMessages.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxMessages.Size = new System.Drawing.Size(781, 238);
+            this.groupBoxMessages.Size = new System.Drawing.Size(781, 226);
             this.groupBoxMessages.TabIndex = 3;
             this.groupBoxMessages.TabStop = false;
             this.groupBoxMessages.Text = "Messages";
@@ -237,7 +240,7 @@
             this.textBoxMessageOutput.Name = "textBoxMessageOutput";
             this.textBoxMessageOutput.ReadOnly = true;
             this.textBoxMessageOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxMessageOutput.Size = new System.Drawing.Size(777, 221);
+            this.textBoxMessageOutput.Size = new System.Drawing.Size(777, 209);
             this.textBoxMessageOutput.TabIndex = 0;
             this.textBoxMessageOutput.TabStop = false;
             // 
@@ -245,7 +248,7 @@
             // 
             this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(12, 533);
+            this.progressBar.Location = new System.Drawing.Point(10, 522);
             this.progressBar.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(690, 27);
@@ -280,6 +283,8 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.Transparent;
+            this.tabPage1.Controls.Add(this.buttonShowGraph);
+            this.tabPage1.Controls.Add(this.buttonCancelPreFilter);
             this.tabPage1.Controls.Add(this.buttonPreFilter);
             this.tabPage1.Controls.Add(this.dataGridViewDevices);
             this.tabPage1.Controls.Add(this.labelDevices);
@@ -297,6 +302,19 @@
             this.tabPage1.Size = new System.Drawing.Size(560, 238);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Time Range";
+            // 
+            // buttonCancelPreFilter
+            // 
+            this.buttonCancelPreFilter.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonCancelPreFilter.Location = new System.Drawing.Point(457, 10);
+            this.buttonCancelPreFilter.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelPreFilter.Name = "buttonCancelPreFilter";
+            this.buttonCancelPreFilter.Size = new System.Drawing.Size(88, 27);
+            this.buttonCancelPreFilter.TabIndex = 12;
+            this.buttonCancelPreFilter.Text = "Cancel...";
+            this.buttonCancelPreFilter.UseVisualStyleBackColor = true;
+            this.buttonCancelPreFilter.Visible = false;
+            this.buttonCancelPreFilter.Click += new System.EventHandler(this.buttonCancelPreFilter_Click);
             // 
             // buttonPreFilter
             // 
@@ -510,6 +528,75 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Settings";
             // 
+            // maskedTextBoxAcceptableMissingData
+            // 
+            this.maskedTextBoxAcceptableMissingData.Location = new System.Drawing.Point(321, 147);
+            this.maskedTextBoxAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2);
+            this.maskedTextBoxAcceptableMissingData.Mask = "000";
+            this.maskedTextBoxAcceptableMissingData.Name = "maskedTextBoxAcceptableMissingData";
+            this.maskedTextBoxAcceptableMissingData.Size = new System.Drawing.Size(31, 20);
+            this.maskedTextBoxAcceptableMissingData.TabIndex = 17;
+            this.maskedTextBoxAcceptableMissingData.Text = "30";
+            this.maskedTextBoxAcceptableMissingData.ValidatingType = typeof(int);
+            this.maskedTextBoxAcceptableMissingData.TextChanged += new System.EventHandler(this.FormElementChanged);
+            // 
+            // labelAcceptableMissingData
+            // 
+            this.labelAcceptableMissingData.AutoSize = true;
+            this.labelAcceptableMissingData.Location = new System.Drawing.Point(189, 150);
+            this.labelAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelAcceptableMissingData.Name = "labelAcceptableMissingData";
+            this.labelAcceptableMissingData.Size = new System.Drawing.Size(128, 13);
+            this.labelAcceptableMissingData.TabIndex = 16;
+            this.labelAcceptableMissingData.Text = "Acceptable Missing Data:";
+            this.labelAcceptableMissingData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // maskedTextBoxAcceptableBadTime
+            // 
+            this.maskedTextBoxAcceptableBadTime.Location = new System.Drawing.Point(321, 123);
+            this.maskedTextBoxAcceptableBadTime.Margin = new System.Windows.Forms.Padding(2);
+            this.maskedTextBoxAcceptableBadTime.Mask = "000";
+            this.maskedTextBoxAcceptableBadTime.Name = "maskedTextBoxAcceptableBadTime";
+            this.maskedTextBoxAcceptableBadTime.Size = new System.Drawing.Size(31, 20);
+            this.maskedTextBoxAcceptableBadTime.TabIndex = 15;
+            this.maskedTextBoxAcceptableBadTime.Text = "30";
+            this.maskedTextBoxAcceptableBadTime.ValidatingType = typeof(int);
+            this.maskedTextBoxAcceptableBadTime.TextChanged += new System.EventHandler(this.FormElementChanged);
+            // 
+            // labelAccetableBadTime
+            // 
+            this.labelAccetableBadTime.AutoSize = true;
+            this.labelAccetableBadTime.Location = new System.Drawing.Point(205, 126);
+            this.labelAccetableBadTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelAccetableBadTime.Name = "labelAccetableBadTime";
+            this.labelAccetableBadTime.Size = new System.Drawing.Size(112, 13);
+            this.labelAccetableBadTime.TabIndex = 14;
+            this.labelAccetableBadTime.Text = "Acceptable Bad Time:";
+            this.labelAccetableBadTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // maskedTextBoxAcceptableBadData
+            // 
+            this.maskedTextBoxAcceptableBadData.Location = new System.Drawing.Point(321, 99);
+            this.maskedTextBoxAcceptableBadData.Margin = new System.Windows.Forms.Padding(2);
+            this.maskedTextBoxAcceptableBadData.Mask = "000";
+            this.maskedTextBoxAcceptableBadData.Name = "maskedTextBoxAcceptableBadData";
+            this.maskedTextBoxAcceptableBadData.Size = new System.Drawing.Size(31, 20);
+            this.maskedTextBoxAcceptableBadData.TabIndex = 13;
+            this.maskedTextBoxAcceptableBadData.Text = "30";
+            this.maskedTextBoxAcceptableBadData.ValidatingType = typeof(int);
+            this.maskedTextBoxAcceptableBadData.TextChanged += new System.EventHandler(this.FormElementChanged);
+            // 
+            // labelAcceptableBadData
+            // 
+            this.labelAcceptableBadData.AutoSize = true;
+            this.labelAcceptableBadData.Location = new System.Drawing.Point(205, 102);
+            this.labelAcceptableBadData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelAcceptableBadData.Name = "labelAcceptableBadData";
+            this.labelAcceptableBadData.Size = new System.Drawing.Size(112, 13);
+            this.labelAcceptableBadData.TabIndex = 12;
+            this.labelAcceptableBadData.Text = "Acceptable Bad Data:";
+            this.labelAcceptableBadData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // checkBoxFillInMissingTimestamps
             // 
             this.checkBoxFillInMissingTimestamps.AutoSize = true;
@@ -629,7 +716,7 @@
             this.maskedTextBoxMessageInterval.Name = "maskedTextBoxMessageInterval";
             this.maskedTextBoxMessageInterval.Size = new System.Drawing.Size(53, 20);
             this.maskedTextBoxMessageInterval.TabIndex = 4;
-            this.maskedTextBoxMessageInterval.Text = "8000";
+            this.maskedTextBoxMessageInterval.Text = "15000";
             this.maskedTextBoxMessageInterval.ValidatingType = typeof(int);
             this.maskedTextBoxMessageInterval.TextChanged += new System.EventHandler(this.FormElementChanged);
             // 
@@ -697,6 +784,39 @@
             this.labelMetaDataTimeout.TabIndex = 19;
             this.labelMetaDataTimeout.Text = "Metadata Timeout:";
             this.labelMetaDataTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelBadDataPercent
+            // 
+            this.labelBadDataPercent.AutoSize = true;
+            this.labelBadDataPercent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelBadDataPercent.Location = new System.Drawing.Point(351, 103);
+            this.labelBadDataPercent.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelBadDataPercent.Name = "labelBadDataPercent";
+            this.labelBadDataPercent.Size = new System.Drawing.Size(15, 13);
+            this.labelBadDataPercent.TabIndex = 22;
+            this.labelBadDataPercent.Text = "%";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(351, 150);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(15, 13);
+            this.label2.TabIndex = 24;
+            this.label2.Text = "%";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(351, 127);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(15, 13);
+            this.label1.TabIndex = 23;
+            this.label1.Text = "%";
             // 
             // groupBox1
             // 
@@ -786,113 +906,39 @@
             this.saveFileDialog.Filter = "CSV Files|*.csv|All Files|*.*";
             this.saveFileDialog.Title = "Select Export File Name";
             // 
-            // maskedTextBoxAcceptableBadData
+            // buttonCancelExport
             // 
-            this.maskedTextBoxAcceptableBadData.Location = new System.Drawing.Point(321, 99);
-            this.maskedTextBoxAcceptableBadData.Margin = new System.Windows.Forms.Padding(2);
-            this.maskedTextBoxAcceptableBadData.Mask = "000";
-            this.maskedTextBoxAcceptableBadData.Name = "maskedTextBoxAcceptableBadData";
-            this.maskedTextBoxAcceptableBadData.Size = new System.Drawing.Size(31, 20);
-            this.maskedTextBoxAcceptableBadData.TabIndex = 13;
-            this.maskedTextBoxAcceptableBadData.Text = "30";
-            this.maskedTextBoxAcceptableBadData.ValidatingType = typeof(int);
-            this.maskedTextBoxAcceptableBadData.TextChanged += new System.EventHandler(this.FormElementChanged);
+            this.buttonCancelExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancelExport.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonCancelExport.Location = new System.Drawing.Point(703, 522);
+            this.buttonCancelExport.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelExport.Name = "buttonCancelExport";
+            this.buttonCancelExport.Size = new System.Drawing.Size(88, 27);
+            this.buttonCancelExport.TabIndex = 13;
+            this.buttonCancelExport.Text = "Cancel...";
+            this.buttonCancelExport.UseVisualStyleBackColor = true;
+            this.buttonCancelExport.Visible = false;
+            this.buttonCancelExport.Click += new System.EventHandler(this.buttonExportCancel_Click);
             // 
-            // labelAcceptableBadData
+            // buttonShowGraph
             // 
-            this.labelAcceptableBadData.AutoSize = true;
-            this.labelAcceptableBadData.Location = new System.Drawing.Point(205, 102);
-            this.labelAcceptableBadData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelAcceptableBadData.Name = "labelAcceptableBadData";
-            this.labelAcceptableBadData.Size = new System.Drawing.Size(112, 13);
-            this.labelAcceptableBadData.TabIndex = 12;
-            this.labelAcceptableBadData.Text = "Acceptable Bad Data:";
-            this.labelAcceptableBadData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // maskedTextBoxAcceptableBadTime
-            // 
-            this.maskedTextBoxAcceptableBadTime.Location = new System.Drawing.Point(321, 123);
-            this.maskedTextBoxAcceptableBadTime.Margin = new System.Windows.Forms.Padding(2);
-            this.maskedTextBoxAcceptableBadTime.Mask = "000";
-            this.maskedTextBoxAcceptableBadTime.Name = "maskedTextBoxAcceptableBadTime";
-            this.maskedTextBoxAcceptableBadTime.Size = new System.Drawing.Size(31, 20);
-            this.maskedTextBoxAcceptableBadTime.TabIndex = 15;
-            this.maskedTextBoxAcceptableBadTime.Text = "30";
-            this.maskedTextBoxAcceptableBadTime.ValidatingType = typeof(int);
-            this.maskedTextBoxAcceptableBadTime.TextChanged += new System.EventHandler(this.FormElementChanged);
-            // 
-            // labelAccetableBadTime
-            // 
-            this.labelAccetableBadTime.AutoSize = true;
-            this.labelAccetableBadTime.Location = new System.Drawing.Point(205, 126);
-            this.labelAccetableBadTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelAccetableBadTime.Name = "labelAccetableBadTime";
-            this.labelAccetableBadTime.Size = new System.Drawing.Size(112, 13);
-            this.labelAccetableBadTime.TabIndex = 14;
-            this.labelAccetableBadTime.Text = "Acceptable Bad Time:";
-            this.labelAccetableBadTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // maskedTextBoxAcceptableMissingData
-            // 
-            this.maskedTextBoxAcceptableMissingData.Location = new System.Drawing.Point(321, 147);
-            this.maskedTextBoxAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2);
-            this.maskedTextBoxAcceptableMissingData.Mask = "000";
-            this.maskedTextBoxAcceptableMissingData.Name = "maskedTextBoxAcceptableMissingData";
-            this.maskedTextBoxAcceptableMissingData.Size = new System.Drawing.Size(31, 20);
-            this.maskedTextBoxAcceptableMissingData.TabIndex = 17;
-            this.maskedTextBoxAcceptableMissingData.Text = "30";
-            this.maskedTextBoxAcceptableMissingData.ValidatingType = typeof(int);
-            this.maskedTextBoxAcceptableMissingData.TextChanged += new System.EventHandler(this.FormElementChanged);
-            // 
-            // labelAcceptableMissingData
-            // 
-            this.labelAcceptableMissingData.AutoSize = true;
-            this.labelAcceptableMissingData.Location = new System.Drawing.Point(189, 150);
-            this.labelAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelAcceptableMissingData.Name = "labelAcceptableMissingData";
-            this.labelAcceptableMissingData.Size = new System.Drawing.Size(128, 13);
-            this.labelAcceptableMissingData.TabIndex = 16;
-            this.labelAcceptableMissingData.Text = "Acceptable Missing Data:";
-            this.labelAcceptableMissingData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelBadDataPercent
-            // 
-            this.labelBadDataPercent.AutoSize = true;
-            this.labelBadDataPercent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBadDataPercent.Location = new System.Drawing.Point(351, 103);
-            this.labelBadDataPercent.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelBadDataPercent.Name = "labelBadDataPercent";
-            this.labelBadDataPercent.Size = new System.Drawing.Size(15, 13);
-            this.labelBadDataPercent.TabIndex = 22;
-            this.labelBadDataPercent.Text = "%";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(351, 127);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(15, 13);
-            this.label1.TabIndex = 23;
-            this.label1.Text = "%";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(351, 150);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(15, 13);
-            this.label2.TabIndex = 24;
-            this.label2.Text = "%";
+            this.buttonShowGraph.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonShowGraph.Location = new System.Drawing.Point(457, 38);
+            this.buttonShowGraph.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonShowGraph.Name = "buttonShowGraph";
+            this.buttonShowGraph.Size = new System.Drawing.Size(88, 27);
+            this.buttonShowGraph.TabIndex = 13;
+            this.buttonShowGraph.Text = "Show Graph";
+            this.buttonShowGraph.UseVisualStyleBackColor = true;
+            this.buttonShowGraph.Visible = false;
+            this.buttonShowGraph.Click += new System.EventHandler(this.buttonShowGraph_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 571);
+            this.ClientSize = new System.Drawing.Size(804, 561);
+            this.Controls.Add(this.buttonCancelExport);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxOptions);
             this.Controls.Add(this.buttonExport);
@@ -900,7 +946,7 @@
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.groupBoxServerConnection);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(820, 610);
+            this.MinimumSize = new System.Drawing.Size(820, 470);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "IMS Data Extractor";
@@ -990,6 +1036,9 @@
         private System.Windows.Forms.Label labelBadDataPercent;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonCancelPreFilter;
+        private System.Windows.Forms.Button buttonCancelExport;
+        private System.Windows.Forms.Button buttonShowGraph;
     }
 }
 

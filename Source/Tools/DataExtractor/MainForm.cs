@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using GSF;
+using GSF.Collections;
 using GSF.ComponentModel;
 using GSF.Diagnostics;
 using GSF.IO;
@@ -44,7 +45,10 @@ namespace DataExtractor
         private Metadata m_metadata;
         private readonly LogPublisher m_log;
         private Settings m_settings;
+        private GraphData m_graphData;
         private bool m_formLoaded;
+        private bool m_prefiltering;
+        private bool m_exporting;
         private bool m_formClosing;
 
         #endregion
@@ -66,6 +70,8 @@ namespace DataExtractor
 
             // Create a new log publisher instance
             m_log = Logger.CreatePublisher(typeof(MainForm), MessageClass.Application);
+
+            m_graphData = new GraphData();
         }
 
         #endregion
@@ -154,8 +160,14 @@ namespace DataExtractor
             }
         }
 
+        private void buttonCancelPreFilter_Click(object sender, EventArgs e)
+        {
+            m_prefiltering = false;
+        }
+
         private void buttonPreFilter_Click(object sender, EventArgs e)
         {
+            m_prefiltering = true;
             SetButtonsEnabledState(false);
             ClearUpdateMessages();
             UpdateProgressBar(0);
@@ -165,21 +177,32 @@ namespace DataExtractor
             new Thread(PreFilter) { IsBackground = true }.Start();
         }
 
+        private void buttonShowGraph_Click(object sender, EventArgs e)
+        {
+            m_graphData.Show();
+        }
+
+        private void buttonExportCancel_Click(object sender, EventArgs e)
+        {
+            m_exporting = false;
+        }
+
         private void buttonExport_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxExportFileName.Text))
             {
+                MessageBox.Show("You must define an export file name before export.", "Error", MessageBoxButtons.OK);
+            }
+            else
+            {
+                m_exporting = true;
                 SetButtonsEnabledState(false);
                 ClearUpdateMessages();
                 UpdateProgressBar(0);
                 SetProgressBarMaximum(100);
 
                 // Kick off a thread to start archive read
-                new Thread(ExportData) { IsBackground = true }.Start();
-            }
-            else
-            {
-                MessageBox.Show("You must define an export file name before export.", "Error", MessageBoxButtons.OK);
+                new Thread(ExportData) {IsBackground = true}.Start();
             }
         }
 
@@ -220,6 +243,7 @@ namespace DataExtractor
             {
                 DataGridViewColumn column = dataGridViewDevices.Columns[i];
                 column.ReadOnly = !column.Name.Equals("Selected", StringComparison.OrdinalIgnoreCase);
+                column.Visible = !column.Name.Equals("UniqueID", StringComparison.OrdinalIgnoreCase);
                 column.SortMode = DataGridViewColumnSortMode.Programmatic;
                 column.Resizable = DataGridViewTriState.True;
             }
@@ -277,18 +301,28 @@ namespace DataExtractor
 
         private void RefreshSelectedCount()
         {
-            int selectedCount = SelectedDeviceCount;
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(RefreshSelectedCount));
+            }
+            else
+            {
+                if (Visible && m_formLoaded)
+                {
+                    int selectedCount = SelectedDeviceCount;
 
-            labelSelectCount.Text = string.Format(labelSelectCount.Tag.ToString(), selectedCount);
+                    labelSelectCount.Text = string.Format(labelSelectCount.Tag.ToString(), selectedCount);
 
-            if (selectedCount == m_metadata.Devices.Count && m_metadata.Devices.Count > 0)
-                checkBoxSelectAllDevices.Checked = true;
-            else if (selectedCount == 0)
-                checkBoxSelectAllDevices.Checked = false;
+                    if (selectedCount == m_metadata.Devices.Count && m_metadata.Devices.Count > 0)
+                        checkBoxSelectAllDevices.Checked = true;
+                    else if (selectedCount == 0)
+                        checkBoxSelectAllDevices.Checked = false;
 
-            RefreshFilterExpression(selectedCount);
+                    RefreshFilterExpression(selectedCount);
 
-            buttonPreFilter.Enabled = selectedCount > 0;
+                    buttonPreFilter.Enabled = selectedCount > 0;
+                }
+            }
         }
 
         private void RefreshFilterExpression(int selectedCount)
@@ -389,7 +423,10 @@ namespace DataExtractor
             {
                 buttonConnect.Enabled = enabled;
                 buttonPreFilter.Enabled = enabled && SelectedDeviceCount > 0;
+                buttonCancelPreFilter.Visible = !enabled && m_prefiltering;
                 buttonExport.Enabled = enabled && !string.IsNullOrEmpty(textBoxExportFileName.Text);
+                buttonCancelExport.Visible = !enabled && m_exporting;
+                buttonShowGraph.Visible = m_graphData.HasData;
             }
         }
 
@@ -429,16 +466,20 @@ namespace DataExtractor
 
         private void PreFilter(object state)
         {
+            const int MaxPoints = 50;
+
             try
             {
                 double timeRange = (m_settings.EndTime - m_settings.StartTime).TotalSeconds;
                 Dictionary<string, DeviceDetail> deviceMap = new Dictionary<string, DeviceDetail>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<Guid, DeviceDetail> signalMap = new Dictionary<Guid, DeviceDetail>();
-                Dictionary<DeviceDetail, DeviceStats> deviceStats = new Dictionary<DeviceDetail, DeviceStats>();
+                Dictionary<Guid, DeviceStats> deviceStats = new Dictionary<Guid, DeviceStats>();
+                Dictionary<Guid, Tuple<Ticks, List<double>, List<double>>> plotValues = new Dictionary<Guid, Tuple<Ticks, List<double>, List<double>>>();
                 bool readComplete = false;
                 long receivedPoints = 0L;
                 Ticks operationTime;
                 Ticks operationStartTime;
+                double pointInterval = timeRange / MaxPoints;
 
                 void handleNewMeasurements(ICollection<IMeasurement> measurements)
                 {
@@ -448,7 +489,9 @@ namespace DataExtractor
 
                     foreach (IMeasurement measurement in measurements)
                     {
-                        if (signalMap.TryGetValue(measurement.Key.SignalID, out DeviceDetail device) && deviceStats.TryGetValue(device, out DeviceStats stats))
+                        Guid signalID = measurement.ID;
+
+                        if (signalMap.TryGetValue(signalID, out DeviceDetail device) && deviceStats.TryGetValue(device.UniqueID, out DeviceStats stats))
                         {
                             stats.Total++;
 
@@ -457,6 +500,15 @@ namespace DataExtractor
 
                             if (!measurement.TimestampQualityIsGood())
                                 stats.BadTimeCount++;
+                        }
+
+                        Tuple<Ticks, List<double>, List<double>> plotData = plotValues.GetOrAdd(signalID, _ => new Tuple<Ticks, List<double>, List<double>>(measurement.Timestamp, new List<double>(new[] { (double)measurement.Timestamp }), new List<double>(new[] { measurement.AdjustedValue })));
+
+                        if ((measurement.Timestamp - plotData.Item1).ToSeconds() > pointInterval)
+                        {
+                            plotData.Item2.Add(measurement.Timestamp);
+                            plotData.Item3.Add(measurement.AdjustedValue);
+                            plotValues[signalID] = new Tuple<Ticks, List<double>, List<double>>(measurement.Timestamp, plotData.Item2, plotData.Item3);
                         }
                     }
 
@@ -468,10 +520,13 @@ namespace DataExtractor
                     }
                 }
 
-                void readCompleted(string message)
+                void readCompleted()
                 {
                     readComplete = true;
-                    ShowUpdateMessage(message);
+                    ShowUpdateMessage("Data read completed.");
+
+                    foreach (KeyValuePair<Guid, Tuple<Ticks, List<double>, List<double>>> plotData in plotValues)
+                        m_graphData.PlotLine(plotData.Value.Item2, plotData.Value.Item3);
                 }
 
                 operationStartTime = DateTime.UtcNow.Ticks;
@@ -486,17 +541,74 @@ namespace DataExtractor
                 }
 
                 foreach (DeviceDetail device in m_metadata.Devices)
-                    deviceStats[device] = new DeviceStats();
+                    deviceStats[device.UniqueID] = new DeviceStats { Device = device };
 
-                using (DataReceiver receiver = new DataReceiver($"server={m_settings.HostAddress}; port={m_settings.Port}; interface=0.0.0.0", m_settings.FilterExpression, m_settings.StartTime, m_settings.EndTime, handleNewMeasurements, ShowUpdateMessage, ex => ShowUpdateMessage($"Error: {ex.Message}"), readCompleted))
+                m_graphData.ClearPlots();
+
+                using (new DataReceiver($"server={m_settings.HostAddress}; port={m_settings.Port}; interface=0.0.0.0", m_settings.FilterExpression, m_settings.StartTime, m_settings.EndTime)
                 {
-                    while (!m_formClosing && !readComplete)
-                        Thread.Sleep(1000);
+                    NewMeasurementsCallback = handleNewMeasurements,
+                    StatusMessageCallback = ShowUpdateMessage,
+                    ProcessExceptionCallback = ex => ShowUpdateMessage($"Error: {ex.Message}"),
+                    ReadCompletedCallback = readCompleted
+                })
+                {
+                    while (!m_formClosing && !readComplete && m_prefiltering)
+                        Thread.Sleep(500);
                 }
+
+                long expectedPoints = (long)(m_settings.FrameRate * timeRange);
+
+                foreach (DeviceStats stats in deviceStats.Values)
+                {
+                    DeviceDetail device = stats.Device;
+                    stats.MissingDataCount = expectedPoints - stats.Total;
+                    double badData, badTime, missingData;
+
+                    if (stats.Total == 0)
+                    {
+                        badTime = 0.0D;
+                        badData = 0.0D;
+                        missingData = 1.0D;
+                    }
+                    else
+                    {
+                        badData = stats.BadDataCount / (double)stats.Total;
+                        badTime = stats.BadTimeCount / (double)stats.Total;
+                        missingData = stats.MissingDataCount / (double)stats.Total;
+
+                        if (badData < 0.0D)
+                            badData = 0.0D;
+
+                        if (badTime < 0.0D)
+                            badTime = 0.0D;
+
+                        if (missingData < 0.0D)
+                            missingData = 0.0D;
+                    }
+
+                    if (stats.BadDataCount / (double)stats.Total * 100.0D > m_settings.AcceptableBadData)
+                    {
+                        device.Selected = false;
+                        ShowUpdateMessage($"Device \"{device.Name}\" unselected - too much bad data: {badData:0.00%}...");
+                    }
+                    else if (stats.BadTimeCount / (double)stats.Total * 100.0D > m_settings.AcceptableBadTime)
+                    {
+                        device.Selected = false;
+                        ShowUpdateMessage($"Device \"{device.Name}\" unselected - too much bad data with bad time: {badTime:0.00%}...");
+                    }
+                    else if (stats.MissingDataCount / (double)stats.Total * 100.0D > m_settings.AcceptableMissingData)
+                    {
+                        device.Selected = false;
+                        ShowUpdateMessage($"Device \"{device.Name}\" unselected - too much missing data: {missingData:0.00%}...");
+                    }
+                }
+
+                RefreshSelectedCount();
 
                 operationTime = DateTime.UtcNow.Ticks - operationStartTime;
 
-                if (m_formClosing)
+                if (m_formClosing || !m_prefiltering)
                 {
                     ShowUpdateMessage("*** Data Pre-filter Canceled ***");
                     UpdateProgressBar(0);
@@ -524,19 +636,122 @@ namespace DataExtractor
         {
             try
             {
-                HashSet<ulong> pointIDList;
                 double timeRange = (m_settings.EndTime - m_settings.StartTime).TotalSeconds;
-                long scannedPoints = 0L;
-                long processedPoints = 0L;
-                long processedDataBlocks = 0L;
-                long duplicatePoints = 0L;
+                Dictionary<string, DeviceDetail> deviceMap = new Dictionary<string, DeviceDetail>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<Guid, DeviceDetail> signalMap = new Dictionary<Guid, DeviceDetail>();
+                Dictionary<Guid, DeviceStats> deviceStats = new Dictionary<Guid, DeviceStats>();
+                bool readComplete = false;
+                long receivedPoints = 0L;
                 Ticks operationTime;
                 Ticks operationStartTime;
-                //DataPoint point = new DataPoint();
-                DateTime firstTimestamp = new DateTime(0L);
-                DateTime lastTimestamp = new DateTime(0L);
-                long lastRowIndex;
-                
+
+                void handleNewMeasurements(ICollection<IMeasurement> measurements)
+                {
+                    bool showMessage = (receivedPoints + measurements.Count >= (receivedPoints / m_settings.MessageInterval + 1) * m_settings.MessageInterval);
+
+                    receivedPoints += measurements.Count;
+
+                    foreach (IMeasurement measurement in measurements)
+                    {
+                        if (signalMap.TryGetValue(measurement.Key.SignalID, out DeviceDetail device) && deviceStats.TryGetValue(device.UniqueID, out DeviceStats stats))
+                        {
+                            stats.Total++;
+
+                            if (!measurement.ValueQualityIsGood())
+                                stats.BadDataCount++;
+
+                            if (!measurement.TimestampQualityIsGood())
+                                stats.BadTimeCount++;
+                        }
+                    }
+
+                    if (showMessage && measurements.Count > 0)
+                    {
+                        IMeasurement measurement = measurements.First();
+                        ShowUpdateMessage($"{Environment.NewLine}{receivedPoints:N0} points read so far averaging {receivedPoints / (DateTime.UtcNow.Ticks - operationStartTime).ToSeconds():N0} points per second.");
+                        UpdateProgressBar((int)((1.0D - new Ticks(m_settings.EndTime.Ticks - (long)measurement.Timestamp).ToSeconds() / timeRange) * 100.0D));
+                    }
+                }
+
+                void readCompleted()
+                {
+                    readComplete = true;
+                    ShowUpdateMessage("Data read completed.");
+                }
+
+                operationStartTime = DateTime.UtcNow.Ticks;
+
+                foreach (DeviceDetail device in m_metadata.Devices)
+                    deviceMap[device.Name] = device;
+
+                foreach (MeasurementDetail measurement in m_metadata.Measurements)
+                {
+                    if (deviceMap.TryGetValue(measurement.DeviceName, out DeviceDetail device))
+                        signalMap[measurement.SignalID] = device;
+                }
+
+                foreach (DeviceDetail device in m_metadata.Devices)
+                    deviceStats[device.UniqueID] = new DeviceStats { Device = device };
+
+                using (new DataReceiver($"server={m_settings.HostAddress}; port={m_settings.Port}; interface=0.0.0.0", m_settings.FilterExpression, m_settings.StartTime, m_settings.EndTime)
+                {
+                    NewMeasurementsCallback = handleNewMeasurements,
+                    StatusMessageCallback = ShowUpdateMessage,
+                    ProcessExceptionCallback = ex => ShowUpdateMessage($"Error: {ex.Message}"),
+                    ReadCompletedCallback = readCompleted
+                })
+                {
+                    while (!m_formClosing && !readComplete && m_exporting)
+                        Thread.Sleep(500);
+                }
+
+                long expectedPoints = (long)(m_settings.FrameRate * timeRange);
+
+                foreach (DeviceStats stats in deviceStats.Values)
+                {
+                    DeviceDetail device = stats.Device;
+                    stats.MissingDataCount = expectedPoints - stats.Total;
+                    double badData, badTime, missingData;
+
+                    if (stats.Total == 0)
+                    {
+                        badTime = 0.0D;
+                        badData = 0.0D;
+                        missingData = 1.0D;
+                    }
+                    else
+                    {
+                        badData = stats.BadDataCount / (double)stats.Total;
+                        badTime = stats.BadTimeCount / (double)stats.Total;
+                        missingData = stats.MissingDataCount / (double)stats.Total;
+
+                        if (badData < 0.0D)
+                            badData = 0.0D;
+
+                        if (badTime < 0.0D)
+                            badTime = 0.0D;
+
+                        if (missingData < 0.0D)
+                            missingData = 0.0D;
+                    }
+
+                    ShowUpdateMessage($"Device \"{device.Name}\" bad data: {badData:0.00%}, bad time: {badTime:0.00%}, missing data: {missingData:0.00%}...");
+                }
+
+                operationTime = DateTime.UtcNow.Ticks - operationStartTime;
+
+                if (m_formClosing || !m_exporting)
+                {
+                    ShowUpdateMessage("*** Data Export Canceled ***");
+                    UpdateProgressBar(0);
+                }
+                else
+                {
+                    ShowUpdateMessage("*** Data Export Complete ***");
+                    UpdateProgressBar(100);
+                }
+
+                ShowUpdateMessage($"Total export processing time {operationTime.ToElapsedTimeString(3)} at {receivedPoints / operationTime.ToSeconds():N0} points per second.{Environment.NewLine}");
             }
             catch (Exception ex)
             {
