@@ -357,9 +357,19 @@
             simulated for the purposes of real-time concentration.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.PageFactor">
+            <summary>
+            Gets or sets value paging factor to read more data per page from PI.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIPBInputAdapter.AutoRepeat">
             <summary>
             Gets or sets value that determines if the input data should be replayed repeatedly.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.TagNamePrefixRemoveCount">
+            <summary>
+            Gets or sets the number of tag name prefixes, e.g., "SOURCE!", applied by subscriptions to remove from PI tag names.
             </summary>
         </member>
         <member name="P:PIAdapters.PIPBInputAdapter.SupportsTemporalProcessing">
@@ -525,10 +535,11 @@
             Gets or sets the handler used to manage any exceptions that may occur while reading data.
             </summary>
         </member>
-        <member name="M:PIAdapters.TimeSortedValueScanner.Read">
+        <member name="M:PIAdapters.TimeSortedValueScanner.Read(System.Int32)">
             <summary>
             Reads all <see cref="T:OSIsoft.AF.Asset.AFValue"/> instances in time sorted order as a yielding enumerable.
             </summary>
+            <param name="pageFactor">Defines a paging factor used to load more data into a page.</param>
             <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
         </member>
     </members>
