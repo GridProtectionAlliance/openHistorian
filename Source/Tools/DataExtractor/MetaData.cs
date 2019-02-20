@@ -35,6 +35,7 @@ namespace DataExtractor
     public class MeasurementDetail
     {
         public long PointID { get; set; }
+        public string PointTag { get; set; }
         public Guid SignalID { get; set; }
         public string DeviceName { get; set; }
         public string SignalAcronym { get; set; }
@@ -44,6 +45,7 @@ namespace DataExtractor
         {
             MeasurementKey.TryParse(row["ID"].ToString(), out MeasurementKey measurementKey);
             PointID = unchecked((long)measurementKey.ID);
+            PointTag = row["PointTag"].ToString();
             SignalID = Guid.Parse(row["SignalID"].ToString());
             DeviceName = row["DeviceAcronym"].ToString();
             SignalAcronym = row["SignalAcronym"].ToString();
@@ -54,7 +56,6 @@ namespace DataExtractor
     public class DeviceDetail
     {
         public bool Selected { get; set; }
-        public Guid UniqueID { get; set; }
         public string Name { get; set; }
         public bool Concentrator { get; set; }
         public string Company { get; set; }
@@ -62,6 +63,7 @@ namespace DataExtractor
         public string VendorDevice { get; set; }
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
+        public Guid UniqueID { get; set; }
 
         public DeviceDetail(DataRow row)
         {

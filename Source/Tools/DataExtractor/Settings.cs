@@ -131,6 +131,13 @@ namespace DataExtractor
         public string FilterExpression { get; set; }
 
         /// <summary>
+        /// Gets or sets export file name.
+        /// </summary>
+        [TypeConvertedValueExpression("Form.textBoxExportFileName.Text")]
+        [SerializeSetting(false)] // <-- Do not synchronize to config file
+        public string ExportFileName { get; set; }
+
+        /// <summary>
         /// Gets or sets message display interval.
         /// </summary>
         [TypeConvertedValueExpression("Form.maskedTextBoxMessageInterval.Text")]

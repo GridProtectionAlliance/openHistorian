@@ -44,6 +44,7 @@
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
             this.tabControlOptions = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.buttonShowGraph = new System.Windows.Forms.Button();
             this.buttonCancelPreFilter = new System.Windows.Forms.Button();
             this.buttonPreFilter = new System.Windows.Forms.Button();
             this.dataGridViewDevices = new System.Windows.Forms.DataGridView();
@@ -94,7 +95,6 @@
             this.radioButtonCSV = new System.Windows.Forms.RadioButton();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.buttonCancelExport = new System.Windows.Forms.Button();
-            this.buttonShowGraph = new System.Windows.Forms.Button();
             this.groupBoxServerConnection.SuspendLayout();
             this.groupBoxMessages.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
@@ -302,6 +302,19 @@
             this.tabPage1.Size = new System.Drawing.Size(560, 238);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Time Range";
+            // 
+            // buttonShowGraph
+            // 
+            this.buttonShowGraph.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonShowGraph.Location = new System.Drawing.Point(457, 38);
+            this.buttonShowGraph.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonShowGraph.Name = "buttonShowGraph";
+            this.buttonShowGraph.Size = new System.Drawing.Size(88, 27);
+            this.buttonShowGraph.TabIndex = 13;
+            this.buttonShowGraph.Text = "Show Graph";
+            this.buttonShowGraph.UseVisualStyleBackColor = true;
+            this.buttonShowGraph.Visible = false;
+            this.buttonShowGraph.Click += new System.EventHandler(this.buttonShowGraph_Click);
             // 
             // buttonCancelPreFilter
             // 
@@ -530,7 +543,7 @@
             // 
             // maskedTextBoxAcceptableMissingData
             // 
-            this.maskedTextBoxAcceptableMissingData.Location = new System.Drawing.Point(321, 147);
+            this.maskedTextBoxAcceptableMissingData.Location = new System.Drawing.Point(324, 171);
             this.maskedTextBoxAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2);
             this.maskedTextBoxAcceptableMissingData.Mask = "000";
             this.maskedTextBoxAcceptableMissingData.Name = "maskedTextBoxAcceptableMissingData";
@@ -543,7 +556,7 @@
             // labelAcceptableMissingData
             // 
             this.labelAcceptableMissingData.AutoSize = true;
-            this.labelAcceptableMissingData.Location = new System.Drawing.Point(189, 150);
+            this.labelAcceptableMissingData.Location = new System.Drawing.Point(192, 174);
             this.labelAcceptableMissingData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAcceptableMissingData.Name = "labelAcceptableMissingData";
             this.labelAcceptableMissingData.Size = new System.Drawing.Size(128, 13);
@@ -553,7 +566,7 @@
             // 
             // maskedTextBoxAcceptableBadTime
             // 
-            this.maskedTextBoxAcceptableBadTime.Location = new System.Drawing.Point(321, 123);
+            this.maskedTextBoxAcceptableBadTime.Location = new System.Drawing.Point(324, 147);
             this.maskedTextBoxAcceptableBadTime.Margin = new System.Windows.Forms.Padding(2);
             this.maskedTextBoxAcceptableBadTime.Mask = "000";
             this.maskedTextBoxAcceptableBadTime.Name = "maskedTextBoxAcceptableBadTime";
@@ -566,7 +579,7 @@
             // labelAccetableBadTime
             // 
             this.labelAccetableBadTime.AutoSize = true;
-            this.labelAccetableBadTime.Location = new System.Drawing.Point(205, 126);
+            this.labelAccetableBadTime.Location = new System.Drawing.Point(208, 150);
             this.labelAccetableBadTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAccetableBadTime.Name = "labelAccetableBadTime";
             this.labelAccetableBadTime.Size = new System.Drawing.Size(112, 13);
@@ -576,7 +589,7 @@
             // 
             // maskedTextBoxAcceptableBadData
             // 
-            this.maskedTextBoxAcceptableBadData.Location = new System.Drawing.Point(321, 99);
+            this.maskedTextBoxAcceptableBadData.Location = new System.Drawing.Point(324, 123);
             this.maskedTextBoxAcceptableBadData.Margin = new System.Windows.Forms.Padding(2);
             this.maskedTextBoxAcceptableBadData.Mask = "000";
             this.maskedTextBoxAcceptableBadData.Name = "maskedTextBoxAcceptableBadData";
@@ -589,7 +602,7 @@
             // labelAcceptableBadData
             // 
             this.labelAcceptableBadData.AutoSize = true;
-            this.labelAcceptableBadData.Location = new System.Drawing.Point(205, 102);
+            this.labelAcceptableBadData.Location = new System.Drawing.Point(208, 126);
             this.labelAcceptableBadData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAcceptableBadData.Name = "labelAcceptableBadData";
             this.labelAcceptableBadData.Size = new System.Drawing.Size(112, 13);
@@ -602,7 +615,7 @@
             this.checkBoxFillInMissingTimestamps.AutoSize = true;
             this.checkBoxFillInMissingTimestamps.Checked = true;
             this.checkBoxFillInMissingTimestamps.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxFillInMissingTimestamps.Location = new System.Drawing.Point(8, 149);
+            this.checkBoxFillInMissingTimestamps.Location = new System.Drawing.Point(11, 173);
             this.checkBoxFillInMissingTimestamps.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxFillInMissingTimestamps.Name = "checkBoxFillInMissingTimestamps";
             this.checkBoxFillInMissingTimestamps.Size = new System.Drawing.Size(146, 17);
@@ -616,7 +629,7 @@
             this.checkBoxAlignTimestamps.AutoSize = true;
             this.checkBoxAlignTimestamps.Checked = true;
             this.checkBoxAlignTimestamps.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAlignTimestamps.Location = new System.Drawing.Point(8, 102);
+            this.checkBoxAlignTimestamps.Location = new System.Drawing.Point(11, 126);
             this.checkBoxAlignTimestamps.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxAlignTimestamps.Name = "checkBoxAlignTimestamps";
             this.checkBoxAlignTimestamps.Size = new System.Drawing.Size(108, 17);
@@ -630,7 +643,7 @@
             this.checkBoxExportMissingAsNaN.AutoSize = true;
             this.checkBoxExportMissingAsNaN.Checked = true;
             this.checkBoxExportMissingAsNaN.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxExportMissingAsNaN.Location = new System.Drawing.Point(8, 126);
+            this.checkBoxExportMissingAsNaN.Location = new System.Drawing.Point(11, 150);
             this.checkBoxExportMissingAsNaN.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxExportMissingAsNaN.Name = "checkBoxExportMissingAsNaN";
             this.checkBoxExportMissingAsNaN.Size = new System.Drawing.Size(168, 17);
@@ -789,7 +802,7 @@
             // 
             this.labelBadDataPercent.AutoSize = true;
             this.labelBadDataPercent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBadDataPercent.Location = new System.Drawing.Point(351, 103);
+            this.labelBadDataPercent.Location = new System.Drawing.Point(354, 127);
             this.labelBadDataPercent.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBadDataPercent.Name = "labelBadDataPercent";
             this.labelBadDataPercent.Size = new System.Drawing.Size(15, 13);
@@ -800,7 +813,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(351, 150);
+            this.label2.Location = new System.Drawing.Point(354, 174);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(15, 13);
@@ -811,7 +824,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(351, 127);
+            this.label1.Location = new System.Drawing.Point(354, 151);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(15, 13);
@@ -920,19 +933,6 @@
             this.buttonCancelExport.Visible = false;
             this.buttonCancelExport.Click += new System.EventHandler(this.buttonExportCancel_Click);
             // 
-            // buttonShowGraph
-            // 
-            this.buttonShowGraph.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonShowGraph.Location = new System.Drawing.Point(457, 38);
-            this.buttonShowGraph.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonShowGraph.Name = "buttonShowGraph";
-            this.buttonShowGraph.Size = new System.Drawing.Size(88, 27);
-            this.buttonShowGraph.TabIndex = 13;
-            this.buttonShowGraph.Text = "Show Graph";
-            this.buttonShowGraph.UseVisualStyleBackColor = true;
-            this.buttonShowGraph.Visible = false;
-            this.buttonShowGraph.Click += new System.EventHandler(this.buttonShowGraph_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1023,7 +1023,6 @@
         public System.Windows.Forms.CheckBox checkBoxExportFilePerDataType;
         private System.Windows.Forms.Label labelExportFileName;
         private System.Windows.Forms.Button buttonSelectFile;
-        private System.Windows.Forms.TextBox textBoxExportFileName;
         private System.Windows.Forms.RadioButton radioButtonCOMTRADE;
         private System.Windows.Forms.RadioButton radioButtonCSV;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
@@ -1039,6 +1038,7 @@
         private System.Windows.Forms.Button buttonCancelPreFilter;
         private System.Windows.Forms.Button buttonCancelExport;
         private System.Windows.Forms.Button buttonShowGraph;
+        public System.Windows.Forms.TextBox textBoxExportFileName;
     }
 }
 
