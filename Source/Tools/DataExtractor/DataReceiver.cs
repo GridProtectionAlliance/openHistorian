@@ -39,10 +39,6 @@ namespace DataExtractor
         // Fields
         private DataSubscriber m_subscriber;
         private readonly UnsynchronizedSubscriptionInfo m_subscriptionInfo;
-        private Action<ICollection<IMeasurement>> m_newMeasurementsCallback;
-        private Action<string> m_statusMessageCallback;
-        private Action<Exception> m_processExceptionCallback;
-        private Action m_readCompletedCallback;
         private bool m_disposed;
 
         #endregion
@@ -70,7 +66,7 @@ namespace DataExtractor
                 FilterExpression = filterExpression,
                 StartTime = startTime.ToString(TimeTagBase.DefaultFormat),
                 StopTime = stopTime.ToString(TimeTagBase.DefaultFormat),
-                ProcessingInterval = 0,
+                ProcessingInterval = 0, // Zero value requests data as fast as possible
                 UseMillisecondResolution = true
             };
 
@@ -91,34 +87,15 @@ namespace DataExtractor
         /// <summary>
         /// Releases the unmanaged resources before the <see cref="DataReceiver"/> object is reclaimed by <see cref="GC"/>.
         /// </summary>
-        ~DataReceiver()
-        {
-            Dispose(false);
-        }
+        ~DataReceiver() => Dispose(false);
 
-        public Action<ICollection<IMeasurement>> NewMeasurementsCallback
-        {
-            get => m_newMeasurementsCallback;
-            set => m_newMeasurementsCallback = value;
-        }
+        public Action<ICollection<IMeasurement>> NewMeasurementsCallback { get; set; }
 
-        public Action<string> StatusMessageCallback
-        {
-            get => m_statusMessageCallback;
-            set => m_statusMessageCallback = value;
-        }
+        public Action<string> StatusMessageCallback { get; set; }
 
-        public Action<Exception> ProcessExceptionCallback
-        {
-            get => m_processExceptionCallback;
-            set => m_processExceptionCallback = value;
-        }
+        public Action<Exception> ProcessExceptionCallback { get; set; }
 
-        public Action ReadCompletedCallback
-        {
-            get => m_readCompletedCallback;
-            set => m_readCompletedCallback = value;
-        }
+        public Action ReadCompletedCallback { get; set; }
 
         #endregion
 
@@ -147,6 +124,9 @@ namespace DataExtractor
                     {
                         if ((object)m_subscriber != null)
                         {
+                            m_subscriber.Unsubscribe();
+                            m_subscriber.Stop();
+
                             // Detach from subscriber events
                             m_subscriber.ConnectionEstablished -= m_subscriber_ConnectionEstablished;
                             m_subscriber.NewMeasurements -= m_subscriber_NewMeasurements;
@@ -166,31 +146,15 @@ namespace DataExtractor
             }
         }
 
-        private void m_subscriber_ConnectionEstablished(object sender, EventArgs e)
-        {
-            // Request meta-data upon successful connection
-            m_subscriber.UnsynchronizedSubscribe(m_subscriptionInfo);
-        }
+        private void m_subscriber_ConnectionEstablished(object sender, EventArgs e) => m_subscriber.UnsynchronizedSubscribe(m_subscriptionInfo);
 
-        private void m_subscriber_NewMeasurements(object sender, EventArgs<ICollection<IMeasurement>> e)
-        {
-            m_newMeasurementsCallback?.Invoke(e.Argument);
-        }
+        private void m_subscriber_NewMeasurements(object sender, EventArgs<ICollection<IMeasurement>> e) => NewMeasurementsCallback?.Invoke(e.Argument);
 
-        private void m_subscriber_StatusMessage(object sender, EventArgs<string> e)
-        {
-            m_statusMessageCallback?.Invoke(e.Argument);
-        }
+        private void m_subscriber_StatusMessage(object sender, EventArgs<string> e) => StatusMessageCallback?.Invoke(e.Argument);
 
-        private void m_subscriber_ProcessException(object sender, EventArgs<Exception> e)
-        {
-            m_processExceptionCallback?.Invoke(e.Argument);
-        }
+        private void m_subscriber_ProcessException(object sender, EventArgs<Exception> e) => ProcessExceptionCallback?.Invoke(e.Argument);
 
-        private void m_subscriber_ProcessingComplete(object sender, EventArgs<string> e)
-        {
-            m_readCompletedCallback?.Invoke();
-        }
+        private void m_subscriber_ProcessingComplete(object sender, EventArgs<string> e) => ReadCompletedCallback?.Invoke();
 
         #endregion
     }

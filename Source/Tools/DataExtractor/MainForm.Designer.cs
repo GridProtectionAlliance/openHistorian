@@ -729,7 +729,7 @@
             this.maskedTextBoxMessageInterval.Name = "maskedTextBoxMessageInterval";
             this.maskedTextBoxMessageInterval.Size = new System.Drawing.Size(53, 20);
             this.maskedTextBoxMessageInterval.TabIndex = 4;
-            this.maskedTextBoxMessageInterval.Text = "15000";
+            this.maskedTextBoxMessageInterval.Text = "30000";
             this.maskedTextBoxMessageInterval.ValidatingType = typeof(int);
             this.maskedTextBoxMessageInterval.TextChanged += new System.EventHandler(this.FormElementChanged);
             // 
@@ -893,6 +893,7 @@
             // radioButtonCOMTRADE
             // 
             this.radioButtonCOMTRADE.AutoSize = true;
+            this.radioButtonCOMTRADE.Enabled = false;
             this.radioButtonCOMTRADE.Location = new System.Drawing.Point(12, 41);
             this.radioButtonCOMTRADE.Name = "radioButtonCOMTRADE";
             this.radioButtonCOMTRADE.Size = new System.Drawing.Size(86, 17);

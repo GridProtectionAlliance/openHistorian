@@ -34,7 +34,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 // ReSharper disable AccessToModifiedClosure
@@ -487,7 +486,7 @@ namespace DataExtractor
 
         // Internal Functions
 
-        private void PreFilter(object state)
+        private void PreFilter()
         {
             const int MaxPoints = 50;
 
@@ -537,7 +536,7 @@ namespace DataExtractor
 
                     if (showMessage && measurements.Count > 0)
                     {
-                        IMeasurement measurement = measurements.First();
+                        IMeasurement measurement = measurements.Last();
                         ShowUpdateMessage($"{Environment.NewLine}{receivedPoints:N0} points read so far averaging {receivedPoints / (DateTime.UtcNow.Ticks - operationStartTime).ToSeconds():N0} points per second.");
                         UpdateProgressBar((int)((1.0D - new Ticks(m_settings.EndTime.Ticks - (long)measurement.Timestamp).ToSeconds() / timeRange) * 100.0D));
                     }
@@ -656,7 +655,7 @@ namespace DataExtractor
             }
         }
 
-        private void ExportData(object state)
+        private void ExportData()
         {
             try
             {
@@ -678,6 +677,7 @@ namespace DataExtractor
                 bool exportFilePerDataType = m_settings.ExportFilePerDataType;
                 string exportFileName = m_settings.ExportFileName;
                 double timeRange = (endTime - startTime).TotalSeconds;
+                int selectedDeviceCount = SelectedDeviceCount;
 
                 Ticks operationStartTime;
                 StringBuilder readBuffer = new StringBuilder(TargetBufferSize * 2);
@@ -744,6 +744,7 @@ namespace DataExtractor
 
                     headers.AppendLine($"Data extraction from \"{hostAddress}:{port}\" exported on {DateTime.UtcNow.ToString(TimeTagBase.DefaultFormat)} UTC");
                     headers.AppendLine($"Export range: {startTime.ToString(TimeTagBase.DefaultFormat)} UTC to {endTime.ToString(TimeTagBase.DefaultFormat)} UTC");
+                    headers.AppendLine($"Signal types: {string.Join(", ", signalTypes)}");
 
                     StringBuilder deviceRow = new StringBuilder();
                     StringBuilder measurementRow = new StringBuilder();
@@ -756,18 +757,23 @@ namespace DataExtractor
                         if (!device.Selected)
                             continue;
 
-                        if (!m_metadata.Measurements.Any(m => string.Equals(m.DeviceName, device.Name, StringComparison.OrdinalIgnoreCase)))
+                        if (!m_metadata.Measurements.Any(m => string.Equals(m.DeviceName, device.Name, StringComparison.OrdinalIgnoreCase) && signalTypes.Contains(m.SignalAcronym)))
                             continue;
 
                         deviceRow.Append($",{device.Name}");
                         deviceCount++;
+                        bool first = true;
 
                         foreach (MeasurementDetail measurement in m_metadata.Measurements.Where(m => string.Equals(m.DeviceName, device.Name, StringComparison.OrdinalIgnoreCase)))
                         {
                             if (!signalTypes.Contains(measurement.SignalAcronym))
                                 continue;
 
-                            deviceRow.Append(",");
+                            if (first)
+                                first = false;
+                            else
+                                deviceRow.Append(",");
+
                             measurementRow.Append($",{measurement.PointTag} [{measurement.SignalAcronym}]");
                             signalIDIndex.Add(measurement.SignalID, measurementCount++);
                         }
@@ -853,13 +859,13 @@ namespace DataExtractor
 
                     if (showMessage && measurements.Count > 0)
                     {
-                        IMeasurement measurement = measurements.First();
+                        IMeasurement measurement = measurements.Last();
                         ShowUpdateMessage($"{Environment.NewLine}{receivedPoints:N0} points read so far averaging {receivedPoints / (DateTime.UtcNow.Ticks - operationStartTime).ToSeconds():N0} points per second.");
 
                         int exportFraction = (int)(100.0D * exports / totalExports);
-                        double currentExportProgress = 1.0D - (endTime.Ticks - measurement.Timestamp).ToSeconds() / timeRange / totalExports;
+                        double currentExportProgress = 1.0D - (endTime.Ticks - measurement.Timestamp).ToSeconds() / timeRange;
 
-                        UpdateProgressBar(exportFraction + (int)(currentExportProgress * 100.0D));
+                        UpdateProgressBar(exportFraction + (int)(currentExportProgress / totalExports * 100.0D));
                     }
                 }
 
@@ -885,6 +891,8 @@ namespace DataExtractor
                         ShowUpdateMessage($"Data read{(totalExports > 1 ? "s" : "" )} completed.");
                     else
                         ShowUpdateMessage($"{exports} of {totalExports} data reads completed.");
+
+                    UpdateProgressBar((int)(100.0D * exports / totalExports));
                 }
 
                 void exportData(HashSet<string> signalTypes, string suffix = null)
@@ -898,8 +906,14 @@ namespace DataExtractor
 
                     readComplete = false;
                     lastTimestamp = 0L;
+                    deviceCount = 0;
                     measurementCount = 0;
                     pastFirstRow = false;
+                    readBuffer.Clear();
+                    writeBuffer.Clear();
+
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
 
                     using (writer = File.CreateText(fileName))
                     {
@@ -907,37 +921,37 @@ namespace DataExtractor
                         writeComplete = false;
                         bufferReady.Reset();
 
-                        using (Task writeTask = Task.Factory.StartNew(writeData))
+                        Thread writeThread = new Thread(writeData);
+                        writeThread.Start();
+
+                        try
                         {
-                            try
+                            if (measurementCount > 0)
                             {
-                                if (measurementCount > 0)
+                                ShowUpdateMessage($"\nStarting data read for {string.Join(", ", signalTypes)} signal type{(signalTypes.Count > 1 ? "s" : "")}...\n");
+
+                                using (new DataReceiver($"server={hostAddress}; port={port}; interface=0.0.0.0", GenerateFilterExpression(signalTypes, selectedDeviceCount), startTime, endTime + TimeSpan.FromTicks(interval))
                                 {
-                                    ShowUpdateMessage($"Starting data read for {string.Join(", ", signalTypes)} signal type{(signalTypes.Count > 1 ? "s" : "")}...");
-
-                                    using (new DataReceiver($"server={hostAddress}; port={port}; interface=0.0.0.0", GenerateFilterExpression(signalTypes, SelectedDeviceCount), startTime, endTime)
-                                    {
-                                        NewMeasurementsCallback = handleNewMeasurements,
-                                        StatusMessageCallback = ShowUpdateMessage,
-                                        ProcessExceptionCallback = ex => ShowUpdateMessage($"Error: {ex.Message}"),
-                                        ReadCompletedCallback = readCompleted
-                                    })
-                                    {
-                                        while (!m_formClosing && !readComplete && m_exporting)
-                                            Thread.Sleep(500);
-                                    }
-
-                                    flushBuffers();
+                                    NewMeasurementsCallback = handleNewMeasurements,
+                                    StatusMessageCallback = ShowUpdateMessage,
+                                    ProcessExceptionCallback = ex => ShowUpdateMessage($"Error: {ex.Message}"),
+                                    ReadCompletedCallback = readCompleted
+                                })
+                                {
+                                    while (!m_formClosing && !readComplete && m_exporting)
+                                        Thread.Sleep(500);
                                 }
-                            }
-                            finally
-                            {
-                                writeComplete = true;
-                                bufferReady.Set();
-                            }
 
-                            writeTask.Wait();
+                                flushBuffers();
+                            }
                         }
+                        finally
+                        {
+                            writeComplete = true;
+                            bufferReady.Set();
+                        }
+
+                        writeThread.Join(5000);
                     }
                 }
 
