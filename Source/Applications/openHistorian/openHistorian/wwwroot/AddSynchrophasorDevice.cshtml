@@ -1,0 +1,1504 @@
+﻿@*******************************************************************************************************
+//  AddSynchrophasorDevice.cshtml - Gbtc
+//
+//  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  02/18/2019 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Threading
+@using GSF.ComponentModel.DataAnnotations
+@using GSF.Identity
+@using GSF.Security
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.HidePageTitle = true;
+    ViewBag.Title = "New Device Commissioning Wizard";
+
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string parameter;
+    int deviceID;
+
+    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID))
+    {
+        deviceID = 0;
+    }
+
+    bool userIsEditor = UserIsEditor();
+}
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        span.table-cell-text {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .input-label {
+            text-align: right;
+            vertical-align: top;
+            padding: 6px;
+            width: 160px;
+        }
+
+        .input-area {
+            width: 80%;
+            display: inline-table;
+            vertical-align: middle;
+        }
+
+        .device-singleton {
+            display: inherit;
+        }
+
+        @@media screen {
+            .page-logo {
+                margin-bottom: 2px;
+                margin-top: -38px;
+            }
+        }
+
+        @@media screen and (min-width: 638px) {
+            .page-logo {
+                margin-bottom: 2px;
+                margin-top: -12px;
+            }
+        }
+
+        @@media screen and (min-width: 868px) {
+            .page-logo {
+                margin-bottom: 2px;
+                margin-top: -12px;
+            }
+        }
+
+        @@media screen and (min-width: 992px) {
+            .page-logo {
+                margin-bottom: -25px;
+                margin-top: -4px;
+            }
+        }
+    </style>
+}
+@functions {
+    public string GetCurrentUserID()
+    {
+        if ((object)Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
+    // This function simply limits access to UI elements that the user does not have access to, server-side
+    // functions will further validate user rights even if UI restriction was somehow bypassed
+    public bool UserIsEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
+    }
+}
+@section Scripts {
+    <script src="@Resources.Root/Shared/Scripts/knockout.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.mapping.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.validation.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout.reactor.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/gsf.web.knockout.js"></script>
+    <script>
+        "use script";
+
+        var firstConnect = true;
+        var deviceID = @deviceID;
+        var viewModel = null;
+        var deviceSignalTypes = [];
+        var phasorSignalTypes = [];
+
+        function showLoadingLabel() {
+            $("#loadingDataLabel").css("visibility", "visible");
+        }
+
+        function hideLoadingLabel() {
+            setTimeout(function () { $("#loadingDataLabel").css("visibility", "hidden"); }, 500);
+        }
+
+        function guessPhase(phasorLabel) {
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1)
+                return "+";
+
+            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1)
+                return "A";
+
+            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1)
+                return "B";
+
+            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1)
+                return "C";
+
+            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1)
+                return "0";
+
+            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1)
+                return "N";
+
+            return "+";
+        }
+
+        function guessNominalVoltage(phasorLabel, deviceLabel) {
+            const commonVoltageLevels = ["69", "115", "230", "500", "765"];
+
+            // Check phasor label before device
+            for (let i = 0; i < commonVoltageLevels.length; i++) {
+                const voltageLevel = commonVoltageLevels[i];
+
+                if (phasorLabel.indexOf(voltageLevel) > -1)
+                    return parseInt(voltageLevel);
+            }
+
+            for (let i = 0; i < commonVoltageLevels.length; i++) {
+                const voltageLevel = commonVoltageLevels[i];
+
+                if (deviceLabel.indexOf(voltageLevel) > -1)
+                    return parseInt(voltageLevel);
+            }
+
+            return 500;
+        }
+
+        function guessAssociatedVoltage(voltages, phasorLabel, phase) {
+            phasorLabel = phasorLabel.toUpperCase();
+
+            if (phase === "+")
+                phase = "1";
+
+            var search = "V" + phase;
+            var replace = "I" + phase;
+
+            for (let i = 0; i < voltages.length; i++) {
+                if (phasorLabel === voltages[i].Label().toUpperCase().replace(search, replace))
+                    return voltages[i].ID;
+            }
+
+            search = "POT";
+            replace = "CURR";
+
+            for (let i = 0; i < voltages.length; i++) {
+                if (phasorLabel === voltages[i].Label().toUpperCase().replace(search, replace))
+                    return voltages[i].ID;
+            }
+
+            return -1;
+        }
+
+        function DeviceViewModel() {
+            const self = this;
+
+            // Observable fields
+            self.voltages = ko.observableArray();
+            self.currents = ko.observableArray();
+            self.configFrame = ko.observable({ConnectionString: "", Cells: []});
+            self.configFrameDetails = ko.observable("Calculating...");
+            self.addAnalogs = ko.observable(false);
+            self.addDigitals = ko.observable(false);
+            self.errors = ko.validation.group(self);
+
+            // Regular fields
+            self.voltageCount = 0;
+
+            // Internal fields
+            self._addTagsAsVirtualPoints = ko.observable(undefined);
+            self._deviceAcronym = ko.observable("DEVICENAME");
+            self._instanceName = ko.observable("");
+            self._templateType = ko.observable("");
+            self._historianID = ko.observable(0);
+            self._dataHubIsConnected = ko.observable(false);
+            self._isDirty = ko.observable(false);
+
+            // Properties
+            self.addTagsAsVirtualPoints = ko.pureComputed({
+                read: function () {
+                    if (self._addTagsAsVirtualPoints() === undefined)
+                        self._addTagsAsVirtualPoints(Cookies.get("addTagsAsVirtualPoints") === "true");
+
+                    return self._addTagsAsVirtualPoints();
+                },
+                write: function (value) {
+                    if (value === self._addTagsAsVirtualPoints())
+                        return;
+
+                    self._addTagsAsVirtualPoints(value);
+                    Cookies.set("addTagsAsVirtualPoints", value.toString(), { expires: 365 });
+                },
+                owner: self
+            });
+
+            self.deviceAcronym = ko.pureComputed({
+                read: self._deviceAcronym,
+                write: function (value) {
+                    if (value === self._deviceAcronym())
+                        return;
+
+                    if (value) {
+                        value = value.trim();
+                        self._deviceAcronym(value);
+                    }
+                    else {
+                        self.deviceAcronym(value);
+                    }
+                },
+                owner: self
+            });
+
+            self.instanceName = ko.pureComputed({
+                read: self._instanceName,
+                write: function (value) {
+                    if (value === self._instanceName())
+                        return;
+
+                    if (value) {
+                        self._instanceName(value);
+                        Cookies.set("instanceName", value.toString(), { expires: 365 });
+                    } else {
+                        self._instanceName("");
+                    }
+
+                    if (self.dataHubIsConnected()) {
+                        dataHub.queryHistorian(self.instanceName()).done(function (historian) {
+                            self._historianID(historian.ID);
+                        });
+                    }
+                },
+                owner: self
+            });
+
+            self.templateType = ko.pureComputed({
+                read: self._templateType,
+                write: function (value) {
+                    if (value === self._templateType())
+                        return;
+
+                    if (value) {
+                        self._templateType(value);
+                        Cookies.set("templateType", value.toString(), { expires: 365 });
+                    } else {
+                        self._templateType("");
+                    }
+                },
+                owner: self
+            });
+
+            self.historianID = ko.pureComputed({
+                read: self._historianID,
+                owner: self
+            });
+
+            self.dataHubIsConnected = ko.pureComputed({
+                read: self._dataHubIsConnected,
+                write: function (value) {
+                    if (value === undefined)
+                        value = false;
+
+                    self._dataHubIsConnected(value);
+
+                    if (value)
+                        self.refreshValidationErrors();
+                },
+                owner: self
+            });
+
+            self.isDirty = ko.pureComputed({
+                read: self._isDirty,
+                write: function (value) {
+                    if (value === undefined)
+                        value = true;
+
+                    self._isDirty(value);
+                },
+                owner: self
+            });
+
+            // Methods
+
+            self.updateConfigFrameDetails = function () {
+                var voltageCount = 0;
+                var currentCount = 0;
+                var analogCount = 0;
+                var digitalCount = 0;
+
+                const cells = self.configFrame().Cells;
+                const cellCount = cells.length;
+
+                for (let i = 0; i < cellCount; i++) {
+                    const cell = cells[i];
+
+                    for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
+                        const phasorDefinition = cell.PhasorDefinitions[j];
+
+                        if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
+                            voltageCount++;
+                        else
+                            currentCount++;
+                    }
+
+                    analogCount += cell.AnalogDefinitions.length;
+                    digitalCount += cell.DigitalDefinitions.length;
+                }
+
+                self.configFrameDetails(String.format("Device Count {0} &ndash; {1} Voltage Phasors, {2} Current Phasors, {3} Analogs, {4} Digitals",
+                    cellCount,
+                    voltageCount,
+                    currentCount,
+                    analogCount,
+                    digitalCount));
+
+                self.addAnalogs(analogCount > 0);
+                self.addDigitals(digitalCount > 0);
+            }
+
+            self.analyzeConfig = function(sourceData) {
+                if (!self.dataHubIsConnected())
+                    return;
+
+                self.voltages.removeAll();
+                self.currents.removeAll();
+
+                $("#responsiveTableDiv").show();
+                $("[id=voltageRow]").css("visibility", "hidden");
+                $("[id=currentRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                showLoadingLabel();
+                self.configFrameDetails("Calculating...");
+
+                // If device is currently active, disconnect it before requesting a configuration
+                // frame in case device doesn't support multiple connections
+                if (deviceID > 0)
+                    serviceHub.sendCommand("disconnect " + deviceID);
+
+                dataHub.loadConfigurationFrame(sourceData).done(function (configFrame) {
+                    // Reconnect device
+                    if (deviceID > 0)
+                        serviceHub.sendCommand("connect " + deviceID);
+
+                    self.configFrame(configFrame);
+                    self.voltageCount = 0;
+
+                    const deviceCount = self.configFrame().Cells.length;
+
+                    for (let i = 0; i < deviceCount; i++) {
+                        const cell = self.configFrame().Cells[i];
+
+                        let cellAcronym = cell.IDLabel;
+
+                        if (isEmpty(cellAcronym))
+                            cellAcronym = cell.StationName.toUpperCase().replaceAll(" ", "_");
+
+                        if (deviceCount === 1) {
+                            self.deviceAcronym(cellAcronym);
+                            cell.IDLabel = self.deviceAcronym;
+                        } else {
+                            cell.IDLabel = ko.observable(cellAcronym);
+                        }
+
+                        cell.IDLabel.extend({
+                            required: true,
+                            pattern: {
+                                message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
+                                params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
+                            },
+                            deviceUniqueInDatabase: true
+                        });
+
+                        for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
+                            const phasorDefinition = cell.PhasorDefinitions[j];
+
+                            phasorDefinition.Label = String(phasorDefinition.Label).toUpperCase();
+
+                            if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
+                                self.voltages.push(self.createObservableVoltage(cell.IDLabel, phasorDefinition));
+                            else
+                                self.currents.push(self.createObservableCurrent(cell.IDLabel, phasorDefinition));
+                        }
+                    }
+
+                    // Make sure table is refreshed
+                    if (ko.options.deferUpdates)
+                        ko.tasks.runEarly();
+
+                    self.errors = ko.validation.group([
+                        self.deviceAcronym,
+                        self.voltages,
+                        self.currents
+                    ]);
+
+                    self.refreshValidationErrors();
+
+                    $("[id=voltageRow]").css("visibility", "visible");
+                    $("[id=currentRow]").css("visibility", "visible");
+                    hideLoadingLabel();
+
+                    self.updateConfigFrameDetails();
+
+                    self.isDirty(false);
+
+                    if (deviceCount === 1)
+                        $(".device-singleton").hide();
+                    else
+                        $(".device-singleton").show();
+                })
+                .fail(function (error) {
+                    showErrorMessage(String.format("Failed to analyze config file: {0}", error));
+
+                    self.configFrameDetails("Unavailable");
+                    $("[id=voltageRow]").css("visibility", "visible");
+                    $("[id=currentRow]").css("visibility", "visible");
+                    hideLoadingLabel();
+                });
+            }
+
+            self.refreshValidationErrors = function () {
+                // Make sure any initial validation error messages are visible
+                self.errors.showAllMessages();
+            }
+
+            self.createObservableVoltage = function (deviceLabel, phasorDefinition) {
+                const voltage = {};
+                const phasorLabel = phasorDefinition.Label;
+                const nominalVoltage = guessNominalVoltage(phasorLabel, deviceLabel());
+                const phase = guessPhase(phasorLabel);
+
+                voltage.ID = self.voltageCount++;
+                voltage.Device = deviceLabel;
+                voltage.Label = ko.observable(phasorLabel);
+                voltage.Phase = ko.observable(phase);
+                voltage.NominalVoltage = ko.observable(nominalVoltage);
+
+                voltage.Label.extend({ required: true });
+                voltage.Phase.extend({
+                    required: true,
+                    pattern: {
+                        message: "Must be one of: A, B, C, 0, +, - or N",
+                        params: "^[A-C0+\\-N]$"
+                    }
+                });
+                voltage.NominalVoltage.extend({ required: true });
+
+                phasorDefinition.Voltage = voltage;
+                phasorDefinition.Label = voltage.Label;
+                phasorDefinition.Phase = voltage.Phase;
+
+                return voltage;
+            }
+
+            self.createObservableCurrent = function (deviceLabel, phasorDefinition) {
+                const current = {};
+                const phasorLabel = phasorDefinition.Label;
+                const phase = guessPhase(phasorLabel);
+                const associatedVoltage = guessAssociatedVoltage(self.voltages(), phasorLabel, phase);
+
+                current.Device = deviceLabel;
+                current.Label = ko.observable(phasorLabel);
+                current.Phase = ko.observable(phase);
+                current.AssociatedVoltage = ko.observable(associatedVoltage);
+
+                current.Label.extend({ required: true });
+                current.Phase.extend({
+                    required: true,
+                    pattern: {
+                        message: "Must be one of: A, B, C, 0, +, - or N",
+                        params: "^[A-C0+\\-N]$"
+                    }
+                });
+
+                phasorDefinition.Current = current;
+                phasorDefinition.Label = current.Label;
+                phasorDefinition.Phase = current.Phase;
+
+                return current;
+            }
+
+            // Validations
+            self.deviceAcronym.extend({
+                required: true,
+                pattern: {
+                    message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
+                    params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
+                },
+                deviceUniqueInDatabase: true
+            });
+
+            self.validationErrors = ko.pureComputed(function () {
+                return self.errors().length;
+            }).extend({
+                notify: "always"
+            });
+        }
+
+        function getDeviceSignalType(acronym) {
+            acronym = acronym.toUpperCase();
+
+            for (let i = 0; i < deviceSignalTypes.length; i++) {
+                const deviceSignalType = deviceSignalTypes[i];
+
+                if (deviceSignalType.Acronym.toUpperCase() === acronym)
+                    return deviceSignalType;
+            }
+
+            return null;
+        }
+
+        function getPhasorSignalType(acronym) {
+            acronym = acronym.toUpperCase();
+
+            for (let i = 0; i < phasorSignalTypes.length; i++) {
+                const phasorSignalType = phasorSignalTypes[i];
+
+                if (phasorSignalType.Acronym.toUpperCase() === acronym)
+                    return phasorSignalType;
+            }
+
+            return null;
+        }
+
+        function savePhasorMeasurement(cell, signalType, phasorDefinition, index) {
+            const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), signalType.Suffix, index);
+
+            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+            return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                return dataHub.createPhasorPointTag(cell.IDLabel(), signalType.Acronym, phasorDefinition.Label(), phasorDefinition.Phase(), index).then(function (pointTag) {
+                    measurement.DeviceID = cell.ID;
+                    measurement.HistorianID = viewModel.historianID();
+                    measurement.PointTag = pointTag;
+                    measurement.Description = String.format("{0} {1} {2} {3}", cell.IDLabel(), phasorDefinition.Label(), phasorDefinition.Phase(), signalType.Name);
+                    measurement.PhasorSourceIndex = index;
+                    measurement.SignalReference = signalReference;
+                    measurement.SignalTypeID = signalType.ID;
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                    });
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                });
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+            });
+        }
+
+        function saveDevicePhasors(cell) {
+            // Get phasor signal types
+            const iphmSignalType = getPhasorSignalType("IPHM");
+            const iphaSignalType = getPhasorSignalType("IPHA");
+            const vphmSignalType = getPhasorSignalType("VPHM");
+            const vphaSignalType = getPhasorSignalType("VPHA");
+
+            if (iphmSignalType == null || iphaSignalType == null || vphmSignalType == null || vphaSignalType == null) {
+                showErrorMessage("Failed to find one or more phasor signal type records.");
+                return $.Deferred().resolve().promise();
+            }
+
+            return dataHub.queryPhasorCountForDevice(cell.ID).then(function (count) {
+                const promise = count > 0 ? dataHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
+
+                return promise.then(function () {
+                    const promises = [];
+
+                    for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                        const index = i + 1;
+                        const phasorDefinition = cell.PhasorDefinitions[i];
+                        const isVoltage = phasorDefinition.PhasorType.toLowerCase() === "voltage";
+
+                        promises.push(dataHub.newPhasor().then(function (phasor) {
+                            phasor.DeviceID = cell.ID;
+                            phasor.Label = phasorDefinition.Label();
+                            phasor.Type = isVoltage ? "V" : "I";
+                            phasor.Phase = phasorDefinition.Phase();
+                            phasor.SourceIndex = index;
+
+                            return dataHub.addNewPhasor(phasor).then(function () {
+                                if (isVoltage) {
+                                    return savePhasorMeasurement(cell, vphmSignalType, phasorDefinition, index).then(function () {
+                                        return savePhasorMeasurement(cell, vphaSignalType, phasorDefinition, index);
+                                    })
+                                    .then(function () {
+                                        const vphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphmSignalType.Suffix, index);
+
+                                        return dataHub.queryMeasurement(vphmSignalReference).done(function (measurement) {
+                                            phasorDefinition.vphmMeasurement = measurement;
+                                        });
+                                    })
+                                    .then(function () {
+                                        const vphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphaSignalType.Suffix, index);
+
+                                        return dataHub.queryMeasurement(vphaSignalReference).done(function (measurement) {
+                                            phasorDefinition.vphaMeasurement = measurement;
+                                        });
+                                    });
+                                } else {
+                                    return savePhasorMeasurement(cell, iphmSignalType, phasorDefinition, index).then(function () {
+                                        return savePhasorMeasurement(cell, iphaSignalType, phasorDefinition, index);
+                                    })
+                                    .then(function () {
+                                        const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, index);
+
+                                        return dataHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
+                                            phasorDefinition.iphmMeasurement = measurement;
+                                        });
+                                    })
+                                    .then(function () {
+                                        const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, index);
+
+                                        return dataHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
+                                            phasorDefinition.iphaMeasurement = measurement;
+                                        });
+                                    });
+                                }
+                             })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to save new phasor: " + error);
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed to create new phasor: " + error);
+                        }));
+                    }
+
+                    return $(promises).whenAll();
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to delete old phasors: " + error);
+                });
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to query phasor count: " + error);
+            });
+        }
+
+        function saveFixedMeasurement(cell, signalType, label) {
+            const signalReference = String.format("{0}-{1}", cell.IDLabel(), signalType.Suffix);
+
+            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+            return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                return dataHub.createPointTag(cell.IDLabel(), signalType.Acronym).then(function (pointTag) {
+                    measurement.DeviceID = cell.ID;
+                    measurement.HistorianID = viewModel.historianID();
+                    measurement.PointTag = pointTag;
+                    measurement.Description = String.format("{0} {1}", cell.IDLabel(), signalType.Name, isEmpty(label) ? "" : " - " + label);
+                    measurement.SignalReference = signalReference;
+                    measurement.SignalTypeID = signalType.ID;
+                    measurement.Internal = true;
+                    measurement.Enabled = true;
+
+                    return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                    });
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                });
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+            });
+        }
+
+        function saveDeviceMeasurements(cell) {
+            const freqSignalType = getDeviceSignalType("FREQ");
+            const dfdtSignalType = getDeviceSignalType("DFDT");
+            const flagSignalType = getDeviceSignalType("FLAG");
+
+            if (freqSignalType == null || dfdtSignalType == null || flagSignalType == null) {
+                showErrorMessage("Failed to find one or more signal type records.");
+                return $.Deferred().resolve().promise();
+            }
+
+            // Add frequency
+            return saveFixedMeasurement(cell, freqSignalType, cell.FrequencyDefinition.Label).then(function () {
+                // Add dF/dt
+                return saveFixedMeasurement(cell, dfdtSignalType);
+            })
+                .then(function () {
+                    // Add status flags
+                    return saveFixedMeasurement(cell, flagSignalType);
+                })
+                .then(function () {
+                    // Add analogs
+                    if (viewModel.addAnalogs()) {
+                        const analogSignalType = getDeviceSignalType("ALOG");
+
+                        if (analogSignalType != null) {
+                            const promises = [];
+
+                            for (let i = 0; i < cell.AnalogDefinitions.length; i++) {
+                                const index = i + 1;
+                                const analogDefinition = cell.AnalogDefinitions[i];
+                                const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), analogSignalType.Suffix, index);
+
+                                // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                                promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                                    return dataHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index).then(function (pointTag) {
+                                        measurement.DeviceID = cell.ID;
+                                        measurement.HistorianID = viewModel.historianID();
+                                        measurement.PointTag = pointTag;
+                                        measurement.AlternateTag = analogDefinition.Label;
+                                        measurement.Description = String.format("{0} Analog Value {1}:{2}: {3}", cell.IDLabel(), index, analogDefinition.AnalogType, analogDefinition.Label);
+                                        measurement.SignalReference = signalReference;
+                                        measurement.SignalTypeID = analogSignalType.ID;
+                                        measurement.Internal = true;
+                                        measurement.Enabled = true;
+
+                                        return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                        });
+                                    })
+                                        .fail(function (error) {
+                                            showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                        });
+                                })
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                    }));
+                            }
+
+                            return $(promises).whenAll();
+                        }
+                        else {
+                            showErrorMessage("Failed to find analog signal type record.");
+                            return $.Deferred().resolve().promise();
+                        }
+                    }
+                    else {
+                        return $.Deferred().resolve().promise();
+                    }
+                })
+                .then(function () {
+                    // Add digitals
+                    if (viewModel.addDigitals()) {
+                        const digitalSignalType = getDeviceSignalType("DIGI");
+
+                        if (digitalSignalType != null) {
+                            const promises = [];
+
+                            for (let i = 0; i < cell.DigitalDefinitions.length; i++) {
+                                const index = i + 1;
+                                const digitialDefinition = cell.DigitalDefinitions[i];
+                                const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), digitalSignalType.Suffix, index);
+
+                                // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                                promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                                    return dataHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index).then(function (pointTag) {
+                                        measurement.DeviceID = cell.ID;
+                                        measurement.HistorianID = viewModel.historianID();
+                                        measurement.PointTag = pointTag;
+                                        measurement.AlternateTag = digitialDefinition.Label;
+                                        measurement.Description = String.format("{0} Digital Value {1}: {2}", cell.IDLabel(), index, digitialDefinition.Label);
+                                        measurement.SignalReference = signalReference;
+                                        measurement.SignalTypeID = digitalSignalType.ID;
+                                        measurement.Internal = true;
+                                        measurement.Enabled = true;
+
+                                        return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                        });
+                                    })
+                                        .fail(function (error) {
+                                            showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                        });
+                                })
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                    }));
+                            }
+
+                            return $(promises).whenAll();
+                        }
+                        else {
+                            showErrorMessage("Failed to find digital signal type record.");
+                            return $.Deferred().resolve().promise();
+                        }
+                    }
+                    else {
+                        return $.Deferred().resolve().promise();
+                    }
+                })
+                .then(function () {
+                    return saveDevicePhasors(cell);
+                });
+        }
+
+        function lookupAssociatedVoltage(cell, voltageID) {
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() === "voltage" && phasorDefinition.Voltage.ID === voltageID)
+                    return phasorDefinition;
+            }
+
+            return null;
+        }
+
+        function savePowerCalcuations(cell, phase, powerCalculations) {
+            const promises = [];
+            phase = phase.toUpperCase();
+
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                // Power calculations can be applied to currents with an associated voltage
+                if (phasorDefinition.PhasorType.toLowerCase() === "current" &&
+                    phasorDefinition.Phase().toUpperCase() === phase &&
+                    phasorDefinition.Current.AssociatedVoltage() > -1) {
+                    const current = phasorDefinition;
+                    const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+
+                    if (voltage) {
+                        const vphmID = voltage.vphmMeasurement.SignalID;
+                        const vphaID = voltage.vphaMeasurement.SignalID;
+                        const iphmID = current.iphmMeasurement.SignalID;
+                        const iphaID = current.iphaMeasurement.SignalID;
+
+                        promises.push(dataHub.newPowerCalculation().then(function (powerCalculation) {
+                            powerCalculation.CircuitDescription = String.format("{0}-{1}({2})", cell.IDLabel(), current.Label(), phase);
+                            powerCalculation.VoltageMagSignalID = vphmID;
+                            powerCalculation.VoltageAngleSignalID = vphaID;
+                            powerCalculation.CurrentMagSignalID = iphmID;
+                            powerCalculation.CurrentAngleSignalID = iphaID;
+                            powerCalculation.Enabled = true;
+
+                            return dataHub.addNewPowerCalculation(powerCalculation).done(function () {
+                                powerCalculations.push([vphmID, vphaID, iphmID, iphaID]);
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to add new power calculation record: " + error);
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed to create new power calculation record: " + error);
+                        }));
+                    }
+                }
+            }
+
+            return $(promises).whenAll().done(function () {
+                serviceHub.sendCommand("initialize PHASOR!POWERCALC");
+            });
+        }
+
+        function saveTemplateCalculations(cell) {
+            const templateType = viewModel.templateType();
+
+            if (templateType.toUpperCase() === "NONE")
+                return $.Deferred().resolve().promise();
+
+            return dataHub.loadTemplate(templateType).then(function (tagTemplates) {
+                const promises = [];
+                const powerCalculations = [];
+
+                for (let i = 0; i < tagTemplates.length; i++) {
+                    const tagTemplate = tagTemplates[i];
+
+                    switch (tagTemplate.Type.toUpperCase()) {
+                        case "CALCULATEPOWER":
+                            promises.push(savePowerCalcuations(cell, tagTemplate.Inputs[0], powerCalculations));
+                            break;
+                        case "SUMPHASEMW":
+                            break;
+                        case "SUMPHASEMVAR":
+                            break;
+                        case "SUMPHASEMVA":
+                            break;
+                        case "DYNAMICCALCULATOR":
+                            break;
+                    }
+                }
+
+                return $(promises).whenAll();
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to load " + templateType + " tag template: " + error);
+            });
+        }
+
+        function saveDeviceRecords(id) {
+            const configFrame = viewModel.configFrame();
+            const cells = configFrame.Cells;
+            const cellCount = cells.length;
+
+            if (cellCount === 1) {
+                // Direct connected device - save associated records
+                const cell = cells[0];
+                cell.ID = deviceID;
+
+                return saveDeviceMeasurements(cell).then(function () {
+                    return saveTemplateCalculations(cell);
+                });
+            }
+            else {
+                const promises = [];
+
+                // PDC connected device - save children devices
+                for (let i = 0; i < cellCount; i++) {
+                    const cell = cells[i];
+
+                    // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
+                    promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
+                        // Set child device properties
+                        device.ParentID = deviceID;
+                        device.HistorianID = viewModel.historianID();
+                        device.ProtocolID = configFrame.ProtocolID;
+                        device.FrameRate = configFrame.FrameRate;
+                        device.AccessID = cell.IDCode;
+                        device.Acronym = cell.IDLabel();
+                        device.Name = device.Acronym;
+                        device.Enabled = true;
+
+                        // Check if this is a new device or an edit to an existing one
+                        if (device.ID === 0) {
+                            // Add new device record
+                            return dataHub.addNewDevice(device).then(function () {
+                                // Get newly added device with auto-incremented ID
+                                return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
+                                    // Save associated device records...
+                                    cell.ID = newDevice.ID;
+
+                                    return saveDeviceMeasurements(cell).then(function () {
+                                        return saveTemplateCalculations(cell);
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                            });
+                        }
+                        else {
+                            // Update existing device record
+                            return dataHub.updateDevice(device).then(function () {
+                                // Save associated device records...
+                                cell.ID = device.ID;
+
+                                return saveDeviceMeasurements(cell).then(function () {
+                                    return saveTemplateCalculations(cell);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                            });
+                        }
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                    }));
+                }
+
+                return $(promises).whenAll();
+            }
+        }
+
+        function saveDeviceConnection() {
+            if (isEmpty(viewModel.configFrame().ConnectionString)) {
+                showErrorMessage("Cannot save device connection without a connection string");
+                return $.Deferred().resolve().promise();
+            }
+
+            if (!hubIsConnected) {
+                showErrorMessage("Cannot save device connection, cannot connect to server.");
+                return $.Deferred().resolve().promise();
+            }
+
+            showInfoMessage("Saving device connection, please wait...", -1);
+            disableUIButtons();
+
+            // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
+            return dataHub.queryDevice(viewModel.deviceAcronym()).then(function (device) {
+                // Set device properties
+                const configFrame = viewModel.configFrame();
+                var connectionString = configFrame.ConnectionString;
+                const connectionStringMap = new Dictionary(connectionString.parseKeyValuePairs());
+                var autoStartDataParsingSequence = true;
+                var skipDisableRealTimeData = false;
+
+                // Handle connection string parameters that are fields in the device table
+                if (connectionStringMap.containsKey("autoStartDataParsingSequence")) {
+                    autoStartDataParsingSequence = connectionStringMap.get("autoStartDataParsingSequence");
+                    connectionStringMap.remove("autoStartDataParsingSequence");
+                    connectionString = connectionStringMap.joinKeyValuePairs();
+                }
+
+                if (connectionStringMap.containsKey("skipDisableRealTimeData")) {
+                    skipDisableRealTimeData = connectionStringMap.get("skipDisableRealTimeData");
+                    connectionStringMap.remove("skipDisableRealTimeData");
+                    connectionString = connectionStringMap.joinKeyValuePairs();
+                }
+
+                device.Acronym = viewModel.deviceAcronym();
+                device.HistorianID = viewModel.historianID();
+                device.ProtocolID = configFrame.ProtocolID;
+                device.FrameRate = configFrame.FrameRate;
+                device.AccessID = configFrame.IDCode;
+                device.Name = device.Acronym;
+                device.ConnectionString = connectionString;
+                device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
+                device.SkipDisableRealTimeData = skipDisableRealTimeData;
+                //device.Longitude = viewModel.longitude();
+                //device.Latitude = viewModel.latitude();
+                device.Enabled = true;
+
+                // Check if this is a new device or an edit to an existing one
+                if (device.ID === 0) {
+                    // Add new device record
+                    return dataHub.addNewDevice(device).then(function () {
+                        // Get newly added device with auto-incremented ID
+                        return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
+                            // Save associated device records...
+                            deviceID = newDevice.ID;
+
+                            return saveDeviceRecords(deviceID).then(function () {
+                                enableUIButtons("Save complete.");
+
+                                serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                    window.location = "GraphMeasurements.cshtml";
+                                });
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                            enableUIButtons();
+                        });
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                        enableUIButtons();
+                    });
+                }
+                else {
+                    // Update existing device record
+                    return dataHub.updateDevice(device).then(function () {
+                        // Save associated device records...
+                        deviceID = device.ID;
+
+                        return saveDeviceRecords(deviceID).then(function () {
+                            enableUIButtons("Save complete.");
+
+                            serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                window.location = "GraphMeasurements.cshtml";
+                            });
+                        });
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                        enableUIButtons();
+                    });
+                }
+            })
+            .fail(function (error) {
+                showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                enableUIButtons();
+            });
+        }
+
+        // Load existing device data
+        function loadDeviceConnection(id) {
+            if (!hubIsConnected)
+                return;
+
+            dataHub.queryDeviceByID(id).done(function (device) {
+                $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
+                $("#inputConfigFile").val(device.ConnectionString);
+            })
+            .fail(function (error) {
+                showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
+            });
+        }
+
+        function resizePageElements() {
+            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+            $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
+        }
+
+        function disableUIButtons() {
+            $("#inputConfigFile").disable();
+            $("#saveData").disable();
+            showLoadingLabel();
+        }
+
+        function enableUIButtons(message) {
+            $("#inputConfigFile").enable();
+            $("#saveData").enable();
+            hideLoadingLabel();
+
+            if (message === undefined)
+                hideInfoMessage();
+            else
+                showInfoMessage(message);
+        }
+
+        // Page initialization function
+        $(function () {
+            $("#bodyContainer").addClass("fill-height");
+
+            // Define local rule that will check that device acronym is unique in the database
+            ko.validation.rules["deviceUniqueInDatabase"] = {
+                async: true,
+                validator: function (newVal, options, callback) {
+                    if (options && viewModel.dataHubIsConnected()) {
+                        // Lookup Device record by Acronym - this will return an empty record if not found
+                        dataHub.queryDevice(newVal).done(function (device) {
+                            // Valid if device doesn't exist or is itself
+                            callback(device.ID === 0 || device.ID === deviceID);
+                        })
+                        .fail(function (error) {
+                            showErrorMessage(error);
+
+                            // Do not display validation failure message for connection issues
+                            callback(true);
+                        });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This device acronym already exists in the database. Acronyms must be unique."
+            };
+
+            ko.bindingHandlers.selectOnError = {
+                init: function (element, valueAccessor) {
+                    $(element).on("input", function(event) {
+                        setTimeout(function () {
+                            if (!valueAccessor().isValid())
+                                element.select();
+                        }, 1);
+                    });
+                }
+            }
+
+            // Enable knockout validation
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
+            }, true);
+
+            // Enable deferred updates for better performance
+            ko.options.deferUpdates = true;
+
+            // Create the primary view model
+            viewModel = new DeviceViewModel();
+
+            // Initialize primary view model
+            ko.applyBindings(viewModel);
+
+            // Monitor for view model changes
+            ko.watch(viewModel.devices, { depth: -1 }, function (parents, child, item) {
+                viewModel.isDirty(true);
+            });
+
+            // Let view model know about hub connectivity changes
+            $(window).on("hubConnected", function () {
+                viewModel.dataHubIsConnected(true);
+
+                if (!firstConnect)
+                    return;
+
+                firstConnect = false;
+
+                if (deviceID > 0)
+                    loadDeviceConnection(deviceID);
+
+                const instanceNameSelect = $("#instanceName");
+
+                // Load available historian instance names, if not already loaded
+                if (instanceNameSelect.children("option").length === 0) {
+                    dataHub.getInstanceNames().done(function (names) {
+                        for (let i = 0; i < names.length; i++) {
+                            const value = names[i];
+                            instanceNameSelect.append($("<option>", { value: value, text: value }));
+                        }
+
+                        // Select last value
+                        var lastInstanceName = Cookies.get("instanceName");
+
+                        if (lastInstanceName === undefined)
+                            lastInstanceName = instanceNameSelect.eq(0).val();
+
+                        if (!isEmpty(lastInstanceName))
+                            instanceNameSelect.val(lastInstanceName);
+
+                        setTimeout(function () {
+                            viewModel.instanceName(lastInstanceName);
+                        }, 200);
+                    });
+                }
+
+                const templateTypeSelect = $("#templateType");
+
+                // Load available calculation templates, if not already loaded
+                if (templateTypeSelect.children("option").length === 0) {
+                    dataHub.getTemplateTypes().done(function (names) {
+                        for (let i = 0; i < names.length; i++) {
+                            const value = names[i];
+                            templateTypeSelect.append($("<option>", { value: value, text: value }));
+                        }
+
+                        // Select last value
+                        var lastTemplateType = Cookies.get("templateType");
+
+                        if (lastTemplateType === undefined)
+                            lastTemplateType = templateTypeSelect.eq(0).val();
+
+                        if (!isEmpty(lastTemplateType))
+                            instanceNameSelect.val(lastTemplateType);
+
+                        setTimeout(function () {
+                            viewModel.templateType(lastTemplateType);
+                        }, 200);
+                    });
+                }
+
+                dataHub.loadSignalTypes("PMU").done(function (result) {
+                    deviceSignalTypes = result;
+                });
+
+                dataHub.loadSignalTypes("Phasor").done(function (result) {
+                    phasorSignalTypes = result;
+                });
+            });
+
+            $(window).on("hubDisconnected", function () {
+                viewModel.dataHubIsConnected(false);
+            });
+
+            $(window).on("messageVisibiltyChanged", function () {
+                resizePageElements();
+            });
+
+            $(window).resize(function () {
+                resizePageElements();
+            });
+
+            // Define button handlers
+            $("#saveData").click(function() {
+                saveDeviceConnection();
+            });
+
+            $("#inputConfigFile").change(function(event){
+                const uploadedFile = event.target.files[0];
+
+                if (uploadedFile) {
+                    const readFile = new FileReader();
+
+                    readFile.onload = function(event) {
+                        viewModel.analyzeConfig(event.target.result);
+                    };
+
+                    readFile.readAsText(uploadedFile);
+                }
+
+                $("#inputConfigFile").tooltip("hide");
+            });
+
+            resizePageElements();
+            hideLoadingLabel();
+        });
+    </script>
+}
+<div id="headerArea">
+    <h3 style="margin-top: -10px;">
+        @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <!--img class="page-logo pull-right" src="Images/AddDevice.png" /-->
+        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
+            <small>
+                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+            </small>
+        </span>
+    </h3>
+    <form>
+        <table style="width: 95%">
+            <tr>
+                <td class="input-label">
+                    <label for="inputConfigFile">Connection File:</label>
+                </td>
+                <td>
+                    <div class="input-group input-area">
+                        <input id="inputConfigFile" type="file" placeholder="Connection file name..." title="Select&nbsp;PMUConnection&nbsp;file..." accept=".PmuConnection,.xml,text/xml" data-toggle="tooltip" data-placement="right" class="form-control" style="width: 100%">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="inputDeviceAcronym"><span data-bind="text: configFrame().Cells.length == 1 ? 'Device' : 'Connection'">Connection</span> Acronym:</label>
+                </td>
+                <td>
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="templateType">Tag Template:</label>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+                        <div class="checkbox" style="display:inline; margin-left: 15px">
+                            <label class="disabled" style="margin-top: 6px"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <span class="pull-right clearfix" id="loadingDataLabel" style="display: inline; margin-top: -27px">
+            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        </span>
+    </form>
+</div>
+<div id="contentWell" class="well well-dynamic-content">
+    <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
+        <span id="configFrameDetails">Config Frame: <span data-bind="html: configFrameDetails"></span></span>
+        <span id="saveDataButton" class="pull-right" style="text-align: right">
+            @if (userIsEditor)
+            {
+                <text>
+                    <div class="input-group pull-right" style="margin-top: -4px">
+                        <form class="form-inline" role="group" style="padding-bottom: 4px">
+                            <div class="checkbox">
+                                <label><input type="checkbox" data-bind="checked: addAnalogs"> Add Analogs</label>
+                            </div>
+                            <div class="checkbox" style="padding-left: 5px;">
+                                <label><input type="checkbox" data-bind="checked: addDigitals"> Add Digitals</label>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: validationErrors() > 0 || !dataHubIsConnected() || isEmpty(configFrame().ConnectionString)">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device
+                        </button>
+                    </div>
+                </text>
+            }
+            else
+            {
+                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to add or modify device data.</span>
+            }
+        </span>
+        <span><br />Connection String: <span data-bind="text: configFrame().ConnectionString"></span></span>
+        <em data-bind="visible: validationErrors() > 0">
+            <br />
+            <span data-bind="text: validationErrors()"></span> validation error<span data-bind="visible: validationErrors() > 1">s</span>...
+        </em>
+        <hr class="quarter-break" />
+        <div id="configInfo"></div>
+        <h3>Voltages</h3>
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th class="text-left device-singleton">Device&nbsp;Acronym</th>
+                    <th class="text-left">Phasor&nbsp;Label</th>
+                    <th class="text-center">Phase</th>
+                    <th class="text-left">Nominal&nbsp;Voltage</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: voltages }">
+                <tr id="voltageRow" style="visibility: hidden">
+                    <td width="190px" class="text-left valign-middle device-singleton">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
+                            <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
+                        </div>
+                    </td>
+                    <td width="290px" class="text-left valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
+                            <input type="text" class="form-control" style="width: 280px" data-bind="acronym: Label, textInput: Label" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
+                        </div>
+                    </td>
+                    <td width="55px" class="text-center valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
+                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
+                        </div>
+                    </td>
+                    <td class="text-left valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
+                            <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage" required>&nbsp;<span class="table-cell-text">kV</span>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Currents</h3>
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th class="text-left device-singleton">Device&nbsp;Acronym</th>
+                    <th class="text-left">Phasor&nbsp;Label</th>
+                    <th class="text-center">Phase</th>
+                    <th class="text-left">Associated&nbsp;Voltage</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: currents }">
+                <tr id="currentRow" style="visibility: hidden">
+                    <td width="190px" class="text-left valign-middle device-singleton">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
+                            <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
+                        </div>
+                    </td>
+                    <td width="290px" class="text-left valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
+                            <input type="text" class="form-control" style="width: 280px" data-bind="acronym: Label, textInput: Label" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
+                        </div>
+                    </td>
+                    <td width="55px" class="text-center valign-middle">
+                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
+                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
+                        </div>
+                    </td>
+                    <td class="text-left valign-middle">
+                        <select class="form-control" style="width: 90%" data-bind="options: $parent.voltages, value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -129,6 +129,7 @@
     <Compile Include="Model\Alarm.cs" />
     <Compile Include="Model\AlarmDeviceStateView.cs" />
     <Compile Include="Model\AlarmLog.cs" />
+    <Compile Include="Model\ConfigurationFrame.cs" />
     <Compile Include="Model\CustomFilterAdapter.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\CustomInputAdapter.cs" />
@@ -145,6 +146,9 @@
     <Compile Include="Model\Measurement.cs" />
     <Compile Include="Model\ActiveMeasurement.cs" />
     <Compile Include="Model\MeasurementDetail.cs" />
+    <Compile Include="Model\Phasor.cs" />
+    <Compile Include="Model\PowerCalculation.cs" />
+    <Compile Include="Model\TagTemplate.cs" />
     <Compile Include="Model\TrendValue.cs" />
     <Compile Include="Model\MeasurementValue.cs" />
     <Compile Include="Model\PhasorDetail.cs" />

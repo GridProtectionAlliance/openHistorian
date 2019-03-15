@@ -177,11 +177,17 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li @Raw(pageTitle == "Home" ? "class=\"active\"" : "")><a href="Index.cshtml">Home</a></li>
-                    <li @Raw(pageTitle == "Devices" ? "class=\"active\"" : "")><a href="Devices.cshtml">Devices</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Devices <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="Devices.cshtml">Browse Devices</a></li>
+                            <li><a href="AddDevice.cshtml">Add Device / Import Data</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoring <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="TrendMeasurements.cshtml">Trend / Export Archived Data</a></li>
+                            <li><a href="TrendMeasurements.cshtml">Trend / Export Data</a></li>
                             @if (Model.Global.GrafanaServerInstalled) {
                                 <li><a href="grafana">Grafana Visualizations</a></li>
                             }
@@ -190,13 +196,6 @@
                             <li><a href="Status.cshtml">Current Device Status</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="RemoteConsole.cshtml">Remote Service Console</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="ModbusConfig.cshtml">Modbus Configuration Builder</a></li>
-                            <li><a href="ImportCOMTRADE.cshtml">Import COMTRADE Data</a></li>
                         </ul>
                     </li>
                     @if (UserIsAdmin()) {

@@ -237,13 +237,12 @@
             <div class="panel-heading">Quick Links</div>
             <div class="panel-body">
                 <div class="btn-group-vertical btn-block">
-                    <a href="Devices.cshtml" role="button" class="btn btn-primary">Devices</a>
-                    <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Archived Data</a>
+                    <a href="Devices.cshtml" role="button" class="btn btn-primary">Browse Devices</a>
+                    <a href="AddDevice.cshtml" role="button" class="btn btn-default">Add Device / Import Data</a>
+                    <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Data</a>
                     @if (Model.Global.GrafanaServerInstalled) {
                         <a href="grafana" role="button" class="btn btn-default"><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
                     }
-                    <a href="ModbusConfig.cshtml" role="button" class="btn btn-default">Add Modbus Mapping</a>
-                    <a href="ImportCOMTRADE.cshtml" role="button" class="btn btn-default">Import COMTRADE Data</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
                     @if (UserIsAdmin()) {
                         <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>

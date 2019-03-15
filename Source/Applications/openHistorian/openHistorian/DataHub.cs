@@ -21,24 +21,31 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
 using GSF;
-using GSF.Data.Model;
 using GSF.COMTRADE;
+using GSF.Data.Model;
 using GSF.Identity;
+using GSF.IO;
+using GSF.PhasorProtocols;
 using GSF.Web.Hubs;
 using GSF.Web.Model.HubOperations;
 using GSF.Web.Security;
+using Microsoft.AspNet.SignalR;
 using ModbusAdapters;
 using ModbusAdapters.Model;
 using openHistorian.Adapters;
 using openHistorian.Model;
+using PhasorProtocolAdapters;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization.Formatters.Soap;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using SignalType = openHistorian.Model.SignalType;
 
 namespace openHistorian
 {
@@ -326,6 +333,112 @@ namespace openHistorian
         public void AddNewOrUpdateMeasurement(Measurement measurement)
         {
             DataContext.Table<Measurement>().AddNewOrUpdateRecord(measurement);
+        }
+
+        #endregion
+
+        #region [ Phasor Table Operations ]
+
+        [RecordOperation(typeof(Phasor), RecordOperation.QueryRecordCount)]
+        public int QueryPhasorCount(string filterText)
+        {
+            return DataContext.Table<Phasor>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(Phasor), RecordOperation.QueryRecords)]
+        public IEnumerable<Phasor> QueryPhasors(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<Phasor>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Phasor), RecordOperation.DeleteRecord)]
+        public void DeletePhasor(int id)
+        {
+            DataContext.Table<Phasor>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(Phasor), RecordOperation.CreateNewRecord)]
+        public Phasor NewPhasor()
+        {
+            return DataContext.Table<Phasor>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Phasor), RecordOperation.AddNewRecord)]
+        public void AddNewPhasor(Phasor phasor)
+        {
+            DataContext.Table<Phasor>().AddNewRecord(phasor);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(Phasor), RecordOperation.UpdateRecord)]
+        public void UpdatePhasor(Phasor phasor)
+        {
+            DataContext.Table<Phasor>().UpdateRecord(phasor);
+        }
+
+        public Phasor QueryPhasorForDevice(int deviceID, int sourceIndex)
+        {
+            return DataContext.Table<Phasor>().QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", deviceID, sourceIndex);
+        }
+
+        public int QueryPhasorCountForDevice(int deviceID)
+        {
+            return DataContext.Connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Phasor WHERE DeviceID = {0}", deviceID);
+        }
+
+        public int DeletePhasorsForDevice(int deviceID)
+        {
+            return DataContext.Connection.ExecuteScalar<int>("DELETE FROM Phasor WHERE DeviceID = {0}", deviceID);
+        }
+
+        #endregion
+
+        #region [ PowerCalculation Table Operations ]
+
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.QueryRecordCount)]
+        public int QueryPowerCalculationCount(string filterText)
+        {
+            return DataContext.Table<PowerCalculation>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.QueryRecords)]
+        public IEnumerable<PowerCalculation> QueryPowerCalculations(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<PowerCalculation>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.DeleteRecord)]
+        public void DeletePowerCalculation(int id)
+        {
+            DataContext.Table<PowerCalculation>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.CreateNewRecord)]
+        public PowerCalculation NewPowerCalculation()
+        {
+            return DataContext.Table<PowerCalculation>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.AddNewRecord)]
+        public void AddNewPowerCalculation(PowerCalculation powerCalculation)
+        {
+            DataContext.Table<PowerCalculation>().AddNewRecord(powerCalculation);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(PowerCalculation), RecordOperation.UpdateRecord)]
+        public void UpdatePowerCalculation(PowerCalculation powerCalculation)
+        {
+            DataContext.Table<PowerCalculation>().UpdateRecord(powerCalculation);
+        }
+
+        public PowerCalculation QueryPowerCalculationForInputs(Guid voltageAngleSignalID, Guid voltageMagSignalID, Guid currentAngleSignalID, Guid currentMagSignalID)
+        {
+            return DataContext.Table<PowerCalculation>().QueryRecordWhere("VoltageAngleSignalID = {0} AND VoltageMagSignalID = {1} AND CurrentAngleSignalID = {2} AND CurrentMagSignalID = {3}", voltageAngleSignalID, voltageMagSignalID, currentAngleSignalID, currentMagSignalID);
         }
 
         #endregion
@@ -747,6 +860,207 @@ namespace openHistorian
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region [ Synchrophasor Device Wizard Operations ]
+
+        public IEnumerable<SignalType> LoadSignalTypes(string source)
+        {
+            return DataContext.Table<SignalType>().QueryRecordsWhere("Source = {0}", source);
+        }
+
+        public string CreatePointTag(string deviceAcronym, string signalTypeAcronym)
+        {
+            return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym);
+        }
+
+        public string CreateIndexedPointTag(string deviceAcronym, string signalTypeAcronym, int signalIndex)
+        {
+            return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, null, signalIndex);
+        }
+
+        public string CreatePhasorPointTag(string deviceAcronym, string signalTypeAcronym, string phasorLabel, string phase, int signalIndex)
+        {
+            return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, phasorLabel, signalIndex, phase?[0] ?? '_');
+        }
+
+        public ConfigurationFrame LoadConfigurationFrame(string sourceData)
+        {
+            string connectionString = "";
+
+            IConfigurationFrame GetConfigurationFrame()
+            {
+                try
+                {
+                    ConnectionSettings connectionSettings;
+                    SoapFormatter formatter = new SoapFormatter
+                    {
+                        AssemblyFormat = FormatterAssemblyStyle.Simple,
+                        TypeFormat = FormatterTypeStyle.TypesWhenNeeded,
+                        Binder = Serialization.LegacyBinder
+                    };
+
+                    using (MemoryStream source = new MemoryStream(Encoding.UTF8.GetBytes(sourceData)))
+                        connectionSettings = formatter.Deserialize(source) as ConnectionSettings;
+
+                    if ((object)connectionSettings != null)
+                    {
+                        connectionString = connectionSettings.ConnectionString;
+
+                        Dictionary<string, string> connectionStringKeyValues = connectionString.ParseKeyValuePairs();
+
+                        connectionString = "transportProtocol=" + connectionSettings.TransportProtocol + ";" + connectionStringKeyValues.JoinKeyValuePairs();
+
+                        if ((object)connectionSettings.ConnectionParameters != null)
+                        {
+                            switch (connectionSettings.PhasorProtocol)
+                            {
+                                case PhasorProtocol.BPAPDCstream:
+                                    GSF.PhasorProtocols.BPAPDCstream.ConnectionParameters bpaParameters = connectionSettings.ConnectionParameters as GSF.PhasorProtocols.BPAPDCstream.ConnectionParameters;
+                                    if ((object)bpaParameters != null)
+                                        connectionString += "; iniFileName=" + bpaParameters.ConfigurationFileName + "; refreshConfigFileOnChange=" + bpaParameters.RefreshConfigurationFileOnChange + "; parseWordCountFromByte=" + bpaParameters.ParseWordCountFromByte;
+                                    break;
+                                case PhasorProtocol.FNET:
+                                    GSF.PhasorProtocols.FNET.ConnectionParameters fnetParameters = connectionSettings.ConnectionParameters as GSF.PhasorProtocols.FNET.ConnectionParameters;
+                                    if ((object)fnetParameters != null)
+                                        connectionString += "; timeOffset=" + fnetParameters.TimeOffset + "; stationName=" + fnetParameters.StationName + "; frameRate=" + fnetParameters.FrameRate + "; nominalFrequency=" + (int)fnetParameters.NominalFrequency;
+                                    break;
+                                case PhasorProtocol.SelFastMessage:
+                                    GSF.PhasorProtocols.SelFastMessage.ConnectionParameters selParameters = connectionSettings.ConnectionParameters as GSF.PhasorProtocols.SelFastMessage.ConnectionParameters;
+                                    if ((object)selParameters != null)
+                                        connectionString += "; messagePeriod=" + selParameters.MessagePeriod;
+                                    break;
+                                case PhasorProtocol.IEC61850_90_5:
+                                    GSF.PhasorProtocols.IEC61850_90_5.ConnectionParameters iecParameters = connectionSettings.ConnectionParameters as GSF.PhasorProtocols.IEC61850_90_5.ConnectionParameters;
+                                    if ((object)iecParameters != null)
+                                        connectionString += "; useETRConfiguration=" + iecParameters.UseETRConfiguration + "; guessConfiguration=" + iecParameters.GuessConfiguration + "; parseRedundantASDUs=" + iecParameters.ParseRedundantASDUs + "; ignoreSignatureValidationFailures=" + iecParameters.IgnoreSignatureValidationFailures + "; ignoreSampleSizeValidationFailures=" + iecParameters.IgnoreSampleSizeValidationFailures;
+                                    break;
+                                case PhasorProtocol.Macrodyne:
+                                    GSF.PhasorProtocols.Macrodyne.ConnectionParameters macrodyneParameters = connectionSettings.ConnectionParameters as GSF.PhasorProtocols.Macrodyne.ConnectionParameters;
+                                    if ((object)macrodyneParameters != null)
+                                        connectionString += "; protocolVersion=" + macrodyneParameters.ProtocolVersion + "; iniFileName=" + macrodyneParameters.ConfigurationFileName + "; refreshConfigFileOnChange=" + macrodyneParameters.RefreshConfigurationFileOnChange + "; deviceLabel=" + macrodyneParameters.DeviceLabel;
+                                    break;
+                            }
+                        }
+
+                        connectionString += "; accessID=" + connectionSettings.PmuID;
+                        connectionString += "; phasorProtocol=" + connectionSettings.PhasorProtocol;
+
+                        using (CommonPhasorServices phasorServices = new CommonPhasorServices())
+                        {
+                            phasorServices.StatusMessage += (sender, e) => LogStatusMessage(e.Argument.Replace("**", ""));
+                            phasorServices.ProcessException += (sender, e) => LogException(e.Argument);
+                            return phasorServices.RequestDeviceConfiguration(connectionString);
+                        }
+                    }
+
+                    using (MemoryStream source = new MemoryStream(Encoding.UTF8.GetBytes(sourceData)))
+                        return formatter.Deserialize(source) as IConfigurationFrame;
+                }
+                catch
+                {
+                    return new ConfigurationErrorFrame();
+                }
+            }
+
+            IConfigurationFrame sourceFrame = GetConfigurationFrame();
+
+            if (sourceFrame is ConfigurationErrorFrame)
+                return new ConfigurationFrame();
+
+            ConfigurationFrame derivedFrame;
+
+            // Create a new simple concrete configuration frame for JSON serialization converted from equivalent configuration information
+            ConfigurationCell derivedCell;
+            IFrequencyDefinition sourceFrequency;
+            int protocolID = 0;
+        
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
+                protocolID = DataContext.Table<Protocol>().QueryRecordWhere("Acronym = {0}", settings["phasorProtocol"]).ID;
+            }
+
+            derivedFrame = new ConfigurationFrame
+            {
+                IDCode = sourceFrame.IDCode,
+                FrameRate = sourceFrame.FrameRate,
+                ConnectionString = connectionString,
+                ProtocolID = protocolID
+            };
+
+            foreach (IConfigurationCell sourceCell in sourceFrame.Cells)
+            {
+                // Create new derived configuration cell
+                derivedCell = new ConfigurationCell
+                {
+                    IDCode = sourceCell.IDCode,
+                    StationName = sourceCell.StationName,
+                    IDLabel = sourceCell.IDLabel
+                };
+
+                // Create equivalent derived frequency definition
+                sourceFrequency = sourceCell.FrequencyDefinition;
+
+                if (sourceFrequency != null)
+                    derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = sourceFrequency.Label };
+
+                // Create equivalent derived phasor definitions
+                foreach (IPhasorDefinition sourcePhasor in sourceCell.PhasorDefinitions)
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
+
+                // Create equivalent derived analog definitions (assuming analog type = SinglePointOnWave)
+                foreach (IAnalogDefinition sourceAnalog in sourceCell.AnalogDefinitions)
+                    derivedCell.AnalogDefinitions.Add(new AnalogDefinition { Label = sourceAnalog.Label, AnalogType = sourceAnalog.AnalogType.ToString() });
+
+                // Create equivalent derived digital definitions
+                foreach (IDigitalDefinition sourceDigital in sourceCell.DigitalDefinitions)
+                    derivedCell.DigitalDefinitions.Add(new DigitalDefinition { Label = sourceDigital.Label });
+
+                // Add cell to frame
+                derivedFrame.Cells.Add(derivedCell);
+            }
+
+            return derivedFrame;
+        }
+
+        public IEnumerable<string> GetTemplateTypes()
+        {
+            List<string> templateTypes = new List<string>(FilePath.GetFileList(FilePath.GetAbsolutePath("*.TagTemplate")).Select(FilePath.GetFileNameWithoutExtension));
+            templateTypes.Insert(0, "None");
+            return templateTypes;
+        }
+
+        public IEnumerable<TagTemplate> LoadTemplate(string templateType)
+        {
+            List<TagTemplate> tagTemplates = new List<TagTemplate>();
+            bool firstLine = true;
+ 
+            foreach (string line in File.ReadLines(FilePath.GetAbsolutePath($"{templateType}.TagTemplate")))
+            {
+                // Skip header
+                if (firstLine)
+                {
+                    firstLine = false;
+                    continue;
+                }
+
+                string[] parts = line.Split(',');
+
+                if (parts.Length == 5)
+                    tagTemplates.Add(new TagTemplate
+                    {
+                        TagName = parts[0].Trim(),
+                        Inputs = parts[1].Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries).Select(input => input.Trim()).ToArray(),
+                        Equation = parts[2].Trim(),
+                        Type = parts[3].Trim(),
+                        Description = parts[4].Trim()
+                    });
+            }
+
+            return tagTemplates;
         }
 
         #endregion

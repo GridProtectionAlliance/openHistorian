@@ -58,7 +58,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>6</LangVersion>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -127,6 +127,10 @@
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.PhasorProtocols, Version=2.3.135.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Security">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Security.dll</HintPath>
     </Reference>
@@ -173,6 +177,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="PhasorProtocolAdapters, Version=2.3.135.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\PhasorProtocolAdapters.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
@@ -187,6 +195,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -277,7 +286,13 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
+    <Content Include="DFR.TagTemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="openHistorian.ico" />
+    <Content Include="PMU.TagTemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -285,12 +300,13 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="wwwroot\AddSynchrophasorDevice.cshtml" />
+    <Content Include="wwwroot\AddDevice.cshtml" />
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
-    <Content Include="wwwroot\SynchrophasorDeviceWizard.cshtml" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\ModbusConfig.cshtml" />
@@ -370,6 +386,7 @@
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\GSF\*.*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\*.exe*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)Sample1344.PmuCapture"
+CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)*.TagTemplate"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Applications\openHistorian\openHistorian\wwwroot\*.*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll"
