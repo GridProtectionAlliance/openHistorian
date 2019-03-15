@@ -1,5 +1,11 @@
 <Include>
 <ComponentGroup Id="wwwroot_Components" Directory="WWWROOTFOLDER">
+  <Component Id="AddDevice_cshtml">
+    <File Id="AddDevice.cshtml" Name="AddDevice.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\AddDevice.cshtml" />
+  </Component>
+  <Component Id="AddSynchrophasorDevice_cshtml">
+    <File Id="AddSynchrophasorDevice.cshtml" Name="AddSynchrophasorDevice.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\AddSynchrophasorDevice.cshtml" />
+  </Component>
   <Component Id="Companies_cshtml">
     <File Id="Companies.cshtml" Name="Companies.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Companies.cshtml" />
   </Component>
