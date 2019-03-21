@@ -34,9 +34,11 @@ IF "%replace%" == "" SET replace=\\GPAWEB\NightlyBuilds\Tools\ReplaceInFiles\Rep
 SET defaulttarget=%LOCALAPPDATA%\Temp\openHistorian
 IF "%remote%" == "" SET remote=git@github.com:GridProtectionAlliance/openHistorian.git
 IF "%source%" == "" SET source=\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Beta
+IF "%sttp%" == "" SET sttp=\\GPAWEB\NightlyBuilds\sttp.net\Beta
 IF "%target%" == "" SET target=%defaulttarget%
 
 SET libraries=%source%\Libraries\*.*
+SET sttplibrary=%sttp%\Release\sttp.net.dll
 SET dependencies=%target%\Source\Dependencies\GSF
 SET sourcemasterbuild=%source%\Build Scripts\MasterBuild.buildproj
 SET targetmasterbuild=%target%\Build\Scripts
@@ -74,6 +76,7 @@ GOTO UpdateDependencies
 ECHO.
 ECHO Updating dependencies...
 XCOPY "%libraries%" "%dependencies%\" /Y /E
+XCOPY "%sttplibrary%" "%dependencies%\" /Y
 XCOPY "%sourcemasterbuild%" "%targetmasterbuild%\" /Y
 COPY /Y "%sourcetools%\ConfigCrypter\ConfigCrypter.exe" "%targettools%\ConfigCrypter.exe"
 COPY /Y "%sourcetools%\ConfigEditor\ConfigEditor.exe" "%targettools%\ConfigurationEditor.exe"

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props" Condition="Exists('..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -15,6 +16,8 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug</DefineConstants>
@@ -248,6 +251,7 @@
     <Content Include="openHistorianSetupBanner.bmp" />
     <Content Include="openHistorianSetupDialog.bmp" />
     <Content Include="openHistorianSetupLogo.jpg" />
+    <Content Include="packages.config" />
     <Content Include="README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -257,7 +261,13 @@
     <Content Include="WebFiles.wxi" />
     <Content Include="WebFolders.wxi" />
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" />
+  <PropertyGroup>
+    <WixInstallPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.11.1\tools\</WixInstallPath>
+    <WixToolPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.11.1\tools\</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
+    <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
+  </PropertyGroup>
+  <Import Project="$(WixTargetsPath)" Condition="Exists($(WixTargetsPath))" />
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Outputs="$(TargetPath)">
     <OnError ExecuteTargets="RestoreBitmap" />
   </Target>
