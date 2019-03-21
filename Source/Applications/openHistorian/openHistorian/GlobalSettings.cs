@@ -147,5 +147,11 @@ namespace openHistorian
             get;
             set;
         }
+
+        public int NominalFrequency
+        {
+            get;
+            set;
+        }
     }
 }

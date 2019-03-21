@@ -286,13 +286,10 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <Content Include="DFR.TagTemplate">
+    <Content Include="Common.TagTemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="openHistorian.ico" />
-    <Content Include="PMU.TagTemplate">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

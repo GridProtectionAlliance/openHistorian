@@ -28,6 +28,7 @@
 @using GSF.Web
 @using GSF.Web.Model
 @using GSF.Web.Shared
+@using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @{
@@ -136,6 +137,7 @@
 
         var firstConnect = true;
         var deviceID = @deviceID;
+        var nodeID = "@Program.Host.Model.Global.NodeID";
         var viewModel = null;
         var deviceSignalTypes = [];
         var phasorSignalTypes = [];
@@ -149,7 +151,7 @@
         }
 
         function guessPhase(phasorLabel) {
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1)
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1)
                 return "+";
 
             if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1)
@@ -161,11 +163,14 @@
             if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1)
                 return "C";
 
-            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1)
-                return "0";
-
             if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1)
                 return "N";
+
+            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1)
+                return "0";
+
+            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1)
+                return "-";
 
             return "+";
         }
@@ -196,6 +201,8 @@
 
             if (phase === "+")
                 phase = "1";
+            else if (phase === "-")
+                phase = "2";
 
             var search = "V" + phase;
             var replace = "I" + phase;
@@ -211,6 +218,80 @@
             for (let i = 0; i < voltages.length; i++) {
                 if (phasorLabel === voltages[i].Label().toUpperCase().replace(search, replace))
                     return voltages[i].ID;
+            }
+
+            var aCount = 0, aID = -1;
+            var bCount = 0, bID = -1;
+            var cCount = 0, cID = -1;
+            var posCount = 0, posID = -1;
+            var negCount = 0, negID = -1;
+            var zCount = 0, zID = -1;
+            var nCount = 0, nID = -1;
+
+            for (let i = 0; i < voltages.length; i++) {
+                const voltageID = voltages[i].ID;
+
+                switch (voltages[i].Phase().toUpperCase()) {
+                    case "A":
+                        aCount++;
+                        aID = voltageID;
+                        break;
+                    case "B":
+                        bCount++;
+                        bID = voltageID;
+                        break;
+                    case "C":
+                        cCount++;
+                        cID = voltageID;
+                        break;
+                    case "+":
+                        posCount++;
+                        posID = voltageID;
+                        break;
+                    case "-":
+                        negCount++;
+                        negID = voltageID;
+                        break;
+                    case "0":
+                        zCount++;
+                        zID = voltageID;
+                        break;
+                    case "N":
+                        nCount++;
+                        nID = voltageID;
+                        break;
+                }
+            }
+
+            switch (phase) {
+                case "A":
+                    if (aCount === 1)
+                        return aID;
+                    break;
+                case "B":
+                    if (bCount === 1)
+                        return bID;
+                    break;
+                case "C":
+                    if (cCount === 1)
+                        return cID;
+                    break;
+                case "1":
+                    if (posCount === 1)
+                        return posID;
+                    break;
+                case "2":
+                    if (negCount === 1)
+                        return negID;
+                    break;
+                case "0":
+                    if (zCount === 1)
+                        return zID;
+                    break;
+                case "N":
+                    if (nCount === 1)
+                        return nID;
+                break;
             }
 
             return -1;
@@ -746,113 +827,113 @@
                 // Add dF/dt
                 return saveFixedMeasurement(cell, dfdtSignalType);
             })
-                .then(function () {
-                    // Add status flags
-                    return saveFixedMeasurement(cell, flagSignalType);
-                })
-                .then(function () {
-                    // Add analogs
-                    if (viewModel.addAnalogs()) {
-                        const analogSignalType = getDeviceSignalType("ALOG");
+            .then(function () {
+                // Add status flags
+                return saveFixedMeasurement(cell, flagSignalType);
+            })
+            .then(function () {
+                // Add analogs
+                if (viewModel.addAnalogs()) {
+                    const analogSignalType = getDeviceSignalType("ALOG");
 
-                        if (analogSignalType != null) {
-                            const promises = [];
+                    if (analogSignalType != null) {
+                        const promises = [];
 
-                            for (let i = 0; i < cell.AnalogDefinitions.length; i++) {
-                                const index = i + 1;
-                                const analogDefinition = cell.AnalogDefinitions[i];
-                                const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), analogSignalType.Suffix, index);
+                        for (let i = 0; i < cell.AnalogDefinitions.length; i++) {
+                            const index = i + 1;
+                            const analogDefinition = cell.AnalogDefinitions[i];
+                            const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), analogSignalType.Suffix, index);
 
-                                // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                                promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
-                                    return dataHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index).then(function (pointTag) {
-                                        measurement.DeviceID = cell.ID;
-                                        measurement.HistorianID = viewModel.historianID();
-                                        measurement.PointTag = pointTag;
-                                        measurement.AlternateTag = analogDefinition.Label;
-                                        measurement.Description = String.format("{0} Analog Value {1}:{2}: {3}", cell.IDLabel(), index, analogDefinition.AnalogType, analogDefinition.Label);
-                                        measurement.SignalReference = signalReference;
-                                        measurement.SignalTypeID = analogSignalType.ID;
-                                        measurement.Internal = true;
-                                        measurement.Enabled = true;
+                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                            promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                                return dataHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index).then(function (pointTag) {
+                                    measurement.DeviceID = cell.ID;
+                                    measurement.HistorianID = viewModel.historianID();
+                                    measurement.PointTag = pointTag;
+                                    measurement.AlternateTag = analogDefinition.Label;
+                                    measurement.Description = String.format("{0} Analog Value {1}:{2}: {3}", cell.IDLabel(), index, analogDefinition.AnalogType, analogDefinition.Label);
+                                    measurement.SignalReference = signalReference;
+                                    measurement.SignalTypeID = analogSignalType.ID;
+                                    measurement.Internal = true;
+                                    measurement.Enabled = true;
 
-                                        return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
-                                        });
-                                    })
-                                        .fail(function (error) {
-                                            showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
-                                        });
+                                    return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                    });
                                 })
-                                    .fail(function (error) {
-                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
-                                    }));
-                            }
+                                .fail(function (error) {
+                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                            }));
+                        }
 
-                            return $(promises).whenAll();
-                        }
-                        else {
-                            showErrorMessage("Failed to find analog signal type record.");
-                            return $.Deferred().resolve().promise();
-                        }
+                        return $(promises).whenAll();
                     }
                     else {
+                        showErrorMessage("Failed to find analog signal type record.");
                         return $.Deferred().resolve().promise();
                     }
-                })
-                .then(function () {
-                    // Add digitals
-                    if (viewModel.addDigitals()) {
-                        const digitalSignalType = getDeviceSignalType("DIGI");
+                }
+                else {
+                    return $.Deferred().resolve().promise();
+                }
+            })
+            .then(function () {
+                // Add digitals
+                if (viewModel.addDigitals()) {
+                    const digitalSignalType = getDeviceSignalType("DIGI");
 
-                        if (digitalSignalType != null) {
-                            const promises = [];
+                    if (digitalSignalType != null) {
+                        const promises = [];
 
-                            for (let i = 0; i < cell.DigitalDefinitions.length; i++) {
-                                const index = i + 1;
-                                const digitialDefinition = cell.DigitalDefinitions[i];
-                                const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), digitalSignalType.Suffix, index);
+                        for (let i = 0; i < cell.DigitalDefinitions.length; i++) {
+                            const index = i + 1;
+                            const digitialDefinition = cell.DigitalDefinitions[i];
+                            const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), digitalSignalType.Suffix, index);
 
-                                // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                                promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
-                                    return dataHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index).then(function (pointTag) {
-                                        measurement.DeviceID = cell.ID;
-                                        measurement.HistorianID = viewModel.historianID();
-                                        measurement.PointTag = pointTag;
-                                        measurement.AlternateTag = digitialDefinition.Label;
-                                        measurement.Description = String.format("{0} Digital Value {1}: {2}", cell.IDLabel(), index, digitialDefinition.Label);
-                                        measurement.SignalReference = signalReference;
-                                        measurement.SignalTypeID = digitalSignalType.ID;
-                                        measurement.Internal = true;
-                                        measurement.Enabled = true;
+                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                            promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                                return dataHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index).then(function (pointTag) {
+                                    measurement.DeviceID = cell.ID;
+                                    measurement.HistorianID = viewModel.historianID();
+                                    measurement.PointTag = pointTag;
+                                    measurement.AlternateTag = digitialDefinition.Label;
+                                    measurement.Description = String.format("{0} Digital Value {1}: {2}", cell.IDLabel(), index, digitialDefinition.Label);
+                                    measurement.SignalReference = signalReference;
+                                    measurement.SignalTypeID = digitalSignalType.ID;
+                                    measurement.Internal = true;
+                                    measurement.Enabled = true;
 
-                                        return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
-                                        });
-                                    })
-                                        .fail(function (error) {
-                                            showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
-                                        });
+                                    return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
+                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                    });
                                 })
-                                    .fail(function (error) {
-                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
-                                    }));
-                            }
+                                .fail(function (error) {
+                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                            }));
+                        }
 
-                            return $(promises).whenAll();
-                        }
-                        else {
-                            showErrorMessage("Failed to find digital signal type record.");
-                            return $.Deferred().resolve().promise();
-                        }
+                        return $(promises).whenAll();
                     }
                     else {
+                        showErrorMessage("Failed to find digital signal type record.");
                         return $.Deferred().resolve().promise();
                     }
-                })
-                .then(function () {
-                    return saveDevicePhasors(cell);
-                });
+                }
+                else {
+                    return $.Deferred().resolve().promise();
+                }
+            })
+            .then(function () {
+                return saveDevicePhasors(cell);
+            });
         }
 
         function lookupAssociatedVoltage(cell, voltageID) {
@@ -866,9 +947,9 @@
             return null;
         }
 
-        function savePowerCalcuations(cell, phase, powerCalculations) {
+        function savePowerCalcuations(cell, tagTemplate, powerCalculations) {
             const promises = [];
-            phase = phase.toUpperCase();
+            const phase = tagTemplate.Inputs[0].toUpperCase()[0];
 
             for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
                 const phasorDefinition = cell.PhasorDefinitions[i];
@@ -887,7 +968,7 @@
                         const iphaID = current.iphaMeasurement.SignalID;
 
                         promises.push(dataHub.newPowerCalculation().then(function (powerCalculation) {
-                            powerCalculation.CircuitDescription = String.format("{0}-{1}({2})", cell.IDLabel(), current.Label(), phase);
+                            powerCalculation.CircuitDescription = String.format("{0}-{1}-{2}", cell.IDLabel(), tagTemplate.TagName, current.Label());
                             powerCalculation.VoltageMagSignalID = vphmID;
                             powerCalculation.VoltageAngleSignalID = vphaID;
                             powerCalculation.CurrentMagSignalID = iphmID;
@@ -913,6 +994,407 @@
             });
         }
 
+        function saveSumPhase(cell, tagTemplate, powerCalculations) {
+            const type = tagTemplate.Inputs[0]; // MW, MVAR, MVA
+
+            return $.Deferred().resolve().promise();
+        }
+
+        var dynamicCalculation = {
+            initialized: false,
+            deviceVariables: new Dictionary(),
+            FAVG: "",
+            FNOM: 60
+        };
+
+        function initializeDynamicCalculation() {
+            if (dynamicCalculation.initialized)
+                return $.Deferred().resolve().promise();
+
+            // Input variables - expanded per device:
+            //   VNOM: Nominal Voltage = viewModel.configFrame().PhasorDefintions[voltage].Voltage.NominalFrequency
+            //    VAM: Voltage A-Phase Magnitude    also VBM, VCM, VNM for B, C & N phases and VPOSM, VNEGM, VZM for +, -, 0 sequence
+            //    VAA: Voltage A-Phase Angle        also VBA, VCA, VNA            ↑            VPOSA, VNEGA, VZA
+            //    IAM: Current A-Phase Magnitude    also IBM, ICM, INM         Neutral         IPOSM, INEGM, IZM
+            //    IAA: Current A-Phase Angle        also IBA, ICA, INA                         IPOSA, INEGA, IZA
+            //   FREQ: Frequency
+            //  FLAGS: Status Flags
+            //   TIME: Timestamp
+            //   FAVG: Frequency Average = system singleton where signal reference = "SYSTEM!FREQ-AVG-FQ"
+
+            const promises = [];
+            const configFrame = viewModel.configFrame();
+            const cells = configFrame.Cells;
+            const cellCount = cells.length;
+
+            for (let i = 0; i < cellCount; i++) {
+                const cell = cells[i];
+                const label = cell.IDLabel();
+                const vars = {
+                      VAM: [],   VBM: [],   VCM: [],   VNM: [],   VPOSM: [],   VNEGM: [],   VZM: [],
+                      VAA: [],   VBA: [],   VCA: [],   VNA: [],   VPOSA: [],   VNEGA: [],   VZA: [],
+                    VANOM: [], VBNOM: [], VCNOM: [], VNNOM: [], VPOSNOM: [], VNEGNOM: [], VZNOM: [],
+                      IAM: [],   IBM: [],   ICM: [],   INM: [],   IPOSM: [],   INEGM: [],   IZM: [],
+                      IAA: [],   IBA: [],   ICA: [],   INA: [],   IPOSA: [],   INEGA: [],   IZA: [],
+                     FREQ: "", FLAGS: "",  TIME: 0
+                };
+
+                for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
+                    const phasorDefinition = cell.PhasorDefinitions[j];
+                    const phase = phasorDefinition.Phase().toUpperCase();
+
+                    if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
+                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage();
+                        const nominalVoltage3 = nominalVoltage / 1.7320508075688772;
+
+                        switch (phase) {
+                            case "A":
+                                vars.VAM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VAA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VANOM.push(nominalVoltage3);
+                                break;
+                            case "B":
+                                vars.VBM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VBA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VBNOM.push(nominalVoltage3);
+                                break;
+                            case "C":
+                                vars.VCM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VCA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VCNOM.push(nominalVoltage3);
+                                break;
+                            case "N": // Neutral
+                                vars.VNM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VNA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VNNOM.push(nominalVoltage);
+                                break;
+                            case "+": // Positive Sequence
+                                vars.VPOSM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VPOSA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VPOSNOM.push(nominalVoltage);
+                                break;
+                            case "-": // Negative Sequence
+                                vars.VNEGM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VNEGA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VNEGNOM.push(nominalVoltage);
+                                break;
+                            case "0": // Zero Sequence
+                                vars.VZM.push(phasorDefinition.vphmMeasurement.SignalID);
+                                vars.VZA.push(phasorDefinition.vphaMeasurement.SignalID);
+                                vars.VZNOM.push(nominalVoltage);
+                                break;
+                            default:
+                                continue;
+                        }
+                    } else {
+                        switch (phase) {
+                            case "A":
+                                vars.IAM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.IAA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "B":
+                                vars.IBM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.IBA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "C":
+                                vars.ICM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.ICA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "N": // Neutral
+                                vars.INM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.INA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "+": // Positive Sequence
+                                vars.IPOSM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.IPOSA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "-": // Negative Sequence
+                                vars.INEGM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.INEGA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            case "0": // Zero Sequence
+                                vars.IZM.push(phasorDefinition.iphmMeasurement.SignalID);
+                                vars.IZA.push(phasorDefinition.iphaMeasurement.SignalID);
+                                break;
+                            default:
+                                continue;
+                        }
+                    }
+                }
+
+                promises.push(dataHub.queryMeasurement(label + "-FQ").then(function (measurement) {
+                    vars.FREQ = measurement.SignalID;
+                    return dataHub.queryMeasurement(label + "-SF");
+                })
+                .then(function (measurement) {
+                    vars.FLAGS = measurement.SignalID;
+                    dynamicCalculation.deviceVariables.set(label, vars);
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to find device '" + label + "' frequency or flags: " + error);
+                }));
+            }
+
+            return $(promises).whenAll().then(function () {
+                return dataHub.queryMeasurement("SYSTEM!FREQ-AVG-FQ");
+            })
+            .then(function (measurement) {
+                if (measurement && measurement.SignalID)
+                    dynamicCalculation.FAVG = measurement.SignalID;
+
+                dynamicCalculation.FNOM = @Program.Host.Model.Global.NominalFrequency;
+                dynamicCalculation.initialized = true;
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to find average system frequency 'SYSTEM!FREQ-AVG-FQ': " + error);
+            });
+        }
+
+        function lookupAssociatedPhasorDefinition(cell, signalID) {
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
+                    if (phasorDefinition.vphmMeasurement.SignalID === signalID || phasorDefinition.vphaMeasurement.SignalID === signalID)
+                        return phasorDefinition;
+                }
+                else {
+                    if (phasorDefinition.iphmMeasurement.SignalID === signalID || phasorDefinition.iphaMeasurement.SignalID === signalID)
+                        return phasorDefinition;
+                }
+            }
+
+            return null;
+        }
+
+        function saveDynamicCalculation(cell, tagTemplate) {
+            return initializeDynamicCalculation().then(function () {
+                const vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
+                var inputSet = {};
+
+                for (let i = 0; i < tagTemplate.Inputs.length; i++) {
+                    let templateName = tagTemplate.Inputs[i].toUpperCase();
+                    let varName = templateName;
+
+                    if (templateName === "FNOM") {
+                        inputSet.FNON = dynamicCalculation.FNOM;
+                        continue;
+                    }
+
+                    if (templateName === "FAVG") {
+                        inputSet.FAVG = dynamicCalculation.FAVG;
+                        continue;
+                    }
+
+                    // Map VNOM since it's entered as per-phasor nominal voltage
+                    if (templateName === "VNOM") {
+                        for (let j = 0; j < tagTemplate.Inputs.length; j++) {
+                            if (i === j)
+                                continue;
+
+                            switch (tagTemplate.Inputs[j].toUpperCase()) {
+                                case "VAM":
+                                case "VAA":
+                                    varName = "VANOM";
+                                    break;
+                                case "VBM":
+                                case "VBA":
+                                    varName = "VBNOM";
+                                    break;
+                                case "VCM":
+                                case "VCA":
+                                    varName = "VCNOM";
+                                    break;
+                                case "VNM":
+                                case "VNA":
+                                    varName = "VNNOM";
+                                    break;
+                                case "VPOSM":
+                                case "VPOSA":
+                                    varName = "VPOSNOM";
+                                    break;
+                                case "VNEGM":
+                                case "VNEGA":
+                                    varName = "VNEGNOM";
+                                    break;
+                                case "VZM":
+                                case "VZA":
+                                    varName = "VZNOM";
+                                    break;
+                            }
+
+                            if (varName !== templateName)
+                                break;
+                        }
+
+                        if (varName === "VNOM")
+                            varName = "VANOM";
+                    }
+
+                    inputSet[templateName] = vars[varName];
+                }
+
+                var maxChannelCount = 0;
+                var inputsAvailable = true;
+
+                // Get max channel count
+                for (let property in inputSet) {
+                    if (inputSet.hasOwnProperty(property)) {
+                        // Ignore non-array elements
+                        if (!Array.isArray(inputSet[property]))
+                            continue;
+
+                        const channelCount = inputSet[property].length;
+
+                        if (channelCount > maxChannelCount)
+                            maxChannelCount = channelCount;
+                    }
+                }
+
+                // Validate inputs
+                if (maxChannelCount > 0) {
+                    for (let property in inputSet) {
+                        if (inputSet.hasOwnProperty(property)) {
+                            // Ignore non-array elements
+                            if (!Array.isArray(inputSet[property]))
+                                continue;
+
+                            if (maxChannelCount !== inputSet[property].length) {
+                                inputsAvailable = false;
+                                break;
+                            }
+                        }
+                    }
+
+                } else {
+                    inputsAvailable = false;
+                }
+
+                const promises = [];
+                const analogSignalType = getDeviceSignalType("ALOG");
+
+                if (inputsAvailable && analogSignalType != null) {
+                    for (let i = 0; i < maxChannelCount; i++) {
+                        const index = i;
+                        const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, analogSignalType.Suffix, index);
+
+                        // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                        promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                            return dataHub.createPointTag(cell.IDLabel(), analogSignalType.Acronym).then(function (pointTag) {
+                                measurement.DeviceID = cell.ID;
+                                measurement.HistorianID = viewModel.historianID();
+                                measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName, analogSignalType.Suffix, index);
+                                measurement.Description = String.format("{0} <0> Analog Value {1}: {2}", cell.IDLabel(), index, tagTemplate.Description);
+                                measurement.SignalReference = signalReference;
+                                measurement.SignalTypeID = analogSignalType.ID;
+                                measurement.Internal = true;
+                                measurement.Enabled = true;
+
+                                return dataHub.addNewOrUpdateMeasurement(measurement).then(function () {
+                                    return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                                        var phasorDefinition = null;
+                                        const connectionString = new Dictionary();
+                                        const variableList = new Dictionary();
+                                        var equation = tagTemplate.Equation;
+
+                                        for (let property in inputSet) {
+                                            if (inputSet.hasOwnProperty(property)) {
+                                                if (Array.isArray(inputSet[property])) {
+                                                    if (property === "VNOM") {
+                                                        // Replace VNOM constant
+                                                        equation = equation.replaceAll("VNOM", String(inputSet.VNOM[index]), true);
+                                                    }
+                                                    else {
+                                                        // Assign variable to signal ID
+                                                        const signalID = inputSet[property][index] + "";
+                                                        variableList.set(property, signalID);
+
+                                                        if (phasorDefinition == null) {
+                                                            const matchedPhasorDefinition = lookupAssociatedPhasorDefinition(cell, signalID);
+
+                                                            if (matchedPhasorDefinition != null)
+                                                                phasorDefinition = matchedPhasorDefinition;
+                                                        }
+                                                    }
+                                                }
+                                                else {
+                                                    if (property === "FNOM") {
+                                                        // Replace FNOM constant
+                                                        equation = equation.replaceAll("FNOM", String(inputSet.FNOM), true);
+                                                    } else if (property === "TIME") {
+                                                        // TODO: Properly handle time
+                                                        equation = equation.replaceAll("TIME", "0", true);
+                                                    } else {
+                                                        // Assign variable to signal ID
+                                                        const signalID = inputSet[property] + "";
+                                                        variableList.set(property, signalID);
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        // Inject phasor definition label into output measurement point tag and description
+                                        if (phasorDefinition != null) {
+                                            const label = phasorDefinition.Label().replaceAll(" ", "_").toUpperCase();
+                                            measurement.PointTag = String.format(measurement.PointTag.replace("<0>", "{0}"), label);
+                                            measurement.Description = String.format(measurement.Description.replace("<0>", "{0}"), phasorDefinition.Label());
+                                            dataHub.updateMeasurement(measurement);
+                                        }
+                                        else {
+                                            measurement.PointTag = measurement.PointTag.replace("-<0>", "");
+                                            measurement.Description = measurement.Description.replace(" <0>", "");
+                                            dataHub.updateMeasurement(measurement);
+                                        }
+
+                                        connectionString.set("variableList", variableList.joinKeyValuePairs());
+                                        connectionString.set("expressionText", equation);
+                                        connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
+                                        connectionString.set("lagTime", "5.0");
+                                        connectionString.set("leadTime", "3.0");
+                                        connectionString.set("outputMeasurements", measurement.SignalID);
+
+                                        return dataHub.newCustomActionAdapter().then(function (adapter) {
+                                            adapter.NodeID = nodeID;
+                                            adapter.AdapterName = measurement.PointTag;
+                                            adapter.AssemblyName = "DynamicCalculator.dll";
+                                            adapter.TypeName = "DynamicCalculator.DynamicCalculator";
+                                            adapter.ConnectionString = connectionString.joinKeyValuePairs();
+                                            adapter.LoadOrder = 100;
+                                            adapter.Enabled = true;
+
+                                            return dataHub.addNewCustomActionAdapter(adapter).then(function () {
+                                                return serviceHub.sendCommand("initialize " + adapter.AdapterName);
+                                            })
+                                            .fail(function (error) {
+                                                showErrorMessage("Save failed for new custom action measurement: " + error);
+                                            });
+                                        })
+                                        .fail(function (error) {
+                                            showErrorMessage("Failed to create new custom action adapter record: " + error);
+                                        });                                        
+                                    })
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error);
+                        }));
+                    }
+                }
+
+                return $(promises).whenAll();
+            });
+        }
+
         function saveTemplateCalculations(cell) {
             const templateType = viewModel.templateType();
 
@@ -928,15 +1410,13 @@
 
                     switch (tagTemplate.Type.toUpperCase()) {
                         case "CALCULATEPOWER":
-                            promises.push(savePowerCalcuations(cell, tagTemplate.Inputs[0], powerCalculations));
+                            promises.push(savePowerCalcuations(cell, tagTemplate, powerCalculations));
                             break;
-                        case "SUMPHASEMW":
-                            break;
-                        case "SUMPHASEMVAR":
-                            break;
-                        case "SUMPHASEMVA":
+                        case "SUMPHASE":
+                            promises.push(saveSumPhase(cell, tagTemplate, powerCalculations));
                             break;
                         case "DYNAMICCALCULATOR":
+                            promises.push(saveDynamicCalculation(cell, tagTemplate));
                             break;
                     }
                 }
@@ -1007,7 +1487,7 @@
                             return dataHub.updateDevice(device).then(function () {
                                 // Save associated device records...
                                 cell.ID = device.ID;
-
+                                
                                 return saveDeviceMeasurements(cell).then(function () {
                                     return saveTemplateCalculations(cell);
                                 });
@@ -1378,7 +1858,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+                        <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 110px"></select>
                         <div class="checkbox" style="display:inline; margin-left: 15px">
                             <label class="disabled" style="margin-top: 6px"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
@@ -1399,7 +1879,7 @@
             {
                 <text>
                     <div class="input-group pull-right" style="margin-top: -4px">
-                        <form class="form-inline" role="group" style="padding-bottom: 4px">
+                        <form class="form-inline" style="padding-bottom: 4px">
                             <div class="checkbox">
                                 <label><input type="checkbox" data-bind="checked: addAnalogs"> Add Analogs</label>
                             </div>
@@ -1425,80 +1905,88 @@
         </em>
         <hr class="quarter-break" />
         <div id="configInfo"></div>
-        <h3>Voltages</h3>
-        <table class="table table-condensed table-striped table-hover">
-            <thead>
-                <tr>
-                    <th class="text-left device-singleton">Device&nbsp;Acronym</th>
-                    <th class="text-left">Phasor&nbsp;Label</th>
-                    <th class="text-center">Phase</th>
-                    <th class="text-left">Nominal&nbsp;Voltage</th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: { data: voltages }">
-                <tr id="voltageRow" style="visibility: hidden">
-                    <td width="190px" class="text-left valign-middle device-singleton">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
-                            <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
-                        </div>
-                    </td>
-                    <td width="290px" class="text-left valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                            <input type="text" class="form-control" style="width: 280px" data-bind="acronym: Label, textInput: Label" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
-                        </div>
-                    </td>
-                    <td width="55px" class="text-center valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
-                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
-                        </div>
-                    </td>
-                    <td class="text-left valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
-                            <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage" required>&nbsp;<span class="table-cell-text">kV</span>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <h3>Currents</h3>
-        <table class="table table-condensed table-striped table-hover">
-            <thead>
-                <tr>
-                    <th class="text-left device-singleton">Device&nbsp;Acronym</th>
-                    <th class="text-left">Phasor&nbsp;Label</th>
-                    <th class="text-center">Phase</th>
-                    <th class="text-left">Associated&nbsp;Voltage</th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: { data: currents }">
-                <tr id="currentRow" style="visibility: hidden">
-                    <td width="190px" class="text-left valign-middle device-singleton">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
-                            <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
-                        </div>
-                    </td>
-                    <td width="290px" class="text-left valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                            <input type="text" class="form-control" style="width: 280px" data-bind="acronym: Label, textInput: Label" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
-                        </div>
-                    </td>
-                    <td width="55px" class="text-center valign-middle">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
-                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
-                        </div>
-                    </td>
-                    <td class="text-left valign-middle">
-                        <select class="form-control" style="width: 90%" data-bind="options: $parent.voltages, value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
+        <!-- Voltages Section -->
+        <div class="col-md-6">
+            <h3>Voltages</h3>
+            <table class="table table-condensed table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-left device-singleton">Device&nbsp;Acronym</th>
+                        <th class="text-left">Phasor&nbsp;Label</th>
+                        <th class="text-center">Phase</th>
+                        <th class="text-left">Nominal&nbsp;Voltage</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: { data: voltages }">
+                    <tr id="voltageRow" style="visibility: hidden">
+                        <td width="190px" class="text-left valign-middle device-singleton">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
+                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
+                            </div>
+                        </td>
+                        <td width="210px" class="text-left valign-middle">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
+                            </div>
+                        </td>
+                        <td width="55px" class="text-center valign-middle">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
+                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
+                            </div>
+                        </td>
+                        <td class="text-left valign-middle">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
+                                <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage" required>&nbsp;<span class="table-cell-text">kV</span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Currents Section -->
+        <div class="col-md-6">
+            <h3>Currents</h3>
+            <table class="table table-condensed table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-left device-singleton">Device&nbsp;Acronym</th>
+                        <th class="text-left">Phasor&nbsp;Label</th>
+                        <th class="text-center">Phase</th>
+                        <th class="text-left">Associated&nbsp;Voltage</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: { data: currents }">
+                    <tr id="currentRow" style="visibility: hidden">
+                        <td width="190px" class="text-left valign-middle device-singleton">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
+                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
+                            </div>
+                        </td>
+                        <td width="210px" class="text-left valign-middle">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
+                            </div>
+                        </td>
+                        <td width="55px" class="text-center valign-middle">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
+                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
+                            </div>
+                        </td>
+                        <td class="text-left valign-middle">
+                            <select class="form-control" style="width: 90%" data-bind="options: $parent.voltages, value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

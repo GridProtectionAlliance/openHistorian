@@ -443,6 +443,49 @@ namespace openHistorian
 
         #endregion
 
+        #region [ CustomActionAdapter Table Operations ]
+
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.QueryRecordCount)]
+        public int QueryCustomActionAdapterCount(string filterText)
+        {
+            return DataContext.Table<CustomActionAdapter>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.QueryRecords)]
+        public IEnumerable<CustomActionAdapter> QueryCustomActionAdapters(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<CustomActionAdapter>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.DeleteRecord)]
+        public void DeleteCustomActionAdapter(int id)
+        {
+            DataContext.Table<CustomActionAdapter>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.CreateNewRecord)]
+        public CustomActionAdapter NewCustomActionAdapter()
+        {
+            return DataContext.Table<CustomActionAdapter>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.AddNewRecord)]
+        public void AddNewCustomActionAdapter(CustomActionAdapter customActionAdapter)
+        {
+            DataContext.Table<CustomActionAdapter>().AddNewRecord(customActionAdapter);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(CustomActionAdapter), RecordOperation.UpdateRecord)]
+        public void UpdateCustomActionAdapter(CustomActionAdapter customActionAdapter)
+        {
+            DataContext.Table<CustomActionAdapter>().UpdateRecord(customActionAdapter);
+        }
+
+        #endregion
+
         #region [ Historian Table Operations ]
 
         [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
@@ -1047,9 +1090,10 @@ namespace openHistorian
                     continue;
                 }
 
-                string[] parts = line.Split(',');
+                string[] parts = line.Split('\t');
 
                 if (parts.Length == 5)
+                {
                     tagTemplates.Add(new TagTemplate
                     {
                         TagName = parts[0].Trim(),
@@ -1058,6 +1102,7 @@ namespace openHistorian
                         Type = parts[3].Trim(),
                         Description = parts[4].Trim()
                     });
+                }
             }
 
             return tagTemplates;

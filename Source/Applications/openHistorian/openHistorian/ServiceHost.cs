@@ -172,7 +172,6 @@ namespace openHistorian
             const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/favicon.ico$";
             const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|^/grafana(?!/api/).*$";
 
-
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
             systemSettings.Add("DiagnosticLogPath", FilePath.GetAbsolutePath(""), "Path for diagnostic logs.");
@@ -197,6 +196,7 @@ namespace openHistorian
             systemSettings.Add("DefaultCorsHeaders", "*", "Comma-separated list of supported headers that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
             systemSettings.Add("DefaultCorsMethods", "*", "Comma-separated list of supported methods that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
             systemSettings.Add("DefaultCorsSupportsCredentials", true, "Boolean flag for the default CORS policy indicating whether the resource supports user credentials in the request.");
+            systemSettings.Add("NominalFrequency", 60, "Defines the nominal system frequency for this instance of the openHistorian");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -221,11 +221,13 @@ namespace openHistorian
             Model.Global.DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value;
             Model.Global.DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value;
             Model.Global.DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true);
+            Model.Global.NominalFrequency = systemSettings["NominalFrequency"].ValueAsInt32(60);
 
-            AuthenticationSchemes authenticationSchemes;
+            // Register a symbolic reference to global settings for use by default value expressions
+            ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Model.Global);
 
             // Parse configured authentication schemes
-            if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(AuthenticationOptions.DefaultAuthenticationSchemes.ToString()), true, out authenticationSchemes))
+            if (!Enum.TryParse(systemSettings["AuthenticationSchemes"].ValueAs(AuthenticationOptions.DefaultAuthenticationSchemes.ToString()), true, out AuthenticationSchemes authenticationSchemes))
                 authenticationSchemes = AuthenticationOptions.DefaultAuthenticationSchemes;
 
             // Initialize web startup configuration
@@ -251,9 +253,6 @@ namespace openHistorian
 
             if (Startup.AuthenticationOptions.AuthenticationToken == Startup.AuthenticationOptions.SessionToken)
                 throw new InvalidOperationException("Authentication token must be different from session token in order to differentiate the cookie values in the HTTP headers.");
-
-            // Register a symbolic reference to global settings for use by default value expressions
-            ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Program.Host.Model.Global);
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;
