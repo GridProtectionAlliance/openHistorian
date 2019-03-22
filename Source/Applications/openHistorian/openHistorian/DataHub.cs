@@ -105,6 +105,7 @@ namespace openHistorian
         // Static Fields
         private static int s_modbusProtocolID;
         private static int s_comtradeProtocolID;
+        private static int s_ieeeC37_118ID;
 
         // Static Constructor
         static DataHub()
@@ -172,6 +173,8 @@ namespace openHistorian
 
         private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : (s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'"));
 
+        private int IeeeC37_118ID => s_ieeeC37_118ID != 0 ? s_ieeeC37_118ID : (s_ieeeC37_118ID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='IeeeC37_118V1'"));
+
         /// <summary>
         /// Gets protocol ID for "ModbusPoller" protocol.
         /// </summary>
@@ -226,6 +229,11 @@ namespace openHistorian
         public Device QueryDeviceByID(int deviceID)
         {
             return DataContext.Table<Device>().QueryRecordWhere("ID = {0}", deviceID) ?? NewDevice();
+        }
+
+        public IEnumerable<Device> QueryChildDevices(int deviceID)
+        {
+            return DataContext.Table<Device>().QueryRecordsWhere("ParentID = {0}", deviceID);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -381,6 +389,11 @@ namespace openHistorian
         public Phasor QueryPhasorForDevice(int deviceID, int sourceIndex)
         {
             return DataContext.Table<Phasor>().QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", deviceID, sourceIndex);
+        }
+
+        public IEnumerable<Phasor> QueryPhasorsForDevice(int deviceID)
+        {
+            return DataContext.Table<Phasor>().QueryRecordsWhere("DeviceID = {0}", deviceID);
         }
 
         public int QueryPhasorCountForDevice(int deviceID)
@@ -929,6 +942,72 @@ namespace openHistorian
             return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, phasorLabel, signalIndex, phase?[0] ?? '_');
         }
 
+        public ConfigurationFrame ExtractConfigurationFrame(int deviceID)
+        {
+            Device device = QueryDeviceByID(deviceID);
+
+            if (device.ID == 0)
+                return new ConfigurationFrame();
+
+            ConfigurationFrame derivedFrame = new ConfigurationFrame
+            {
+                IDCode = (ushort)device.AccessID,
+                FrameRate = (ushort)(device.FramesPerSecond ?? 30),
+                ConnectionString = device.ConnectionString,
+                ProtocolID = device.ProtocolID ?? IeeeC37_118ID
+            };
+
+            if (device.ParentID == null)
+            {
+                IEnumerable<Device> devices = QueryChildDevices(deviceID);
+
+                foreach (Device childDevice in devices)
+                {
+                    // Create new configuration cell
+                    ConfigurationCell derivedCell = new ConfigurationCell
+                    {
+                        IDCode = (ushort)childDevice.AccessID,
+                        StationName = childDevice.Name,
+                        IDLabel = childDevice.Acronym
+                    };
+
+                    derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+
+                    // Extract phasor definitions
+                    foreach (Phasor phasor in QueryPhasorsForDevice(childDevice.ID))
+                    {
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
+                    }
+
+                    // Add cell to frame
+                    derivedFrame.Cells.Add(derivedCell);
+                }
+            }
+            else
+            {
+                // Create new configuration cell
+                ConfigurationCell derivedCell = new ConfigurationCell
+                {
+                    IDCode = (ushort)device.AccessID,
+                    StationName = device.Name,
+                    IDLabel = device.Acronym
+                };
+
+                derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+
+                // Extract phasor definitions
+                foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
+                {
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
+                }
+
+                // Add cell to frame
+                derivedFrame.Cells.Add(derivedCell);
+            }
+
+            return derivedFrame;
+        }
+
         public ConfigurationFrame LoadConfigurationFrame(string sourceData)
         {
             string connectionString = "";
@@ -1016,8 +1095,6 @@ namespace openHistorian
             ConfigurationFrame derivedFrame;
 
             // Create a new simple concrete configuration frame for JSON serialization converted from equivalent configuration information
-            ConfigurationCell derivedCell;
-            IFrequencyDefinition sourceFrequency;
             int protocolID = 0;
         
             if (!string.IsNullOrWhiteSpace(connectionString))
@@ -1037,7 +1114,7 @@ namespace openHistorian
             foreach (IConfigurationCell sourceCell in sourceFrame.Cells)
             {
                 // Create new derived configuration cell
-                derivedCell = new ConfigurationCell
+                ConfigurationCell derivedCell = new ConfigurationCell
                 {
                     IDCode = sourceCell.IDCode,
                     StationName = sourceCell.StationName,
@@ -1045,7 +1122,7 @@ namespace openHistorian
                 };
 
                 // Create equivalent derived frequency definition
-                sourceFrequency = sourceCell.FrequencyDefinition;
+                IFrequencyDefinition sourceFrequency = sourceCell.FrequencyDefinition;
 
                 if (sourceFrequency != null)
                     derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = sourceFrequency.Label };

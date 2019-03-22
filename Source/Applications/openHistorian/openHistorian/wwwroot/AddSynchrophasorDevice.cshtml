@@ -41,8 +41,7 @@
     string parameter;
     int deviceID;
 
-    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID))
-    {
+    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID)) {
         deviceID = 0;
     }
 
@@ -339,6 +338,12 @@
                 owner: self
             });
 
+            self.editMode = ko.pureComputed({
+                read: function () {
+                    return deviceID > 0;
+                }
+            });
+
             self.deviceAcronym = ko.pureComputed({
                 read: self._deviceAcronym,
                 write: function (value) {
@@ -462,7 +467,75 @@
                 self.addDigitals(digitalCount > 0);
             }
 
-            self.analyzeConfig = function(sourceData) {
+            self.loadConfigFrame = function (configFrame) {
+                self.configFrame(configFrame);
+                self.voltageCount = 0;
+
+                const deviceCount = self.configFrame().Cells.length;
+
+                for (let i = 0; i < deviceCount; i++) {
+                    const cell = self.configFrame().Cells[i];
+
+                    let cellAcronym = cell.IDLabel;
+
+                    if (isEmpty(cellAcronym))
+                        cellAcronym = cell.StationName.toUpperCase().replaceAll(" ", "_");
+
+                    if (deviceCount === 1) {
+                        self.deviceAcronym(cellAcronym);
+                        cell.IDLabel = self.deviceAcronym;
+                    } else {
+                        cell.IDLabel = ko.observable(cellAcronym);
+                    }
+
+                    cell.IDLabel.extend({
+                        required: true,
+                        pattern: {
+                            message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
+                            params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
+                        },
+                        deviceUniqueInDatabase: true
+                    });
+
+                    for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
+                        const phasorDefinition = cell.PhasorDefinitions[j];
+
+                        phasorDefinition.Label = String(phasorDefinition.Label).toUpperCase();
+
+                        if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
+                            self.voltages.push(self.createObservableVoltage(cell.IDLabel, phasorDefinition));
+                        else
+                            self.currents.push(self.createObservableCurrent(cell.IDLabel, phasorDefinition));
+                    }
+                }
+
+                // Make sure table is refreshed
+                if (ko.options.deferUpdates)
+                    ko.tasks.runEarly();
+
+                self.errors = ko.validation.group([
+                    self.deviceAcronym,
+                    self.voltages,
+                    self.currents
+                ]);
+
+                self.refreshValidationErrors();
+
+                $("[id=voltageRow]").css("visibility", "visible");
+                $("[id=currentRow]").css("visibility", "visible");
+                hideLoadingLabel();
+
+                self.updateConfigFrameDetails();
+
+                self.isDirty(false);
+
+                if (deviceCount === 1)
+                    $(".device-singleton").hide();
+                else
+                    $(".device-singleton").show();
+            }
+
+            self.loadExisting = function () {
                 if (!self.dataHubIsConnected())
                     return;
 
@@ -474,83 +547,43 @@
                 $("[id=currentRow]").css("visibility", "hidden");
                 $("#bulkSelectionButtons").hide();
                 showLoadingLabel();
-                self.configFrameDetails("Calculating...");
+
+                self.configFrameDetails("Analyzing...");
+
+                dataHub.extractConfigurationFrame(deviceID).done(self.loadConfigFrame).fail(function (error) {
+                    showErrorMessage(String.format("Failed to extract config file from existing device: {0}", error));
+
+                    self.configFrameDetails("Unavailable");
+                    $("[id=voltageRow]").css("visibility", "visible");
+                    $("[id=currentRow]").css("visibility", "visible");
+                    hideLoadingLabel();
+                });
+            }
+
+            self.analyzeConfig = function (sourceData) {
+                if (!self.dataHubIsConnected())
+                    return;
+
+                self.voltages.removeAll();
+                self.currents.removeAll();
+
+                $("#responsiveTableDiv").show();
+                $("[id=voltageRow]").css("visibility", "hidden");
+                $("[id=currentRow]").css("visibility", "hidden");
+                $("#bulkSelectionButtons").hide();
+                showLoadingLabel();
+
+                self.configFrameDetails("Analyzing...");
 
                 // If device is currently active, disconnect it before requesting a configuration
                 // frame in case device doesn't support multiple connections
                 if (deviceID > 0)
                     serviceHub.sendCommand("disconnect " + deviceID);
 
-                dataHub.loadConfigurationFrame(sourceData).done(function (configFrame) {
+                dataHub.loadConfigurationFrame(sourceData).done(self.loadConfigFrame).then(function () {
                     // Reconnect device
                     if (deviceID > 0)
                         serviceHub.sendCommand("connect " + deviceID);
-
-                    self.configFrame(configFrame);
-                    self.voltageCount = 0;
-
-                    const deviceCount = self.configFrame().Cells.length;
-
-                    for (let i = 0; i < deviceCount; i++) {
-                        const cell = self.configFrame().Cells[i];
-
-                        let cellAcronym = cell.IDLabel;
-
-                        if (isEmpty(cellAcronym))
-                            cellAcronym = cell.StationName.toUpperCase().replaceAll(" ", "_");
-
-                        if (deviceCount === 1) {
-                            self.deviceAcronym(cellAcronym);
-                            cell.IDLabel = self.deviceAcronym;
-                        } else {
-                            cell.IDLabel = ko.observable(cellAcronym);
-                        }
-
-                        cell.IDLabel.extend({
-                            required: true,
-                            pattern: {
-                                message: "@Raw(AcronymValidationAttribute.DefaultErrorMessage)",
-                                params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
-                            },
-                            deviceUniqueInDatabase: true
-                        });
-
-                        for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
-                            const phasorDefinition = cell.PhasorDefinitions[j];
-
-                            phasorDefinition.Label = String(phasorDefinition.Label).toUpperCase();
-
-                            if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
-                                self.voltages.push(self.createObservableVoltage(cell.IDLabel, phasorDefinition));
-                            else
-                                self.currents.push(self.createObservableCurrent(cell.IDLabel, phasorDefinition));
-                        }
-                    }
-
-                    // Make sure table is refreshed
-                    if (ko.options.deferUpdates)
-                        ko.tasks.runEarly();
-
-                    self.errors = ko.validation.group([
-                        self.deviceAcronym,
-                        self.voltages,
-                        self.currents
-                    ]);
-
-                    self.refreshValidationErrors();
-
-                    $("[id=voltageRow]").css("visibility", "visible");
-                    $("[id=currentRow]").css("visibility", "visible");
-                    hideLoadingLabel();
-
-                    self.updateConfigFrameDetails();
-
-                    self.isDirty(false);
-
-                    if (deviceCount === 1)
-                        $(".device-singleton").hide();
-                    else
-                        $(".device-singleton").show();
                 })
                 .fail(function (error) {
                     showErrorMessage(String.format("Failed to analyze config file: {0}", error));
@@ -1436,7 +1469,7 @@
             if (cellCount === 1) {
                 // Direct connected device - save associated records
                 const cell = cells[0];
-                cell.ID = deviceID;
+                cell.ID = id;
 
                 return saveDeviceMeasurements(cell).then(function () {
                     return saveTemplateCalculations(cell);
@@ -1452,7 +1485,7 @@
                     // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
                     promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
                         // Set child device properties
-                        device.ParentID = deviceID;
+                        device.ParentID = id;
                         device.HistorianID = viewModel.historianID();
                         device.ProtocolID = configFrame.ProtocolID;
                         device.FrameRate = configFrame.FrameRate;
@@ -1507,7 +1540,7 @@
         }
 
         function saveDeviceConnection() {
-            if (isEmpty(viewModel.configFrame().ConnectionString)) {
+            if (!viewModel.editMode() && isEmpty(viewModel.configFrame().ConnectionString)) {
                 showErrorMessage("Cannot save device connection without a connection string");
                 return $.Deferred().resolve().promise();
             }
@@ -1524,7 +1557,7 @@
             return dataHub.queryDevice(viewModel.deviceAcronym()).then(function (device) {
                 // Set device properties
                 const configFrame = viewModel.configFrame();
-                var connectionString = configFrame.ConnectionString;
+                var connectionString = configFrame.ConnectionString + "";
                 const connectionStringMap = new Dictionary(connectionString.parseKeyValuePairs());
                 var autoStartDataParsingSequence = true;
                 var skipDisableRealTimeData = false;
@@ -1586,12 +1619,12 @@
                     // Update existing device record
                     return dataHub.updateDevice(device).then(function () {
                         // Save associated device records...
-                        deviceID = device.ID;
-
-                        return saveDeviceRecords(deviceID).then(function () {
+                        return saveDeviceRecords(device.ID).then(function () {
                             enableUIButtons("Save complete.");
 
-                            serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                            const connectionID = device.ParentID ? device.ParentID : device.ID;
+
+                            serviceHub.sendCommand("initialize " + connectionID).done(function () {
                                 window.location = "GraphMeasurements.cshtml";
                             });
                         });
@@ -1615,7 +1648,6 @@
 
             dataHub.queryDeviceByID(id).done(function (device) {
                 $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
-                $("#inputConfigFile").val(device.ConnectionString);
             })
             .fail(function (error) {
                 showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
@@ -1623,7 +1655,9 @@
         }
 
         function resizePageElements() {
-            $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+            if (deviceID === 0)
+                $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+
             $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
         }
 
@@ -1773,12 +1807,15 @@
                     });
                 }
 
-                dataHub.loadSignalTypes("PMU").done(function (result) {
+                dataHub.loadSignalTypes("PMU").then(function (result) {
                     deviceSignalTypes = result;
-                });
 
-                dataHub.loadSignalTypes("Phasor").done(function (result) {
-                    phasorSignalTypes = result;
+                    return dataHub.loadSignalTypes("Phasor").then(function (result) {
+                        phasorSignalTypes = result;
+
+                        if (deviceID > 0)
+                            viewModel.loadExisting();
+                    });
                 });
             });
 
@@ -1831,7 +1868,7 @@
     </h3>
     <form>
         <table style="width: 95%">
-            <tr>
+            <tr data-bind="visible: !editMode()">
                 <td class="input-label">
                     <label for="inputConfigFile">Connection File:</label>
                 </td>
@@ -1887,7 +1924,7 @@
                                 <label><input type="checkbox" data-bind="checked: addDigitals"> Add Digitals</label>
                             </div>
                         </form>
-                        <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: validationErrors() > 0 || !dataHubIsConnected() || isEmpty(configFrame().ConnectionString)">
+                        <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: validationErrors() > 0 || !dataHubIsConnected() || (!editMode() && isEmpty(configFrame().ConnectionString))">
                             <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device
                         </button>
                     </div>
