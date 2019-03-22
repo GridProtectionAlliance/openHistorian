@@ -1077,7 +1077,7 @@
                     const phase = phasorDefinition.Phase().toUpperCase();
 
                     if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
-                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage();
+                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage() * 1000; // Convert to kV
                         const nominalVoltage3 = nominalVoltage / 1.7320508075688772;
 
                         switch (phase) {
