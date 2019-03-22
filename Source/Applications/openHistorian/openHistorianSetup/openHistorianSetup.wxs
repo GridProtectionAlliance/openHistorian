@@ -26,6 +26,7 @@
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
         <ComponentRef Id="Sample1344"/>
+        <ComponentRef Id="TagTemplates"/>
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
@@ -260,6 +261,11 @@
       <!-- Sample Data -->
       <Component Id="Sample1344">
         <File Id="Sample1344.PmuCapture" Name="Sample1344.PmuCapture" Source="$(var.openHistorian.ProjectDir)\Sample1344.PmuCapture" />
+      </Component>
+      
+      <!-- Included Tag Templates -->
+      <Component Id="TagTemplates">
+        <File Id="Common.TagTemplate" Name="Common.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Common.TagTemplate" />
       </Component>
 
       <!-- Registry Settings -->
