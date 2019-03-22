@@ -1395,7 +1395,7 @@
                                             adapter.LoadOrder = 100;
                                             adapter.Enabled = true;
 
-                                            return dataHub.addNewCustomActionAdapter(adapter).then(function () {
+                                            return dataHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
                                                 return serviceHub.sendCommand("initialize " + adapter.AdapterName);
                                             })
                                             .fail(function (error) {
