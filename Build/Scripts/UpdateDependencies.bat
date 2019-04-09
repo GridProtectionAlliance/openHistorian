@@ -38,7 +38,7 @@ IF "%sttp%" == "" SET sttp=\\GPAWEB\NightlyBuilds\sttp.net\Beta
 IF "%target%" == "" SET target=%defaulttarget%
 
 SET libraries=%source%\Libraries\*.*
-SET sttplibrary=%sttp%\Release\sttp.net.dll
+SET sttplibrary=%sttp%\lib\sttp.net.dll
 SET dependencies=%target%\Source\Dependencies\GSF
 SET sourcemasterbuild=%source%\Build Scripts\MasterBuild.buildproj
 SET targetmasterbuild=%target%\Build\Scripts
