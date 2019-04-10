@@ -502,20 +502,23 @@ namespace openHistorian
 
         public void AddNewOrUpdateCustomActionAdapter(CustomActionAdapter customActionAdapter)
         {
-            CustomActionAdapter existingActionAdapter = DataContext.Table<CustomActionAdapter>().QueryRecordWhere("AdapterName = {0}", customActionAdapter.AdapterName);
+            TableOperations<CustomActionAdapter> customActionAdapterTable = DataContext.Table<CustomActionAdapter>();
 
-            if (existingActionAdapter == null)
+            if (customActionAdapterTable.QueryRecordCountWhere("AdapterName = {0}", customActionAdapter.AdapterName) == 0)
             {
                 AddNewCustomActionAdapter(customActionAdapter);
             }
             else
             {
+                CustomActionAdapter existingActionAdapter = customActionAdapterTable.QueryRecordWhere("AdapterName = {0}", customActionAdapter.AdapterName);
+                
                 existingActionAdapter.AssemblyName = customActionAdapter.AssemblyName;
                 existingActionAdapter.TypeName = customActionAdapter.TypeName;
                 existingActionAdapter.ConnectionString = customActionAdapter.ConnectionString;
                 existingActionAdapter.Enabled = customActionAdapter.Enabled;
                 existingActionAdapter.UpdatedBy = customActionAdapter.UpdatedBy;
                 existingActionAdapter.UpdatedOn = customActionAdapter.UpdatedOn;
+                
                 UpdateCustomActionAdapter(existingActionAdapter);
             }
         }

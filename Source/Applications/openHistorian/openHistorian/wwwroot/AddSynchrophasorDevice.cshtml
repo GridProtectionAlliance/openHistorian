@@ -1304,22 +1304,22 @@
                 }
 
                 const promises = [];
-                const analogSignalType = getDeviceSignalType("ALOG");
+                const calcSignalType = getDeviceSignalType("CALC");
 
-                if (inputsAvailable && analogSignalType != null) {
+                if (inputsAvailable && calcSignalType != null) {
                     for (let i = 0; i < maxChannelCount; i++) {
                         const index = i;
-                        const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, analogSignalType.Suffix, index);
+                        const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, index);
 
                         // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
                         promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
-                            return dataHub.createPointTag(cell.IDLabel(), analogSignalType.Acronym).then(function (pointTag) {
+                            return dataHub.createPointTag(cell.IDLabel(), calcSignalType.Acronym).then(function (pointTag) {
                                 measurement.DeviceID = cell.ID;
                                 measurement.HistorianID = viewModel.historianID();
-                                measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName, analogSignalType.Suffix, index);
+                                measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, index);
                                 measurement.Description = String.format("{0} <0> Analog Value {1}: {2}", cell.IDLabel(), index, tagTemplate.Description);
                                 measurement.SignalReference = signalReference;
-                                measurement.SignalTypeID = analogSignalType.ID;
+                                measurement.SignalTypeID = calcSignalType.ID;
                                 measurement.Internal = true;
                                 measurement.Enabled = true;
 
