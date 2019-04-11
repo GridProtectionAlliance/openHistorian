@@ -11,12 +11,12 @@ VMAG_DEV_VB	VNOM;VBM	100*((VBM-VNOM)/VNOM)	DynamicCalculator	Voltage Deviation f
 VMAG_DEV_VC	VNOM;VCM	100*((VCM-VNOM)/VNOM)	DynamicCalculator	Voltage Deviation from Nominal C
 VMAG_DEV_XP	VAM;VBM;VCM	100*((Max(VAM,Max(VBM,VCM))-Min(VAM,Min(VBM,VCM)))/Min(VAM,Min(VBM,VCM)))	DynamicCalculator	Voltage Deviation across Phases
 VANG_DIFF_BA	VBA;VAA	VBA-VAA	DynamicCalculator	Voltage Angle Difference B to A
-VANG_DIFF_CA	VCA;VAA	VCA-VAA	DynamicCalculator	Voltage Angle Difference B to A
+VANG_DIFF_CA	VCA;VAA	VCA-VAA	DynamicCalculator	Voltage Angle Difference C to A
 VANG_DIFF_1A	VPOSA;VAA	VPOSA-VAA	DynamicCalculator	Voltage Angle Difference + to A
 IMAG_RATIO_NA	INM;IAM	100*(INM/IAM)	DynamicCalculator	Neutral Current Ratio to Angle
 IMAG_DEV_XP	IAM;IBM;ICM	100*((Max(IAM,Max(IBM,ICM))-Min(IAM,Min(IBM,ICM)))/Min(IAM,Min(IBM,ICM)))	DynamicCalculator	Current Deviation across Phases
 IANG_DIFF_BA	IBA;IAA	IBA-IAA	DynamicCalculator	Current Angle Difference B to A
-IANG_DIFF_CA	ICA;IAA	ICA-IAA	DynamicCalculator	Current Angle Difference B to A
+IANG_DIFF_CA	ICA;IAA	ICA-IAA	DynamicCalculator	Current Angle Difference C to A
 IANG_DIFF_1A	IPOSA;IAA	IPOSA-IAA	DynamicCalculator	Current Angle Difference + to A
 FREQ_DIFF_NOM	FREQ;FNOM	FREQ-FNOM	DynamicCalculator	Frequency Difference from Nominal
 FREQ_DIFF_AVG	FREQ;FAVG	FREQ-FAVG	DynamicCalculator	Frequency Difference from Average
