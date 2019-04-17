@@ -242,8 +242,4 @@ INSERT INTO VendorDevice(VendorID, Name, Description, URL) VALUES(14, 'SIMEAS R-
 INSERT INTO VendorDevice(VendorID, Name, Description, URL) VALUES(15, 'ePDC', 'ePDC & eSPDC', 'http://www.electricpowergroup.com/solutions/epdc/index.html');
  
 INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 15);
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1); 
-INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 15);
-INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1); 
-INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 15);
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1);
