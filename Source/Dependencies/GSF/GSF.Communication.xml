@@ -1627,14 +1627,15 @@
             Default byte sequence used to mark the beginning of the payload in a "Payload-Aware" transmissions.
             </summary>
         </member>
-        <member name="M:GSF.Communication.Payload.AddHeader(System.Byte[]@,System.Int32@,System.Int32@,System.Byte[])">
+        <member name="M:GSF.Communication.Payload.AddHeader(System.Byte[]@,System.Int32@,System.Int32@,System.Byte[],GSF.EndianOrder)">
             <summary>
             Adds header containing the <paramref name="marker"/> to the payload in the <paramref name="buffer"/> for "Payload-Aware" transmission.
             </summary>
             <param name="buffer">The buffer containing the payload.</param>
             <param name="offset">The offset in the <paramref name="buffer"/> at which the payload starts.</param>
-            <param name="length">The lenght of the payload in the <paramref name="buffer"/> starting at the <paramref name="offset"/>.</param>
+            <param name="length">The length of the payload in the <paramref name="buffer"/> starting at the <paramref name="offset"/>.</param>
             <param name="marker">The byte sequence used to mark the beginning of the payload in a "Payload-Aware" transmissions.</param>
+            <param name="endianOrder">The endian order to apply to payload size encoding.</param>
         </member>
         <member name="M:GSF.Communication.Payload.HasHeader(System.Byte[],System.Byte[])">
             <summary>
@@ -1644,13 +1645,14 @@
             <param name="marker">The byte sequence used to mark the beginning of the payload in a "Payload-Aware" transmissions.</param>
             <returns>true if the buffer contains "Payload-Aware" transmission header; otherwise false.</returns>
         </member>
-        <member name="M:GSF.Communication.Payload.ExtractLength(System.Byte[],System.Int32,System.Byte[])">
+        <member name="M:GSF.Communication.Payload.ExtractLength(System.Byte[],System.Int32,System.Byte[],GSF.EndianOrder)">
             <summary>
             Determines the length of a payload in a "Payload-Aware" transmission from the payload header information.
             </summary>
-            <param name="buffer">The buffer containg payload header information starting at index zero.</param>
+            <param name="buffer">The buffer containing payload header information starting at index zero.</param>
             <param name="length">The length of valid data within in <paramref name="buffer"/>.</param>
             <param name="marker">The byte sequence used to mark the beginning of the payload in a "Payload-Aware" transmissions.</param>
+            <param name="endianOrder">The endian order to apply to payload size decoding.</param>
             <returns>Length of the payload.</returns>
         </member>
         <member name="T:GSF.Communication.Radius.NamespaceDoc">
@@ -3204,7 +3206,17 @@
             <summary>
             Gets or sets the byte sequence used to mark the beginning of a payload in a <see cref="P:GSF.Communication.TlsClient.PayloadAware"/> transmission.
             </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty buffer.</exception>
+            <remarks>
+            Setting property to <c>null</c> will create a zero-length payload marker.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TlsClient.PayloadEndianOrder">
+            <summary>
+            Gets or sets the endian order to apply for encoding and decoding payload size in a <see cref="P:GSF.Communication.TlsClient.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will force use of little-endian encoding.
+            </remarks>
         </member>
         <member name="P:GSF.Communication.TlsClient.IntegratedSecurity">
             <summary>
@@ -3557,7 +3569,17 @@
             <summary>
             Gets or sets the byte sequence used to mark the beginning of a payload in a <see cref="P:GSF.Communication.TlsServer.PayloadAware"/> transmission.
             </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty buffer.</exception>
+            <remarks>
+            Setting property to <c>null</c> will create a zero-length payload marker.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TlsServer.PayloadEndianOrder">
+            <summary>
+            Gets or sets the endian order to apply for encoding and decoding payload size in a <see cref="P:GSF.Communication.TlsServer.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will force use of little-endian encoding.
+            </remarks>
         </member>
         <member name="P:GSF.Communication.TlsServer.IntegratedSecurity">
             <summary>
@@ -3947,7 +3969,17 @@
             <summary>
             Gets or sets the byte sequence used to mark the beginning of a payload in a <see cref="P:GSF.Communication.TcpClient.PayloadAware"/> transmission.
             </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty buffer.</exception>
+            <remarks>
+            Setting property to <c>null</c> will create a zero-length payload marker.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TcpClient.PayloadEndianOrder">
+            <summary>
+            Gets or sets the endian order to apply for encoding and decoding payload size in a <see cref="P:GSF.Communication.TcpClient.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will force use of little-endian encoding.
+            </remarks>
         </member>
         <member name="P:GSF.Communication.TcpClient.IntegratedSecurity">
             <summary>
@@ -4282,7 +4314,17 @@
             <summary>
             Gets or sets the byte sequence used to mark the beginning of a payload in a <see cref="P:GSF.Communication.TcpServer.PayloadAware"/> transmission.
             </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is null or empty buffer.</exception>
+            <remarks>
+            Setting property to <c>null</c> will create a zero-length payload marker.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TcpServer.PayloadEndianOrder">
+            <summary>
+            Gets or sets the endian order to apply for encoding and decoding payload size in a <see cref="P:GSF.Communication.TcpServer.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will force use of little-endian encoding.
+            </remarks>
         </member>
         <member name="P:GSF.Communication.TcpServer.IntegratedSecurity">
             <summary>
