@@ -1211,6 +1211,11 @@ namespace openHistorian
             return tagTemplates;
         }
 
+        public string GetProtocolCategory(int protocolID)
+        {
+            return DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID).Category;
+        }
+
         #endregion
 
         #region [ Miscellaneous Functions ]

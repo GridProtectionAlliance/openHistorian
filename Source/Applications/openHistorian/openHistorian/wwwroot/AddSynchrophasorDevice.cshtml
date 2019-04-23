@@ -306,6 +306,7 @@
             self.configFrameDetails = ko.observable("Calculating...");
             self.addAnalogs = ko.observable(false);
             self.addDigitals = ko.observable(false);
+            self.readOnly = ko.observable(false);
             self.errors = ko.validation.group(self);
 
             // Regular fields
@@ -470,6 +471,12 @@
             self.loadConfigFrame = function (configFrame) {
                 self.configFrame(configFrame);
                 self.voltageCount = 0;
+
+                if (configFrame.ProtocolID > 0) {
+                    dataHub.getProtocolCategory(configFrame.ProtocolID).done(function (category) {
+                        self.readOnly(category.toLowerCase() === "gateway");
+                    });
+                }
 
                 const deviceCount = self.configFrame().Cells.length;
 
@@ -1045,15 +1052,15 @@
                 return $.Deferred().resolve().promise();
 
             // Input variables - expanded per device:
-            //   VNOM: Nominal Voltage = viewModel.configFrame().PhasorDefintions[voltage].Voltage.NominalFrequency
+            //   VNOM: Nominal Voltage = viewModel.configFrame().PhasorDefintions[voltage].Voltage.NominalVoltage()
             //    VAM: Voltage A-Phase Magnitude    also VBM, VCM, VNM for B, C & N phases and VPOSM, VNEGM, VZM for +, -, 0 sequence
             //    VAA: Voltage A-Phase Angle        also VBA, VCA, VNA            ↑            VPOSA, VNEGA, VZA
             //    IAM: Current A-Phase Magnitude    also IBM, ICM, INM         Neutral         IPOSM, INEGM, IZM
             //    IAA: Current A-Phase Angle        also IBA, ICA, INA                         IPOSA, INEGA, IZA
             //   FREQ: Frequency
-            //  FLAGS: Status Flags
-            //   TIME: Timestamp
+            //   FNOM: Model.Global.NominalFrequency
             //   FAVG: Frequency Average = system singleton where signal reference = "SYSTEM!FREQ-AVG-FQ"
+            //  FLAGS: Status Flags
 
             const promises = [];
             const configFrame = viewModel.configFrame();
@@ -1069,7 +1076,7 @@
                     VANOM: [], VBNOM: [], VCNOM: [], VNNOM: [], VPOSNOM: [], VNEGNOM: [], VZNOM: [],
                       IAM: [],   IBM: [],   ICM: [],   INM: [],   IPOSM: [],   INEGM: [],   IZM: [],
                       IAA: [],   IBA: [],   ICA: [],   INA: [],   IPOSA: [],   INEGA: [],   IZA: [],
-                     FREQ: "", FLAGS: "",  TIME: 0
+                     FREQ: "", FLAGS: ""
                 };
 
                 for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
@@ -1200,27 +1207,27 @@
             return null;
         }
 
-        function saveDynamicCalculation(cell, tagTemplate) {
+        function saveDynamicCalculation(cell, tagTemplate, calcSignalType) {
             return initializeDynamicCalculation().then(function () {
                 const vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
                 var inputSet = {};
 
                 for (let i = 0; i < tagTemplate.Inputs.length; i++) {
-                    let templateName = tagTemplate.Inputs[i].toUpperCase();
-                    let varName = templateName;
+                    const inputName = tagTemplate.Inputs[i].toUpperCase();
+                    let varName = inputName;
 
-                    if (templateName === "FNOM") {
-                        inputSet.FNON = dynamicCalculation.FNOM;
-                        continue;
-                    }
-
-                    if (templateName === "FAVG") {
+                    if (inputName === "FAVG") {
                         inputSet.FAVG = dynamicCalculation.FAVG;
                         continue;
                     }
 
+                    if (inputName === "FNOM") {
+                        inputSet.FNOM = dynamicCalculation.FNOM;
+                        continue;
+                    }
+
                     // Map VNOM since it's entered as per-phasor nominal voltage
-                    if (templateName === "VNOM") {
+                    if (inputName === "VNOM") {
                         for (let j = 0; j < tagTemplate.Inputs.length; j++) {
                             if (i === j)
                                 continue;
@@ -1256,7 +1263,7 @@
                                     break;
                             }
 
-                            if (varName !== templateName)
+                            if (varName !== inputName)
                                 break;
                         }
 
@@ -1264,11 +1271,12 @@
                             varName = "VANOM";
                     }
 
-                    inputSet[templateName] = vars[varName];
+                    inputSet[inputName] = vars[varName];
                 }
 
-                var maxChannelCount = 0;
+                var maxInputLength = 0;
                 var inputsAvailable = true;
+                var singletonCalculation = false;
 
                 // Get max channel count
                 for (let property in inputSet) {
@@ -1279,45 +1287,50 @@
 
                         const channelCount = inputSet[property].length;
 
-                        if (channelCount > maxChannelCount)
-                            maxChannelCount = channelCount;
+                        if (channelCount > maxInputLength)
+                            maxInputLength = channelCount;
                     }
                 }
 
                 // Validate inputs
-                if (maxChannelCount > 0) {
+                if (maxInputLength > 0) {
                     for (let property in inputSet) {
                         if (inputSet.hasOwnProperty(property)) {
                             // Ignore non-array elements
                             if (!Array.isArray(inputSet[property]))
                                 continue;
 
-                            if (maxChannelCount !== inputSet[property].length) {
+                            // All array-based inputs, e.g., phasors, must have consistent lengths
+                            if (maxInputLength !== inputSet[property].length) {
                                 inputsAvailable = false;
                                 break;
                             }
                         }
                     }
-
                 } else {
-                    inputsAvailable = false;
+                    // Check for singleton calculation inputs
+                    inputsAvailable = inputSet.FREQ || inputSet.FAVG || inputSet.FNOM || inputSet.FLAGS;
+
+                    if (inputsAvailable) {
+                        maxInputLength = 1;
+                        singletonCalculation = true;
+                    }
                 }
 
                 const promises = [];
-                const calcSignalType = getDeviceSignalType("CALC");
 
-                if (inputsAvailable && calcSignalType != null) {
-                    for (let i = 0; i < maxChannelCount; i++) {
-                        const index = i;
-                        const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, index);
+                if (inputsAvailable) {
+                    for (let i = 0; i < maxInputLength; i++) {
+                        if (inputSet.hasOwnProperty(property)) {
+                            const index = i;
+                            const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
 
-                        // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                        promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
-                            return dataHub.createPointTag(cell.IDLabel(), calcSignalType.Acronym).then(function (pointTag) {
+                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                            promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
                                 measurement.DeviceID = cell.ID;
                                 measurement.HistorianID = viewModel.historianID();
-                                measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, index);
-                                measurement.Description = String.format("{0} <0> Analog Value {1}: {2}", cell.IDLabel(), index, tagTemplate.Description);
+                                measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName);
+                                measurement.Description = String.format("{0} <0> Calculated Value {1}: {2}", cell.IDLabel(), index, tagTemplate.Description);
                                 measurement.SignalReference = signalReference;
                                 measurement.SignalTypeID = calcSignalType.ID;
                                 measurement.Internal = true;
@@ -1354,9 +1367,6 @@
                                                     if (property === "FNOM") {
                                                         // Replace FNOM constant
                                                         equation = equation.replaceAll("FNOM", String(inputSet.FNOM), true);
-                                                    } else if (property === "TIME") {
-                                                        // TODO: Properly handle time
-                                                        equation = equation.replaceAll("TIME", "0", true);
                                                     } else {
                                                         // Assign variable to signal ID
                                                         const signalID = inputSet[property] + "";
@@ -1404,7 +1414,7 @@
                                         })
                                         .fail(function (error) {
                                             showErrorMessage("Failed to create new custom action adapter record: " + error);
-                                        });                                        
+                                        });
                                     })
                                     .fail(function (error) {
                                         showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
@@ -1415,12 +1425,9 @@
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
-                            });
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error);
-                        }));
+                                showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error);
+                            }));
+                        }
                     }
                 }
 
@@ -1434,9 +1441,12 @@
             if (templateType.toUpperCase() === "NONE")
                 return $.Deferred().resolve().promise();
 
+            const calcSignalType = getDeviceSignalType("CALC");
+
             return dataHub.loadTemplate(templateType).then(function (tagTemplates) {
                 const promises = [];
                 const powerCalculations = [];
+                var errorDisplayed = false;
 
                 for (let i = 0; i < tagTemplates.length; i++) {
                     const tagTemplate = tagTemplates[i];
@@ -1449,7 +1459,12 @@
                             promises.push(saveSumPhase(cell, tagTemplate, powerCalculations));
                             break;
                         case "DYNAMICCALCULATOR":
-                            promises.push(saveDynamicCalculation(cell, tagTemplate));
+                            if (calcSignalType == null && !errorDisplayed) {
+                                showErrorMessage("Cannot save DynamicCalculator based tag templates: no signal type record found for 'CALC'");
+                                errorDisplayed = true;
+                            } else {
+                                promises.push(saveDynamicCalculation(cell, tagTemplate, calcSignalType));
+                            }
                             break;
                     }
                 }
@@ -1884,7 +1899,7 @@
                 </td>
                 <td>
                     <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
-                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym" required>
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym, disable: readOnly" required>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
                     </div>
                 </td>
@@ -1959,13 +1974,13 @@
                     <tr id="voltageRow" style="visibility: hidden">
                         <td width="190px" class="text-left valign-middle device-singleton">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
-                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device, disable: $parent.readOnly" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
                             </div>
                         </td>
                         <td width="210px" class="text-left valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label" required>
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
                         </td>
@@ -2002,13 +2017,13 @@
                     <tr id="currentRow" style="visibility: hidden">
                         <td width="190px" class="text-left valign-middle device-singleton">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device, true), 'has-feedback': !fieldIsValid(Device, true) }">
-                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device" required>
+                                <input \type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device, disable: $parent.readOnly" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device, true)"></span>
                             </div>
                         </td>
                         <td width="210px" class="text-left valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label" required>
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
                         </td>
