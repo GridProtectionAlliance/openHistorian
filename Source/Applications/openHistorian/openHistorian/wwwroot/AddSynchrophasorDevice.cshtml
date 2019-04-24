@@ -150,28 +150,28 @@
         }
 
         function guessPhase(phasorLabel) {
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.endsWith(" +SV") || phasorLabel.endsWith(" +SI") || phasorLabel.startsWith("V1 ") || phasorLabel.startsWith("I1 "))
-                return "+";
-
-            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.endsWith(" APV") || phasorLabel.endsWith(" API") || phasorLabel.startsWith("VA ") || phasorLabel.startsWith("IA "))
+            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.indexOf(" APV") > -1 || phasorLabel.indexOf(" API") > -1 || phasorLabel.indexOf("VA ") > -1 || phasorLabel.indexOf("IA ") > -1)
                 return "A";
 
-            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1 || phasorLabel.endsWith(" BPV") || phasorLabel.endsWith(" BPI") || phasorLabel.startsWith("VB ") || phasorLabel.startsWith("IB "))
+            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1 || phasorLabel.indexOf(" BPV") > -1 || phasorLabel.indexOf(" BPI") > -1 || phasorLabel.indexOf("VB ") > -1 || phasorLabel.indexOf("IB ") > -1)
                 return "B";
 
-            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1 || phasorLabel.endsWith(" CPV") || phasorLabel.endsWith(" CPI") || phasorLabel.startsWith("VC ") || phasorLabel.startsWith("IC "))
+            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1 || phasorLabel.indexOf(" CPV") > -1 || phasorLabel.indexOf(" CPI") > -1 || phasorLabel.indexOf("VC ") > -1 || phasorLabel.indexOf("IC ") > -1)
                 return "C";
 
-            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.endsWith(" NPV") || phasorLabel.endsWith(" NPI") || phasorLabel.startsWith("VN ") || phasorLabel.startsWith("IN "))
+            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.indexOf(" NPV") > -1 || phasorLabel.indexOf(" NPI") > -1 || phasorLabel.indexOf("VN ") > -1 || phasorLabel.indexOf("IN ") > -1)
                 return "N";
 
-            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.endsWith(" ZPV") || phasorLabel.endsWith(" ZPI") || phasorLabel.startsWith("VZ ") || phasorLabel.startsWith("IZ "))
+            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1)
                 return "0";
 
-            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.endsWith(" -SV") || phasorLabel.endsWith(" +SI") || phasorLabel.startsWith("V2 ") || phasorLabel.startsWith("I2 "))
+            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1)
                 return "-";
 
-            return "+";
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1)
+                return "+";
+
+            return "?";
         }
 
         function guessNominalVoltage(phasorLabel, deviceLabel) {
@@ -1387,6 +1387,9 @@
                                         measurement.Description = measurement.Description.replace(" <0>", "");
                                         dataHub.updateMeasurement(measurement);
                                     }
+                                    
+                                    // Remove any invalid characters that may have been injected into point tag
+                                    measurement.PointTag = measurement.PointTag.replace(/[^A-Z0-9\-!_\.@@#\$]/gi, "");
 
                                     connectionString.set("variableList", variableList.joinKeyValuePairs());
                                     connectionString.set("expressionText", equation);
@@ -1478,66 +1481,96 @@
             const configFrame = viewModel.configFrame();
             const cells = configFrame.Cells;
             const cellCount = cells.length;
-            const promises = [];
 
-            // Save devices
-            for (let i = 0; i < cellCount; i++) {
-                const cell = cells[i];
+            if (cellCount === 0) {
+                showErrorMessage("Cannot save device records: no devices were defined in loaded configuration.");
+                return $.Deferred().resolve().promise();
+            }
 
-                // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
-                promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
-                    // Set device properties
-                    device.ParentID = configFrame.IsConcentrator ? null : id;
-                    device.HistorianID = viewModel.historianID();
-                    device.ProtocolID = configFrame.ProtocolID;
-                    device.FrameRate = configFrame.FrameRate;
-                    device.AccessID = cell.IDCode;
-                    device.Acronym = cell.IDLabel();
-                    device.Name = device.Acronym;
-                    device.Enabled = true;
+            if (configFrame.IsConcentrator || cellCount > 1) {
+                const promises = [];
 
-                    // Check if this is a new device or an edit to an existing one
-                    if (device.ID === 0) {
-                        // Add new device record
-                        return dataHub.addNewDevice(device).then(function () {
-                            // Get newly added device with auto-incremented ID
-                            return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
-                                // Save associated device records...
-                                cell.ID = newDevice.ID;
+                for (let i = 0; i < cellCount; i++) {
+                    const cell = cells[i];
 
-                                return saveDeviceMeasurements(cell).then(function () {
-                                    return saveTemplateCalculations(cell);
-                                });
-                            })
-                            .fail(function (error) {
-                                showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
-                            });
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
-                        });
-                    }
-                    else {
-                        // Update existing device record
-                        return dataHub.updateDevice(device).then(function () {
-                            // Save associated device records...
-                            cell.ID = device.ID;
-                                
+                    // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
+                    promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
+                        // Check if this is a direct update to child device
+                        if (cellCount === 1 && device.ID === id) {
+                            cell.ID = id;
+
+                            // Save measurements and calculations associated with a directly edited child device
                             return saveDeviceMeasurements(cell).then(function () {
                                 return saveTemplateCalculations(cell);
                             });
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
-                        });
-                    }
-                })
-                .fail(function (error) {
-                    showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
-                }));
-            }
+                        }
+                        else {
+                            // Set device properties
+                            device.ParentID = cell.ParentID == null ? id : cell.ParentID;
+                            device.HistorianID = viewModel.historianID();
+                            device.ProtocolID = configFrame.ProtocolID;
+                            device.FrameRate = configFrame.FrameRate;
+                            device.AccessID = cell.IDCode;
+                            device.Acronym = cell.IDLabel();
 
-            return $(promises).whenAll();
+                            if (isEmpty(device.Name))
+                                device.Name = device.Acronym;
+
+                            device.Enabled = true;
+
+                            // Check if this is a new device or an edit to an existing one
+                            if (device.ID === 0) {
+                                // Add new device record
+                                return dataHub.addNewDevice(device).then(function () {
+                                    // Get newly added device with auto-incremented ID
+                                    return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
+                                        // Save associated device records...
+                                        cell.ID = newDevice.ID;
+
+                                        return saveDeviceMeasurements(cell).then(function () {
+                                            return saveTemplateCalculations(cell);
+                                        });
+                                    })
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                });
+                            }
+                            else {
+                                // Update existing device record
+                                return dataHub.updateDevice(device).then(function () {
+                                    // Save associated device records...
+                                    cell.ID = device.ID;
+
+                                    return saveDeviceMeasurements(cell).then(function () {
+                                        return saveTemplateCalculations(cell);
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                });
+                            }
+                        }
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                    }));
+                }
+
+                return $(promises).whenAll();
+            }
+            else {
+                const cell = cells[0];
+                cell.ID = id;
+
+                // Save measurements and calculations  associated with a directly connected device
+                return saveDeviceMeasurements(cell).then(function () {
+                    return saveTemplateCalculations(cell);
+                });
+            }
         }
 
         function saveDeviceConnection() {
@@ -1581,8 +1614,13 @@
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
                 device.AccessID = configFrame.IDCode;
-                device.Name = device.Acronym;
-                device.ConnectionString = connectionString;
+                
+                if (isEmpty(device.Name))
+                    device.Name = device.Acronym;
+                
+                if (!isEmpty(connectionString))
+                    device.ConnectionString = connectionString;
+
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
                 //device.Longitude = viewModel.longitude();

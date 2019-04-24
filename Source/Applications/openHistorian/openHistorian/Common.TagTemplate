@@ -21,4 +21,4 @@ IANG_DIFF_1A	IPOSA;IAA	IPOSA-IAA	DynamicCalculator	Current Angle Difference + to
 FREQ_DIFF_NOM	FREQ;FNOM	FREQ-FNOM	DynamicCalculator	Frequency Difference from Nominal
 FREQ_DIFF_AVG	FREQ;FAVG	FREQ-FAVG	DynamicCalculator	Frequency Difference from Average
 TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synchronization
-TIME_DIFF	TIME	UtcNow.Ticks-TIME	DynamicCalculator	Timestamp Difference
+TIME_DIFF	FLAGS	UtcNow.Ticks-TIME	DynamicCalculator	Timestamp Difference

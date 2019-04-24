@@ -900,12 +900,11 @@ namespace openHistorian
             foreach (Measurement measurement in QueryDeviceMeasurements(deviceID))
             {
                 string alternateTag = measurement.AlternateTag;
-                int index;
 
                 if (string.IsNullOrWhiteSpace(alternateTag))
                     continue;
 
-                if (alternateTag.Length > 7 && alternateTag.StartsWith("ANALOG:") && int.TryParse(alternateTag.Substring(7), out index))
+                if (alternateTag.Length > 7 && alternateTag.StartsWith("ANALOG:") && int.TryParse(alternateTag.Substring(7), out int index))
                     indexToPointID[index - 1] = measurement.PointID;
                 else if (alternateTag.Length > 8 && alternateTag.StartsWith("DIGITAL:") && int.TryParse(alternateTag.Substring(8), out index))
                     indexToPointID[schema.TotalAnalogChannels + index - 1] = measurement.PointID;
@@ -930,9 +929,7 @@ namespace openHistorian
 
                     for (int i = 0; i < schema.TotalChannels; i++)
                     {
-                        int pointID;
-
-                        if (indexToPointID.TryGetValue(i, out pointID))
+                        if (indexToPointID.TryGetValue(i, out int pointID))
                             yield return new TrendValue
                             {
                                 ID = pointID,
@@ -985,8 +982,6 @@ namespace openHistorian
 
             if (device.ParentID == null)
             {
-                derivedFrame.IsConcentrator = true;
-
                 IEnumerable<Device> devices = QueryChildDevices(deviceID);
 
                 foreach (Device childDevice in devices)
@@ -994,6 +989,7 @@ namespace openHistorian
                     // Create new configuration cell
                     ConfigurationCell derivedCell = new ConfigurationCell
                     {
+                        ParentID = device.ID,
                         IDCode = (ushort)childDevice.AccessID,
                         StationName = childDevice.Name,
                         IDLabel = childDevice.Acronym
@@ -1010,14 +1006,44 @@ namespace openHistorian
                     // Add cell to frame
                     derivedFrame.Cells.Add(derivedCell);
                 }
+
+                if (derivedFrame.Cells.Count > 0)
+                {
+                    derivedFrame.IsConcentrator = true;
+                }
+                else
+                {
+                    // This is a directly connected device
+                    derivedFrame.IsConcentrator = false;
+
+                    ConfigurationCell derivedCell = new ConfigurationCell
+                    {
+                        ParentID = null,
+                        IDCode = derivedFrame.IDCode,
+                        StationName = device.Name,
+                        IDLabel = device.Acronym
+                    };
+
+                    derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+
+                    // Extract phasor definitions
+                    foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
+                    {
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
+                    }
+
+                    // Add cell to frame
+                    derivedFrame.Cells.Add(derivedCell);
+                }
             }
             else
             {
-                derivedFrame.IsConcentrator = false;
+                derivedFrame.IsConcentrator = true;
 
                 // Create new configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {
+                    ParentID = device.ID,
                     IDCode = (ushort)device.AccessID,
                     StationName = device.Name,
                     IDLabel = device.Acronym
@@ -1146,6 +1172,7 @@ namespace openHistorian
                 // Create new derived configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {
+                    ParentID = null,
                     IDCode = sourceCell.IDCode,
                     StationName = sourceCell.StationName,
                     IDLabel = sourceCell.IDLabel
@@ -1172,6 +1199,8 @@ namespace openHistorian
                 // Add cell to frame
                 derivedFrame.Cells.Add(derivedCell);
             }
+
+            derivedFrame.IsConcentrator = derivedFrame.Cells.Count > 0;
 
             return derivedFrame;
         }

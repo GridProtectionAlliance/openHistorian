@@ -31,6 +31,8 @@ namespace openHistorian.Adapters
 
     public class ConfigurationCell
     {
+        public int? ParentID { get; set; }
+
         public ushort IDCode { get; set; }
 
         public string StationName { get; set; }
