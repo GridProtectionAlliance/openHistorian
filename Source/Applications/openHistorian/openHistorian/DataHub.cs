@@ -985,6 +985,8 @@ namespace openHistorian
 
             if (device.ParentID == null)
             {
+                derivedFrame.IsConcentrator = true;
+
                 IEnumerable<Device> devices = QueryChildDevices(deviceID);
 
                 foreach (Device childDevice in devices)
@@ -1011,6 +1013,8 @@ namespace openHistorian
             }
             else
             {
+                derivedFrame.IsConcentrator = false;
+
                 // Create new configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {

@@ -1480,78 +1480,66 @@
             const configFrame = viewModel.configFrame();
             const cells = configFrame.Cells;
             const cellCount = cells.length;
+            const promises = [];
 
-            if (cellCount === 1) {
-                // Direct connected device - save associated records
-                const cell = cells[0];
-                cell.ID = id;
+            // Save devices
+            for (let i = 0; i < cellCount; i++) {
+                const cell = cells[i];
 
-                return saveDeviceMeasurements(cell).then(function () {
-                    return saveTemplateCalculations(cell);
-                });
-            }
-            else {
-                const promises = [];
+                // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
+                promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
+                    // Set device properties
+                    device.ParentID = configFrame.IsConcentrator ? null : id;
+                    device.HistorianID = viewModel.historianID();
+                    device.ProtocolID = configFrame.ProtocolID;
+                    device.FrameRate = configFrame.FrameRate;
+                    device.AccessID = cell.IDCode;
+                    device.Acronym = cell.IDLabel();
+                    device.Name = device.Acronym;
+                    device.Enabled = true;
 
-                // PDC connected device - save children devices
-                for (let i = 0; i < cellCount; i++) {
-                    const cell = cells[i];
-
-                    // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
-                    promises.push(dataHub.queryDevice(cell.IDLabel()).then(function (device) {
-                        // Set child device properties
-                        device.ParentID = id;
-                        device.HistorianID = viewModel.historianID();
-                        device.ProtocolID = configFrame.ProtocolID;
-                        device.FrameRate = configFrame.FrameRate;
-                        device.AccessID = cell.IDCode;
-                        device.Acronym = cell.IDLabel();
-                        device.Name = device.Acronym;
-                        device.Enabled = true;
-
-                        // Check if this is a new device or an edit to an existing one
-                        if (device.ID === 0) {
-                            // Add new device record
-                            return dataHub.addNewDevice(device).then(function () {
-                                // Get newly added device with auto-incremented ID
-                                return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
-                                    // Save associated device records...
-                                    cell.ID = newDevice.ID;
-
-                                    return saveDeviceMeasurements(cell).then(function () {
-                                        return saveTemplateCalculations(cell);
-                                    });
-                                })
-                                .fail(function (error) {
-                                    showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
-                                });
-                            })
-                            .fail(function (error) {
-                                showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
-                            });
-                        }
-                        else {
-                            // Update existing device record
-                            return dataHub.updateDevice(device).then(function () {
+                    // Check if this is a new device or an edit to an existing one
+                    if (device.ID === 0) {
+                        // Add new device record
+                        return dataHub.addNewDevice(device).then(function () {
+                            // Get newly added device with auto-incremented ID
+                            return dataHub.queryDevice(device.Acronym).then(function (newDevice) {
                                 // Save associated device records...
-                                cell.ID = device.ID;
-                                
+                                cell.ID = newDevice.ID;
+
                                 return saveDeviceMeasurements(cell).then(function () {
                                     return saveTemplateCalculations(cell);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
                             });
-                        }
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
-                    }));
-                }
-
-                return $(promises).whenAll();
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                        });
+                    }
+                    else {
+                        // Update existing device record
+                        return dataHub.updateDevice(device).then(function () {
+                            // Save associated device records...
+                            cell.ID = device.ID;
+                                
+                            return saveDeviceMeasurements(cell).then(function () {
+                                return saveTemplateCalculations(cell);
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                        });
+                    }
+                })
+                .fail(function (error) {
+                    showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                }));
             }
+
+            return $(promises).whenAll();
         }
 
         function saveDeviceConnection() {

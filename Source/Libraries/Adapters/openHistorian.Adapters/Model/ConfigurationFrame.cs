@@ -57,5 +57,7 @@ namespace openHistorian.Adapters
         public string ConnectionString { get; set; }
 
         public int ProtocolID { get; set; }
+
+        public bool IsConcentrator { get; set; }
     }
 }
