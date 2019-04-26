@@ -452,9 +452,14 @@ namespace openHistorian
             DataContext.Table<PowerCalculation>().UpdateRecord(powerCalculation);
         }
 
+        public PowerCalculation QueryPowerCalculationForCircuitDescription(string circuitDescription)
+        {
+            return DataContext.Table<PowerCalculation>().QueryRecordWhere("CircuitDescription = {0}", circuitDescription) ?? NewPowerCalculation();
+        }
+
         public PowerCalculation QueryPowerCalculationForInputs(Guid voltageAngleSignalID, Guid voltageMagSignalID, Guid currentAngleSignalID, Guid currentMagSignalID)
         {
-            return DataContext.Table<PowerCalculation>().QueryRecordWhere("VoltageAngleSignalID = {0} AND VoltageMagSignalID = {1} AND CurrentAngleSignalID = {2} AND CurrentMagSignalID = {3}", voltageAngleSignalID, voltageMagSignalID, currentAngleSignalID, currentMagSignalID);
+            return DataContext.Table<PowerCalculation>().QueryRecordWhere("VoltageAngleSignalID = {0} AND VoltageMagSignalID = {1} AND CurrentAngleSignalID = {2} AND CurrentMagSignalID = {3}", voltageAngleSignalID, voltageMagSignalID, currentAngleSignalID, currentMagSignalID) ?? NewPowerCalculation();
         }
 
         #endregion
@@ -515,6 +520,7 @@ namespace openHistorian
                 existingActionAdapter.AssemblyName = customActionAdapter.AssemblyName;
                 existingActionAdapter.TypeName = customActionAdapter.TypeName;
                 existingActionAdapter.ConnectionString = customActionAdapter.ConnectionString;
+                existingActionAdapter.LoadOrder = customActionAdapter.LoadOrder;
                 existingActionAdapter.Enabled = customActionAdapter.Enabled;
                 existingActionAdapter.UpdatedBy = customActionAdapter.UpdatedBy;
                 existingActionAdapter.UpdatedOn = customActionAdapter.UpdatedOn;
@@ -1215,16 +1221,12 @@ namespace openHistorian
         public IEnumerable<TagTemplate> LoadTemplate(string templateType)
         {
             List<TagTemplate> tagTemplates = new List<TagTemplate>();
-            bool firstLine = true;
  
             foreach (string line in File.ReadLines(FilePath.GetAbsolutePath($"{templateType}.TagTemplate")))
             {
-                // Skip header
-                if (firstLine)
-                {
-                    firstLine = false;
+                // Skip comment lines
+                if (line.TrimStart().StartsWith("#"))
                     continue;
-                }
 
                 string[] parts = line.Split('\t');
 
