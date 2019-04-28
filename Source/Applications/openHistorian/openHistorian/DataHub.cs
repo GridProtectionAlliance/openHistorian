@@ -36,6 +36,7 @@ using ModbusAdapters.Model;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using PhasorProtocolAdapters;
+using PowerCalculations.PowerMultiCalculator;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,6 +46,8 @@ using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Measurement = openHistorian.Model.Measurement;
+using PowerCalculation = openHistorian.Adapters.PowerCalculation;
 using SignalType = openHistorian.Model.SignalType;
 
 namespace openHistorian
@@ -1249,6 +1252,78 @@ namespace openHistorian
         public string GetProtocolCategory(int protocolID)
         {
             return DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID).Category;
+        }
+
+        public void ValidateCalculatorConfigurations(int historianID)
+        {
+            const int Avg = 0, Max = 1, Min = 2;
+            PowerCalculationConfigurationValidation.ValidateDatabaseDefinitions();        
+            TableOperations<Measurement> measurementTable = DataContext.Table<Measurement>();
+
+            // Look for existing frequency average
+            if (measurementTable.QueryRecordCountWhere("SignalReference = 'SYSTEM!FREQ-AVG-FQ'") > 0)
+                return;
+
+            TableOperations<CustomActionAdapter> customActionAdapterTable = DataContext.Table<CustomActionAdapter>();
+            CustomActionAdapter avgFreqAdapter = customActionAdapterTable.QueryRecordWhere("TypeName = {0}", typeof(PowerCalculations.AverageFrequency).FullName) ?? NewCustomActionAdapter();
+            Measurement[] measurements = GetCalculatedFrequencyMeasurements(historianID);
+
+            avgFreqAdapter.AdapterName = "PHASOR!AVERAGEFREQ";
+            avgFreqAdapter.AssemblyName = "PowerCalculations.dll";
+            avgFreqAdapter.TypeName = typeof(PowerCalculations.AverageFrequency).FullName;
+            avgFreqAdapter.NodeID = Program.Host.Model.Global.NodeID;
+            avgFreqAdapter.ConnectionString = $"InputMeasurementKeys={{FILTER ActiveMeasurements WHERE SignalType = 'FREQ'}}; OutputMeasurements={{{measurements[Avg].SignalID};{measurements[Max].SignalID};{measurements[Min].SignalID}}}; LagTime=5.0; LeadTime=3.0; FramesPerSecond=30";
+            avgFreqAdapter.Enabled = true;
+
+            customActionAdapterTable.AddNewOrUpdateRecord(avgFreqAdapter);            
+        }
+
+        private Measurement[] GetCalculatedFrequencyMeasurements(int historianID)
+        {
+            SignalType freqSignalType = DataContext.Table<SignalType>().QueryRecordWhere("Acronym = 'FREQ'");
+
+            if (freqSignalType.ID == 0)
+                throw new InvalidOperationException("Failed to find 'FREQ' signal type");
+
+            Measurement avgFreqMeasurement = NewMeasurement();
+            Measurement maxFreqMeasurement = NewMeasurement();
+            Measurement minFreqMeasurement = NewMeasurement();
+
+            avgFreqMeasurement.PointTag = "SYSTEM!FREQ-AVG-FQ";
+            avgFreqMeasurement.SignalReference = "SYSTEM!FREQ-AVG-FQ";
+            avgFreqMeasurement.SignalTypeID = freqSignalType.ID;
+            avgFreqMeasurement.HistorianID = historianID;
+            avgFreqMeasurement.Description = "Average System Frequency";
+            avgFreqMeasurement.Internal = true;
+            avgFreqMeasurement.Enabled = true;
+
+            maxFreqMeasurement.PointTag = "SYSTEM!FREQ-MAX-FQ";
+            maxFreqMeasurement.SignalReference = "SYSTEM!FREQ-MAX-FQ";
+            maxFreqMeasurement.SignalTypeID = freqSignalType.ID;
+            maxFreqMeasurement.HistorianID = historianID;
+            maxFreqMeasurement.Description = "Maximum System Frequency";
+            maxFreqMeasurement.Internal = true;
+            maxFreqMeasurement.Enabled = true;
+
+            minFreqMeasurement.PointTag = "SYSTEM!FREQ-MIN-FQ";
+            minFreqMeasurement.SignalReference = "SYSTEM!FREQ-MIN-FQ";
+            minFreqMeasurement.SignalTypeID = freqSignalType.ID;
+            minFreqMeasurement.HistorianID = historianID;
+            minFreqMeasurement.Description = "Minimum System Frequency";
+            minFreqMeasurement.Internal = true;
+            minFreqMeasurement.Enabled = true;
+
+            AddNewOrUpdateMeasurement(avgFreqMeasurement);
+            AddNewOrUpdateMeasurement(maxFreqMeasurement);
+            AddNewOrUpdateMeasurement(minFreqMeasurement);
+
+            Measurement[] measurements = new Measurement[3];
+
+            measurements[0] = QueryMeasurement("SYSTEM!FREQ-AVG-FQ");
+            measurements[1] = QueryMeasurement("SYSTEM!FREQ-MAX-FQ");
+            measurements[2] = QueryMeasurement("SYSTEM!FREQ-MIN-FQ");
+
+            return measurements;
         }
 
         #endregion

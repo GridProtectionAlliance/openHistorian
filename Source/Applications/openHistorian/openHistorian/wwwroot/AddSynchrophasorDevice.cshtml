@@ -150,25 +150,25 @@
         }
 
         function guessPhase(phasorLabel) {
-            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.indexOf(" APV") > -1 || phasorLabel.indexOf(" API") > -1 || phasorLabel.indexOf("VA ") > -1 || phasorLabel.indexOf("IA ") > -1 || phasorLabel.indexOf("VAPM") > -1 || phasorLabel.indexOf("IAPM") > -1)
+            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.indexOf(" APV") > -1 || phasorLabel.indexOf(" API") > -1 || phasorLabel.indexOf("VA ") > -1 || phasorLabel.indexOf("IA ") > -1 || phasorLabel.indexOf("VAPM") > -1 || phasorLabel.indexOf("IAPM") > -1 || phasorLabel.indexOf(".AV") > -1 || phasorLabel.indexOf(".AI") > -1)
                 return "A";
 
-            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1 || phasorLabel.indexOf(" BPV") > -1 || phasorLabel.indexOf(" BPI") > -1 || phasorLabel.indexOf("VB ") > -1 || phasorLabel.indexOf("IB ") > -1 || phasorLabel.indexOf("VBPM") > -1 || phasorLabel.indexOf("IBPM") > -1)
+            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1 || phasorLabel.indexOf(" BPV") > -1 || phasorLabel.indexOf(" BPI") > -1 || phasorLabel.indexOf("VB ") > -1 || phasorLabel.indexOf("IB ") > -1 || phasorLabel.indexOf("VBPM") > -1 || phasorLabel.indexOf("IBPM") > -1 || phasorLabel.indexOf(".BV") > -1 || phasorLabel.indexOf(".BI") > -1)
                 return "B";
 
-            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1 || phasorLabel.indexOf(" CPV") > -1 || phasorLabel.indexOf(" CPI") > -1 || phasorLabel.indexOf("VC ") > -1 || phasorLabel.indexOf("IC ") > -1 || phasorLabel.indexOf("VCPM") > -1 || phasorLabel.indexOf("ICPM") > -1)
+            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1 || phasorLabel.indexOf(" CPV") > -1 || phasorLabel.indexOf(" CPI") > -1 || phasorLabel.indexOf("VC ") > -1 || phasorLabel.indexOf("IC ") > -1 || phasorLabel.indexOf("VCPM") > -1 || phasorLabel.indexOf("ICPM") > -1 || phasorLabel.indexOf(".CV") > -1 || phasorLabel.indexOf(".CI") > -1)
                 return "C";
 
-            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.indexOf(" NPV") > -1 || phasorLabel.indexOf(" NPI") > -1 || phasorLabel.indexOf("VN ") > -1 || phasorLabel.indexOf("IN ") > -1 || phasorLabel.indexOf("VNPM") > -1 || phasorLabel.indexOf("INPM") > -1)
+            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.indexOf(" NPV") > -1 || phasorLabel.indexOf(" NPI") > -1 || phasorLabel.indexOf("VN ") > -1 || phasorLabel.indexOf("IN ") > -1 || phasorLabel.indexOf("VNPM") > -1 || phasorLabel.indexOf("INPM") > -1 || phasorLabel.indexOf(".NV") > -1 || phasorLabel.indexOf(".NI") > -1)
                 return "N";
 
-            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1 || phasorLabel.indexOf("VZPM") > -1 || phasorLabel.indexOf("IZPM") > -1)
+            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1 || phasorLabel.indexOf("VZPM") > -1 || phasorLabel.indexOf("IZPM") > -1 || phasorLabel.indexOf(".ZV") > -1 || phasorLabel.indexOf(".ZI") > -1)
                 return "0";
 
-            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1)
+            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1 || phasorLabel.indexOf(".-V") > -1 || phasorLabel.indexOf(".-I") > -1)
                 return "-";
 
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1)
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1)
                 return "+";
 
             return "?";
@@ -1696,61 +1696,68 @@
             }
 
             return dataHub.loadTemplate(templateType).then(function (tagTemplates) {
-                const promises = [];
+                return dataHub.validateCalculatorConfigurations(viewModel.historianID()).then(function () {
+                    return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
+                        const promises = [];
 
-                let calculatePowerCount = 0;
-                let sumPhaseCount = 0;
-                
-                for (let i = 0; i < tagTemplates.length; i++) {
-                    const tagTemplate = tagTemplates[i];
+                        let calculatePowerCount = 0;
+                        let sumPhaseCount = 0;
 
-                    switch (tagTemplate.Type.toUpperCase()) {
-                        case "CALCULATEPOWER":
-                            calculatePowerCount++;
-                            break;
-                        case "SUMPHASE":
-                            sumPhaseCount++;
-                            break;
-                    }
+                        for (let i = 0; i < tagTemplates.length; i++) {
+                            const tagTemplate = tagTemplates[i];
 
-                    if (calculatePowerCount > 0 && sumPhaseCount > 0)
-                        break;
-                }
+                            switch (tagTemplate.Type.toUpperCase()) {
+                                case "CALCULATEPOWER":
+                                    calculatePowerCount++;
+                                    break;
+                                case "SUMPHASE":
+                                    sumPhaseCount++;
+                                    break;
+                            }
 
-                if (sumPhaseCount > 0 && calculatePowerCount === 0)
-                    showErrorMessage("3-phase power calculations will be skipped because selected template \"" + templateType + "\" defines no power calculations...");
+                            if (calculatePowerCount > 0 && sumPhaseCount > 0)
+                                break;
+                        }
 
-                const sumPhaseTagTemplates = [];
+                        if (sumPhaseCount > 0 && calculatePowerCount === 0)
+                            showErrorMessage("3-phase power calculations will be skipped because selected template \"" + templateType + "\" defines no power calculations...");
 
-                for (let i = 0; i < tagTemplates.length; i++) {
-                    const tagTemplate = tagTemplates[i];
+                        const sumPhaseTagTemplates = [];
 
-                    switch (tagTemplate.Type.toUpperCase()) {
-                        case "CALCULATEPOWER":
-                            promises.push(savePowerCalcuations(cell, tagTemplate).then(function () {
-                                return serviceHub.sendCommand("initialize PHASOR!POWERCALC");
-                            }));
-                            break;
-                        case "SUMPHASE":
-                            // Hold on to sum phase tag templates for later execution
-                            if (calculatePowerCount > 0)
-                                sumPhaseTagTemplates.push(tagTemplate);
-                            break;
-                        case "DYNAMICCALCULATOR":
-                            promises.push(saveDynamicCalculation(cell, tagTemplate, calcSignalType));
-                            break;
-                    }
-                }
+                        for (let i = 0; i < tagTemplates.length; i++) {
+                            const tagTemplate = tagTemplates[i];
 
-                return $(promises).whenAll().then(function () {
-                    const sumPhasePromises = [];
+                            switch (tagTemplate.Type.toUpperCase()) {
+                                case "CALCULATEPOWER":
+                                    promises.push(savePowerCalcuations(cell, tagTemplate).then(function () {
+                                        return serviceHub.sendCommand("initialize PHASOR!POWERCALC");
+                                    }));
+                                    break;
+                                case "SUMPHASE":
+                                    // Hold on to sum phase tag templates for later execution
+                                    if (calculatePowerCount > 0)
+                                        sumPhaseTagTemplates.push(tagTemplate);
+                                    break;
+                                case "DYNAMICCALCULATOR":
+                                    promises.push(saveDynamicCalculation(cell, tagTemplate, calcSignalType));
+                                    break;
+                            }
+                        }
 
-                    // Sum phase templates are saved after power calculations have completed as they are dependent calculations
-                    for (let i = 0; i < sumPhaseTagTemplates.length; i++) {
-                        sumPhasePromises.push(saveSumPhase(cell, sumPhaseTagTemplates[i], calcSignalType));
-                    }
+                        return $(promises).whenAll().then(function () {
+                            const sumPhasePromises = [];
 
-                    return $(sumPhasePromises).whenAll();
+                            // Sum phase templates are saved after power calculations have completed as they are dependent calculations
+                            for (let i = 0; i < sumPhaseTagTemplates.length; i++) {
+                                sumPhasePromises.push(saveSumPhase(cell, sumPhaseTagTemplates[i], calcSignalType));
+                            }
+
+                            return $(sumPhasePromises).whenAll();
+                        });
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to validate calculator configurations: " + error);
+                    });
                 });
             })
             .fail(function (error) {
@@ -1779,12 +1786,6 @@
                         // Check if this is a direct update to child device
                         if (cellCount === 1 && device.ID === id) {
                             cell.ID = id;
-
-                            // Update historian ID associated with child device - normally code looking to archive child data looks to the
-                            // historian associated with the parent, but the automated power calculation data operations look instead to the
-                            // device itself for the historian ID when creating output measurements for power calculations. As a result we
-                            // update the device historian ID so that any power calculations will get properly archived:
-                            device.HistorianID = viewModel.historianID();
                             
                             return dataHub.updateDevice(device).then(function () {
                                 // Save measurements and calculations associated with a directly edited child device
@@ -2239,7 +2240,7 @@
 <div id="contentWell" class="well well-dynamic-content">
     <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
         <span id="configFrameDetails">Config Frame: <span data-bind="html: configFrameDetails"></span></span>
-        <span id="saveDataButton" class="pull-right" style="text-align: right">
+        <div id="saveDataButton" class="pull-right" style="text-align: right">
             @if (userIsEditor)
             {
                 <text>
@@ -2262,7 +2263,7 @@
             {
                 <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to add or modify device data.</span>
             }
-        </span>
+        </div>
         <span><br />Connection String: <span data-bind="text: configFrame().ConnectionString"></span></span>
         <em data-bind="visible: validationErrors() > 0">
             <br />
