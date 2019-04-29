@@ -1264,7 +1264,7 @@
                 };
 
                 // Look for matching line currents - this creates a quadratic search time, but total phasors are expected to be small
-                for (let j = 0; i < cell.PhasorDefinitions.length; j++) {
+                for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
                     if (j === i)
                         continue;
                         
@@ -1301,9 +1301,9 @@
 
         function queryPowerOutput(type, linePhase, attempt) {
             if (attempt === undefined)
-                attempt = 0;
+                attempt = 1;
 
-            if (attempt === 4) {
+            if (attempt > 4) {
                 showErrorMessage("Failed to find power output measurement after waiting 4 seconds - skipping 3-phase power calculations.");
                 return $.Deferred().resolve(null).promise();
             }
@@ -1367,15 +1367,15 @@
                 let phaseCSignalID = null;
 
                 // These queries will keep looping while power calculations are initializing until power output measurements exist or timeout after 4 seconds:
-                queryPromises.push(queryPowerOutput(type, line.A).then(function (signalID) {
+                queryPromises.push(queryPowerOutput(type, line.A, 1).then(function (signalID) {
                     phaseASignalID = signalID;
                 }));
                 
-                queryPromises.push(queryPowerOutput(type, line.B).then(function (signalID) {
+                queryPromises.push(queryPowerOutput(type, line.B, 1).then(function (signalID) {
                     phaseBSignalID = signalID;
                 }));
                 
-                queryPromises.push(queryPowerOutput(type, line.C).then(function (signalID) {
+                queryPromises.push(queryPowerOutput(type, line.C, 1).then(function (signalID) {
                     phaseCSignalID = signalID;
                 }));
 
