@@ -21,6 +21,8 @@ namespace openHistorian.Adapters
         public string Phase { get; set; }
 
         public int? DestinationPhasorID { get; set; }
+
+        public int? NominalVoltage { get; set; }
     }
 
     public class AnalogDefinition
