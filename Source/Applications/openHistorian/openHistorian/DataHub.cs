@@ -394,12 +394,12 @@ namespace openHistorian
 
         public Phasor QueryPhasorForDevice(int deviceID, int sourceIndex)
         {
-            return DataContext.Table<Phasor>().QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", deviceID, sourceIndex);
+            return DataContext.Table<Phasor>().QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", deviceID, sourceIndex) ?? NewPhasor();
         }
 
         public IEnumerable<Phasor> QueryPhasorsForDevice(int deviceID)
         {
-            return DataContext.Table<Phasor>().QueryRecordsWhere("DeviceID = {0}", deviceID);
+            return DataContext.Table<Phasor>().QueryRecordsWhere("DeviceID = {0}", deviceID).OrderBy(phasor => phasor.SourceIndex);
         }
 
         public int QueryPhasorCountForDevice(int deviceID)
@@ -1004,13 +1004,11 @@ namespace openHistorian
                         IDLabel = childDevice.Acronym
                     };
 
-                    derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+                    derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = "Frequency" };
 
                     // Extract phasor definitions
                     foreach (Phasor phasor in QueryPhasorsForDevice(childDevice.ID))
-                    {
-                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
-                    }
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID });
 
                     // Add cell to frame
                     derivedFrame.Cells.Add(derivedCell);
@@ -1033,13 +1031,11 @@ namespace openHistorian
                         IDLabel = device.Acronym
                     };
 
-                    derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+                    derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = "Frequency" };
 
                     // Extract phasor definitions
                     foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
-                    {
-                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
-                    }
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID });
 
                     // Add cell to frame
                     derivedFrame.Cells.Add(derivedCell);
@@ -1058,13 +1054,11 @@ namespace openHistorian
                     IDLabel = device.Acronym
                 };
 
-                derivedCell.FrequencyDefinition = new FrequencyDefinition {Label = "Frequency"};
+                derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = "Frequency" };
 
                 // Extract phasor definitions
                 foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
-                {
-                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition {Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current"});
-                }
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID });
 
                 // Add cell to frame
                 derivedFrame.Cells.Add(derivedCell);
@@ -1160,7 +1154,7 @@ namespace openHistorian
             ConfigurationFrame derivedFrame;
 
             // Create a new simple concrete configuration frame for JSON serialization converted from equivalent configuration information
-            int protocolID = 0;
+            int protocolID = 0, phasorID = 0;
         
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
@@ -1195,7 +1189,7 @@ namespace openHistorian
 
                 // Create equivalent derived phasor definitions
                 foreach (IPhasorDefinition sourcePhasor in sourceCell.PhasorDefinitions)
-                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = ++phasorID, Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
 
                 // Create equivalent derived analog definitions (assuming analog type = SinglePointOnWave)
                 foreach (IAnalogDefinition sourceAnalog in sourceCell.AnalogDefinitions)

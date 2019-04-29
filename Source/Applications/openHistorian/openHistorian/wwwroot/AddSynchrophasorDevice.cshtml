@@ -149,7 +149,10 @@
             setTimeout(function () { $("#loadingDataLabel").css("visibility", "hidden"); }, 500);
         }
 
-        function guessPhase(phasorLabel) {
+        function guessPhase(phase, phasorLabel) {
+            if (!isEmpty(phase) && phase !== "+")
+                return phase;
+
             if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.indexOf(" APV") > -1 || phasorLabel.indexOf(" API") > -1 || phasorLabel.indexOf("VA ") > -1 || phasorLabel.indexOf("IA ") > -1 || phasorLabel.indexOf("VAPM") > -1 || phasorLabel.indexOf("IAPM") > -1 || phasorLabel.indexOf(".AV") > -1 || phasorLabel.indexOf(".AI") > -1)
                 return "A";
 
@@ -168,10 +171,10 @@
             if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1 || phasorLabel.indexOf(".-V") > -1 || phasorLabel.indexOf(".-I") > -1)
                 return "-";
 
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1)
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf(" SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1)
                 return "+";
 
-            return "?";
+            return isEmpty(phase) ? "?" : phase;
         }
 
         function guessNominalVoltage(phasorLabel, deviceLabel) {
@@ -195,7 +198,10 @@
             return 500;
         }
 
-        function guessAssociatedVoltage(voltages, phasorLabel, phase) {
+        function guessAssociatedVoltage(destinationPhasorID, voltages, phasorLabel, phase) {
+            if (destinationPhasorID != null && destinationPhasorID > 0)
+                return destinationPhasorID;
+
             phasorLabel = phasorLabel.toUpperCase();
 
             if (phase === "+")
@@ -203,8 +209,8 @@
             else if (phase === "-")
                 phase = "2";
 
-            var search = "V" + phase;
-            var replace = "I" + phase;
+            let search = "V" + phase;
+            let replace = "I" + phase;
 
             for (let i = 0; i < voltages.length; i++) {
                 if (phasorLabel === voltages[i].Label().toUpperCase().replace(search, replace))
@@ -219,13 +225,14 @@
                     return voltages[i].ID;
             }
 
-            var aCount = 0, aID = -1;
-            var bCount = 0, bID = -1;
-            var cCount = 0, cID = -1;
-            var posCount = 0, posID = -1;
-            var negCount = 0, negID = -1;
-            var zCount = 0, zID = -1;
-            var nCount = 0, nID = -1;
+            let aCount = 0, aID = -1;
+            let bCount = 0, bID = -1;
+            let cCount = 0, cID = -1;
+            let posCount = 0, posID = -1;
+            let negCount = 0, negID = -1;
+            let zCount = 0, zID = -1;
+            let nCount = 0, nID = -1;
+            let otherCount = 0;
 
             for (let i = 0; i < voltages.length; i++) {
                 const voltageID = voltages[i].ID;
@@ -259,38 +266,43 @@
                         nCount++;
                         nID = voltageID;
                         break;
+                    default:
+                        otherCount++;
+                        break;
                 }
             }
 
-            switch (phase) {
-                case "A":
-                    if (aCount === 1)
-                        return aID;
-                    break;
-                case "B":
-                    if (bCount === 1)
-                        return bID;
-                    break;
-                case "C":
-                    if (cCount === 1)
-                        return cID;
-                    break;
-                case "1":
-                    if (posCount === 1)
-                        return posID;
-                    break;
-                case "2":
-                    if (negCount === 1)
-                        return negID;
-                    break;
-                case "0":
-                    if (zCount === 1)
-                        return zID;
-                    break;
-                case "N":
-                    if (nCount === 1)
-                        return nID;
-                break;
+            if (otherCount === 0) {
+                switch (phase) {
+                    case "A":
+                        if (aCount === 1)
+                            return aID;
+                        break;
+                    case "B":
+                        if (bCount === 1)
+                            return bID;
+                        break;
+                    case "C":
+                        if (cCount === 1)
+                            return cID;
+                        break;
+                    case "1":
+                        if (posCount === 1)
+                            return posID;
+                        break;
+                    case "2":
+                        if (negCount === 1)
+                            return negID;
+                        break;
+                    case "0":
+                        if (zCount === 1)
+                            return zID;
+                        break;
+                    case "N":
+                        if (nCount === 1)
+                            return nID;
+                        break;
+                }
             }
 
             return -1;
@@ -314,9 +326,6 @@
             self.addDigitals = ko.observable(false);
             self.readOnly = ko.observable(false);
             self.errors = ko.validation.group(self);
-
-            // Regular fields
-            self.voltageCount = 0;
 
             // Internal fields
             self._addTagsAsVirtualPoints = ko.observable(undefined);
@@ -617,9 +626,9 @@
                 const voltage = {};
                 const phasorLabel = phasorDefinition.Label;
                 const nominalVoltage = guessNominalVoltage(phasorLabel, deviceLabel());
-                const phase = guessPhase(phasorLabel);
+                const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
 
-                voltage.ID = self.voltageCount++;
+                voltage.ID = phasorDefinition.ID;
                 voltage.Device = deviceLabel;
                 voltage.Label = ko.observable(phasorLabel);
                 voltage.Phase = ko.observable(phase);
@@ -645,9 +654,10 @@
             self.createObservableCurrent = function (deviceLabel, phasorDefinition) {
                 const current = {};
                 const phasorLabel = phasorDefinition.Label;
-                const phase = guessPhase(phasorLabel);
-                const associatedVoltage = guessAssociatedVoltage(self.voltages(), phasorLabel, phase);
+                const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
+                const associatedVoltage = guessAssociatedVoltage(phasorDefinition.DestinationPhasorID, self.voltages(), phasorLabel, phase);
 
+                current.ID = phasorDefinition.ID;
                 current.Device = deviceLabel;
                 current.Label = ko.observable(phasorLabel);
                 current.Phase = ko.observable(phase);
@@ -758,78 +768,233 @@
                 return $.Deferred().resolve().promise();
             }
 
-            return dataHub.queryPhasorCountForDevice(cell.ID).then(function (count) {
-                // TODO: Implement better phasor augment procedure
-                const promise = count > 0 ? dataHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
+            return dataHub.queryPhasorsForDevice(cell.ID).then(function (phasors) {
+                let dropAndAdd = phasors.length !== cell.PhasorDefinitions.length;
 
-                return promise.then(function () {
-                    const promises = [];
-
+                if (!dropAndAdd) {
+                    // Also do add operation if these are new records, e.g., from new config
                     for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
-                        const index = i + 1;
-                        const phasorDefinition = cell.PhasorDefinitions[i];
-                        const isVoltage = phasorDefinition.PhasorType.toLowerCase() === "voltage";
+                        const phasorID = cell.PhasorDefinitions[i].ID;
 
-                        promises.push(dataHub.newPhasor().then(function (phasor) {
-                            phasor.DeviceID = cell.ID;
-                            phasor.Label = phasorDefinition.Label();
-                            phasor.Type = isVoltage ? "V" : "I";
-                            phasor.Phase = phasorDefinition.Phase();
-                            phasor.SourceIndex = index;
+                        if (phasorID === null || phasorID === 0) {
+                            dropAndAdd = true;
+                            break;
+                        }
+                    }
+                }
 
-                            return dataHub.addNewPhasor(phasor).then(function () {
-                                if (isVoltage) {
-                                    return savePhasorMeasurement(cell, vphmSignalType, phasorDefinition, index).then(function () {
-                                        return savePhasorMeasurement(cell, vphaSignalType, phasorDefinition, index);
+                if (!dropAndAdd) {
+                    // Also do add operation if phasor source index records are not sequential
+                    for (let i = 0; i < phasors.length; i++) {
+                        if (phasors[i].SourceIndex !== i + 1) {
+                            dropAndAdd = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Separate voltage and current phasor defintions
+                const voltages = [];
+                const currents = [];
+
+                for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                    const phasorDefinition = cell.PhasorDefinitions[i];
+                    
+                    phasorDefinition.SourceIndex = i + 1;
+
+                    if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
+                        voltages.push(phasorDefinition);
+                    else
+                        currents.push(phasorDefinition);
+                }
+
+                if (dropAndAdd) {
+                    // Handle drop and (re)add phasors operation
+                    const promise = count > 0 ? dataHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
+
+                    return promise.then(function () {
+                        const promises = [];
+                        const voltageIDMap = [];
+
+                        for (let i = 0; i < voltages.length; i++) {
+                            const voltage = voltages[i];
+
+                            promises.push(dataHub.newPhasor().then(function (phasor) {
+                                phasor.DeviceID = cell.ID;
+                                phasor.Label = voltage.Label();
+                                phasor.Type = "V";
+                                phasor.Phase = voltage.Phase();
+                                phasor.DestinationPhasorID = null;
+                                phasor.SourceIndex = voltage.SourceIndex;
+
+                                return dataHub.addNewPhasor(phasor).then(function () {
+                                    return savePhasorMeasurement(cell, vphmSignalType, voltage, phasor.SourceIndex).then(function () {
+                                        return savePhasorMeasurement(cell, vphaSignalType, voltage, phasor.SourceIndex);
                                     })
                                     .then(function () {
-                                        const vphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphmSignalType.Suffix, index);
+                                        const vphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphmSignalType.Suffix, phasor.SourceIndex);
 
                                         return dataHub.queryMeasurement(vphmSignalReference).done(function (measurement) {
-                                            phasorDefinition.vphmMeasurement = measurement;
+                                            voltage.vphmMeasurement = measurement;
                                         });
                                     })
                                     .then(function () {
-                                        const vphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphaSignalType.Suffix, index);
+                                        const vphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphaSignalType.Suffix, phasor.SourceIndex);
 
                                         return dataHub.queryMeasurement(vphaSignalReference).done(function (measurement) {
-                                            phasorDefinition.vphaMeasurement = measurement;
+                                            voltage.vphaMeasurement = measurement;
                                         });
-                                    });
-                                } else {
-                                    return savePhasorMeasurement(cell, iphmSignalType, phasorDefinition, index).then(function () {
-                                        return savePhasorMeasurement(cell, iphaSignalType, phasorDefinition, index);
                                     })
                                     .then(function () {
-                                        const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, index);
+                                        return dataHub.queryPhasorForDevice(cell.ID, phasor.SourceIndex).then(function (newPhasor) {
+                                            voltageIDMap[voltage.ID] = newPhasor.ID;
+                                        })
+                                        .fail(function (error) {
+                                            showErrorMessage("Failed to query voltage phasor: " + error);
+                                        });
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Failed to save new voltage phasor: " + error);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to create new voltage phasor: " + error);
+                            }));                        
+                        }
+
+                        for (let i = 0; i < currents.length; i++) {
+                            const current = currents[i];
+
+                            promises.push(dataHub.newPhasor().then(function (phasor) {
+                                phasor.DeviceID = cell.ID;
+                                phasor.Label = current.Label();
+                                phasor.Type = "I";
+                                phasor.Phase = current.Phase();
+                                phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
+                                phasor.SourceIndex = current.SourceIndex;
+
+                                return dataHub.addNewPhasor(phasor).then(function () {
+                                    return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
+                                        return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
+                                    })
+                                    .then(function () {
+                                        const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
 
                                         return dataHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
-                                            phasorDefinition.iphmMeasurement = measurement;
+                                            current.iphmMeasurement = measurement;
                                         });
                                     })
                                     .then(function () {
-                                        const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, index);
+                                        const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
 
                                         return dataHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
-                                            phasorDefinition.iphaMeasurement = measurement;
+                                            current.iphaMeasurement = measurement;
                                         });
                                     });
-                                }
-                             })
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Failed to save new current phasor: " + error);
+                                });
+                            })
                             .fail(function (error) {
-                                showErrorMessage("Failed to save new phasor: " + error);
+                                showErrorMessage("Failed to create current new phasor: " + error);
+                            }));
+                        }
+
+                        return $(promises).whenAll();
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to delete old phasors: " + error);
+                    });
+                }
+                else {
+                    // Handle update phasors operation
+                    const promises = [];
+                    const voltageIDMap = [];
+
+                    for (let i = 0; i < voltages.length; i++) {
+                        const voltage = voltages[i];
+
+                        promises.push(dataHub.queryPhasorForDevice(cell.ID, voltage.SourceIndex).then(function (phasor) {
+                            phasor.DeviceID = cell.ID;
+                            phasor.Label = voltage.Label();
+                            phasor.Type = "V";
+                            phasor.Phase = voltage.Phase();
+                            phasor.DestinationPhasorID = null;
+                            phasor.SourceIndex = voltage.SourceIndex;
+                            
+                            voltageIDMap[voltage.ID] = phasor.ID;
+
+                            return dataHub.updatePhasor(phasor).then(function () {
+                                return savePhasorMeasurement(cell, vphmSignalType, voltage, phasor.SourceIndex).then(function () {
+                                    return savePhasorMeasurement(cell, vphaSignalType, voltage, phasor.SourceIndex);
+                                })
+                                .then(function () {
+                                    const vphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphmSignalType.Suffix, phasor.SourceIndex);
+
+                                    return dataHub.queryMeasurement(vphmSignalReference).done(function (measurement) {
+                                        voltage.vphmMeasurement = measurement;
+                                    });
+                                })
+                                .then(function () {
+                                    const vphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), vphaSignalType.Suffix, phasor.SourceIndex);
+
+                                    return dataHub.queryMeasurement(vphaSignalReference).done(function (measurement) {
+                                        voltage.vphaMeasurement = measurement;
+                                    });
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to save voltage phasor: " + error);
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed to create new phasor: " + error);
+                            showErrorMessage("Failed to query voltage phasor: " + error);
+                        }));
+                    }
+
+                    for (let i = 0; i < currents.length; i++) {
+                        const current = currents[i];
+
+                        promises.push(dataHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
+                            phasor.DeviceID = cell.ID;
+                            phasor.Label = current.Label();
+                            phasor.Type = "I";
+                            phasor.Phase = current.Phase();
+                            phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
+                            phasor.SourceIndex = current.SourceIndex;
+
+                            return dataHub.updatePhasor(phasor).then(function () {
+                                return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
+                                    return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
+                                })
+                                .then(function () {
+                                    const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
+
+                                    return dataHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
+                                        current.iphmMeasurement = measurement;
+                                    });
+                                })
+                                .then(function () {
+                                    const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
+
+                                    return dataHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
+                                        current.iphaMeasurement = measurement;
+                                    });
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to save current phasor: " + error);
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed to query current phasor: " + error);
                         }));
                     }
 
                     return $(promises).whenAll();
-                })
-                .fail(function (error) {
-                    showErrorMessage("Failed to delete old phasors: " + error);
-                });
+                }
             })
             .fail(function (error) {
                 showErrorMessage("Failed to query phasor count: " + error);
