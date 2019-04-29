@@ -50,4 +50,4 @@ FREQ_DIFF_AVG	FREQ;FAVG	FREQ-FAVG	DynamicCalculator	Frequency Difference from Av
 TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synchronization
 # The following calculation specifies FLAGS as input but does not use it in the equation, this is intentional, the TIME
 # variable is a reserved constant in the dynamic calculator, but the calculator will not execute without an input:
-TIME_DIFF	FLAGS	(UtcNow.Ticks-TIME) * 10000	DynamicCalculator	Millisecond Timestamp Difference from System Clock
+TIME_DIFF	FLAGS	(UtcNow.Ticks-TIME) / 10000	DynamicCalculator	Millisecond Timestamp Difference from System Clock
