@@ -984,7 +984,7 @@ namespace openHistorian
             ConfigurationFrame derivedFrame = new ConfigurationFrame
             {
                 IDCode = (ushort)device.AccessID,
-                FrameRate = (ushort)(device.FramesPerSecond ?? 30),
+                FrameRate = (ushort)(device.FramesPerSecond ?? Program.Host.Model.Global.DefaultCalculationFramesPerSecond),
                 ConnectionString = device.ConnectionString,
                 ProtocolID = device.ProtocolID ?? IeeeC37_118ID
             };
@@ -1262,11 +1262,19 @@ namespace openHistorian
             CustomActionAdapter avgFreqAdapter = customActionAdapterTable.QueryRecordWhere("TypeName = {0}", typeof(PowerCalculations.AverageFrequency).FullName) ?? NewCustomActionAdapter();
             Measurement[] measurements = GetCalculatedFrequencyMeasurements(historianID);
 
+            double lagTime = Program.Host.Model.Global.DefaultCalculationLagTime;
+
+            // Reduce lag-time since dynamic calculations can depend on average frequency
+            lagTime -= lagTime > 1.0 ? 1.0 : 0.5;
+
+            if (lagTime < 0.1)
+                lagTime = 0.1;
+
             avgFreqAdapter.AdapterName = "PHASOR!AVERAGEFREQ";
             avgFreqAdapter.AssemblyName = "PowerCalculations.dll";
             avgFreqAdapter.TypeName = typeof(PowerCalculations.AverageFrequency).FullName;
             avgFreqAdapter.NodeID = Program.Host.Model.Global.NodeID;
-            avgFreqAdapter.ConnectionString = $"InputMeasurementKeys={{FILTER ActiveMeasurements WHERE SignalType = 'FREQ'}}; OutputMeasurements={{{measurements[Avg].SignalID};{measurements[Max].SignalID};{measurements[Min].SignalID}}}; LagTime=5.0; LeadTime=3.0; FramesPerSecond=30";
+            avgFreqAdapter.ConnectionString = $"InputMeasurementKeys={{FILTER ActiveMeasurements WHERE SignalType = 'FREQ'}}; OutputMeasurements={{{measurements[Avg].SignalID};{measurements[Max].SignalID};{measurements[Min].SignalID}}}; LagTime={lagTime}; LeadTime={Program.Host.Model.Global.DefaultCalculationLeadTime}; FramesPerSecond={Program.Host.Model.Global.DefaultCalculationFramesPerSecond}";
             avgFreqAdapter.Enabled = true;
 
             customActionAdapterTable.AddNewOrUpdateRecord(avgFreqAdapter);            

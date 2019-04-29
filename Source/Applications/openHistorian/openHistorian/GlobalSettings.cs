@@ -153,5 +153,23 @@ namespace openHistorian
             get;
             set;
         }
+
+        public double DefaultCalculationLagTime
+        {
+            get;
+            set;
+        }
+
+        public double DefaultCalculationLeadTime
+        {
+            get;
+            set;
+        }
+
+        public int DefaultCalculationFramesPerSecond
+        {
+            get;
+            set;
+        }
     }
 }

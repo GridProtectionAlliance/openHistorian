@@ -1411,8 +1411,8 @@
                                 connectionString.set("variableList", variableList.joinKeyValuePairs());
                                 connectionString.set("expressionText", equation);
                                 connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                                connectionString.set("lagTime", "6.0");
-                                connectionString.set("leadTime", "3.0");
+                                connectionString.set("lagTime", "@Program.Host.Model.Global.DefaultCalculationLagTime");
+                                connectionString.set("leadTime", "@Program.Host.Model.Global.DefaultCalculationLeadTime");
                                 connectionString.set("outputMeasurements", measurement.SignalID);
                                 connectionString.set("useLatestValues", "false");
 
@@ -1804,8 +1804,8 @@
                                     connectionString.set("variableList", variableList.joinKeyValuePairs());
                                     connectionString.set("expressionText", equation);
                                     connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                                    connectionString.set("lagTime", "6.0");
-                                    connectionString.set("leadTime", "3.0");
+                                    connectionString.set("lagTime", "@Program.Host.Model.Global.DefaultCalculationLagTime");
+                                    connectionString.set("leadTime", "@Program.Host.Model.Global.DefaultCalculationLeadTime");
                                     connectionString.set("outputMeasurements", measurement.SignalID);
                                     connectionString.set("useLatestValues", "false");
 
