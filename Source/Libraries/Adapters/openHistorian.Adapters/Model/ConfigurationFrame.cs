@@ -39,6 +39,8 @@ namespace openHistorian.Adapters
 
     public class ConfigurationCell
     {
+        public int ID { get; set; }
+
         public int? ParentID { get; set; }
 
         public ushort IDCode { get; set; }
@@ -61,6 +63,10 @@ namespace openHistorian.Adapters
         public List<ConfigurationCell> Cells { get; } = new List<ConfigurationCell>();
 
         public ushort IDCode { get; set; }
+
+        public string StationName { get; set; }
+
+        public string IDLabel { get; set; }
 
         public ushort FrameRate { get; set; }
 

@@ -1086,6 +1086,8 @@ namespace openHistorian
             ConfigurationFrame derivedFrame = new ConfigurationFrame
             {
                 IDCode = (ushort)device.AccessID,
+                StationName = device.Name,
+                IDLabel = device.Acronym,
                 FrameRate = (ushort)(device.FramesPerSecond ?? Program.Host.Model.Global.DefaultCalculationFramesPerSecond),
                 ConnectionString = device.ConnectionString,
                 ProtocolID = device.ProtocolID ?? IeeeC37_118ID
@@ -1100,6 +1102,7 @@ namespace openHistorian
                     // Create new configuration cell
                     ConfigurationCell derivedCell = new ConfigurationCell
                     {
+                        ID = childDevice.ID,
                         ParentID = device.ID,
                         IDCode = (ushort)childDevice.AccessID,
                         StationName = childDevice.Name,
@@ -1127,6 +1130,7 @@ namespace openHistorian
 
                     ConfigurationCell derivedCell = new ConfigurationCell
                     {
+                        ID = device.ID,
                         ParentID = null,
                         IDCode = derivedFrame.IDCode,
                         StationName = device.Name,
@@ -1150,7 +1154,8 @@ namespace openHistorian
                 // Create new configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {
-                    ParentID = device.ID,
+                    ID = device.ID,
+                    ParentID = null,
                     IDCode = (ushort)device.AccessID,
                     StationName = device.Name,
                     IDLabel = device.Acronym
@@ -1256,7 +1261,7 @@ namespace openHistorian
             ConfigurationFrame derivedFrame;
 
             // Create a new simple concrete configuration frame for JSON serialization converted from equivalent configuration information
-            int protocolID = 0, phasorID = 0;
+            int protocolID = 0, deviceID = 0, phasorID = 0;
         
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
@@ -1277,6 +1282,7 @@ namespace openHistorian
                 // Create new derived configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {
+                    ID = ++deviceID,
                     ParentID = null,
                     IDCode = sourceCell.IDCode,
                     StationName = sourceCell.StationName,
