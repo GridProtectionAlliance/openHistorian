@@ -1,4 +1,4 @@
-﻿.@*******************************************************************************************************
+﻿@*******************************************************************************************************
 //  AddSynchrophasorDevice.cshtml - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
@@ -204,11 +204,10 @@
             return 500;
         }
 
-        function guessAssociatedVoltage(destinationPhasorID, voltages, phasorLabel, phase) {
-            if (destinationPhasorID != null && destinationPhasorID > 0)
-                return destinationPhasorID;
-
-            phasorLabel = phasorLabel.toUpperCase();
+        function guessAssociatedVoltage(current) {
+            const voltages = current.DeviceVoltages();
+            const phasorLabel = current.Label().toUpperCase();
+            let phase = current.Phase();
 
             if (phase === "+")
                 phase = "1";
@@ -719,32 +718,90 @@
             self.createObservableCurrent = function (cell, phasorDefinition, firstCurrent) {
                 const current = {};
                 const phasorLabel = phasorDefinition.Label;
-                const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
 
                 current.ID = phasorDefinition.ID;
                 current.Device = cell;
                 current.Label = ko.observable(phasorLabel);
-                current.Phase = ko.observable(phase);
                 current.FirstCurrent = firstCurrent;
+
+                current._associatedVoltage = ko.observable(-1);
+                current._phase = ko.observable("");
+
+                current.AssociatedVoltage = ko.pureComputed({
+                    read: function () {
+                        if (current._associatedVoltage() === undefined) // Unselected KO option
+                            current._associatedVoltage(-1);
+
+                        return current._associatedVoltage();
+                    },
+                    write: function (value) {
+                        if (value === null) // Undefined DB value
+                            value = -1;
+
+                        current._associatedVoltage(value);
+                    },
+                    owner: current
+                });
+
+                current.Phase = ko.pureComputed({
+                    read: current._phase,
+                    write: function (value) {
+                        current._phase(value);
+
+                        // Validate any pre-defined association
+                        const associatedVoltage = current.AssociatedVoltage();
+
+                        if (associatedVoltage > 0) {
+                            const voltages = current.DeviceVoltages();
+                            let found = false;
+
+                            for (let j = 0; j < voltages.length; j++) {
+                                const voltage = voltages[j];
+
+                                if (voltage.ID === associatedVoltage && voltage.Phase() === current.Phase()) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                                current.AssociatedVoltage(-1);
+                        }
+
+                        // Guess associated voltage
+                        if (current.AssociatedVoltage() < 1)
+                            current.AssociatedVoltage(guessAssociatedVoltage(current));
+                    },
+                    owner: current
+                });
 
                 current.DeviceVoltages = ko.pureComputed({
                     read: function () {
                         const allVoltages = self.voltages();
                         const deviceVoltages = [];
 
+                        // Match by phase first
                         for (let i = 0; i < allVoltages.length; i++) {
                             const voltage = allVoltages[i];
 
-                            if (voltage.Device === current.Device)
+                            if (voltage.Device === current.Device && voltage.Phase() === current.Phase())
                                 deviceVoltages.push(voltage);
+                        }
+
+                        if (deviceVoltages.length === 0) {
+                            // If no phases match, select all for device second
+                            for (let i = 0; i < allVoltages.length; i++) {
+                                const voltage = allVoltages[i];
+
+                                if (voltage.Device === current.Device)
+                                    deviceVoltages.push(voltage);
+                            }
                         }
 
                         return deviceVoltages;
                     },
                     owner: current
                 });
-
-                current.AssociatedVoltage = ko.observable(guessAssociatedVoltage(phasorDefinition.DestinationPhasorID, current.DeviceVoltages(), phasorLabel, phase));
 
                 current.Label.extend({ required: true });
                 current.Phase.extend({
@@ -754,6 +811,12 @@
                         params: "^[A-C0+\\-N]$"
                     }
                 });
+
+                // Assign any existing associated voltage
+                current.AssociatedVoltage(phasorDefinition.DestinationPhasorID);
+
+                // Guess phase, which will subsequently guess any unassociated voltage
+                current.Phase(guessPhase(phasorDefinition.Phase, phasorLabel));
 
                 phasorDefinition.Current = current;
                 phasorDefinition.Label = current.Label;
@@ -962,9 +1025,12 @@
                                 phasor.DeviceID = cell.ID;
                                 phasor.Label = current.Label();
                                 phasor.Type = "I";
-                                phasor.Phase = current.Phase();
+                                phasor.Phase = current.Phase();                                
                                 phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
                                 phasor.SourceIndex = current.SourceIndex;
+
+                                if (phasor.DestinationPhasorID === undefined)
+                                    phasor.DestinationPhasorID = null;
 
                                 return dataHub.addNewPhasor(phasor).then(function () {
                                     return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
@@ -1056,6 +1122,9 @@
                             phasor.Phase = current.Phase();
                             phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
                             phasor.SourceIndex = current.SourceIndex;
+
+                            if (phasor.DestinationPhasorID === undefined)
+                                phasor.DestinationPhasorID = null;
 
                             return dataHub.updatePhasor(phasor).then(function () {
                                 return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
@@ -1264,9 +1333,7 @@
                 const phasorDefinition = cell.PhasorDefinitions[i];
 
                 // Power calculations can be applied to currents with an associated voltage
-                if (phasorDefinition.PhasorType.toLowerCase() === "current" &&
-                    phasorDefinition.Phase().toUpperCase() === phase &&
-                    phasorDefinition.Current.AssociatedVoltage() > -1) {
+                if (phasorDefinition.PhasorType.toLowerCase() === "current" && phasorDefinition.Phase().toUpperCase() === phase && phasorDefinition.Current.AssociatedVoltage() > 0) {
                     const current = phasorDefinition;
                     const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
 
@@ -2643,7 +2710,7 @@
                             </div>
                         </td>
                         <td class="text-left valign-middle">
-                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
+                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
                         </td>
                     </tr>
                 </tbody>
