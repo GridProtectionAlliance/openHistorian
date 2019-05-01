@@ -515,8 +515,10 @@
 
                 let deviceAcronym = configFrame.IDLabel;
 
-                if (isEmpty(deviceAcronym))
+                if (isEmpty(deviceAcronym) && !isEmpty(configFrame.StationName))
                     deviceAcronym = getCleanAcronym(configFrame.StationName.toUpperCase().replaceAll(" ", "_"));
+                else
+                    deviceAcronym = "DEVICENAME";
 
                 self.deviceAcronym(deviceAcronym);
 
@@ -571,6 +573,17 @@
                             params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
                         },
                         deviceUniqueInDatabase: cell.ID
+                    });
+
+                    cell.Acronym = cellAcronym;
+
+                    cell.OriginalAcronym = ko.pureComputed({
+                        read: function () {
+                            // ReSharper disable ClosureOnModifiedVariable
+                            return self.editMode() ? cell.Acronym : cell.IDLabel();
+                            // ReSharper enable ClosureOnModifiedVariable
+                        },
+                        owner: cell
                     });
 
                     let firstVoltage = true;
@@ -674,7 +687,7 @@
                     showErrorMessage(String.format("Failed to analyze config file: {0}", error));
 
                     self.configFrameDetails("Unavailable");
-                    $("[id=voltageRow]").css("visibility", "visible");
+                        $("[id=voltageRow]").css("visibility", "visible");
                     $("[id=currentRow]").css("visibility", "visible");
                     hideLoadingLabel();
                 });
@@ -769,7 +782,7 @@
                         }
 
                         // Guess associated voltage
-                        if (current.AssociatedVoltage() < 1)
+                        if (current.AssociatedVoltage() === -1)
                             current.AssociatedVoltage(guessAssociatedVoltage(current));
                     },
                     owner: current
@@ -874,10 +887,11 @@
         }
 
         function savePhasorMeasurement(cell, signalType, phasorDefinition, index) {
+            const orgSignalReference = String.format("{0}-{1}{2}", cell.OriginalAcronym(), signalType.Suffix, index);
             const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), signalType.Suffix, index);
 
             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-            return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+            return dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                 return dataHub.createPhasorPointTag(cell.IDLabel(), signalType.Acronym, phasorDefinition.Label(), phasorDefinition.Phase(), index).then(function (pointTag) {
                     measurement.DeviceID = cell.ID;
                     measurement.HistorianID = viewModel.historianID();
@@ -1163,10 +1177,11 @@
         }
 
         function saveFixedMeasurement(cell, signalType, label) {
+            const orgSignalReference = String.format("{0}-{1}", cell.OriginalAcronym(), signalType.Suffix);
             const signalReference = String.format("{0}-{1}", cell.IDLabel(), signalType.Suffix);
 
             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-            return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+            return dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                 return dataHub.createPointTag(cell.IDLabel(), signalType.Acronym).then(function (pointTag) {
                     measurement.DeviceID = cell.ID;
                     measurement.HistorianID = viewModel.historianID();
@@ -1220,10 +1235,11 @@
                         for (let i = 0; i < cell.AnalogDefinitions.length; i++) {
                             const index = i + 1;
                             const analogDefinition = cell.AnalogDefinitions[i];
+                            const orgSignalReference = String.format("{0}-{1}{2}", cell.OriginalAcronym(), analogSignalType.Suffix, index);
                             const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), analogSignalType.Suffix, index);
 
                             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                            promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                            promises.push(dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                                 return dataHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index).then(function (pointTag) {
                                     measurement.DeviceID = cell.ID;
                                     measurement.HistorianID = viewModel.historianID();
@@ -1270,10 +1286,11 @@
                         for (let i = 0; i < cell.DigitalDefinitions.length; i++) {
                             const index = i + 1;
                             const digitialDefinition = cell.DigitalDefinitions[i];
+                            const orgSignalReference = String.format("{0}-{1}{2}", cell.OriginalAcronym(), digitalSignalType.Suffix, index);
                             const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), digitalSignalType.Suffix, index);
 
                             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                            promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                            promises.push(dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                                 return dataHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index).then(function (pointTag) {
                                     measurement.DeviceID = cell.ID;
                                     measurement.HistorianID = viewModel.historianID();
@@ -1549,10 +1566,11 @@
                         return $.Deferred().resolve().promise();
 
                     const lineName = line.A.current.Label();
+                    const orgSignalReference = String.format("{0}-{1}-{2}-{3}", cell.OriginalAcronym(), tagTemplate.TagName, lineName, calcSignalType.Suffix);
                     const signalReference = String.format("{0}-{1}-{2}-{3}", cell.IDLabel(), tagTemplate.TagName, lineName, calcSignalType.Suffix);
 
                     // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                    return dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                    return dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                         measurement.DeviceID = cell.ID;
                         measurement.HistorianID = viewModel.historianID();
                         measurement.PointTag = getCleanAcronym(String.format("{0}-{1}-{2}", cell.IDLabel(), tagTemplate.TagName, lineName));
@@ -1906,10 +1924,11 @@
                 if (inputsAvailable) {
                     for (let i = 0; i < maxInputLength; i++) {
                         const index = i;
+                        const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
                         const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
 
                         // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                        promises.push(dataHub.queryMeasurement(signalReference).then(function (measurement) {
+                        promises.push(dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                             measurement.DeviceID = cell.ID;
                             measurement.HistorianID = viewModel.historianID();
                             measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName);
@@ -2122,8 +2141,8 @@
                     deviceSaveChain = deviceSaveChain.then(function () {
                         showInfoMessage(String.format("Saving \"{0}\" device {1} / {2} please wait...", cell.IDLabel(), index + 1, cellCount), -1);
 
-                        // Query existing child device record for specified acronym - function will create a new blank device record if one does not exist
-                        return dataHub.queryDevice(cell.IDLabel()).then(function (device) {
+                        // Query existing child device record - function will create a new blank device record if one does not exist
+                        return dataHub.queryDeviceByID(cell.ID).then(function (device) {
                             // Check if this is a direct update to child device
                             if (cellCount === 1 && device.ID === id) {
                                 cell.ID = id;
@@ -2162,13 +2181,13 @@
                                                 return saveTemplateCalculations(cell);
                                             });
                                         })
-                                            .fail(function (error) {
-                                                showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
-                                            });
-                                    })
                                         .fail(function (error) {
-                                            showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
                                         });
+                                    })
+                                    .fail(function (error) {
+                                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                    });
                                 }
                                 else {
                                     // Update existing device record
@@ -2180,9 +2199,9 @@
                                             return saveTemplateCalculations(cell);
                                         });
                                     })
-                                        .fail(function (error) {
-                                            showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
-                                        });
+                                    .fail(function (error) {
+                                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                    });
                                 }
                             }
                         })
@@ -2219,8 +2238,8 @@
             showInfoMessage("Saving device connection, please wait...", -1);
             disableUIButtons();
 
-            // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
-            return dataHub.queryDevice(viewModel.deviceAcronym()).then(function (device) {
+            // Query existing device record - function will create a new blank device record if one does not exist
+            return dataHub.queryDeviceByID(deviceID).then(function (device) {
                 // Set device properties
                 const configFrame = viewModel.configFrame();
                 var connectionString = configFrame.ConnectionString + "";

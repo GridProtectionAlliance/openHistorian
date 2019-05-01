@@ -1261,7 +1261,7 @@ namespace openHistorian
             ConfigurationFrame derivedFrame;
 
             // Create a new simple concrete configuration frame for JSON serialization converted from equivalent configuration information
-            int protocolID = 0, deviceID = 0, phasorID = 0;
+            int protocolID = 0, deviceID = 0, phasorID = -1; // Start phasor ID's at less than -1 since associated voltage == -1 is reserved as unselected
         
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
@@ -1282,7 +1282,7 @@ namespace openHistorian
                 // Create new derived configuration cell
                 ConfigurationCell derivedCell = new ConfigurationCell
                 {
-                    ID = ++deviceID,
+                    ID = --deviceID, // Provide a negative index so any database lookup will return null
                     ParentID = null,
                     IDCode = sourceCell.IDCode,
                     StationName = sourceCell.StationName,
@@ -1297,7 +1297,7 @@ namespace openHistorian
 
                 // Create equivalent derived phasor definitions
                 foreach (IPhasorDefinition sourcePhasor in sourceCell.PhasorDefinitions)
-                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = ++phasorID, Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = --phasorID, Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
 
                 // Create equivalent derived analog definitions (assuming analog type = SinglePointOnWave)
                 foreach (IAnalogDefinition sourceAnalog in sourceCell.AnalogDefinitions)
