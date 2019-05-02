@@ -711,6 +711,9 @@
       <Component Id="System.Data.SQLite">
         <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Data.SQLite.dll" />
       </Component>
+      <Component Id="sttp.gsf">
+        <File Id="sttp.gsf.dll" Name="sttp.gsf.dll" Source="$(var.SolutionDir)\Dependencies\GSF\sttp.gsf.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- Microsoft Dependencies -->
