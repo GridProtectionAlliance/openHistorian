@@ -34,11 +34,11 @@ IF "%replace%" == "" SET replace=\\GPAWEB\NightlyBuilds\Tools\ReplaceInFiles\Rep
 SET defaulttarget=%LOCALAPPDATA%\Temp\openHistorian
 IF "%remote%" == "" SET remote=git@github.com:GridProtectionAlliance/openHistorian.git
 IF "%source%" == "" SET source=\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Beta
-IF "%sttp%" == "" SET sttp=\\GPAWEB\NightlyBuilds\sttp.net\Beta
+IF "%sttp%" == "" SET sttp=\\GPAWEB\NightlyBuilds\sttp-gsfapi\Beta
 IF "%target%" == "" SET target=%defaulttarget%
 
 SET libraries=%source%\Libraries\*.*
-SET sttplibrary=%sttp%\lib\sttp.net.dll
+SET sttplibrary=%sttp%\lib\sttp.gsf.dll
 SET dependencies=%target%\Source\Dependencies\GSF
 SET sourcemasterbuild=%source%\Build Scripts\MasterBuild.buildproj
 SET targetmasterbuild=%target%\Build\Scripts
