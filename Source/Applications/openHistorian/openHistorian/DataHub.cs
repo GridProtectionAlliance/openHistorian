@@ -1113,7 +1113,7 @@ namespace openHistorian
 
                     // Extract phasor definitions
                     foreach (Phasor phasor in QueryPhasorsForDevice(childDevice.ID))
-                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor) });
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor), SourceIndex = phasor.SourceIndex });
 
                     // Add cell to frame
                     derivedFrame.Cells.Add(derivedCell);
@@ -1141,7 +1141,7 @@ namespace openHistorian
 
                     // Extract phasor definitions
                     foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
-                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor) });
+                        derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor), SourceIndex = phasor.SourceIndex });
 
                     // Add cell to frame
                     derivedFrame.Cells.Add(derivedCell);
@@ -1165,7 +1165,7 @@ namespace openHistorian
 
                 // Extract phasor definitions
                 foreach (Phasor phasor in QueryPhasorsForDevice(device.ID))
-                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor) });
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = phasor.ID, Label = phasor.Label, PhasorType = phasor.Type == 'V' ? "Voltage" : "Current", Phase = phasor.Phase.ToString(), DestinationPhasorID = phasor.DestinationPhasorID, NominalVoltage = LookupNominalVoltage(phasor), SourceIndex = phasor.SourceIndex });
 
                 // Add cell to frame
                 derivedFrame.Cells.Add(derivedCell);
@@ -1295,9 +1295,11 @@ namespace openHistorian
                 if (sourceFrequency != null)
                     derivedCell.FrequencyDefinition = new FrequencyDefinition { Label = sourceFrequency.Label };
 
+                int sourceIndex = 0;
+
                 // Create equivalent derived phasor definitions
                 foreach (IPhasorDefinition sourcePhasor in sourceCell.PhasorDefinitions)
-                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = --phasorID, Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString() });
+                    derivedCell.PhasorDefinitions.Add(new PhasorDefinition { ID = --phasorID, Label = sourcePhasor.Label, PhasorType = sourcePhasor.PhasorType.ToString(), SourceIndex = ++sourceIndex });
 
                 // Create equivalent derived analog definitions (assuming analog type = SinglePointOnWave)
                 foreach (IAnalogDefinition sourceAnalog in sourceCell.AnalogDefinitions)

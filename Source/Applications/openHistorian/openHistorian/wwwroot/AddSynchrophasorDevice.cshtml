@@ -968,8 +968,6 @@
 
                 for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
                     const phasorDefinition = cell.PhasorDefinitions[i];
-                    
-                    phasorDefinition.SourceIndex = i + 1;
 
                     if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
                         voltages.push(phasorDefinition);

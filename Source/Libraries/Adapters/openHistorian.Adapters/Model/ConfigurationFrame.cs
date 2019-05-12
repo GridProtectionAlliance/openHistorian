@@ -23,6 +23,8 @@ namespace openHistorian.Adapters
         public int? DestinationPhasorID { get; set; }
 
         public int? NominalVoltage { get; set; }
+
+        public int SourceIndex { get; set; }
     }
 
     public class AnalogDefinition
