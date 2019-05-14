@@ -710,6 +710,7 @@
                 voltage.Phase = ko.observable(phase);
                 voltage.NominalVoltage = ko.observable(nominalVoltage);
                 voltage.FirstVoltage = firstVoltage;
+                voltage.Enabled = ko.observable(true);
 
                 voltage.Label.extend({ required: true });
                 voltage.Phase.extend({
@@ -724,6 +725,7 @@
                 phasorDefinition.Voltage = voltage;
                 phasorDefinition.Label = voltage.Label;
                 phasorDefinition.Phase = voltage.Phase;
+                phasorDefinition.Enabled = voltage.Enabled;
 
                 return voltage;
             };
@@ -736,6 +738,7 @@
                 current.Device = cell;
                 current.Label = ko.observable(phasorLabel);
                 current.FirstCurrent = firstCurrent;
+                current.Enabled = ko.observable(true);
 
                 current._associatedVoltage = ko.observable(-1);
                 current._phase = ko.observable("");
@@ -771,7 +774,7 @@
                             for (let j = 0; j < voltages.length; j++) {
                                 const voltage = voltages[j];
 
-                                if (voltage.ID === associatedVoltage && voltage.Phase() === current.Phase()) {
+                                if (voltage.ID === associatedVoltage && voltage.Phase() === current.Phase() && voltage.Enabled()) {
                                     found = true;
                                     break;
                                 }
@@ -797,7 +800,7 @@
                         for (let i = 0; i < allVoltages.length; i++) {
                             const voltage = allVoltages[i];
 
-                            if (voltage.Device === current.Device && voltage.Phase() === current.Phase())
+                            if (voltage.Device === current.Device && voltage.Phase() === current.Phase() && voltage.Enabled())
                                 deviceVoltages.push(voltage);
                         }
 
@@ -806,7 +809,7 @@
                             for (let i = 0; i < allVoltages.length; i++) {
                                 const voltage = allVoltages[i];
 
-                                if (voltage.Device === current.Device)
+                                if (voltage.Device === current.Device && voltage.Enabled())
                                     deviceVoltages.push(voltage);
                             }
                         }
@@ -834,6 +837,7 @@
                 phasorDefinition.Current = current;
                 phasorDefinition.Label = current.Label;
                 phasorDefinition.Phase = current.Phase;
+                phasorDefinition.Enabled = current.Enabled;
 
                 return current;
             };
@@ -995,6 +999,9 @@
                                 phasor.SourceIndex = voltage.SourceIndex;
 
                                 return dataHub.addNewPhasor(phasor).then(function () {
+                                    if (!voltage.Enabled())
+                                        return $.Deferred().resolve().promise();
+
                                     return savePhasorMeasurement(cell, vphmSignalType, voltage, phasor.SourceIndex).then(function () {
                                         return savePhasorMeasurement(cell, vphaSignalType, voltage, phasor.SourceIndex);
                                     })
@@ -1045,6 +1052,9 @@
                                     phasor.DestinationPhasorID = null;
 
                                 return dataHub.addNewPhasor(phasor).then(function () {
+                                    if (!current.Enabled())
+                                        return $.Deferred().resolve().promise();
+
                                     return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
                                         return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
                                     })
@@ -1095,8 +1105,11 @@
                             phasor.SourceIndex = voltage.SourceIndex;
                             
                             voltageIDMap[voltage.ID] = phasor.ID;
-
+                            
                             return dataHub.updatePhasor(phasor).then(function () {
+                                if (!voltage.Enabled())
+                                    return $.Deferred().resolve().promise();
+                                
                                 return savePhasorMeasurement(cell, vphmSignalType, voltage, phasor.SourceIndex).then(function () {
                                     return savePhasorMeasurement(cell, vphaSignalType, voltage, phasor.SourceIndex);
                                 })
@@ -1139,6 +1152,9 @@
                                 phasor.DestinationPhasorID = null;
 
                             return dataHub.updatePhasor(phasor).then(function () {
+                                if (!current.Enabled())
+                                    return $.Deferred().resolve().promise();
+                                
                                 return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
                                     return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
                                 })
@@ -2657,26 +2673,29 @@
                         <!-- ko if: FirstVoltage && $parent.configFrame().Cells.length > 1 -->
                         <td width="190px" class="text-left valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
-                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly" required>
+                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
                         <!-- /ko -->
                         <td width="210px" class="text-left valign-middle">
+                            <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
+                                <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
+                            </div>
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly" required>
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
                         </td>
                         <td width="55px" class="text-center valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
-                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                             </div>
                         </td>
                         <td class="text-left valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
-                                <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage" required>&nbsp;<span class="table-cell-text">kV</span>
+                                <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage, enable: Enabled" required>&nbsp;<span class="table-cell-text">kV</span>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
                             </div>
                         </td>
@@ -2709,25 +2728,28 @@
                         <!-- ko if: FirstCurrent && $parent.configFrame().Cells.length > 1 -->
                         <td width="190px" class="text-left valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
-                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly" required>
+                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
                         <!-- /ko -->
                         <td width="210px" class="text-left valign-middle">
+                            <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
+                                <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
+                            </div>
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly" required>
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
                         </td>
                         <td width="55px" class="text-center valign-middle">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
-                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase" placeholder="Ø" required>
+                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                             </div>
                         </td>
                         <td class="text-left valign-middle">
-                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true"></select>
+                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true, enable: Enabled"></select>
                         </td>
                     </tr>
                 </tbody>
