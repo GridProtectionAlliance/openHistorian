@@ -338,7 +338,7 @@
             self._deviceAcronym = ko.observable("DEVICENAME");
             self._instanceName = ko.observable("");
             self._templateType = ko.observable("");
-            self._historianID = ko.observable(0);
+            self._historianID = ko.observable(-1);
             self._dataHubIsConnected = ko.observable(false);
             self._isDirty = ko.observable(false);
 
@@ -397,9 +397,17 @@
                     }
 
                     if (self.dataHubIsConnected()) {
-                        dataHub.queryHistorian(self.instanceName()).done(function (historian) {
-                            self._historianID(historian.ID);
-                        });
+                        if (isEmpty(self._instanceName())) {
+                            self._historianID(-1);
+                        }
+                        else {
+                            dataHub.queryHistorian(self.instanceName()).done(function (historian) {
+                                if (historian)
+                                    self._historianID(historian.ID);
+                                else
+                                    self._historianID(-1);
+                            });
+                        }
                     }
                 },
                 owner: self
@@ -422,7 +430,14 @@
             });
 
             self.historianID = ko.pureComputed({
-                read: self._historianID,
+                read: function () {
+                    const historianID = self._historianID();
+
+                    if (historianID === -1)
+                        return null;
+
+                    return historianID;
+                },
                 owner: self
             });
 
@@ -2466,6 +2481,8 @@
                 // Load available historian instance names, if not already loaded
                 if (instanceNameSelect.children("option").length === 0) {
                     dataHub.getInstanceNames().done(function (names) {
+                        instanceNameSelect.append($("<option>", { value: null, text: 'Do Not Archive' }));
+
                         for (let i = 0; i < names.length; i++) {
                             const value = names[i];
                             instanceNameSelect.append($("<option>", { value: value, text: value }));
@@ -2568,7 +2585,7 @@
         @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <!--img class="page-logo pull-right" src="Images/AddDevice.png" /-->
         <span style="padding-right: 10px" class="form-inline pull-right clearfix">
             <small>
-                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: false" style="border: 0; width: 80px"></select>
+                Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: true" style="border: 0; width: 140px"></select>
             </small>
         </span>
     </h3>

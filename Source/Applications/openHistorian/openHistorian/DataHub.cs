@@ -1358,7 +1358,7 @@ namespace openHistorian
             return DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID).Category;
         }
 
-        public void ValidateCalculatorConfigurations(int historianID)
+        public void ValidateCalculatorConfigurations(int? historianID)
         {
             const int Avg = 0, Max = 1, Min = 2;
             PowerCalculationConfigurationValidation.ValidateDatabaseDefinitions();        
@@ -1390,7 +1390,7 @@ namespace openHistorian
             customActionAdapterTable.AddNewOrUpdateRecord(avgFreqAdapter);            
         }
 
-        private Measurement[] GetCalculatedFrequencyMeasurements(int historianID)
+        private Measurement[] GetCalculatedFrequencyMeasurements(int? historianID)
         {
             SignalType freqSignalType = DataContext.Table<SignalType>().QueryRecordWhere("Acronym = 'FREQ'");
 
