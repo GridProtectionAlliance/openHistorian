@@ -168,13 +168,13 @@
             if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.indexOf(" NPV") > -1 || phasorLabel.indexOf(" NPI") > -1 || phasorLabel.indexOf("VN ") > -1 || phasorLabel.indexOf("IN ") > -1 || phasorLabel.indexOf("VNPM") > -1 || phasorLabel.indexOf("INPM") > -1 || phasorLabel.indexOf(".NV") > -1 || phasorLabel.indexOf(".NI") > -1)
                 return "N";
 
-            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1 || phasorLabel.indexOf("VZPM") > -1 || phasorLabel.indexOf("IZPM") > -1 || phasorLabel.indexOf(".ZV") > -1 || phasorLabel.indexOf(".ZI") > -1)
+            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1 || phasorLabel.indexOf("VZPM") > -1 || phasorLabel.indexOf("IZPM") > -1 || phasorLabel.indexOf(".ZV") > -1 || phasorLabel.indexOf(".ZI") > -1 || phasorLabel.indexOf("_ZS") > -1)
                 return "0";
 
-            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1 || phasorLabel.indexOf(".-V") > -1 || phasorLabel.indexOf(".-I") > -1)
+            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1 || phasorLabel.indexOf(".-V") > -1 || phasorLabel.indexOf(".-I") > -1 || phasorLabel.indexOf("_NS") > -1)
                 return "-";
 
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf(" SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1)
+            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf(" SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1 || phasorLabel.indexOf("_PS") > -1)
                 return "+";
 
             return isEmpty(phase) ? "?" : phase;
