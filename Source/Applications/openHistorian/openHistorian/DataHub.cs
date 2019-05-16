@@ -974,7 +974,7 @@ namespace openHistorian
 
         public string CreatePhasorPointTag(string deviceAcronym, string signalTypeAcronym, string phasorLabel, string phase, int signalIndex)
         {
-            return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, phasorLabel, signalIndex, phase?[0] ?? '_');
+            return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, phasorLabel, signalIndex, string.IsNullOrWhiteSpace(phase) ? '_' : phase.Trim()[0]);
         }
 
         public void SaveNominalVoltage(string signalReference, int? nominalVoltage)

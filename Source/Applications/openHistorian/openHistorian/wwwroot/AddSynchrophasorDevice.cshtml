@@ -875,7 +875,7 @@
         }
 
         function getCleanAcronym(acronym) {
-            // Remove any invalid characters from acronym
+            // Remove any invalid characters from acronym - @@ is escaped single at symbol:
             return acronym.replace(/[^A-Z0-9\-!_\.@@#\$]/gi, "");
         }
 
@@ -1602,7 +1602,7 @@
                     return dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                         measurement.DeviceID = cell.ID;
                         measurement.HistorianID = viewModel.historianID();
-                        measurement.PointTag = getCleanAcronym(String.format("{0}-{1}-{2}", cell.IDLabel(), tagTemplate.TagName, lineName));
+                        measurement.PointTag = getCleanAcronym(String.format("{0}-{1}:CALC-{2}", cell.IDLabel(), lineName, tagTemplate.TagName));
                         measurement.Description = String.format("{0} {1} Calculated Value: {2}", cell.IDLabel(), lineName, tagTemplate.Description);
                         measurement.SignalReference = signalReference;
                         measurement.SignalTypeID = calcSignalType.ID;
@@ -1960,7 +1960,7 @@
                         promises.push(dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                             measurement.DeviceID = cell.ID;
                             measurement.HistorianID = viewModel.historianID();
-                            measurement.PointTag = String.format("{0}-{1}-<0>", cell.IDLabel(), tagTemplate.TagName);
+                            measurement.PointTag = String.format("{0}-<0>:CALC-{1}", cell.IDLabel(), tagTemplate.TagName);
                             measurement.Description = String.format("{0} <0> Calculated Value {1}: {2}", cell.IDLabel(), index, tagTemplate.Description);
                             measurement.SignalReference = signalReference;
                             measurement.SignalTypeID = calcSignalType.ID;
