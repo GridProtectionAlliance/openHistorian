@@ -905,13 +905,38 @@
             return null;
         }
 
+        function lookupAssociatedVoltage(cell, voltageID) {
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() === "voltage" && phasorDefinition.Voltage.ID === voltageID)
+                    return phasorDefinition;
+            }
+
+            return null;
+        }
+
         function savePhasorMeasurement(cell, signalType, phasorDefinition, index) {
             const orgSignalReference = String.format("{0}-{1}{2}", cell.OriginalAcronym(), signalType.Suffix, index);
             const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), signalType.Suffix, index);
 
             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
             return dataHub.queryMeasurement(orgSignalReference).then(function (measurement) {
-                return dataHub.createPhasorPointTag(cell.IDLabel(), signalType.Acronym, phasorDefinition.Label(), phasorDefinition.Phase(), index).then(function (pointTag) {
+                // Determine defined nominal voltage kV level of phasor
+                let baseKV = 0;
+
+                if (phasorDefinition.Voltage) {
+                    baseKV = phasorDefinition.Voltage.NominalVoltage();
+                }
+                else if (phasorDefinition.Current) {
+                    const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+
+                    if (voltage)
+                        baseKV = voltage.NominalVoltage();
+                }
+
+                // Create point tag using system defined naming convention
+                return dataHub.createPhasorPointTag(cell.IDLabel(), signalType.Acronym, phasorDefinition.Label(), phasorDefinition.Phase(), index, baseKV).then(function (pointTag) {
                     measurement.DeviceID = cell.ID;
                     measurement.HistorianID = viewModel.historianID();
                     measurement.PointTag = pointTag;
@@ -1358,17 +1383,6 @@
             .then(function () {
                 return saveDevicePhasors(cell);
             });
-        }
-
-        function lookupAssociatedVoltage(cell, voltageID) {
-            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
-                const phasorDefinition = cell.PhasorDefinitions[i];
-
-                if (phasorDefinition.PhasorType.toLowerCase() === "voltage" && phasorDefinition.Voltage.ID === voltageID)
-                    return phasorDefinition;
-            }
-
-            return null;
         }
 
         function savePowerCalcuations(cell, tagTemplate) {
