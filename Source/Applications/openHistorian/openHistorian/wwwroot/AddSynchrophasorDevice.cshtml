@@ -181,7 +181,7 @@
         }
 
         function guessNominalVoltage(nominalVoltage, phasorLabel, deviceLabel) {
-            if (!isEmpty(nominalVoltage))
+            if (!isEmpty(nominalVoltage) && nominalVoltage > 0)
                 return nominalVoltage;
 
             const commonVoltageLevels = ["69", "115", "230", "500", "765"];
@@ -932,7 +932,7 @@
                     const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
 
                     if (voltage)
-                        baseKV = voltage.NominalVoltage();
+                        baseKV = voltage.Voltage.NominalVoltage();
                 }
 
                 // Create point tag using system defined naming convention
@@ -1035,6 +1035,7 @@
                                 phasor.Label = voltage.Label();
                                 phasor.Type = "V";
                                 phasor.Phase = voltage.Phase();
+                                phasor.BaseKV = voltage.Voltage.NominalVoltage();
                                 phasor.DestinationPhasorID = null;
                                 phasor.SourceIndex = voltage.SourceIndex;
 
@@ -1081,11 +1082,19 @@
                             const current = currents[i];
 
                             promises.push(dataHub.newPhasor().then(function (phasor) {
+                                const associatedVoltage = current.Current.AssociatedVoltage();
+                                const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
+                                let baseKV = 0;
+
+                                if (voltage)
+                                    baseKV = voltage.Voltage.NominalVoltage();
+
                                 phasor.DeviceID = cell.ID;
                                 phasor.Label = current.Label();
                                 phasor.Type = "I";
-                                phasor.Phase = current.Phase();                                
-                                phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
+                                phasor.Phase = current.Phase();
+                                phasor.BaseKV = baseKV;
+                                phasor.DestinationPhasorID = voltageIDMap[associatedVoltage];
                                 phasor.SourceIndex = current.SourceIndex;
 
                                 if (phasor.DestinationPhasorID === undefined)

@@ -26,6 +26,8 @@ namespace openHistorian.Model
 
         public char Phase { get; set; }
 
+        public int BaseKV { get; set; }
+
         public int? DestinationPhasorID { get; set; }
 
         public int SourceIndex { get; set; }
