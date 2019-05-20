@@ -1615,6 +1615,11 @@
             Gets or sets the Phase of the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.BaseKV">
+            <summary>
+            Gets or sets nominal voltage level of line/bus associated with phasor.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.DestinationPhasorID">
             <summary>
             Gets or sets Destination <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> ID for the current Phasor.

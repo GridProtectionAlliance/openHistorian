@@ -38,7 +38,7 @@ USE openHistorian;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 9 AS VersionNumber;
+SELECT 10 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -413,6 +413,7 @@ CREATE TABLE Phasor(
     Phase NCHAR(1) NOT NULL DEFAULT N'+',
     DestinationPhasorID INT NULL,
     SourceIndex INT NOT NULL DEFAULT 0,
+    BaseKV INT NOT NULL DEFAULT 0,
     CreatedOn DATETIME NULL,
     CreatedBy VARCHAR(200) NULL,
     UpdatedOn DATETIME NULL,
@@ -1137,7 +1138,7 @@ SELECT     Device.CompanyID, Company.Acronym AS CompanyAcronym, Company.Name AS 
     Device.Acronym AS DeviceAcronym, Device.Name AS DeviceName, COALESCE(Device.FramesPerSecond, 30) AS FramesPerSecond, Device.Enabled AS DeviceEnabled, Device.ContactList, 
     Device.VendorDeviceID, VendorDevice.Name AS VendorDeviceName, VendorDevice.Description AS VendorDeviceDescription, 
     Device.ProtocolID, Protocol.Acronym AS ProtocolAcronym, Protocol.Name AS ProtocolName, Measurement.SignalTypeID, 
-    Measurement.PhasorSourceIndex, Phasor.Label AS PhasorLabel, Phasor.Type AS PhasorType, Phasor.Phase, 
+    Measurement.PhasorSourceIndex, Phasor.Label AS PhasorLabel, Phasor.Type AS PhasorType, Phasor.Phase, Phasor.BaseKV,
     Measurement.SignalReference, Measurement.Adder, Measurement.Multiplier, Measurement.Description, Measurement.Subscribed, Measurement.Internal, Measurement.Enabled, 
     COALESCE (SignalType.EngineeringUnits, N'') AS EngineeringUnits, SignalType.Source, SignalType.Acronym AS SignalAcronym, 
     SignalType.Name AS SignalName, SignalType.Suffix AS SignalTypeSuffix, Device.Longitude, Device.Latitude,

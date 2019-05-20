@@ -149,7 +149,7 @@
             </summary>
             <param name="command"><see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreatePointTag(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Char)">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreatePointTag(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Char,System.Int32)">
             <summary>
             Create a new point tag using the configured point tag name expression.
             </summary>
@@ -160,6 +160,7 @@
             <param name="phasorLabel">The label of the phasor associated with the point.</param>
             <param name="signalIndex">Signal index of the point, if any.</param>
             <param name="phase">Signal phase of the point, if any.</param>
+            <param name="baseKV">Nominal kV of line associated with phasor.</param>
             <returns>A new point tag created using the configured point tag name expression.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.MeasurementDeviceAssociation(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">

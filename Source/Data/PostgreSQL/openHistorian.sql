@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 9 AS VersionNumber;
+SELECT 10 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -447,6 +447,7 @@ CREATE TABLE Phasor(
     Phase NCHAR(1) NOT NULL DEFAULT '+',
     DestinationPhasorID INTEGER NULL,
     SourceIndex INTEGER NOT NULL DEFAULT 0,
+    BaseKV INTEGER NOT NULL DEFAULT 0,
     CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CreatedBy VARCHAR(200) NOT NULL DEFAULT '',
     UpdatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -1053,7 +1054,7 @@ SELECT     Device.CompanyID, Device.CompanyAcronym, Device.CompanyName, Measurem
                       Device.Acronym AS DeviceAcronym, Device.Name AS DeviceName, COALESCE(Device.FramesPerSecond, 30) AS FramesPerSecond, Device.Enabled AS DeviceEnabled, Device.ContactList, 
                       Device.VendorDeviceID, VendorDevice.Name AS VendorDeviceName, VendorDevice.Description AS VendorDeviceDescription, 
                       Device.ProtocolID, Protocol.Acronym AS ProtocolAcronym, Protocol.Name AS ProtocolName, Measurement.SignalTypeID, 
-                      Measurement.PhasorSourceIndex, Phasor.Label AS PhasorLabel, Phasor.Type AS PhasorType, Phasor.Phase, 
+                      Measurement.PhasorSourceIndex, Phasor.Label AS PhasorLabel, Phasor.Type AS PhasorType, Phasor.Phase, Phasor.BaseKV,
                       Measurement.SignalReference, Measurement.Adder, Measurement.Multiplier, Measurement.Description, Measurement.Subscribed, Measurement.Internal, Measurement.Enabled, 
                       COALESCE (Measurement.EngineeringUnits, '') AS EngineeringUnits, Measurement.Source, Measurement.SignalAcronym, 
                       Measurement.SignalName, Measurement.SignalTypeSuffix, Device.Longitude, Device.Latitude,
