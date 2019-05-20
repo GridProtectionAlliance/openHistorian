@@ -1415,14 +1415,18 @@
                             const iphmID = current.iphmMeasurement.SignalID;
 
                             // Query for existing power calculation, this will create a new record if not found
-                            promises.push(dataHub.queryPowerCalculationForCircuitDescription(circuitDescription).then(function (powerCalculation) {
-                                // Phasor measurement IDs may have changed, update them
-                                powerCalculation.CircuitDescription = circuitDescription;
+                            promises.push(dataHub.queryPowerCalculationForInputs(circuitDescription, vphaID, vphmID, iphaID, iphmID).then(function (powerCalculation) {
                                 powerCalculation.VoltageAngleSignalID = vphaID;
                                 powerCalculation.VoltageMagSignalID = vphmID;
                                 powerCalculation.CurrentAngleSignalID = iphaID;
                                 powerCalculation.CurrentMagSignalID = iphmID;
                                 powerCalculation.Enabled = true;
+
+                                // For direct phase power calculations, do not apply voltage adjustment strategy
+                                if (phase === "A" || phase === "B" || phase === "C")
+                                    powerCalculation.CircuitDescription = circuitDescription + "; AdjustmentStrategy = None";
+                                else
+                                    powerCalculation.CircuitDescription = circuitDescription;
 
                                 if (powerCalculation.ID === 0) {
                                     return dataHub.addNewPowerCalculation(powerCalculation).fail(function (error) {
