@@ -1415,7 +1415,7 @@
                             const iphmID = current.iphmMeasurement.SignalID;
 
                             // Query for existing power calculation, this will create a new record if not found
-                            promises.push(dataHub.queryPowerCalculationForInputs(circuitDescription, vphaID, vphmID, iphaID, iphmID).then(function (powerCalculation) {
+                            promises.push(dataHub.queryPowerCalculationForDescriptionOrInputs(circuitDescription, vphaID, vphmID, iphaID, iphmID).then(function (powerCalculation) {
                                 powerCalculation.VoltageAngleSignalID = vphaID;
                                 powerCalculation.VoltageMagSignalID = vphmID;
                                 powerCalculation.CurrentAngleSignalID = iphaID;

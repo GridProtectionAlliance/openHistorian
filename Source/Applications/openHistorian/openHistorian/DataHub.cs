@@ -458,9 +458,14 @@ namespace openHistorian
             DataContext.Table<PowerCalculation>().UpdateRecord(powerCalculation);
         }
 
-        public PowerCalculation QueryPowerCalculationForInputs(string circuitDescription, Guid voltageAngleSignalID, Guid voltageMagSignalID, Guid currentAngleSignalID, Guid currentMagSignalID)
+        public PowerCalculation QueryPowerCalculationForDescriptionOrInputs(string circuitDescription, Guid voltageAngleSignalID, Guid voltageMagSignalID, Guid currentAngleSignalID, Guid currentMagSignalID)
         {
             return DataContext.Table<PowerCalculation>().QueryRecordWhere($"CircuitDescription LIKE '{circuitDescription}%' OR (VoltageAngleSignalID = {{0}} AND VoltageMagSignalID = {{1}} AND CurrentAngleSignalID = {{2}} AND CurrentMagSignalID = {{3}})", voltageAngleSignalID, voltageMagSignalID, currentAngleSignalID, currentMagSignalID) ?? NewPowerCalculation();
+        }
+
+        public PowerCalculation QueryPowerCalculationForInputs(string circuitDescription, Guid voltageAngleSignalID, Guid voltageMagSignalID, Guid currentAngleSignalID, Guid currentMagSignalID)
+        {
+            return DataContext.Table<PowerCalculation>().QueryRecordWhere("VoltageAngleSignalID = {0} AND VoltageMagSignalID = {1} AND CurrentAngleSignalID = {2} AND CurrentMagSignalID = {3}", voltageAngleSignalID, voltageMagSignalID, currentAngleSignalID, currentMagSignalID) ?? NewPowerCalculation();
         }
 
         #endregion
