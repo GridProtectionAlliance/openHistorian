@@ -68,22 +68,22 @@
             Circuit Description field for the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageAngleSignalID">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageAngleMeasurementKey">
             <summary>
             Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Angle <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageMagnitudeSignalID">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.VoltageMagnitudeMeasurementKey">
             <summary>
             Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Voltage Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentAngleSignalID">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentAngleMeasurementKey">
             <summary>
             Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Angle <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
         </member>
-        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentMagnitudeSignalID">
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.CurrentMagnitudeMeasurementKey">
             <summary>
             Measurement key from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>'s Current Magnitude <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement"/> 
             </summary>
@@ -300,7 +300,7 @@
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AdjustmentStrategy">
             <summary>
-            Gets or sets the strategy used to adjust voltage values for based on the nature of the voltage measurements.
+            Gets or sets the default strategy used to adjust voltage values for based on the nature of the voltage measurements.
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnableTemporalProcessing">
