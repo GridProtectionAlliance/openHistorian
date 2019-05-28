@@ -1,69 +1,126 @@
-///<reference path="../../../headers/common.d.ts" />
-
-import config from 'app/core/config';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import coreModule from '../../core_module';
+import { SearchSrv } from 'app/core/services/search_srv';
+import { contextSrv } from 'app/core/services/context_srv';
+
+import appEvents from 'app/core/app_events';
+import { parse, SearchParserOptions, SearchParserResult } from 'search-query-parser';
+import { getDashboardSrv } from 'app/features/dashboard/services/DashboardSrv';
+export interface SearchQuery {
+  query: string;
+  parsedQuery: SearchParserResult;
+  tags: string[];
+  starred: boolean;
+}
+
+class SearchQueryParser {
+  config: SearchParserOptions;
+  constructor(config: SearchParserOptions) {
+    this.config = config;
+  }
+
+  parse(query: string) {
+    const parsedQuery = parse(query, this.config);
+
+    if (typeof parsedQuery === 'string') {
+      return {
+        text: parsedQuery,
+      } as SearchParserResult;
+    }
+
+    return parsedQuery;
+  }
+}
+
+interface OpenSearchParams {
+  query?: string;
+}
 
 export class SearchCtrl {
   isOpen: boolean;
-  query: any;
-  giveSearchFocus: number;
+  query: SearchQuery;
+  giveSearchFocus: boolean;
   selectedIndex: number;
   results: any;
   currentSearchId: number;
-  tagsMode: boolean;
   showImport: boolean;
   dismiss: any;
   ignoreClose: any;
-  // triggers fade animation class
-  openCompleted: boolean;
+  isLoading: boolean;
+  initialFolderFilterTitle: string;
+  isEditor: string;
+  hasEditPermissionInFolders: boolean;
+  queryParser: SearchQueryParser;
 
   /** @ngInject */
-  constructor($scope, private $location, private $timeout, private backendSrv, public contextSrv, $rootScope) {
-    $rootScope.onAppEvent('show-dash-search', this.openSearch.bind(this), $scope);
-    $rootScope.onAppEvent('hide-dash-search', this.closeSearch.bind(this), $scope);
+  constructor($scope, private $location, private $timeout, private searchSrv: SearchSrv) {
+    appEvents.on('show-dash-search', this.openSearch.bind(this), $scope);
+    appEvents.on('hide-dash-search', this.closeSearch.bind(this), $scope);
+    appEvents.on('search-query', debounce(this.search.bind(this), 500), $scope);
+
+    this.initialFolderFilterTitle = 'All';
+    this.isEditor = contextSrv.isEditor;
+    this.hasEditPermissionInFolders = contextSrv.hasEditPermissionInFolders;
+    this.onQueryChange = this.onQueryChange.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    this.query = {
+      query: '',
+      parsedQuery: { text: '' },
+      tags: [],
+      starred: false,
+    };
+
+    this.queryParser = new SearchQueryParser({
+      keywords: ['folder'],
+    });
   }
 
   closeSearch() {
     this.isOpen = this.ignoreClose;
-    this.openCompleted = false;
   }
 
-  openSearch(evt, payload) {
+  onQueryChange(query: SearchQuery | string) {
+    if (typeof query === 'string') {
+      this.query = {
+        ...this.query,
+        parsedQuery: this.queryParser.parse(query),
+        query: query,
+      };
+    } else {
+      this.query = query;
+    }
+    appEvents.emit('search-query');
+  }
+
+  openSearch(payload: OpenSearchParams = {}) {
     if (this.isOpen) {
-      this.isOpen = false;
+      this.closeSearch();
       return;
     }
 
     this.isOpen = true;
-    this.giveSearchFocus = 0;
+    this.giveSearchFocus = true;
     this.selectedIndex = -1;
     this.results = [];
-    this.query = { query: '', tag: [], starred: false };
+    this.query = {
+      query: payload.query ? `${payload.query} ` : '',
+      parsedQuery: this.queryParser.parse(payload.query),
+      tags: [],
+      starred: false,
+    };
+
     this.currentSearchId = 0;
     this.ignoreClose = true;
-
-    if (payload && payload.starred) {
-      this.query.starred = true;
-    }
-
-    if (payload && payload.tagsMode) {
-      return this.$timeout(() => {
-        this.ignoreClose = false;
-        this.giveSearchFocus = this.giveSearchFocus + 1;
-        this.getTags();
-      }, 100);
-    }
+    this.isLoading = true;
 
     this.$timeout(() => {
-      this.openCompleted = true;
       this.ignoreClose = false;
-      this.giveSearchFocus = this.giveSearchFocus + 1;
+      this.giveSearchFocus = true;
       this.search();
     }, 100);
   }
 
-  keyDown(evt) {
+  onKeyDown(evt: KeyboardEvent) {
     if (evt.keyCode === 27) {
       this.closeSearch();
     }
@@ -74,93 +131,202 @@ export class SearchCtrl {
       this.moveSelection(-1);
     }
     if (evt.keyCode === 13) {
-      if (this.tagsMode) {
-        var tag = this.results[this.selectedIndex];
-        if (tag) {
-          this.filterByTag(tag.term, null);
-        }
-        return;
-      }
+      const flattenedResult = this.getFlattenedResultForNavigation();
+      const currentItem = flattenedResult[this.selectedIndex];
 
-      var selectedDash = this.results[this.selectedIndex];
-      if (selectedDash) {
-        this.$location.search({});
-        this.$location.path(selectedDash.url);
+      if (currentItem) {
+        if (currentItem.dashboardIndex !== undefined) {
+          const selectedDash = this.results[currentItem.folderIndex].items[currentItem.dashboardIndex];
+
+          if (selectedDash) {
+            this.$location.search({});
+            this.$location.path(selectedDash.url);
+            this.closeSearch();
+          }
+        } else {
+          const selectedFolder = this.results[currentItem.folderIndex];
+
+          if (selectedFolder) {
+            selectedFolder.toggle(selectedFolder);
+          }
+        }
       }
     }
   }
 
-  moveSelection(direction) {
-    var max = (this.results || []).length;
-    var newIndex = this.selectedIndex + direction;
-    this.selectedIndex = ((newIndex %= max) < 0) ? newIndex + max : newIndex;
+  onFilterboxClick() {
+    this.giveSearchFocus = false;
+    this.preventClose();
   }
 
-  searchDashboards() {
-    this.tagsMode = false;
-    this.currentSearchId = this.currentSearchId + 1;
-    var localSearchId = this.currentSearchId;
+  preventClose() {
+    this.ignoreClose = true;
 
-    return this.backendSrv.search(this.query).then((results) => {
-      if (localSearchId < this.currentSearchId) { return; }
+    this.$timeout(() => {
+      this.ignoreClose = false;
+    }, 100);
+  }
 
-      this.results = _.map(results, function(dash) {
-        dash.url = 'dashboard/' + dash.uri;
-        return dash;
-      });
+  moveSelection(direction) {
+    if (this.results.length === 0) {
+      return;
+    }
 
-      if (this.queryHasNoFilters()) {
-        this.results.unshift({ title: 'Home', url: config.appSubUrl + '/', type: 'dash-home' });
+    const flattenedResult = this.getFlattenedResultForNavigation();
+    const currentItem = flattenedResult[this.selectedIndex];
+
+    if (currentItem) {
+      if (currentItem.dashboardIndex !== undefined) {
+        this.results[currentItem.folderIndex].items[currentItem.dashboardIndex].selected = false;
+      } else {
+        this.results[currentItem.folderIndex].selected = false;
       }
-    });
+    }
+
+    if (direction === 0) {
+      this.selectedIndex = -1;
+      return;
+    }
+
+    const max = flattenedResult.length;
+    const newIndex = (this.selectedIndex + direction) % max;
+    this.selectedIndex = newIndex < 0 ? newIndex + max : newIndex;
+    const selectedItem = flattenedResult[this.selectedIndex];
+
+    if (selectedItem.dashboardIndex === undefined && this.results[selectedItem.folderIndex].id === 0) {
+      this.moveSelection(direction);
+      return;
+    }
+
+    if (selectedItem.dashboardIndex !== undefined) {
+      if (!this.results[selectedItem.folderIndex].expanded) {
+        this.moveSelection(direction);
+        return;
+      }
+
+      this.results[selectedItem.folderIndex].items[selectedItem.dashboardIndex].selected = true;
+      return;
+    }
+
+    if (this.results[selectedItem.folderIndex].hideHeader) {
+      this.moveSelection(direction);
+      return;
+    }
+
+    this.results[selectedItem.folderIndex].selected = true;
+  }
+
+  searchDashboards(folderContext?: string) {
+    this.currentSearchId = this.currentSearchId + 1;
+    const localSearchId = this.currentSearchId;
+    const folderIds = [];
+
+    const { parsedQuery } = this.query;
+
+    if (folderContext === 'current') {
+      folderIds.push(getDashboardSrv().getCurrent().meta.folderId);
+    }
+
+    const query = {
+      ...this.query,
+      query: parsedQuery.text,
+      tag: this.query.tags,
+      folderIds,
+    };
+
+    return this.searchSrv
+      .search({
+        ...query,
+      })
+      .then(results => {
+        if (localSearchId < this.currentSearchId) {
+          return;
+        }
+        this.results = results || [];
+        this.isLoading = false;
+        this.moveSelection(1);
+      });
   }
 
   queryHasNoFilters() {
-    var query = this.query;
-    return query.query === '' && query.starred === false && query.tag.length === 0;
+    const query = this.query;
+    return query.query === '' && query.starred === false && query.tags.length === 0;
   }
 
-  filterByTag(tag, evt) {
-    this.query.tag.push(tag);
-    this.search();
-    this.giveSearchFocus = this.giveSearchFocus + 1;
-    if (evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
+  filterByTag(tag) {
+    if (_.indexOf(this.query.tags, tag) === -1) {
+      this.query.tags.push(tag);
+      this.search();
     }
   }
 
   removeTag(tag, evt) {
-    this.query.tag = _.without(this.query.tag, tag);
+    this.query.tags = _.without(this.query.tags, tag);
     this.search();
-    this.giveSearchFocus = this.giveSearchFocus + 1;
+    this.giveSearchFocus = true;
     evt.stopPropagation();
     evt.preventDefault();
   }
 
-  getTags() {
-    return this.backendSrv.get('/api/dashboards/tags').then((results) => {
-      this.tagsMode = !this.tagsMode;
-      this.results = results;
-      this.giveSearchFocus = this.giveSearchFocus + 1;
-      if ( !this.tagsMode ) {
-        this.search();
-      }
-    });
+  getTags = () => {
+    return this.searchSrv.getDashboardTags();
+  };
+
+  onTagFiltersChanged = (tags: string[]) => {
+    this.query.tags = tags;
+    this.search();
+  };
+
+  clearSearchFilter() {
+    this.query.query = '';
+    this.query.tags = [];
+    this.search();
   }
 
   showStarred() {
     this.query.starred = !this.query.starred;
-    this.giveSearchFocus = this.giveSearchFocus + 1;
+    this.giveSearchFocus = true;
     this.search();
   }
 
   search() {
     this.showImport = false;
-    this.selectedIndex = 0;
-    this.searchDashboards();
+    this.selectedIndex = -1;
+    this.searchDashboards(this.query.parsedQuery['folder']);
   }
 
+  folderExpanding() {
+    this.moveSelection(0);
+  }
+
+  private getFlattenedResultForNavigation(): Array<{
+    folderIndex: number;
+    dashboardIndex: number;
+  }> {
+    let folderIndex = 0;
+
+    return _.flatMap(this.results, s => {
+      let result = [];
+
+      result.push({
+        folderIndex: folderIndex,
+      });
+
+      let dashboardIndex = 0;
+
+      result = result.concat(
+        _.map(s.items || [], i => {
+          return {
+            folderIndex: folderIndex,
+            dashboardIndex: dashboardIndex++,
+          };
+        })
+      );
+
+      folderIndex++;
+      return result;
+    });
+  }
 }
 
 export function searchDirective() {

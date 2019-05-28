@@ -8,7 +8,7 @@ export class PiWebApiDatasource {
    * 
    * @param {any} instanceSettings - Settings from admin page.
    * @param {any} backendSrv - Grafana backend web communications.
-   * @param {any} templateSrv - Grafana template server .
+   * @param {any} templateSrv - Grafana template server.
    * @param {any} $q - Angular async/promise helper.
    * @param {any} $cacheFactory - A cache for PI Web API webids for element paths.
    * 
@@ -83,14 +83,20 @@ export class PiWebApiDatasource {
         refId: target.refId,
         hide: target.hide,
         interpolate: target.interpolate || {enable: false},
+        recordedValues: target.recordedValues || {enable: false},
         webid: target.webid,
         webids: target.webids || [],
         regex: target.regex || {enable: false},
         expression: target.expression || '',
-        summary: target.summary || {types: []}
+        summary: target.summary || {types: []},
+        startTime: options.range.from.toJSON(),
+        endTime: options.range.to.toJSON()
         // items: results
       }
-
+      
+      if (tar.expression) {
+        tar.expression = this.templateSrv.replace(tar.expression);
+      }
 
       if (tar.summary.types !== undefined) {
         tar.summary.types = _.filter(tar.summary.types, item => { return item !== undefined && item !== null && item !== '' })
@@ -133,8 +139,6 @@ export class PiWebApiDatasource {
         })
     }
   }
-
-  
 
   /**
    * Alerting Implementation
@@ -276,7 +280,6 @@ export class PiWebApiDatasource {
     }
   }
 
-
   /**
    * Gets the url of summary data from the query configuration.
    * 
@@ -286,11 +289,14 @@ export class PiWebApiDatasource {
    * @memberOf PiWebApiDatasource
    */
   getSummaryUrl (summary) {
+    if (summary.interval == "") {
+      return '&summaryType=' + summary.types.join('&summaryType=') +
+            '&calculationBasis=' + summary.basis
+    }
     return '&summaryType=' + summary.types.join('&summaryType=') +
             '&calculationBasis=' + summary.basis +
             '&summaryDuration=' + summary.interval
   }
-
 
   /**
    * Resolve a Grafana query into a PI Web API webid. Uses client side cache when possible to reduce lookups.
@@ -333,33 +339,80 @@ export class PiWebApiDatasource {
     })
   }
   
-  parsePiPointValueList(value, noDataReplacementMode) {
+  /**
+   * Resolve PIWebAPI response 'value' data to value - timestamp pairs.
+   * 
+   * @param {any} value - A list of PIWebAPI values.
+   * @param {any} target - The target Grafana metric.
+   * @param {any} isSummary - Boolean for tracking if data is of summary class.
+   * @returns - An array of Grafana value, timestamp pairs.
+   * 
+   */
+  parsePiPointValueList(value, target, isSummary = false) {
     var api = this;
-
     var datapoints = [];
     var previousValue = null;
     _.each(value, item => {
-      var grafanaDataPoint = api.parsePiPointValue(item);
-
-      if (item.Value === 'No Data' || !item.Good) {
-        if (noDataReplacementMode === 'Drop') {
-          return;
-        } else if (noDataReplacementMode === '0') {
-          grafanaDataPoint[0] = 0;
-        } else if (noDataReplacementMode === 'Null') {
-          grafanaDataPoint[0] = null;
-        } else if (noDataReplacementMode === 'Previous' && previousValue !== null) {
-          grafanaDataPoint[0] = previousValue;
-        }
-      } else {
-        previousValue = item.Value;
+      var grafanaDataPoint = api.parsePiPointValue(item, isSummary, target);
+      if (isSummary){
+        grafanaDataPoint, previousValue = this.noDataReplace(item.Value, target.summary.nodata, grafanaDataPoint)
+      } else{
+        grafanaDataPoint, previousValue = this.noDataReplace(item, target.summary.nodata, grafanaDataPoint)
       }
-
       datapoints.push(grafanaDataPoint)
     })
     return datapoints;
   }
   
+  /**
+   * Convert a PI Point value to use Grafana value/timestamp.
+   * 
+   * @param {any} value - PI Point value.
+   * @param {any} isSummary - Boolean for tracking if data is of summary class.
+   * @param {any} target - The target grafana metric.
+   * @returns - Grafana value pair.
+   * 
+   */
+  parsePiPointValue (value, isSummary = false, target) {
+    var num = Number(value.Value)
+    if (isSummary) {
+      num = Number(value.Value.Value)
+      if (target.summary.interval == ""){
+        return [(!isNaN(num) ? num : 0), new Date(target.endTime).getTime()]
+      }
+      return [(!isNaN(num) ? num : 0), new Date(value.Value.Timestamp).getTime()]
+    }
+    return [(!isNaN(num) ? num : 0), new Date(value.Timestamp).getTime()]
+  }
+
+  /**
+   * Resolve PIWebAPI response 'value' data to value - timestamp pairs.
+   * 
+   * @param {any} item - 'Item' object from PIWebAPI
+   * @param {any} noDataReplacementMode - String state of how to replace 'No Data'
+   * @param {any} grafanaDataPoint - Single Grafana value pair (value, timestamp).
+   * @returns grafanaDataPoint - Single Grafana value pair (value, timestamp).
+   * @returns perviousValue - {any} Grafana value (value only). 
+   * 
+   */
+  noDataReplace(item, noDataReplacementMode, grafanaDataPoint){
+    var previousValue = null;
+    if (item.Value === 'No Data' || !item.Good) {
+      if (noDataReplacementMode === 'Drop') {
+        return;
+      } else if (noDataReplacementMode === '0') {
+        grafanaDataPoint[0] = 0;
+      } else if (noDataReplacementMode === 'Null') {
+        grafanaDataPoint[0] = null;
+      } else if (noDataReplacementMode === 'Previous' && previousValue !== null) {
+        grafanaDataPoint[0] = previousValue;
+      }
+    } else {
+      previousValue = item.Value;
+    }
+    return grafanaDataPoint, previousValue
+  }
+
   /**
    * Process the response from PI Web API for a single item.
    * 
@@ -372,35 +425,27 @@ export class PiWebApiDatasource {
    */
   processResults (content, target, name) {
     var api = this
-    // .then(response => {
-    // var name = target.attributes[idIndex++] || target.display || target.expression || target.elementPath
     var isSummary = target.summary && target.summary.types && target.summary.types.length > 0
     if (target.regex && target.regex.enable) {
       name = name.replace(new RegExp(target.regex.search), target.regex.replace)
     }
-
     if (isSummary) {
       var innerResults = []
       var groups = _.groupBy(content.Items, item => { return item.Type })
       _.forOwn(groups, (value, key) => {
-        
-        var datapoints = 
-
         innerResults.push({
           'target': name + '[' + key + ']',
-          'datapoints': api.parsePiPointValueList(value, target.summary.nodata)
+          'datapoints': api.parsePiPointValueList(value, target, isSummary)
         })
       })
       return innerResults
     }
-
     return [{
       'target': name,
-      'datapoints': api.parsePiPointValueList(content.Items, target.summary.nodata)
+      'datapoints': api.parsePiPointValueList(content.Items, target, isSummary)
     }]
     // }).catch(err => { api.error = err }))
   }
-
 
   /**
    * Gets historical data from a PI Web API stream source.
@@ -415,8 +460,6 @@ export class PiWebApiDatasource {
     var results = []
 
     _.each(query.targets, target => {
-      // populate webids
-
       target.attributes = _.filter(target.attributes || [], attribute => { return (1 && attribute) })
       var url = ''
       var isSummary = target.summary && target.summary.types && target.summary.types.length > 0
@@ -424,26 +467,23 @@ export class PiWebApiDatasource {
       // perhaps add a check to see if interpolate override time < query.interval
       var intervalTime = ((target.interpolate.interval) ? target.interpolate.interval : query.interval)
       var timeRange = '?startTime=' + query.range.from.toJSON() + '&endTime=' + query.range.to.toJSON()
-      var targetName = target.display || target.expression || target.elementPath
+      var targetName = target.expression || target.elementPath
       if (target.expression) {
         url += '/calculation'
-
         if (isSummary) {
           url += '/summary' + timeRange + (isInterpolated ? '&sampleType=Interval&sampleInterval=' + intervalTime : '')
         } else {
           url += '/intervals' + timeRange + '&sampleInterval=' + intervalTime
         }
-
         url += '&expression=' + encodeURIComponent(target.expression)
         url += '&webid='
-
         if (target.attributes.length > 0) {
           _.each(target.attributes, attribute => {
             results.push(
               api.restGetWebId(target.elementPath + '|' + attribute)
               .then(webidresponse => {
                 return api.restPost(url + webidresponse.WebId)
-                .then(response => { return api.processResults(response.data, target, attribute || targetName) })
+                .then(response => { return api.processResults(response.data, target, target.display || attribute || targetName) })
                 .catch(err => { api.error = err })
               }))
           })
@@ -452,16 +492,19 @@ export class PiWebApiDatasource {
             api.restGetWebId(target.elementPath)
               .then(webidresponse => {
                 return api.restPost(url + webidresponse.WebId)
-                .then(response => { return api.processResults(response.data, target, targetName) })
+                .then(response => { return api.processResults(response.data, target, target.display || targetName) })
                 .catch(err => { api.error = err })
               }))
         }
+
       } else {
-        url += 'streamsets'
+        url += '/streamsets'
         if (isSummary) {
           url += '/summary' + timeRange + '&intervals=' + query.maxDataPoints + this.getSummaryUrl(target.summary)
         } else if (target.interpolate && target.interpolate.enable) {
           url += '/interpolated' + timeRange + '&interval=' + intervalTime
+        } else if (target.recordedValues && target.recordedValues.enable) {
+          url += '/recorded' + timeRange + '&maxCount=' + target.recordedValues.maxNumber
         } else {
           url += '/plot' + timeRange + '&intervals=' + query.maxDataPoints
         }
@@ -479,10 +522,9 @@ export class PiWebApiDatasource {
           return api.restBatch(query)
             .then(response => {
               var targetResults = []
-
               _.each(response.data, (value, key) => {
                 _.each(value.Content.Items, item => {
-                  _.each(api.processResults(item, target, item.Name || targetName), targetResult => { targetResults.push(targetResult) })
+                  _.each(api.processResults(item, target, target.display || item.Name || targetName), targetResult => { targetResults.push(targetResult) })
                 })
               })
               
@@ -490,30 +532,12 @@ export class PiWebApiDatasource {
             })
             .catch(err => { api.error = err })
         }))
-        /*
-        .then(webidsresponses => {
-          var webids = _.reduce(webidsresponses, function (result, webid) {
-            return (webid.WebId) ? result + '&webid=' + webid.WebId : result
-          }, '')
-
-          return api.restPost(url + webids)
-            .then(response => {
-              var targetResults = []
-              _.each(response.data.Items, item => {
-                _.each(api.processResults(item, target, item.Name || targetName), targetResult => { targetResults.push(targetResult) })
-              })
-              return targetResults
-            })
-            .catch(err => { api.error = err })
-        }))
-        */
       }
     })
 
     return results
   }
 
-  
   /**
    * Abstraction for calling the PI Web API REST endpoint
    * 
@@ -576,10 +600,12 @@ export class PiWebApiDatasource {
       url: this.url + '/batch',
       data: batch,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'message/http'
+      }
     })
   }
-
 
   /**
    * Execute a POST on the PI Web API.
@@ -595,12 +621,14 @@ export class PiWebApiDatasource {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Requested-With': 'message/http',
         'X-PIWEBAPI-HTTP-METHOD': 'GET',
         'X-PIWEBAPI-RESOURCE-ADDRESS': path
       }
     })
   }
-  // get a list of all data (PI) servers
+
+  // Get a list of all data (PI) servers
   getDataServers () {
     return this.restGet('/dataservers')
     .then(response => { return response.data.Items })
@@ -609,7 +637,7 @@ export class PiWebApiDatasource {
     return this.restGet('/dataservers?name=' + name)
     .then(response => { return response.data })
   }
-  // get a list of all asset (AF) servers
+  // Get a list of all asset (AF) servers
   getAssetServers () {
     return this.restGet('/assetservers')
       .then(response => { return response.data.Items })
@@ -646,6 +674,7 @@ export class PiWebApiDatasource {
         })
       })
   }
+
   /**
    * @description
    * Get the child attributes of the current resource.
@@ -675,6 +704,7 @@ export class PiWebApiDatasource {
     return this.restGet('/elements/' + elementId + '/attributes' + querystring)
       .then(response => { return response.data.Items })
   }
+
   /**
    * @description
    * Retrieve elements based on the specified conditions. By default, this method selects immediate children of the current resource.
@@ -704,6 +734,7 @@ export class PiWebApiDatasource {
     return this.restGet('/assetdatabases/' + databaseId + '/elements' + querystring)
     .then(response => { return response.data.Items })
   }
+
   /**
    * @description
    * Retrieve elements based on the specified conditions. By default, this method selects immediate children of the current resource.
@@ -735,20 +766,8 @@ export class PiWebApiDatasource {
   }
 
   /**
-   * Convert a PI Point value to use Grafana value/timestamp.
-   * 
-   * @param {any} value - PI Point value.
-   * @returns - Grafana value.
-   * 
-   * @memberOf PiWebApiDatasource
-   */
-  parsePiPointValue (value) {
-    var num = Number(value.Value)
-    return [(!isNaN(num) ? num : 0), new Date(value.Timestamp).getTime()]
-  }
-  /**
-   * @description
    * Retrieve a list of points on a specified Data Server.
+   * 
    * @param {string} serverId - The ID of the server. See WebID for more information.
    * @param {string} nameFilter - A query string for filtering by point name. The default is no filter. *, ?, [ab], [!ab]
    */

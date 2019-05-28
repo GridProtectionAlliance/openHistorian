@@ -42,7 +42,7 @@ System.register(['angular', 'lodash'], function (_export, _context) {
          * 
          * @param {any} instanceSettings - Settings from admin page.
          * @param {any} backendSrv - Grafana backend web communications.
-         * @param {any} templateSrv - Grafana template server .
+         * @param {any} templateSrv - Grafana template server.
          * @param {any} $q - Angular async/promise helper.
          * @param {any} $cacheFactory - A cache for PI Web API webids for element paths.
          * 
@@ -126,13 +126,20 @@ System.register(['angular', 'lodash'], function (_export, _context) {
                 refId: target.refId,
                 hide: target.hide,
                 interpolate: target.interpolate || { enable: false },
+                recordedValues: target.recordedValues || { enable: false },
                 webid: target.webid,
                 webids: target.webids || [],
                 regex: target.regex || { enable: false },
                 expression: target.expression || '',
-                summary: target.summary || { types: [] }
+                summary: target.summary || { types: [] },
+                startTime: options.range.from.toJSON(),
+                endTime: options.range.to.toJSON()
                 // items: results
               };
+
+              if (tar.expression) {
+                tar.expression = _this2.templateSrv.replace(tar.expression);
+              }
 
               if (tar.summary.types !== undefined) {
                 tar.summary.types = _.filter(tar.summary.types, function (item) {
@@ -275,6 +282,9 @@ System.register(['angular', 'lodash'], function (_export, _context) {
         }, {
           key: 'getSummaryUrl',
           value: function getSummaryUrl(summary) {
+            if (summary.interval == "") {
+              return '&summaryType=' + summary.types.join('&summaryType=') + '&calculationBasis=' + summary.basis;
+            }
             return '&summaryType=' + summary.types.join('&summaryType=') + '&calculationBasis=' + summary.basis + '&summaryDuration=' + summary.interval;
           }
         }, {
@@ -308,75 +318,96 @@ System.register(['angular', 'lodash'], function (_export, _context) {
           }
         }, {
           key: 'parsePiPointValueList',
-          value: function parsePiPointValueList(value, noDataReplacementMode) {
-            var api = this;
+          value: function parsePiPointValueList(value, target) {
+            var _this4 = this;
 
+            var isSummary = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+            var api = this;
             var datapoints = [];
             var previousValue = null;
             _.each(value, function (item) {
-              var grafanaDataPoint = api.parsePiPointValue(item);
-
-              if (item.Value === 'No Data' || !item.Good) {
-                if (noDataReplacementMode === 'Drop') {
-                  return;
-                } else if (noDataReplacementMode === '0') {
-                  grafanaDataPoint[0] = 0;
-                } else if (noDataReplacementMode === 'Null') {
-                  grafanaDataPoint[0] = null;
-                } else if (noDataReplacementMode === 'Previous' && previousValue !== null) {
-                  grafanaDataPoint[0] = previousValue;
-                }
+              var grafanaDataPoint = api.parsePiPointValue(item, isSummary, target);
+              if (isSummary) {
+                grafanaDataPoint, previousValue = _this4.noDataReplace(item.Value, target.summary.nodata, grafanaDataPoint);
               } else {
-                previousValue = item.Value;
+                grafanaDataPoint, previousValue = _this4.noDataReplace(item, target.summary.nodata, grafanaDataPoint);
               }
-
               datapoints.push(grafanaDataPoint);
             });
             return datapoints;
           }
         }, {
+          key: 'parsePiPointValue',
+          value: function parsePiPointValue(value) {
+            var isSummary = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+            var target = arguments[2];
+
+            var num = Number(value.Value);
+            if (isSummary) {
+              num = Number(value.Value.Value);
+              if (target.summary.interval == "") {
+                return [!isNaN(num) ? num : 0, new Date(target.endTime).getTime()];
+              }
+              return [!isNaN(num) ? num : 0, new Date(value.Value.Timestamp).getTime()];
+            }
+            return [!isNaN(num) ? num : 0, new Date(value.Timestamp).getTime()];
+          }
+        }, {
+          key: 'noDataReplace',
+          value: function noDataReplace(item, noDataReplacementMode, grafanaDataPoint) {
+            var previousValue = null;
+            if (item.Value === 'No Data' || !item.Good) {
+              if (noDataReplacementMode === 'Drop') {
+                return;
+              } else if (noDataReplacementMode === '0') {
+                grafanaDataPoint[0] = 0;
+              } else if (noDataReplacementMode === 'Null') {
+                grafanaDataPoint[0] = null;
+              } else if (noDataReplacementMode === 'Previous' && previousValue !== null) {
+                grafanaDataPoint[0] = previousValue;
+              }
+            } else {
+              previousValue = item.Value;
+            }
+            return grafanaDataPoint, previousValue;
+          }
+        }, {
           key: 'processResults',
           value: function processResults(content, target, name) {
             var api = this;
-            // .then(response => {
-            // var name = target.attributes[idIndex++] || target.display || target.expression || target.elementPath
             var isSummary = target.summary && target.summary.types && target.summary.types.length > 0;
             if (target.regex && target.regex.enable) {
               name = name.replace(new RegExp(target.regex.search), target.regex.replace);
             }
-
             if (isSummary) {
               var innerResults = [];
               var groups = _.groupBy(content.Items, function (item) {
                 return item.Type;
               });
               _.forOwn(groups, function (value, key) {
-
-                var datapoints = innerResults.push({
+                innerResults.push({
                   'target': name + '[' + key + ']',
-                  'datapoints': api.parsePiPointValueList(value, target.summary.nodata)
+                  'datapoints': api.parsePiPointValueList(value, target, isSummary)
                 });
               });
               return innerResults;
             }
-
             return [{
               'target': name,
-              'datapoints': api.parsePiPointValueList(content.Items, target.summary.nodata)
+              'datapoints': api.parsePiPointValueList(content.Items, target, isSummary)
             }];
             // }).catch(err => { api.error = err }))
           }
         }, {
           key: 'getStream',
           value: function getStream(query) {
-            var _this4 = this;
+            var _this5 = this;
 
             var api = this;
             var results = [];
 
             _.each(query.targets, function (target) {
-              // populate webids
-
               target.attributes = _.filter(target.attributes || [], function (attribute) {
                 return 1 && attribute;
               });
@@ -386,24 +417,21 @@ System.register(['angular', 'lodash'], function (_export, _context) {
               // perhaps add a check to see if interpolate override time < query.interval
               var intervalTime = target.interpolate.interval ? target.interpolate.interval : query.interval;
               var timeRange = '?startTime=' + query.range.from.toJSON() + '&endTime=' + query.range.to.toJSON();
-              var targetName = target.display || target.expression || target.elementPath;
+              var targetName = target.expression || target.elementPath;
               if (target.expression) {
                 url += '/calculation';
-
                 if (isSummary) {
                   url += '/summary' + timeRange + (isInterpolated ? '&sampleType=Interval&sampleInterval=' + intervalTime : '');
                 } else {
                   url += '/intervals' + timeRange + '&sampleInterval=' + intervalTime;
                 }
-
                 url += '&expression=' + encodeURIComponent(target.expression);
                 url += '&webid=';
-
                 if (target.attributes.length > 0) {
                   _.each(target.attributes, function (attribute) {
                     results.push(api.restGetWebId(target.elementPath + '|' + attribute).then(function (webidresponse) {
                       return api.restPost(url + webidresponse.WebId).then(function (response) {
-                        return api.processResults(response.data, target, attribute || targetName);
+                        return api.processResults(response.data, target, target.display || attribute || targetName);
                       }).catch(function (err) {
                         api.error = err;
                       });
@@ -412,18 +440,20 @@ System.register(['angular', 'lodash'], function (_export, _context) {
                 } else {
                   results.push(api.restGetWebId(target.elementPath).then(function (webidresponse) {
                     return api.restPost(url + webidresponse.WebId).then(function (response) {
-                      return api.processResults(response.data, target, targetName);
+                      return api.processResults(response.data, target, target.display || targetName);
                     }).catch(function (err) {
                       api.error = err;
                     });
                   }));
                 }
               } else {
-                url += 'streamsets';
+                url += '/streamsets';
                 if (isSummary) {
-                  url += '/summary' + timeRange + '&intervals=' + query.maxDataPoints + _this4.getSummaryUrl(target.summary);
+                  url += '/summary' + timeRange + '&intervals=' + query.maxDataPoints + _this5.getSummaryUrl(target.summary);
                 } else if (target.interpolate && target.interpolate.enable) {
                   url += '/interpolated' + timeRange + '&interval=' + intervalTime;
+                } else if (target.recordedValues && target.recordedValues.enable) {
+                  url += '/recorded' + timeRange + '&maxCount=' + target.recordedValues.maxNumber;
                 } else {
                   url += '/plot' + timeRange + '&intervals=' + query.maxDataPoints;
                 }
@@ -441,10 +471,9 @@ System.register(['angular', 'lodash'], function (_export, _context) {
 
                   return api.restBatch(query).then(function (response) {
                     var targetResults = [];
-
                     _.each(response.data, function (value, key) {
                       _.each(value.Content.Items, function (item) {
-                        _.each(api.processResults(item, target, item.Name || targetName), function (targetResult) {
+                        _.each(api.processResults(item, target, target.display || item.Name || targetName), function (targetResult) {
                           targetResults.push(targetResult);
                         });
                       });
@@ -455,22 +484,6 @@ System.register(['angular', 'lodash'], function (_export, _context) {
                     api.error = err;
                   });
                 }));
-                /*
-                .then(webidsresponses => {
-                  var webids = _.reduce(webidsresponses, function (result, webid) {
-                    return (webid.WebId) ? result + '&webid=' + webid.WebId : result
-                  }, '')
-                   return api.restPost(url + webids)
-                    .then(response => {
-                      var targetResults = []
-                      _.each(response.data.Items, item => {
-                        _.each(api.processResults(item, target, item.Name || targetName), targetResult => { targetResults.push(targetResult) })
-                      })
-                      return targetResults
-                    })
-                    .catch(err => { api.error = err })
-                }))
-                */
               }
             });
 
@@ -515,7 +528,10 @@ System.register(['angular', 'lodash'], function (_export, _context) {
               url: this.url + '/batch',
               data: batch,
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'message/http'
+              }
             });
           }
         }, {
@@ -526,6 +542,7 @@ System.register(['angular', 'lodash'], function (_export, _context) {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'message/http',
                 'X-PIWEBAPI-HTTP-METHOD': 'GET',
                 'X-PIWEBAPI-RESOURCE-ADDRESS': path
               }
@@ -642,12 +659,6 @@ System.register(['angular', 'lodash'], function (_export, _context) {
             return this.restGet('/elements/' + elementId + '/elements' + querystring).then(function (response) {
               return response.data.Items;
             });
-          }
-        }, {
-          key: 'parsePiPointValue',
-          value: function parsePiPointValue(value) {
-            var num = Number(value.Value);
-            return [!isNaN(num) ? num : 0, new Date(value.Timestamp).getTime()];
           }
         }, {
           key: 'piPointSearch',

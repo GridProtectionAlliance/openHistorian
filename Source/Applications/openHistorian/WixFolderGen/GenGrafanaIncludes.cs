@@ -44,7 +44,7 @@ namespace WiXFolderGen
         const string GrafanaFilesDestinationFile = ApplicationPath + "\\" + ProjectName + "Setup\\GrafanaFiles.wxi";
 
         // Define list of installed files types NOT to delete between installations - this only applies to installed files as any files added at runtime will remain:
-        static readonly HashSet<string> PermanentFileNames = new HashSet<string>(new[] { "custom.ini", "grafana.db" }, StringComparer.OrdinalIgnoreCase);
+        static readonly HashSet<string> PermanentFileNames = new HashSet<string>(new[] { /*"custom.ini",*/ "grafana.db" }, StringComparer.OrdinalIgnoreCase);
 
         // Define list of files types NOT to publish that may be found in Grafana folder:
         static readonly HashSet<string> ExcludedFileNames = new HashSet<string>(new[] { "Readme.txt" }, StringComparer.OrdinalIgnoreCase);

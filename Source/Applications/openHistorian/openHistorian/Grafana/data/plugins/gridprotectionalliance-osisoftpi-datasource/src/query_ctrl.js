@@ -52,11 +52,11 @@ export class PiWebApiDatasourceQueryCtrl extends QueryCtrl {
     ]
 
 
-    this.target.summary = this.target.summary || { types: [], basis: 'EventWeighted', interval: '5m', nodata: 'Null' }
+    this.target.summary = this.target.summary || { types: [], basis: 'EventWeighted', interval: '', nodata: 'Null' }
     this.target.summary.types = this.target.summary.types || []
-    this.target.summary.basis = this.target.summary.basis || 'EventWeighted'
+    this.target.summary.basis = this.target.summary.basis
     this.target.summary.nodata = this.target.summary.nodata || 'Null'
-    this.target.summary.interval = this.target.summary.interval || '5m'
+    this.target.summary.interval = this.target.summary.interval || ''
 
 
     this.target.target = this.target.target || ';'
@@ -66,7 +66,13 @@ export class PiWebApiDatasourceQueryCtrl extends QueryCtrl {
       this.target.interpolate = { enable: this.target.interpolate }
     }
     this.target.interpolate.enable = this.target.interpolate.enable || false
-
+    
+    this.target.recordedValues = this.target.recordedValues || {enable: false}
+    if (this.target.recordedValues === false || this.target.recordedValues === true) {
+      this.target.recordedValues = { enable: this.target.recordedValues }
+    }
+    this.target.recordedValues.enable = this.target.recordedValues.enable || false
+    
     if (this.segments.length === 0) {
       this.segments.push(this.uiSegmentSrv.newSelectMetric())
     }

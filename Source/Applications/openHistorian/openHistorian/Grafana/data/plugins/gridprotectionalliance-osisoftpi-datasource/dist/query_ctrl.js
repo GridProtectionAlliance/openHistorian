@@ -68,7 +68,7 @@ System.register(['angular', 'lodash', 'app/plugins/sdk', './css/query-editor.css
         function PiWebApiDatasourceQueryCtrl($scope, $injector, uiSegmentSrv, templateSrv, $q) {
           _classCallCheck(this, PiWebApiDatasourceQueryCtrl);
 
-          var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PiWebApiDatasourceQueryCtrl).call(this, $scope, $injector));
+          var _this = _possibleConstructorReturn(this, (PiWebApiDatasourceQueryCtrl.__proto__ || Object.getPrototypeOf(PiWebApiDatasourceQueryCtrl)).call(this, $scope, $injector));
 
           _this.uiSegmentSrv = uiSegmentSrv;
           _this.templateSrv = templateSrv;
@@ -111,11 +111,11 @@ System.register(['angular', 'lodash', 'app/plugins/sdk', './css/query-editor.css
           'Previous', // use previous value if available
           '0'];
 
-          _this.target.summary = _this.target.summary || { types: [], basis: 'EventWeighted', interval: '5m', nodata: 'Null' };
+          _this.target.summary = _this.target.summary || { types: [], basis: 'EventWeighted', interval: '', nodata: 'Null' };
           _this.target.summary.types = _this.target.summary.types || [];
-          _this.target.summary.basis = _this.target.summary.basis || 'EventWeighted';
+          _this.target.summary.basis = _this.target.summary.basis;
           _this.target.summary.nodata = _this.target.summary.nodata || 'Null';
-          _this.target.summary.interval = _this.target.summary.interval || '5m';
+          _this.target.summary.interval = _this.target.summary.interval || '';
 
           _this.target.target = _this.target.target || ';';
 
@@ -124,6 +124,12 @@ System.register(['angular', 'lodash', 'app/plugins/sdk', './css/query-editor.css
             _this.target.interpolate = { enable: _this.target.interpolate };
           }
           _this.target.interpolate.enable = _this.target.interpolate.enable || false;
+
+          _this.target.recordedValues = _this.target.recordedValues || { enable: false };
+          if (_this.target.recordedValues === false || _this.target.recordedValues === true) {
+            _this.target.recordedValues = { enable: _this.target.recordedValues };
+          }
+          _this.target.recordedValues.enable = _this.target.recordedValues.enable || false;
 
           if (_this.segments.length === 0) {
             _this.segments.push(_this.uiSegmentSrv.newSelectMetric());

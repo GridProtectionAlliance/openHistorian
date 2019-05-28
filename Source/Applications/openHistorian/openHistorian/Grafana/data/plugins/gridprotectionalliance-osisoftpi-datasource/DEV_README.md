@@ -9,4 +9,11 @@ to update the `dist` folder. This will also update the distribution
 readme file.
 
 If you are using Visual Studio Code, you can launch the terminal
-using `ctrl+~` and issue the `grunt` command directly from the editor.
+using `ctrl+~`.
+
+## Build script example
+```sh
+npm i yarn -g
+yarn
+yarn build
+```

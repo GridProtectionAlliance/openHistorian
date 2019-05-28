@@ -1,9 +1,8 @@
 import _ from 'lodash';
 
 class GrafanaDatasource {
-
   /** @ngInject */
-  constructor(private backendSrv, private $q) {}
+  constructor(private backendSrv, private $q, private templateSrv) {}
 
   query(options) {
     return this.backendSrv
@@ -14,11 +13,11 @@ class GrafanaDatasource {
         maxDataPoints: options.maxDataPoints,
       })
       .then(res => {
-        var data = [];
+        const data = [];
 
         if (res.results) {
           _.forEach(res.results, queryRes => {
-            for (let series of queryRes.series) {
+            for (const series of queryRes.series) {
               data.push({
                 target: series.name,
                 datapoints: series.points,
@@ -27,14 +26,13 @@ class GrafanaDatasource {
           });
         }
 
-        return {data: data};
+        return { data: data };
       });
   }
 
   metricFindQuery(options) {
-    return this.$q.when({data: []});
+    return this.$q.when({ data: [] });
   }
-
 
   annotationQuery(options) {
     const params: any = {
@@ -42,6 +40,7 @@ class GrafanaDatasource {
       to: options.range.to.valueOf(),
       limit: options.annotation.limit,
       tags: options.annotation.tags,
+      matchAny: options.annotation.matchAny,
     };
 
     if (options.annotation.type === 'dashboard') {
@@ -58,10 +57,25 @@ class GrafanaDatasource {
       if (!_.isArray(options.annotation.tags) || options.annotation.tags.length === 0) {
         return this.$q.when([]);
       }
+      const delimiter = '__delimiter__';
+      const tags = [];
+      for (const t of params.tags) {
+        const renderedValues = this.templateSrv.replace(t, {}, value => {
+          if (typeof value === 'string') {
+            return value;
+          }
+
+          return value.join(delimiter);
+        });
+        for (const tt of renderedValues.split(delimiter)) {
+          tags.push(tt);
+        }
+      }
+      params.tags = tags;
     }
 
     return this.backendSrv.get('/api/annotations', params);
   }
 }
 
-export {GrafanaDatasource};
+export { GrafanaDatasource };

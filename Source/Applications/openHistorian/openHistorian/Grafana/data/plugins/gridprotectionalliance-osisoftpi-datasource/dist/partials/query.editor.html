@@ -45,6 +45,20 @@
 
 	<div class="gf-form-inline">
 		<div class="gf-form">
+			<label class="gf-form-label query-keyword width-11">Max Recorded Values
+					<i class="fa fa-question-circle" bs-tooltip="'Maximum number of recorded value to retrive from the data archive, without using interpolation.'" data-placement="top"></i>
+				</label>
+			<input type="number" class="gf-form-input width-6" ng-model="ctrl.target.recordedValues.maxNumber" placeholder="150000"
+				ng-blur="ctrl.refresh()"></input>
+		</div>
+		<div class="gf-form">
+			<gf-form-switch class="gf-form-inline" label="Recorded Values" label-class="query-keyword" checked="ctrl.target.recordedValues.enable"
+				on-change="ctrl.targetBlur()" ng-disabled="ctrl.target.interpolate.enable">
+			</gf-form-switch>
+		</div>
+  </div>
+	<div class="gf-form-inline">
+		<div class="gf-form">
 			<label class="gf-form-label query-keyword width-11">Interpolate Period
 					<i class="fa fa-question-circle" bs-tooltip="'Override time between sampling, e.g. \'30s\'. Defaults to timespan/chart width.'" data-placement="top"></i>
 				</label>
@@ -53,7 +67,7 @@
 		</div>
 		<div class="gf-form">
 			<gf-form-switch class="gf-form-inline" label="Interpolate" label-class="query-keyword" checked="ctrl.target.interpolate.enable"
-				on-change="ctrl.targetBlur()">
+				on-change="ctrl.targetBlur()" ng-disabled="ctrl.target.recordedValues.enable">
 			</gf-form-switch>
 		</div>
     <div class="gf-form">
@@ -68,7 +82,7 @@
   <div class="gf-form-inline">  
 		<div class="gf-form">
 			<label class="gf-form-label query-keyword">Summary Period
-					<i class="fa fa-question-circle" bs-tooltip="'Override time between sampling, e.g. \'30s\'. Defaults to timespan/chart width.'" data-placement="top"></i>
+					<i class="fa fa-question-circle" bs-tooltip="'Override time between sampling, e.g. \'30s\'.'" data-placement="top"></i>
 				</label>
 			<input type="text" class="gf-form-input width-5" ng-model="ctrl.target.summary.interval" spellcheck='false' placeholder="30s" ng-blur="ctrl.panelCtrl.refresh()"></input>
 		</div>

@@ -29,8 +29,8 @@
       {"name": "MIT License", "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana/blob/master/LICENSE"},
       {"name": "PI System", "url": "http://www.osisoft.com/corporate/connected-services/pisystem.html"}
     ],
-    "version": "1.0.3",
-    "updated": "2017-12-13"
+    "version": "1.0.4",
+    "updated": "2019-01-30"
   },
 
   "dependencies": {

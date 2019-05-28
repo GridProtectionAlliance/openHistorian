@@ -1,10 +1,9 @@
-///<reference path="../../headers/common.d.ts" />
-
 import _ from 'lodash';
-import {Variable, assignModelProperties, variableTypes} from './variable';
+import { Variable, assignModelProperties, variableTypes } from './variable';
 
 export class AdhocVariable implements Variable {
   filters: any[];
+  skipUrlSync: boolean;
 
   defaults = {
     type: 'adhoc',
@@ -13,9 +12,10 @@ export class AdhocVariable implements Variable {
     hide: 0,
     datasource: null,
     filters: [],
+    skipUrlSync: false,
   };
 
-  /** @ngInject **/
+  /** @ngInject */
   constructor(private model) {
     assignModelProperties(this, model, this.defaults);
   }
@@ -43,7 +43,7 @@ export class AdhocVariable implements Variable {
     }
 
     this.filters = urlValue.map(item => {
-      var values = item.split('|').map(value => {
+      const values = item.split('|').map(value => {
         return this.unescapeDelimiter(value);
       });
       return {
@@ -58,9 +58,11 @@ export class AdhocVariable implements Variable {
 
   getValueForUrl() {
     return this.filters.map(filter => {
-      return [filter.key, filter.operator, filter.value].map(value => {
-        return this.escapeDelimiter(value);
-      }).join('|');
+      return [filter.key, filter.operator, filter.value]
+        .map(value => {
+          return this.escapeDelimiter(value);
+        })
+        .join('|');
     });
   }
 
