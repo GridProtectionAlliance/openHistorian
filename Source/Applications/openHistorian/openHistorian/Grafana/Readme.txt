@@ -2,7 +2,7 @@
 
 Do not point your debug system to this folder - instead copy the contents of this folder to the debug output folder, i.e.: openHistorian/Build/Output/Debug/Applications/openHistorian/Grafana
 
-When Grafana exists in the debug output folder, you can properly debug the openHistorian while also running a self-hosted copy of Grafana. Note that you will need to change the URL for the OHDATA data source to http://localhost:8181/api/grafana so that Grafana can access the debug version of the openHistorian.
+When Grafana exists in the debug output folder, you can properly debug the openHistorian while also running a self-hosted copy of Grafana
 
 When updating to a new Grafana version, include the following files for deployment:
 
