@@ -230,7 +230,7 @@ namespace WiXFolderGen
         private static string GetDirectoryID(string folderName)
         {
             const string Suffix = "FOLDER";
-            return Program.GetCleanID(folderName, "", Suffix, MaxWixIDLength - Suffix.Length, removeDirectorySeparatorChar: true, removeUnderscores: true).ToUpperInvariant();
+            return Program.GetCleanID(folderName, "", Suffix, MaxWixIDLength - Suffix.Length, removeDirectorySeparatorChar: true).ToUpperInvariant();
         }
 
         private static string GetComponentGroupID(string folderName)

@@ -68,7 +68,7 @@
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_Components" Directory="DATAPLUGINSFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCEFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_gitignore">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\.gitignore" />
   </Component>
@@ -91,7 +91,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\README.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1963126255_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCEDISTFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1963126255_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_d1478022608">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_d1478022608" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\LICENSE" />
   </Component>
@@ -129,7 +129,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4159536026.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\README.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1027920215_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCED831293520FOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1027920215_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR2909013327FOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2854151768_ts">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2621091567.ts" Name="openHistorianAnnotations_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianAnnotations_ctrl.d.ts" />
   </Component>
@@ -215,7 +215,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1292132169.ts" Name="openHistorianTextEditor_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianTextEditor_ctrl.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhist148523662_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCEDISTCSSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhist148523662_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTCSSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4064609405_css">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4064609405.css" Name="bootstrap-multiselect.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\css\bootstrap-multiselect.css" />
   </Component>
@@ -226,7 +226,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2646701706.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\css\query-editor.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3419809018_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCEDISTIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3419809018_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1520719736_png">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1520719736.png" Name="AlarmAnnotations.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\AlarmAnnotations.png" />
   </Component>
@@ -252,7 +252,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1456254581.png" Name="TextEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\TextEditor.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1776248913_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCEDISTJSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1776248913_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTJSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1418946130_ts">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1656172261.ts" Name="openHistorianConstants.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.d.ts" />
   </Component>
@@ -266,7 +266,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3875121232.ts" Name="openHistorianConstants.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2586971943_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCE2454355513FOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2586971943_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR2047699740FOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3655194757_html">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2478965530.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\annotations.editor.html" />
   </Component>
@@ -289,7 +289,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2569516436.html" Name="query.textEditor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.textEditor.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3402395035_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCESRCFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3402395035_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_src_LICENSE">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_src_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\LICENSE" />
   </Component>
@@ -306,7 +306,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource345328191.md" Name="query_help.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\query_help.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2621599517_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCES811168916FOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2621599517_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR3520250448FOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1574364001_ts">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1574364001.ts" Name="openHistorianAnnotations_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianAnnotations_ctrl.ts" />
   </Component>
@@ -329,7 +329,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource708808644.ts" Name="openHistorianTextEditor_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianTextEditor_ctrl.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhisto51720728_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCESRCCSSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhisto51720728_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCCSSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3824168439_css">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3824168439.css" Name="bootstrap-multiselect.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\css\bootstrap-multiselect.css" />
   </Component>
@@ -340,7 +340,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3250519761.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\css\query-editor.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3222887532_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCESRCIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3222887532_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1676995845_png">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1676995845.png" Name="AlarmAnnotations.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\AlarmAnnotations.png" />
   </Component>
@@ -366,12 +366,12 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3101982913.png" Name="TextEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\TextEditor.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2105073566_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCESRCJSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2105073566_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCJSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4148986330_ts">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4148986330.ts" Name="openHistorianConstants.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\js\openHistorianConstants.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2202770110_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOPENHISTORIANDATASOURCESRCPARTIALFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2202770110_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR1669280482FOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3567323026_html">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2663308301.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\annotations.editor.html" />
   </Component>
@@ -394,7 +394,7 @@
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour755327823.html" Name="query.textEditor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.textEditor.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1387172533_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1387172533_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_editorconfig">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource.editorconfig" Name=".editorconfig" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\.editorconfig" />
   </Component>
@@ -426,7 +426,7 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_yarn.lock" Name="yarn.lock" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\yarn.lock" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1214005531_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1214005531_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_di1818144314_js">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_di1818144314.js" Name="af_query.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\af_query.js" />
   </Component>
@@ -473,14 +473,14 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_dist_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\README.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2917946289_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTCSSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2917946289_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTCSSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2748832055_css">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2748832055.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\css\query-editor.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1710018750_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTDOCSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1710018750_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTDOCSFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1235154168_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTDOCSIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1235154168_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTDOCSIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2090253853_png">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2090253853.png" Name="event_frame.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\docs\img\event_frame.png" />
   </Component>
@@ -500,12 +500,12 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d3991444899.png" Name="template_setup_1.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\docs\img\template_setup_1.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1860189637_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1860189637_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d3763532558_png">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d3763532558.png" Name="osi-pi.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\img\osi-pi.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1130933923_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDISTPARTIALSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1130933923_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDISTPARTIALSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_2269113849_html">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_3441440358.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\partials\annotations.editor.html" />
   </Component>
@@ -519,9 +519,9 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_4014321454.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\dist\partials\query.options.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2557983323_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDOCSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2557983323_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDOCSFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft3167147636_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCEDOCSIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft3167147636_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEDOCSIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2970216963_png">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d2970216963.png" Name="event_frame.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\docs\img\event_frame.png" />
   </Component>
@@ -541,7 +541,7 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_d4266424955.png" Name="template_setup_1.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\docs\img\template_setup_1.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1291144958_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCESRCFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1291144958_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCESRCFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_src_af_query_js">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_src_af_query.js" Name="af_query.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\af_query.js" />
   </Component>
@@ -564,17 +564,17 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_sr2350849940.js" Name="query_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\query_ctrl.js" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1069114943_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCESRCCSSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1069114943_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCESRCCSSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_s3110508598_css">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_s3110508598.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\css\query-editor.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft4239722571_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCESRCIMGFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft4239722571_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCESRCIMGFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_s2339806507_png">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_s2339806507.png" Name="osi-pi.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\img\osi-pi.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2739645440_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCEOSISOFTPIDATASOURCESRCPARTIALSFOLDER">
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft2739645440_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCESRCPARTIALSFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_2242750362_html">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_3484580869.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\partials\annotations.editor.html" />
   </Component>
@@ -709,7 +709,7 @@
     <File Id="public_app_core_components_AppNotifications_AppNotificationList.tsx" Name="AppNotificationList.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\AppNotifications\AppNotificationList.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_code_editor_Components" Directory="PUBLICAPPCORECOMPONENTSCODEEDITORFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_code_editor_Components" Directory="PUBLICAPPCORECOMPONENTSCODE_EDITORFOLDER">
   <Component Id="public_app_core_components_code_editor_code_editor_ts">
     <File Id="public_app_core_components_code_editor_code_editor.ts" Name="code_editor.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\code_editor\code_editor.ts" />
   </Component>
@@ -747,7 +747,7 @@
     <File Id="public_app_core_components_Footer_Footer.tsx" Name="Footer.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\Footer\Footer.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_form_dropdown_Components" Directory="PUBLICAPPCORECOMPONENTSFORMDROPDOWNFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_form_dropdown_Components" Directory="PUBLICAPPCORECOMPONENTSFORM_DROPDOWNFOLDER">
   <Component Id="public_app_core_components_form_dropdown_form_dropdown_ts">
     <File Id="public_app_core_components_form_dropdown_form_dropdown.ts" Name="form_dropdown.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\form_dropdown\form_dropdown.ts" />
   </Component>
@@ -770,7 +770,7 @@
     <File Id="public_app_core_components_jsontree_jsontree.ts" Name="jsontree.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\jsontree\jsontree.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_json_explorer_Components" Directory="PUBLICAPPCORECOMPONENTSJSONEXPLORERFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_json_explorer_Components" Directory="PUBLICAPPCORECOMPONENTSJSON_EXPLORERFOLDER">
   <Component Id="public_app_core_components_json_explorer_helpers_ts">
     <File Id="public_app_core_components_json_explorer_helpers.ts" Name="helpers.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\json_explorer\helpers.ts" />
   </Component>
@@ -783,12 +783,12 @@
     <File Id="public_app_core_components_LayoutSelector_LayoutSelector.tsx" Name="LayoutSelector.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\LayoutSelector\LayoutSelector.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_layout_selector_Components" Directory="PUBLICAPPCORECOMPONENTSLAYOUTSELECTORFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_layout_selector_Components" Directory="PUBLICAPPCORECOMPONENTSLAYOUT_SELECTORFOLDER">
   <Component Id="public_app_core_components_layout_selector_layout_selector_ts">
     <File Id="public_app_core_components_layout_selector_layout_selector.ts" Name="layout_selector.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\layout_selector\layout_selector.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_manage_dashboards_Components" Directory="PUBLICAPPCORECOMPONENTSMANAGEDASHBOARDSFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_manage_dashboards_Components" Directory="PUBLICAPPCORECOMPONENTSMANAGE_DASHBOARDSFOLDER">
   <Component Id="public_app_core_components_manage_dashboards_manage_dashboards_html">
     <File Id="public_app_core_components_manage_dashboards_manage_dashboards.html" Name="manage_dashboards.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\manage_dashboards\manage_dashboards.html" />
   </Component>
@@ -812,7 +812,7 @@
     <File Id="public_app_core_components_OrgActionBar_OrgActionBar.tsx" Name="OrgActionBar.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\OrgActionBar\OrgActionBar.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_OrgActionBar_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSORGACTIONBARSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_OrgActionBar_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSORGACTIONBAR_SNAPSHOTSFOLDER">
   <Component Id="public_app_core_components_OrgActionBar_snapshots_OrgActi2069209879_snap">
     <File Id="public_app_core_components_OrgActionBar_snapshots_OrgActi1326363512.snap" Name="OrgActionBar.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\OrgActionBar\__snapshots__\OrgActionBar.test.tsx.snap" />
   </Component>
@@ -860,7 +860,7 @@
     <File Id="public_app_core_components_PluginHelp_PluginHelp.tsx" Name="PluginHelp.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\PluginHelp\PluginHelp.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_query_part_Components" Directory="PUBLICAPPCORECOMPONENTSQUERYPARTFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_query_part_Components" Directory="PUBLICAPPCORECOMPONENTSQUERY_PARTFOLDER">
   <Component Id="public_app_core_components_query_part_query_part_ts">
     <File Id="public_app_core_components_query_part_query_part.ts" Name="query_part.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\query_part\query_part.ts" />
   </Component>
@@ -913,7 +913,7 @@
     <File Id="public_app_core_components_Select_UserPicker.tsx" Name="UserPicker.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\Select\UserPicker.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_Select_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSSELECTSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_Select_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSSELECT_SNAPSHOTSFOLDER">
   <Component Id="public_app_core_components_Select_snapshots_TeamPicker_test_tsx_snap">
     <File Id="public_app_core_components_Select_snapshots_TeamPicker.test.tsx.snap" Name="TeamPicker.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\Select\__snapshots__\TeamPicker.test.tsx.snap" />
   </Component>
@@ -976,7 +976,7 @@
     <File Id="public_app_core_components_sidemenu_TopSectionItem.tsx" Name="TopSectionItem.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\sidemenu\TopSectionItem.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_sidemenu_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSSIDEMENUSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_sidemenu_snapshots_Components" Directory="PUBLICAPPCORECOMPONENTSSIDEMENU_SNAPSHOTSFOLDER">
   <Component Id="public_app_core_components_sidemenu_snapshots_BottomNavLi3635756802_snap">
     <File Id="public_app_core_components_sidemenu_snapshots_BottomNavLi3975032685.snap" Name="BottomNavLinks.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\sidemenu\__snapshots__\BottomNavLinks.test.tsx.snap" />
   </Component>
@@ -1002,7 +1002,7 @@
     <File Id="public_app_core_components_sidemenu_snapshots_TopSectionI3585616756.snap" Name="TopSectionItem.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\sidemenu\__snapshots__\TopSectionItem.test.tsx.snap" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_components_sql_part_Components" Directory="PUBLICAPPCORECOMPONENTSSQLPARTFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_components_sql_part_Components" Directory="PUBLICAPPCORECOMPONENTSSQL_PARTFOLDER">
   <Component Id="public_app_core_components_sql_part_sql_part_ts">
     <File Id="public_app_core_components_sql_part_sql_part.ts" Name="sql_part.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\components\sql_part\sql_part.ts" />
   </Component>
@@ -1202,7 +1202,7 @@
     <File Id="public_app_core_services_util_srv.ts" Name="util_srv.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\services\util_srv.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_core_services_mocks_Components" Directory="PUBLICAPPCORESERVICESMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_core_services_mocks_Components" Directory="PUBLICAPPCORESERVICES_MOCKSFOLDER">
   <Component Id="public_app_core_services_mocks_backend_srv_ts">
     <File Id="public_app_core_services_mocks_backend_srv.ts" Name="backend_srv.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\core\services\__mocks__\backend_srv.ts" />
   </Component>
@@ -1432,7 +1432,7 @@
     <File Id="public_app_features_admin_state_apis.ts" Name="apis.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\admin\state\apis.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_admin_snapshots_Components" Directory="PUBLICAPPFEATURESADMINSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_admin_snapshots_Components" Directory="PUBLICAPPFEATURESADMIN_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_admin_snapshots_ServerStats_test_tsx_snap">
     <File Id="public_app_features_admin_snapshots_ServerStats.test.tsx.snap" Name="ServerStats.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\admin\__snapshots__\ServerStats.test.tsx.snap" />
   </Component>
@@ -1512,7 +1512,7 @@
     <File Id="public_app_features_alerting_state_ThresholdMapper.ts" Name="ThresholdMapper.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\alerting\state\ThresholdMapper.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_alerting_snapshots_Components" Directory="PUBLICAPPFEATURESALERTINGSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_alerting_snapshots_Components" Directory="PUBLICAPPFEATURESALERTING_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_alerting_snapshots_AlertRuleItem_test_tsx_snap">
     <File Id="public_app_features_alerting_snapshots_AlertRuleItem.test.tsx.snap" Name="AlertRuleItem.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\alerting\__snapshots__\AlertRuleItem.test.tsx.snap" />
   </Component>
@@ -1562,7 +1562,7 @@
     <File Id="public_app_features_annotations_specs_annotations_srv_specs.test.ts" Name="annotations_srv_specs.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\annotations\specs\annotations_srv_specs.test.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_api_keys_Components" Directory="PUBLICAPPFEATURESAPIKEYSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_api_keys_Components" Directory="PUBLICAPPFEATURESAPI_KEYSFOLDER">
   <Component Id="public_app_features_api_keys_ApiKeysAddedModal_test_tsx">
     <File Id="public_app_features_api_keys_ApiKeysAddedModal.test.tsx" Name="ApiKeysAddedModal.test.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\ApiKeysAddedModal.test.tsx" />
   </Component>
@@ -1576,7 +1576,7 @@
     <File Id="public_app_features_api_keys_ApiKeysPage.tsx" Name="ApiKeysPage.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\ApiKeysPage.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_api_keys_state_Components" Directory="PUBLICAPPFEATURESAPIKEYSSTATEFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_api_keys_state_Components" Directory="PUBLICAPPFEATURESAPI_KEYSSTATEFOLDER">
   <Component Id="public_app_features_api_keys_state_actions_ts">
     <File Id="public_app_features_api_keys_state_actions.ts" Name="actions.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\state\actions.ts" />
   </Component>
@@ -1593,12 +1593,12 @@
     <File Id="public_app_features_api_keys_state_selectors.ts" Name="selectors.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\state\selectors.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_api_keys_mocks_Components" Directory="PUBLICAPPFEATURESAPIKEYSMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_api_keys_mocks_Components" Directory="PUBLICAPPFEATURESAPI_KEYS_MOCKSFOLDER">
   <Component Id="public_app_features_api_keys_mocks_apiKeysMock_ts">
     <File Id="public_app_features_api_keys_mocks_apiKeysMock.ts" Name="apiKeysMock.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\__mocks__\apiKeysMock.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_api_keys_snapshots_Components" Directory="PUBLICAPPFEATURESAPIKEYSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_api_keys_snapshots_Components" Directory="PUBLICAPPFEATURESAPI_KEYS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_api_keys_snapshots_ApiKeysAddedModal_test_tsx_snap">
     <File Id="public_app_features_api_keys_snapshots_ApiKeysAddedModal.test.tsx.snap" Name="ApiKeysAddedModal.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\api-keys\__snapshots__\ApiKeysAddedModal.test.tsx.snap" />
   </Component>
@@ -1627,7 +1627,7 @@
     <File Id="public_app_features_dashboard_components_AddPanelWidget_Ad206565084.scss" Name="_AddPanelWidget.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\components\AddPanelWidget\_AddPanelWidget.scss" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_dashboard_components_Ad1635530906_Components" Directory="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDPANELWIDGETSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_dashboard_components_Ad1635530906_Components" Directory="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDPANELWIDGET_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_dashboard_components_AddPanelWidget_s2456434572_snap">
     <File Id="public_app_features_dashboard_components_AddPanelWidget_s2788239331.snap" Name="AddPanelWidget.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\components\AddPanelWidget\__snapshots__\AddPanelWidget.test.tsx.snap" />
   </Component>
@@ -1847,7 +1847,7 @@
     <File Id="public_app_features_dashboard_components_VersionHistory_template.html" Name="template.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\components\VersionHistory\template.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_dashboard_components_Ver790284145_Components" Directory="PUBLICAPPFEATURESDASHBOARDCOMPONENTSVERSIONHISTORYMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_dashboard_components_Ver790284145_Components" Directory="PUBLICAPPFEATURESDASHBOARDCOMPONENTSVERSIONHISTORY_MOCKSFOLDER">
   <Component Id="public_app_features_dashboard_components_VersionHistory_mocks_history_ts">
     <File Id="public_app_features_dashboard_components_VersionHistory_mocks_history.ts" Name="history.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\components\VersionHistory\__mocks__\history.ts" />
   </Component>
@@ -1863,7 +1863,7 @@
     <File Id="public_app_features_dashboard_containers_SoloPanelPage.tsx" Name="SoloPanelPage.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\containers\SoloPanelPage.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_dashboard_containers_snapshots_Components" Directory="PUBLICAPPFEATURESDASHBOARDCONTAINERSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_dashboard_containers_snapshots_Components" Directory="PUBLICAPPFEATURESDASHBOARDCONTAINERS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_dashboard_containers_snapshots_Dashboa557839792_snap">
     <File Id="public_app_features_dashboard_containers_snapshots_Dashboa358933983.snap" Name="DashboardPage.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\containers\__snapshots__\DashboardPage.test.tsx.snap" />
   </Component>
@@ -1905,12 +1905,12 @@
     <File Id="public_app_features_dashboard_dashgrid_PanelHeader_PanelHe2918101986.tsx" Name="PanelHeaderMenuItem.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\dashgrid\PanelHeader\PanelHeaderMenuItem.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_dashboard_dashgrid_snapshots_Components" Directory="PUBLICAPPFEATURESDASHBOARDDASHGRIDSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_dashboard_dashgrid_snapshots_Components" Directory="PUBLICAPPFEATURESDASHBOARDDASHGRID_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_dashboard_dashgrid_snapshots_Dashboar3995252719_snap">
     <File Id="public_app_features_dashboard_dashgrid_snapshots_Dashboar3665405824.snap" Name="DashboardGrid.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\dashgrid\__snapshots__\DashboardGrid.test.tsx.snap" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_dashboard_panel_editor_Components" Directory="PUBLICAPPFEATURESDASHBOARDPANELEDITORFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_dashboard_panel_editor_Components" Directory="PUBLICAPPFEATURESDASHBOARDPANEL_EDITORFOLDER">
   <Component Id="public_app_features_dashboard_panel_editor_DataSourceOption_tsx">
     <File Id="public_app_features_dashboard_panel_editor_DataSourceOption.tsx" Name="DataSourceOption.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\dashboard\panel_editor\DataSourceOption.tsx" />
   </Component>
@@ -2110,7 +2110,7 @@
     <File Id="public_app_features_datasources_settings_TlsAuthSettingsCtrl.ts" Name="TlsAuthSettingsCtrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\datasources\settings\TlsAuthSettingsCtrl.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_datasources_settings_snapshots_Components" Directory="PUBLICAPPFEATURESDATASOURCESSETTINGSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_datasources_settings_snapshots_Components" Directory="PUBLICAPPFEATURESDATASOURCESSETTINGS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_datasources_settings_snapshots_BasicSe120187403_snap">
     <File Id="public_app_features_datasources_settings_snapshots_BasicSe863173220.snap" Name="BasicSettings.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\datasources\settings\__snapshots__\BasicSettings.test.tsx.snap" />
   </Component>
@@ -2149,12 +2149,12 @@
     <File Id="public_app_features_datasources_utils_passwordHandlers.ts" Name="passwordHandlers.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\datasources\utils\passwordHandlers.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_datasources_mocks_Components" Directory="PUBLICAPPFEATURESDATASOURCESMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_datasources_mocks_Components" Directory="PUBLICAPPFEATURESDATASOURCES_MOCKSFOLDER">
   <Component Id="public_app_features_datasources_mocks_dataSourcesMocks_ts">
     <File Id="public_app_features_datasources_mocks_dataSourcesMocks.ts" Name="dataSourcesMocks.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\datasources\__mocks__\dataSourcesMocks.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_datasources_snapshots_Components" Directory="PUBLICAPPFEATURESDATASOURCESSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_datasources_snapshots_Components" Directory="PUBLICAPPFEATURESDATASOURCES_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_datasources_snapshots_DashboardsTable_test_tsx_snap">
     <File Id="public_app_features_datasources_snapshots_DashboardsTable.test.tsx.snap" Name="DashboardsTable.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\datasources\__snapshots__\DashboardsTable.test.tsx.snap" />
   </Component>
@@ -2281,7 +2281,7 @@
     <File Id="public_app_features_explore_Wrapper.tsx" Name="Wrapper.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\Wrapper.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_explore_slate_plugins_Components" Directory="PUBLICAPPFEATURESEXPLORESLATEPLUGINSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_explore_slate_plugins_Components" Directory="PUBLICAPPFEATURESEXPLORESLATE_PLUGINSFOLDER">
   <Component Id="public_app_features_explore_slate_plugins_braces_test_ts">
     <File Id="public_app_features_explore_slate_plugins_braces.test.ts" Name="braces.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\slate-plugins\braces.test.ts" />
   </Component>
@@ -2301,7 +2301,7 @@
     <File Id="public_app_features_explore_slate_plugins_runner.ts" Name="runner.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\slate-plugins\runner.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_explore_slate_plugins_prism_Components" Directory="PUBLICAPPFEATURESEXPLORESLATEPLUGINSPRISMFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_explore_slate_plugins_prism_Components" Directory="PUBLICAPPFEATURESEXPLORESLATE_PLUGINSPRISMFOLDER">
   <Component Id="public_app_features_explore_slate_plugins_prism_index_tsx">
     <File Id="public_app_features_explore_slate_plugins_prism_index.tsx" Name="index.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\slate-plugins\prism\index.tsx" />
   </Component>
@@ -2346,12 +2346,12 @@
     <File Id="public_app_features_explore_utils_typeahead.ts" Name="typeahead.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\utils\typeahead.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_explore_mocks_Components" Directory="PUBLICAPPFEATURESEXPLOREMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_explore_mocks_Components" Directory="PUBLICAPPFEATURESEXPLORE_MOCKSFOLDER">
   <Component Id="public_app_features_explore_mocks_mockData_ts">
     <File Id="public_app_features_explore_mocks_mockData.ts" Name="mockData.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\__mocks__\mockData.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_explore_snapshots_Components" Directory="PUBLICAPPFEATURESEXPLORESNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_explore_snapshots_Components" Directory="PUBLICAPPFEATURESEXPLORE_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_explore_snapshots_Graph_test_tsx_snap">
     <File Id="public_app_features_explore_snapshots_Graph.test.tsx.snap" Name="Graph.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\explore\__snapshots__\Graph.test.tsx.snap" />
   </Component>
@@ -2400,12 +2400,12 @@
     <File Id="public_app_features_folders_state_reducers.ts" Name="reducers.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\folders\state\reducers.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_folders_snapshots_Components" Directory="PUBLICAPPFEATURESFOLDERSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_folders_snapshots_Components" Directory="PUBLICAPPFEATURESFOLDERS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_folders_snapshots_FolderSettingsPage_test_tsx_snap">
     <File Id="public_app_features_folders_snapshots_FolderSettingsPage.test.tsx.snap" Name="FolderSettingsPage.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\folders\__snapshots__\FolderSettingsPage.test.tsx.snap" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSFOLDER">
   <Component Id="public_app_features_manage_dashboards_DashboardImportCtrl_test_ts">
     <File Id="public_app_features_manage_dashboards_DashboardImportCtrl.test.ts" Name="DashboardImportCtrl.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\DashboardImportCtrl.test.ts" />
   </Component>
@@ -2422,9 +2422,9 @@
     <File Id="public_app_features_manage_dashboards_SnapshotListCtrl.ts" Name="SnapshotListCtrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\SnapshotListCtrl.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_components_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSCOMPONENTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_components_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSCOMPONENTSFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_compo1380740273_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSCOMPONENTSMOVETOFOLDERMODALFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_compo1380740273_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSCOMPONENTSMOVETOFOLDERMODALFOLDER">
   <Component Id="public_app_features_manage_dashboards_components_MoveToFolde971361370_ts">
     <File Id="public_app_features_manage_dashboards_components_MoveToFolde971361370.ts" Name="index.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\components\MoveToFolderModal\index.ts" />
   </Component>
@@ -2435,7 +2435,7 @@
     <File Id="public_app_features_manage_dashboards_components_MoveToFo2736164152.html" Name="template.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\components\MoveToFolderModal\template.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_compon586703545_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSCOMPONENTSUPLOADDASHBOARDFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_compon586703545_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSCOMPONENTSUPLOADDASHBOARDFOLDER">
   <Component Id="public_app_features_manage_dashboards_components_UploadDash2892448203_ts">
     <File Id="public_app_features_manage_dashboards_components_UploadDash2892448203.ts" Name="index.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\components\UploadDashboard\index.ts" />
   </Component>
@@ -2443,7 +2443,7 @@
     <File Id="public_app_features_manage_dashboards_components_UploadDash1723789900.ts" Name="uploadDashboardDirective.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\components\UploadDashboard\uploadDashboardDirective.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_partials_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSPARTIALSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_partials_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSPARTIALSFOLDER">
   <Component Id="public_app_features_manage_dashboards_partials_dashboard_import_html">
     <File Id="public_app_features_manage_dashboards_partials_dashboard_import.html" Name="dashboard_import.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\partials\dashboard_import.html" />
   </Component>
@@ -2454,7 +2454,7 @@
     <File Id="public_app_features_manage_dashboards_partials_snapshot_list.html" Name="snapshot_list.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\partials\snapshot_list.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_services_Components" Directory="PUBLICAPPFEATURESMANAGEDASHBOARDSSERVICESFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_manage_dashboards_services_Components" Directory="PUBLICAPPFEATURESMANAGE_DASHBOARDSSERVICESFOLDER">
   <Component Id="public_app_features_manage_dashboards_services_ValidationSrv_ts">
     <File Id="public_app_features_manage_dashboards_services_ValidationSrv.ts" Name="ValidationSrv.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\manage-dashboards\services\ValidationSrv.ts" />
   </Component>
@@ -2504,7 +2504,7 @@
     <File Id="public_app_features_org_state_reducers.ts" Name="reducers.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\org\state\reducers.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_org_snapshots_Components" Directory="PUBLICAPPFEATURESORGSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_org_snapshots_Components" Directory="PUBLICAPPFEATURESORG_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_org_snapshots_OrgDetailsPage_test_tsx_snap">
     <File Id="public_app_features_org_snapshots_OrgDetailsPage.test.tsx.snap" Name="OrgDetailsPage.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\org\__snapshots__\OrgDetailsPage.test.tsx.snap" />
   </Component>
@@ -2703,12 +2703,12 @@
     <File Id="public_app_features_plugins_wrappers_AppConfigWrapper.tsx" Name="AppConfigWrapper.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\plugins\wrappers\AppConfigWrapper.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_plugins_mocks_Components" Directory="PUBLICAPPFEATURESPLUGINSMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_plugins_mocks_Components" Directory="PUBLICAPPFEATURESPLUGINS_MOCKSFOLDER">
   <Component Id="public_app_features_plugins_mocks_pluginMocks_ts">
     <File Id="public_app_features_plugins_mocks_pluginMocks.ts" Name="pluginMocks.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\plugins\__mocks__\pluginMocks.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_plugins_snapshots_Components" Directory="PUBLICAPPFEATURESPLUGINSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_plugins_snapshots_Components" Directory="PUBLICAPPFEATURESPLUGINS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_plugins_snapshots_PluginList_test_tsx_snap">
     <File Id="public_app_features_plugins_snapshots_PluginList.test.tsx.snap" Name="PluginList.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\plugins\__snapshots__\PluginList.test.tsx.snap" />
   </Component>
@@ -2815,7 +2815,7 @@
     <File Id="public_app_features_teams_state_selectors.ts" Name="selectors.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\teams\state\selectors.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_teams_mocks_Components" Directory="PUBLICAPPFEATURESTEAMSMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_teams_mocks_Components" Directory="PUBLICAPPFEATURESTEAMS_MOCKSFOLDER">
   <Component Id="public_app_features_teams_mocks_navModelMock_ts">
     <File Id="public_app_features_teams_mocks_navModelMock.ts" Name="navModelMock.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\teams\__mocks__\navModelMock.ts" />
   </Component>
@@ -2823,7 +2823,7 @@
     <File Id="public_app_features_teams_mocks_teamMocks.ts" Name="teamMocks.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\teams\__mocks__\teamMocks.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_teams_snapshots_Components" Directory="PUBLICAPPFEATURESTEAMSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_teams_snapshots_Components" Directory="PUBLICAPPFEATURESTEAMS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_teams_snapshots_TeamGroupSync_test_tsx_snap">
     <File Id="public_app_features_teams_snapshots_TeamGroupSync.test.tsx.snap" Name="TeamGroupSync.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\teams\__snapshots__\TeamGroupSync.test.tsx.snap" />
   </Component>
@@ -2952,12 +2952,12 @@
     <File Id="public_app_features_users_state_selectors.ts" Name="selectors.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\users\state\selectors.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_users_mocks_Components" Directory="PUBLICAPPFEATURESUSERSMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_users_mocks_Components" Directory="PUBLICAPPFEATURESUSERS_MOCKSFOLDER">
   <Component Id="public_app_features_users_mocks_userMocks_ts">
     <File Id="public_app_features_users_mocks_userMocks.ts" Name="userMocks.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\users\__mocks__\userMocks.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_features_users_snapshots_Components" Directory="PUBLICAPPFEATURESUSERSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_features_users_snapshots_Components" Directory="PUBLICAPPFEATURESUSERS_SNAPSHOTSFOLDER">
   <Component Id="public_app_features_users_snapshots_InviteesTable_test_tsx_snap">
     <File Id="public_app_features_users_snapshots_InviteesTable.test.tsx.snap" Name="InviteesTable.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\features\users\__snapshots__\InviteesTable.test.tsx.snap" />
   </Component>
@@ -3007,7 +3007,7 @@
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_app_plugins_app_Components" Directory="PUBLICAPPPLUGINSAPPFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLEAPPFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLE_APPFOLDER">
   <Component Id="public_app_plugins_app_example_app_ExampleRootPage_tsx">
     <File Id="public_app_plugins_app_example_app_ExampleRootPage.tsx" Name="ExampleRootPage.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\ExampleRootPage.tsx" />
   </Component>
@@ -3021,7 +3021,7 @@
     <File Id="public_app_plugins_app_example_app_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\README.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_config_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLEAPPCONFIGFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_config_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLE_APPCONFIGFOLDER">
   <Component Id="public_app_plugins_app_example_app_config_ExampleTab1_tsx">
     <File Id="public_app_plugins_app_example_app_config_ExampleTab1.tsx" Name="ExampleTab1.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\config\ExampleTab1.tsx" />
   </Component>
@@ -3029,7 +3029,7 @@
     <File Id="public_app_plugins_app_example_app_config_ExampleTab2.tsx" Name="ExampleTab2.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\config\ExampleTab2.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_dashboards_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLEAPPDASHBOARDSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_dashboards_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLE_APPDASHBOARDSFOLDER">
   <Component Id="public_app_plugins_app_example_app_dashboards_stats_json">
     <File Id="public_app_plugins_app_example_app_dashboards_stats.json" Name="stats.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\dashboards\stats.json" />
   </Component>
@@ -3037,12 +3037,12 @@
     <File Id="public_app_plugins_app_example_app_dashboards_streaming.json" Name="streaming.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\dashboards\streaming.json" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_img_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLEAPPIMGFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_img_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLE_APPIMGFOLDER">
   <Component Id="public_app_plugins_app_example_app_img_logo_png">
     <File Id="public_app_plugins_app_example_app_img_logo.png" Name="logo.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\img\logo.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_legacy_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLEAPPLEGACYFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_app_example_app_legacy_Components" Directory="PUBLICAPPPLUGINSAPPEXAMPLE_APPLEGACYFOLDER">
   <Component Id="public_app_plugins_app_example_app_legacy_angular_example_page_html">
     <File Id="public_app_plugins_app_example_app_legacy_angular_example_page.html" Name="angular_example_page.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\app\example-app\legacy\angular_example_page.html" />
   </Component>
@@ -3224,7 +3224,7 @@
     <File Id="public_app_plugins_datasource_grafana_specs_datasource.test.ts" Name="datasource.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana\specs\datasource.test.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1559204618_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1559204618_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCEFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3091158090_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3091158090.ts" Name="annotations_query_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\annotations_query_ctrl.ts" />
   </Component>
@@ -3259,7 +3259,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasource_types.ts" Name="types.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\types.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1859253549_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEAPPINSIGHTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1859253549_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOUR1885274801FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou1986675025_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3000535086.ts" Name="app_insights_datasource.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\app_insights\app_insights_datasource.test.ts" />
   </Component>
@@ -3276,7 +3276,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou2438577647.ts" Name="response_parser.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\app_insights\response_parser.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure3883498642_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEA2480490700FOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure3883498642_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOUR2039899940FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou1091977631_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou2242152672.ts" Name="azure_log_analytics_datasource.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\azure_log_analytics\azure_log_analytics_datasource.test.ts" />
   </Component>
@@ -3287,12 +3287,12 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3490853861.ts" Name="response_parser.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\azure_log_analytics\response_parser.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure2642361102_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEA1797318217FOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure2642361102_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOUR1062054241FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou1268212869_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou1268212869.ts" Name="schema.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\azure_log_analytics\__mocks__\schema.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_357253742_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEAZ109409453FOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_357253742_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOUR3974894582FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou1190794472_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou2185813399.ts" Name="azure_monitor_datasource.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\azure_monitor\azure_monitor_datasource.test.ts" />
   </Component>
@@ -3318,12 +3318,12 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou4205031354.ts" Name="url_builder.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\azure_monitor\url_builder.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_511093523_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCECSSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_511093523_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCECSSFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_dataso3429303198_css">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso3429303198.css" Name="query_editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\css\query_editor.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_555732366_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEEDITORFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_555732366_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCEEDITORFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_dataso1298593705_tsx">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso1298593705.tsx" Name="editor_component.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\editor\editor_component.tsx" />
   </Component>
@@ -3337,12 +3337,12 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso1583634540.tsx" Name="typeahead.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\editor\typeahead.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_976890269_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEEDITORKUSTOFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_976890269_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURC718916297FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3853724458_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3853724458.ts" Name="kusto.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\editor\kusto\kusto.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure3715810663_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEIMGFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure3715810663_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCEIMGFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_dataso4024470394_png">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso4024470394.png" Name="azure_monitor_cpu.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\img\azure_monitor_cpu.png" />
   </Component>
@@ -3374,7 +3374,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso3201960373.jpg" Name="logo.jpg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\img\logo.jpg" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1621482698_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEL1379712334FOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure1621482698_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOUR2567081298FOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasourc85881649_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3249322574.ts" Name="querystring_builder.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\log_analytics\querystring_builder.test.ts" />
   </Component>
@@ -3382,7 +3382,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou4246707589.ts" Name="querystring_builder.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\log_analytics\querystring_builder.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_892443712_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEPARTIALSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure_892443712_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCEPARTIALSFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou76743742_html">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datas1317855137.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\partials\annotations.editor.html" />
   </Component>
@@ -3393,7 +3393,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_dataso440903806.html" Name="query.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\partials\query.editor.html" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure2548977831_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANAAZUREMONITORDATASOURCEMOCKSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_azure2548977831_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_AZURE_MONITOR_DATASOURCE_MOCKSFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3278502792_ts">
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasou3278502792.ts" Name="query_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\__mocks__\query_ctrl.ts" />
   </Component>
@@ -3401,7 +3401,7 @@
     <File Id="public_app_plugins_datasource_grafana_azure_monitor_datasour771413787.ts" Name="sdk.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-azure-monitor-datasource\__mocks__\sdk.ts" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_live_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANALIVEFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_live_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_LIVEFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_live_datasource_ts">
     <File Id="public_app_plugins_datasource_grafana_live_datasource.ts" Name="datasource.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-live\datasource.ts" />
   </Component>
@@ -3412,7 +3412,7 @@
     <File Id="public_app_plugins_datasource_grafana_live_plugin.json" Name="_plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-live\_plugin.json" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_live_partials_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANALIVEPARTIALSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_grafana_live_partials_Components" Directory="PUBLICAPPPLUGINSDATASOURCEGRAFANA_LIVEPARTIALSFOLDER">
   <Component Id="public_app_plugins_datasource_grafana_live_partials_query_editor_html">
     <File Id="public_app_plugins_datasource_grafana_live_partials_query.editor.html" Name="query.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\grafana-live\partials\query.editor.html" />
   </Component>
@@ -4126,7 +4126,7 @@
     <File Id="public_app_plugins_datasource_stackdriver_components_Variab365066310.tsx" Name="VariableQueryEditor.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\stackdriver\components\VariableQueryEditor.tsx" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_datasource_stackdriver_com11669254_Components" Directory="PUBLICAPPPLUGINSDATASOURCESTACKDRIVERCOMPONENTSSNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_datasource_stackdriver_com11669254_Components" Directory="PUBLICAPPPLUGINSDATASOURCESTACKDRIVERCOMPONENTS_SNAPSHOTSFOLDER">
   <Component Id="public_app_plugins_datasource_stackdriver_components_snap4208338360_snap">
     <File Id="public_app_plugins_datasource_stackdriver_components_snap3465360855.snap" Name="Aggregations.test.tsx.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\stackdriver\components\__snapshots__\Aggregations.test.tsx.snap" />
   </Component>
@@ -4299,7 +4299,7 @@
     <File Id="public_app_plugins_panel_gauge_img_icon_gauge.svg" Name="icon_gauge.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\panel\gauge\img\icon_gauge.svg" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_app_plugins_panel_gauge_snapshots_Components" Directory="PUBLICAPPPLUGINSPANELGAUGESNAPSHOTSFOLDER">
+<ComponentGroup Id="Grafana_public_app_plugins_panel_gauge_snapshots_Components" Directory="PUBLICAPPPLUGINSPANELGAUGE_SNAPSHOTSFOLDER">
   <Component Id="public_app_plugins_panel_gauge_snapshots_GaugeMigrations_test_ts_snap">
     <File Id="public_app_plugins_panel_gauge_snapshots_GaugeMigrations.test.ts.snap" Name="GaugeMigrations.test.ts.snap" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\panel\gauge\__snapshots__\GaugeMigrations.test.ts.snap" />
   </Component>
@@ -5313,7 +5313,7 @@
     <File Id="public_img_warn.svg" Name="warn.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\warn.svg" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_img_icons_dark_theme_Components" Directory="PUBLICIMGICONSDARKTHEMEFOLDER">
+<ComponentGroup Id="Grafana_public_img_icons_dark_theme_Components" Directory="PUBLICIMGICONS_DARK_THEMEFOLDER">
   <Component Id="public_img_icons_dark_theme_icon_add_annotation_svg">
     <File Id="public_img_icons_dark_theme_icon_add_annotation.svg" Name="icon_add_annotation.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\icons_dark_theme\icon_add_annotation.svg" />
   </Component>
@@ -5468,7 +5468,7 @@
     <File Id="public_img_icons_dark_theme_icon_zoom_out.svg" Name="icon_zoom_out.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\icons_dark_theme\icon_zoom_out.svg" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_img_icons_light_theme_Components" Directory="PUBLICIMGICONSLIGHTTHEMEFOLDER">
+<ComponentGroup Id="Grafana_public_img_icons_light_theme_Components" Directory="PUBLICIMGICONS_LIGHT_THEMEFOLDER">
   <Component Id="public_img_icons_light_theme_icon_add_annotation_svg">
     <File Id="public_img_icons_light_theme_icon_add_annotation.svg" Name="icon_add_annotation.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\icons_light_theme\icon_add_annotation.svg" />
   </Component>
@@ -5623,7 +5623,7 @@
     <File Id="public_img_icons_light_theme_icon_zoom_out.svg" Name="icon_zoom_out.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\icons_light_theme\icon_zoom_out.svg" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_img_panel_tabs_Components" Directory="PUBLICIMGPANELTABSFOLDER">
+<ComponentGroup Id="Grafana_public_img_panel_tabs_Components" Directory="PUBLICIMGPANEL_TABSFOLDER">
   <Component Id="public_img_panel_tabs_alert_selected_svg">
     <File Id="public_img_panel_tabs_alert_selected.svg" Name="alert-selected.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\img\panel-tabs\alert-selected.svg" />
   </Component>
@@ -5710,7 +5710,7 @@
     <File Id="public_sass_base_type.scss" Name="_type.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\sass\base\_type.scss" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_sass_base_font_awesome_Components" Directory="PUBLICSASSBASEFONTAWESOMEFOLDER">
+<ComponentGroup Id="Grafana_public_sass_base_font_awesome_Components" Directory="PUBLICSASSBASEFONT_AWESOMEFOLDER">
   <Component Id="public_sass_base_font_awesome_animated_scss">
     <File Id="public_sass_base_font_awesome_animated.scss" Name="_animated.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\sass\base\font-awesome\_animated.scss" />
   </Component>
@@ -6096,7 +6096,7 @@
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_vendor_Components" Directory="PUBLICVENDORFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_vendor_angular_other_Components" Directory="PUBLICVENDORANGULAROTHERFOLDER">
+<ComponentGroup Id="Grafana_public_vendor_angular_other_Components" Directory="PUBLICVENDORANGULAR_OTHERFOLDER">
   <Component Id="public_vendor_angular_other_angular_strap_js">
     <File Id="public_vendor_angular_other_angular_strap.js" Name="angular-strap.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\angular-other\angular-strap.js" />
   </Component>
@@ -6107,7 +6107,7 @@
     <File Id="public_vendor_angular_other_timepicker.js" Name="timepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\angular-other\timepicker.js" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_vendor_angular_ui_Components" Directory="PUBLICVENDORANGULARUIFOLDER">
+<ComponentGroup Id="Grafana_public_vendor_angular_ui_Components" Directory="PUBLICVENDORANGULAR_UIFOLDER">
   <Component Id="public_vendor_angular_ui_ui_bootstrap_tpls_js">
     <File Id="public_vendor_angular_ui_ui_bootstrap_tpls.js" Name="ui-bootstrap-tpls.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\angular-ui\ui-bootstrap-tpls.js" />
   </Component>
@@ -6165,17 +6165,17 @@
     <File Id="public_vendor_flot_jquery.flot.time.js" Name="jquery.flot.time.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\flot\jquery.flot.time.js" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_vendor_jquery_ui_Components" Directory="PUBLICVENDORJQUERYUIFOLDER">
+<ComponentGroup Id="Grafana_public_vendor_jquery_ui_Components" Directory="PUBLICVENDORJQUERY_UIFOLDER">
   <Component Id="public_vendor_jquery_ui_custom_js">
     <File Id="public_vendor_jquery_ui_custom.js" Name="custom.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\jquery-ui\custom.js" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_vendor_plugin_css_Components" Directory="PUBLICVENDORPLUGINCSSFOLDER">
+<ComponentGroup Id="Grafana_public_vendor_plugin_css_Components" Directory="PUBLICVENDORPLUGIN_CSSFOLDER">
   <Component Id="public_vendor_plugin_css_css_js">
     <File Id="public_vendor_plugin_css_css.js" Name="css.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\plugin-css\css.js" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_public_vendor_plugin_text_Components" Directory="PUBLICVENDORPLUGINTEXTFOLDER">
+<ComponentGroup Id="Grafana_public_vendor_plugin_text_Components" Directory="PUBLICVENDORPLUGIN_TEXTFOLDER">
   <Component Id="public_vendor_plugin_text_text_js">
     <File Id="public_vendor_plugin_text_text.js" Name="text.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\vendor\plugin-text\text.js" />
   </Component>
@@ -6252,7 +6252,7 @@
 </ComponentGroup>
 <ComponentGroup Id="Grafana_scripts_grunt_Components" Directory="SCRIPTSGRUNTFOLDER">
 </ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_verify_repo_update_Components" Directory="SCRIPTSVERIFYREPOUPDATEFOLDER">
+<ComponentGroup Id="Grafana_scripts_verify_repo_update_Components" Directory="SCRIPTSVERIFY_REPO_UPDATEFOLDER">
 </ComponentGroup>
 <ComponentGroup Id="Grafana_scripts_webpack_Components" Directory="SCRIPTSWEBPACKFOLDER">
 </ComponentGroup>
