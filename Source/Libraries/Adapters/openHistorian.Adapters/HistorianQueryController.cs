@@ -36,6 +36,8 @@ using openHistorian.Model;
 using openHistorian.Net;
 using CancellationToken = System.Threading.CancellationToken;
 
+#pragma warning disable 0649
+
 namespace openHistorian.Adapters
 {
     /// <summary>
@@ -43,6 +45,7 @@ namespace openHistorian.Adapters
     /// </summary>
     public class HistorianQueryController : ApiController
     {
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class QueryParameters
         {
             public string instanceName;
