@@ -35,6 +35,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using GSF;
+using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
@@ -94,12 +95,17 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Default timeout, in seconds, for system initialization.
         /// </summary>
-        public const int DefaultInitializationTimeout = 15;
+        public const int DefaultInitializationTimeout = 10;
 
         /// <summary>
         /// Default Grafana organization ID.
         /// </summary>
         public const int DefaultOrganizationID = 1;
+
+        /// <summary>
+        /// Default cookie name for last visited Grafana dashboard.
+        /// </summary>
+        public const string DefaultLastDashboardCookieName = "x-last-dashboard";
 
         /// <summary>
         /// Grafana admin role name.
@@ -159,11 +165,8 @@ namespace openHistorian.Adapters
 
             if (Request.Method == HttpMethod.Get)
                 Request.Content = null;
-
-            // HACK: Cannot reuse request objects, but we may need to tweak and resend the same request
-            Func<Task<HttpRequestMessage>> requestFactory = MakeRequestFactory();
-            HttpRequestMessage request = await requestFactory();
-            HttpResponseMessage response = await s_http.SendAsync(request, cancellationToken);
+            
+            HttpResponseMessage response = await s_http.SendAsync(Request, cancellationToken);
             HttpStatusCode statusCode = response.StatusCode;
 
             if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
@@ -171,7 +174,8 @@ namespace openHistorian.Adapters
                 // HACK: Internet Explorer sometimes applies cached authorization headers to concurrent AJAX requests
                 if ((object)Request.Headers.Authorization != null)
                 {
-                    HttpRequestMessage retryRequest = await requestFactory();
+                    // Clone request to allow modification
+                    HttpRequestMessage retryRequest = await CloneRequest();
                     retryRequest.Headers.Authorization = null;
 
                     HttpResponseMessage retryResponse = await s_http.SendAsync(retryRequest, cancellationToken);
@@ -179,7 +183,6 @@ namespace openHistorian.Adapters
 
                     if (retryStatusCode != HttpStatusCode.NotFound && retryStatusCode != HttpStatusCode.Unauthorized)
                     {
-                        request = retryRequest;
                         response = retryResponse;
                         statusCode = retryStatusCode;
                     }
@@ -216,49 +219,43 @@ namespace openHistorian.Adapters
                 RequestContext.Principal);
             }
 
+            // Always keep last visited Grafana dashboard in a client session cookie
+            if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer.AbsolutePath))
+                response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
+
             return response;
         }
 
-        private Func<Task<HttpRequestMessage>> MakeRequestFactory()
+        private async Task<HttpRequestMessage> CloneRequest()
         {
-            MemoryStream content = null;
-
-            return async () =>
+            HttpRequestMessage clone = new HttpRequestMessage(Request.Method, Request.RequestUri)
             {
-                HttpRequestMessage clone = new HttpRequestMessage(Request.Method, Request.RequestUri);
-
-                clone.Version = Request.Version;
-
-                foreach (KeyValuePair<string, object> property in Request.Properties)
-                    clone.Properties.Add(property);
-
-                foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
-                    clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
-
-                if ((object)content == null && (object)Request.Content != null)
-                {
-                    content = new MemoryStream();
-                    await Request.Content.CopyToAsync(content);
-                    content.Position = 0;
-                }
-
-                if ((object)content != null)
-                {
-                    MemoryStream cloneContent = new MemoryStream();
-                    await content.CopyToAsync(cloneContent);
-                    content.Position = 0;
-                    cloneContent.Position = 0;
-                    clone.Content = new StreamContent(cloneContent);
-
-                    if ((object)Request.Content.Headers != null)
-                    {
-                        foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Content.Headers)
-                            clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    }
-                }
-
-                return clone;
+                Version = Request.Version
             };
+
+            foreach (KeyValuePair<string, object> property in Request.Properties)
+                clone.Properties.Add(property);
+
+            foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
+                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+            if (Request.Content != null)
+            {
+                MemoryStream content = new MemoryStream();
+                
+                await Request.Content.CopyToAsync(content);
+                content.Position = 0;
+                
+                clone.Content = new StreamContent(content);
+
+                if (Request.Content.Headers != null)
+                {
+                    foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Content.Headers)
+                        clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                }
+            }
+
+            return clone;
         }
 
         #endregion
@@ -281,6 +278,7 @@ namespace openHistorian.Adapters
         private static readonly string s_logoutResource;
         private static readonly string s_avatarResource;
         private static readonly int s_organizationID;
+        private static readonly string s_lastDashboardCookieName;
         private static readonly ShortSynchronizedOperation s_synchronizeUsers;
         private static readonly ManualResetEventSlim s_initializationWaitHandle;
         private static Dictionary<string, string[]> s_lastSecurityContext;
@@ -291,7 +289,7 @@ namespace openHistorian.Adapters
         static GrafanaAuthProxyController()
         {
             // Create a shared HTTP client instance
-            s_http = new HttpClient();
+            s_http = new HttpClient(new HttpClientHandler { UseCookies = false });
 
             // Make sure openHistorian specific default service settings exist
             CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
@@ -305,6 +303,7 @@ namespace openHistorian.Adapters
             grafanaHosting.Add("AvatarResource", "Images/Icons/openHistorian.png", "Defines the relative URL to the 40x40px avatar image to use for Grafana users.");
             grafanaHosting.Add("HostedURL", DefaultHostedURL, "Defines the local URL to the hosted Grafana server instance. Setting is for internal use, external access to Grafana instance will be proxied via WebHostURL.");
             grafanaHosting.Add("OrganizationID", DefaultOrganizationID, "Defines the database ID of the target organization used for user synchronization.");
+            grafanaHosting.Add("LastDashboardCookieName", DefaultLastDashboardCookieName, "Defines the session cookie name used to save the last visited Grafana dashboard.");
 
             // Get settings as currently defined in configuration file
             s_authProxyHeaderName = grafanaHosting["AuthProxyHeaderName"].Value;
@@ -314,6 +313,7 @@ namespace openHistorian.Adapters
             s_avatarResource = grafanaHosting["AvatarResource"].Value;
             s_baseUrl = grafanaHosting["HostedURL"].Value;
             s_organizationID = grafanaHosting["OrganizationID"].ValueAs(DefaultOrganizationID);
+            s_lastDashboardCookieName = grafanaHosting["LastDashboardCookieName"].ValueAs(DefaultLastDashboardCookieName);
 
             if (File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
             {
@@ -392,14 +392,11 @@ namespace openHistorian.Adapters
             s_manualSynchronization = false;
             Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
-            // Give initialization - which includes starting Grafana server process - a chance to start
+            // Give initialization - which includes starting Grafana server process - a chance to complete
             s_initializationWaitHandle.Wait(s_initializationTimeout);
 
-            UserDetail userDetail;
-            string message;
-
             // Lookup Grafana Administrative user
-            if (!LookupUser(s_adminUser, out userDetail, out message))
+            if (!LookupUser(s_adminUser, out UserDetail userDetail, out string message))
             {
                 OnStatusMessage($"WARNING: Failed to synchronize Grafana users, cannot find Grafana Administrator \"{s_adminUser}\": {message}");
                 return;
@@ -478,10 +475,9 @@ namespace openHistorian.Adapters
         private static bool LookupUser(string userName, out UserDetail userDetail, out string message)
         {
             JObject result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}/api/users/lookup?loginOrEmail={userName}").Result;
-            JToken token;
             message = null;
 
-            if (result.TryGetValue("id", out token))
+            if (result.TryGetValue("id", out JToken token))
             {
                 try
                 {
@@ -605,9 +601,7 @@ namespace openHistorian.Adapters
 
             foreach (KeyValuePair<string, string[]> item in left)
             {
-                string[] value;
-
-                if (!right.TryGetValue(item.Key, out value))
+                if (!right.TryGetValue(item.Key, out string[] value))
                     return false;
 
                 if (item.Value.CompareTo(value) != 0)
@@ -709,14 +703,34 @@ namespace openHistorian.Adapters
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Redirect) { RequestMessage = request };
             Uri uri = request.RequestUri;
 
-            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_logoutResource}");
+            if (request.Headers.Referrer?.AbsolutePath.ToLowerInvariant().Contains("/grafana/") ?? false)
+            {
+                response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_logoutResource}");
+            }
+            else
+            {
+                CookieHeaderValue cookies = request.Headers.GetCookies(s_lastDashboardCookieName).FirstOrDefault();            
+                string lastDashboard = cookies?[s_lastDashboardCookieName].Value;
+
+                if (string.IsNullOrWhiteSpace(lastDashboard))
+                {
+                    response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/grafana");
+                }
+                else
+                {
+                    // Unfortunately best we can do is restore last screen only, if multiple browsers tabs/instances for
+                    // same user session are on different dashboards, they will all redirect to the same last screen
+                    response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}{lastDashboard}?orgId={s_organizationID}");
+                    OnStatusMessage($"Reloading previous Grafana dashboard: {lastDashboard}");
+                }
+            }
 
             return response;
         }
 
         private static HttpResponseMessage HandleGrafanaLoginPingRequest(HttpRequestMessage request, SecurityPrincipal securityPrincipal)
         {
-            string userLoginState = (object)securityPrincipal == null || (object)securityPrincipal.Identity == null ? "Unauthorized" : "Logged in";
+            string userLoginState = securityPrincipal?.Identity == null ? "Unauthorized" : "Logged in";
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
