@@ -264,29 +264,39 @@ namespace openHistorian
             ServiceHelper.LoggedException += LoggedExceptionHandler;
             GrafanaAuthProxyController.StatusMessage += GrafanaAuthProxyController_StatusMessage;
 
-            // Attach to default web server events
-            WebServer webServer = WebServer.Default;
-            webServer.StatusMessage += WebServer_StatusMessage;
-            webServer.ExecutionException += LoggedExceptionHandler;
-
-            // Define types for Razor pages - self-hosted web service does not use view controllers so
-            // we must define configuration types for all paged view model based Razor views here:
-            webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
-            webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(SharedHub)));
-            webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(SharedHub)));
-            webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(SharedHub)));
-            webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
-            webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
-
             // Define exception logger for CSV downloader
             CsvDownloadHandler.LogExceptionHandler = LogException;
+
+            Thread startWebServer = new Thread(() =>
+            {
+                // Attach to default web server events
+                WebServer webServer = WebServer.Default;
+                webServer.StatusMessage += WebServer_StatusMessage;
+                webServer.ExecutionException += LoggedExceptionHandler;
+
+                // Define types for Razor pages - self-hosted web service does not use view controllers so
+                // we must define configuration types for all paged view model based Razor views here:
+                webServer.PagedViewModelTypes.TryAdd("TrendMeasurements.cshtml", new Tuple<Type, Type>(typeof(ActiveMeasurement), typeof(DataHub)));
+                webServer.PagedViewModelTypes.TryAdd("Devices.cshtml", new Tuple<Type, Type>(typeof(Device), typeof(DataHub)));
+                webServer.PagedViewModelTypes.TryAdd("Companies.cshtml", new Tuple<Type, Type>(typeof(Company), typeof(SharedHub)));
+                webServer.PagedViewModelTypes.TryAdd("Vendors.cshtml", new Tuple<Type, Type>(typeof(Vendor), typeof(SharedHub)));
+                webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(SharedHub)));
+                webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
+                webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
+            })
+            {
+                IsBackground = true
+            };
+
+            startWebServer.Start();
 
             new Thread(() =>
             {
                 const int RetryDelay = 1000;
                 const int SleepTime = 200;
                 const int LoopCount = RetryDelay / SleepTime;
+
+                startWebServer.Join();
 
                 while (!m_serviceStopping)
                 {
