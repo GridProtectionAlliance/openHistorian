@@ -296,7 +296,7 @@ namespace openHistorian
                 const int SleepTime = 200;
                 const int LoopCount = RetryDelay / SleepTime;
 
-                startWebServer.Join();
+                startWebServer.Join(5000);
 
                 while (!m_serviceStopping)
                 {
