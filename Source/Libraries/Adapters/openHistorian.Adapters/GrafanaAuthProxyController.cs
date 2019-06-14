@@ -701,26 +701,49 @@ namespace openHistorian.Adapters
         private static HttpResponseMessage HandleGrafanaLogoutRequest(HttpRequestMessage request)
         {
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Redirect) { RequestMessage = request };
-            Uri uri = request.RequestUri;
+            Uri requestUri = request.RequestUri, referrerUri = request.Headers.Referrer;
 
-            if (request.Headers.Referrer?.AbsolutePath.ToLowerInvariant().Contains("/grafana/") ?? false)
+            if (referrerUri.AbsolutePath.ToLowerInvariant().Contains("/grafana/"))
             {
-                response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_logoutResource}");
+                // Handle user requested logout
+                response.Headers.Location = new Uri($"{requestUri.Scheme}://{requestUri.Host}:{requestUri.Port}/{s_logoutResource}");
             }
             else
             {
-                CookieHeaderValue cookies = request.Headers.GetCookies(s_lastDashboardCookieName).FirstOrDefault();            
-                string lastDashboard = cookies?[s_lastDashboardCookieName].Value;
+                // Handle automated logout, returning to original Grafana page
+                string lastDashboard = null;
+
+                if (!string.IsNullOrWhiteSpace(referrerUri.Query))
+                {
+                    Dictionary<string, string> parameters = referrerUri.ParseQueryString().ToDictionary();
+
+                    if (parameters.TryGetValue("referrer", out string referrer))
+                    {
+                        string base64Path = WebUtility.UrlDecode(referrer);
+                        byte[] pathBytes = Convert.FromBase64String(base64Path);
+                        referrerUri = new Uri(Encoding.UTF8.GetString(pathBytes));
+                        lastDashboard = referrerUri.PathAndQuery;
+                    }
+                }
 
                 if (string.IsNullOrWhiteSpace(lastDashboard))
                 {
-                    response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/grafana");
+                    // Without knowing the original referrer, the best we can do is restore last screen only
+                    CookieHeaderValue lastDashboardCookie = request.Headers.GetCookies(s_lastDashboardCookieName).FirstOrDefault();            
+                    lastDashboard = lastDashboardCookie?[s_lastDashboardCookieName].Value;
+                }
+
+                if (string.IsNullOrWhiteSpace(lastDashboard))
+                {
+                    // As a last resort (i.e., no cookie or original referrer), return to the Grafana home page
+                    response.Headers.Location = new Uri($"{requestUri.Scheme}://{requestUri.Host}:{requestUri.Port}/grafana");
                 }
                 else
                 {
-                    // Unfortunately best we can do is restore last screen only, if multiple browsers tabs/instances for
-                    // same user session are on different dashboards, they will all redirect to the same last screen
-                    response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}{lastDashboard}?orgId={s_organizationID}");
+                    if (!lastDashboard.Contains("?"))
+                        lastDashboard += $"?orgId={s_organizationID}";
+
+                    response.Headers.Location = new Uri($"{requestUri.Scheme}://{requestUri.Host}:{requestUri.Port}{lastDashboard}");
                     OnStatusMessage($"Reloading previous Grafana dashboard: {lastDashboard}");
                 }
             }
