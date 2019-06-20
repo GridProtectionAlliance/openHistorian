@@ -1,0 +1,1350 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Azure.EventHubs</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Azure.EventHubs.Amqp.AmqpEventHubClient.TokenProviderAdapter">
+            <summary>
+            Provides an adapter from TokenProvider to ICbsTokenProvider for AMQP CBS usage.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventData">
+            <summary>
+            The data structure encapsulating the Event being sent-to and received-from EventHubs.
+            Each EventHubs partition can be visualized as a Stream of EventData.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventData.#ctor(System.Byte[])">
+            <summary>
+            Construct EventData to send to EventHub.
+            Typical pattern to create a Sending EventData is:
+            <para>i. Serialize the sending ApplicationEvent to be sent to EventHubs into bytes.</para>
+            <para>ii. If complex serialization logic is involved (for example: multiple types of data) - add a Hint using the <see cref="P:Microsoft.Azure.EventHubs.EventData.Properties"/> for the Consumer.</para>
+            </summary>
+            <example>Sample Code:
+            <code>
+            EventData eventData = new EventData(telemetryEventBytes);
+            eventData.Properties["eventType"] = "com.microsoft.azure.monitoring.EtlEvent";
+            await partitionSender.SendAsync(eventData);
+            </code>
+            </example>
+            <param name="array">The actual payload of data in bytes to be sent to the EventHub.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventData.#ctor(System.ArraySegment{System.Byte})">
+            <summary>
+            Construct EventData to send to EventHub.
+            Typical pattern to create a Sending EventData is:
+            <para>i.  Serialize the sending ApplicationEvent to be sent to EventHub into bytes.</para>
+            <para>ii. If complex serialization logic is involved (for example: multiple types of data) - add a Hint using the <see cref="P:Microsoft.Azure.EventHubs.EventData.Properties"/> for the Consumer.</para>
+            </summary>
+            <example>Sample Code:
+            <code>
+            EventData eventData = new EventData(new ArraySegment&lt;byte&gt;(eventBytes, offset, count));
+            eventData.Properties["eventType"] = "com.microsoft.azure.monitoring.EtlEvent";
+            await partitionSender.SendAsync(eventData);
+            </code>
+            </example>
+            <param name="arraySegment">The payload bytes, offset and length to be sent to the EventHub.</param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.Body">
+            <summary>
+            Get the actual Payload/Data wrapped by EventData.
+            This is intended to be used after receiving EventData using <see cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.Properties">
+            <summary>
+            Application property bag
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.SystemProperties">
+            <summary>
+            SystemProperties that are populated by EventHubService.
+            As these are populated by Service, they are only present on a Received EventData.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventData.Dispose">
+            <summary>
+            Disposes resources attached to an Event Data
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection">
+            <summary>
+            A collection used to store properties which are set by the Event Hubs service.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.SequenceNumber">
+            <summary>Gets the logical sequence number of the event within the partition stream of the Event Hub.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.EnqueuedTimeUtc">
+            <summary>Gets or sets the date and time of the sent time in UTC.</summary>
+            <value>The enqueue time in UTC. This value represents the actual time of enqueuing the message.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.Offset">
+            <summary>
+            Gets the offset of the data relative to the Event Hub partition stream. The offset is a marker or identifier for an event within the Event Hubs stream. The identifier is unique within a partition of the Event Hubs stream.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.PartitionKey">
+            <summary>Gets the partition key of the corresponding partition that stored the <see cref="T:Microsoft.Azure.EventHubs.EventData"/></summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventDataBatch">
+            <summary>A helper class for creating a batch of EventData objects to be used for SendBatch or SendBatchAsync call.</summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventDataBatch.#ctor(System.Int64)">
+            <summary>
+            Creates a new <see cref="T:Microsoft.Azure.EventHubs.EventDataBatch"/>.
+            </summary>
+            <param name="maxSizeInBytes">The maximum size allowed for the batch</param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventDataBatch.Count">
+            <summary>Gets the current event count in the batch.</summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventDataBatch.TryAdd(Microsoft.Azure.EventHubs.EventData)">
+            <summary>Tries to add an event data to the batch if permitted by the batch's size limit.</summary>
+            <param name="eventData">The <see cref="T:Microsoft.Azure.EventHubs.EventData" /> to add.</param>
+            <returns>A boolean value indicating if the event data has been added to the batch or not.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the EventData is null.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown when the batch is already disposed.</exception>
+            <remarks>
+            This method checks the sizes of the batch, the EventData object and the specified limit to determine
+            if the EventData object can be added.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventDataBatch.ToEnumerable">
+            <summary>Converts the batch to an IEnumerable of EventData objects that can be accepted by the
+            SendBatchAsync method.</summary>
+            <returns>Returns an IEnumerable of EventData objects.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventDataBatch.Dispose">
+            <summary>
+            Disposes resources attached to an EventDataBatch.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubClient">
+            <summary>
+            Anchor class - all EventHub client operations start here.
+            See <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)"/>
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubClient.EventHubName">
+            <summary>
+            Gets the name of the EventHub.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubClient.ThisLock">
+            <summary></summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)">
+            <summary>
+            Creates a new instance of the Event Hubs client using the specified connection string. You can populate the EntityPath property with the name of the Event Hub.
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CloseAsync">
+            <summary>
+            Closes and releases resources associated with <see cref="T:Microsoft.Azure.EventHubs.EventHubClient"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)">
+            <summary>
+            Send <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to EventHub. The sent EventData will land on any arbitrarily chosen EventHubs partition.
+            <para>There are 3 ways to send to EventHubs, each exposed as a method (along with its sendBatch overload):</para>
+            <para>i.    <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            <para>ii.   <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData},System.String)"/></para>
+            <para>iii.  <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            Use this method to send if:
+            <para>a) the <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> operation should be highly available and</para>
+            <para>b) the data needs to be evenly distributed among all partitions; exception being, when a subset of partitions are unavailable</para>
+            <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> sends the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to a Service Gateway, which in-turn will forward the EventData to one of the EventHub's partitions.
+            Here's the message forwarding algorithm:
+            <para>i.  Forward the EventDatas to EventHub partitions, by equally distributing the data among all partitions (ex: Round-robin the EventDatas to all EventHub partitions) </para>
+            <para>ii. If one of the EventHub partitions is unavailable for a moment, the Service Gateway will automatically detect it and forward the message to another available partition - making the send operation highly-available.</para>
+            </summary>
+            <param name="eventData">the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to be sent.</param>
+            <returns>A Task that completes when the send operations is done.</returns>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/>
+            <seealso cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})">
+            <summary>
+            Send a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to EventHub. The sent EventData will land on any arbitrarily chosen EventHub partition.
+            This is the most recommended way to send to EventHub.
+            
+            <para>There are 3 ways to send to EventHubs, to understand this particular type of send refer to the overload <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>, which is used to send single <see cref="T:Microsoft.Azure.EventHubs.EventData"/>.
+            Use this overload if you need to send a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>.</para>
+            
+            Sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s is useful in the following cases:
+            <para>i.    Efficient send - sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> maximizes the overall throughput by optimally using the number of sessions created to EventHub's service.</para>
+            <para>ii.   Send multiple <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s in a Transaction. To acheieve ACID properties, the Gateway Service will forward all <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s in the batch to a single EventHub partition.</para>
+            </summary>
+            <example>
+            Sample code:
+            <code>
+            var client = EventHubClient.Create("__connectionString__");
+            while (true)
+            {
+                var events = new List&lt;EventData&gt;();
+                for (int count = 1; count &lt; 11; count++)
+                {
+                    var payload = new PayloadEvent(count);
+                    byte[] payloadBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
+                    var sendEvent = new EventData(payloadBytes);
+                    var applicationProperties = new Dictionary&lt;string, string&gt;();
+                    applicationProperties["from"] = "csharpClient";
+                    sendEvent.Properties = applicationProperties;
+                    events.Add(sendEvent);
+                }
+                    
+                await client.SendAsync(events);
+                Console.WriteLine("Sent Batch... Size: {0}", events.Count);
+            }
+            </code>
+            </example>
+            <param name="eventDatas">A batch of events to send to EventHub</param>
+            <returns>A Task that completes when the send operations is done.</returns>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/>
+            <seealso cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)">
+            <summary>
+             Sends an '<see cref="T:Microsoft.Azure.EventHubs.EventData"/> with a partitionKey to EventHub. All <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s with a partitionKey are guaranteed to land on the same partition.
+             This send pattern emphasize data correlation over general availability and latency.
+             <para>There are 3 ways to send to EventHubs, each exposed as a method (along with its batched overload):</para>
+             <para>i.   <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+             <para>ii.  <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData},System.String)"/></para>
+             <para>iii. <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+             Use this type of send if:
+             <para>a)  There is a need for correlation of events based on Sender instance; The sender can generate a UniqueId and set it as partitionKey - which on the received Message can be used for correlation</para>
+             <para>b) The client wants to take control of distribution of data across partitions.</para>
+             Multiple PartitionKeys could be mapped to one Partition. EventHubs service uses a proprietary Hash algorithm to map the PartitionKey to a PartitionId.
+             Using this type of send (Sending using a specific partitionKey) could sometimes result in partitions which are not evenly distributed. 
+            </summary>
+            <param name="eventData">the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to be sent.</param>
+            <param name="partitionKey">the partitionKey will be hashed to determine the partitionId to send the EventData to. On the Received message this can be accessed at <see cref="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.PartitionKey"/>.</param>
+            <returns>A Task that completes when the send operation is done.</returns>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+            <seealso cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData},System.String)">
+            <summary>
+            Send a 'batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> with the same partitionKey' to EventHub. All <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s with a partitionKey are guaranteed to land on the same partition.
+            Multiple PartitionKey's will be mapped to one Partition.
+            <para>
+            There are 3 ways to send to EventHubs, to understand this particular type of send refer to the overload <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/>,
+            which is the same type of send and is used to send single <see cref="T:Microsoft.Azure.EventHubs.EventData"/>.
+            </para>
+            Sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s is useful in the following cases:
+            <para>i.    Efficient send - sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> maximizes the overall throughput by optimally using the number of sessions created to EventHubs service.</para>
+            <para>ii.   Sending multiple events in One Transaction. This is the reason why all events sent in a batch needs to have same partitionKey (so that they are sent to one partition only).</para>
+            </summary>
+            <param name="eventDatas">the batch of events to send to EventHub</param>
+            <param name="partitionKey">the partitionKey will be hashed to determine the partitionId to send the EventData to. On the Received message this can be accessed at <see cref="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.PartitionKey"/>.</param>
+            <returns>A Task that completes when the send operation is done.</returns>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+            <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreatePartitionSender(System.String)">
+            <summary>
+            Create a <see cref="T:Microsoft.Azure.EventHubs.PartitionSender"/> which can publish <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s directly to a specific EventHub partition (sender type iii. in the below list).
+            <para/>
+            There are 3 patterns/ways to send to EventHubs:
+            <para>i.   <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            <para>ii.  <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData},System.String)"/></para>
+            <para>iii. <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            </summary>
+            <param name="partitionId">partitionId of EventHub to send the <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s to.</param>
+            <returns>The created PartitionSender</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionSender"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateReceiver(System.String,System.String,System.String)">
+            <summary>
+            Create a receiver for a specific EventHub partition from the specific consumer group.
+            <para/>
+            NOTE: There can be a maximum number of receivers that can run in parallel per ConsumerGroup per Partition. 
+            The limit is enforced by the Event Hub service - current limit is 5 receivers in parallel. Having multiple receivers 
+            reading from offsets that are far apart on the same consumer group / partition combo will have significant performance Impact. 
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startingOffset">the offset to start receiving the events from. To receive from start of the stream use <see cref="F:Microsoft.Azure.EventHubs.PartitionReceiver.StartOfStream"/></param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateReceiver(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Create the EventHub receiver with given partition id and start receiving from the specified starting offset.
+            The receiver is created for a specific EventHub Partition from the specific consumer group.
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startOffset">the offset to start receiving the events from. To receive from start of the stream use: <see cref="F:Microsoft.Azure.EventHubs.PartitionReceiver.StartOfStream"/></param>
+            <param name="offsetInclusive">if set to true, the startingOffset is treated as an inclusive offset - meaning the first event returned is the
+            one that has the starting offset. Normally first event returned is the event after the starting offset.</param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateReceiver(System.String,System.String,System.DateTime)">
+            <summary>
+            Create the EventHub receiver with given partition id and start receiving from the specified starting offset.
+            The receiver is created for a specific EventHub Partition from the specific consumer group.
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startTime">the DateTime instant that receive operations will start receive events from. Events received will have <see cref="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.EnqueuedTimeUtc"/> later than this Instant.</param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateEpochReceiver(System.String,System.String,System.String,System.Int64)">
+            <summary>
+            Create a Epoch based EventHub receiver with given partition id and start receiving from the beginning of the partition stream.
+            The receiver is created for a specific EventHub Partition from the specific consumer group.
+            <para/>
+            It is important to pay attention to the following when creating epoch based receiver:
+            <para/>- Ownership enforcement: Once you created an epoch based receiver, you cannot create a non-epoch receiver to the same consumerGroup-Partition combo until all receivers to the combo are closed.
+            <para/>- Ownership stealing: If a receiver with higher epoch value is created for a consumerGroup-Partition combo, any older epoch receiver to that combo will be force closed.
+            <para/>- Any receiver closed due to lost of ownership to a consumerGroup-Partition combo will get ReceiverDisconnectedException for all operations from that receiver.
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startingOffset">the offset to start receiving the events from. To receive from start of the stream use <see cref="F:Microsoft.Azure.EventHubs.PartitionReceiver.StartOfStream"/></param>
+            <param name="epoch">an unique identifier (epoch value) that the service uses, to enforce partition/lease ownership.</param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateEpochReceiver(System.String,System.String,System.String,System.Boolean,System.Int64)">
+            <summary>
+             Create a Epoch based EventHub receiver with given partition id and start receiving from the beginning of the partition stream.
+             The receiver is created for a specific EventHub Partition from the specific consumer group.
+             <para/> 
+             It is important to pay attention to the following when creating epoch based receiver:
+             <para/>- Ownership enforcement: Once you created an epoch based receiver, you cannot create a non-epoch receiver to the same consumerGroup-Partition combo until all receivers to the combo are closed.
+             <para/>- Ownership stealing: If a receiver with higher epoch value is created for a consumerGroup-Partition combo, any older epoch receiver to that combo will be force closed.
+             <para/>- Any receiver closed due to lost of ownership to a consumerGroup-Partition combo will get ReceiverDisconnectedException for all operations from that receiver.
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startingOffset">the offset to start receiving the events from. To receive from start of the stream use <see cref="F:Microsoft.Azure.EventHubs.PartitionReceiver.StartOfStream"/></param>
+            <param name="offsetInclusive">if set to true, the startingOffset is treated as an inclusive offset - meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.</param>
+            <param name="epoch">an unique identifier (epoch value) that the service uses, to enforce partition/lease ownership. </param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateEpochReceiver(System.String,System.String,System.DateTime,System.Int64)">
+            <summary>
+            Create a Epoch based EventHub receiver with given partition id and start receiving from the beginning of the partition stream.
+            The receiver is created for a specific EventHub Partition from the specific consumer group.
+            <para/>It is important to pay attention to the following when creating epoch based receiver:
+            <para/>- Ownership enforcement: Once you created an epoch based receiver, you cannot create a non-epoch receiver to the same consumerGroup-Partition combo until all receivers to the combo are closed.
+            <para/>- Ownership stealing: If a receiver with higher epoch value is created for a consumerGroup-Partition combo, any older epoch receiver to that combo will be force closed.
+            <para/>- Any receiver closed due to lost of ownership to a consumerGroup-Partition combo will get ReceiverDisconnectedException for all operations from that receiver.
+            </summary>
+            <param name="consumerGroupName">the consumer group name that this receiver should be grouped under.</param>
+            <param name="partitionId">the partition Id that the receiver belongs to. All data received will be from this partition only.</param>
+            <param name="startTime">the date time instant that receive operations will start receive events from. Events received will have <see cref="P:Microsoft.Azure.EventHubs.EventData.SystemPropertiesCollection.EnqueuedTimeUtc"/> later than this instant.</param>
+            <param name="epoch">a unique identifier (epoch value) that the service uses, to enforce partition/lease ownership.</param>
+            <returns>The created PartitionReceiver</returns>
+            <seealso cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.GetRuntimeInformationAsync">
+            <summary>
+            Retrieves EventHub runtime information
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.GetPartitionRuntimeInformationAsync(System.String)">
+            <summary>Retrieves runtime information for the specified partition of the Event Hub.</summary>
+            <param name="partitionId">The partition ID.</param>
+            <returns>Returns <see cref="T:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation" />.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.CreateBatch">
+            <summary>Creates a batch where event data objects can be added for later SendAsync call.</summary>
+            <returns>Returns <see cref="T:Microsoft.Azure.EventHubs.EventDataBatch" />.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.OnCreateReceiver(System.String,System.String,System.String,System.Boolean,System.Nullable{System.DateTime},System.Nullable{System.Int64})">
+            <summary></summary>
+            <param name="consumerGroupName"></param>
+            <param name="partitionId"></param>
+            <param name="startOffset"></param>
+            <param name="offsetInclusive"></param>
+            <param name="startTime"></param>
+            <param name="epoch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.OnGetRuntimeInformationAsync">
+            <summary></summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.OnGetPartitionRuntimeInformationAsync(System.String)">
+            <summary></summary>
+            <param name="partitionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubClient.OnCloseAsync">
+            <summary></summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation">
+            <summary>
+            Contains information regarding an event hub partition.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.Path">
+            <summary>Gets the path of the event hub.</summary>
+            <value>The path of the event hub.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.PartitionId">
+            <summary>Gets the partition ID for a logical partition of an Event Hub.</summary>
+            <value>The partition identifier.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.BeginSequenceNumber">
+            <summary>Gets the begin sequence number.</summary>
+            <value>The begin sequence number.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.LastEnqueuedSequenceNumber">
+            <summary>Gets the end sequence number.</summary>
+            <value>The end sequence number.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.LastEnqueuedOffset">
+            <summary>Gets the offset of the last enqueued event.</summary>
+            <value>The offset of the last enqueued event.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubPartitionRuntimeInformation.LastEnqueuedTimeUtc">
+            <summary>Gets the enqueued UTC time of the last event.</summary>
+            <value>The enqueued time of the last event.</value>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubRuntimeInformation">
+            <summary>
+            Contains information regarding Event Hubs.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubRuntimeInformation.Path">
+            <summary>Gets or sets the path to the Event Hub.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubRuntimeInformation.CreatedAt">
+            <summary>Gets or sets the time at which the Event Hub was created.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubRuntimeInformation.PartitionCount">
+            <summary>Gets or sets the number of partitions in an Event Hub.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubRuntimeInformation.PartitionIds">
+            <summary>Gets or sets the partition IDs for an Event Hub.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubsEventSource">
+            <summary>
+            EventSource for Microsoft-Azure-EventHubs traces.
+            
+            When defining Start/Stop tasks, the StopEvent.Id must be exactly StartEvent.Id + 1.
+            
+            Do not explicity include the Guid here, since EventSource has a mechanism to automatically
+            map to an EventSource Guid based on the Name (Microsoft-Azure-EventHubs).
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.IPartitionReceiveHandler">
+            <summary>
+            A handler interface for the receive operation. Use any implementation of this interface to specify
+            user action when using <see cref="M:Microsoft.Azure.EventHubs.PartitionReceiver.SetReceiveHandler(Microsoft.Azure.EventHubs.IPartitionReceiveHandler)"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.IPartitionReceiveHandler.MaxBatchSize">
+            <summary>
+            Gets the maximum batch size.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.IPartitionReceiveHandler.ProcessEventsAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})">
+            <summary>
+            Users should implement this method to specify the action to be performed on the received events.
+            </summary>
+            <seealso cref="M:Microsoft.Azure.EventHubs.PartitionReceiver.ReceiveAsync(System.Int32)"/>
+            <param name="events">The list of fetched events from the corresponding PartitionReceiver.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.IPartitionReceiveHandler.ProcessErrorAsync(System.Exception)">
+            <summary>
+            Implement in order to handle exceptions that are thrown during receipt of events.
+            </summary>
+            <param name="error">The <see cref="T:System.Exception"/> to be processed</param>
+            <returns>An asynchronour operation</returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.PartitionReceiver">
+            <summary>
+            This is a logical representation of receiving from a EventHub partition.
+            <para>
+            A PartitionReceiver is tied to a ConsumerGroup + Partition combination. If you are creating an epoch based
+            PartitionReceiver (i.e. PartitionReceiver.Epoch != 0) you cannot have more than one active receiver per
+            ConsumerGroup + Partition combo. You can have multiple receivers per ConsumerGroup + Partition combination with 
+            non-epoch receivers.
+            </para>
+            </summary>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateReceiver(System.String,System.String,System.String)"/>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateEpochReceiver(System.String,System.String,System.String,System.Int64)"/>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.PartitionReceiver.StartOfStream">
+            <summary>
+            This is a constant defined to represent the start of a partition stream in EventHub.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.PartitionReceiver.EndOfStream">
+            <summary>
+            The constant that denotes the end of a stream. This can be used as an offset argument in receiver creation to 
+            start receiving from the latest event, instead of a specific point in time/offset value.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.PartitionReceiver.DefaultConsumerGroupName">
+            <summary>
+            The default consumer group name: $Default.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.#ctor(Microsoft.Azure.EventHubs.EventHubClient,System.String,System.String,System.String,System.Boolean,System.Nullable{System.DateTime},System.Nullable{System.Int64})">
+            <summary></summary>
+            <param name="eventHubClient"></param>
+            <param name="consumerGroupName"></param>
+            <param name="partitionId"></param>
+            <param name="startOffset"></param>
+            <param name="offsetInclusive"></param>
+            <param name="startTime"></param>
+            <param name="epoch"></param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.EventHubClient">
+            <summary>
+            The EventHubClient this PartitionReceiver was created from.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.ConsumerGroupName">
+            <summary>
+            The Consumer Group Name
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.PartitionId">
+            <summary>
+            Get the EventHub partition identifier.
+            </summary>
+            <value>The identifier representing the partition from which this receiver is fetching data</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.PrefetchCount">
+            <summary>
+            Get Prefetch Count configured on the Receiver.
+            </summary>
+            <value>The upper limit of events this receiver will actively receive regardless of whether a receive operation is pending.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.Epoch">
+            <summary>
+            Get the epoch value that this receiver is currently using for partition ownership.
+            <para>A value of null means this receiver is not an epoch-based receiver.</para>
+            </summary>
+            <value>the epoch value that this receiver is currently using for partition ownership.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.StartTime">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.OffsetInclusive">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionReceiver.StartOffset">
+            <summary></summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.ReceiveAsync(System.Int32)">
+            <summary>
+            Receive a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s from an EventHub partition
+            </summary>
+            <example>
+            Sample code:
+            <code>
+            EventHubClient client = EventHubClient.Create("__connectionString__");
+            PartitionReceiver receiver = client.CreateReceiver("ConsumerGroup1", "1");
+            IEnumerable&lt;EventData&gt; receivedEvents = await receiver.ReceiveAsync(BatchSize);
+                 
+            while (true)
+            {
+                int batchSize = 0;
+                if (receivedEvents != null)
+                {
+                    foreach (EventData receivedEvent in receivedEvents)
+                    {
+                        Console.WriteLine("Message Payload: {0}", Encoding.UTF8.GetString(receivedEvent.Body));
+                        Console.WriteLine("Offset: {0}, SeqNo: {1}, EnqueueTime: {2}", 
+                            receivedEvent.SystemProperties.Offset, 
+                            receivedEvent.SystemProperties.SequenceNumber, 
+                            receivedEvent.SystemProperties.EnqueuedTime);
+                        batchSize++;
+                    }
+                }
+                     
+                Console.WriteLine("ReceivedBatch Size: {0}", batchSize);
+                receivedEvents = await receiver.ReceiveAsync();
+            }
+            </code>
+            </example>
+            <returns>A Task that will yield a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> from the partition on which this receiver is created. Returns 'null' if no EventData is present.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.ReceiveAsync(System.Int32,System.TimeSpan)">
+            <summary>
+            Receive a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s from an EventHub partition by allowing wait time on each individual call.
+            </summary>
+            <returns>A Task that will yield a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> from the partition on which this receiver is created. Returns 'null' if no EventData is present.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.SetReceiveHandler(Microsoft.Azure.EventHubs.IPartitionReceiveHandler)">
+            <summary>
+            Sets the <see cref="T:Microsoft.Azure.EventHubs.IPartitionReceiveHandler"/> to process events.
+            </summary>
+            <param name="receiveHandler">The <see cref="T:Microsoft.Azure.EventHubs.IPartitionReceiveHandler"/> used to process events.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.CloseAsync">
+            <summary>
+            Closes and releases resources associated with <see cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/>.
+            </summary>
+            <returns>An asynchronous operation</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.OnReceiveAsync(System.Int32,System.TimeSpan)">
+            <summary></summary>
+            <param name="maxMessageCount"></param>
+            <param name="waitTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.OnSetReceiveHandler(Microsoft.Azure.EventHubs.IPartitionReceiveHandler)">
+            <summary></summary>
+            <param name="receiveHandler"></param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionReceiver.OnCloseAsync">
+            <summary></summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.PartitionSender">
+            <summary>
+            This sender class is a logical representation of sending events to a specific EventHub partition. Do not use this class
+            if you do not care about sending events to specific partitions, instead use <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>.
+            </summary>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreatePartitionSender(System.String)"/>
+            <seealso cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)"/>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionSender.EventHubClient">
+            <summary>
+            Gets the <see cref="P:Microsoft.Azure.EventHubs.PartitionSender.EventHubClient"/> associated with this PartitionSender.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.PartitionSender.PartitionId">
+            <summary>
+            Gets the partition ID for this <see cref="T:Microsoft.Azure.EventHubs.PartitionSender"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)">
+            <summary>
+            Send <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to a specific EventHub partition. The target partition is pre-determined when this PartitionSender was created.
+            This send pattern emphasizes data correlation over general availability and latency.
+            <para>There are 3 ways to send to EventHubs, each exposed as a method (along with its sendBatch overload):</para>
+            <para>i.   <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            <para>ii.  <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(Microsoft.Azure.EventHubs.EventData,System.String)"/> or <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData},System.String)"/></para>
+            <para>iii. <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/> or <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})"/></para>
+            Use this type of send if:
+            <para>a. The client wants to take direct control of distribution of data across partitions. In this case client is responsible for making sure there is at least one sender per event hub partition.</para>
+            <para>b. User cannot use partition key as a mean to direct events to specific partition, yet there is a need for data correlation with partitioning scheme.</para>
+            </summary>
+            <param name="eventData">the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to be sent.</param>
+            <returns>A Task that completes when the send operations is done.</returns>
+            <exception cref="T:Microsoft.Azure.EventHubs.MessageSizeExceededException">the total size of the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> exceeds a pre-defined limit set by the service. Default is 256k bytes.</exception>
+            <exception cref="T:Microsoft.Azure.EventHubs.EventHubsException">Event Hubs service encountered problems during the operation.</exception>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(System.Collections.Generic.IEnumerable{Microsoft.Azure.EventHubs.EventData})">
+            <summary>
+            Send <see cref="T:Microsoft.Azure.EventHubs.EventData"/> to a specific EventHub partition. The targeted partition is pre-determined when this PartitionSender was created.
+            <para>
+            There are 3 ways to send to EventHubs, to understand this particular type of send refer to the overload <see cref="M:Microsoft.Azure.EventHubs.PartitionSender.SendAsync(Microsoft.Azure.EventHubs.EventData)"/>, which is the same type of send and is used to send single <see cref="T:Microsoft.Azure.EventHubs.EventData"/>.
+            </para>
+            Sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s is useful in the following cases:
+            <para>i.    Efficient send - sending a batch of <see cref="T:Microsoft.Azure.EventHubs.EventData"/> maximizes the overall throughput by optimally using the number of sessions created to EventHubs' service.</para>
+            <para>ii.   Sending multiple <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s in a Transaction. To acheive ACID properties, the Gateway Service will forward all <see cref="T:Microsoft.Azure.EventHubs.EventData"/>'s in the batch to a single EventHub partition.</para>
+            </summary>
+            <example>
+            Sample code:
+            <code>
+            EventHubClient client = EventHubClient.Create("__connectionString__");
+            PartitionSender senderToPartitionOne = client.CreatePartitionSender("1");
+                    
+            while (true)
+            {
+                var events = new List&lt;EventData&gt;();
+                for (int count = 1; count &lt; 11; count++)
+                {
+                    var payload = new PayloadEvent(count);
+                    byte[] payloadBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
+                    var sendEvent = new EventData(payloadBytes);
+                    var applicationProperties = new Dictionary&lt;string, string&gt;();
+                    applicationProperties["from"] = "csharpClient";
+                    sendEvent.Properties = applicationProperties;
+                    events.Add(sendEvent);
+                }
+                    
+                await senderToPartitionOne.SendAsync(events);
+                Console.WriteLine("Sent Batch... Size: {0}", events.Count);
+                
+            }
+            </code>
+            </example>
+            <param name="eventDatas">batch of events to send to EventHub</param>
+            <returns>a Task that completes when the send operation is done.</returns>
+            <exception cref="T:Microsoft.Azure.EventHubs.MessageSizeExceededException">the total size of the <see cref="T:Microsoft.Azure.EventHubs.EventData"/> exceeds a pre-defined limit set by the service. Default is 256k bytes.</exception>
+            <exception cref="T:Microsoft.Azure.EventHubs.EventHubsException">Event Hubs service encountered problems during the operation.</exception>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.PartitionSender.CloseAsync">
+            <summary>
+            Closes and releases resources for the <see cref="T:Microsoft.Azure.EventHubs.PartitionSender"/>.
+            </summary>
+            <returns>An asynchronous operation</returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.AsyncLock">
+            <summary>
+            Used as an asynchronous semaphore for internal Event Hubs operations.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.AsyncLock.#ctor">
+            <summary>
+            Returns a new AsyncLock.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.AsyncLock.LockAsync">
+            <summary>
+            Sets a lock.
+            </summary>
+            <returns>An asynchronous operation</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.AsyncLock.LockAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sets a lock, which allows for cancellation, using a <see cref="T:System.Threading.CancellationToken"/>.
+            </summary>
+            <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> which can be used to cancel the lock</param>
+            <returns>An asynchronous operation</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.AsyncLock.Dispose">
+            <summary>
+            Closes and releases any resources associated with the AsyncLock.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.AsyncLock.LockRelease">
+            <summary>
+            Used coordinate lock releases.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.AsyncLock.LockRelease.Dispose">
+            <summary>
+            Closes and releases resources associated with <see cref="T:Microsoft.Azure.EventHubs.AsyncLock.LockRelease"/>.
+            </summary>
+            <returns>An asynchronous operation</returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.ClientEntity">
+            <summary>
+            Contract for all client entities with Open-Close/Abort state m/c
+            main-purpose: closeAll related entities
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.ClientEntity.#ctor(System.String)">
+            <summary></summary>
+            <param name="clientId"></param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.ClientEntity.ClientId">
+            <summary>
+            Gets the client ID.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.ClientEntity.RetryPolicy">
+            <summary>
+            Gets the <see cref="M:Microsoft.Azure.EventHubs.RetryPolicy.#ctor"/> for the ClientEntity.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.ClientEntity.CloseAsync">
+            <summary>
+            Closes the ClientEntity.
+            </summary>
+            <returns>The asynchronous operation</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.ClientEntity.Close">
+            <summary>
+            Closes the ClientEntity.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.ClientEntity.GetNextId">
+            <summary></summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubsCommunicationException">
+            <summary>
+            Exception for signaling general communication errors related to messaging operations.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsCommunicationException.#ctor(System.String)">
+            <summary></summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsCommunicationException.#ctor(System.String,System.Exception)">
+            <summary></summary>
+            <param name="message"></param>
+            <param name="innerException"></param>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.TransportType">
+            <summary>
+             Supported transport types
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.TransportType.Amqp">
+            <summary>
+            AMQP over the default TCP transport protocol
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.TransportType.AmqpWebSockets">
+            <summary>
+            AMQP over the Web Sockets transport protocol
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder">
+            <summary>
+            EventHubsConnectionStringBuilder can be used to construct a connection string which can establish communication with Event Hubs entities.
+            It can also be used to perform basic validation on an existing connection string.
+            <para/>
+            A connection string is basically a string consisted of key-value pair separated by ";". 
+            Basic format is "&lt;key&gt;=&lt;value&gt;[;&lt;key&gt;=&lt;value&gt;]" where supported key name are as follow:
+            <para/> Endpoint - the URL that contains the Event Hubs namespace
+            <para/> EntityPath - the path to the Event Hub entity
+            <para/> SharedAccessKeyName - the key name to the corresponding shared access policy rule for the namespace, or entity.
+            <para/> SharedAccessKey - the key for the corresponding shared access policy rule of the namespace or entity.
+            </summary>
+            <example>
+            Sample code:
+            <code>
+            var connectionStringBuiler = new EventHubsConnectionStringBuilder(
+                "amqps://EventHubsNamespaceName.servicebus.windows.net", 
+                "EventHubsEntityName", // Event Hub Name 
+                "SharedAccessSignatureKeyName", 
+                "SharedAccessSignatureKey");
+             string connectionString = connectionStringBuiler.ToString();
+            </code>
+            </example>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.#ctor(System.Uri,System.String,System.String,System.String)">
+            <summary>
+            Build a connection string consumable by <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)"/>
+            </summary>
+            <param name="endpointAddress">Fully qualified domain name for Event Hubs. Most likely, {yournamespace}.servicebus.windows.net</param>
+            <param name="entityPath">Entity path or Event Hub name.</param>
+            <param name="sharedAccessKeyName">Shared Access Key name</param>
+            <param name="sharedAccessKey">Shared Access Key</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.#ctor(System.Uri,System.String,System.String,System.String,System.TimeSpan)">
+            <summary>
+            Build a connection string consumable by <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)"/>
+            </summary>
+            <param name="endpointAddress">Fully qualified domain name for Event Hubs. Most likely, {yournamespace}.servicebus.windows.net</param>
+            <param name="entityPath">Entity path or Event Hub name.</param>
+            <param name="sharedAccessKeyName">Shared Access Key name</param>
+            <param name="sharedAccessKey">Shared Access Key</param>
+            <param name="operationTimeout">Operation timeout for Event Hubs operations</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.#ctor(System.Uri,System.String,System.String,System.TimeSpan)">
+            <summary>
+            Build a connection string consumable by <see cref="M:Microsoft.Azure.EventHubs.EventHubClient.CreateFromConnectionString(System.String)"/>
+            </summary>
+            <param name="endpointAddress">Fully qualified domain name for Event Hubs. Most likely, {yournamespace}.servicebus.windows.net</param>
+            <param name="entityPath">Entity path or Event Hub name.</param>
+            <param name="sharedAccessSignature">Shared Access Signature</param>
+            <param name="operationTimeout">Operation timeout for Event Hubs operations</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.#ctor(System.String)">
+            <summary>
+            ConnectionString format:
+            Endpoint=sb://namespace_DNS_Name;EntityPath=EVENT_HUB_NAME;SharedAccessKeyName=SHARED_ACCESS_KEY_NAME;SharedAccessKey=SHARED_ACCESS_KEY
+            </summary>
+            <param name="connectionString">Event Hubs ConnectionString</param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.Endpoint">
+            <summary>
+            Gets or sets the Event Hubs endpoint.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.SasKey">
+            <summary>
+            Get the shared access policy key value from the connection string
+            </summary>
+            <value>Shared Access Signature key</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.SasKeyName">
+            <summary>
+            Get the shared access policy owner name from the connection string
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.SharedAccessSignature">
+            <summary>
+            Gets or sets the SAS access token.
+            </summary>
+            <value>Shared Access Signature</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.EntityPath">
+            <summary>
+            Get the entity path value from the connection string
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.OperationTimeout">
+            <summary>
+            OperationTimeout is applied in erroneous situations to notify the caller about the relevant <see cref="T:Microsoft.Azure.EventHubs.EventHubsException"/>
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.TransportType">
+            <summary>
+            Transport type for the client connection.
+            Avaiable options are Amqp and AmqpWebSockets.
+            Defaults to Amqp if not specified.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.Clone">
+            <summary>
+            Creates a cloned object of the current <see cref="T:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder"/>.
+            </summary>
+            <returns>A new <see cref="T:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder"/></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsConnectionStringBuilder.ToString">
+            <summary>
+            Returns an interoperable connection string that can be used to connect to Event Hubs Namespace
+            </summary>
+            <returns>the connection string</returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.EventHubsException">
+            <summary>
+            Base Exception for various Event Hubs errors.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsException.#ctor(System.Boolean)">
+            <summary>
+            Returns a new EventHubsException
+            </summary>
+            <param name="isTransient">Specifies whether or not the exception is transient.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsException.#ctor(System.Boolean,System.String)">
+            <summary>
+            Returns a new EventHubsException
+            </summary>
+            <param name="isTransient">Specifies whether or not the exception is transient.</param>
+            <param name="message">The detailed message exception.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsException.#ctor(System.Boolean,System.Exception)">
+            <summary>
+            Returns a new EventHubsException
+            </summary>
+            <param name="isTransient">Specifies whether or not the exception is transient.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.EventHubsException.#ctor(System.Boolean,System.String,System.Exception)">
+            <summary>
+            Returns a new EventHubsException
+            </summary>
+            <param name="isTransient">Specifies whether or not the exception is transient.</param>
+            <param name="message">The detailed message exception.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsException.Message">
+            <summary>
+            Gets the message as a formatted string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsException.IsTransient">
+            <summary>
+            A boolean indicating if the exception is a transient error or not.
+            </summary>
+            <value>returns true when user can retry the operation that generated the exception without additional intervention.</value>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.EventHubsException.EventHubsNamespace">
+            <summary>
+            Gets the Event Hubs namespace from which the exception occured, if available.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.MessageSizeExceededException">
+            <summary>
+            The exception is thrown when the message size exceeds what AMQP allows on the link.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.MessagingEntityNotFoundException">
+            <summary>
+            The exception that is thrown when the Event Hub is not found on the namespace.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.ReceiverDisconnectedException">
+            <summary>
+            This exception is thrown if two or more <see cref="T:Microsoft.Azure.EventHubs.PartitionReceiver"/> instances connect
+            to the same partition with different epoch values.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.RetryExponential">
+            <summary>
+            RetryPolicy implementation where the delay between retries will grow in a staggered exponential manner.
+            RetryPolicy can be set on the client using <see cref="T:Microsoft.Azure.EventHubs.EventHubClient"/>.
+            RetryIntervals will be computed using a retryFactor which is a function of deltaBackOff (MaximumBackoff - MinimumBackoff) and MaximumRetryCount
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryExponential.#ctor(System.TimeSpan,System.TimeSpan,System.Int32)">
+            <summary>
+            Returns a new RetryExponential retry policy object.
+            </summary>
+            <param name="minimumBackoff">Minimum backoff interval.</param>
+            <param name="maximumBackoff">Maximum backoff interval.</param>
+            <param name="maximumRetryCount">Maximum retry count.</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryExponential.OnGetNextRetryInterval(System.String,System.Exception,System.TimeSpan,System.Int32)">
+            <summary></summary>
+            <param name="clientId"></param>
+            <param name="lastException"></param>
+            <param name="remainingTime"></param>
+            <param name="baseWaitTimeSecs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.RetryPolicy">
+            <summary>
+            Represents an abstraction for retrying messaging operations. Users should not 
+            implement this class, and instead should use one of the provided implementations.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.IncrementRetryCount(System.String)">
+            <summary>
+            Increases the retry count.
+            </summary>
+            <param name="clientId">The <see cref="P:Microsoft.Azure.EventHubs.ClientEntity.ClientId"/> associated with the operation to retry</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.ResetRetryCount(System.String)">
+            <summary>
+            Resets the retry count to zero.
+            </summary>
+            <param name="clientId">The <see cref="P:Microsoft.Azure.EventHubs.ClientEntity.ClientId"/> associated with the operation to retry</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.IsRetryableException(System.Exception)">
+            <summary>
+            Determines whether or not the exception can be retried.
+            </summary>
+            <param name="exception"></param>
+            <returns>A bool indicating whether or not the operation can be retried.</returns>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.RetryPolicy.Default">
+            <summary>
+            Returns the default retry policy, <see cref="T:Microsoft.Azure.EventHubs.RetryExponential"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.RetryPolicy.NoRetry">
+            <summary>
+            Returns the default retry policy, <see cref="P:Microsoft.Azure.EventHubs.RetryPolicy.NoRetry"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.GetRetryCount(System.String)">
+            <summary></summary>
+            <param name="clientId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.OnGetNextRetryInterval(System.String,System.Exception,System.TimeSpan,System.Int32)">
+            <summary></summary>
+            <param name="clientId"></param>
+            <param name="lastException"></param>
+            <param name="remainingTime"></param>
+            <param name="baseWaitTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.RetryPolicy.GetNextRetryInterval(System.String,System.Exception,System.TimeSpan)">
+            <summary>
+            Gets the timespan for the next retry operation.
+            </summary>
+            <param name="clientId">The <see cref="P:Microsoft.Azure.EventHubs.ClientEntity.ClientId"/> associated with the operation to retry</param>
+            <param name="lastException">The last exception that was thrown</param>
+            <param name="remainingTime">Remaining time for the cumulative timeout</param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.SecurityToken">
+            <summary>
+            Provides information about a security token such as audience, expiry time, and the string token value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SecurityToken.#ctor(System.String,System.DateTime,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Microsoft.Azure.EventHubs.SecurityToken"/> class.
+            </summary>
+            <param name="tokenString">The token</param>
+            <param name="expiresAtUtc">The expiration time</param>
+            <param name="audience">The audience</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SecurityToken.#ctor(System.String,System.DateTime)">
+            <summary>
+            Creates a new instance of the <see cref="T:Microsoft.Azure.EventHubs.SecurityToken"/> class.
+            </summary>
+            <param name="tokenString">The token</param>
+            <param name="expiresAtUtc">The expiration time</param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SecurityToken.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Microsoft.Azure.EventHubs.SecurityToken"/> class.
+            </summary>
+            <param name="tokenString">The token</param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.Audience">
+            <summary>
+            Gets the audience of this token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.ExpiresAtUtc">
+            <summary>
+            Gets the expiration time of this token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.ExpiresOnFieldName">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.AudienceFieldName">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.KeyValueSeparator">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.PairSeparator">
+            <summary></summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.SecurityToken.TokenValue">
+            <summary>
+            Gets the actual token.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.ServerBusyException">
+            <summary>
+            The exception that is thrown when a server is busy.  Callers should wait a while and retry the operation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider">
+            <summary>
+            The SharedAccessSignatureTokenProvider generates tokens using a shared access key or existing signature.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider.EpochTime">
+            <summary>
+            Represents 00:00:00 UTC Thursday 1, January 1970.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider.#ctor(System.String,System.String,System.Func{System.String,System.Byte[]},System.TimeSpan,Microsoft.Azure.EventHubs.TokenScope)">
+            <summary></summary>
+            <param name="keyName"></param>
+            <param name="sharedAccessKey"></param>
+            <param name="customKeyEncoder"></param>
+            <param name="tokenTimeToLive"></param>
+            <param name="tokenScope"></param>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider.OnGetTokenAsync(System.String,System.String,System.TimeSpan)">
+            <summary></summary>
+            <param name="appliesTo"></param>
+            <param name="action"></param>
+            <param name="timeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider.BuildSignature(System.String)">
+            <summary></summary>
+            <param name="targetUri"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.SharedAccessSignatureTokenProvider.SharedAccessSignatureToken">
+            <summary>
+            A WCF SecurityToken that wraps a Shared Access Signature
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.StringUtility.FormatForUser(System.String,System.Object[])">
+            <summary>
+            Formats a string+parameters using CurrentCulture.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.StringUtility.FormatInvariant(System.String,System.Object)">
+            <summary>
+            Formats a string+parameter using InvariantCulture.  This overload avoids allocating an array when there's only one replacement parameter
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.StringUtility.FormatInvariant(System.String,System.Object[])">
+            <summary>
+            Formats a string+parameters using InvariantCulture.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.TokenProvider">
+            <summary>
+            This abstract base class can be extended to implement additional token providers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.#ctor(Microsoft.Azure.EventHubs.TokenScope)">
+            <summary></summary>
+            <param name="tokenScope"></param>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.TokenProvider.TokenScope">
+            <summary>
+            Gets the scope or permissions associated with the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.TokenProvider.ThisLock">
+            <summary></summary>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.CreateSharedAccessSignatureTokenProvider(System.String)">
+            <summary>
+            Construct a TokenProvider based on a sharedAccessSignature.
+            </summary>
+            <param name="sharedAccessSignature">The shared access signature</param>
+            <returns>A TokenProvider initialized with the shared access signature</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.CreateSharedAccessSignatureTokenProvider(System.String,System.String)">
+            <summary>
+            Construct a TokenProvider based on the provided Key Name and Shared Access Key.
+            </summary>
+            <param name="keyName">The key name of the corresponding SharedAccessKeyAuthorizationRule.</param>
+            <param name="sharedAccessKey">The key associated with the SharedAccessKeyAuthorizationRule</param>
+            <returns>A TokenProvider initialized with the provided RuleId and Password</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.CreateSharedAccessSignatureTokenProvider(System.String,System.String,System.TimeSpan)">
+            <summary>
+            Construct a TokenProvider based on the provided Key Name and Shared Access Key.
+            </summary>
+            <param name="keyName">The key name of the corresponding SharedAccessKeyAuthorizationRule.</param>
+            <param name="sharedAccessKey">The key associated with the SharedAccessKeyAuthorizationRule</param>
+            <param name="tokenTimeToLive">The token time to live</param>
+            <returns>A TokenProvider initialized with the provided RuleId and Password</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.CreateSharedAccessSignatureTokenProvider(System.String,System.String,Microsoft.Azure.EventHubs.TokenScope)">
+            <summary>
+            Construct a TokenProvider based on the provided Key Name and Shared Access Key.
+            </summary>
+            <param name="keyName">The key name of the corresponding SharedAccessKeyAuthorizationRule.</param>
+            <param name="sharedAccessKey">The key associated with the SharedAccessKeyAuthorizationRule</param>
+            <param name="tokenScope">The tokenScope of tokens to request.</param>
+            <returns>A TokenProvider initialized with the provided RuleId and Password</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.CreateSharedAccessSignatureTokenProvider(System.String,System.String,System.TimeSpan,Microsoft.Azure.EventHubs.TokenScope)">
+            <summary>
+            Construct a TokenProvider based on the provided Key Name and Shared Access Key.
+            </summary>
+            <param name="keyName">The key name of the corresponding SharedAccessKeyAuthorizationRule.</param>
+            <param name="sharedAccessKey">The key associated with the SharedAccessKeyAuthorizationRule</param>
+            <param name="tokenTimeToLive">The token time to live</param> 
+            <param name="tokenScope">The tokenScope of tokens to request.</param>
+            <returns>A TokenProvider initialized with the provided RuleId and Password</returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.GetTokenAsync(System.String,System.String,System.TimeSpan)">
+            <summary>
+            Gets a <see cref="T:Microsoft.Azure.EventHubs.SecurityToken"/> for the given audience and duration.
+            </summary>
+            <param name="appliesTo">The URI which the access token applies to</param>
+            <param name="action">The request action</param>
+            <param name="timeout">The time span that specifies the timeout value for the message that gets the security token</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.OnGetTokenAsync(System.String,System.String,System.TimeSpan)">
+            <summary></summary>
+            <param name="appliesTo"></param>
+            <param name="action"></param>
+            <param name="timeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Azure.EventHubs.TokenProvider.NormalizeAppliesTo(System.String)">
+            <summary></summary>
+            <param name="appliesTo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.TokenScope">
+            <summary>
+            A enum representing the scope of the <see cref="T:Microsoft.Azure.EventHubs.SecurityToken"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.TokenScope.Namespace">
+            <summary>
+            The namespace.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.EventHubs.TokenScope.Entity">
+            <summary>
+            The entity.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.EventHubs.Resources">
+            <summary>
+               A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.ResourceManager">
+            <summary>
+               Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.Culture">
+            <summary>
+               Overrides the current thread's CurrentUICulture property for all
+               resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.AmqpMessageSizeExceeded">
+            <summary>
+               Looks up a localized string similar to The received message (delivery-id:{0}, size:{1} bytes) exceeds the limit ({2} bytes) currently allowed on the link..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.ArgumentNullOrWhiteSpace">
+            <summary>
+               Looks up a localized string similar to The argument {0} is null or white space..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.ArgumentStringTooBig">
+            <summary>
+               Looks up a localized string similar to The argument &apos;{0}&apos; cannot exceed {1} characters..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.CannotSendAnEmptyEvent">
+            <summary>
+               Looks up a localized string similar to Sending empty {0} is not a valid operation..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.EventDataListIsNullOrEmpty">
+            <summary>
+               Looks up a localized string similar to There are no event data supplied. Please make sure input events are not empty..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.FailedToSerializeUnsupportedType">
+            <summary>
+               Looks up a localized string similar to Serialization operation failed due to unsupported type {0}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.InvalidEncoding">
+            <summary>
+               Looks up a localized string similar to The string has an invalid encoding format..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.PartitionInvalidPartitionKey">
+            <summary>
+               Looks up a localized string similar to The specified partitionKey &apos;{0}&apos; is invalid for partition &apos;{1}&apos;. Do not specify a partitionKey when sending using a PartitionedSender.  Instead use EventHubClient.Send..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.TimeoutMustBeNonNegative">
+            <summary>
+               Looks up a localized string similar to Argument {0} must be a non-negative timeout value. The provided value was {1}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.TimeoutMustBePositive">
+            <summary>
+               Looks up a localized string similar to Argument {0} must be a positive timeout value. The provided value was {1}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.TokenMissingAudience">
+            <summary>
+               Looks up a localized string similar to The provided token does not specify the &apos;Audience&apos; value..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.TokenMissingExpiresOn">
+            <summary>
+               Looks up a localized string similar to The provided token does not specify the &apos;ExpiresOn&apos; value..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.SasTokenShouldBeAlone">
+            <summary>
+               Looks up a localized string similar to {0} cannot be specified along with {1}. {0} alone should be...
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.EventHubs.Resources.ArgumentInvalidCombination">
+            <summary>
+               Gets localized string like: Please make sure either all or none of the following arguments are defined: '{0}'.
+            </summary>
+        </member>
+    </members>
+</doc>

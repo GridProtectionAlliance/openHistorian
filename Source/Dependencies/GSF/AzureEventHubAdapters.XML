@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AzureEventHubAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:AzureEventHubAdapters.AzureEventHubOutputAdapter">
+            <summary>
+            Represents an output adapter that sends measurements to an Azure Event Hub
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultUseParallelPosting">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultValuesPerPost">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.ValuesPerPost"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultSerializeMetadata">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultDataPartitionKey">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPartitionKey"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultMetadataPartitionKey">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.MetadataPartitionKey"/>.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubConnectionString">
+            <summary>
+            Gets or sets the event hub connection string for the Azure event hub connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubName">
+            <summary>
+            Gets or sets the event hub name for the Azure event hub connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPartitionKey">
+            <summary>
+            Gets or sets the Azure event hub partition key for the time-series data.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.MetadataPartitionKey">
+            <summary>
+            Gets or sets the Azure event hub partition key for the time-series meta-data.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting">
+            <summary>
+            Gets or sets flag that determines if multiple posts to Azure Event Hub should be made in parallel.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.ValuesPerPost">
+            <summary>
+            Gets or sets the maximum values to send per post when <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting"/> is <c>true</c> for the Azure Event Hub connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata">
+            <summary>
+            Gets or sets flag that determines if metadata should be serialized into Azure event hub.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns a flag that determines if measurements sent to this <see cref="T:AzureEventHubAdapters.AzureEventHubOutputAdapter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if this <see cref="T:AzureEventHubAdapters.AzureEventHubOutputAdapter"/> uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.Status">
+            <summary>
+            Gets a detailed status for this <see cref="T:AzureEventHubAdapters.AzureEventHubOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:AzureEventHubAdapters.AzureEventHubOutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:AzureEventHubAdapters.AzureEventHubOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to Azure Event Hub database.
+            </summary>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from Azure Event Hub.
+            </summary>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.ExecuteMetadataRefresh">
+            <summary>
+            Executes the metadata refresh in a synchronous fashion.
+            </summary>
+        </member>
+        <member name="M:AzureEventHubAdapters.AzureEventHubOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to Azure Event Hub.
+            </summary>
+        </member>
+    </members>
+</doc>
