@@ -96,9 +96,6 @@ namespace openHistorian
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
 
-            // Setup resolver for web page controller instances
-            httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, model, typeof(AppModel));
-
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
 
@@ -202,6 +199,9 @@ namespace openHistorian
 
             // Load the WebPageController class and assign its routes
             app.UseWebApi(httpConfig);
+
+            // Setup resolver for web page controller instances
+            app.UseWebPageController(WebServer.Default, Program.Host.DefaultWebPage, model, typeof(AppModel), AuthenticationOptions);
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
