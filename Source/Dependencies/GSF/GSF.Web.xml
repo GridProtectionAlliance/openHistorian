@@ -2919,11 +2919,6 @@
             </summary>
             <param name="webServer"><see cref="P:GSF.Web.Hosting.WebPageController.WebServer"/> instance to use for controller; uses default instance if not provided.</param>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.DefaultWebPage">
-            <summary>
-            Gets or sets default web page to use for this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Hosting.WebPageController.Model">
             <summary>
             Gets or sets the <see cref="T:GSF.Web.Model.RazorView"/> model instance for this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
@@ -2934,22 +2929,10 @@
             Gets or sets the <see cref="T:GSF.Web.Model.RazorView"/> model <see cref="T:System.Type"/> for this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
             </summary>
         </member>
-        <member name="P:GSF.Web.Hosting.WebPageController.Database">
-            <summary>
-            Gets or sets database connection to provide to <see cref="T:GSF.Web.Model.RazorView"/> instances in this <see cref="T:GSF.Web.Hosting.WebPageController"/>, if any.
-            </summary>
-        </member>
         <member name="P:GSF.Web.Hosting.WebPageController.WebServer">
             <summary>
             Gets the <see cref="T:GSF.Web.Hosting.WebServer"/> instance used by this <see cref="T:GSF.Web.Hosting.WebPageController"/>.
             </summary>
-        </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.Threading.CancellationToken)">
-            <summary>
-            Default page request handler.
-            </summary>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page.</returns>
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.GetPage(System.String,System.Threading.CancellationToken)">
             <summary>
@@ -2959,23 +2942,29 @@
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Rendered page result for given page.</returns>
         </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.Threading.CancellationToken)">
+        <member name="T:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions">
             <summary>
-            Common page post handler.
+            Defines extension function for registering <see cref="T:GSF.Web.Hosting.WebPageController"/> in web server pipeline.
             </summary>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page.</returns>
         </member>
-        <member name="M:GSF.Web.Hosting.WebPageController.GetDependencyResolver(GSF.Web.Hosting.WebServer,System.String,System.Object,System.Type,GSF.Data.AdoDataConnection)">
+        <member name="M:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions.UseWebPageController(Owin.IAppBuilder,GSF.Web.Hosting.WebServer,System.String,System.Object,System.Type,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Registers web page controller in web server pipeline.
+            </summary>
+            <param name="app">The app builder for the web server pipeline.</param>
+            <param name="webServer"><see cref="T:GSF.Web.Hosting.WebServer"/> instance to use for controller.</param>
+            <param name="defaultWebPage">The default page to display on the default path.</param>
+            <param name="model">Reference to model to use when rendering Razor templates, if any.</param>
+            <param name="modelType">Type of <paramref name="model"/>, if any.</param>
+            <param name="options">Authentication options for enabling sessions.</param>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions.GetDependencyResolver(GSF.Web.Hosting.WebServer,System.Object,System.Type)">
             <summary>
             Gets a dependency resolver.
             </summary>
-            <param name="webServer"><see cref="P:GSF.Web.Hosting.WebPageController.WebServer"/> instance to use for controller; uses default instance if not provided.</param>
-            <param name="defaultWebPage">Default web page name to use for controller; uses "index.html" if not provided.</param>
+            <param name="webServer"><see cref="T:GSF.Web.Hosting.WebServer"/> instance to use for controller.</param>
             <param name="model">Reference to model to use when rendering Razor templates, if any.</param>
             <param name="modelType">Type of <paramref name="model"/>, if any.</param>
-            <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to use, if any.</param>
             <returns>Dependency resolver for the specified parameters.</returns>
         </member>
         <member name="T:GSF.Web.Hosting.WebServer">

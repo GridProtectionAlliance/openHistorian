@@ -9,21 +9,6 @@
             Represents an output adapter that sends measurements to an Azure Event Hub
             </summary>
         </member>
-        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultUseParallelPosting">
-            <summary>
-            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting"/>.
-            </summary>
-        </member>
-        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultValuesPerPost">
-            <summary>
-            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.ValuesPerPost"/>.
-            </summary>
-        </member>
-        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultSerializeMetadata">
-            <summary>
-            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
-            </summary>
-        </member>
         <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultDataPartitionKey">
             <summary>
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPartitionKey"/>.
@@ -32,6 +17,16 @@
         <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultMetadataPartitionKey">
             <summary>
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.MetadataPartitionKey"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultDataPostFormat">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultSerializeMetadata">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubConnectionString">
@@ -54,14 +49,9 @@
             Gets or sets the Azure event hub partition key for the time-series meta-data.
             </summary>
         </member>
-        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting">
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat">
             <summary>
-            Gets or sets flag that determines if multiple posts to Azure Event Hub should be made in parallel.
-            </summary>
-        </member>
-        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.ValuesPerPost">
-            <summary>
-            Gets or sets the maximum values to send per post when <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.UseParallelPosting"/> is <c>true</c> for the Azure Event Hub connection.
+            Gets or sets the Azure event hub JSON data posting format for the time-series meta-data.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata">
