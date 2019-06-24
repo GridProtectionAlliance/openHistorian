@@ -112,6 +112,11 @@ namespace openHistorian.Adapters
         /// </summary>
         public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
 
+        /// <summary>
+        /// Defines the default value for <see cref="ArchiveCurtailmentInterval"/>.
+        /// </summary>
+        public const int DefaultArchiveCurtailmentInterval = Time.SecondsPerDay;
+
         // Fields
         private HistorianIArchive m_archive;
         private HistorianServerDatabaseConfig m_archiveInfo;
@@ -137,7 +142,7 @@ namespace openHistorian.Adapters
         private Dictionary<ulong, DataRow> m_measurements;
         private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
         private Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
-        private Timer m_dailyTimer;
+        private Timer m_archiveCurtailmentTimer;
         private SafeFileWatcher[] m_attachedPathWatchers;
         private bool m_disposed;
 
@@ -295,6 +300,18 @@ namespace openHistorian.Adapters
             {
                 m_directoryNamingMode = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the default interval, in seconds, over which the archive curtailment will operation. Set to zero to disable.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the default interval, in seconds, over which the archive curtailment will operation. Set to zero to disable."),
+        DefaultValue(DefaultArchiveCurtailmentInterval)]
+        public int ArchiveCurtailmentInterval
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -557,6 +574,7 @@ namespace openHistorian.Adapters
                 status.AppendFormat("          Memory pool size: {0:N4}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
                 status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"));
                 status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled");
+                status.AppendFormat(" Archive curtailment timer: {0}\r\n", Time.ToElapsedTimeString(ArchiveCurtailmentInterval, 0));
 
                 if (EnableTimeReasonabilityCheck)
                 {
@@ -646,11 +664,11 @@ namespace openHistorian.Adapters
                             m_replicationProviders.Dispose();
                         }
 
-                        if ((object)m_dailyTimer != null)
+                        if ((object)m_archiveCurtailmentTimer != null)
                         {
-                            m_dailyTimer.Stop();
-                            m_dailyTimer.Elapsed -= m_dailyTimer_Elapsed;
-                            m_dailyTimer.Dispose();
+                            m_archiveCurtailmentTimer.Stop();
+                            m_archiveCurtailmentTimer.Elapsed -= m_archiveCurtailmentTimerElapsed;
+                            m_archiveCurtailmentTimer.Dispose();
                         }
                     }
                 }
@@ -688,6 +706,11 @@ namespace openHistorian.Adapters
 
             if (settings.TryGetValue("ArchiveDirectories", out setting))
                 ArchiveDirectories = setting;
+
+            if (settings.TryGetValue("ArchiveCurtailmentInterval", out setting))
+                ArchiveCurtailmentInterval = int.Parse(setting);
+            else
+                ArchiveCurtailmentInterval = DefaultArchiveCurtailmentInterval;
 
             if (settings.TryGetValue("AttachedPaths", out setting))
                 AttachedPaths = setting;
@@ -778,10 +801,10 @@ namespace openHistorian.Adapters
 
             if (MaximumArchiveDays > 0)
             {
-                m_dailyTimer = new Timer(Time.SecondsPerDay * 1000.0D);
-                m_dailyTimer.AutoReset = true;
-                m_dailyTimer.Elapsed += m_dailyTimer_Elapsed;
-                m_dailyTimer.Enabled = true;
+                m_archiveCurtailmentTimer = new Timer(ArchiveCurtailmentInterval * 1000.0D);
+                m_archiveCurtailmentTimer.AutoReset = true;
+                m_archiveCurtailmentTimer.Elapsed += m_archiveCurtailmentTimerElapsed;
+                m_archiveCurtailmentTimer.Enabled = true;
             }
 
             // Initialize the file watchers for attached paths
@@ -910,7 +933,7 @@ namespace openHistorian.Adapters
             throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
         }
 
-        private void m_dailyTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void m_archiveCurtailmentTimerElapsed(object sender, ElapsedEventArgs e)
         {
             CurtailArchiveFiles();
         }
