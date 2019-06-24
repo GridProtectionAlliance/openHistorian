@@ -303,10 +303,10 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets or sets the default interval, in seconds, over which the archive curtailment will operation. Set to zero to disable.
+        /// Gets or sets the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable.
         /// </summary>
         [ConnectionStringParameter,
-        Description("Define the default interval, in seconds, over which the archive curtailment will operation. Set to zero to disable."),
+        Description("Define the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable."),
         DefaultValue(DefaultArchiveCurtailmentInterval)]
         public int ArchiveCurtailmentInterval
         {
