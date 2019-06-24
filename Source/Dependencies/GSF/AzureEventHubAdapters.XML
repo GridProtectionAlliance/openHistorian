@@ -24,6 +24,11 @@
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat"/>.
             </summary>
         </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultTimestampFormat">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.TimestampFormat"/>.
+            </summary>
+        </member>
         <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultSerializeMetadata">
             <summary>
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
@@ -52,6 +57,11 @@
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat">
             <summary>
             Gets or sets the Azure event hub JSON data posting format for the time-series meta-data.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.TimestampFormat">
+            <summary>
+            Gets or sets the default timestamp format for the time-series data.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata">
