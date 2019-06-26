@@ -7616,6 +7616,35 @@
             </summary>
             <param name="command">The command to be parsed.</param>
             <returns>An array of arguments.</returns>
+            <remarks>
+            <para>
+            This function processes a set of command line arguments using a simple set of rules based on
+            those used in popular POSIX command shells. It is important to note that these rules do not apply
+            to instances of the <see cref="T:GSF.Console.Arguments"/> class or the <see cref="M:GSF.Console.Arguments.ParseCommand(System.String)"/> function.
+            </para>
+            
+            <para>
+            The motivation for this function was to provide a more user-friendly set of rules by which to
+            specify command-line arguments. This is of course helpful for the user who has to type the
+            command-line arguments by hand, but it also ends up being useful for systems that have to
+            programmatically escape arguments to be consumed by other command-line applications (see
+            the <see cref="M:GSF.Console.Arguments.Escape(System.String)"/> function).
+            </para>
+            
+            <para>
+            Also note that Windows has historically not provided a standard method for handling
+            command-line arguments and that some of the command-line tools in Windows have rolled their
+            own (potentially faulty) methods for doing so. More recently, Microsoft has provided the
+            <see cref="M:System.Environment.GetCommandLineArgs"/> function for .NET applications to retrieve their
+            own command line arguments using a standard format, but this function lacks the appropriate
+            supporting functions for programmatically handling arbitrary command strings within an
+            application. Furthermore, the rules for escaping spaces, quotes, and backslashes are very
+            inconsistent, making it difficult to write a robust method for escaping individual arguments,
+            let alone fully reproducing the same command parsing rules. For this reason, some programmers
+            may be interested in using this method in conjunction with <see cref="P:System.Environment.CommandLine"/>
+            for parsing their own command line arguments.
+            </para>
+            </remarks>
         </member>
         <member name="M:GSF.Console.Arguments.Escape(System.String)">
             <summary>

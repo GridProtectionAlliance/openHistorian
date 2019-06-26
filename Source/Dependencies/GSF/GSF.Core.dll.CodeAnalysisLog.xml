@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#ParseExpressions(System.String,System.Boolean)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-06-25 04:00:47Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-06-26 04:01:18Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Parsing" File="TemplatedExpressionParser.cs" Line="277">'TemplatedExpressionParser.ParseExpressions(string, bool)' has a cyclomatic complexity of 26. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
