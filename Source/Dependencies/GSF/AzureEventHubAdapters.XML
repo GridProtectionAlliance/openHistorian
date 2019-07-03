@@ -34,14 +34,24 @@
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
             </summary>
         </member>
-        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubConnectionString">
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubDataClientConnectionString">
             <summary>
-            Gets or sets the event hub connection string for the Azure event hub connection.
+            Gets or sets the event hub time-series data client connection string for the Azure event hub connection.
             </summary>
         </member>
-        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubName">
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubDataClientName">
             <summary>
-            Gets or sets the event hub name for the Azure event hub connection.
+            Gets or sets the event hub time-series data client name for the Azure event hub connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubMetadataClientConnectionString">
+            <summary>
+            Gets or sets the event hub meta-data client connection string for the Azure event hub connection.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubMetadataClientName">
+            <summary>
+            Gets or sets the event hub meta-data client name for the Azure event hub connection.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPartitionKey">
