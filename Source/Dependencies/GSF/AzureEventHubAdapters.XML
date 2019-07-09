@@ -24,6 +24,16 @@
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat"/>.
             </summary>
         </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultMetadataPostFormat">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.MetadataPostFormat"/>.
+            </summary>
+        </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultPostSizeLimit">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.PostSizeLimit"/>.
+            </summary>
+        </member>
         <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultTimestampFormat">
             <summary>
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.TimestampFormat"/>.
@@ -66,7 +76,17 @@
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.DataPostFormat">
             <summary>
+            Gets or sets the Azure event hub JSON data posting format for the time-series data.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.MetadataPostFormat">
+            <summary>
             Gets or sets the Azure event hub JSON data posting format for the time-series meta-data.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.PostSizeLimit">
+            <summary>
+            Gets or sets the Azure event hub JSON data posting size limit.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.TimestampFormat">
