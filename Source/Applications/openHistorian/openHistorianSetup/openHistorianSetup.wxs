@@ -631,6 +631,15 @@
       <Component Id="EzDNAServApiNet64">
         <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll" />
       </Component>
+      <Component Id="AzureEventHubAdapters">
+        <File Id="AzureEventHubAdapters.dll" Name="AzureEventHubAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AzureEventHubAdapters.dll" />
+      </Component>
+      <Component Id="Microsoft.Azure.Amqp">
+        <File Id="Microsoft.Azure.Amqp.dll" Name="Microsoft.Azure.Amqp.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.Amqp.dll" />
+      </Component>
+      <Component Id="Microsoft.Azure.EventHubs">
+        <File Id="Microsoft.Azure.EventHubs.dll" Name="Microsoft.Azure.EventHubs.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.EventHubs.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- BouncyCastle Dependencies -->
