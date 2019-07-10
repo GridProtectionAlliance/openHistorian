@@ -840,6 +840,11 @@
             Gets the <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/> component used for logging errors encountered in the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
             </summary>
         </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ConnectionErrorLogger">
+            <summary>
+            Gets the <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/> component used for logging connection related exceptions encountered in the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
         <member name="P:GSF.ServiceProcess.ServiceHelper.Enabled">
             <summary>
             Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> is currently enabled.
@@ -1164,6 +1169,12 @@
             Log exception to <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/>.
             </summary>
             <param name="ex">Exception to log.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.LogConnectionException(System.Exception)">
+            <summary>
+            Log exception to <see cref="P:GSF.ServiceProcess.ServiceHelper.ConnectionErrorLogger"/>.
+            </summary>
+            <param name="ex">Connection exception to log.</param>
         </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStarting(System.String[])">
             <summary>

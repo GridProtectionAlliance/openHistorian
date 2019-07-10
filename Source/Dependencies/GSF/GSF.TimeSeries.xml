@@ -4355,6 +4355,34 @@
             Not supported.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.ConnectionException">
+            <summary>
+            Represents an exception related to connection activities.
+            </summary>
+            <remarks>
+            This exception is used to filter connection exceptions into a separate log since
+            these types of exceptions can be so frequent when a device is offline.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.ConnectionException.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.ConnectionException"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ConnectionException.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.ConnectionException"/> with the specified <paramref name="message"/>.
+            </summary>
+            <param name="message">Exception message.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ConnectionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.ConnectionException"/> with the specified <paramref name="message"/>
+            and <paramref name="innerException"/>.
+            </summary>
+            <param name="message">Exception message.</param>
+            <param name="innerException">Inner exception.</param>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
@@ -11810,7 +11838,32 @@
         </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.LogExceptionHandler(System.Object,GSF.EventArgs{System.Exception})">
             <summary>
-            Event handler for processing exceptions encountered while writing entries to a log file.
+            Event handler for processing exceptions encountered while writing entries to any log file.
+            </summary>
+            <param name="sender">Event source of the exception.</param>
+            <param name="e">Event arguments containing the exception to report.</param>
+            <remarks>
+            This function is for derived classes wanting access to any logged exception without needing
+            to override all specific log exception handlers.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.StatusLogExceptionHandler(System.Object,GSF.EventArgs{System.Exception})">
+            <summary>
+            Event handler for processing exceptions encountered while writing entries to the status log file.
+            </summary>
+            <param name="sender">Event source of the exception.</param>
+            <param name="e">Event arguments containing the exception to report.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ErrorLogExceptionHandler(System.Object,GSF.EventArgs{System.Exception})">
+            <summary>
+            Event handler for processing exceptions encountered while writing entries to the error log file.
+            </summary>
+            <param name="sender">Event source of the exception.</param>
+            <param name="e">Event arguments containing the exception to report.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ConnectionErrorLogExceptionHandler(System.Object,GSF.EventArgs{System.Exception})">
+            <summary>
+            Event handler for processing exceptions encountered while writing entries to the connection log file.
             </summary>
             <param name="sender">Event source of the exception.</param>
             <param name="e">Event arguments containing the exception to report.</param>
