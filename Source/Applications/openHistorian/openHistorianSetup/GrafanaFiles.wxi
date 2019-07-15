@@ -4844,41 +4844,41 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_build_Components" Directory="PUBLICBUILDFOLDER">
-  <Component Id="public_build_app_e20ad27c583c67dee67e_js">
-    <File Id="public_build_app.e20ad27c583c67dee67e.js" Name="app.e20ad27c583c67dee67e.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\app.e20ad27c583c67dee67e.js" />
+  <Component Id="public_build_app_9d62d98149547e1107ad_js">
+    <File Id="public_build_app.9d62d98149547e1107ad.js" Name="app.9d62d98149547e1107ad.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\app.9d62d98149547e1107ad.js" />
   </Component>
-  <Component Id="public_build_app_e20ad27c583c67dee67e_js_map">
-    <File Id="public_build_app.e20ad27c583c67dee67e.js.map" Name="app.e20ad27c583c67dee67e.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\app.e20ad27c583c67dee67e.js.map" />
+  <Component Id="public_build_app_9d62d98149547e1107ad_js_map">
+    <File Id="public_build_app.9d62d98149547e1107ad.js.map" Name="app.9d62d98149547e1107ad.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\app.9d62d98149547e1107ad.js.map" />
   </Component>
-  <Component Id="public_build_dark_e20ad27c583c67dee67e_js">
-    <File Id="public_build_dark.e20ad27c583c67dee67e.js" Name="dark.e20ad27c583c67dee67e.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\dark.e20ad27c583c67dee67e.js" />
+  <Component Id="public_build_dark_9d62d98149547e1107ad_js">
+    <File Id="public_build_dark.9d62d98149547e1107ad.js" Name="dark.9d62d98149547e1107ad.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\dark.9d62d98149547e1107ad.js" />
   </Component>
-  <Component Id="public_build_dark_e20ad27c583c67dee67e_js_map">
-    <File Id="public_build_dark.e20ad27c583c67dee67e.js.map" Name="dark.e20ad27c583c67dee67e.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\dark.e20ad27c583c67dee67e.js.map" />
+  <Component Id="public_build_dark_9d62d98149547e1107ad_js_map">
+    <File Id="public_build_dark.9d62d98149547e1107ad.js.map" Name="dark.9d62d98149547e1107ad.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\dark.9d62d98149547e1107ad.js.map" />
   </Component>
-  <Component Id="public_build_explore_e20ad27c583c67dee67e_js">
-    <File Id="public_build_explore.e20ad27c583c67dee67e.js" Name="explore.e20ad27c583c67dee67e.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\explore.e20ad27c583c67dee67e.js" />
+  <Component Id="public_build_explore_9d62d98149547e1107ad_js">
+    <File Id="public_build_explore.9d62d98149547e1107ad.js" Name="explore.9d62d98149547e1107ad.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\explore.9d62d98149547e1107ad.js" />
   </Component>
-  <Component Id="public_build_explore_e20ad27c583c67dee67e_js_map">
-    <File Id="public_build_explore.e20ad27c583c67dee67e.js.map" Name="explore.e20ad27c583c67dee67e.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\explore.e20ad27c583c67dee67e.js.map" />
+  <Component Id="public_build_explore_9d62d98149547e1107ad_js_map">
+    <File Id="public_build_explore.9d62d98149547e1107ad.js.map" Name="explore.9d62d98149547e1107ad.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\explore.9d62d98149547e1107ad.js.map" />
   </Component>
-  <Component Id="public_build_grafana_dark_e20ad27c583c67dee67e_css">
-    <File Id="public_build_grafana.dark.e20ad27c583c67dee67e.css" Name="grafana.dark.e20ad27c583c67dee67e.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\grafana.dark.e20ad27c583c67dee67e.css" />
+  <Component Id="public_build_grafana_dark_9d62d98149547e1107ad_css">
+    <File Id="public_build_grafana.dark.9d62d98149547e1107ad.css" Name="grafana.dark.9d62d98149547e1107ad.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\grafana.dark.9d62d98149547e1107ad.css" />
   </Component>
-  <Component Id="public_build_grafana_light_e20ad27c583c67dee67e_css">
-    <File Id="public_build_grafana.light.e20ad27c583c67dee67e.css" Name="grafana.light.e20ad27c583c67dee67e.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\grafana.light.e20ad27c583c67dee67e.css" />
+  <Component Id="public_build_grafana_light_9d62d98149547e1107ad_css">
+    <File Id="public_build_grafana.light.9d62d98149547e1107ad.css" Name="grafana.light.9d62d98149547e1107ad.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\grafana.light.9d62d98149547e1107ad.css" />
   </Component>
-  <Component Id="public_build_light_e20ad27c583c67dee67e_js">
-    <File Id="public_build_light.e20ad27c583c67dee67e.js" Name="light.e20ad27c583c67dee67e.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\light.e20ad27c583c67dee67e.js" />
+  <Component Id="public_build_light_9d62d98149547e1107ad_js">
+    <File Id="public_build_light.9d62d98149547e1107ad.js" Name="light.9d62d98149547e1107ad.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\light.9d62d98149547e1107ad.js" />
   </Component>
-  <Component Id="public_build_light_e20ad27c583c67dee67e_js_map">
-    <File Id="public_build_light.e20ad27c583c67dee67e.js.map" Name="light.e20ad27c583c67dee67e.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\light.e20ad27c583c67dee67e.js.map" />
+  <Component Id="public_build_light_9d62d98149547e1107ad_js_map">
+    <File Id="public_build_light.9d62d98149547e1107ad.js.map" Name="light.9d62d98149547e1107ad.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\light.9d62d98149547e1107ad.js.map" />
   </Component>
-  <Component Id="public_build_vendor_e20ad27c583c67dee67e_js">
-    <File Id="public_build_vendor.e20ad27c583c67dee67e.js" Name="vendor.e20ad27c583c67dee67e.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\vendor.e20ad27c583c67dee67e.js" />
+  <Component Id="public_build_vendor_9d62d98149547e1107ad_js">
+    <File Id="public_build_vendor.9d62d98149547e1107ad.js" Name="vendor.9d62d98149547e1107ad.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\vendor.9d62d98149547e1107ad.js" />
   </Component>
-  <Component Id="public_build_vendor_e20ad27c583c67dee67e_js_map">
-    <File Id="public_build_vendor.e20ad27c583c67dee67e.js.map" Name="vendor.e20ad27c583c67dee67e.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\vendor.e20ad27c583c67dee67e.js.map" />
+  <Component Id="public_build_vendor_9d62d98149547e1107ad_js_map">
+    <File Id="public_build_vendor.9d62d98149547e1107ad.js.map" Name="vendor.9d62d98149547e1107ad.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\build\vendor.9d62d98149547e1107ad.js.map" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_dashboards_Components" Directory="PUBLICDASHBOARDSFOLDER">
