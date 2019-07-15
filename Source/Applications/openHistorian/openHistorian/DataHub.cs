@@ -977,6 +977,10 @@ namespace openHistorian
             return CommonPhasorServices.CreatePointTag(Program.Host.Model.Global.CompanyAcronym, deviceAcronym, null, signalTypeAcronym, phasorLabel, signalIndex, string.IsNullOrWhiteSpace(phase) ? '_' : phase.Trim()[0], baseKV);
         }
 
+        #region [ Old Code ]
+
+        // Saving BaseKV into its own Phasor table field now...
+
         //public void SaveNominalVoltage(string signalReference, int? nominalVoltage)
         //{
         //    if (string.IsNullOrWhiteSpace(signalReference) || nominalVoltage == null)
@@ -1078,6 +1082,8 @@ namespace openHistorian
 
         //    return null;
         //}
+
+        #endregion
 
         public ConfigurationFrame ExtractConfigurationFrame(int deviceID)
         {

@@ -947,16 +947,7 @@
                     measurement.Internal = true;
                     measurement.Enabled = true;
 
-                    return dataHub.addNewOrUpdateMeasurement(measurement).then(function () {
-                        if (signalType.Acronym === "VPHM") {
-                            return dataHub.saveNominalVoltage(signalReference, phasorDefinition.Voltage.NominalVoltage()).fail(function (error) {
-                                showErrorMessage("Failed to save nominal voltage for phasor measurement " + signalReference + ": " + error);
-                            });
-                        }
-
-                        return $.Deferred().resolve().promise();
-                    })
-                    .fail(function (error) {
+                    return dataHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
                         showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
                     });
                 })
