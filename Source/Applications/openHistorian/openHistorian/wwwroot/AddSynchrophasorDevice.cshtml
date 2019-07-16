@@ -1012,7 +1012,7 @@
 
                 if (dropAndAdd) {
                     // Handle drop and (re)add phasors operation
-                    const promise = count > 0 ? dataHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
+                    const promise = cell.PhasorDefinitions.length > 0 ? dataHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
 
                     return promise.then(function () {
                         const promises = [];
@@ -2638,7 +2638,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 110px"></select>
+                        <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 250px"></select>
                         <div class="checkbox" style="display:inline; margin-left: 15px">
                             <label class="disabled" style="margin-top: 6px"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
