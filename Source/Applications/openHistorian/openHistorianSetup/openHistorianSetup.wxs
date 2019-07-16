@@ -265,7 +265,9 @@
       
       <!-- Included Tag Templates -->
       <Component Id="TagTemplates">
-        <File Id="Common.TagTemplate" Name="Common.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Common.TagTemplate" />
+        <File Id="Full_Checkout_Calculations.TagTemplate" Name="Full Checkout Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Full Checkout Calculations.TagTemplate" />
+        <File Id="Single_Phase_Power_Calculations.TagTemplate" Name="Single Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Single Phase Power Calculations.TagTemplate" />
+        <File Id="Three_Phase_Power_Calculations.TagTemplate" Name="Three Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Three Phase Power Calculations.TagTemplate" />
       </Component>
 
       <!-- Registry Settings -->

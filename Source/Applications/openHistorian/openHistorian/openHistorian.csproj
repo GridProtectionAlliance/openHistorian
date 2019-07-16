@@ -298,9 +298,7 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <Content Include="Common.TagTemplate">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Full Checkout Calculations.TagTemplate" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
@@ -311,6 +309,8 @@
     </Content>
     <Content Include="wwwroot\AddSynchrophasorDevice.cshtml" />
     <Content Include="wwwroot\AddDevice.cshtml" />
+    <Content Include="Single Phase Power Calculations.TagTemplate" />
+    <Content Include="Three Phase Power Calculations.TagTemplate" />
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />

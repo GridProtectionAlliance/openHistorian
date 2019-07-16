@@ -1,0 +1,32 @@
+# Single Phase Power Calculations Template
+#
+# File format is tab-delimited with the following columns:
+#     Tag Name->Inputs->Equation->Type->Description
+#
+# Tag Name column defines identifier that becomes part of the point tag name of the calculation result
+# Inputs column defines the particular inputs for the specified calculation type
+# Equation column defines the equation of the calculation, if applicable to the calculation type
+# Type column defines calculation type and is one of: CalculatePower, SumPhase or DynamicCalculator
+# Description column defines a textual explanation of the calculation used to describe calculation purpose
+#
+# CalculatePower type creates power calculations for paired voltage/current phasors where
+# Inputs column is one of: +, A, B or C
+#
+# SumPhase type creates a 3-phase power summation when A, B and C power calculations are available where
+# Inputs column is one of: MW, MVAR or MVA
+#     
+# DynamicCalculator type creates an equation-based calculation using one or more selected inputs separated by semi-colon where
+# Inputs column variables are as follows - note that phasor based inputs will create one calculation per phasor type (V or I):
+#     VNOM: Nominal Voltage = derived from per voltage phasor screen input in kV
+#      VAM: Voltage A-Phase Magnitude also VBM, VCM, VNM for B, C & N phases and VPOSM, VNEGM, VZM for +, -, 0 sequence
+#      VAA: Voltage A-Phase Angle     also VBA, VCA, VNA            ^            VPOSA, VNEGA, VZA
+#      IAM: Current A-Phase Magnitude also IBM, ICM, INM         Neutral         IPOSM, INEGM, IZM
+#      IAA: Current A-Phase Angle     also IBA, ICA, INA                         IPOSA, INEGA, IZA
+#     FREQ: Frequency
+#     FNOM: Constant nominal frequency per defined global system configuration, defaults to 60
+#     FAVG: Current average frequency - must be pre-calculated with signal reference of "SYSTEM!FREQ-AVG-FQ"
+#    FLAGS: Status Flags, e.g., IEEE C37.118 STAT word
+MW_1	+		CalculatePower	Positive Sequence MW
+MW_A	A		CalculatePower	Single Phase MW A
+MW_B	B		CalculatePower	Single Phase MW B
+MW_C	C		CalculatePower	Single Phase MW C
