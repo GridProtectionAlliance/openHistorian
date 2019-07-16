@@ -1322,7 +1322,7 @@ namespace openHistorian
                 derivedFrame.Cells.Add(derivedCell);
             }
 
-            derivedFrame.IsConcentrator = derivedFrame.Cells.Count > 0;
+            derivedFrame.IsConcentrator = derivedFrame.Cells.Count > 1;
 
             return derivedFrame;
         }
