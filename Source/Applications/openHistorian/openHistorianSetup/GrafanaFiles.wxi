@@ -68,6 +68,336 @@
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_Components" Directory="DATAPLUGINSFOLDER">
 </ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_gitignore">
+    <File Id="data_plugins_grafana_clock_panel.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\.gitignore" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_CHANGELOG_md">
+    <File Id="data_plugins_grafana_clock_panel_CHANGELOG.md" Name="CHANGELOG.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\CHANGELOG.md" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_docker_compose_yml">
+    <File Id="data_plugins_grafana_clock_panel_docker_compose.yml" Name="docker-compose.yml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\docker-compose.yml" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_jest_config_js">
+    <File Id="data_plugins_grafana_clock_panel_jest.config.js" Name="jest.config.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\jest.config.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_LICENSE">
+    <File Id="data_plugins_grafana_clock_panel_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_package_json">
+    <File Id="data_plugins_grafana_clock_panel_package.json" Name="package.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\package.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_README_md">
+    <File Id="data_plugins_grafana_clock_panel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\README.md" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_tsconfig_json">
+    <File Id="data_plugins_grafana_clock_panel_tsconfig.json" Name="tsconfig.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\tsconfig.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_tslint_json">
+    <File Id="data_plugins_grafana_clock_panel_tslint.json" Name="tslint.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\tslint.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_webpack_config_dev_js">
+    <File Id="data_plugins_grafana_clock_panel_webpack.config.dev.js" Name="webpack.config.dev.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\webpack.config.dev.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_webpack_config_js">
+    <File Id="data_plugins_grafana_clock_panel_webpack.config.js" Name="webpack.config.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\webpack.config.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_webpack_config_prod_js">
+    <File Id="data_plugins_grafana_clock_panel_webpack.config.prod.js" Name="webpack.config.prod.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\webpack.config.prod.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_yarn_lock">
+    <File Id="data_plugins_grafana_clock_panel_yarn.lock" Name="yarn.lock" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\yarn.lock" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_.circleci_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANEL.CIRCLECIFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_circleci_config_yml">
+    <File Id="data_plugins_grafana_clock_panel_.circleci_config.yml" Name="config.yml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\.circleci\config.yml" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_artifacts_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELARTIFACTSFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_artifacts_grafana_clock_pa1024089406_gz">
+    <File Id="data_plugins_grafana_clock_panel_artifacts_grafana_clock_pa1309529517.gz" Name="grafana-clock-panel-1.0.3.tar.gz" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\artifacts\grafana-clock-panel-1.0.3.tar.gz" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_artifacts_grafana_clock_panel_1_0_3_zip">
+    <File Id="data_plugins_grafana_clock_panel_artifacts_grafana_clock_panel_1.0.3.zip" Name="grafana-clock-panel-1.0.3.zip" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\artifacts\grafana-clock-panel-1.0.3.zip" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_dist_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELDISTFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_dist_LICENSE">
+    <File Id="data_plugins_grafana_clock_panel_dist_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_module_js">
+    <File Id="data_plugins_grafana_clock_panel_dist_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\module.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_module_js_map">
+    <File Id="data_plugins_grafana_clock_panel_dist_module.js.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\module.js.map" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_plugin_json">
+    <File Id="data_plugins_grafana_clock_panel_dist_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_README_md">
+    <File Id="data_plugins_grafana_clock_panel_dist_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\README.md" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_dist_img_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELDISTIMGFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_dist_img_clock_panel_logo_svg">
+    <File Id="data_plugins_grafana_clock_panel_dist_img_clock_panel_logo.svg" Name="clock_panel_logo.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\img\clock_panel_logo.svg" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_img_countdown1_png">
+    <File Id="data_plugins_grafana_clock_panel_dist_img_countdown1.png" Name="countdown1.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\img\countdown1.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_img_screenshot_clock_options_png">
+    <File Id="data_plugins_grafana_clock_panel_dist_img_screenshot_clock_options.png" Name="screenshot-clock-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\img\screenshot-clock-options.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_img_screenshot_clocks_png">
+    <File Id="data_plugins_grafana_clock_panel_dist_img_screenshot_clocks.png" Name="screenshot-clocks.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\img\screenshot-clocks.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_img_screenshot_showcase_png">
+    <File Id="data_plugins_grafana_clock_panel_dist_img_screenshot_showcase.png" Name="screenshot-showcase.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\img\screenshot-showcase.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_dist_partials_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELDISTPARTIALSFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_dist_partials_module_html">
+    <File Id="data_plugins_grafana_clock_panel_dist_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\partials\module.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_partials_options_html">
+    <File Id="data_plugins_grafana_clock_panel_dist_partials_options.html" Name="options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\partials\options.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_dist_partials_refresh_html">
+    <File Id="data_plugins_grafana_clock_panel_dist_partials_refresh.html" Name="refresh.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\dist\partials\refresh.html" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_provisioning_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELPROVISIONINGFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_provisionin646715166_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELPROVISIONINGDATASOURCESFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_provisioning_datasources_dev_yaml">
+    <File Id="data_plugins_grafana_clock_panel_provisioning_datasources_dev.yaml" Name="dev.yaml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\provisioning\datasources\dev.yaml" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_spec_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSPECFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_spec_clock_panel_jest_ts">
+    <File Id="data_plugins_grafana_clock_panel_spec_clock_panel.jest.ts" Name="clock-panel.jest.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\spec\clock-panel.jest.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_spec_setup_tests_ts">
+    <File Id="data_plugins_grafana_clock_panel_spec_setup_tests.ts" Name="setup_tests.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\spec\setup_tests.ts" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_src_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSRCFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_src_clock_ctrl_ts">
+    <File Id="data_plugins_grafana_clock_panel_src_clock_ctrl.ts" Name="clock_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\clock_ctrl.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_module_ts">
+    <File Id="data_plugins_grafana_clock_panel_src_module.ts" Name="module.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\module.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_plugin_json">
+    <File Id="data_plugins_grafana_clock_panel_src_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\plugin.json" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_src_css_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSRCCSSFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_src_css_clock_panel_css">
+    <File Id="data_plugins_grafana_clock_panel_src_css_clock_panel.css" Name="clock-panel.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\css\clock-panel.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_src_external_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSRCEXTERNALFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_src_external_moment_duration_format_js">
+    <File Id="data_plugins_grafana_clock_panel_src_external_moment_duration_format.js" Name="moment-duration-format.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\external\moment-duration-format.js" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_src_img_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSRCIMGFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_src_img_clock_panel_logo_svg">
+    <File Id="data_plugins_grafana_clock_panel_src_img_clock_panel_logo.svg" Name="clock_panel_logo.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\img\clock_panel_logo.svg" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_img_countdown1_png">
+    <File Id="data_plugins_grafana_clock_panel_src_img_countdown1.png" Name="countdown1.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\img\countdown1.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_img_screenshot_clock_options_png">
+    <File Id="data_plugins_grafana_clock_panel_src_img_screenshot_clock_options.png" Name="screenshot-clock-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\img\screenshot-clock-options.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_img_screenshot_clocks_png">
+    <File Id="data_plugins_grafana_clock_panel_src_img_screenshot_clocks.png" Name="screenshot-clocks.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\img\screenshot-clocks.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_img_screenshot_showcase_png">
+    <File Id="data_plugins_grafana_clock_panel_src_img_screenshot_showcase.png" Name="screenshot-showcase.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\img\screenshot-showcase.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_clock_panel_src_partials_Components" Directory="DATAPLUGINSGRAFANA_CLOCK_PANELSRCPARTIALSFOLDER">
+  <Component Id="data_plugins_grafana_clock_panel_src_partials_module_html">
+    <File Id="data_plugins_grafana_clock_panel_src_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\partials\module.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_partials_options_html">
+    <File Id="data_plugins_grafana_clock_panel_src_partials_options.html" Name="options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\partials\options.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_clock_panel_src_partials_refresh_html">
+    <File Id="data_plugins_grafana_clock_panel_src_partials_refresh.html" Name="refresh.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-clock-panel\src\partials\refresh.html" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_gitignore">
+    <File Id="data_plugins_grafana_piechart_panel.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\.gitignore" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_CHANGELOG_md">
+    <File Id="data_plugins_grafana_piechart_panel_CHANGELOG.md" Name="CHANGELOG.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\CHANGELOG.md" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_docker_compose_yml">
+    <File Id="data_plugins_grafana_piechart_panel_docker_compose.yml" Name="docker-compose.yml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\docker-compose.yml" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_LICENSE">
+    <File Id="data_plugins_grafana_piechart_panel_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_package_json">
+    <File Id="data_plugins_grafana_piechart_panel_package.json" Name="package.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\package.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_README_md">
+    <File Id="data_plugins_grafana_piechart_panel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\README.md" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_yarn_lock">
+    <File Id="data_plugins_grafana_piechart_panel_yarn.lock" Name="yarn.lock" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\yarn.lock" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_.circleci_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANEL.CIRCLECIFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_circleci_config_yml">
+    <File Id="data_plugins_grafana_piechart_panel_.circleci_config.yml" Name="config.yml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\.circleci\config.yml" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_artifacts_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELARTIFACTSFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_artifacts_grafana_piech2923282984_gz">
+    <File Id="data_plugins_grafana_piechart_panel_artifacts_grafana_piech3711584955.gz" Name="grafana-piechart-panel-1.3.8.tar.gz" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\artifacts\grafana-piechart-panel-1.3.8.tar.gz" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_artifacts_grafana_piec3054996499_zip">
+    <File Id="data_plugins_grafana_piechart_panel_artifacts_grafana_piec1404044125.zip" Name="grafana-piechart-panel-1.3.8.zip" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\artifacts\grafana-piechart-panel-1.3.8.zip" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_dist_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELDISTFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_dist_dark_js">
+    <File Id="data_plugins_grafana_piechart_panel_dist_dark.js" Name="dark.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\dark.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_editor_html">
+    <File Id="data_plugins_grafana_piechart_panel_dist_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\editor.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_LICENSE">
+    <File Id="data_plugins_grafana_piechart_panel_dist_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_light_js">
+    <File Id="data_plugins_grafana_piechart_panel_dist_light.js" Name="light.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\light.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_module_html">
+    <File Id="data_plugins_grafana_piechart_panel_dist_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\module.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_module_js">
+    <File Id="data_plugins_grafana_piechart_panel_dist_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\module.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_plugin_json">
+    <File Id="data_plugins_grafana_piechart_panel_dist_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_README_md">
+    <File Id="data_plugins_grafana_piechart_panel_dist_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\README.md" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_dist_img_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELDISTIMGFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_donut_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_donut.png" Name="piechart-donut.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart-donut.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_lege1779691979_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_lege1779691979.png" Name="piechart-legend-on-graph.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart-legend-on-graph.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_legend_rhs_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_legend_rhs.png" Name="piechart-legend-rhs.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart-legend-rhs.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_legend_under_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_legend_under.png" Name="piechart-legend-under.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart-legend-under.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_options_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_options.png" Name="piechart-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart-options.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_logo_large_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_logo_large.png" Name="piechart_logo_large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart_logo_large.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_img_piechart_logo_small_png">
+    <File Id="data_plugins_grafana_piechart_panel_dist_img_piechart_logo_small.png" Name="piechart_logo_small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\img\piechart_logo_small.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_dist_styles_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELDISTSTYLESFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_dist_styles_dark_css">
+    <File Id="data_plugins_grafana_piechart_panel_dist_styles_dark.css" Name="dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\styles\dark.css" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_dist_styles_light_css">
+    <File Id="data_plugins_grafana_piechart_panel_dist_styles_light.css" Name="light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\dist\styles\light.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_src_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELSRCFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_src_editor_html">
+    <File Id="data_plugins_grafana_piechart_panel_src_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\editor.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_legend_ts">
+    <File Id="data_plugins_grafana_piechart_panel_src_legend.ts" Name="legend.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\legend.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_module_html">
+    <File Id="data_plugins_grafana_piechart_panel_src_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\module.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_module_ts">
+    <File Id="data_plugins_grafana_piechart_panel_src_module.ts" Name="module.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\module.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_piechart_ctrl_test_ts">
+    <File Id="data_plugins_grafana_piechart_panel_src_piechart_ctrl.test.ts" Name="piechart_ctrl.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\piechart_ctrl.test.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_piechart_ctrl_ts">
+    <File Id="data_plugins_grafana_piechart_panel_src_piechart_ctrl.ts" Name="piechart_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\piechart_ctrl.ts" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_plugin_json">
+    <File Id="data_plugins_grafana_piechart_panel_src_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_rendering_ts">
+    <File Id="data_plugins_grafana_piechart_panel_src_rendering.ts" Name="rendering.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\rendering.ts" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_src_img_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELSRCIMGFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_donut_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_donut.png" Name="piechart-donut.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart-donut.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_on_graph_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_on_graph.png" Name="piechart-legend-on-graph.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart-legend-on-graph.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_rhs_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_rhs.png" Name="piechart-legend-rhs.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart-legend-rhs.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_under_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_legend_under.png" Name="piechart-legend-under.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart-legend-under.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_options_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_options.png" Name="piechart-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart-options.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_logo_large_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_logo_large.png" Name="piechart_logo_large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart_logo_large.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_img_piechart_logo_small_png">
+    <File Id="data_plugins_grafana_piechart_panel_src_img_piechart_logo_small.png" Name="piechart_logo_small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\img\piechart_logo_small.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_src_lib_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELSRCLIBFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_src_lib_jquery_flot_js">
+    <File Id="data_plugins_grafana_piechart_panel_src_lib_jquery.flot.js" Name="jquery.flot.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\lib\jquery.flot.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_lib_jquery_flot_pie_js">
+    <File Id="data_plugins_grafana_piechart_panel_src_lib_jquery.flot.pie.js" Name="jquery.flot.pie.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\lib\jquery.flot.pie.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_lib_jquery_flot_time_js">
+    <File Id="data_plugins_grafana_piechart_panel_src_lib_jquery.flot.time.js" Name="jquery.flot.time.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\lib\jquery.flot.time.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_lib_perfect_scrollbar_min_js">
+    <File Id="data_plugins_grafana_piechart_panel_src_lib_perfect_scrollbar.min.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\lib\perfect-scrollbar.min.js" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_piechart_panel_src_styles_Components" Directory="DATAPLUGINSGRAFANA_PIECHART_PANELSRCSTYLESFOLDER">
+  <Component Id="data_plugins_grafana_piechart_panel_src_styles_dark_scss">
+    <File Id="data_plugins_grafana_piechart_panel_src_styles_dark.scss" Name="dark.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\styles\dark.scss" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_styles_light_scss">
+    <File Id="data_plugins_grafana_piechart_panel_src_styles_light.scss" Name="light.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\styles\light.scss" />
+  </Component>
+  <Component Id="data_plugins_grafana_piechart_panel_src_styles_piechart_scss">
+    <File Id="data_plugins_grafana_piechart_panel_src_styles_piechart.scss" Name="piechart.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\styles\piechart.scss" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_gitignore">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\.gitignore" />
@@ -586,6 +916,163 @@
   </Component>
   <Component Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_2500825893_html">
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_4126474795.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\partials\query.options.html" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_gitignore">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\.gitignore" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_Gruntfile_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_Gruntfile.js" Name="Gruntfile.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\Gruntfile.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_LICENSE">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_package_json">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_package.json" Name="package.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\package.json" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_README_md">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\README.md" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_dist_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_editor_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\editor.html" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend.js" Name="legend.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\legend.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend.js.map" Name="legend.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\legend.js.map" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.html" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.js.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.js.map" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_plugin_json">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_README_md">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\README.md" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl.js" Name="scadavis_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\scadavis_ctrl.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl.js.map" Name="scadavis_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\scadavis_ctrl.js.map" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa4053213142_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTCSSFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sca478399393_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sc3627090654.css" Name="scadavis.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\css\scadavis.dark.css" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sc3768785771_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sca551404815.css" Name="scadavis.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\css\scadavis.light.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan849047970_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTIMGFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc3740031655_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc3740031655.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-donuts-radar.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2754918495_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2754918495.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-large.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sca274228903_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sca274228903.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-options.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1456836673_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1456836673.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-power.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2283437042_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2283437042.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-small.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1971682696_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1971682696.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-speedometer.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan542540482_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTLIBFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_lib_per3428903063_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_lib_perf534982510.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\lib\perfect-scrollbar.min.js" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa3911032195_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTSRCFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa3660895712_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTSRCIMGFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2027828175_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2027828175.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-donuts-radar.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3943670867_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3943670867.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-large.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2834053855_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2834053855.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-options.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_img435063885_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_img435063885.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-power.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3340855294_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3340855294.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-small.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im4223365677_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im4223365677.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-speedometer.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_src_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_editor_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\editor.html" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_legend_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_legend.js" Name="legend.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\legend.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\module.html" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\module.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_plugin_json">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_scadavis_ctrl_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_scadavis_ctrl.js" Name="scadavis_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\scadavis_ctrl.js" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa4154393988_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCCSSFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scadavis_dark_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scadavis.dark.css" Name="scadavis.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\css\scadavis.dark.css" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_sca3339181746_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scad125370582.css" Name="scadavis.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\css\scadavis.light.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan882076656_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCIMGFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_scad433077735_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_scad433077735.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-donuts-radar.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2207284614_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2207284614.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-large.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2880178538_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2880178538.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-options.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca1903252888_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca1903252888.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-power.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2948513323_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2948513323.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-small.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2655685107_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2655685107.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-speedometer.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan643733648_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCLIBFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_lib_perfe190615511_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_lib_perf3638511662.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\lib\perfect-scrollbar.min.js" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_Components" Directory="PUBLICFOLDER">

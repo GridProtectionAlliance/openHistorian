@@ -4,6 +4,7 @@
   <Directory Id="IMAGESFOLDER" Name="Images">
     <Directory Id="IMAGESICONSFOLDER" Name="Icons" />
   </Directory>
+  <Directory Id="PANELSFOLDER" Name="Panels" />
   <Directory Id="SCRIPTSFOLDER" Name="Scripts" />
 </Directory>
 </Include>

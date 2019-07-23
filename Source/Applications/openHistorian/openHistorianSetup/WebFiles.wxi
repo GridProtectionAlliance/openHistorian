@@ -130,6 +130,38 @@
     <File Id="Images_Icons_openHistorianWebManager.ico" Name="openHistorianWebManager.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorianWebManager.ico" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="wwwroot_Panels_Components" Directory="PANELSFOLDER">
+  <Component Id="Panels_donut_svg">
+    <File Id="Panels_donut.svg" Name="donut.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\donut.svg" />
+  </Component>
+  <Component Id="Panels_electricalpower_svg">
+    <File Id="Panels_electricalpower.svg" Name="electricalpower.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\electricalpower.svg" />
+  </Component>
+  <Component Id="Panels_helloworld_svg">
+    <File Id="Panels_helloworld.svg" Name="helloworld.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\helloworld.svg" />
+  </Component>
+  <Component Id="Panels_helloworld2_svg">
+    <File Id="Panels_helloworld2.svg" Name="helloworld2.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\helloworld2.svg" />
+  </Component>
+  <Component Id="Panels_helloworld3_svg">
+    <File Id="Panels_helloworld3.svg" Name="helloworld3.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\helloworld3.svg" />
+  </Component>
+  <Component Id="Panels_kor1_svg">
+    <File Id="Panels_kor1.svg" Name="kor1.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\kor1.svg" />
+  </Component>
+  <Component Id="Panels_LICENSE">
+    <File Id="Panels_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\LICENSE" />
+  </Component>
+  <Component Id="Panels_office_svg">
+    <File Id="Panels_office.svg" Name="office.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\office.svg" />
+  </Component>
+  <Component Id="Panels_powergen_svg">
+    <File Id="Panels_powergen.svg" Name="powergen.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\powergen.svg" />
+  </Component>
+  <Component Id="Panels_speedometer_svg">
+    <File Id="Panels_speedometer.svg" Name="speedometer.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\speedometer.svg" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="SCRIPTSFOLDER">
   <Component Id="Scripts_bootstrap_datetimepicker_js">
     <File Id="Scripts_bootstrap_datetimepicker.js" Name="bootstrap-datetimepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.js" />
