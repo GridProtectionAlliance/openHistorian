@@ -276,6 +276,15 @@
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
     <Content Include="wwwroot\Images\ModbusConfigEditor.png" />
     <Content Include="wwwroot\ImportCOMTRADE.cshtml" />
+    <Content Include="wwwroot\Panels\donut.svg" />
+    <Content Include="wwwroot\Panels\electricalpower.svg" />
+    <Content Include="wwwroot\Panels\helloworld.svg" />
+    <Content Include="wwwroot\Panels\helloworld2.svg" />
+    <Content Include="wwwroot\Panels\helloworld3.svg" />
+    <Content Include="wwwroot\Panels\kor1.svg" />
+    <Content Include="wwwroot\Panels\office.svg" />
+    <Content Include="wwwroot\Panels\powergen.svg" />
+    <Content Include="wwwroot\Panels\speedometer.svg" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
     <Content Include="wwwroot\Content\bootstrap-sidebar.css" />
