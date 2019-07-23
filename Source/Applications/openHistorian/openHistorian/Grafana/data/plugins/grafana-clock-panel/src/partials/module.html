@@ -1,0 +1,7 @@
+<div class="clock-panel" ng-style="{height: ctrl.height}">
+  <span ng-if="ctrl.panel.dateSettings.showDate && ctrl.panel.mode === 'time'"
+    <h3 style="font-size: {{ctrl.panel.dateSettings.fontSize}}; font-weight: {{ctrl.panel.dateSettings.fontWeight}};">{{ctrl.date}}</h3>
+  </span>
+  <h2 style="font-size: {{ctrl.panel.timeSettings.fontSize}}; font-weight: {{ctrl.panel.timeSettings.fontWeight}};">{{ctrl.time}}</h2>
+  <h4 ng-if="ctrl.panel.timezone && ctrl.panel.timezoneSettings.showTimezone" style="font-size: {{ctrl.panel.timezoneSettings.fontSize}}; font-weight: {{ctrl.panel.timezoneSettings.fontWeight}};" ng-bind-html="ctrl.zone"></h4>
+</div>
