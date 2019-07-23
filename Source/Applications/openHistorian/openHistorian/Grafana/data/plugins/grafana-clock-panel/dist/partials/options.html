@@ -1,0 +1,129 @@
+<div class="editor-row">
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Clock options</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Clock Mode</label>
+			<div class="gf-form-select-wrapper max-width-10">
+				<select class="input-medium gf-form-input" ng-model="ctrl.panel.mode" ng-options="t for t in ['time', 'countdown']" ng-change="ctrl.render()"></select>
+			</div>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-9">Bg Color</label>
+			<span class="max-width-10">
+				<spectrum-picker class="gf-form-input" ng-model="ctrl.panel.bgColor" ng-change="ctrl.render()" ></spectrum-picker>
+			</span>
+		</div>
+	</div>
+
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'time'">
+		<h5 class="section-heading">Time format</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">12 or 24 hour</label>
+			<div class="gf-form-select-wrapper max-width-12">
+				<select class="input-small gf-form-input" ng-model="ctrl.panel.clockType" ng-options="t for t in ['12 hour', '24 hour', 'custom']" ng-change="ctrl.render()"></select>
+			</div>
+		</div>
+    	<div class="gf-form" ng-show="ctrl.panel.clockType === 'custom'">
+			<label class="gf-form-label width-10">Custom format</label>
+			<input type="text" class="input-small gf-form-input width-12" ng-model="ctrl.panel.timeSettings.customFormat" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Font Size</label>
+			<input type="text" class="input-small gf-form-input width-12" ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Font Weight</label>
+			<span class="gf-form-select-wrapper max-width-12">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.timeSettings.fontWeight"
+																							 ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+	</div>
+
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'countdown'">
+		<h5 class="section-heading">Countdown options</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">Deadline</label>
+			<span class="gf-form-select-wrapper width-16">
+				<input type="datetime-local" class="input-large gf-form-input" ng-model="ctrl.panel.countdownSettings.endCountdownTime" ng-change="ctrl.render()" ng-model-onblur>
+			</span>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">End Text</label>
+			<input type="text" class="gf-form-input max-width-16" ng-model="ctrl.panel.countdownSettings.endText" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">Custom Format
+				<info-popover mode="right-normal">
+					<ul>
+						<li>Leave empty to use default formatting</li>
+						<li>Use <code>auto</code> to format based on length</li>
+						<li>Use <code>[square brackets]</code> for escapes</li>
+						<li>Use
+								<code>Y</code> or <code>y</code> for years,
+								<code>M</code> for months,
+								<code>W</code> or <code>w</code> for weeks,
+								<code>D</code> or <code>d</code> for days,
+								<code>H</code> or <code>h</code> for hours,
+								<code>m</code> for minutes,
+								<code>s</code> for seconds
+						</li>
+						<li>Example: <code>d [days], h [hours]</code></li>
+					</ul>
+				</info-popover>
+			</label>
+			<input type="text" class="input-medium gf-form-input max-width-16" ng-model="ctrl.panel.countdownSettings.customFormat" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+    <div class="gf-form">
+			<label class="gf-form-label width-12">Font Size</label>
+			<input type="text" class="input-small gf-form-input max-width-16" ng-model="ctrl.panel.timeSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur />
+		</div>
+	</div>
+
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Timezone</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Timezone</label>
+			<div class="gf-form-select-wrapper max-width-12">
+				<select class="input-small gf-form-input" ng-model="ctrl.panel.timezone" ng-options="t as t for t in ctrl.timezones" ng-change="ctrl.render()"></select>
+			</div>
+		</div>
+		<gf-form-switch class="gf-form" label="Show" label-class="width-10" checked="ctrl.panel.timezoneSettings.showTimezone" on-change="ctrl.render()"></gf-form-switch>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Display Format</label>
+			<span class="gf-form-select-wrapper max-width-12">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.timezoneSettings.zoneFormat"																		 ng-options="t.value as t.label for t in [{label: 'Zone name', value: 'name'}, {label: 'Zone name + Offset', value: 'nameOffset'}, {label: 'Offset + Abbreviation', value: 'offsetAbbv'}, {label: 'Offset', value: 'offset'}, {label: 'Abbreviation', value: 'abbv'}]" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Font Size</label>
+			<input type="text" class="input-small gf-form-input max-width-12" ng-model="ctrl.panel.timezoneSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-10">Font Weight</label>
+			<span class="gf-form-select-wrapper max-width-12">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.timezoneSettings.fontWeight" ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+	</div>
+	
+	<div class="section gf-form-group" ng-if="ctrl.panel.mode === 'time'">
+		<h5 class="section-heading">Date options</h5>
+
+		<gf-form-switch class="gf-form" label="Show" label-class="width-8" checked="ctrl.panel.dateSettings.showDate" on-change="ctrl.render()"></gf-form-switch>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Format</label>
+			<input type="text" class="input-medium gf-form-input max-width-10" ng-model="ctrl.panel.dateSettings.dateFormat" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Font Size</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.dateSettings.fontSize" ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-8">Font Weight</label>
+			<span class="gf-form-select-wrapper max-width-10">
+				<select class="input-small gf-form-input " ng-model="ctrl.panel.dateSettings.fontWeight" ng-options="t for t in ['normal', 'bold']" ng-change="ctrl.render()"></select>
+			</span>
+		</div>
+	</div>
+</div>
