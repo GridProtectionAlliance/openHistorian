@@ -1,0 +1,281 @@
+.scadavis-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.scadavis-panel--legend-right {
+  flex-direction: row;
+}
+
+.scadavis-panel--legend-right .scadavis-legend {
+  flex: 0 1 10px;
+  height: 100%;
+}
+
+_:-ms-fullscreen, :root .scadavis-panel--legend-right .scadavis-legend {
+  flex: 0 1 200px;
+}
+
+.scadavis-panel--legend-right .scadavis-legend-series {
+  display: block;
+  padding-left: 0px;
+}
+
+.scadavis-panel--legend-right .scadavis-legend-table .scadavis-legend-series {
+  display: table-row;
+}
+
+.scadavis-legend__container {
+  height: 100%;
+}
+
+.scadavis-panel__chart {
+  position: relative;
+  cursor: crosshair;
+  flex-grow: 1;
+  top: 10px;
+}
+
+.datapoints-warning {
+  pointer: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  margin-top: -50px;
+  margin-left: -100px;
+  width: 200px;
+  text-align: center;
+  cursor: auto;
+  padding: 10px;
+}
+
+.scadavis-legend {
+  flex: 0 1 auto;
+  margin: 0 1rem;
+  text-align: center;
+  padding-top: 6px;
+  position: relative;
+}
+
+.scadavis-legend .popover-content {
+  padding: 0;
+}
+
+.scadavis-legend-icon {
+  position: relative;
+  padding-right: 4px;
+  top: 1px;
+}
+
+.scadavis-legend-icon,
+.scadavis-legend-alias,
+.scadavis-legend-value {
+  cursor: pointer;
+  float: left;
+  white-space: nowrap;
+  font-size: 85%;
+  text-align: left;
+  color: 52545c;
+}
+
+.scadavis-legend-icon.current::before {
+  content: "Current: ";
+}
+
+.scadavis-legend-icon.max::before {
+  content: "Max: ";
+}
+
+.scadavis-legend-icon.min::before {
+  content: "Min: ";
+}
+
+.scadavis-legend-icon.total::before {
+  content: "Total: ";
+}
+
+.scadavis-legend-icon.avg::before {
+  content: "Avg: ";
+}
+
+.scadavis-legend-alias.current::before {
+  content: "Current: ";
+}
+
+.scadavis-legend-alias.max::before {
+  content: "Max: ";
+}
+
+.scadavis-legend-alias.min::before {
+  content: "Min: ";
+}
+
+.scadavis-legend-alias.total::before {
+  content: "Total: ";
+}
+
+.scadavis-legend-alias.avg::before {
+  content: "Avg: ";
+}
+
+.scadavis-legend-value.current::before {
+  content: "Current: ";
+}
+
+.scadavis-legend-value.max::before {
+  content: "Max: ";
+}
+
+.scadavis-legend-value.min::before {
+  content: "Min: ";
+}
+
+.scadavis-legend-value.total::before {
+  content: "Total: ";
+}
+
+.scadavis-legend-value.avg::before {
+  content: "Avg: ";
+}
+
+.scadavis-legend-icon .fa {
+  font-size: 135%;
+  position: relative;
+  top: 1px;
+}
+
+.scadavis-legend-series {
+  float: left;
+  white-space: nowrap;
+  padding-left: 10px;
+}
+
+.scadavis-legend-series--right-y {
+  float: right;
+}
+
+.scadavis-legend-value {
+  padding-left: 6px;
+}
+
+.scadavis-legend-table tbody {
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  padding-bottom: 1px;
+  padding-right: 5px;
+}
+
+.scadavis-legend-table .scadavis-legend-series {
+  display: table-row;
+  float: none;
+  padding-left: 0;
+}
+
+.scadavis-legend-table .scadavis-legend-series--right-y {
+  float: none;
+}
+
+.scadavis-legend-table .scadavis-legend-series--right-y .scadavis-legend-alias::after {
+  content: "(right-y)";
+  padding: 0 5px;
+  color: #767980;
+}
+
+.scadavis-legend-table td,
+.scadavis-legend-alias,
+.scadavis-legend-icon,
+.scadavis-legend-value {
+  float: none;
+  display: table-cell;
+  white-space: nowrap;
+  padding: 2px 10px;
+  text-align: right;
+}
+
+.scadavis-legend-table .scadavis-legend-icon {
+  width: 5px;
+  padding: 0;
+  top: 0;
+}
+
+.scadavis-legend-table .scadavis-legend-icon .fa {
+  top: 4px;
+}
+
+.scadavis-legend-table .scadavis-legend-value {
+  padding-left: 15px;
+}
+
+.scadavis-legend-table .scadavis-legend-alias {
+  padding-left: 7px;
+  text-align: left;
+  width: 95%;
+  max-width: 650px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.scadavis-legend-table .scadavis-legend-series:nth-child(odd) {
+  background: #dde4ed;
+}
+
+.scadavis-legend-table .scadavis-legend-value.current::before {
+  content: "";
+}
+
+.scadavis-legend-table .scadavis-legend-value.max::before {
+  content: "";
+}
+
+.scadavis-legend-table .scadavis-legend-value.min::before {
+  content: "";
+}
+
+.scadavis-legend-table .scadavis-legend-value.total::before {
+  content: "";
+}
+
+.scadavis-legend-table .scadavis-legend-value.avg::before {
+  content: "";
+}
+
+.scadavis-legend-table th {
+  text-align: right;
+  padding: 0px 10px 1px 0;
+  font-weight: bold;
+  color: #61c2f2;
+  font-size: 85%;
+  white-space: nowrap;
+}
+
+.scadavis-legend-series-hidden .scadavis-legend-value,
+.scadavis-legend-series-hidden .scadavis-legend-alias {
+  color: #acb6bf;
+}
+
+.scadavis-tooltip {
+  white-space: nowrap;
+  font-size: 12px;
+  background-color: #dde4ed;
+  color: #35373f;
+}
+
+.scadavis-tooltip .scadavis-tooltip-time {
+  text-align: center;
+  position: relative;
+  top: -3px;
+  padding: 0.2rem;
+  font-weight: bold;
+  color: #35373f;
+}
+
+.scadavis-tooltip .scadavis-tooltip-value {
+  display: table-cell;
+  font-weight: bold;
+  padding-left: 15px;
+  text-align: right;
+}

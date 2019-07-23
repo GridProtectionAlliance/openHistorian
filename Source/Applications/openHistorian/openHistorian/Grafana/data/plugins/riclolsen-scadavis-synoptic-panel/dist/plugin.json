@@ -1,0 +1,36 @@
+{
+  "type": "panel",
+  "name": "SCADAvis Synoptic Panel",
+  "id": "scadavis-synoptic-panel",
+
+  "info": {
+    "description": "SCADA-like synoptic panel for grafana",
+    "author": {
+      "name": "SCADAvis.io",
+      "url": "https://scadavis.io"
+    },
+    "keywords": ["scada", "synoptic", "panel"],
+    "logos": {
+      "small": "img/scadavis-small.png",
+      "large": "img/scadavis-large.png"
+    },
+    "links": [
+      {"name": "Project site", "url": "https://github.com/ricardolo/scadavis-synoptic-panel"},
+      {"name": "Blog Post", "url": ""},
+      {"name": "GPL License", "url": ""}
+    ],
+    "screenshots": [
+      {"name": "Legend on the graph", "path": "img/scadavis-power.png"},
+      {"name": "Legend to the right", "path": "img/scadavis-speedometer.png"},
+      {"name": "Legend underneath", "path": "img/scadavis-donuts-radar.png"},
+      {"name": "Piechart options", "path": "img/scadavis-options.png"}
+    ],
+    "version": "1.0.2",
+    "updated": "2018-12-12"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "4.6",
+    "plugins": [ ]
+  }
+}
