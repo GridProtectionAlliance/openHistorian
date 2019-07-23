@@ -4,7 +4,7 @@ Do not point your debug system to this folder - instead copy the contents of thi
 
 When Grafana exists in the debug output folder, you can properly debug the openHistorian while also running a self-hosted copy of Grafana
 
-When updating to a new Grafana version, include the following files for deployment:
+When updating to a new Grafana version, include the following files for deployment (this may change for newwer versions):
 
 bin/
 	* (all files)
