@@ -299,7 +299,7 @@
     <ComponentGroup Id="openHistorianComponents" Directory="INSTALLFOLDER">
       <Component Id="openHistorian">
         <File Id="openHistorian.exe" Name="$(var.openHistorian.TargetFileName)" Source="$(var.openHistorian.TargetPath)" />
-        <ServiceInstall Id="openHistorianService" Name="openHistorian" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Provides processing for streaming time-series data in real-time including phasor data concentration services for synchrophasor applications." />
+        <ServiceInstall Id="openHistorianService" Name="openHistorian" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Provides archive management and routing services for streaming time-series data in real-time for process applications." />
         <ServiceControl Id="openHistorianServiceControl" Name="openHistorian" Stop="both" Remove="uninstall" />
       </Component>
       <Component Id="openHistorianConfig" Permanent="yes">
