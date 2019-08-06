@@ -37,6 +37,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using CancellationToken = System.Threading.CancellationToken;
@@ -267,6 +268,39 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<string[]> Search(Target request)
         {
+            if (ParseFilterExpression(request.target.Trim(), out string tableName, out string[] fieldNames, out string expression, out string sortField, out int takeCount))
+            {
+                return Task.Factory.StartNew(() =>
+                {
+                    DataTableCollection tables = DataSource.Metadata.Tables;
+                    List<string> results = new List<string>();
+
+                    if (tables.Contains(tableName))
+                    {
+                        DataTable table = tables[tableName];
+                        List<string> validFieldNames = new List<string>();
+
+                        for (int i = 0; i < fieldNames?.Length; i++)
+                        {
+                            string fieldName = fieldNames[i].Trim();
+
+                            if (table.Columns.Contains(fieldName))
+                                validFieldNames.Add(fieldName);
+                        }
+
+                        fieldNames = validFieldNames.ToArray();
+
+                        if (fieldNames.Length == 0)
+                            fieldNames = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+
+                        foreach (DataRow row in table.Select(expression, sortField).Take(takeCount))
+                            results.Add(string.Join(",", fieldNames.Select(fieldName => row[fieldName].ToString())));
+                    }
+
+                    return results.ToArray();
+                });
+            }
+
             return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
         }
 
@@ -319,20 +353,53 @@ namespace openHistorian.Adapters
 
         #region [ Static ]
 
+        private static readonly Regex s_filterExpression = new Regex(@"(FILTER\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*\s*\))?\s*(FROM)?\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+)\s+ORDER\s+BY\s+(?<SortField>\w+))|(FILTER\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*\s*\))?\s*(FROM)?\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         // Static Methods
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)
         {
             if (!string.IsNullOrWhiteSpace(instanceName))
             {
-                LocalOutputAdapter adapterInstance;
-
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapterInstance))
+                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance))
                     return adapterInstance;
             }
 
             return null;
         }
 
+        private static bool ParseFilterExpression(string filterExpression, out string tableName, out string[] fieldNames, out string expression, out string sortField, out int takeCount)
+        {
+            tableName = null;
+            fieldNames = null;
+            expression = null;
+            sortField = null;
+            takeCount = 0;
+
+            if (string.IsNullOrWhiteSpace(filterExpression))
+                return false;
+
+            Match filterMatch;
+
+            lock (s_filterExpression)
+            {
+                filterMatch = s_filterExpression.Match(filterExpression.ReplaceControlCharacters());
+            }
+
+            if (!filterMatch.Success)
+                return false;
+
+            tableName = filterMatch.Result("${TableName}").Trim();
+            fieldNames = filterMatch.Groups["FieldName"].Captures.Cast<Capture>().Select(capture => capture.Value).ToArray();
+            expression = filterMatch.Result("${Expression}").Trim();
+            sortField = filterMatch.Result("${SortField}").Trim();
+
+            string maxRows = filterMatch.Result("${MaxRows}").Trim();
+
+            if (string.IsNullOrEmpty(maxRows) || !int.TryParse(maxRows, out takeCount))
+                takeCount = int.MaxValue;
+
+            return true;
+        }
         #endregion
     }
 }
