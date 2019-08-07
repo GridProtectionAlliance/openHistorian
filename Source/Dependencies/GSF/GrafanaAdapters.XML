@@ -280,6 +280,11 @@
             Data source values enumerable.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.DropEmptySeries">
+            <summary>
+            Defines flag that determines if empty series are produced.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.GrafanaDataService">
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
@@ -1210,6 +1215,11 @@
         <member name="F:GrafanaAdapters.TimeSeriesValues.longitude">
             <summary>
             Defines a Grafana time-series underlying point tag longitude.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.dropEmptySeries">
+            <summary>
+            Defines flag that determines if empty series are produced.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.datapoints">
