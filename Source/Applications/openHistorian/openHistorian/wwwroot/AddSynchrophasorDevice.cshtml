@@ -1141,6 +1141,7 @@
                             phasor.Label = voltage.Label();
                             phasor.Type = "V";
                             phasor.Phase = voltage.Phase();
+                            phasor.BaseKV = voltage.Voltage.NominalVoltage();
                             phasor.DestinationPhasorID = null;
                             phasor.SourceIndex = voltage.SourceIndex;
                             
@@ -1179,12 +1180,19 @@
 
                     for (let i = 0; i < currents.length; i++) {
                         const current = currents[i];
+                        const associatedVoltage = current.Current.AssociatedVoltage();
+                        const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
+                        let baseKV = 0;
+
+                        if (voltage)
+                            baseKV = voltage.Voltage.NominalVoltage();
 
                         promises.push(dataHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
                             phasor.DeviceID = cell.ID;
                             phasor.Label = current.Label();
                             phasor.Type = "I";
                             phasor.Phase = current.Phase();
+                            phasor.BaseKV = baseKV;
                             phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
                             phasor.SourceIndex = current.SourceIndex;
 
