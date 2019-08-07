@@ -1,45 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="15.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
-   <Modules>
-    <Module Name="gsf.core.dll">
-     <Namespaces>
-      <Namespace Name="GSF.Units.EE">
-       <Types>
-        <Type Name="SignalReference" Kind="Struct" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#.ctor(System.String)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message Id="System.Int32.TryParse(System.String,System.Int32@)" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Active" Created="2019-08-02 04:00:32Z" FixCategory="NonBreaking">
-             <Issue Name="TryParse" Certainty="95" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared\Units\EE" File="SignalReference.cs" Line="88">'SignalReference.SignalReference(string)' calls 'int.TryParse(string, out int)' but does not explicitly check whether the conversion succeeded. Either use the return value in a conditional statement or verify that the call site expects that the out argument will be set to the default value when the conversion fails.</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806">
-   <Name>Do not ignore method results</Name>
-   <Description>The result of methods that return new instances of strings should be assigned to a variable and subsequently used. If the result of a method that creates a new object, such as String.ToLower(), is not assigned to a variable, the call is wasted.</Description>
-   <Resolution Name="HResultOrErrorCode">{0} calls {1} but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method.</Resolution>
-   <Resolution Name="ObjectCreation">{0} creates a new instance of {1} which is never used. Pass the instance as an argument to another method, assign the instance to a variable, or remove the object creation if it is unnecessary.</Resolution>
-   <Resolution Name="TryParse">{0} calls {1} but does not explicitly check whether the conversion succeeded. Either use the return value in a conditional statement or verify that the call site expects that the out argument will be set to the default value when the conversion fails.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182273.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="95">Warning</MessageLevel>
-   <File Name="usagerules.dll" Version="15.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
