@@ -241,7 +241,7 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() => 
@@ -265,10 +265,10 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string[]> Search(Target request)
         {
-            if (ParseFilterExpression(request.target.Trim(), out string tableName, out string[] fieldNames, out string expression, out string sortField, out int takeCount))
+            if (ParseSelectExpression(request.target.Trim(), out string tableName, out string[] fieldNames, out string expression, out string sortField, out int takeCount))
             {
                 return Task.Factory.StartNew(() =>
                 {
@@ -309,7 +309,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string[]> SearchFields(Target request)
         {
             return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
@@ -320,7 +320,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string[]> SearchFilters(Target request)
         {
             return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
@@ -331,7 +331,7 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="request">Search target.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string[]> SearchOrderBys(Target request)
         {
             return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
@@ -353,7 +353,7 @@ namespace openHistorian.Adapters
 
         #region [ Static ]
 
-        private static readonly Regex s_filterExpression = new Regex(@"(FILTER\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*\s*\))?\s*(FROM)?\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+)\s+ORDER\s+BY\s+(?<SortField>\w+))|(FILTER\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*\s*\))?\s*(FROM)?\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex s_selectExpression = new Regex(@"(SELECT\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*)?\s*FROM\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+)\s+ORDER\s+BY\s+(?<SortField>\w+))|(SELECT\s+(TOP\s+(?<MaxRows>\d+)\s+)?(\s*(?<FieldName>\w+)(\s*,\s*(?<FieldName>\w+))*)?\s*FROM\s*(?<TableName>\w+)\s+WHERE\s+(?<Expression>.+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         // Static Methods
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)
@@ -367,22 +367,22 @@ namespace openHistorian.Adapters
             return null;
         }
 
-        private static bool ParseFilterExpression(string filterExpression, out string tableName, out string[] fieldNames, out string expression, out string sortField, out int takeCount)
+        private static bool ParseSelectExpression(string selectExpression, out string tableName, out string[] fieldNames, out string whereExpression, out string sortField, out int takeCount)
         {
             tableName = null;
             fieldNames = null;
-            expression = null;
+            whereExpression = null;
             sortField = null;
             takeCount = 0;
 
-            if (string.IsNullOrWhiteSpace(filterExpression))
+            if (string.IsNullOrWhiteSpace(selectExpression))
                 return false;
 
             Match filterMatch;
 
-            lock (s_filterExpression)
+            lock (s_selectExpression)
             {
-                filterMatch = s_filterExpression.Match(filterExpression.ReplaceControlCharacters());
+                filterMatch = s_selectExpression.Match(selectExpression.ReplaceControlCharacters());
             }
 
             if (!filterMatch.Success)
@@ -390,7 +390,7 @@ namespace openHistorian.Adapters
 
             tableName = filterMatch.Result("${TableName}").Trim();
             fieldNames = filterMatch.Groups["FieldName"].Captures.Cast<Capture>().Select(capture => capture.Value).ToArray();
-            expression = filterMatch.Result("${Expression}").Trim();
+            whereExpression = filterMatch.Result("${Expression}").Trim();
             sortField = filterMatch.Result("${SortField}").Trim();
 
             string maxRows = filterMatch.Result("${MaxRows}").Trim();
