@@ -50,8 +50,10 @@ namespace openHistorian
         /// </summary>
         static void Main()
         {
+        #if !DEBUG
             if (!s_singleInstanceMutex.WaitOne(0, true))
                 Environment.Exit(1);
+        #endif
 
             bool runAsService;
             bool runAsApplication;
@@ -60,13 +62,13 @@ namespace openHistorian
 
             if (args.Count == 0)
             {
-#if DEBUG
+            #if DEBUG
                 runAsService = false;
                 runAsApplication = true;
-#else
+            #else
                 runAsService = true;
                 runAsApplication = false;
-#endif
+            #endif
             }
             else
             {
