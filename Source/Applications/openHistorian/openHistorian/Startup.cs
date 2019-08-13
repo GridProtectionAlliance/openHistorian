@@ -33,6 +33,7 @@ using ModbusAdapters;
 using Newtonsoft.Json;
 using openHistorian.Model;
 using Owin;
+using PhasorWebUI;
 using System;
 using System.Security;
 using System.Web.Http;
@@ -67,7 +68,7 @@ namespace openHistorian
             {
                 using (new SecurityHub(
                     (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
-                    ex => Program.Host.LogException(ex)
+                    Program.Host.LogException
                 )) { }
             }
             catch (Exception ex)
@@ -80,12 +81,25 @@ namespace openHistorian
             {
                 using (new SharedHub(
                     (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
-                    ex => Program.Host.LogException(ex)
+                    Program.Host.LogException
                 )) { }
             }
             catch (Exception ex)
             {
                 Program.Host.LogException(new SecurityException($"Failed to load Shared Hub: {ex.Message}", ex));
+            }
+
+            // Load phasor hub into application domain, initializing default status and exception handlers
+            try
+            {
+                using (new PhasorHub(
+                    (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
+                    Program.Host.LogException
+                )) { }
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new SecurityException($"Failed to load Phasor Hub: {ex.Message}", ex));
             }
 
             Load_ModbusAssembly();

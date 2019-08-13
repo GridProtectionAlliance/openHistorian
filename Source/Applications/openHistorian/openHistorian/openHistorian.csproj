@@ -189,6 +189,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\PhasorProtocolAdapters.dll</HintPath>
     </Reference>
+    <Reference Include="PhasorWebUI">
+      <HintPath>..\..\..\Dependencies\GSF\PhasorWebUI.dll</HintPath>
+    </Reference>
     <Reference Include="PowerCalculations, Version=2.3.157.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\PowerCalculations.dll</HintPath>
@@ -427,7 +430,7 @@ XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y
           </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
           <servers defaultServer="SelfHostServer">
-            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:8181/" workingDir="" />
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:8180" workingDir="" />
           </servers>
         </WebProjectProperties>
       </FlavorProperties>
