@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PhasorWebUI</name>
+    </assembly>
+    <members>
+        <member name="P:PhasorWebUI.Model.Device.CreatedOn">
+            <summary>
+                Created on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Device.CreatedBy">
+            <summary>
+                Created by field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Device.UpdatedOn">
+            <summary>
+                Updated on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Device.UpdatedBy">
+            <summary>
+                Updated by field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Measurement.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Measurement.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Measurement.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Measurement.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Phasor.CreatedOn">
+            <summary>
+                Created on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Phasor.CreatedBy">
+            <summary>
+                Created by field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Phasor.UpdatedOn">
+            <summary>
+                Updated on field.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Model.Phasor.UpdatedBy">
+            <summary>
+                Updated by field.
+            </summary>
+        </member>
+        <member name="T:PhasorWebUI.PhasorHub">
+            <summary>
+            Represents a data hub used for web-based synchrophasor operations.
+            </summary>
+        </member>
+        <member name="M:PhasorWebUI.PhasorHub.#ctor">
+            <summary>
+            Creates a new <see cref="T:PhasorWebUI.PhasorHub"/>.
+            </summary>
+        </member>
+        <member name="M:PhasorWebUI.PhasorHub.#ctor(System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:PhasorWebUI.PhasorHub"/> with the specified logging functions.
+            </summary>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:PhasorWebUI.PhasorHub.#ctor(System.String,System.Action{System.String,GSF.UpdateType},System.Action{System.Exception})">
+            <summary>
+            Creates a new <see cref="T:PhasorWebUI.PhasorHub"/> with the specified <see cref="T:GSF.Web.Model.DataContext"/> and logging functions.
+            </summary>
+            <param name="settingsCategory">Setting category that contains the connection settings. Defaults to "securityProvider".</param>
+            <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
+            <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
+        </member>
+        <member name="M:PhasorWebUI.PhasorHub.OnConnected">
+            <summary>
+            Overrides base OnConnected method to provide logging
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PhasorWebUI.PhasorHub.OnDisconnected(System.Boolean)">
+            <summary>
+            Overrides base OnDisconnected method to provide logging
+            </summary>
+            <param name="stopCalled"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
