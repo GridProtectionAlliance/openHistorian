@@ -22,9 +22,11 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Diagnostics;
+using GSF.Security;
 using GSF.TimeSeries;
 using InStep.eDNA.EzDNAApiNet;
 using Newtonsoft.Json;
@@ -41,6 +43,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using eDNAMetaData = eDNAAdapters.Metadata;
 
+// ReSharper disable VirtualMemberCallInConstructor
 namespace openHistorian.eDNAGrafanaController
 {
     /// <summary>
@@ -98,7 +101,7 @@ namespace openHistorian.eDNAGrafanaController
 
                     while (result == 0)
                     {
-                        result = History.DnaGetNextHist(key, out double value, out DateTime time, out string status);
+                        result = History.DnaGetNextHist(key, out double value, out DateTime time, out string _);
                         DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
                         if (result == 0)
@@ -131,19 +134,28 @@ namespace openHistorian.eDNAGrafanaController
         private const string FileBackedDictionary = "eDNADataSources.bin";
 
         private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(eDNAGrafanaController), MessageClass.Component);
+        
         private static ConcurrentDictionary<string, eDNADataSource> DataSources { get; }
 
         static eDNAGrafanaController()
         {
+            ConfigurationFile configFile = ConfigurationFile.Open("openHistorian.exe.config");
+            CategorizedSettingsElementCollection settings = configFile.Settings["systemSettings"];
+
+            bool eDNAControllerEnabled = settings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
+
+            if (!eDNAControllerEnabled)
+                return;
+
             using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
             {
                 DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
             }
 
-            string settings = ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"]["eDNAMetaData"]?.Value ?? "*.*";
+            string eDNAMetaData = settings["eDNAMetaData"]?.Value ?? "*.*";
             List<Task> tasks = new List<Task>();
 
-            foreach (string setting in settings.Split(','))
+            foreach (string setting in eDNAMetaData.Split(','))
             {
                 string site = setting.Split('.')[0].ToUpper();
                 string service = setting.Split('.')[1].ToUpper();
@@ -151,12 +163,10 @@ namespace openHistorian.eDNAGrafanaController
                 if (!DataSources.ContainsKey($"{site}.{service}"))
                     DataSources.AddOrUpdate($"{site}.{service}", new eDNADataSource(site, service));
 
-
                 tasks.Add(Task.Factory.StartNew(() => RefreshMetaData(site, service)));
-
             }
 
-            Task finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
                 using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
                 {
@@ -171,46 +181,105 @@ namespace openHistorian.eDNAGrafanaController
 
         private static void RefreshMetaData(string site, string service)
         {
-
             DataTable dataTable = GetNewMetaDataTable();
             IEnumerable<eDNAMetaData> results = eDNAMetaData.Query(new eDNAMetaData() { Site = site.ToUpper(), Service = service.ToUpper() });
 
             foreach (eDNAMetaData result in results)
             {
-                if (result.ExtendedDescription == string.Empty) continue;
-
+                if (result.ExtendedDescription == string.Empty)
+                    continue;
 
                 string fqn = $"{result.Site}.{result.Service}.{result.ShortID}";
                 string id = $"edna_{result.Site}_{result.Service}:{result.ShortID}";
 
                 try
                 {
+                    Guid nodeID = AdoSecurityProvider.DefaultNodeID;
+                    Guid signalID = Guid.Empty;
+
+                    if (!string.IsNullOrEmpty(result.LongID))
+                        Guid.TryParse(result.LongID.Trim(), out signalID);
+
+                    if (signalID == Guid.Empty)
+                        signalID = Guid.NewGuid();
+
+                    string tagName = result.ReferenceField01;
+
+                    if (string.IsNullOrWhiteSpace(tagName))
+                        tagName = result.Description;
+
+                    if (!string.IsNullOrWhiteSpace(result.ReferenceField05))
+                        id = result.ReferenceField05;
+
+                    decimal latitude = 0.0M, longitude = 0.0M; 
+
+                    if (!string.IsNullOrWhiteSpace(result.ReferenceField06))
+                    {
+                        string[] parts = result.ReferenceField06.Trim().Split(',');
+
+                        if (parts.Length == 2)
+                        {
+                            decimal.TryParse(parts[0].Trim(), out latitude);
+                            decimal.TryParse(parts[1].Trim(), out longitude);
+                        }
+                    }
+
+                    string signalType = result.ReferenceField03?.Trim().ToUpperInvariant();
+                    string phasorType = null;
+
+                    if (!string.IsNullOrEmpty(signalType) && signalType.Length == 4)
+                    {
+                        switch (signalType)
+                        {
+                            case "VPHA":
+                            case "VPHM":
+                                phasorType = "V";
+                                break;
+                            case "IPHA":
+                            case "IPHM":
+                                phasorType = "I";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (result.PointType)
+                        {
+                            case "DI":
+                                signalType = "DIGI";
+                                break;
+                            default:
+                                signalType = "ALOG";
+                                break;
+                        }
+                    }
+
                     dataTable.Rows.Add(
-                        Guid.NewGuid(), //node ID
-                        Guid.NewGuid(),  // source node
-                        id,  // ID
-                        Guid.NewGuid(), // signal id 
-                        fqn, // point tag
-                        "NULL", // alternate tag
-                        "NULL", // signal ref
-                        "true", // internal
-                        "false", // subscribed
-                        "NULL", // device
-                        "NULL", // deviceid
-                        1, // frames per sec
-                        "NULL", // protocol
-                        "NULL", // signal type
-                        result.Units, // enineering units
-                        "NULL", // phasor id
-                        "NULL", // phasor type
-                        "NULL", // phase
-                        0, // adder
-                        1, // multiplier
-                        "NULL", // company
-                        0.0F, // long
-                        0.0F, // lat
-                        result.ExtendedDescription, //desc 
-                        DateTime.UtcNow // updated on
+                        nodeID,                     // Node ID
+                        nodeID,                     // Source node
+                        id,                         // ID
+                        signalID,                   // Signal ID
+                        fqn,                        // Point Tag
+                        tagName,                    // Alternate Tag
+                        result.ReferenceField02,    // Signal Ref
+                        1,                          // Internal
+                        0,                          // Subscribed
+                        result.ReferenceField04,    // Device
+                        null,                       // Device ID
+                        1,                          // Frames per Second
+                        result.ReferenceField08,    // Protocol
+                        signalType,                 // Signal Type
+                        result.Units,               // Engineering Units
+                        null,                       // Phasor ID
+                        phasorType,                 // Phasor Type
+                        null,                       // Phase
+                        0.0D,                       // Adder
+                        1.0D,                       // Multiplier
+                        result.ReferenceField07,    // Company
+                        longitude,                  // Longitude
+                        latitude,                   // Latitude
+                        result.ExtendedDescription, // Description
+                        DateTime.UtcNow             // Updated On
                     );
                 }
                 catch (Exception ex)
@@ -228,6 +297,7 @@ namespace openHistorian.eDNAGrafanaController
         private static DataTable GetNewMetaDataTable()
         {
             DataTable dataTable = new DataTable("ActiveMeasurements");
+
             dataTable.Columns.Add("NodeID", typeof(Guid));
             dataTable.Columns.Add("SourceNodeID", typeof(Guid));
             dataTable.Columns.Add("ID", typeof(string));
@@ -235,22 +305,22 @@ namespace openHistorian.eDNAGrafanaController
             dataTable.Columns.Add("PointTag", typeof(string));
             dataTable.Columns.Add("AlternateTag", typeof(string));
             dataTable.Columns.Add("SignalReference", typeof(string));
-            dataTable.Columns.Add("Internal", typeof(string));
-            dataTable.Columns.Add("Subscribed", typeof(string));
+            dataTable.Columns.Add("Internal", typeof(int));
+            dataTable.Columns.Add("Subscribed", typeof(int));
             dataTable.Columns.Add("Device", typeof(string));
-            dataTable.Columns.Add("DeviceID", typeof(string));
+            dataTable.Columns.Add("DeviceID", typeof(int?));
             dataTable.Columns.Add("FramesPerSecond", typeof(int));
             dataTable.Columns.Add("Protocol", typeof(string));
             dataTable.Columns.Add("SignalType", typeof(string));
             dataTable.Columns.Add("EngineeringUnits", typeof(string));
-            dataTable.Columns.Add("PhasorID", typeof(string));
+            dataTable.Columns.Add("PhasorID", typeof(int?));
             dataTable.Columns.Add("PhasorType", typeof(string));
             dataTable.Columns.Add("Phase", typeof(string));
-            dataTable.Columns.Add("Adder", typeof(int));
-            dataTable.Columns.Add("Multiplier", typeof(int));
+            dataTable.Columns.Add("Adder", typeof(double));
+            dataTable.Columns.Add("Multiplier", typeof(double));
             dataTable.Columns.Add("Company", typeof(string));
-            dataTable.Columns.Add("Longitude", typeof(float));
-            dataTable.Columns.Add("Latitude", typeof(float));
+            dataTable.Columns.Add("Longitude", typeof(decimal));
+            dataTable.Columns.Add("Latitude", typeof(decimal));
             dataTable.Columns.Add("Description", typeof(string));
             dataTable.Columns.Add("UpdatedOn", typeof(DateTime));
 
@@ -272,7 +342,7 @@ namespace openHistorian.eDNAGrafanaController
 
             }
 
-            Task finalTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
+            Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
                 using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
                 {
@@ -322,7 +392,6 @@ namespace openHistorian.eDNAGrafanaController
             }
 
             return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
-
         }
 
         /// <summary>
@@ -373,7 +442,6 @@ namespace openHistorian.eDNAGrafanaController
             }
 
             return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
-
         }
 
         /// <summary>
