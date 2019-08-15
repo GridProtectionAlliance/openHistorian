@@ -139,12 +139,9 @@ namespace openHistorian.eDNAGrafanaController
 
         static eDNAGrafanaController()
         {
-            ConfigurationFile configFile = ConfigurationFile.Open("openHistorian.exe.config");
-            CategorizedSettingsElementCollection settings = configFile.Settings["systemSettings"];
+            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Open("openHistorian.exe.config").Settings["systemSettings"];
 
-            bool eDNAControllerEnabled = settings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
-
-            if (!eDNAControllerEnabled)
+            if (!systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true)
                 return;
 
             using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
@@ -152,7 +149,7 @@ namespace openHistorian.eDNAGrafanaController
                 DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
             }
 
-            string eDNAMetaData = settings["eDNAMetaData"]?.Value ?? "*.*";
+            string eDNAMetaData = systemSettings["eDNAMetaData"]?.Value ?? "*.*";
             List<Task> tasks = new List<Task>();
 
             foreach (string setting in eDNAMetaData.Split(','))

@@ -200,6 +200,9 @@ namespace openHistorian
             systemSettings.Add("DefaultCalculationLagTime", 6.0, "Defines the default lag-time value, in seconds, for template calculations");
             systemSettings.Add("DefaultCalculationLeadTime", 3.0, "Defines the default lead-time value, in seconds, for template calculations");
             systemSettings.Add("DefaultCalculationFramesPerSecond", 30, "Defines the default frames-per-second value for template calculations");
+            systemSettings.Add("OSIPIGrafanaControllerEnabled", true, "Defines flag that determines if the OSI-PI Grafana controller is enabled.");
+            systemSettings.Add("eDNAGrafanaControllerEnabled", true, "Defines flag that determines if the eDNA Grafana controller is enabled.");
+            systemSettings.Add("eDNAMetaData", "*.*", "Comma separated search string for the eDNA metadata search command.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -338,7 +341,10 @@ namespace openHistorian
         {
             base.ServiceStartedHandler(sender, e);
 
-            ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("eDNARefreshMetadata", "Refreshes eDNA metadata.", RefreshMetaDataHandler, new[] { "eDNARefresh", "RefresheDNAMetadata" }));
+            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+
+            if (systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true)
+                ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("eDNARefreshMetadata", "Refreshes eDNA metadata.", RefreshMetaDataHandler, new[] { "eDNARefresh", "RefresheDNAMetadata" }));
 
             if (!Model.Global.GrafanaServerInstalled)
                 return;

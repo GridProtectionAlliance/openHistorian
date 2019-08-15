@@ -39,6 +39,7 @@ using System.Security;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
+using GSF.Configuration;
 
 namespace openHistorian
 {
@@ -55,6 +56,10 @@ namespace openHistorian
     {
         public void Configuration(IAppBuilder app)
         {
+            CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+            bool osiPIGrafanaControllerEnabled = systemSettings["OSIPIGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
+            bool eDNAGrafanaControllerEnabled = systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
+
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
             // to date strings and browsers will select whatever timezone suits them
             JsonSerializerSettings settings = JsonUtility.CreateDefaultSerializerSettings();
@@ -103,8 +108,12 @@ namespace openHistorian
             }
 
             Load_ModbusAssembly();
-            Load_OSIPIGrafanaController();
-            Load_eDNAGrafanaController();
+            
+            if (osiPIGrafanaControllerEnabled)
+                Load_OSIPIGrafanaController();
+
+            if (eDNAGrafanaControllerEnabled)
+                Load_eDNAGrafanaController();
 
             // Configure Windows Authentication for self-hosted web service
             HubConfiguration hubConfig = new HubConfiguration();
@@ -152,32 +161,38 @@ namespace openHistorian
                 Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
             }
 
-            // Map OSI-PI Grafana controller
-            try
+            if (osiPIGrafanaControllerEnabled)
             {
-                httpConfig.Routes.MapHttpRoute(
-                    name: "OsiPiGrafana",
-                    routeTemplate: "api/pigrafana/{instanceName}/{serverName}/{action}",
-                    defaults: new { action = "Index", controller = "OsiPiGrafana" }
-                );
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogStatusMessage($"WARNING: Failed to initialize OSI-PI Grafana controller routes {ex.Message}", UpdateType.Warning);
+                // Map OSI-PI Grafana controller
+                try
+                {
+                    httpConfig.Routes.MapHttpRoute(
+                        name: "OsiPiGrafana",
+                        routeTemplate: "api/pigrafana/{instanceName}/{serverName}/{action}",
+                        defaults: new { action = "Index", controller = "OSIPIGrafana" }
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Program.Host.LogStatusMessage($"WARNING: Failed to initialize OSI-PI Grafana controller routes {ex.Message}", UpdateType.Warning);
+                }
             }
 
-            // Map eDNA Grafana controller
-            try
+            if (eDNAGrafanaControllerEnabled)
             {
-                httpConfig.Routes.MapHttpRoute(
-                    name: "eDNAGrafana",
-                    routeTemplate: "api/ednagrafana/{site}/{service}/{action}",
-                    defaults: new { action = "Index", controller = "eDNAGrafana" }
+                // Map eDNA Grafana controller
+                try
+                {
+                    httpConfig.Routes.MapHttpRoute(
+                        name: "eDNAGrafana",
+                        routeTemplate: "api/ednagrafana/{site}/{service}/{action}",
+                        defaults: new { action = "Index", controller = "eDNAGrafana" }
                     );
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogStatusMessage($"WARNING: Failed to initialize eDNA Grafana controller routes: {ex.Message}", UpdateType.Warning);
+                }
+                catch (Exception ex)
+                {
+                    Program.Host.LogStatusMessage($"WARNING: Failed to initialize eDNA Grafana controller routes: {ex.Message}", UpdateType.Warning);
+                }
             }
 
             // Map custom API controllers
