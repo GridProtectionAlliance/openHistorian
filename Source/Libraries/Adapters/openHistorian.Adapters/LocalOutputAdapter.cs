@@ -75,7 +75,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Defines default value for <see cref="DataChannel"/>.
         /// </summary>
-        public const string DefaultDataChannel = "port=38402";
+        public const string DefaultDataChannel = "port=38402; interface=::0";
 
         /// <summary>
         /// Defines the default value for <see cref="TargetFileSize"/>.
@@ -141,7 +141,7 @@ namespace openHistorian.Adapters
         private readonly HistorianValue m_value;
         private Dictionary<ulong, DataRow> m_measurements;
         private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
-        private Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
+        private readonly Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
         private Timer m_archiveCurtailmentTimer;
         private SafeFileWatcher[] m_attachedPathWatchers;
         private bool m_disposed;
@@ -516,9 +516,7 @@ namespace openHistorian.Adapters
                 // Create dictionary of metadata for this server instance
                 foreach (DataRow row in value.Tables["ActiveMeasurements"].Rows)
                 {
-                    MeasurementKey key;
-
-                    if (MeasurementKey.TryParse(row["ID"].ToString(), out key) && (key.Source?.Equals(instanceName, StringComparison.OrdinalIgnoreCase) ?? false))
+                    if (MeasurementKey.TryParse(row["ID"].ToString(), out MeasurementKey key) && (key.Source?.Equals(instanceName, StringComparison.OrdinalIgnoreCase) ?? false))
                         measurements[key.ID] = row;
                 }
 
@@ -689,8 +687,6 @@ namespace openHistorian.Adapters
 
             //const string errorMessage = "{0} is missing from Settings - Example: instanceName=default; ArchiveDirectories={{c:\\Archive1\\;d:\\Backups2\\}}; dataChannel={{port=9591; interface=0.0.0.0}}";
             Dictionary<string, string> settings = Settings;
-            string setting;
-            double value;
 
             // Validate settings.
             if (!settings.TryGetValue("instanceName", out m_instanceName) || string.IsNullOrWhiteSpace(m_instanceName))
@@ -699,7 +695,7 @@ namespace openHistorian.Adapters
             // Track instance in static dictionary
             Instances[InstanceName] = this;
 
-            if (!settings.TryGetValue("WorkingDirectory", out setting) || string.IsNullOrEmpty(setting))
+            if (!settings.TryGetValue("WorkingDirectory", out string setting) || string.IsNullOrEmpty(setting))
                 setting = "Archive";
 
             WorkingDirectory = setting;
@@ -723,9 +719,7 @@ namespace openHistorian.Adapters
             if (!settings.TryGetValue("DataChannel", out m_dataChannel))
                 m_dataChannel = DefaultDataChannel;
 
-            double targetFileSize;
-
-            if (!settings.TryGetValue("TargetFileSize", out setting) || !double.TryParse(setting, out targetFileSize))
+            if (!settings.TryGetValue("TargetFileSize", out setting) || !double.TryParse(setting, out double targetFileSize))
                 targetFileSize = DefaultTargetFileSize;
 
             if (targetFileSize < 0.1D || targetFileSize > SI2.Tera)
@@ -739,7 +733,7 @@ namespace openHistorian.Adapters
             else
                 m_enableTimeReasonabilityCheck = DefaultEnableTimeReasonabilityCheck;
 
-            if (settings.TryGetValue("PastTimeReasonabilityLimit", out setting) && double.TryParse(setting, out value))
+            if (settings.TryGetValue("PastTimeReasonabilityLimit", out setting) && double.TryParse(setting, out double value))
                 PastTimeReasonabilityLimit = value;
             else
                 PastTimeReasonabilityLimit = DefaultPastTimeReasonabilityLimit;
@@ -758,15 +752,13 @@ namespace openHistorian.Adapters
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
 
             // Handle advanced settings - there are hidden but available from manual entry into connection string
-            int stagingCount, diskFlushInterval, cacheFlushInterval;
-
-            if (!settings.TryGetValue("StagingCount", out setting) || !int.TryParse(setting, out stagingCount))
+            if (!settings.TryGetValue("StagingCount", out setting) || !int.TryParse(setting, out int stagingCount))
                 stagingCount = 3;
 
-            if (!settings.TryGetValue("DiskFlushInterval", out setting) || !int.TryParse(setting, out diskFlushInterval))
+            if (!settings.TryGetValue("DiskFlushInterval", out setting) || !int.TryParse(setting, out int diskFlushInterval))
                 diskFlushInterval = 10000;
 
-            if (!settings.TryGetValue("CacheFlushInterval", out setting) || !int.TryParse(setting, out cacheFlushInterval))
+            if (!settings.TryGetValue("CacheFlushInterval", out setting) || !int.TryParse(setting, out int cacheFlushInterval))
                 cacheFlushInterval = 100;
 
             // Establish archive information for this historian instance
@@ -944,14 +936,15 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Dictionary<string, string> settings = m_dataChannel.ParseKeyValuePairs();
-            string setting;
-            int port;
+            Dictionary<string, string> settings = (m_dataChannel ?? DefaultDataChannel).ParseKeyValuePairs();
 
-            if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out port))
+            if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out int port))
                 port = DefaultPort;
 
-            m_server = new HistorianServer(m_archiveInfo, port);
+            if (!settings.TryGetValue("interface", out string networkInterfaceIP))
+                networkInterfaceIP = "::0";
+
+            m_server = new HistorianServer(m_archiveInfo, port, networkInterfaceIP);
             m_archive = m_server[InstanceName];
 
             // Initialization of services needs to occur after files are open
@@ -1222,9 +1215,7 @@ namespace openHistorian.Adapters
             if (memoryPoolSize > 0.0D)
                 Globals.MemoryPool.SetMaximumBufferSize((long)(memoryPoolSize * SI2.Giga));
 
-            TargetUtilizationLevels targetLevel;
-
-            if (!Enum.TryParse(systemSettings["MemoryPoolTargetUtilization"].Value, false, out targetLevel))
+            if (!Enum.TryParse(systemSettings["MemoryPoolTargetUtilization"].Value, false, out TargetUtilizationLevels targetLevel))
                 targetLevel = TargetUtilizationLevels.High;
 
             Globals.MemoryPool.SetTargetUtilizationLevel(targetLevel);

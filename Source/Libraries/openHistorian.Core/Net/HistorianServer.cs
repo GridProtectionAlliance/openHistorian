@@ -25,7 +25,6 @@
 
 using System;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Net;
 
 namespace openHistorian.Net
@@ -37,8 +36,6 @@ namespace openHistorian.Net
     {
         #region [ Members ]
 
-        // Fields
-        private SnapServer m_host;
         private bool m_disposed;
 
         #endregion
@@ -50,29 +47,36 @@ namespace openHistorian.Net
         /// </summary>
         public HistorianServer()
         {
-            m_host = new SnapServer();
+            Host = new SnapServer();
         }
 
         /// <summary>
         /// Creates a new <see cref="HistorianServer"/> instance.
         /// </summary>
-        public HistorianServer(int? port)
+        public HistorianServer(int? port, string networkInterfaceIP = null)
         {
-            var server = new ServerSettings();
-            if (port.HasValue)
+            ServerSettings server = new ServerSettings();
+            
+            if (port.HasValue || !string.IsNullOrWhiteSpace(networkInterfaceIP))
             {
-                var settings = new SnapSocketListenerSettings() { LocalTcpPort = port.Value };
-                settings.DefaultUserCanRead = true;
-                settings.DefaultUserCanWrite = true;
-                settings.DefaultUserIsAdmin = true;
+                SnapSocketListenerSettings settings = new SnapSocketListenerSettings
+                {
+                    LocalTcpPort = port ?? SnapSocketListenerSettings.DefaultNetworkPort,
+                    LocalIpAddress = networkInterfaceIP,
+                    DefaultUserCanRead = true,
+                    DefaultUserCanWrite = true,
+                    DefaultUserIsAdmin = true
+                };
+
                 server.Listeners.Add(settings);
             }
+            
             // Maintain a member level list of all established archive database engines
-            m_host = new SnapServer(server);
+            Host = new SnapServer(server);
         }
 
-        public HistorianServer(HistorianServerDatabaseConfig database, int? port = null)
-            : this(port)
+        public HistorianServer(HistorianServerDatabaseConfig database, int? port = null, string networkInterfaceIP = null)
+            : this(port, networkInterfaceIP)
         {
             AddDatabase(database);
         }
@@ -84,31 +88,19 @@ namespace openHistorian.Net
         /// <summary>
         /// Gets the underlying host ending for the historian.
         /// </summary>
-        public SnapServer Host
-        {
-            get
-            {
-                return m_host;
-            }
-        }
+        public SnapServer Host { get; }
 
         /// <summary>
         /// Adds the supplied database to this server.
         /// </summary>
         /// <param name="database"></param>
-        public void AddDatabase(HistorianServerDatabaseConfig database)
-        {
-            m_host.AddDatabase(database);
-        }
+        public void AddDatabase(HistorianServerDatabaseConfig database) => Host.AddDatabase(database);
 
         /// <summary>
         /// Removes the supplied database from the historian.
         /// </summary>
         /// <param name="database"></param>
-        public void RemoveDatabase(string database)
-        {
-            m_host.RemoveDatabase(database);
-        }
+        public void RemoveDatabase(string database) => Host.RemoveDatabase(database);
 
 #if !SQLCLR
         /// <summary>
@@ -116,13 +108,7 @@ namespace openHistorian.Net
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns><see cref="SnapServerDatabaseBase"/> for given <paramref name="databaseName"/>.</returns>
-        public HistorianIArchive this[string databaseName]
-        {
-            get
-            {
-                return new HistorianIArchive(this, databaseName);
-            }
-        }
+        public HistorianIArchive this[string databaseName] => new HistorianIArchive(this, databaseName);
 #endif
 
         #endregion
@@ -131,12 +117,9 @@ namespace openHistorian.Net
 
         public void Dispose()
         {
-            m_host.Dispose();
+            Host.Dispose();
         }
 
         #endregion
-
-
     }
-
 }

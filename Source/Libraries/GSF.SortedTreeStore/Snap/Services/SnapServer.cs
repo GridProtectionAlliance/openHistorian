@@ -45,18 +45,21 @@ namespace GSF.Snap.Services
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();
+        
         /// <summary>
         /// Contains a list of databases that are UPPER case names.
         /// </summary>
         private readonly Dictionary<string, SnapServerDatabaseBase> m_databases;
+        
         /// <summary>
         /// Contains a list of all clients such that a strong reference will not be maintained.
         /// </summary>
         private readonly WeakList<Client> m_clients;
+        
         /// <summary>
         /// All of the socket listener per IPEndPoint.
         /// </summary>
-        private Dictionary<IPEndPoint, SnapSocketListener> m_sockets;
+        private readonly Dictionary<IPEndPoint, SnapSocketListener> m_sockets;
 
         /// <summary>
         /// Creates an empty server instance
@@ -87,20 +90,20 @@ namespace GSF.Snap.Services
             : this()
         {
             if (settings == null)
-                throw new ArgumentNullException("settings");
-            var settings2 = settings.ToServerSettings();
+                throw new ArgumentNullException(nameof(settings));
+            
+            ServerSettings settings2 = settings.ToServerSettings();
+
             if (settings2 == null)
-                throw new ArgumentNullException("settings", "The ToServerSettings method returned null");
+                throw new ArgumentNullException(nameof(settings), "The ToServerSettings method returned null");
+            
             settings2.Validate();
 
-            foreach (var db in settings2.Databases)
-            {
+            foreach (ServerDatabaseSettings db in settings2.Databases)
                 AddDatabase(db);
-            }
-            foreach (var list in settings2.Listeners)
-            {
+            
+            foreach (SnapSocketListenerSettings list in settings2.Listeners)
                 AddSocketListener(list);
-            }
         }
 
         public void AddDatabase(IToServerDatabaseSettings databaseConfig)
@@ -115,9 +118,9 @@ namespace GSF.Snap.Services
         public void AddDatabase(ServerDatabaseSettings databaseConfig)
         {
             if ((object)databaseConfig == null)
-                throw new ArgumentNullException("databaseConfig");
+                throw new ArgumentNullException(nameof(databaseConfig));
 
-            //Pre check to prevent loading a database with the same name twice.
+            // Pre check to prevent loading a database with the same name twice.
             lock (m_syncRoot)
             {
                 if (m_databases.ContainsKey(databaseConfig.DatabaseName.ToUpper()))
@@ -128,6 +131,7 @@ namespace GSF.Snap.Services
             }
 
             SnapServerDatabaseBase database;
+            
             try
             {
                 using (Logger.AppendStackMessages(Log.InitialStackMessages))
@@ -165,17 +169,17 @@ namespace GSF.Snap.Services
         public void AddSocketListener(SnapSocketListenerSettings socketSettings)
         {
             if ((object)socketSettings == null)
-                throw new ArgumentNullException("socketSettings");
+                throw new ArgumentNullException(nameof(socketSettings));
 
             using (Logger.AppendStackMessages(Log.InitialStackMessages))
             {
                 SnapSocketListener listener = new SnapSocketListener(socketSettings, this);
+                
                 lock (m_syncRoot)
                 {
                     m_sockets.Add(socketSettings.LocalEndPoint, listener);
                 }
             }
-
         }
 
 
@@ -188,11 +192,13 @@ namespace GSF.Snap.Services
             // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
             // TODO: waitSeconds is not used - is this for waiting to flush? need to remove otherwise
             SnapServerDatabaseBase db;
+            
             lock (m_syncRoot)
             {
                 db = m_databases[database.ToUpper()];
                 m_databases.Remove(database.ToUpper());
             }
+            
             db.Dispose();
         }
 
@@ -203,11 +209,13 @@ namespace GSF.Snap.Services
         public void UnloadSocket(IPEndPoint socketEndpoint)
         {
             SnapSocketListener listener;
+            
             lock (m_syncRoot)
             {
                 listener = m_sockets[socketEndpoint];
                 m_sockets.Remove(socketEndpoint);
             }
+            
             listener.Dispose();
         }
 
@@ -245,12 +253,14 @@ namespace GSF.Snap.Services
         {
             lock (m_syncRoot)
             {
-                var lst = new List<DatabaseInfo>();
-                foreach (var database in m_databases.Values)
+                List<DatabaseInfo> list = new List<DatabaseInfo>();
+                
+                foreach (SnapServerDatabaseBase database in m_databases.Values)
                 {
-                    lst.Add(database.Info);
+                    list.Add(database.Info);
                 }
-                return lst;
+                
+                return list;
             }
         }
 
@@ -264,23 +274,18 @@ namespace GSF.Snap.Services
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
+                    if (!disposing)
+                        return;
 
-                    if (disposing)
-                    {
-                        foreach (SnapSocketListener socket in m_sockets.Values)
-                        {
-                            socket.Dispose();
-                        }
-                        m_sockets.Clear();
-                        foreach (SnapServerDatabaseBase db in m_databases.Values)
-                        {
-                            db.Dispose();
-                        }
-                        m_databases.Clear();
-
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
+                    foreach (SnapSocketListener socket in m_sockets.Values)
+                        socket.Dispose();
+                        
+                    m_sockets.Clear();
+                        
+                    foreach (SnapServerDatabaseBase db in m_databases.Values)
+                        db.Dispose();
+                        
+                    m_databases.Clear();
                 }
                 finally
                 {
@@ -323,9 +328,11 @@ namespace GSF.Snap.Services
             lock (m_syncRoot)
             {
                 status.AppendFormat("Historian Instances:");
-                foreach (var dbInfo in GetDatabaseInfo())
+                
+                foreach (DatabaseInfo dbInfo in GetDatabaseInfo())
                 {
                     status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
+                    
                     try
                     {
                         GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
@@ -337,12 +344,14 @@ namespace GSF.Snap.Services
                 }
 
                 status.AppendFormat("Socket Connections");
-                foreach (var socket in m_sockets)
+                
+                foreach (KeyValuePair<IPEndPoint, SnapSocketListener> socket in m_sockets)
                 {
                     status.AppendFormat("Port:{0}\r\n", socket.Key);
+                    
                     try
                     {
-                        var historian = socket.Value;
+                        SnapSocketListener historian = socket.Value;
                         historian.GetFullStatus(status);
                     }
                     catch (Exception ex)
@@ -351,7 +360,6 @@ namespace GSF.Snap.Services
                     }
                 }
             }
-
         }
     }
 }

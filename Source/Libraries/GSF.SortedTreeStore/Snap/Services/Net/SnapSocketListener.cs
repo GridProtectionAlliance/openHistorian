@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  12/08/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
+//  08/15/2019 - J. Ritchie Carroll
+//       Updated to allow for dual-stack bindings.
 //
 //******************************************************************************************************
 
@@ -31,21 +33,19 @@ using GSF.Security;
 
 namespace GSF.Snap.Services.Net
 {
-    // TODO: Need the ability to dynamically add and remove database instances from the socket historian - or maybe better - just "replace" the collection it's using...
-    // TODO: Initial glance looks like replacement of collection might be simple...??
     /// <summary>
     /// Hosts a <see cref="SnapServer"/> on a network socket.
     /// </summary>
     public class SnapSocketListener
         : DisposableLoggingClassBase
     {
-        private volatile bool m_isRunning = true;
-        private TcpListener m_listener;
+        private volatile bool m_isRunning;
+        private readonly TcpListener m_listener;
         private SnapServer m_server;
         private bool m_disposed;
         private readonly List<SnapNetworkServer> m_clients = new List<SnapNetworkServer>();
         private readonly SnapSocketListenerSettings m_settings;
-        private SecureStreamServer<SocketUserPermissions> m_authenticator;
+        private readonly SecureStreamServer<SocketUserPermissions> m_authenticator;
 
         /// <summary>
         /// Creates a <see cref="SnapSocketListener"/>
@@ -57,51 +57,45 @@ namespace GSF.Snap.Services.Net
             : base(MessageClass.Framework)
         {
             if ((object)server == null)
-                throw new ArgumentNullException("server");
+                throw new ArgumentNullException(nameof(server));
+
             if ((object)settings == null)
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
 
             m_server = server;
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
 
             m_authenticator = new SecureStreamServer<SocketUserPermissions>();
+            
             if (settings.DefaultUserCanRead || settings.DefaultUserCanWrite || settings.DefaultUserIsAdmin)
             {
-                m_authenticator.SetDefaultUser(true, new SocketUserPermissions()
+                m_authenticator.SetDefaultUser(true, new SocketUserPermissions
                 {
                     CanRead = settings.DefaultUserCanRead,
                     CanWrite = settings.DefaultUserCanWrite,
                     IsAdmin = settings.DefaultUserIsAdmin
                 });
             }
-            foreach (var user in settings.Users)
+
+            foreach (string user in settings.Users)
             {
-                m_authenticator.AddUserIntegratedSecurity(user, new SocketUserPermissions()
-                    {
-                        CanRead = true,
-                        CanWrite = true,
-                        IsAdmin = true
-                    });
+                m_authenticator.AddUserIntegratedSecurity(user, new SocketUserPermissions
+                {
+                    CanRead = true,
+                    CanWrite = true,
+                    IsAdmin = true
+                });
             }
 
-            // TODO: Shouldn't we use GSF.Communications async library here for scalability? If not, why not? 
-            // TODO: I think async communication classes could pass NetworkBinaryStream to a handler like ProcessClient...
-            // TODO: Communications library may need a simple modification... Check with S. Wills for thoughts here...
             m_isRunning = true;
-            m_listener = new TcpListener(m_settings.LocalEndPoint);
-            //m_listener.Server.DualMode = true;
+            
+            m_listener = new TcpListener(m_settings.LocalEndPoint);          
+            m_listener.Server.DualMode = m_settings.LocalEndPoint.AddressFamily == AddressFamily.InterNetworkV6;                      
             m_listener.Start();
 
-            //var socket = m_listener.AcceptSocketAsync();
-            //socket.ContinueWith(ProcessDataRequests);
-            //socket.Start();
-
-            Log.Publish(MessageLevel.Info, "Constructor Called", "Listening on " + m_settings.LocalEndPoint.ToString());
-
-            Thread th = new Thread(ProcessDataRequests);
-            th.IsBackground = true;
-            th.Start();
+            Log.Publish(MessageLevel.Info, "Constructor Called", $"Listening on {m_settings.LocalEndPoint}");
+            new Thread(ProcessDataRequests) { IsBackground = true }.Start();
         }
 
         /// <summary>
@@ -129,9 +123,8 @@ namespace GSF.Snap.Services.Net
             try
             {
                 while (m_isRunning && !m_listener.Pending())
-                {
                     Thread.Sleep(10);
-                }
+
                 if (!m_isRunning)
                 {
                     m_listener.Stop();
@@ -140,17 +133,17 @@ namespace GSF.Snap.Services.Net
                 }
 
                 TcpClient client = m_listener.AcceptTcpClient();
-                Log.Publish(MessageLevel.Info, "Client Connection", "Client connection attempted from: " + client.Client.RemoteEndPoint.ToString());
+                Log.Publish(MessageLevel.Info, "Client Connection", $"Client connection attempted from: {client.Client.RemoteEndPoint}");
 
-                Thread th = new Thread(ProcessDataRequests);
-                th.IsBackground = true;
-                th.Start();
+                new Thread(ProcessDataRequests) { IsBackground = true }.Start();
 
                 SnapNetworkServer networkServerProcessing;
+
                 using (Logger.AppendStackMessages(Log.InitialStackMessages))
                 {
                     networkServerProcessing = new SnapNetworkServer(m_authenticator, client, m_server);
                 }
+
                 lock (m_clients)
                 {
                     if (m_isRunning)
@@ -164,6 +157,7 @@ namespace GSF.Snap.Services.Net
                         return;
                     }
                 }
+                
                 try
                 {
                     networkServerProcessing.ProcessClient();
@@ -181,9 +175,8 @@ namespace GSF.Snap.Services.Net
             }
             catch (Exception ex)
             {
-                Log.Publish(MessageLevel.Critical, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
+                Log.Publish(MessageLevel.Critical, "Client Processing Failed", "An unhandled Exception occurred while processing clients", null, ex);
             }
-
         }
 
         /// <summary>
@@ -196,21 +189,21 @@ namespace GSF.Snap.Services.Net
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
+                    if (!disposing)
+                        return;
 
-                    if (disposing)
+                    m_isRunning = false;
+                        
+                    if (m_listener != null)
+                        m_listener.Stop();
+                        
+                    m_server = null;
+                        
+                    lock (m_clients)
                     {
-                        m_isRunning = false;
-                        if (m_listener != null)
-                            m_listener.Stop();
-                        m_server = null;
-                        lock (m_clients)
-                        {
-                            foreach (SnapNetworkServer client in m_clients)
-                                client.Dispose();
-                            m_clients.Clear();
-                        }
-                        // This will be done only when the object is disposed by calling Dispose().
+                        foreach (SnapNetworkServer client in m_clients)
+                            client.Dispose();
+                        m_clients.Clear();
                     }
                 }
                 finally

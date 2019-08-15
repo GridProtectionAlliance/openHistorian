@@ -18,16 +18,21 @@
 //  ----------------------------------------------------------------------------------------------------
 //  05/16/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  08/15/2019 - J. Ritchie Carroll
+//       Updated to allow for IPv6 bindings.
 //
 //******************************************************************************************************
 
 using System.Data;
 using System.IO;
 using System.Net;
+#if !SQLCLR
+using GSF.Communication;
+#endif
 using GSF.Immutable;
 using GSF.IO;
 
+// ReSharper disable RedundantDefaultMemberInitializer
 namespace GSF.Snap.Services.Net
 {
     /// <summary>
@@ -67,12 +72,7 @@ namespace GSF.Snap.Services.Net
         private string m_serverName = DefaultServerName;
 
         /// <summary>
-        /// A list of all windows users that are allowed to connnect to the historian.
-        /// </summary>
-        private ImmutableList<string> m_users = new ImmutableList<string>();
-
-        /// <summary>
-        /// Force the use of Ssl for all clients connecting to this socket.
+        /// Force the use of SSL for all clients connecting to this socket.
         /// </summary>
         private bool m_forceSsl = false;
 
@@ -83,27 +83,27 @@ namespace GSF.Snap.Services.Net
         {
             get
             {
+#if SQLCLR
                 if (string.IsNullOrWhiteSpace(m_localIpAddress))
-                {
                     return new IPEndPoint(IPAddress.Any, m_localTcpPort);
-                }
+
                 return new IPEndPoint(IPAddress.Parse(m_localIpAddress), m_localTcpPort);
+#else
+                // SnapSocketListener automatically enables dual-stack socket for IPv6 to support legacy client implementations expecting IPv4 hosting
+                IPStack ipStack = string.IsNullOrWhiteSpace(m_localIpAddress) ? Transport.GetDefaultIPStack() : (Transport.IsIPv6IP(m_localIpAddress) ? IPStack.IPv6 : IPStack.IPv4);               
+
+                return Transport.CreateEndPoint(m_localIpAddress, m_localTcpPort, ipStack);
+#endif                
             }
         }
 
         /// <summary>
-        /// A list of all windows users that are allowed to connnect to the historian.
+        /// A list of all Windows users that are allowed to connect to the historian.
         /// </summary>
-        public ImmutableList<string> Users
-        {
-            get
-            {
-                return m_users;
-            }
-        }
+        public ImmutableList<string> Users { get; } = new ImmutableList<string>();
 
         /// <summary>
-        /// Force the use of Ssl for all clients connecting to this socket.
+        /// Force the use of SSL for all clients connecting to this socket.
         /// </summary>
         public bool ForceSsl
         {
@@ -162,21 +162,15 @@ namespace GSF.Snap.Services.Net
         public override void Load(Stream stream)
         {
             TestForEditable();
+            
             byte version = stream.ReadNextByte();
-            switch (version)
-            {
-                case 1:
 
-                    break;
-                default:
-                    throw new VersionNotFoundException("Unknown Version Code: " + version);
-
-            }
+            if (version != 1)
+                throw new VersionNotFoundException("Unknown Version Code: " + version);
         }
 
         public override void Validate()
         {
-            //ToDo: Validate later when this class is fixed.
         }
     }
 }

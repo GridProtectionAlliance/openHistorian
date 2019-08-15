@@ -120,6 +120,9 @@
     <Reference Include="crypto">
       <HintPath>..\..\Dependencies\BouncyCastle\crypto.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Communication">
+      <HintPath>..\..\Dependencies\GSF\GSF.Communication.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
