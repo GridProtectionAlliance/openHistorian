@@ -262,12 +262,12 @@ namespace openHistorian.eDNAGrafanaController
                         1,                          // Internal
                         0,                          // Subscribed
                         result.ReferenceField04,    // Device
-                        null,                       // Device ID
+                        0,                          // Device ID
                         1,                          // Frames per Second
                         result.ReferenceField08,    // Protocol
                         signalType,                 // Signal Type
                         result.Units,               // Engineering Units
-                        null,                       // Phasor ID
+                        0,                          // Phasor ID
                         phasorType,                 // Phasor Type
                         null,                       // Phase
                         0.0D,                       // Adder
@@ -305,12 +305,12 @@ namespace openHistorian.eDNAGrafanaController
             dataTable.Columns.Add("Internal", typeof(int));
             dataTable.Columns.Add("Subscribed", typeof(int));
             dataTable.Columns.Add("Device", typeof(string));
-            dataTable.Columns.Add("DeviceID", typeof(int?));
+            dataTable.Columns.Add("DeviceID", typeof(int));
             dataTable.Columns.Add("FramesPerSecond", typeof(int));
             dataTable.Columns.Add("Protocol", typeof(string));
             dataTable.Columns.Add("SignalType", typeof(string));
             dataTable.Columns.Add("EngineeringUnits", typeof(string));
-            dataTable.Columns.Add("PhasorID", typeof(int?));
+            dataTable.Columns.Add("PhasorID", typeof(int));
             dataTable.Columns.Add("PhasorType", typeof(string));
             dataTable.Columns.Add("Phase", typeof(string));
             dataTable.Columns.Add("Adder", typeof(double));
