@@ -549,23 +549,31 @@ namespace ConfigurationSetupUtility.Screens
 
                             foreach (DataRow row in existingUsers.Rows)
                             {
-                                string userName = row.ConvertField<string>("UserName");
-                                string loginName = row.ConvertField<string>("LoginName");
-                                string roleName = row.ConvertField<string>("RoleName");
+                                try
+                                {
+                                    string userName = row.ConvertField<string>("UserName");
+                                    string loginName = row.ConvertField<string>("LoginName");
+                                    string roleName = row.ConvertField<string>("RoleName");
 
-                                string[] roles = (roleName != "openHistorianAdminRole")
-                                    ? new[] { roleName }
-                                    : adminRoles;
+                                    string[] roles = (roleName != "openHistorianAdminRole")
+                                        ? new[] { roleName }
+                                        : adminRoles;
 
-                                if (userName == "dbo")
-                                    userName = loginName;
+                                    if (userName == "dbo")
+                                        userName = loginName;
 
-                                AppendStatusMessage($"Granting database access to {loginName}...");
+                                    AppendStatusMessage($"Granting database access to {loginName}...");
 
-                                foreach (string role in roles)
-                                    adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
+                                    foreach (string role in roles)
+                                        adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
 
-                                AppendStatusMessage("Database access granted successfully.");
+                                    AppendStatusMessage("Database access granted successfully.");
+                                }
+                                catch (Exception ex)
+                                {
+                                    AppendStatusMessage($"ERROR: {ex.Message}");
+                                    AppendStatusMessage("Failed to grant database access, but continuing anyway...");
+                                }
                             }
 
                             AppendStatusMessage("");
