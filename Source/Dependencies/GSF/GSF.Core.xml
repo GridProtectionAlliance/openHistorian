@@ -32776,14 +32776,15 @@
             <param name="values">the returned values from the try parse.</param>
             <returns>TRUE if all values parse successfully.</returns>
         </member>
-        <member name="M:GSF.Parsing.StringParser.ExpectedFieldNamesMatch(System.String[],System.String[],System.Boolean,System.Int32)">
+        <member name="M:GSF.Parsing.StringParser.ExpectedFieldNamesMatch(System.String[],System.String[],System.Boolean,System.Int32,System.Int32)">
             <summary>
             Validates that expected field names match field names found.
             </summary>
-            <param name="expectedFieldNames"></param>
-            <param name="actualFieldNames"></param>
+            <param name="expectedFieldNames">The string array of expected field names.</param>
+            <param name="actualFieldNames">The string array of actual field names.</param>
             <param name="matchCase">Set to TRUE to require case to match.</param>
             <param name="length">The number of fields to check.  Less than 1 sets length to expectedFieldName length</param>
+            <param name="startIndex">The index to use to start matching test.</param>
             <returns></returns>
         </member>
         <member name="M:GSF.Parsing.StringParser.FindIndex(System.String,System.String[],System.Boolean,System.Boolean)">
