@@ -6,7 +6,7 @@
    <Modules>
     <Module Name="phasorwebui.dll">
      <Messages>
-      <Message TypeName="MarkAssembliesWithAssemblyVersion" Category="Microsoft.Design" CheckId="CA1016" Status="Active" Created="2019-09-04 04:02:53Z" FixCategory="NonBreaking">
+      <Message TypeName="MarkAssembliesWithAssemblyVersion" Category="Microsoft.Design" CheckId="CA1016" Status="Active" Created="2019-09-11 04:02:51Z" FixCategory="NonBreaking">
        <Issue Certainty="95" Level="Error">Add an AssemblyVersion attribute to 'PhasorWebUI.dll'.</Issue>
       </Message>
      </Messages>
@@ -15,7 +15,7 @@
        <Types>
         <Type Name="PhasorHub" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="ComVisibleTypeBaseTypesShouldBeComVisible" Category="Microsoft.Interoperability" CheckId="CA1405" Status="Active" Created="2019-09-04 04:02:53Z" FixCategory="DependsOnFix">
+          <Message TypeName="ComVisibleTypeBaseTypesShouldBeComVisible" Category="Microsoft.Interoperability" CheckId="CA1405" Status="Active" Created="2019-09-11 04:02:51Z" FixCategory="DependsOnFix">
            <Issue Certainty="90" Level="Error">'PhasorHub' is marked ComVisible(true) but has the following ComVisible(false) types in its object hierarchy: 'RecordOperationsHub&lt;PhasorHub&gt;'</Issue>
           </Message>
          </Messages>
