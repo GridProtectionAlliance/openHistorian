@@ -725,6 +725,9 @@
       <Component Id="sttp.gsf">
         <File Id="sttp.gsf.dll" Name="sttp.gsf.dll" Source="$(var.SolutionDir)\Dependencies\GSF\sttp.gsf.dll" />
       </Component>
+      <Component Id="PhasorWebUI">
+        <File Id="PhasorWebUI.dll" Name="PhasorWebUI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorWebUI.dll" />
+      </Component>
     </ComponentGroup>
 
     <!-- Microsoft Dependencies -->
