@@ -35789,6 +35789,569 @@
             <param name="quoteChars">The collection of quote chars to use. Due to trimming, whitespace is not allowed.</param>
             <returns>The sent string with matched surrounding quote chars removed.</returns>
         </member>
+        <member name="T:GSF.Text.Operation">
+            <summary>
+            The data structure representing a diff is a List of Diff objects:
+            {Diff(Operation.DELETE, "Hello"), Diff(Operation.INSERT, "Goodbye"),
+             Diff(Operation.EQUAL, " world.")}
+            which means: delete "Hello", add "Goodbye" and keep " world."
+            </summary>
+        </member>
+        <member name="F:GSF.Text.Operation.DELETE">
+            <summary>
+            Target deletes text
+            </summary>
+        </member>
+        <member name="F:GSF.Text.Operation.INSERT">
+            <summary>
+            Target inserts text
+            </summary>
+        </member>
+        <member name="F:GSF.Text.Operation.EQUAL">
+            <summary>
+            Source and target are the same
+            </summary>
+        </member>
+        <member name="T:GSF.Text.Diff">
+            <summary>
+            Class representing one diff operation.
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Diff.Operation">
+            <summary>
+            One of: INSERT, DELETE or EQUAL.
+            </summary>
+        </member>
+        <member name="F:GSF.Text.Diff.Text">
+            <summary>
+            The text associated with this diff operation.
+            </summary>
+        </member>
+        <member name="M:GSF.Text.Diff.#ctor(GSF.Text.Operation,System.String)">
+            <summary>
+            Initializes the diff with the provided values.
+            </summary>
+            <param name="operation">One of INSERT, DELETE or EQUAL.</param>
+            <param name="text">The text being applied.</param>
+        </member>
+        <member name="M:GSF.Text.Diff.ToString">
+            <summary>
+            Display a human-readable version of this Diff.
+            </summary>
+            <returns>text version</returns>
+        </member>
+        <member name="M:GSF.Text.Diff.Equals(System.Object)">
+            <summary>
+            Is this Diff equivalent to another Diff?
+            </summary>
+            <param name="obj">Another Diff to compare against.</param>
+            <returns>true or false</returns>
+        </member>
+        <member name="M:GSF.Text.Diff.Equals(GSF.Text.Diff)">
+            <summary>
+            Is this Diff equivalent to another Diff?
+            </summary>
+            <param name="obj">Another Diff to compare against.</param>
+            <returns>true or false</returns>
+        </member>
+        <member name="M:GSF.Text.Diff.GetHashCode">
+            <summary>
+            Hash function for the Diff.
+            </summary>
+            <returns>The Diff's hash code</returns>
+        </member>
+        <member name="T:GSF.Text.DiffMatchPatch">
+            <summary>
+            Class containing the diff, match and patch methods.
+            Also Contains the behaviour settings.
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.DiffTimeout">
+            <summary>
+            Number of seconds to map a diff before giving up (0 for infinity).
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.DiffEditCost">
+            <summary>
+            Cost of an empty edit operation in terms of edit characters.
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.MatchThreshold">
+            <summary>
+            At what point is no match declared (0.0 = perfection, 1.0 = very loose).
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.MatchDistance">
+            <summary>
+            How far to search for a match (0 = exact location, 1000+ = broad match).
+            A match this many characters away from the expected location will add
+            1.0 to the score (0.0 is a perfect match).
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.PatchDeleteThreshold">
+            <summary>
+            When deleting a large block of text (over ~64 characters), how close
+            do the contents have to be to match the expected contents. (0.0 =
+            perfection, 1.0 = very loose).  Note that MatchThreshold controls
+            how closely the end points of a delete need to match.
+            </summary>
+        </member>
+        <member name="F:GSF.Text.DiffMatchPatch.PatchMargin">
+            <summary>
+            Chunk size for context length.
+            </summary>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffMain(System.String,System.String)">
+            <summary>
+            Find the differences between two texts.
+            Run a faster, slightly less optimal diff.
+            This method allows the 'checklines' of DiffMain() to be optional.
+            Most of the time checklines is wanted, so default to true.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffMain(System.String,System.String,System.Boolean)">
+            <summary>
+            Find the differences between two texts.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="checklines">
+            Speedup flag.  If false, then don't run a
+            line-level diff first to identify the changed areas.
+            If true, then run a faster slightly less optimal diff.
+            </param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffMain(System.String,System.String,System.Boolean,System.DateTime)">
+            <summary>
+            Find the differences between two texts.  Simplifies the problem by
+            stripping any common prefix or suffix off the texts before diffing.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="checklines">
+            Speedup flag.  If false, then don't run a
+            line-level diff first to identify the changed areas.
+            If true, then run a faster slightly less optimal diff.
+            </param>
+            <param name="deadline">
+            Time when the diff should be complete by.  Used
+            internally for recursive calls.  Users should set DiffTimeout
+            instead.
+            </param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCompute(System.String,System.String,System.Boolean,System.DateTime)">
+            <summary>
+            Find the differences between two texts.  Assumes that the texts do not
+            have any common prefix or suffix.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="checklines">
+            Speedup flag.  If false, then don't run a
+            line-level diff first to identify the changed areas.
+            If true, then run a faster slightly less optimal diff.
+            </param>
+            <param name="deadline">Time when the diff should be complete by</param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffLineMode(System.String,System.String,System.DateTime)">
+            <summary>
+            Do a quick line-level diff on both strings, then rediff the parts for
+            greater accuracy. This speedup can produce non-minimal diffs.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="deadline">Time when the diff should be complete by</param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffBisect(System.String,System.String,System.DateTime)">
+            <summary>
+            <para>
+            Find the 'middle snake' of a diff, split the problem in two
+            and return the recursively constructed diff.
+            </para>
+            
+            <para>
+            See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
+            </para>
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="deadline">Time at which to bail if not yet complete</param>
+            <returns>List of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffBisectSplit(System.String,System.String,System.Int32,System.Int32,System.DateTime)">
+            <summary>
+            Given the location of the 'middle snake', split the diff in two parts
+            and recurse.
+            </summary>
+            <param name="text1">Old string to be diffed</param>
+            <param name="text2">New string to be diffed</param>
+            <param name="x">Index of split point in text1</param>
+            <param name="y">Index of split point in text2</param>
+            <param name="deadline">Time at which to bail if not yet complete</param>
+            <returns>LinkedList of Diff objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffLinesToChars(System.String,System.String)">
+            <summary>
+            Split two texts into a list of strings.  Reduce the texts to a string of
+            hashes where each Unicode character represents one line.
+            </summary>
+            <param name="text1">First string</param>
+            <param name="text2">Second string</param>
+            <returns>
+            Three element Object array, containing the encoded text1, the
+            encoded text2 and the List of unique strings.  The zeroth element
+            of the List of unique strings is intentionally blank.
+            </returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffLinesToCharsMunge(System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.Dictionary{System.String,System.Int32},System.Int32)">
+            <summary>
+            Split a text into a list of strings.  Reduce the texts to a string of
+            hashes where each Unicode character represents one line.
+            </summary>
+            <param name="text">String to encode</param>
+            <param name="lineArray">List of unique strings</param>
+            <param name="lineHash">Map of strings to indices</param>
+            <param name="maxLines">Maximum length of lineArray</param>
+            <returns>Encoded string</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCharsToLines(System.Collections.Generic.ICollection{GSF.Text.Diff},System.Collections.Generic.IList{System.String})">
+            <summary>
+            Rehydrate the text in a diff from a string of line hashes to real lines
+            of text.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <param name="lineArray">List of unique strings</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCommonPrefix(System.String,System.String)">
+            <summary>
+            Determine the common prefix of two strings.
+            </summary>
+            <param name="text1">First string</param>
+            <param name="text2">Second string</param>
+            <returns>The number of characters common to the start of each string</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCommonSuffix(System.String,System.String)">
+            <summary>
+            Determine the common suffix of two strings.
+            </summary>
+            <param name="text1">First string</param>
+            <param name="text2">Second string</param>
+            <returns>The number of characters common to the end of each string</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCommonOverlap(System.String,System.String)">
+            <summary>
+            Determine if the suffix of one string is the prefix of another.
+            </summary>
+            <param name="text1">First string</param>
+            <param name="text2">Second string</param>
+            <returns>
+            The number of characters common to the end of the first
+            string and the start of the second string.
+            </returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffHalfMatch(System.String,System.String)">
+            <summary>
+            Do the two texts share a Substring which is at least half the length of
+            the longer text? This speedup can produce non-minimal diffs.
+            </summary>
+            <param name="text1">First string</param>
+            <param name="text2">Second string</param>
+            <returns>
+            Five element String array, containing the prefix of text1, the
+            suffix of text1, the prefix of text2, the suffix of text2 and the
+            common middle.  Or null if there was no match.
+            </returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffHalfMatchI(System.String,System.String,System.Int32)">
+            <summary>
+            Does a Substring of shorttext exist within longtext such that the
+            Substring is at least half the length of longtext?
+            </summary>
+            <param name="longtext">Longer string</param>
+            <param name="shorttext">Shorter string</param>
+            <param name="i">Start index of quarter length Substring within longtext</param>
+            <returns>
+            Five element string array, containing the prefix of longtext, the
+            suffix of longtext, the prefix of shorttext, the suffix of shorttext
+            and the common middle.  Or null if there was no match.
+            </returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCleanupSemantic(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Reduce the number of edits by eliminating semantically trivial equalities.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCleanupSemanticLossless(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Look for single edits surrounded on both sides by equalities
+            which can be shifted sideways to align the edit to a word boundary.
+            e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCleanupSemanticScore(System.String,System.String)">
+            <summary>
+            Given two strings, compute a score representing whether the internal
+            boundary falls on logical boundaries. Scores range from 6 (best) to 0 (worst).
+            </summary>
+            <param name="one">First string</param>
+            <param name="two">Second string</param>
+            <returns>The score</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCleanupEfficiency(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Reduce the number of edits by eliminating operationally trivial equalities.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffCleanupMerge(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Reorder and merge like edit sections.  Merge equalities.
+            Any edit section can move as long as it doesn't cross an equality.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffXIndex(System.Collections.Generic.List{GSF.Text.Diff},System.Int32)">
+            <summary>
+            loc is a location in text1, compute and return the equivalent location in
+            text2. e.g. "The cat" vs "The big cat", 1->1, 5->8
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <param name="loc">Location within text1</param>
+            <returns>Location within text2</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffPrettyHtml(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Convert a Diff list into a pretty HTML report.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <returns>HTML representation</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffText1(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute and return the source text (all equalities and deletions).
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <returns>Source text</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffText2(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute and return the destination text (all equalities and insertions).
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <returns>Destination text</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffLevenshtein(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute the Levenshtein distance; the number of inserted, deleted or
+            substituted characters.
+            </summary>
+            <param name="diffs">List of Diff objects</param>
+            <returns>Number of changes</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffToDelta(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Crush the diff into an encoded string which describes the operations
+            required to transform text1 into text2.
+            E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
+            Operations are tab-separated.  Inserted text is escaped using %xx
+            notation.
+            </summary>
+            <param name="diffs">Array of Diff objects</param>
+            <returns>Delta text</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.DiffFromDelta(System.String,System.String)">
+            <summary>
+            Given the original text1, and an encoded string which describes the
+            operations required to transform text1 into text2, compute the full diff.
+            </summary>
+            <param name="text1">Source string for the diff</param>
+            <param name="delta">Delta text</param>
+            <returns>Array of Diff objects or null if invalid</returns>
+            <exception cref="T:System.ArgumentException">If invalid input</exception>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.MatchMain(System.String,System.String,System.Int32)">
+            <summary>
+            Locate the best instance of 'pattern' in 'text' near 'loc'.
+            Returns -1 if no match found.
+            </summary>
+            <param name="text">The text to search</param>
+            <param name="pattern">The pattern to search for</param>
+            <param name="loc">The location to search around</param>
+            <returns>Best match index or -1</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.MatchBitap(System.String,System.String,System.Int32)">
+            <summary>
+            Locate the best instance of 'pattern' in 'text' near 'loc' using the
+            Bitap algorithm.  Returns -1 if no match found.
+            </summary>
+            <param name="text">The text to search</param>
+            <param name="pattern">The pattern to search for</param>
+            <param name="loc">The location to search around</param>
+            <returns>Best match index or -1</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.MatchBitapScore(System.Int32,System.Int32,System.Int32,System.String)">
+            <summary>
+            Compute and return the score for a match with e errors and x location.
+            </summary>
+            <param name="e">Number of errors in match</param>
+            <param name="x">Location of match</param>
+            <param name="loc">Expected location of match</param>
+            <param name="pattern">Pattern being sought</param>
+            <returns>Overall score for match (0.0 = good, 1.0 = bad)</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.MatchAlphabet(System.String)">
+            <summary>
+            Initialise the alphabet for the Bitap algorithm.
+            </summary>
+            <param name="pattern">The text to encode</param>
+            <returns>Hash of character locations</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchAddContext(GSF.Text.Patch,System.String)">
+            <summary>
+            Increase the context until it is unique,
+            but don't let the pattern expand beyond MatchMaxBits.
+            </summary>
+            <param name="patch">The patch to grow</param>
+            <param name="text">Source text</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchMake(System.String,System.String)">
+            <summary>
+            Compute a list of patches to turn text1 into text2.
+            A set of diffs will be computed.
+            </summary>
+            <param name="text1">Old text</param>
+            <param name="text2">New text</param>
+            <returns>List of Patch objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchMake(System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute a list of patches to turn text1 into text2.
+            text1 will be derived from the provided diffs.
+            </summary>
+            <param name="diffs">Array of Diff objects for text1 to text2</param>
+            <returns>List of Patch objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchMake(System.String,System.String,System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute a list of patches to turn text1 into text2.
+            text2 is ignored, diffs are the delta between text1 and text2.
+            </summary>
+            <param name="text1">Old text</param>
+            <param name="text2">Ignored</param>
+            <param name="diffs">Array of Diff objects for text1 to text2</param>
+            <returns>List of Patch objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchMake(System.String,System.Collections.Generic.List{GSF.Text.Diff})">
+            <summary>
+            Compute a list of patches to turn text1 into text2.
+            text2 is not provided, diffs are the delta between text1 and text2.
+            </summary>
+            <param name="text1">Old text</param>
+            <param name="diffs">Array of Diff objects for text1 to text2</param>
+            <returns>List of Patch objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchDeepCopy(System.Collections.Generic.List{GSF.Text.Patch})">
+            <summary>
+            Given an array of patches, return another array that is identical.
+            </summary>
+            <param name="patches">Array of Patch objects</param>
+            <returns>Array of Patch objects</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchApply(System.Collections.Generic.List{GSF.Text.Patch},System.String)">
+            <summary>
+            Merge a set of patches onto the text.  Return a patched text, as well
+            as an array of true/false values indicating which patches were applied.
+            </summary>
+            <param name="patches">Array of Patch objects</param>
+            <param name="text">Old text</param>
+            <returns>Two element Object array, containing the new text and an array of bool values</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchAddPadding(System.Collections.Generic.List{GSF.Text.Patch})">
+            <summary>
+            Add some padding on text start and end so that edges can match something.
+            Intended to be called only from within PatchApply.
+            </summary>
+            <param name="patches">Array of Patch objects</param>
+            <returns>The padding string added to each side</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchSplitMax(System.Collections.Generic.List{GSF.Text.Patch})">
+            <summary>
+            Look through the patches and break up any which are longer than the
+            maximum limit of the match algorithm.
+            Intended to be called only from within PatchApply.
+            </summary>
+            <param name="patches">List of Patch objects</param>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchToText(System.Collections.Generic.List{GSF.Text.Patch})">
+            <summary>
+            Take a list of patches and return a textual representation.
+            </summary>
+            <param name="patches">List of Patch objects</param>
+            <returns>Text representation of patches</returns>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.PatchFromText(System.String)">
+            <summary>
+            Parse a textual representation of patches and return a List of Patch objects.
+            </summary>
+            <param name="textline">Text representation of patches</param>
+            <returns>List of Patch objects</returns>
+            <exception cref="T:System.ArgumentException">If invalid input</exception>
+        </member>
+        <member name="M:GSF.Text.DiffMatchPatch.EncodeURI(System.String)">
+            <summary>
+            Encodes a string with URI-style % escaping.
+            Compatible with JavaScript's encodeURI function.
+            </summary>
+            <param name="str">The string to encode</param>
+            <returns>The encoded string</returns>
+        </member>
+        <member name="T:GSF.Text.Patch">
+            <summary>
+            Class representing one patch operation.
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Patch.Diffs">
+            <summary>
+            List of <see cref="T:GSF.Text.Diff"/>s in the patch
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Patch.Start1">
+            <summary>
+            Source line number (zero-based index)
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Patch.Start2">
+            <summary>
+            Target line number (zero-based index)
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Patch.Length1">
+            <summary>
+            Number of lines from source contained in this patch
+            </summary>
+        </member>
+        <member name="P:GSF.Text.Patch.Length2">
+            <summary>
+            Number of lines from target contained in this patch
+            </summary>
+        </member>
+        <member name="M:GSF.Text.Patch.ToString">
+            <summary>
+            Emulate GNU diff's format.
+            Header: @@ -382,8 +481,9 @@
+            Indices are printed as 1-based, not 0-based.
+            </summary>
+            <returns>The GNU diff string</returns>
+        </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
             Defines extension functions related to manipulation wait handle objects.
