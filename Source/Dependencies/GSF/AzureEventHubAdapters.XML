@@ -44,6 +44,11 @@
             Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata"/>.
             </summary>
         </member>
+        <member name="F:AzureEventHubAdapters.AzureEventHubOutputAdapter.DefaultPushMetadataInParallel">
+            <summary>
+            Default value for <see cref="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.PushMetadataInParallel"/>.
+            </summary>
+        </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.EventHubDataClientConnectionString">
             <summary>
             Gets or sets the event hub time-series data client connection string for the Azure event hub connection.
@@ -97,6 +102,11 @@
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.SerializeMetadata">
             <summary>
             Gets or sets flag that determines if metadata should be serialized into Azure event hub.
+            </summary>
+        </member>
+        <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.PushMetadataInParallel">
+            <summary>
+            Gets or sets flag that determines if data and metadata should be pushed in parallel to Azure event hub.
             </summary>
         </member>
         <member name="P:AzureEventHubAdapters.AzureEventHubOutputAdapter.OutputIsForArchive">
