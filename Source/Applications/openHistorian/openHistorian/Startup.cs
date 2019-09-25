@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using GSF;
+using GSF.Configuration;
 using GSF.IO;
 using GSF.Web;
 using GSF.Web.Hosting;
@@ -39,7 +40,6 @@ using System.Security;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
-using GSF.Configuration;
 
 namespace openHistorian
 {
@@ -106,6 +106,8 @@ namespace openHistorian
             {
                 Program.Host.LogException(new SecurityException($"Failed to load Phasor Hub: {ex.Message}", ex));
             }
+
+            Load_PhasorWebUIAssembly();
 
             Load_ModbusAssembly();
             
@@ -234,6 +236,25 @@ namespace openHistorian
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+        }
+
+        private void Load_PhasorWebUIAssembly()
+        {
+            try
+            {
+                // Wrap class reference in lambda function to force
+                // assembly load errors to occur within the try-catch
+                new Action(() =>
+                {
+                    // Make embedded resources of PhasorWebUI available to web server
+                    using (PhasorHub hub = new PhasorHub())
+                        WebExtensions.AddEmbeddedResourceAssembly(hub.GetType().Assembly);                  
+                })();
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
+            }
         }
 
         private void Load_ModbusAssembly()
