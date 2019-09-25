@@ -3336,6 +3336,11 @@
             Determines whether the base class should track statistics.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsClient.Status">
+            <summary>
+            Gets the descriptive status of the client.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.TlsClient.SaveSettings">
             <summary>
             Saves <see cref="T:GSF.Communication.TlsClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
@@ -3357,6 +3362,12 @@
             <summary>
             Initiates an asynchronous connection attempt.
             </summary>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TlsClient.ProcessTlsAuthentication(System.IAsyncResult)">
             <summary>
@@ -4061,6 +4072,12 @@
             <summary>
             Initiates an asynchronous connection attempt.
             </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TcpClient.ProcessConnect(GSF.Communication.TcpClient.ConnectState)">
             <summary>
