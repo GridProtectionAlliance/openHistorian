@@ -119,7 +119,7 @@ System.register(["lodash"], function(exports_1) {
                 };
                 OpenHistorianDataSource.prototype.mapToTextValue = function (result) {
                     return lodash_1.default.map(result.data, function (d, i) {
-                        return { text: d, value: i };
+                        return { text: d, value: d };
                     });
                 };
                 OpenHistorianDataSource.prototype.buildQueryParameters = function (options) {
