@@ -35816,6 +35816,10 @@
             <summary>
             Class representing one diff operation.
             </summary>
+            <remarks>
+            This class produces a dynamic hash code, do not use
+            an instance of this class as key in a dictionary.
+            </remarks>
         </member>
         <member name="P:GSF.Text.Diff.Operation">
             <summary>

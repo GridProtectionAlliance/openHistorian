@@ -131,12 +131,13 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyFromTag(System.String,System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyFromTag(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up measurement key from point tag.
             </summary>
             <param name="pointTag">Point tag to lookup.</param>
             <param name="source">Source metadata.</param>
+            <param name="table">Table to search.</param>
             <returns>Measurement key from source metadata.</returns>
             <remarks>
             This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
@@ -144,12 +145,46 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyAndTagFromSignalID(System.String,System.Data.DataSet,System.String)">
+            <summary>
+            Looks up measurement key from signal ID.
+            </summary>
+            <param name="signalID">Signal ID to lookup.</param>
+            <param name="source">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <returns>Measurement key from source metadata.</returns>
+            <remarks>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up metadata record from point tag.
             </summary>
             <param name="pointTag">Point tag to lookup.</param>
             <param name="source">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <returns>Metadata record from source metadata for provided point tag.</returns>
+            <remarks>
+            <para>
+            Use "table.pointTag" format to specify which table to pull point tag from.
+            </para>
+            <para>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromSignalID(System.String,System.Data.DataSet,System.String)">
+            <summary>
+            Looks up metadata record from signal ID.
+            </summary>
+            <param name="signalID">Signal ID to lookup.</param>
+            <param name="source">Source metadata.</param>
+            <param name="table">Table to search.</param>
             <returns>Metadata record from source metadata for provided point tag.</returns>
             <remarks>
             This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
