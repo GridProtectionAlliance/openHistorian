@@ -79,6 +79,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the window length used for computation
         /// </summary>
+        [ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
         [Description("Defines the Windowlength in frames.")]
         [DefaultValue(DefaultResultDeviceName)]
@@ -91,6 +92,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the default Device Acronym used if SNR measurements have to be generated
         /// </summary>
+        [ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
         [Description("Defines the Windowlength in frames.")]
         [DefaultValue(DefaultWindowLength)]
