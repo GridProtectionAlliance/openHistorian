@@ -285,7 +285,7 @@ namespace openHistorian.Adapters
                         GSF.TimeSeries.Measurement outmeas = new GSF.TimeSeries.Measurement();
                         outmeas.Metadata = set.outMapping.Metadata;
 
-                        outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas, unbalanced, frame.Timestamp));
+                        outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas, unbalanced*100.0D, frame.Timestamp));
                     }
                 }
             }
