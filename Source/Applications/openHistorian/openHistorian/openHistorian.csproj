@@ -328,6 +328,7 @@
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
+    <Content Include="wwwroot\UnbalanceReport.cshtml" />
     <None Include="wwwroot\Index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\ModbusConfig.cshtml" />
@@ -336,6 +337,7 @@
     <None Include="wwwroot\SelectTheme.cshtml" />
     <Content Include="wwwroot\SelectTimeRange.cshtml" />
     <Content Include="wwwroot\Status.cshtml" />
+    <Content Include="wwwroot\SelectReportRange.cshtml" />
     <None Include="wwwroot\TrendMeasurements.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
     <None Include="wwwroot\VendorDevices.cshtml" />

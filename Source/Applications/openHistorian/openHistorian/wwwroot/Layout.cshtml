@@ -177,6 +177,7 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li @Raw(pageTitle == "Home" ? "class=\"active\"" : "")><a href="Index.cshtml">Home</a></li>
+                    <li @Raw(pageTitle == "SNRReport" ? "class=\"active\"" : "")><a href="UnbalanceReport.cshtml">SNR and Unbalance</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Devices <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -188,7 +189,8 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoring <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="TrendMeasurements.cshtml">Trend / Export Data</a></li>
-                            @if (Model.Global.GrafanaServerInstalled) {
+                            @if (Model.Global.GrafanaServerInstalled)
+                            {
                                 <li><a href="grafana">Grafana Visualizations</a></li>
                             }
                             <li><a href="GraphMeasurements.cshtml">Real-time Measurements</a></li>
@@ -198,21 +200,22 @@
                             <li><a href="RemoteConsole.cshtml">Remote Service Console</a></li>
                         </ul>
                     </li>
-                    @if (UserIsAdmin()) {
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="Users.cshtml">Users</a></li>
-                            <li><a href="Groups.cshtml">Groups</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="Companies.cshtml">Companies</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="Vendors.cshtml">Vendors</a></li>
-                            <li><a href="VendorDevices.cshtml">Vendor Devices</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="SelectTheme.cshtml">Select Theme</a></li>
-                        </ul>
-                    </li>
+                    @if (UserIsAdmin())
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="Users.cshtml">Users</a></li>
+                                <li><a href="Groups.cshtml">Groups</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="Companies.cshtml">Companies</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="Vendors.cshtml">Vendors</a></li>
+                                <li><a href="VendorDevices.cshtml">Vendor Devices</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="SelectTheme.cshtml">Select Theme</a></li>
+                            </ul>
+                        </li>
                     }
                     <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                 </ul>

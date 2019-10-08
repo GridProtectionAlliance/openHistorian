@@ -144,6 +144,103 @@ namespace openHistorian
         #endregion
 
         // Client-side script functionality
+        #region [ SNR Measurement View Operations ]
+        [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecordCount)]
+        public int QuerySNRMeasurmentCount(string filterText)
+        {
+            TableOperations<SNRMeasurment> tableOperations = DataContext.Table<SNRMeasurment>();
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
+
+            return tableOperations.QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecords)]
+        public IEnumerable<SNRMeasurment> QuerySNRMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText, DateTime startTime, DateTime endTime, int MeasurementType )
+        {
+            IEnumerable<SNRMeasurment> result;
+
+            TableOperations<SNRMeasurment> tableOperations = DataContext.Table<SNRMeasurment>();
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
+
+            string sortby = sortField;
+            if ((sortField == "Mean")|| (sortField == "Max") || (sortField == "TimeAlarms"))
+            {
+                sortby = "PointTag";
+            }
+
+
+            List<SNRMeasurment> measurements = tableOperations.QueryRecords(sortby, ascending, page, pageSize, filterText).ToList();
+
+            result = measurements.Where(item => item.UnbalanceFlag== MeasurementType).Select(item => AddStatistics(item, startTime, endTime));
+            
+            if (sortField == "Mean")
+            {
+                if (ascending)
+                    result = result.OrderBy(item => item.Mean);
+                else
+                    result = result.OrderByDescending(item => item.Mean);
+            }
+            else if (sortField == "Max")
+            {
+                if (ascending)
+                    result = result.OrderBy(item => item.Max);
+                else
+                    result = result.OrderByDescending(item => item.Max);
+            }
+            else if (sortField == "TimeAlarms")
+            {
+                if (ascending)
+                    result = result.OrderBy(item => item.TimeAlarms);
+                else
+                    result = result.OrderByDescending(item => item.TimeAlarms);
+            }
+
+
+            return result;
+        }
+
+        private SNRMeasurment AddStatistics(SNRMeasurment original, DateTime startTime, DateTime endTime)
+        {
+            // This needs to be fixed But right now it keeps the system from obtaining too much data
+            int limit = 200;
+            string instanceName = "PPA";
+
+            List<TrendValue> points = m_historianOperations.GetHistorianData(instanceName, startTime, endTime, new ulong[1] { original.PointID }, openHistorian.Adapters.Resolution.Every30Seconds, limit, true).ToList();
+            original.Mean = points.Select(item => item.Value).Average();
+            original.Min = points.Select(item => item.Value).Min();
+            original.Max = points.Select(item => item.Value).Max();
+            double sum = points.Sum(item => Math.Pow(item.Value - original.Mean, 2));
+            if (points.Count() < 2)
+                original.StandardDeviation = 0.0D;
+            else
+                original.StandardDeviation = Math.Sqrt(sum / (points.Count() - 1));
+
+            original.NumAlarms = points.Where(item => item.Value > 4).Count();
+            if (points.Count() > 1)
+                original.PercentAlarms = (original.NumAlarms*100.0D)/points.Count();
+            else
+                original.PercentAlarms = 0.0D;
+
+            original.TimeAlarms = 0;
+
+            return original;
+        }
+
+ 
+
+
+        [RecordOperation(typeof(SNRMeasurment), RecordOperation.CreateNewRecord)]
+        public SNRMeasurment NewSNR()
+        {
+            
+            return (SNRMeasurment)DataContext.Table<ActiveMeasurement>().NewRecord();
+        }
+
+        #endregion
+
+        #region [ Voltage Unbalance Measurement View Operations ]
+
+        #endregion
 
         #region [ ActiveMeasurement View Operations ]
 

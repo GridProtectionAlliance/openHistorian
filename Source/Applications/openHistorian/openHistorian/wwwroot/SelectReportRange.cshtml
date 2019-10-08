@@ -1,0 +1,65 @@
+﻿                        <form class="form-inline" role="form">
+                            <label for="filter" data-bind="css: {{'disabled': false}}">Report Period:</label>
+                            <div class="input-group">
+                                <select class="form-control" id="filter" data-bind="{{'value': selectedIntervall}}" style="width: 165px">
+                                    <option value="4">Last 5 Days</option>
+                                    <option value="5">Last 10 Days</option>
+                                    <option value="6">Last 15 Days</option>
+                                    <option value="1">Last 30 Days</option>
+                                    <option value="2">Last 60 Days</option>
+                                    <option value="3">Last 90 Days</option>
+                                    <option value="0">Use Time Range</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group form-group-sm" data-bind="validationElement: startTime">
+                                <label for="{0}StartTime" data-bind="css: {{'disabled': useInterval()}}">Start&nbsp;Time:</label>
+                                <div class="input-group date" data-bind="dateTimePicker: startTime">
+                                    <input type="datetime" class="form-control" id="{0}StartTime" placeholder="Select start time..." data-bind="textInput: startTime, attr: {{'disabled': useInterval(), 'readonly': useInterval()}}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval()}}"></i></span>
+                                </div>
+                                &nbsp;&nbsp;
+                            </div>
+                            <div class="form-group form-group-sm" data-bind="validationElement: endTime">
+                                <label for="{0}EndTime" data-bind="css: {{'disabled': useInterval()}}">&nbsp;End&nbsp;Time:</label>
+                                <div class="input-group date" data-bind="dateTimePicker: endTime">
+                                    <input type="datetime" class="form-control" id="{0}EndTime" placeholder="Select end time..." data-bind="textInput: endTime, attr: {{'disabled': (useInterval() ? true : undefined), 'readonly': (useInterval() ? true : undefined)}}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar" data-bind="css: {{'disabled': useInterval() }}"></i></span>
+                                </div>
+                                &nbsp;&nbsp;
+                            </div>
+                            <br />
+                        </form>
+                        <hr class="quarter-break" />
+                        <hr class="thick-spacer">
+                        <form class="form-inline clearfix" role="form">
+                            <label for="trendResolution"> Filter:</label>
+                            <div class="input-group">
+                                <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 165px">
+                                    <option value="25">Worst 25</option>
+                                    <option value="50">Worst 50</option>
+                                    <option value="100">Worst 100</option>
+                                </select>
+                            </div><em class="validationMessage small" style="display: none;"></em>
+                            <div class="input-group">
+                                <select class="form-control" id="trendResolution" data-bind="value: selectedUnbalance" style="width: 225px">
+                                    <option value="0">Signal to Noise Ratio</option>
+                                    <option value="2">Voltage Unbalance</option>
+                                    <option value="1">Currrent Unbalance</option>
+                                </select>
+                            </div>
+                            <label for="Criteria"> by </label>
+                            <div class="input-group">
+                                <select class="form-control" id="Criteria" data-bind="value: worstBy" style="width: 225px">
+                                    <option value="0">Maximum</option>
+                                    <option value="1">Mean</option>
+                                    <option value="2">Time above Threshhold</option>
+                                </select>
+                            </div>
+                            <span>&nbsp;&nbsp;</span>
+                            <div class="form-group form-group-sm">
+                                <button type="button" class="btn btn-default set-midnight-time" onclick="updateData()" >Generate Report</button>
+                            </div>
+
+                            <em class="validationMessage small" style="display: none;"></em>
+                        </form>

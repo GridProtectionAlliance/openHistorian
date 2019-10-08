@@ -133,6 +133,7 @@
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
+    <Compile Include="Model\SNRMeasurment.cs" />
     <Compile Include="Model\Alarm.cs" />
     <Compile Include="Model\AlarmDeviceStateView.cs" />
     <Compile Include="Model\AlarmLog.cs" />
