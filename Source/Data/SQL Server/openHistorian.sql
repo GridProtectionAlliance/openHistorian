@@ -3170,7 +3170,7 @@ SELECT
       ,[Latitude]
       ,[Description]
       ,[UpdatedOn]
-	  ,(CASE WHEN ([SignalReference] LIKE '%-SNR') THEN (SELECT 0) ELSE (CASE WHEN ([SignalReference] LIKE '%I-UBAL') THEN (SELECT 1) ELSE (SELECT 2) END) END) AS [UnbalanceFlag]
+	  ,(CASE WHEN ([SignalReference] LIKE '%-SNR') THEN (SELECT 0) ELSE (CASE WHEN ([PointTag] LIKE '%I-UBAL') THEN (SELECT 1) ELSE (SELECT 2) END) END) AS [UnbalanceFlag]
 	  FROM ActiveMeasurement
 	  WHERE (SignalReference LIKE '%-SNR' OR SignalReference LIKE '%-UBAL') AND SignalType = 'CALC'
 GO

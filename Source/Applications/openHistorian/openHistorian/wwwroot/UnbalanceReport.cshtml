@@ -167,8 +167,8 @@
     @helper BodyRows()
     {
     <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag.truncate(50), click: $parent.viewPageRecord"></button></div></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumAlarms.toFixed(2)"></span></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeAlarms.toFixed(2)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumAlarms.toFixed(0)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeAlarms.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
@@ -192,7 +192,7 @@
         viewModel.primaryKeyFields = ["SignalID"];
 
         viewModel.setQueryRecordCount(function (filterText) {
-            return dataHub.querySNRMeasurmentCount(filterText);
+            return dataHub.querySNRMeasurmentCount(filterText, viewModel.selectedUnbalance());
         });
 
         viewModel.setQueryRecords(function (sortField, ascending, page, pageSize, filterText) {
@@ -392,13 +392,13 @@
                             span = 90;
                         }
                         else if (self.selectedIntervall() == 4) {
-                            span = 5;
+                            span = 7;
                         }
                         else if (self.selectedIntervall() == 5) {
                             span = 10;
                         }
                         else if (self.selectedIntervall() == 6) {
-                            span = 15;
+                            span = 14;
                         }
 
                         self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));

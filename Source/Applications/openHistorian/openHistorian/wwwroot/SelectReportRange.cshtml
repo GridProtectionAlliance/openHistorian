@@ -2,9 +2,8 @@
                             <label for="filter" data-bind="css: {{'disabled': false}}">Report Period:</label>
                             <div class="input-group">
                                 <select class="form-control" id="filter" data-bind="{{'value': selectedIntervall}}" style="width: 165px">
-                                    <option value="4">Last 5 Days</option>
-                                    <option value="5">Last 10 Days</option>
-                                    <option value="6">Last 15 Days</option>
+                                    <option value="4">Last 7 Days</option>
+                                    <option value="6">Last 14 Days</option>
                                     <option value="1">Last 30 Days</option>
                                     <option value="2">Last 60 Days</option>
                                     <option value="3">Last 90 Days</option>
@@ -39,6 +38,7 @@
                                     <option value="25">Worst 25</option>
                                     <option value="50">Worst 50</option>
                                     <option value="100">Worst 100</option>
+                                    <option value="200">All</option>
                                 </select>
                             </div><em class="validationMessage small" style="display: none;"></em>
                             <div class="input-group">
@@ -53,7 +53,7 @@
                                 <select class="form-control" id="Criteria" data-bind="value: worstBy" style="width: 225px">
                                     <option value="0">Maximum</option>
                                     <option value="1">Mean</option>
-                                    <option value="2">Time above Threshhold</option>
+                                    <option value="2">Time in Alarm</option>
                                 </select>
                             </div>
                             <span>&nbsp;&nbsp;</span>

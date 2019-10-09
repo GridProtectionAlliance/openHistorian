@@ -30,3 +30,39 @@ SELECT
     CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node
 GO
+
+-- **************************
+-- SNR and Unbalance Report
+-- **************************
+CREATE VIEW SNRMeasurment AS
+SELECT 
+	   [NodeID]
+      ,[SourceNodeID]
+      ,[ID]
+      ,[SignalID]
+      ,[PointTag]
+      ,[AlternateTag]
+      ,[SignalReference]
+      ,[Internal]
+      ,[Subscribed]
+      ,[Device]
+      ,[DeviceID]
+      ,[FramesPerSecond]
+      ,[Protocol]
+      ,[ProtocolType]
+      ,[SignalType]
+      ,[EngineeringUnits]
+      ,[PhasorID]
+      ,[PhasorType]
+      ,[Phase]
+      ,[Adder]
+      ,[Multiplier]
+      ,[Company]
+      ,[Longitude]
+      ,[Latitude]
+      ,[Description]
+      ,[UpdatedOn]
+	  ,(CASE WHEN ([SignalReference] LIKE '%-SNR') THEN (SELECT 0) ELSE (CASE WHEN ([PointTag] LIKE '%I-UBAL') THEN (SELECT 1) ELSE (SELECT 2) END) END) AS [UnbalanceFlag]
+	  FROM ActiveMeasurement
+	  WHERE (SignalReference LIKE '%-SNR' OR SignalReference LIKE '%-UBAL') AND SignalType = 'CALC'
+GO

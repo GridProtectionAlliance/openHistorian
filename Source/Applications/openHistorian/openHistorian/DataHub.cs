@@ -146,12 +146,14 @@ namespace openHistorian
         // Client-side script functionality
         #region [ SNR Measurement View Operations ]
         [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecordCount)]
-        public int QuerySNRMeasurmentCount(string filterText)
+        public int QuerySNRMeasurmentCount(string filterText, int MeasurementType)
         {
             TableOperations<SNRMeasurment> tableOperations = DataContext.Table<SNRMeasurment>();
             tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
-
-            return tableOperations.QueryRecordCount(filterText);
+            // Distinguish between seperate sets
+            int nTotal = tableOperations.QueryRecordCount(filterText);
+            List<SNRMeasurment> measurements = tableOperations.QueryRecords("PointTag", true, 1, nTotal, filterText).ToList();
+            return measurements.Where(item => item.UnbalanceFlag == MeasurementType).Count();
         }
 
         [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecords)]
@@ -168,11 +170,13 @@ namespace openHistorian
                 sortby = "PointTag";
             }
 
+            int nTotal = tableOperations.QueryRecordCount(filterText);
+            List<SNRMeasurment> measurements = tableOperations.QueryRecords(sortby, ascending, 1, nTotal, filterText).ToList();
 
-            List<SNRMeasurment> measurements = tableOperations.QueryRecords(sortby, ascending, page, pageSize, filterText).ToList();
-
-            result = measurements.Where(item => item.UnbalanceFlag== MeasurementType).Select(item => AddStatistics(item, startTime, endTime));
+            result = measurements.Where(item => item.UnbalanceFlag == MeasurementType).ToList();
+            result = result.Select(item => AddStatistics(item, startTime, endTime)).ToList();
             
+
             if (sortField == "Mean")
             {
                 if (ascending)
@@ -196,7 +200,19 @@ namespace openHistorian
             }
 
 
-            return result;
+            return PageQuery(result,page,pageSize);
+        }
+
+        // Take care of paging locally since Tableoperations does the incorrect thing in this scenario
+        // This will need to move, but for now I don't want to remove the pageviewmodel
+        private IEnumerable<SNRMeasurment> PageQuery(IEnumerable<SNRMeasurment> input, int page, int pageSize )
+        {
+            int start = (page-1) * pageSize; // include start
+            if (start == 0)
+            {
+                return input.Take(pageSize).ToList();
+            }
+            return input.Skip(start).Take(pageSize).ToList();
         }
 
         private SNRMeasurment AddStatistics(SNRMeasurment original, DateTime startTime, DateTime endTime)
@@ -204,18 +220,41 @@ namespace openHistorian
             // This needs to be fixed But right now it keeps the system from obtaining too much data
             int limit = 200;
             string instanceName = "PPA";
+           
+            List<TrendValue> points;
+            try
+            {
+                points = m_historianOperations.GetHistorianData(instanceName, startTime, endTime, new ulong[1] { original.PointID }, openHistorian.Adapters.Resolution.Every30Seconds, limit, true).ToList();
+            }
+            catch
+            {
+                points = new List<TrendValue>();
+            }
 
-            List<TrendValue> points = m_historianOperations.GetHistorianData(instanceName, startTime, endTime, new ulong[1] { original.PointID }, openHistorian.Adapters.Resolution.Every30Seconds, limit, true).ToList();
-            original.Mean = points.Select(item => item.Value).Average();
-            original.Min = points.Select(item => item.Value).Min();
-            original.Max = points.Select(item => item.Value).Max();
-            double sum = points.Sum(item => Math.Pow(item.Value - original.Mean, 2));
+            if (points.Count() > 1)
+            {
+                original.Mean = points.Select(item => item.Value).Average();
+                original.Min = points.Select(item => item.Value).Min();
+                original.Max = points.Select(item => item.Value).Max();
+                original.NumAlarms = points.Where(item => item.Value > 4).Count();
+            }
+            else
+            {
+                original.Mean = 0.0D;
+                original.Min = 0.0D;
+                original.Max = 0.0D;
+                original.NumAlarms = 0.0D;
+
+            }
+            
             if (points.Count() < 2)
                 original.StandardDeviation = 0.0D;
             else
+            {
+                double sum = points.Sum(item => Math.Pow(item.Value - original.Mean, 2));
                 original.StandardDeviation = Math.Sqrt(sum / (points.Count() - 1));
-
-            original.NumAlarms = points.Where(item => item.Value > 4).Count();
+            }
+            
             if (points.Count() > 1)
                 original.PercentAlarms = (original.NumAlarms*100.0D)/points.Count();
             else

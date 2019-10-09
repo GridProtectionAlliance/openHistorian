@@ -81,7 +81,7 @@ namespace openHistorian.Adapters
         /// </summary>
         [ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
-        [Description("Defines the Windowlength in frames.")]
+        [Description("Defines Name of the Device used forf output Measurements.")]
         [DefaultValue(DefaultResultDeviceName)]
         public string ResultDeviceName
         {
