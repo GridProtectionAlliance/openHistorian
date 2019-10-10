@@ -43,6 +43,7 @@ using PhasorProtocolAdapters;
 using openHistorian.Model;
 using ConnectionStringParser = GSF.Configuration.ConnectionStringParser<GSF.TimeSeries.Adapters.ConnectionStringParameterAttribute>;
 using GSF.Identity;
+using System.Diagnostics;
 
 namespace openHistorian.Adapters
 {
@@ -71,19 +72,33 @@ namespace openHistorian.Adapters
 
         private int numberOfFrames;
         private Dictionary<Guid, List<double>> dataWindow;
+        private List<double> refWindow;
         private Dictionary<Guid, MeasurementKey> outputMapping;
         private Guid nodeID;
         
         #endregion [ Members ]
 
         /// <summary>
-        /// Gets or sets the window length used for computation
+        /// Gets or sets the device acronym of the outputs
         /// </summary>
         [ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
-        [Description("Defines Name of the Device used forf output Measurements.")]
+        [Description("Defines Name of the Device used for output Measurements.")]
         [DefaultValue(DefaultResultDeviceName)]
         public string ResultDeviceName
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the reference for Phase Computation
+        /// </summary>
+        [ConnectionStringParameter]
+        [CalculatedMesaurementAttribute]
+        [Description("Defines Reference Angle for Phase SNRs.")]
+        [DefaultValue(null)]
+        public MeasurementKey Reference 
         {
             get;
             set;
@@ -146,6 +161,7 @@ namespace openHistorian.Adapters
             //Figure OutOutput Measurement Keys
 
             this.dataWindow = new Dictionary<Guid, List<double>>();
+            this.refWindow = new List<double>();
             this.outputMapping = new Dictionary<Guid, MeasurementKey>();
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
@@ -212,6 +228,24 @@ namespace openHistorian.Adapters
                     }
 
                 }
+
+                if (this.Reference == null)
+                {
+                    OnStatusMessage(GSF.Diagnostics.MessageLevel.Warning, "No Reference Angle Specified");
+                    int refIndex = this.InputMeasurementKeyTypes.IndexOf(item => (item == GSF.Units.EE.SignalType.IPHA || item == GSF.Units.EE.SignalType.VPHA));
+                    if (refIndex > -1)
+                    {
+                        this.Reference = this.InputMeasurementKeys[refIndex];
+                    }
+                }
+
+                if (this.Reference != null)
+                {
+                    if (!this.InputMeasurementKeys.Contains(this.Reference))
+                    {
+                        this.InputMeasurementKeys.AddRange(new MeasurementKey[1] { this.Reference });
+                    }
+                }
             }
             
 
@@ -232,31 +266,54 @@ namespace openHistorian.Adapters
                 numberOfFrames = 0;
             }
 
-            foreach (IMeasurement measurement in frame.Measurements.Values)
+            MeasurementKey[] availableKeys = frame.Measurements.Values.MeasurementKeys();
+            
+            foreach (Guid key in this.dataWindow.Keys)
             {
-                if (this.dataWindow.Keys.Contains(measurement.Key.SignalID))
+                int keyIndex = availableKeys.IndexOf(item => item.SignalID == key);
+                if (keyIndex > -1)
                 {
-                    this.dataWindow[measurement.Key.SignalID].Add(measurement.Value);
+                    this.dataWindow[key].Add(frame.Measurements[availableKeys[keyIndex]].Value);
                 }
-               
+                else
+                {
+                    this.dataWindow[key].Add(double.NaN);
+                }
             }
 
+            if (this.Reference != null)
+            {
+                int keyIndex = availableKeys.IndexOf(item => item.SignalID == Reference.SignalID);
+                if (keyIndex > -1)
+                {
+                    this.refWindow.Add(frame.Measurements[availableKeys[keyIndex]].Value);
+                }
+                else
+                {
+                    this.refWindow.Add(double.NaN);
+                }
+            }
+            
+            
             int currentWindowLength = this.dataWindow.Keys.Select(key => this.dataWindow[key].Count).Max();
 
             if (currentWindowLength >= WindowLength)
             {
-                Dictionary<Guid,double> SNR = new Dictionary<Guid, double>(this.dataWindow.Keys.Count);
                 List<IMeasurement> outputmeasurements = new List<IMeasurement>();
+                Debug.WriteLine(String.Format("Here {0}",this.dataWindow.Keys.Count()));
 
-                foreach (Guid key in this.dataWindow.Keys)
+                List<Guid> Keys = this.dataWindow.Keys.ToList();
+                foreach (Guid key in Keys)
                 {
-                    SNR.Add(key, CalculateSignalToNoise(this.dataWindow[key]));
+                    double SNR = CalculateSignalToNoise(this.dataWindow[key],key);
                     GSF.TimeSeries.Measurement outmeas = new GSF.TimeSeries.Measurement();
                     outmeas.Metadata = this.outputMapping[key].Metadata;
                     
-                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas,SNR[key], frame.Timestamp));               
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas,SNR, frame.Timestamp));
+                    dataWindow[key] = new List<double>();
+                    Debug.WriteLine(String.Format("key: {0}", key));
                 }
-
+                refWindow = new List<double>();
                 OnNewMeasurements(outputmeasurements);
             }
             
@@ -269,9 +326,21 @@ namespace openHistorian.Adapters
             }
         }
 
-        private double CalculateSignalToNoise(List<double> values)
+        private double CalculateSignalToNoise(List<double> values, Guid key)
         {
             int sampleCount = values.Count;
+            int keyIndex = this.InputMeasurementKeys.IndexOf(item => item.SignalID == key);
+
+            //If its a Phase
+            if ((this.InputMeasurementKeyTypes[keyIndex] == GSF.Units.EE.SignalType.IPHA ||
+                this.InputMeasurementKeyTypes[keyIndex] == GSF.Units.EE.SignalType.IPHA) && 
+                    (sampleCount == this.refWindow.Count()) && (this.Reference != null))
+            {
+                values = GSF.Units.Angle.Unwrap(values.Select((item, index) => (GSF.Units.Angle)item - (GSF.Units.Angle)this.refWindow[index]).ToArray()).Select(item => (double)item).ToList();
+            }
+
+            values = values.Where(item => double.IsNaN(item)).ToList();
+            sampleCount = values.Count;
 
             if (sampleCount < 1)
                 return double.NaN;
@@ -279,7 +348,7 @@ namespace openHistorian.Adapters
             double sampleAverage = values.Average();
             double totalVariance = values.Select(item => item - sampleAverage).Select(deviation => deviation * deviation).Sum();
 
-            return Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / sampleCount)));
+            return (10*Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / sampleCount))));
         }
 
         private openHistorian.Model.Device CreateDefaultDevice(GSF.Data.Model.TableOperations<openHistorian.Model.Device> table)
