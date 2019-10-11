@@ -60,6 +60,7 @@ namespace openHistorian
         // Fields
         private readonly HistorianOperations m_historianOperations;
         private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
+        private readonly ReportOperations m_reportOperations;
         private readonly ModbusOperations m_modbusOperations;
 
         #endregion
@@ -74,6 +75,8 @@ namespace openHistorian
             m_historianOperations = new HistorianOperations(this, logStatusMessage, logException);
             m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
             m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
+            m_reportOperations = new ReportOperations(this, logStatusMessage, logException);
+
         }
 
         #endregion
@@ -94,6 +97,7 @@ namespace openHistorian
                 m_historianOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
                 m_modbusOperations?.EndSession();
+                m_reportOperations?.EndSession();
 
                 LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}", UpdateType.Information, false);
             }
@@ -144,142 +148,71 @@ namespace openHistorian
         #endregion
 
         // Client-side script functionality
-        #region [ SNR Measurement View Operations ]
-        [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecordCount)]
-        public int QuerySNRMeasurmentCount(string filterText, int MeasurementType)
+        #region [ Report View Operations ]
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecordCount)]
+        public int QuerySNRMeasurmentCount(string filterText)
         {
-            TableOperations<SNRMeasurment> tableOperations = DataContext.Table<SNRMeasurment>();
-            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
-            // Distinguish between seperate sets
-            int nTotal = tableOperations.QueryRecordCount(filterText);
-            List<SNRMeasurment> measurements = tableOperations.QueryRecords("PointTag", true, 1, nTotal, filterText).ToList();
-            return measurements.Where(item => item.UnbalanceFlag == MeasurementType).Count();
+            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedReportInstanceName()}:%";
+            return tableOperations.QueryRecordCount(filterText);
         }
 
-        [RecordOperation(typeof(SNRMeasurment), RecordOperation.QueryRecords)]
-        public IEnumerable<SNRMeasurment> QuerySNRMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText, DateTime startTime, DateTime endTime, int MeasurementType )
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecords)]
+        public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            IEnumerable<SNRMeasurment> result;
-
-            TableOperations<SNRMeasurment> tableOperations = DataContext.Table<SNRMeasurment>();
-            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
-
-            string sortby = sortField;
-            if ((sortField == "Mean")|| (sortField == "Max") || (sortField == "TimeAlarms"))
-            {
-                sortby = "PointTag";
-            }
-
-            int nTotal = tableOperations.QueryRecordCount(filterText);
-            List<SNRMeasurment> measurements = tableOperations.QueryRecords(sortby, ascending, 1, nTotal, filterText).ToList();
-
-            result = measurements.Where(item => item.UnbalanceFlag == MeasurementType).ToList();
-            result = result.Select(item => AddStatistics(item, startTime, endTime)).ToList();
-            
-
-            if (sortField == "Mean")
-            {
-                if (ascending)
-                    result = result.OrderBy(item => item.Mean);
-                else
-                    result = result.OrderByDescending(item => item.Mean);
-            }
-            else if (sortField == "Max")
-            {
-                if (ascending)
-                    result = result.OrderBy(item => item.Max);
-                else
-                    result = result.OrderByDescending(item => item.Max);
-            }
-            else if (sortField == "TimeAlarms")
-            {
-                if (ascending)
-                    result = result.OrderBy(item => item.TimeAlarms);
-                else
-                    result = result.OrderByDescending(item => item.TimeAlarms);
-            }
-
-
-            return PageQuery(result,page,pageSize);
+            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedReportInstanceName()}:%";
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
-        // Take care of paging locally since Tableoperations does the incorrect thing in this scenario
-        // This will need to move, but for now I don't want to remove the pageviewmodel
-        private IEnumerable<SNRMeasurment> PageQuery(IEnumerable<SNRMeasurment> input, int page, int pageSize )
+
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.CreateNewRecord)]
+        public ReportMeasurements NewReportMeasurement()
         {
-            int start = (page-1) * pageSize; // include start
-            if (start == 0)
-            {
-                return input.Take(pageSize).ToList();
-            }
-            return input.Skip(start).Take(pageSize).ToList();
+            //This is not really allowed need to check if we can disable that
+            return m_reportOperations.Table().NewRecord();
         }
 
-        private SNRMeasurment AddStatistics(SNRMeasurment original, DateTime startTime, DateTime endTime)
+        /// <summary>
+        /// Set selected Report Sources.
+        /// </summary>
+        /// <param name="ReportType">Type of the report requested <see cref="ReportType"/>.</param>
+        /// <param name="number">Depth of the report (0 is all).</param>
+        /// <param name="start">Start time of the report.</param>
+        /// <param name="end">End time of the report.</param>
+        /// 
+        public void SetReportingSource(int ReportType, int number, DateTime start, DateTime end)
         {
-            // This needs to be fixed But right now it keeps the system from obtaining too much data
-            int limit = 200;
-            string instanceName = "PPA";
-           
-            List<TrendValue> points;
-            try
-            {
-                points = m_historianOperations.GetHistorianData(instanceName, startTime, endTime, new ulong[1] { original.PointID }, openHistorian.Adapters.Resolution.Every30Seconds, limit, true).ToList();
-            }
-            catch
-            {
-                points = new List<TrendValue>();
-            }
-
-            if (points.Count() > 1)
-            {
-                original.Mean = points.Select(item => item.Value).Average();
-                original.Min = points.Select(item => item.Value).Min();
-                original.Max = points.Select(item => item.Value).Max();
-                original.NumAlarms = points.Where(item => item.Value > 4).Count();
-            }
-            else
-            {
-                original.Mean = 0.0D;
-                original.Min = 0.0D;
-                original.Max = 0.0D;
-                original.NumAlarms = 0.0D;
-
-            }
-            
-            if (points.Count() < 2)
-                original.StandardDeviation = 0.0D;
-            else
-            {
-                double sum = points.Sum(item => Math.Pow(item.Value - original.Mean, 2));
-                original.StandardDeviation = Math.Sqrt(sum / (points.Count() - 1));
-            }
-            
-            if (points.Count() > 1)
-                original.PercentAlarms = (original.NumAlarms*100.0D)/points.Count();
-            else
-                original.PercentAlarms = 0.0D;
-
-            original.TimeAlarms = 0;
-
-            return original;
+            this.m_reportOperations.UpdateReportSource(start, end, (ReportType)ReportType, number, DataContext);
         }
 
- 
-
-
-        [RecordOperation(typeof(SNRMeasurment), RecordOperation.CreateNewRecord)]
-        public SNRMeasurment NewSNR()
+        /// <summary>
+        /// Set selected Report instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        public void SetSelectedReportInstanceName(string instanceName)
         {
-            
-            return (SNRMeasurment)DataContext.Table<ActiveMeasurement>().NewRecord();
+            m_reportOperations.SetSelectedInstanceName(instanceName);
         }
+
+        /// <summary>
+        /// Gets selected Report instance name.
+        /// </summary>
+        /// <returns>Selected Reportinstance name.</returns>
+        public string GetSelectedReportInstanceName()
+        {
+            return m_reportOperations.GetSelectedInstanceName();
+        }
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names to Report from.
+        /// </summary>
+        /// <returns>Report Historian adapter instance names.</returns>
+        public IEnumerable<string> GetReportInstanceNames() => m_reportOperations.GetInstanceNames();
 
         #endregion
 
-        #region [ Voltage Unbalance Measurement View Operations ]
 
-        #endregion
 
         #region [ ActiveMeasurement View Operations ]
 
@@ -726,7 +659,7 @@ namespace openHistorian
         #region [ Historian Operations ]
 
         /// <summary>
-        /// Set selected instance name.
+        /// Set selected Historian instance name.
         /// </summary>
         /// <param name="instanceName">Instance name that is selected by user.</param>
         public void SetSelectedInstanceName(string instanceName)
@@ -748,7 +681,6 @@ namespace openHistorian
         /// </summary>
         /// <returns>Historian adapter instance names.</returns>
         public IEnumerable<string> GetInstanceNames() => m_historianOperations.GetInstanceNames();
-
 
         /// <summary>
         /// Begins a new historian write operation.

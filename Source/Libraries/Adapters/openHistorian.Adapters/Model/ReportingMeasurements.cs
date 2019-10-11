@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  SNRMeasurment.cs - Gbtc
+//  ReportingMeasurements.cs - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -85,5 +85,36 @@ namespace openHistorian.Model
         // 2 -> V
         public int UnbalanceFlag
         { get; set; }
+    }
+
+    [RootQueryRestriction("ID LIKE {0} AND SignalReference LIKE {1}", "PPA:%")]
+    public class ReportMeasurements : ActiveMeasurement
+    {
+
+        public double Mean
+        { get; set; }
+
+        public double Min
+        { get; set; }
+
+        public double Max
+        { get; set; }
+
+        public double StandardDeviation
+        { get; set; }
+
+        public double NumberOfAlarms
+        { get; set; }
+
+        public double PercentAlarms
+        { get; set; }
+
+        public double TimeInAlarm
+        { get; set; }
+
+        public string OriginalTag
+        {
+            get; set;
+        }
     }
 }
