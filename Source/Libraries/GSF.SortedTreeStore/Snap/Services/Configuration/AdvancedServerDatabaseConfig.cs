@@ -350,6 +350,8 @@ namespace GSF.Snap.Services.Configuration
                     }
                     else
                     {
+                        // TODO: JRC - Must make desiredRemainingSpace configurable!!
+
                         //Final staging file
                         rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024,
                             m_directoryMethod, ArchiveEncodingMethod, m_databaseName.ToNonNullNorEmptyString("stage" + stage).RemoveInvalidFileNameCharacters(),
