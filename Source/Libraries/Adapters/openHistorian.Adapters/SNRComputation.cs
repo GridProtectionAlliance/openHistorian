@@ -300,7 +300,6 @@ namespace openHistorian.Adapters
             if (currentWindowLength >= WindowLength)
             {
                 List<IMeasurement> outputmeasurements = new List<IMeasurement>();
-                Debug.WriteLine(String.Format("Here {0}",this.dataWindow.Keys.Count()));
 
                 List<Guid> Keys = this.dataWindow.Keys.ToList();
                 foreach (Guid key in Keys)
@@ -311,7 +310,6 @@ namespace openHistorian.Adapters
                     
                     outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas,SNR, frame.Timestamp));
                     dataWindow[key] = new List<double>();
-                    Debug.WriteLine(String.Format("key: {0}", key));
                 }
                 refWindow = new List<double>();
                 OnNewMeasurements(outputmeasurements);
