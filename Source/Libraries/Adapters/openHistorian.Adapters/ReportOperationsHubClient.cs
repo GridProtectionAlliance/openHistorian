@@ -99,6 +99,7 @@ namespace openHistorian.Adapters
         private string databaseFile;
         private AdoDataConnection connection;
         private bool m_disposed;
+        private double threshold;
 
         #endregion
 
@@ -110,6 +111,15 @@ namespace openHistorian.Adapters
         public ReportOperationsHubClient()
         {
             this.historianOperations = new ReportHistorianOperations();
+
+            // Override the Historian Instance with the value from the config File
+            // Any changes after this will take effect
+
+            // Access needed settings from specified categories in configuration file
+            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
+            reportSettings.Add("historianInstance", "PPA" , "Default historian instance used for reporting");
+            string historian = reportSettings["historianInstance"].ValueAs("PPA");
+            this.SetSelectedInstanceName(historian);
         }
 
         #endregion
@@ -190,6 +200,7 @@ namespace openHistorian.Adapters
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int number, DataContext dataContext)
         {
+
             string sourceFile = string.Format("{0}{1}ReportTemplate.db", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
             this.databaseFile = string.Format("{0}{1}{2}.db",ConfigurationCachePath, Path.DirectorySeparatorChar,this.ConnectionID) ;
             System.IO.File.Copy(sourceFile, this.databaseFile, true);
@@ -206,18 +217,36 @@ namespace openHistorian.Adapters
             else if (reportType == ReportType.Unbalance_V)
                 filterstring = "%V-UBAL";
 
+            //Get AlertThreshold
+            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
+            if (reportType == ReportType.SNR)
+            {
+                reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
+                this.threshold = reportSettings["DefaultSNRThreshold"].ValueAs(this.threshold);
+            }
+            else if (reportType == ReportType.Unbalance_V)
+            {
+                reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
+                this.threshold = reportSettings["VUnbalanceThreshold"].ValueAs(this.threshold);
+            }
+            else if (reportType == ReportType.Unbalance_I)
+            {
+                reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
+                this.threshold = reportSettings["IUnbalanceThreshold"].ValueAs(this.threshold);
+            }
+
 
             List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType);
 
             if (reportingMeasurements.Count() < 1)
             {
-
-                List<ActiveMeasurement> activeMeasuremnts = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
+               
+                List <ActiveMeasurement> activeMeasuremnts = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
                 reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
 
                 // Pull Data From the Open Historian
 
-                List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts).ToList();
+                List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts,this.threshold).ToList();
 
                 //remove any that don't have data
                 reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
@@ -229,9 +258,11 @@ namespace openHistorian.Adapters
                     item.Max = data.max;
                     item.Min = data.min;
                     item.Mean = data.sum / data.totalPoints;
-                    item.NumberOfAlarms = 0;
-                    item.PercentAlarms = 0;
-                    item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + data.totalPoints * item.Mean * item.Mean) / data.totalPoints);
+                    item.NumberOfAlarms = data.alert;
+                    item.PercentAlarms = (double)data.alert * 100.0D / (double)data.totalPoints;
+                    item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + (double)data.totalPoints * item.Mean * item.Mean) / (double)data.totalPoints);
+                    item.TimeInAlarm = item.NumberOfAlarms * 1000.0D / (double)item.FramesPerSecond;
+
                     return item;
                 }
                 ).ToList();
@@ -252,6 +283,17 @@ namespace openHistorian.Adapters
 
             if (this.numberOfRecords == 0)
                 this.numberOfRecords = reportingMeasurements.Count();
+
+            // Create Original Point Tag
+            reportingMeasurements.Select(item =>
+            {
+                item.OriginalTag = item.PointTag;
+                if (reportType == ReportType.SNR)
+                    item.OriginalTag = item.OriginalTag.Remove(item.OriginalTag.Length - 4);
+                else
+                    item.OriginalTag = item.OriginalTag.Remove(item.OriginalTag.Length - 5);
+                return item;
+            }).ToList();
 
             TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(connection);
             for (int i=0; i < Math.Min(this.numberOfRecords, reportingMeasurements.Count());i++)
@@ -304,6 +346,11 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets the reporting Measurment List from Aggregate Channels if available.
         /// </summary>
+        /// <returns> List of ReportMeasurements to be added to Report.</returns>
+        /// <param name="start">Start date of the Report.</param>
+        /// <param name="end">End date of the Report.</param>
+        /// <param name="type"> Type of Report <see cref="ReportType"/>.</param>
+        /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type)
         {
             List<ReportMeasurements> result = new List<ReportMeasurements>();
@@ -331,7 +378,15 @@ namespace openHistorian.Adapters
 
                 // Pull Data From the Open Historian
                 List<ActiveMeasurement> all = sums.Concat(squaredsums).Concat(minimums).Concat(maximums).Concat(number).ToList();
-                List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(start, end, all).ToList();
+                List<CondensedDataPoint> historiandata = new List<CondensedDataPoint>();
+                try
+                {
+                    historiandata = this.historianOperations.ReadCondensed(start, end, all, double.MaxValue).ToList();
+                }
+                catch
+                {
+                    return new List<ReportMeasurements>();
+                }
 
                 result = result.Where((item,index) =>
                 {
@@ -372,6 +427,7 @@ namespace openHistorian.Adapters
                     item.PercentAlarms = 0;
                     item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + npoints * item.Mean * item.Mean) / npoints);
 
+                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
                     return item;
                 }).ToList();
             }

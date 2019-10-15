@@ -150,7 +150,7 @@
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.HeaderColumns = new[]
        {   //    { "Field", "Label", "Classes" }
-        new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
+        new[] { "OriginalTag", "Tag&nbsp;Name", "text-left" },
         new[] { "NumAlarms" , "#&nbsp;of&nbsp;Alarms", "text-center" },
         new[] { "TimeAlarms" , "Time &nbsp;in&nbsp;Alarm", "text-center" },
         new[] { "PercentAlarms" , "Percent &nbsp;in&nbsp;Alarm", "text-center" },
@@ -166,7 +166,7 @@
 }
     @helper BodyRows()
     {
-    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag, click: $parent.viewPageRecord"></button></div></td>
+    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag, click: $parent.viewPageRecord"></button></div></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeInAlarm.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>

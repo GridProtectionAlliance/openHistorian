@@ -172,7 +172,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Total Number of Points.
         /// </summary>
-        public double totalPoints;
+        public int totalPoints;
 
         /// <summary>
         /// Sum (X).
@@ -183,6 +183,11 @@ namespace openHistorian.Adapters
         /// Sum (X*X).
         /// </summary>
         public double sqrsum;
+
+        /// <summary>
+        /// nu,ber of points exceeding alert threshold.
+        /// </summary>
+        public int alert;
 
         /// <summary>
         /// Intializes a new condesed data point.
@@ -197,6 +202,7 @@ namespace openHistorian.Adapters
             point.sum = 0;
             point.totalPoints = 0;
             point.PointID = PointID;
+            point.alert = 0;
             return point;
         }
     }
@@ -440,8 +446,8 @@ namespace openHistorian.Adapters
         /// <param name="start">Starttime.</param>
         /// <param name="end">EndTime.</param>
         /// <param name="measurements">Measurements to be read.</param>
-        ///   
-        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements)
+        /// <param name="threshold">Threshhold used to determine number of alerts.</param>   
+        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold)
         {
             List<CondensedDataPoint> result = new List<CondensedDataPoint>(measurements.Count());
 
@@ -456,14 +462,12 @@ namespace openHistorian.Adapters
                 foreach (ulong key in pointIDs)
                 {
                     frameRateResult.Add(key,CondensedDataPoint.EmptyPoint(key));
-                        
                 }
 
                 using (ReportHistorianReader reader = new ReportHistorianReader(server, this.m_instance, start, end, framerate, pointIDs))
                 {
                     DataPoint point = new DataPoint();
 
-                        
                     // Scan to first record
                     if (!reader.ReadNext(point))
                         throw new InvalidOperationException("No data for specified time range in openHistorian connection!");
@@ -481,6 +485,10 @@ namespace openHistorian.Adapters
                             frameRateResult[point.PointID].sum += point.ValueAsSingle;
                             frameRateResult[point.PointID].sqrsum += point.ValueAsSingle * point.ValueAsSingle;
                             frameRateResult[point.PointID].totalPoints++;
+                            if (point.ValueAsSingle > threshold)
+                            {
+                                frameRateResult[point.PointID].alert++;
+                            }
                         }
                     }
                 }
