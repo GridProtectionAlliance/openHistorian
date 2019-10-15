@@ -151,8 +151,8 @@
     ViewBag.HeaderColumns = new[]
        {   //    { "Field", "Label", "Classes" }
         new[] { "OriginalTag", "Tag&nbsp;Name", "text-left" },
-        new[] { "NumAlarms" , "#&nbsp;of&nbsp;Alarms", "text-center" },
-        new[] { "TimeAlarms" , "Time &nbsp;in&nbsp;Alarm", "text-center" },
+        new[] { "NumberOfAlarms", "#&nbsp;of&nbsp;Alarms", "text-center" },
+        new[] { "TimeInAlarm", "Time &nbsp;in&nbsp;Alarm", "text-center" },
         new[] { "PercentAlarms" , "Percent &nbsp;in&nbsp;Alarm", "text-center" },
         new[] { "Mean" , "Mean", "text-center" },
         new[] { "StandardDeviation" , "Standard &nbsp;Dev.", "text-center" },
@@ -168,7 +168,7 @@
     {
     <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag, click: $parent.viewPageRecord"></button></div></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeInAlarm.toFixed(0)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: secondstoInterval(TimeInAlarm)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
@@ -189,7 +189,6 @@
         });
 
         
-
         function updateData() {
             var reportType = "";
 
@@ -205,7 +204,15 @@
             viewModel.ReportTitle("Worst 25 " + reportType + " Report");
 
             dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment()).done(function (result) {
-                viewModel.updateSortOrder("Mean", false);
+                if (viewModel.worstBy() == 0) {
+                    viewModel.updateSortOrder("Mean", false);
+                }
+                else if (viewModel.worstBy() == 1) {
+                    viewModel.updateSortOrder("Max", false);
+                }
+                if (viewModel.worstBy() == 2) {
+                    viewModel.updateSortOrder("TimeinAlarm", false);
+                }
             });
             
             
@@ -226,7 +233,7 @@
     @* Make sure to use single quotes in this function: *@
     <form class='form-inline pull-right clearfix' role='form'>
         <small>
-            Instance:&nbsp;<select class='form-control' id='instanceName' data-bind='value: instanceName; valueAllowUnset: false' style='border: 0; width: 80px'></select>&nbsp;&nbsp;&nbsp;&nbsp;
+            Instance:&nbsp;<select disabled class='form-control' id='instanceName' data-bind='value: instanceName; valueAllowUnset: false' style='border: 0; width: 80px'></select>&nbsp;&nbsp;&nbsp;&nbsp;
         </small>
     </form>
 }
@@ -248,6 +255,7 @@
             return DateTimeFormat.substr(dotIndex + 1).trim().length;
         }();
 
+
         function adjustSubsecondDigits(timeValue) {
             if (SubsecondDigits === 0)
                 return timeValue;
@@ -258,6 +266,22 @@
                 return timeValue + "." + Array(SubsecondDigits + 2).join("0");
 
             return timeValue + Array(SubsecondDigits - timeValue.substr(dotIndex + 1).trim().length + 1).join("0");
+        }
+
+        function secondstoInterval(seconds) {
+            var day = 0;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+
+            second = seconds % 60.0;
+            minute = Math.floor(seconds / 60.0);
+            hour = Math.floor(minute / 60.0);
+            day = Math.floor(hour / 24.0);
+            hour = hour % 24.0;
+            minute = minute % 60;
+
+            return (day.toFixed(0) + "d " + hour.toFixed(0) + "h " + minute.toFixed(0) + "m " + second.toFixed(0) + "s"); 
         }
 
         function ExtendedViewModel() {
@@ -351,30 +375,14 @@
 
             self.instanceName = ko.pureComputed({
                 read: function () {
+                    if (self.dataHubIsConnected()) {
+                        dataHub.getSelectedReportInstanceName().done(function (result) {
+                            self._instanceName(result);
+                        });
+                    }
                     return self._instanceName();
                 },
                 write: function (value) {
-                    if (value === self._instanceName())
-                        return;
-
-                    if (value) {
-                        self._instanceName(value);
-                        Cookies.set("instanceName", value.toString(), { expires: 365 });
-                    } else {
-                        self._instanceName("");
-                    }
-                    
-                    if (self.dataHubIsConnected()) {
-                        dataHub.getSelectedReportInstanceName().done(function (selectedInstanceName) {
-                            const currentInstanceName = self._instanceName();
-
-                            if (selectedInstanceName !== currentInstanceName) {
-                                dataHub.setSelectedReportInstanceName(currentInstanceName).done(function () {
-                                    self.initialize();
-                                });
-                            }
-                        });
-                    }
                 },
                 owner: self
             });
