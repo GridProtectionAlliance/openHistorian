@@ -64,7 +64,26 @@ namespace openHistorian.Adapters
         Unbalance_I
     }
 
-    
+    /// <summary>
+    /// Defines enumeration of supported Report Crtieria.
+    /// </summary>
+    public enum ReportCriteria
+    {
+        /// <summary>
+        /// Mean.
+        /// </summary>
+        Mean,
+
+        /// <summary>
+        /// Maximum.
+        /// </summary>
+        Maximum,
+
+        /// <summary>
+        /// Time in Alert.
+        /// </summary>
+        AlertTime,
+    }
 
     /// <summary>
     /// Represents a client instance of a SignalR Hub for report data operations.
@@ -76,7 +95,7 @@ namespace openHistorian.Adapters
         // Fields
         private ReportType reportType;
         private int numberOfRecords;
-        private HistorianOperationsHubClient historianOperations;
+        private ReportHistorianOperations historianOperations;
         private string databaseFile;
         private AdoDataConnection connection;
         private bool m_disposed;
@@ -90,7 +109,7 @@ namespace openHistorian.Adapters
         /// </summary>
         public ReportOperationsHubClient()
         {
-            this.historianOperations = new HistorianOperationsHubClient();
+            this.historianOperations = new ReportHistorianOperations();
         }
 
         #endregion
@@ -166,9 +185,10 @@ namespace openHistorian.Adapters
         /// <param name="startDate">Start date of the Report.</param>
         /// <param name="endDate">End date of the Report.</param>
         /// <param name="reportType"> Type of Report <see cref="ReportType"/>.</param>
+        /// /// <param name="reportCriteria"> Criteria to create Report <see cref="ReportCriteria"/>.</param>
         /// <param name="number">Number of records included 0 for all records.</param>
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
-        public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportType reportType, int number, DataContext dataContext)
+        public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int number, DataContext dataContext)
         {
             string sourceFile = string.Format("{0}{1}ReportTemplate.db", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
             this.databaseFile = string.Format("{0}{1}{2}.db",ConfigurationCachePath, Path.DirectorySeparatorChar,this.ConnectionID) ;
@@ -186,59 +206,45 @@ namespace openHistorian.Adapters
             else if (reportType == ReportType.Unbalance_V)
                 filterstring = "%V-UBAL";
 
-            List<ActiveMeasurement> activeMeasuremnts = new TableOperations<ActiveMeasurement>(dataContext.Connection).
-                QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
 
-            List<ReportMeasurements> reportingMeasurements = activeMeasuremnts.Select(item => (ReportMeasurements)item).ToList();
+            List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType);
 
-            // Pull Data From the Open Historian
-
-            Parallel.ForEach(reportingMeasurements, item =>
+            if (reportingMeasurements.Count() < 1)
             {
 
-                List<TrendValue> points;
+                List<ActiveMeasurement> activeMeasuremnts = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
+                reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
 
-                try
+                // Pull Data From the Open Historian
+
+                List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts).ToList();
+
+                //remove any that don't have data
+                reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
+
+                // Deal with the not-aggregated signals
+                reportingMeasurements = reportingMeasurements.Select(item =>
                 {
-                    points = this.historianOperations.GetHistorianData(this.GetSelectedInstanceName(), startDate, endDate, new ulong[1] { item.PointID },
-                        openHistorian.Adapters.Resolution.Full, 999, true).ToList();
+                    CondensedDataPoint data = historiandata.Find(point => point.PointID == item.PointID);
+                    item.Max = data.max;
+                    item.Min = data.min;
+                    item.Mean = data.sum / data.totalPoints;
+                    item.NumberOfAlarms = 0;
+                    item.PercentAlarms = 0;
+                    item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + data.totalPoints * item.Mean * item.Mean) / data.totalPoints);
+                    return item;
                 }
-                catch
-                {
-                    points = new List<TrendValue>();
-                }
+                ).ToList();
 
-                if (points.Count() > 1)
-                {
-                    item.Mean = points.Select(point => point.Value).Average();
-                    item.Min = points.Select(point => point.Value).Min();
-                    item.Max = points.Select(point => point.Value).Max();
-                    item.NumberOfAlarms = points.Where(point => point.Value > 4).Count();
-                    item.PercentAlarms = (item.NumberOfAlarms * 100.0D) / points.Count();
-                }
-                else
-                {
-                    item.Mean = 0.0D;
-                    item.Min = 0.0D;
-                    item.Max = 0.0D;
-                    item.NumberOfAlarms = 0.0D;
-                    item.PercentAlarms = 0.0D;
-                }
-
-                if (points.Count() < 2)
-                    item.StandardDeviation = 0.0D;
-                else
-                {
-                    double sum = points.Sum(point => Math.Pow(point.Value - item.Mean, 2));
-                    item.StandardDeviation = Math.Sqrt(sum / (points.Count() - 1));
-                }
-
-                item.TimeInAlarm = 0;
+            }
 
 
-            });
-
-            reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
+            if (reportCriteria == ReportCriteria.Mean)
+                reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
+            if (reportCriteria == ReportCriteria.AlertTime)
+                reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.TimeInAlarm).ToList();
+            if (reportCriteria == ReportCriteria.Maximum)
+                reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Max).ToList();
 
             string connectionstring = String.Format("Data Source={0}; Version=3; Foreign Keys=True; FailIfMissing=True", this.databaseFile);
             string dataProviderstring = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
@@ -250,13 +256,8 @@ namespace openHistorian.Adapters
             TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(connection);
             for (int i=0; i < Math.Min(this.numberOfRecords, reportingMeasurements.Count());i++)
             {
-                tbl.AddNewRecord(reportingMeasurements[i]);
+                    tbl.AddNewRecord(reportingMeasurements[i]);
             }
-          
-            
-            //Also make sure instance selection is taken care of in DataHub
-            // And then switch over cshtml to original Creation of JS Script except we need to add setup Report...
-            //based on the Data Context from datahub and OpenHistorian Data
 
         }
 
@@ -267,6 +268,9 @@ namespace openHistorian.Adapters
         /// <returns> Table Operations Object that is used to query report data.</returns>
         public TableOperations<ReportMeasurements> Table()
         {
+            if (this.connection == null)
+                return null;
+
             return (new TableOperations<ReportMeasurements>(this.connection));
         }
 
@@ -296,6 +300,86 @@ namespace openHistorian.Adapters
                 return s_configurationCachePath;
             }
         }
+
+        /// <summary>
+        /// Gets the reporting Measurment List from Aggregate Channels if available.
+        /// </summary>
+        private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type)
+        {
+            List<ReportMeasurements> result = new List<ReportMeasurements>();
+
+            string filterstring = "";
+
+            if (reportType == ReportType.SNR)
+                filterstring = "%-SNR";
+            else if (reportType == ReportType.Unbalance_I)
+                filterstring = "%I-UBAL";
+            else if (reportType == ReportType.Unbalance_V)
+                filterstring = "%V-UBAL";
+
+
+
+            if (new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordCountWhere("PointTag LIKE {0}", (filterstring + ":SUM")) > 0)
+            {
+                List<ActiveMeasurement> sums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SUM").ToList();
+                List<ActiveMeasurement> squaredsums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SQR").ToList();
+                List<ActiveMeasurement> minimums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MIN").ToList();
+                List<ActiveMeasurement> maximums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MAX").ToList();
+                List<ActiveMeasurement> number = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":NUM").ToList();
+
+                result = sums.Select(point => new ReportMeasurements(point)).ToList();
+
+                // Pull Data From the Open Historian
+                List<ActiveMeasurement> all = sums.Concat(squaredsums).Concat(minimums).Concat(maximums).Concat(number).ToList();
+                List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(start, end, all).ToList();
+
+                result = result.Where((item,index) =>
+                {
+                    ReportMeasurements sum = item;
+                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
+                    ActiveMeasurement squared = squaredsums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement min = minimums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement max = maximums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement total = number.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+
+                    return (historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(squared.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(min.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(max.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(total.PointID));
+                }).ToList();
+
+                result = result.Select(item =>
+                {
+
+                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
+                    ActiveMeasurement sum = sums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement squared = squaredsums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement min = minimums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement max = maximums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement total = number.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+
+                    double minimum = historiandata.Find(point => point.PointID == min.PointID).min;
+                    double maximum = historiandata.Find(point => point.PointID == max.PointID).max;
+                    double npoints = historiandata.Find(point => point.PointID == total.PointID).sum;
+                    double summation = historiandata.Find(point => point.PointID == sum.PointID).sum;
+                    double squaredsum = historiandata.Find(point => point.PointID == squared.PointID).sum;
+
+                    item.Max = maximum;
+                    item.Min = minimum;
+                    item.Mean = summation / npoints;
+                    item.NumberOfAlarms = 0;
+                    item.PercentAlarms = 0;
+                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + npoints * item.Mean * item.Mean) / npoints);
+
+                    return item;
+                }).ToList();
+            }
+
+            return result;
+        }
+        
+
 
         #endregion
     }

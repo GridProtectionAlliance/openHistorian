@@ -127,6 +127,7 @@
     <Compile Include="GrafanaDeviceStatusController.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
+    <Compile Include="HistorianReportOperations.cs" />
     <Compile Include="ReportOperationsHubClient.cs" />
     <Compile Include="ReportOperations.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />

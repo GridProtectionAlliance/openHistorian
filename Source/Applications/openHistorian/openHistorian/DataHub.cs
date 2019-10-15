@@ -153,7 +153,8 @@ namespace openHistorian
         public int QuerySNRMeasurmentCount(string filterText)
         {
             TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
-            tableOperations.RootQueryRestriction[0] = $"{GetSelectedReportInstanceName()}:%";
+            if (tableOperations == null)
+                return 0;
             return tableOperations.QueryRecordCount(filterText);
         }
 
@@ -161,7 +162,9 @@ namespace openHistorian
         public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
-            tableOperations.RootQueryRestriction[0] = $"{GetSelectedReportInstanceName()}:%";
+
+            if (tableOperations == null)
+                return (new List<ReportMeasurements>());
             return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
@@ -180,10 +183,11 @@ namespace openHistorian
         /// <param name="number">Depth of the report (0 is all).</param>
         /// <param name="start">Start time of the report.</param>
         /// <param name="end">End time of the report.</param>
-        /// 
-        public void SetReportingSource(int ReportType, int number, DateTime start, DateTime end)
+        /// <returns> Flag to ensure this is completed before creating a report.</returns>
+        public bool SetReportingSource(int ReportType, int ReportCriteria, int number, DateTime start, DateTime end)
         {
-            this.m_reportOperations.UpdateReportSource(start, end, (ReportType)ReportType, number, DataContext);
+            this.m_reportOperations.UpdateReportSource(start, end, (ReportCriteria)ReportCriteria, (ReportType)ReportType, number, DataContext);
+            return true;
         }
 
         /// <summary>

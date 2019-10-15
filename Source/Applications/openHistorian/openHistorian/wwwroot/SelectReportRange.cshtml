@@ -8,6 +8,7 @@
                                     <option value="2">Last 60 Days</option>
                                     <option value="3">Last 90 Days</option>
                                     <option value="0">Use Time Range</option>
+                                    <option value="-1">Last 5 minutes</option>
                                 </select>
                             </div>
 
@@ -34,11 +35,11 @@
                         <form class="form-inline clearfix" role="form">
                             <label for="trendResolution"> Filter:</label>
                             <div class="input-group">
-                                <select class="form-control" id="trendResolution" data-bind="value: trendResolution" style="width: 165px">
+                                <select class="form-control" id="trendResolution" data-bind="value: ReportDepth" style="width: 165px">
                                     <option value="25">Worst 25</option>
                                     <option value="50">Worst 50</option>
                                     <option value="100">Worst 100</option>
-                                    <option value="200">All</option>
+                                    <option value="0">All</option>
                                 </select>
                             </div><em class="validationMessage small" style="display: none;"></em>
                             <div class="input-group">
@@ -51,8 +52,8 @@
                             <label for="Criteria"> by </label>
                             <div class="input-group">
                                 <select class="form-control" id="Criteria" data-bind="value: worstBy" style="width: 225px">
-                                    <option value="0">Maximum</option>
-                                    <option value="1">Mean</option>
+                                    <option value="1">Maximum</option>
+                                    <option value="0">Mean</option>
                                     <option value="2">Time in Alarm</option>
                                 </select>
                             </div>

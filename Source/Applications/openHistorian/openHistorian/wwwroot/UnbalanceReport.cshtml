@@ -166,9 +166,9 @@
 }
     @helper BodyRows()
     {
-    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag.truncate(50), click: $parent.viewPageRecord"></button></div></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumAlarms.toFixed(0)"></span></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeAlarms.toFixed(0)"></span></td>
+    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag, click: $parent.viewPageRecord"></button></div></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: TimeInAlarm.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
@@ -182,26 +182,13 @@
 
         const LocalTimeFormat = DateFormat + " hh:mm:ss.fff";
 
-        // Set up Page View Model Functions
-        // This is neccesarry because we have additional Parameters
-        viewModel.defaultSortField = "Mean";
-        viewModel.defaultSortAscending = false;
-        viewModel.labelField = "ID";
-        viewModel.modelName = "openHistorian.Model.SNRMeasurment";
-        viewModel.hubName = "openHistorian.DataHub";
-        viewModel.primaryKeyFields = ["SignalID"];
+        @Raw(dataContext.RenderViewModelConfiguration<ReportMeasurements, DataHub>(ViewBag, "PointTag"))
 
-        viewModel.setQueryRecordCount(function (filterText) {
-            return dataHub.querySNRMeasurmentCount(filterText, viewModel.selectedUnbalance());
+        viewModel.updateReport(function () {
+            return dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment() );
         });
 
-        viewModel.setQueryRecords(function (sortField, ascending, page, pageSize, filterText) {
-            return dataHub.querySNRMeasurments(sortField, ascending, page, pageSize, filterText, viewModel.startMoment(), viewModel.endMoment(), viewModel.selectedUnbalance());
-        });
-
-        viewModel.setNewRecord(function () {
-            return dataHub.newSNR();
-        });
+        
 
         function updateData() {
             var reportType = "";
@@ -215,11 +202,16 @@
             else if (viewModel.selectedUnbalance() == 2) {
                 reportType = "Voltage Unbalance";
             }
-            viewModel.ReportTitle("Worst 25 " + reportType +" Report");
-            viewModel.UpdateData();
+            viewModel.ReportTitle("Worst 25 " + reportType + " Report");
+
+            dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment()).done(function (result) {
+                viewModel.updateSortOrder("Mean", false);
+            });
+            
+            
+
         }
 
-        var queryInProgress = false;
 
 
 
@@ -275,11 +267,51 @@
 
             self.ReportTitle = ko.observable("Worst 25 SNR Report");
 
+            self._selectedIntervall = ko.observable(1);
+           
+            self.selectedIntervall = ko.pureComputed({
+                read: function () {
+                    return self._selectedIntervall();
+                },
+                write: function (value) {
+                    var span = 30;
+                    if (value == 1) {
+                        span = 30;
+                    }
+                    else if (value == 2) {
+                        span = 60;
+                    }
+                    else if (value == 3) {
+                        span = 90;
+                    }
+                    else if (value == 4) {
+                        span = 7;
+                    }
+                    else if (value == 5) {
+                        span = 10;
+                    }
+                    else if (value == 6) {
+                        span = 14;
+                    }
+                    else if (value == -1) {
+                        span = 5;
+                        self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+                        self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'minutes').format(MomentDateTimeFormat));
+                        self._selectedIntervall(value);
+                        return;
+                    }
+                    self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+                    self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
+                    self._selectedIntervall(value);
+                   
+                },
+                owner: self
+            });
 
-            self.selectedIntervall = ko.observable(1);
+
             self._instanceName = ko.observable("");
 
-            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat)));
+            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(30, "days").format(MomentDateTimeFormat)));
             self._endTime = ko.observable(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
 
             self.startTime = ko.pureComputed({
@@ -301,32 +333,6 @@
                 },
                 owner: self
             });
-
-            self.timeRange = ko.validatedObservable([{
-                startTime: self.startTime.extend({
-                    required: {
-                        message: "<br />Start time is required"
-                    },
-                    //validation: {
-                    //    validator: function () {
-                    //        return self.preciseTimeDiff() > 0;
-                    //    },
-                    //    message: "<br />Start time must be less than end time"
-                    //}
-                })
-            }, {
-                endTime: self.endTime.extend({
-                    required: {
-                        message: "<br />End time is required"
-                    },
-                   // validation: {
-                     //   validator: function () {
-                     //       return self.preciseTimeDiff() > 0;
-                     //   },
-                     //   message: "<br />End time must be greater than start time"
-                    //}
-                })
-            }]);
 
             self.startMoment = ko.pureComputed({
                 read: function () {
@@ -357,15 +363,13 @@
                     } else {
                         self._instanceName("");
                     }
-
-                    //self.clearSelectedPoints();
-
+                    
                     if (self.dataHubIsConnected()) {
-                        dataHub.getSelectedInstanceName().done(function (selectedInstanceName) {
+                        dataHub.getSelectedReportInstanceName().done(function (selectedInstanceName) {
                             const currentInstanceName = self._instanceName();
 
                             if (selectedInstanceName !== currentInstanceName) {
-                                dataHub.setSelectedInstanceName(currentInstanceName).done(function () {
+                                dataHub.setSelectedReportInstanceName(currentInstanceName).done(function () {
                                     self.initialize();
                                 });
                             }
@@ -377,72 +381,24 @@
 
             self.useInterval = ko.pureComputed({
                 read: function () {
-                    if (self.selectedIntervall() == 0) {
+                    if (self.selectedIntervall() == 0) 
                         return false;
-                    }
-                    else {
-                        var span = 30;
-                        if (self.selectedIntervall() == 1) {
-                            span = 30;
-                        }
-                        else if (self.selectedIntervall() == 2) {
-                            span = 60;
-                        }
-                        else if (self.selectedIntervall() == 3) {
-                            span = 90;
-                        }
-                        else if (self.selectedIntervall() == 4) {
-                            span = 7;
-                        }
-                        else if (self.selectedIntervall() == 5) {
-                            span = 10;
-                        }
-                        else if (self.selectedIntervall() == 6) {
-                            span = 14;
-                        }
-
-                        self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
+                    else 
                         return true;
-                    }
-                },
-                write: function (value) {
+                    
                 },
                 owner: self
             });
 
-            self._worstBy = ko.observable(1);
-            self.worstBy = ko.pureComputed({
-                read: function () {
-                    return self._worstBy();
-                },
-                write: function (value) {
-                    self._worstBy(value);
-                },
-                owner: self
-            })
+            self.worstBy = ko.observable(1);
+            self.ReportDepth = ko.observable(25);
+            self.selectedUnbalance = ko.observable(0);
 
-            self.UpdateData = function () {
-                if (self.worstBy() == 0) {
-                    viewModel.updateSortOrder("Max", false);
-                }
-                else if (self.worstBy() == 1) {
-                    viewModel.updateSortOrder("Mean", false);
-                }
-                else if (self.worstBy() == 2) {
-                    viewModel.updateSortOrder("TimeAlarms", false);
-                }
+            self.updateReport = function (result) {
+                return result;
             }
 
-            self._selectedUnbalance = ko.observable(0);
-            self.selectedUnbalance = ko.pureComputed({
-                read: function () {
-                    return self._selectedUnbalance();
-                },
-                write: function (value) {
-                    self._selectedUnbalance(value);
-                },
-                owner: self
-            })
+            
         }
 
         function extendViewModel(event, data) {
@@ -554,6 +510,8 @@
                 @Raw(string.Format(Include("SelectReportRange.cshtml").ToString(), "report").Trim())
             </div>
     </div>
+</div>
+<div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="panel panel-default">
             <div class="panel-heading"> <h3 id="ReportHeader" data-bind="text: ReportTitle"> Worst 25 Unbalanced Report </h3></div>
@@ -562,6 +520,7 @@
             </div>
         </div>
     </div>
+</div>
     <script>
         // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
         //     Visit JavaScript Kit (http://javascriptkit.com)

@@ -65,8 +65,9 @@ namespace openHistorian.Adapters
         /// <param name="endDate">End date of the Report.</param>
         /// <param name="reportType"> Type of Report <see cref="ReportType"/>.</param>
         /// <param name="number">Number of records included 0 for all records.</param>
+        /// <param name="reportCriteria"> Crtieria to use for Report <see cref="ReportCriteria"/>.</param>
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
-        void UpdateReportSource(DateTime startDate, DateTime endDate, ReportType reportType, int number, DataContext dataContext);
+        void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int number, DataContext dataContext);
 
         /// <summary>
         /// Returns the Table Operation Object that Queries are build against.
@@ -126,11 +127,12 @@ namespace openHistorian.Adapters
         /// <param name="startDate">Start date of the Report.</param>
         /// <param name="endDate">End date of the Report.</param>
         /// <param name="reportType"> Type of Report <see cref="ReportType"/>.</param>
+        /// <param name="reportCriteria"> Crtieria to use for Report <see cref="ReportCriteria"/>.</param>
         /// <param name="number">Number of records included 0 for all records.</param>
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
-        public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportType reportType, int number, DataContext dataContext)
+        public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int number, DataContext dataContext)
         {
-            HubClient.UpdateReportSource(startDate, endDate, reportType, number, dataContext);
+            HubClient.UpdateReportSource(startDate, endDate, reportCriteria, reportType, number, dataContext);
         }
 
         /// <summary>

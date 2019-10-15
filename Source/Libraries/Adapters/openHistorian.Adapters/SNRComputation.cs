@@ -438,8 +438,8 @@ namespace openHistorian.Adapters
             }
 
             
-                /// So that the number of frames does not continue on forever
-                /// The number is arbitrary, but it needs to rollover like this
+                // So that the number of frames does not continue on forever
+                // The number is arbitrary, but it needs to rollover like this
                 if (numberOfFrames % 30 == 0)
             {
                 //OnStatusMessage(measurement.Key.ToString() + ": " + measurement.Value.ToString());
