@@ -33,64 +33,178 @@ using GSF.TimeSeries;
 
 namespace openHistorian.Model
 {
-    [RootQueryRestriction("ID LIKE {0}", "PPA:%")]
-    public class SNRMeasurment: ActiveMeasurement
+
+    
+    public class ReportMeasurements 
     {
-        [NonRecordField]
-        public double Mean
-        { get; set; }
+        
 
-        [NonRecordField]
-        public double Min
-        { get; set; }
+        public ReportMeasurements()
+        {}
 
-        [NonRecordField]
-        public double Max
-        { get; set; }
-
-        [NonRecordField]
-        public double StandardDeviation
-        { get; set; }
-
-        [NonRecordField]
-        public double NumAlarms
-        { get; set; }
-
-        [NonRecordField]
-        public double PercentAlarms
-        { get; set; }
-
-        [NonRecordField]
-        public double TimeAlarms
-        { get; set; }
-
-        [NonRecordField]
-        public string OriginalTag
+        public ReportMeasurements(ActiveMeasurement activemeasurement)
         {
-            get
-            {
-                if (this.UnbalanceFlag == 0)
-                {
-                    return this.PointTag.Substring(0, this.PointTag.Length - 4);
-                }
-                else
-                {
-                    return this.PointTag.Substring(0, this.PointTag.Length - 5);
-                }
-            }
+            this.ID = activemeasurement.ID;
+            this.Source = activemeasurement.Source;
+            this.PointID = activemeasurement.PointID;
+            this.SignalID = (Guid)activemeasurement.SignalID;
+            this.PointTag = activemeasurement.PointTag;
+            this.AlternateTag = activemeasurement.AlternateTag;
+            this.SignalReference = activemeasurement.SignalReference;
+            this.Device = activemeasurement.Device;
+            this.DeviceID = activemeasurement.DeviceID;
+            this.FramesPerSecond = activemeasurement.FramesPerSecond;
+            this.SignalType = activemeasurement.SignalType;
+            this.EngineeringUnits = activemeasurement.EngineeringUnits;
+            this.PhasorID = activemeasurement.PhasorID;
+            this.PhasorType = activemeasurement.PhasorType;
+            this.Phase = activemeasurement.Phase;
+            this.Adder = activemeasurement.Adder;
+            this.Multiplier = activemeasurement.Multiplier;
+            this.Description = activemeasurement.Description;
+           
+
+            this.Mean = 0;
+            this.Min = 0;
+            this.StandardDeviation = 0;
+            this.NumberOfAlarms = 0;
+            this.PercentAlarms = 0;
+            this.TimeInAlarm = 0;
+            this.OriginalTag = "";
         }
 
-        // 0 -> SNR
-        // 1 -> I
-        // 2 -> V
-        public int UnbalanceFlag
+        [Searchable]
+        public string ID
+        {  get; set;   }
+
+
+
+        [PrimaryKey(false)]
+        [Label("Unique Signal ID")]
+        public Guid SignalID
+        {
+            get;
+            set;
+        }
+
+        [Label("Tag Name")]
+        [Required]
+        [StringLength(200)]
+        [Searchable]
+        public string PointTag
+        {
+            get;
+            set;
+        }
+
+        [Label("Alternate Tag Name")]
+        [Searchable]
+        public string AlternateTag
+        {
+            get;
+            set;
+        }
+
+        [Label("Signal Reference")]
+        [Required]
+        [StringLength(200)]
+        [Searchable]
+        public string SignalReference
+        {
+            get;
+            set;
+        }
+
+        
+
+        [Searchable]
+        public string Device
+        {
+            get;
+            set;
+        }
+
+        public int? DeviceID
+        {
+            get;
+            set;
+        }
+
+        [Label("Frames per Second")]
+        public int? FramesPerSecond
+        {
+            get;
+            set;
+        }
+
+
+        [Label("Signal Type<span class='pull-right' data-bind='text: notNull(EngineeringUnits()).length > 0 ? \"&nbsp;(\" + EngineeringUnits()  + \")\" : \"\"'></span>")]
+        [Searchable(SearchType.FullValueMatch)]
+        public string SignalType
+        {
+            get;
+            set;
+        }
+
+
+        [Label("Engineering Units")]
+        public string EngineeringUnits
+        {
+            get;
+            set;
+        }
+
+        [Label("Phasor ID")]
+        public int? PhasorID
+        {
+            get;
+            set;
+        }
+
+        [Label("Phasor Type")]
+        public char? PhasorType
+        {
+            get;
+            set;
+        }
+
+        public char? Phase
+        {
+            get;
+            set;
+        }
+
+        public double Adder
+        {
+            get;
+            set;
+        }
+
+        public double Multiplier
+        {
+            get;
+            set;
+        }
+    
+
+        [Searchable]
+        public string Description
+        {
+            get;
+            set;
+        }
+
+      
+
+        [NonRecordField]
+        public string Source
         { get; set; }
-    }
 
-    [RootQueryRestriction("ID LIKE {0} AND SignalReference LIKE {1}", "PPA:%")]
-    public class ReportMeasurements : ActiveMeasurement
-    {
+        [NonRecordField]
+        public ulong PointID
+        { get; set; }
 
+        // Fields populated by historian data
         public double Mean
         { get; set; }
 
@@ -116,5 +230,6 @@ namespace openHistorian.Model
         {
             get; set;
         }
+
     }
 }
