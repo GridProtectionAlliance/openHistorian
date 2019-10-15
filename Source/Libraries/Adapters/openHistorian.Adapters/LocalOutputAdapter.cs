@@ -592,6 +592,7 @@ namespace openHistorian.Adapters
                 status.AppendFormat("         Working directory: {0}\r\n", FilePath.TrimFileName(WorkingDirectory, 51));
                 status.AppendFormat("      Network data channel: {0}\r\n", DataChannel.ToNonNullString(DefaultDataChannel));
                 status.AppendFormat("          Target file size: {0:N4}GB\r\n", TargetFileSize);
+                status.AppendFormat("   Desired remaining space: {0:N4}GB\r\n", DesiredRemainingSpace);
                 status.AppendFormat("     Directory naming mode: {0}\r\n", DirectoryNamingMode);
                 status.AppendFormat("       Disk flush interval: {0:N0}ms\r\n", m_archiveInfo.DiskFlushInterval);
                 status.AppendFormat("      Cache flush interval: {0:N0}ms\r\n", m_archiveInfo.CacheFlushInterval);
