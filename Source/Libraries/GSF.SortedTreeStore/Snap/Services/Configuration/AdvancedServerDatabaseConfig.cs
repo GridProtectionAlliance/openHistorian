@@ -20,6 +20,9 @@
 //       Generated original version of source code. 
 //  11/25/2014 - J. Ritchie Carroll
 //       Updated final staging file name to use database name as prefix instead of "stage(n)".
+//  10/15/2019 - J. Ritchie Carroll
+//       Added DesiredRemainingSpace property for configurable target disk remaining space for
+//       final staging files / general code cleanup.
 //
 //******************************************************************************************************
 
@@ -28,6 +31,7 @@ using System.Collections.Generic;
 using GSF.IO;
 using GSF.Snap.Services.Writer;
 using GSF.Snap.Storage;
+using GSF.Units;
 
 namespace GSF.Snap.Services.Configuration
 {
@@ -39,115 +43,72 @@ namespace GSF.Snap.Services.Configuration
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        private bool m_supportsWriting;
-        private string m_databaseName;
-        private string m_mainPath;
+        private readonly string m_mainPath;
         private string m_finalFileExtension;
         private string m_intermediateFileExtension;
-        private bool m_importAttachedPathsAtStartup;
-        private List<string> m_importPaths;
-        private List<string> m_finalWritePaths;
-        private EncodingDefinition m_archiveEncodingMethod;
-        private List<EncodingDefinition> m_streamingEncodingMethods;
-        private long m_targetFileSize;
-        private int m_stagingCount;
-        private ArchiveDirectoryMethod m_directoryMethod;
-        private int m_diskFlushInterval;
-        private int m_cacheFlushInterval;
 
         /// <summary>
         /// Gets a database config.
         /// </summary>
         public AdvancedServerDatabaseConfig(string databaseName, string mainPath, bool supportsWriting)
         {
-            m_supportsWriting = supportsWriting;
-            m_databaseName = databaseName;
+            SupportsWriting = supportsWriting;
+            DatabaseName = databaseName;
             m_mainPath = mainPath;
             m_intermediateFileExtension = ".d2i";
             m_finalFileExtension = ".d2";
-            m_importAttachedPathsAtStartup = true;
-            m_importPaths = new List<string>();
-            m_finalWritePaths = new List<string>();
-            m_archiveEncodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
-            m_streamingEncodingMethods = new List<EncodingDefinition>();
-            m_targetFileSize = 2 * 1024 * 1024 * 1024L;
-            m_stagingCount = 3;
-            m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
-            m_diskFlushInterval = 10000;
-            m_cacheFlushInterval = 100;
+            ImportAttachedPathsAtStartup = true;
+            ImportPaths = new List<string>();
+            FinalWritePaths = new List<string>();
+            ArchiveEncodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
+            StreamingEncodingMethods = new List<EncodingDefinition>();
+            TargetFileSize = 2L * SI2.Giga;
+            DesiredRemainingSpace =  5L * SI2.Giga;
+            StagingCount = 3;
+            DirectoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+            DiskFlushInterval = 10000;
+            CacheFlushInterval = 100;
         }
 
         /// <summary>
         /// Gets the method of how the directory will be stored. Defaults to 
         /// top directory only.
         /// </summary>
-        public ArchiveDirectoryMethod DirectoryMethod
-        {
-            get
-            {
-                return m_directoryMethod;
-            }
-            set
-            {
-                m_directoryMethod = value;
-            }
-        }
+        public ArchiveDirectoryMethod DirectoryMethod { get; set; }
 
         /// <summary>
         /// The name associated with the database.
         /// </summary>
-        public string DatabaseName
-        {
-            get
-            {
-                return m_databaseName;
-            }
-        }
+        public string DatabaseName { get; }
 
         /// <summary>
-        /// The desired size of archive files
+        /// Gets or sets the desired size of the final stage archive files.
         /// </summary>
-        public long TargetFileSize
-        {
-            get
-            {
-                return m_targetFileSize;
-            }
-            set
-            {
-                m_targetFileSize = value;
-            }
-        }
+        /// <remarks>
+        /// Value must be between 100MB and 1TB.
+        /// </remarks>
+        public long TargetFileSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the desired remaining drive space, in bytes, for final stage files.
+        /// </summary>
+        /// <remarks>
+        /// Value must be between 100MB and 1TB.
+        /// </remarks>
+        public long DesiredRemainingSpace { get; set; }
 
         /// <summary>
         /// The number of stages.
         /// </summary>
-        public int StagingCount
-        {
-            get
-            {
-                return m_stagingCount;
-            }
-            set
-            {
-                m_stagingCount = value;
-            }
-        }
-
+        public int StagingCount { get; set; }
 
         /// <summary>
         /// The extension to use for the intermediate files
         /// </summary>
         public string IntermediateFileExtension
         {
-            get
-            {
-                return m_intermediateFileExtension;
-            }
-            set
-            {
-                m_intermediateFileExtension = PathHelpers.FormatExtension(value);
-            }
+            get => m_intermediateFileExtension;
+            set => m_intermediateFileExtension = PathHelpers.FormatExtension(value);
         }
 
         /// <summary>
@@ -155,90 +116,40 @@ namespace GSF.Snap.Services.Configuration
         /// </summary>
         public string FinalFileExtension
         {
-            get
-            {
-                return m_finalFileExtension;
-            }
-            set
-            {
-                m_finalFileExtension = PathHelpers.FormatExtension(value);
-            }
+            get => m_finalFileExtension;
+            set => m_finalFileExtension = PathHelpers.FormatExtension(value);
         }
 
         /// <summary>
         /// Determines whether the server should import attached paths at startup.
         /// </summary>
-        public bool ImportAttachedPathsAtStartup
-        {
-            get
-            {
-                return m_importAttachedPathsAtStartup;
-            }
-            set
-            {
-                m_importAttachedPathsAtStartup = value;
-            }
-        }
+        public bool ImportAttachedPathsAtStartup { get; set; }
 
         /// <summary>
         /// Gets all of the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
-        public List<string> ImportPaths
-        {
-            get
-            {
-                return m_importPaths;
-            }
-        }
+        public List<string> ImportPaths { get; }
 
         /// <summary>
         /// The list of directories where final files can be placed written. 
         /// If nothing is specified, the main directory is used.
         /// </summary>
-        public List<string> FinalWritePaths
-        {
-            get
-            {
-                return m_finalWritePaths;
-            }
-        }
+        public List<string> FinalWritePaths { get; }
 
         /// <summary>
         /// Gets the default encoding methods for storing files.
         /// </summary>
-        public EncodingDefinition ArchiveEncodingMethod
-        {
-            get
-            {
-                return m_archiveEncodingMethod;
-            }
-            set
-            {
-                m_archiveEncodingMethod = value;
-            }
-        }
+        public EncodingDefinition ArchiveEncodingMethod { get; set; }
 
         /// <summary>
         /// Gets the supported encoding methods for streaming data. This list is in a prioritized order.
         /// </summary>
-        public List<EncodingDefinition> StreamingEncodingMethods
-        {
-            get
-            {
-                return m_streamingEncodingMethods;
-            }
-        }
+        public List<EncodingDefinition> StreamingEncodingMethods { get; }
         /// <summary>
         /// Gets if writing will be supported
         /// </summary>
-        public bool SupportsWriting
-        {
-            get
-            {
-                return m_supportsWriting;
-            }
-        }
+        public bool SupportsWriting { get; }
 
         /// <summary>
         /// The number of milliseconds before data is automatically flushed to the disk.
@@ -246,17 +157,7 @@ namespace GSF.Snap.Services.Configuration
         /// <remarks>
         /// Must be between 1,000 ms and 60,000 ms.
         /// </remarks>
-        public int DiskFlushInterval
-        {
-            get
-            {
-                return m_diskFlushInterval;
-            }
-            set
-            {
-                m_diskFlushInterval = value;
-            }
-        }
+        public int DiskFlushInterval { get; set; }
 
         /// <summary>
         /// The number of milliseconds before data is taken from it's cache and put in the
@@ -265,146 +166,127 @@ namespace GSF.Snap.Services.Configuration
         /// <remarks>
         /// Must be between 1 and 1,000
         /// </remarks>
-        public int CacheFlushInterval
-        {
-            get
-            {
-                return m_cacheFlushInterval;
-            }
-            set
-            {
-                m_cacheFlushInterval = value;
-            }
-        }
+        public int CacheFlushInterval { get; set; }
 
         #region [ IToServerDatabaseSettings ]
 
         public ServerDatabaseSettings ToServerDatabaseSettings()
         {
-            var settings = new ServerDatabaseSettings();
-            settings.DatabaseName = m_databaseName;
-            if (m_supportsWriting)
+            ServerDatabaseSettings settings = new ServerDatabaseSettings
+            {
+                DatabaseName = DatabaseName
+            };
+
+            if (SupportsWriting)
                 ToWriteProcessorSettings(settings.WriteProcessor);
-            settings.SupportsWriting = m_supportsWriting;
+            
+            settings.SupportsWriting = SupportsWriting;
             ToArchiveListSettings(settings.ArchiveList);
+            
             settings.RolloverLog.LogPath = m_mainPath;
             settings.KeyType = new TKey().GenericTypeGuid;
             settings.ValueType = new TValue().GenericTypeGuid;
-            if (m_streamingEncodingMethods.Count == 0)
-            {
+            
+            if (StreamingEncodingMethods.Count == 0)
                 settings.StreamingEncodingMethods.Add(EncodingDefinition.FixedSizeCombinedEncoding);
-            }
             else
-            {
-                settings.StreamingEncodingMethods.AddRange(m_streamingEncodingMethods);
-            }
+                settings.StreamingEncodingMethods.AddRange(StreamingEncodingMethods);
+
             return settings;
         }
 
         private void ToWriteProcessorSettings(WriteProcessorSettings settings)
         {
-            string intermediateFilePendingExtension;
-            string intermediateFileFinalExtension;
-            string finalFilePendingExtension;
-            string finalFileFinalExtension;
+            if (!SupportsWriting)
+                return;
 
-            ValidateExtension(IntermediateFileExtension, out intermediateFilePendingExtension, out intermediateFileFinalExtension);
-            ValidateExtension(FinalFileExtension, out finalFilePendingExtension, out finalFileFinalExtension);
+            ValidateExtension(IntermediateFileExtension, out string intermediateFilePendingExtension, out string intermediateFileFinalExtension);
+            ValidateExtension(FinalFileExtension, out string finalFilePendingExtension, out string finalFileFinalExtension);
 
-            if (m_supportsWriting)
+            List<string> finalPaths = new List<string>();
+
+            if (FinalWritePaths.Count > 0)
+                finalPaths.AddRange(FinalWritePaths);
+            else
+                finalPaths.Add(m_mainPath);
+
+            settings.IsEnabled = true;
+
+            // 0.1 seconds
+            settings.PrebufferWriter.RolloverInterval = CacheFlushInterval;
+            settings.PrebufferWriter.MaximumPointCount = 25000;
+            settings.PrebufferWriter.RolloverPointCount = 25000;
+
+            // 10 seconds
+            settings.FirstStageWriter.MaximumAllowedMb = 100;   // about 10 million points
+            settings.FirstStageWriter.RolloverSizeMb = 100;     // about 10 million points
+            settings.FirstStageWriter.RolloverInterval = DiskFlushInterval; // 10 seconds
+            settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
+            settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new[] { m_mainPath }, SI2.Giga, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
+
+            for (int stage = 2; stage <= StagingCount; stage++)
             {
-                List<string> finalPaths = new List<string>();
-                if (FinalWritePaths.Count > 0)
+                int remainingStages = StagingCount - stage;
+
+                CombineFilesSettings rollover = new CombineFilesSettings();
+
+                if (remainingStages > 0)
                 {
-                    finalPaths.AddRange(FinalWritePaths);
+                    rollover.ArchiveSettings.ConfigureOnDisk(new[] { m_mainPath }, SI2.Giga,
+                        ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage" + stage,
+                        intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.GetStage(stage), FileFlags.IntermediateFile);
                 }
                 else
                 {
-                    finalPaths.Add(m_mainPath);
+                    // Final staging file
+                    rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, DesiredRemainingSpace,
+                        DirectoryMethod, ArchiveEncodingMethod, DatabaseName.ToNonNullNorEmptyString("stage" + stage).RemoveInvalidFileNameCharacters(),
+                        finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
                 }
 
-                settings.IsEnabled = true;
-
-                //0.1 seconds
-                settings.PrebufferWriter.RolloverInterval = m_cacheFlushInterval;
-                settings.PrebufferWriter.MaximumPointCount = 25000;
-                settings.PrebufferWriter.RolloverPointCount = 25000;
-
-                //10 seconds
-                settings.FirstStageWriter.MaximumAllowedMb = 100; //about 10 million points
-                settings.FirstStageWriter.RolloverSizeMb = 100; //about 10 million points
-                settings.FirstStageWriter.RolloverInterval = m_diskFlushInterval; //10 seconds
-                settings.FirstStageWriter.EncodingMethod = ArchiveEncodingMethod;
-                settings.FirstStageWriter.FinalSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024, ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage1", intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.Stage1, FileFlags.IntermediateFile);
-
-                for (int stage = 2; stage <= StagingCount; stage++)
-                {
-                    int remainingStages = StagingCount - stage;
-
-                    var rollover = new CombineFilesSettings();
-                    if (remainingStages > 0)
-                    {
-                        rollover.ArchiveSettings.ConfigureOnDisk(new string[] { m_mainPath }, 1024 * 1024 * 1024,
-                            ArchiveDirectoryMethod.TopDirectoryOnly, ArchiveEncodingMethod, "stage" + stage,
-                            intermediateFilePendingExtension, intermediateFileFinalExtension, FileFlags.GetStage(stage), FileFlags.IntermediateFile);
-                    }
-                    else
-                    {
-                        // TODO: JRC - Must make desiredRemainingSpace configurable!!
-
-                        //Final staging file
-                        rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, 5 * 1024L * 1024 * 1024,
-                            m_directoryMethod, ArchiveEncodingMethod, m_databaseName.ToNonNullNorEmptyString("stage" + stage).RemoveInvalidFileNameCharacters(),
-                            finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
-                    }
-
-                    rollover.LogPath = m_mainPath;
-                    rollover.ExecuteTimer = 1000;
-                    rollover.CombineOnFileCount = 60;
-                    rollover.CombineOnFileSize = m_targetFileSize / (long)Math.Pow(30, remainingStages);
-                    rollover.MatchFlag = FileFlags.GetStage(stage - 1);
-                    settings.StagingRollovers.Add(rollover);
-                }
+                rollover.LogPath = m_mainPath;
+                rollover.ExecuteTimer = 1000;
+                rollover.CombineOnFileCount = 60;
+                rollover.CombineOnFileSize = TargetFileSize / (long)Math.Pow(30, remainingStages);
+                rollover.MatchFlag = FileFlags.GetStage(stage - 1);
+                settings.StagingRollovers.Add(rollover);
             }
         }
 
         private void ToArchiveListSettings(ArchiveListSettings listSettings)
         {
-            string intermediateFilePendingExtension;
-            string intermediateFileFinalExtension;
-            string finalFilePendingExtension;
-            string finalFileFinalExtension;
-
-            ValidateExtension(IntermediateFileExtension, out intermediateFilePendingExtension, out intermediateFileFinalExtension);
-            ValidateExtension(FinalFileExtension, out finalFilePendingExtension, out finalFileFinalExtension);
-
+            ValidateExtension(IntermediateFileExtension, out string _, out string intermediateFileFinalExtension);
+            ValidateExtension(FinalFileExtension, out string _, out string finalFileFinalExtension);
 
             listSettings.AddExtension(intermediateFileFinalExtension);
             listSettings.AddExtension(finalFileFinalExtension);
+
             if (!string.IsNullOrWhiteSpace(m_mainPath))
                 listSettings.AddPath(m_mainPath);
+
             if (ImportAttachedPathsAtStartup)
             {
                 listSettings.AddPaths(ImportPaths);
                 listSettings.AddPaths(FinalWritePaths);
             }
+
             listSettings.LogSettings.LogPath = m_mainPath;
         }
 
         private static void ValidateExtension(string extension, out string pending, out string final)
         {
             if (string.IsNullOrWhiteSpace(extension))
-                throw new ArgumentException("Cannot be null or whitespace", "extension");
+                throw new ArgumentException("Cannot be null or whitespace", nameof(extension));
+
             extension = extension.Trim();
+            
             if (extension.Contains("."))
-            {
                 extension = extension.Substring(extension.IndexOf('.') + 1);
-            }
+
             pending = ".~" + extension;
             final = "." + extension;
         }
 
         #endregion
-
     }
 }

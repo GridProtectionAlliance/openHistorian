@@ -18,18 +18,18 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/05/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  10/15/2019 - J. Ritchie Carroll
+//       Added DesiredRemainingSpace property for configurable target disk remaining space for
+//       final staging files / general code cleanup.
 //
 //******************************************************************************************************
 
 using System;
 using System.Collections.Generic;
 using GSF.Snap;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
-using GSF.Snap.Tree;
+using GSF.Units;
 using openHistorian.Snap;
 using openHistorian.Snap.Definitions;
 
@@ -41,15 +41,18 @@ namespace openHistorian.Net
     public class HistorianServerDatabaseConfig
         : IToServerDatabaseSettings
     {
-        private AdvancedServerDatabaseConfig<HistorianKey, HistorianValue> m_config;
+        private readonly AdvancedServerDatabaseConfig<HistorianKey, HistorianValue> m_config;
 
         /// <summary>
         /// Gets a database config.
         /// </summary>
         public HistorianServerDatabaseConfig(string databaseName, string mainPath, bool supportsWriting)
         {
-            m_config = new AdvancedServerDatabaseConfig<HistorianKey, HistorianValue>(databaseName, mainPath, supportsWriting);
-            m_config.ArchiveEncodingMethod = HistorianFileEncodingDefinition.TypeGuid;
+            m_config = new AdvancedServerDatabaseConfig<HistorianKey, HistorianValue>(databaseName, mainPath, supportsWriting)
+            {
+                ArchiveEncodingMethod = HistorianFileEncodingDefinition.TypeGuid
+            };
+            
             m_config.StreamingEncodingMethods.Add(HistorianStreamEncodingDefinition.TypeGuid);
             m_config.StreamingEncodingMethods.Add(EncodingDefinition.FixedSizeCombinedEncoding);
             m_config.IntermediateFileExtension = ".d2i";
@@ -62,18 +65,12 @@ namespace openHistorian.Net
         /// </summary>
         public ArchiveDirectoryMethod DirectoryMethod
         {
-            get
-            {
-                return m_config.DirectoryMethod;
-            }
-            set
-            {
-                m_config.DirectoryMethod = value;
-            }
+            get => m_config.DirectoryMethod;
+            set => m_config.DirectoryMethod = value;
         }
 
         /// <summary>
-        /// The desired size of archive files
+        /// Gets or sets the desired size of the final stage archive files.
         /// </summary>
         /// <remarks>Must be between 100MB and 1TB</remarks>
         public long TargetFileSize
@@ -84,15 +81,35 @@ namespace openHistorian.Net
             }
             set
             {
-                if (value < 100 * 1024 * 1024)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Target size must be between 100MB and 1TB");
-                }
-                if (value > 1 * 1024 * 1024 * 1024 * 1024L)
-                {
-                    throw new ArgumentOutOfRangeException("value", "Target size must be between 100MB and 1TB");
-                }
+                if (value < 100 * SI2.Mega)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Target file size must be between 100MB and 1TB");
+
+                if (value > SI2.Tera)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Target file size must be between 100MB and 1TB");
+
                 m_config.TargetFileSize = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the desired remaining drive space, in bytes, for final stage files.
+        /// </summary>
+        /// <remarks>Must be between 100MB and 1TB</remarks>
+        public long DesiredRemainingSpace
+        {
+            get
+            {
+                return m_config.DesiredRemainingSpace;
+            }
+            set
+            {
+                if (value < 100 * SI2.Mega)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Desired remaining space must be between 100MB and 1TB");
+
+                if (value > SI2.Tera)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Desired remaining space must be between 100MB and 1TB");
+
+                m_config.DesiredRemainingSpace = value;
             }
         }
 
@@ -111,7 +128,8 @@ namespace openHistorian.Net
             set
             {
                 if (value < 1000 || value > 60000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1,000 ms and 60,000 ms.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Must be between 1,000 ms and 60,000 ms.");
+
                 m_config.DiskFlushInterval = value;
             }
         }
@@ -132,7 +150,8 @@ namespace openHistorian.Net
             set
             {
                 if (value < 1 || value > 1000)
-                    throw new ArgumentOutOfRangeException("value", "Must be between 1 and 1,000");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Must be between 1 and 1,000");
+
                 m_config.CacheFlushInterval = value;
             }
         }
@@ -156,7 +175,8 @@ namespace openHistorian.Net
             set
             {
                 if (value < 3 || value > 4)
-                    throw new ArgumentOutOfRangeException("value", "StagingCount must be 3 or 4");
+                    throw new ArgumentOutOfRangeException(nameof(value), "StagingCount must be 3 or 4");
+
                 m_config.StagingCount = value;
             }
         }
@@ -164,60 +184,33 @@ namespace openHistorian.Net
         /// <summary>
         /// The name associated with the database.
         /// </summary>
-        public string DatabaseName
-        {
-            get
-            {
-                return m_config.DatabaseName;
-            }
-        }
+        public string DatabaseName => m_config.DatabaseName;
 
         /// <summary>
         /// Determines whether the historian should import attached paths at startup.
         /// </summary>
         public bool ImportAttachedPathsAtStartup
         {
-            get
-            {
-                return m_config.ImportAttachedPathsAtStartup;
-            }
-            set
-            {
-                m_config.ImportAttachedPathsAtStartup = value;
-            }
+            get => m_config.ImportAttachedPathsAtStartup;
+            set => m_config.ImportAttachedPathsAtStartup = value;
         }
 
         /// <summary>
         /// Gets all of the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
-        public List<string> ImportPaths
-        {
-            get
-            {
-                return m_config.ImportPaths;
-            }
-        }
+        public List<string> ImportPaths => m_config.ImportPaths;
 
         /// <summary>
         /// The list of directories where final files can be placed written. 
         /// If nothing is specified, the main directory is used.
         /// </summary>
-        public List<string> FinalWritePaths
-        {
-            get
-            {
-                return m_config.FinalWritePaths;
-            }
-        }
+        public List<string> FinalWritePaths => m_config.FinalWritePaths;
 
         /// <summary>
         /// Creates a <see cref="ServerDatabaseSettings"/> configuration that can be used for <see cref="SnapServerDatabase{TKey,TValue}"/>
         /// </summary>
         /// <returns></returns>
-        public ServerDatabaseSettings ToServerDatabaseSettings()
-        {
-            return m_config.ToServerDatabaseSettings();
-        }
+        public ServerDatabaseSettings ToServerDatabaseSettings() => m_config.ToServerDatabaseSettings();
     }
 }

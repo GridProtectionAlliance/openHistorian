@@ -83,6 +83,11 @@ namespace openHistorian.Adapters
         public const double DefaultTargetFileSize = 2.0D;
 
         /// <summary>
+        /// Defines the default value for <see cref="DesiredRemainingSpace"/>.
+        /// </summary>
+        public const double DefaultDesiredRemainingSpace = 500.0D;
+
+        /// <summary>
         /// Defines the default value for <see cref="MaximumArchiveDays"/>.
         /// </summary>
         public const int DefaultMaximumArchiveDays = 0;
@@ -127,6 +132,7 @@ namespace openHistorian.Adapters
         private bool m_watchAttachedPaths;
         private string m_dataChannel;
         private double m_targetFileSize;
+        private double m_desiredRemainingSpace;
         private int m_maximumArchiveDays;
         private bool m_enableTimeReasonabilityCheck;
         private long m_pastTimeReasonabilityLimit;
@@ -390,6 +396,27 @@ namespace openHistorian.Adapters
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 m_targetFileSize = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets desired remaining space, in GigaBytes.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define desired remaining disk space in GigaBytes."),
+        DefaultValue(DefaultDesiredRemainingSpace)]
+        public double DesiredRemainingSpace
+        {
+            get
+            {
+                return m_desiredRemainingSpace;
+            }
+            set
+            {
+                if (value < 0.1D || value > SI2.Tera)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                m_desiredRemainingSpace = value;
             }
         }
 
@@ -725,6 +752,12 @@ namespace openHistorian.Adapters
             if (targetFileSize < 0.1D || targetFileSize > SI2.Tera)
                 targetFileSize = DefaultTargetFileSize;
 
+            if (!settings.TryGetValue("DesiredRemainingSpace", out setting) || !double.TryParse(setting, out double desiredRemainingSpace))
+                desiredRemainingSpace = DefaultDesiredRemainingSpace;
+
+            if (desiredRemainingSpace < 0.1D || desiredRemainingSpace > SI2.Tera)
+                desiredRemainingSpace = DefaultDesiredRemainingSpace;
+
             if (!settings.TryGetValue("MaximumArchiveDays", out setting) || !int.TryParse(setting, out m_maximumArchiveDays))
                 m_maximumArchiveDays = DefaultMaximumArchiveDays;
 
@@ -772,6 +805,7 @@ namespace openHistorian.Adapters
 
             m_archiveInfo.ImportAttachedPathsAtStartup = false;
             m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
+            m_archiveInfo.DesiredRemainingSpace = (long)(desiredRemainingSpace * SI.Giga);
             m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
             m_archiveInfo.StagingCount = stagingCount;
             m_archiveInfo.DiskFlushInterval = diskFlushInterval;
