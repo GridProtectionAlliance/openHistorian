@@ -52,9 +52,65 @@ namespace openHistorian.Adapters
         [Description("Unbalanced Computation: Computes Unbalance of the voltage and currents")]
     public class UnBalancedCalculation : CalculatedMeasurementBase
     {
+
+        #region[InternalClasses]
+
+        private class StatisticsCollection
+        {
+            public MeasurementKey max;
+            public MeasurementKey min;
+            public MeasurementKey total;
+            public MeasurementKey sum;
+            public MeasurementKey sqrd;
+            public MeasurementKey alert;
+
+            public double count;
+            public double maximum;
+            public double minimum;
+            public double summation;
+            public double squaredsummation;
+            public int alertcount;
+
+            public void Reset()
+            {
+                this.count = 0;
+                this.maximum = double.MaxValue;
+                this.minimum = double.MinValue;
+                this.summation = 0;
+                this.squaredsummation = 0;
+                this.alertcount = 0;
+            }
+        }
+
+        private class ThreePhaseSet
+        {
+            public MeasurementKey positive;
+            public MeasurementKey negative;
+            public MeasurementKey zero;
+            public MeasurementKey outMapping;
+
+            public double threshold;
+            public ThreePhaseSet(MeasurementKey pos, MeasurementKey zero, MeasurementKey neg, MeasurementKey unbalance, double threshold)
+            {
+                this.positive = pos;
+                this.negative = neg;
+                this.zero = zero;
+                this.outMapping = unbalance;
+                this.threshold = threshold;
+
+            }
+        }
+
+        #endregion[InternalClasses]
+
+
         #region [ Members ]
 
-        
+        /// <summary>
+        /// Default value for <see cref="ReportingIntervall"/>.
+        /// </summary>
+        public const int DefaultReportingIntervall = 300;
+
         /// <summary>
         /// Default value for <see cref="ResultDeviceName"/>.
         /// </summary>
@@ -63,27 +119,40 @@ namespace openHistorian.Adapters
         private int numberOfFrames;
         private Guid nodeID;
         private List<ThreePhaseSet> threePhaseComponent;
+        private Dictionary<Guid, StatisticsCollection> statisticsMapping;
+        private bool saveStats;
+
 
         #endregion [ Members ]
 
-        private class ThreePhaseSet
-        {
-            public MeasurementKey Positive;
-            public MeasurementKey Negative;
-            public MeasurementKey Zero;
-            public MeasurementKey outMapping;
-
-            public ThreePhaseSet(MeasurementKey pos, MeasurementKey zero, MeasurementKey neg, MeasurementKey unbalance)
-            {
-                this.Positive = pos;
-                this.Negative = neg;
-                this.Zero = zero;
-                this.outMapping = unbalance;
-
-            }
-        }
-        
         #region[Properties]
+
+        /// <summary>
+        /// Gets or sets the flag to determine of aggregates are saved
+        /// </summary>
+        [ConnectionStringParameter]
+        [CalculatedMesaurementAttribute]
+        [Description("Defines If aggregates are saved sepperately.")]
+        [DefaultValue(false)]
+        public bool SaveAggregates
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the reporting Intervall of the results
+        /// </summary>
+        [ConnectionStringParameter]
+        [CalculatedMesaurementAttribute]
+        [Description("Defines the Reporting Intervall of the Statistics.")]
+        [DefaultValue(DefaultReportingIntervall)]
+        public int ReportingIntervall
+        {
+            get;
+            set;
+        }
+
 
         /// <summary>
         /// Gets or sets the default Device Acronym used if SNR measurements have to be generated
@@ -112,6 +181,16 @@ namespace openHistorian.Adapters
 
                 status.AppendFormat("  Default Output Device Name: {0}", ResultDeviceName);
                 status.AppendLine();
+                if (this.saveStats)
+                {
+                    status.AppendFormat("         Reporting Intervall: {0}", ReportingIntervall);
+                    status.AppendLine();
+                }
+                else
+                {
+                    status.AppendFormat("Statistics are not saved");
+                    status.AppendLine();
+                }
 
                 return status.ToString();
             }
@@ -131,8 +210,16 @@ namespace openHistorian.Adapters
             
             base.Initialize();
 
-            //Figure OutOutput Measurement Keys
+           
             this.threePhaseComponent = new List<ThreePhaseSet>();
+            this.statisticsMapping = new Dictionary<Guid, StatisticsCollection>();
+            this.saveStats = this.SaveAggregates;
+
+            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
+            reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
+            reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
+            double Ithreshold = reportSettings["IUnbalanceThreshold"].ValueAs(1.0D);
+            double Vthreshold = reportSettings["VUnbalanceThreshold"].ValueAs(1.0D);
 
             List<Guid> processed = new List<Guid>();
 
@@ -216,10 +303,19 @@ namespace openHistorian.Adapters
                             OnStatusMessage(GSF.Diagnostics.MessageLevel.Warning, String.Format("Output measurment {0} not found. Creating measurement", outputRefference));
                         }
 
-                        this.threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance));
+                        double threshold = 0;
+                        if (this.InputMeasurementKeyTypes[this.InputMeasurementKeys.IndexOf(item => item == key)] == GSF.Units.EE.SignalType.IPHM)
+                            threshold = Ithreshold;
+                        else
+                            threshold = Vthreshold;
+
+                        this.threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
                         processed.Add(pos.SignalID);
                         processed.Add(neg.SignalID);
                         processed.Add(zero.SignalID);
+
+                        if (this.saveStats)
+                            this.statisticsMapping.Add(key.SignalID, CreateStatistics(measTable, key, device));
 
                     }
 
@@ -256,13 +352,6 @@ namespace openHistorian.Adapters
         /// <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
         protected override void PublishFrame(IFrame frame, int index)
         {
-            numberOfFrames++;
-
-            if (numberOfFrames > 3000)
-            {
-                numberOfFrames = 0;
-            }
-
             IMeasurement[] available = frame.Measurements.Values.ToArray();
 
             List<Guid> availableGuids = available.Select(item => item.Key.SignalID).ToList();
@@ -271,36 +360,79 @@ namespace openHistorian.Adapters
 
             foreach (ThreePhaseSet set in this.threePhaseComponent)
             {
-                bool hasP=availableGuids.Contains(set.Positive.SignalID);
-                bool hasN = availableGuids.Contains(set.Negative.SignalID);
-                bool hasZ = availableGuids.Contains(set.Zero.SignalID);
+                bool hasP=availableGuids.Contains(set.positive.SignalID);
+                bool hasN = availableGuids.Contains(set.negative.SignalID);
+                bool hasZ = availableGuids.Contains(set.zero.SignalID);
 
                 if (hasP && hasN)
                 {
-                    double v1p = available.Where(item => item.Key.SignalID == set.Positive.SignalID).FirstOrDefault().Value;
-                    double v2n = available.Where(item => item.Key.SignalID == set.Negative.SignalID).FirstOrDefault().Value;
+                    double v1p = available.Where(item => item.Key.SignalID == set.positive.SignalID).FirstOrDefault().Value;
+                    double v2n = available.Where(item => item.Key.SignalID == set.negative.SignalID).FirstOrDefault().Value;
                     if (v1p != 0.0F)
                     {
                         double unbalanced = v2n / v1p;
                         GSF.TimeSeries.Measurement outmeas = new GSF.TimeSeries.Measurement();
                         outmeas.Metadata = set.outMapping.Metadata;
 
+                        if (this.saveStats)
+                        {
+                            this.statisticsMapping[set.positive.SignalID].count++;
+                            if (unbalanced > this.statisticsMapping[set.positive.SignalID].maximum)
+                                this.statisticsMapping[set.positive.SignalID].maximum = unbalanced;
+                            if (unbalanced < this.statisticsMapping[set.positive.SignalID].minimum)
+                                this.statisticsMapping[set.positive.SignalID].minimum = unbalanced;
+                            if (unbalanced > set.threshold)
+                                this.statisticsMapping[set.positive.SignalID].alertcount++;
+                            this.statisticsMapping[set.positive.SignalID].summation += unbalanced;
+                            this.statisticsMapping[set.positive.SignalID].squaredsummation += (unbalanced * unbalanced);
+                        }
+
+
+
                         outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas, unbalanced*100.0D, frame.Timestamp));
                     }
                 }
             }
 
-
-                OnNewMeasurements(outputmeasurements);
-            
-            
-
-            /// So that the number of frames does not continue on forever
-            /// The number is arbitrary, but it needs to rollover like this
-            if (numberOfFrames % 30 == 0)
+            // Reporting if neccesarry
+            if ((numberOfFrames >= this.ReportingIntervall) && (this.saveStats))
             {
-                //OnStatusMessage(measurement.Key.ToString() + ": " + measurement.Value.ToString());
+                foreach (ThreePhaseSet set in this.threePhaseComponent)
+                {
+                    Guid key = set.positive.SignalID;
+                       
+                    GSF.TimeSeries.Measurement statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].sum.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].summation, frame.Timestamp));
+
+                    statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].sqrd.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].squaredsummation, frame.Timestamp));
+
+                    statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].min.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].minimum, frame.Timestamp));
+
+                    statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].max.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].maximum, frame.Timestamp));
+
+                    statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].total.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].count, frame.Timestamp));
+
+                    statmeas = new GSF.TimeSeries.Measurement();
+                    statmeas.Metadata = this.statisticsMapping[key].alert.Metadata;
+                    outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].alertcount, frame.Timestamp));
+
+                    this.statisticsMapping[key].Reset();
+                    numberOfFrames = 0;
+                }
+
             }
+
+            OnNewMeasurements(outputmeasurements);
+            
         }
 
         private openHistorian.Model.Device CreateDefaultDevice(GSF.Data.Model.TableOperations<openHistorian.Model.Device> table)
@@ -372,6 +504,190 @@ namespace openHistorian.Adapters
             ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
             return (measurement.Phase == '0');
         }
+
+        private StatisticsCollection CreateStatistics(GSF.Data.Model.TableOperations<openHistorian.Model.Measurement> table, MeasurementKey key, Device device)
+        {
+            openHistorian.Model.Measurement inMeas = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            int signaltype = 0;
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                GSF.Data.Model.TableOperations<openHistorian.Model.SignalType> signalTypeTable = new GSF.Data.Model.TableOperations<openHistorian.Model.SignalType>(connection);
+                signaltype = signalTypeTable.QueryRecordWhere("Acronym = {0}", "CALC").ID;
+            }
+
+            string outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
+
+
+            //Sum
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:SUM",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:SUM",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " Summ of SNR",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+
+            }
+
+            //sqrdSum
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:SQR",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:SQR",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " Summ of Sqared SNR",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+
+            }
+
+            //Min
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:MIN",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:MIN",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " Minimum SNR",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+            }
+
+            // Max
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:MAX",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:MAX",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " Maximum SNR",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+            }
+
+            // Number of Points
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:NUM",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:NUM",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " Number of Points",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+            }
+
+            // Number of Points above Alert 
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:ALT",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:ALT",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " number of Alerts",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+            }
+
+            StatisticsCollection result = new StatisticsCollection();
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
+            result.sum = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
+            result.sqrd = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
+            result.min = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
+            result.max = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
+            result.total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            result.alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            result.Reset();
+            return result;
+        }
+
         #endregion[Method]
 
     }
