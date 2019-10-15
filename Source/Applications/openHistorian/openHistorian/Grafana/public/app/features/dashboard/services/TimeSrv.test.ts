@@ -1,6 +1,6 @@
-import moment from 'moment';
 import { TimeSrv } from './TimeSrv';
 import { ContextSrvStub } from 'test/specs/helpers';
+import { isDateTime, dateTime } from '@grafana/data';
 
 describe('timeSrv', () => {
   const rootScope = {
@@ -19,7 +19,7 @@ describe('timeSrv', () => {
     search: jest.fn(() => ({})),
   };
 
-  let timeSrv;
+  let timeSrv: TimeSrv;
 
   const _dashboard: any = {
     time: { from: 'now-6h', to: 'now' },
@@ -43,8 +43,8 @@ describe('timeSrv', () => {
     it('should return parsed when parse is true', () => {
       timeSrv.setTime({ from: 'now', to: 'now-1h' });
       const time = timeSrv.timeRange();
-      expect(moment.isMoment(time.from)).toBe(true);
-      expect(moment.isMoment(time.to)).toBe(true);
+      expect(isDateTime(time.from)).toBe(true);
+      expect(isDateTime(time.to)).toBe(true);
     });
   });
 
@@ -144,6 +144,39 @@ describe('timeSrv', () => {
       expect(timeSrv.time.from).toEqual('now-6h');
       expect(timeSrv.time.to).toEqual('now');
     });
+
+    describe('data point windowing', () => {
+      it('handles time window specfied as interval string', () => {
+        location = {
+          search: jest.fn(() => ({
+            time: '1410337645000',
+            'time.window': '10s',
+          })),
+        };
+
+        timeSrv = new TimeSrv(rootScope as any, jest.fn() as any, location as any, timer, new ContextSrvStub() as any);
+
+        timeSrv.init(_dashboard);
+        const time = timeSrv.timeRange();
+        expect(time.from.valueOf()).toEqual(1410337640000);
+        expect(time.to.valueOf()).toEqual(1410337650000);
+      });
+      it('handles time window specified in ms', () => {
+        location = {
+          search: jest.fn(() => ({
+            time: '1410337645000',
+            'time.window': '10000',
+          })),
+        };
+
+        timeSrv = new TimeSrv(rootScope as any, jest.fn() as any, location as any, timer, new ContextSrvStub() as any);
+
+        timeSrv.init(_dashboard);
+        const time = timeSrv.timeRange();
+        expect(time.from.valueOf()).toEqual(1410337640000);
+        expect(time.to.valueOf()).toEqual(1410337650000);
+      });
+    });
   });
 
   describe('setTime', () => {
@@ -164,8 +197,8 @@ describe('timeSrv', () => {
     it('should restore refresh after relative time range is set', () => {
       _dashboard.refresh = '10s';
       timeSrv.setTime({
-        from: moment([2011, 1, 1]),
-        to: moment([2015, 1, 1]),
+        from: dateTime([2011, 1, 1]),
+        to: dateTime([2015, 1, 1]),
       });
       expect(_dashboard.refresh).toBe(false);
       timeSrv.setTime({ from: '2011-01-01', to: 'now' });

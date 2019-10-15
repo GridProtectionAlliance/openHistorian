@@ -49,6 +49,7 @@
     cursor: $cursor-disabled;
     opacity: 0.65;
     @include box-shadow(none);
+    pointer-events: none;
   }
 
   &--radius-left-0 {
@@ -70,6 +71,7 @@
   @include button-size($btn-padding-y-lg, $space-lg, $font-size-lg, $border-radius-sm);
   font-weight: normal;
   height: $height-lg;
+
   .gicon {
     //font-size: 31px;
     margin-right: $space-sm;
