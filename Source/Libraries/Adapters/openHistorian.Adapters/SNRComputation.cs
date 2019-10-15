@@ -67,12 +67,14 @@ namespace openHistorian.Adapters
             public MeasurementKey total;
             public MeasurementKey sum;
             public MeasurementKey sqrd;
+            public MeasurementKey alert;
 
             public double count;
             public double maximum;
             public double minimum;
             public double summation;
             public double squaredsummation;
+            public int alertcount;
 
             public void Reset()
             {
@@ -81,6 +83,7 @@ namespace openHistorian.Adapters
                 this.minimum = double.MinValue;
                 this.summation = 0;
                 this.squaredsummation = 0;
+                this.alertcount = 0;
             }
         }
 
@@ -111,6 +114,7 @@ namespace openHistorian.Adapters
         private Dictionary<Guid, StatisticsCollection> statisticsMapping;
         private bool saveStats;
         private Guid nodeID;
+        private double threshold;
 
         #endregion [ Members ]
 
@@ -240,6 +244,12 @@ namespace openHistorian.Adapters
                 this.ReportingIntervall = this.WindowLength * (this.ReportingIntervall / this.WindowLength);
                 OnStatusMessage(GSF.Diagnostics.MessageLevel.Warning, String.Format("Adjusting Reporting Interval to every {0} frames.", this.ReportingIntervall));
             }
+
+            
+            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
+            reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
+            this.threshold = reportSettings["DefaultSNRThreshold"].ValueAs(this.threshold);
+
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
@@ -394,7 +404,8 @@ namespace openHistorian.Adapters
                             this.statisticsMapping[key].maximum = SNR;
                         if (SNR < this.statisticsMapping[key].minimum)
                             this.statisticsMapping[key].minimum = SNR;
-
+                        if (SNR > this.threshold)
+                            this.statisticsMapping[key].alertcount++;
                         this.statisticsMapping[key].summation += SNR;
                         this.statisticsMapping[key].squaredsummation += (SNR * SNR);
                     }
@@ -428,6 +439,10 @@ namespace openHistorian.Adapters
                         statmeas = new GSF.TimeSeries.Measurement();
                         statmeas.Metadata = this.statisticsMapping[key].total.Metadata;
                         outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].count, frame.Timestamp));
+
+                        statmeas = new GSF.TimeSeries.Measurement();
+                        statmeas.Metadata = this.statisticsMapping[key].alert.Metadata;
+                        outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(statmeas, this.statisticsMapping[key].alertcount, frame.Timestamp));
 
                         this.statisticsMapping[key].Reset();
                     }
@@ -526,7 +541,7 @@ namespace openHistorian.Adapters
                     AlternateTag = inMeas.AlternateTag + "-SNR:SUM",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " SNR:SUM",
+                    Description = inMeas.Description + " Summ of SNR",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -551,7 +566,7 @@ namespace openHistorian.Adapters
                     AlternateTag = inMeas.AlternateTag + "-SNR:SQR",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " SNR:SQR",
+                    Description = inMeas.Description + " Summ of Sqared SNR",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -576,7 +591,7 @@ namespace openHistorian.Adapters
                     AlternateTag = inMeas.AlternateTag + "-SNR:MIN",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " SNR:MIN",
+                    Description = inMeas.Description + " Minimum SNR",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -600,7 +615,7 @@ namespace openHistorian.Adapters
                     AlternateTag = inMeas.AlternateTag + "-SNR:MAX",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " SNR:MAX",
+                    Description = inMeas.Description + " Maximum SNR",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -624,7 +639,31 @@ namespace openHistorian.Adapters
                     AlternateTag = inMeas.AlternateTag + "-SNR:NUM",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " SNR:NUM",
+                    Description = inMeas.Description + " Number of Points",
+                    Enabled = true,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow,
+                    CreatedBy = UserInfo.CurrentUserID,
+                    UpdatedBy = UserInfo.CurrentUserID,
+                    SignalID = Guid.NewGuid(),
+                    Adder = 0.0D,
+                    Multiplier = 1.0D
+                });
+            }
+
+            // Number of Points above Alert 
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
+            {
+                table.AddNewRecord(new openHistorian.Model.Measurement()
+                {
+                    HistorianID = inMeas.HistorianID,
+                    DeviceID = device.ID,
+                    PointTag = inMeas.PointTag + "-SNR:ALT",
+                    AlternateTag = inMeas.AlternateTag + "-SNR:ALT",
+                    SignalTypeID = signaltype,
+                    SignalReference = outputRefference,
+                    Description = inMeas.Description + " number of Alerts",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -652,6 +691,9 @@ namespace openHistorian.Adapters
 
             outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
             result.total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
+
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            result.alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
             result.Reset();
             return result;          
