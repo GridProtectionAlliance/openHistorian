@@ -350,11 +350,6 @@ namespace openHistorian.Adapters
         {
             numberOfFrames++;
 
-            if (numberOfFrames > 3000)
-            {
-                numberOfFrames = 0;
-            }
-
             MeasurementKey[] availableKeys = frame.Measurements.Values.MeasurementKeys();
             
             foreach (Guid key in this.dataWindow.Keys)
@@ -412,12 +407,15 @@ namespace openHistorian.Adapters
 
                     outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas,SNR, frame.Timestamp));
                     dataWindow[key] = new List<double>();
+                    if (!this.saveStats)
+                        numberOfFrames = 0;
                 }
                 refWindow = new List<double>();
 
                 // Reporting if neccesarry
-                if ((currentWindowLength >= this.ReportingIntervall) && (this.saveStats))
+                if ((numberOfFrames >= this.ReportingIntervall) && (this.saveStats))
                 {
+                    numberOfFrames = 0;
                     foreach (Guid key in Keys)
                     {
                         GSF.TimeSeries.Measurement statmeas = new GSF.TimeSeries.Measurement();
@@ -450,14 +448,6 @@ namespace openHistorian.Adapters
                 }
 
                 OnNewMeasurements(outputmeasurements);
-            }
-
-            
-                // So that the number of frames does not continue on forever
-                // The number is arbitrary, but it needs to rollover like this
-                if (numberOfFrames % 30 == 0)
-            {
-                //OnStatusMessage(measurement.Key.ToString() + ": " + measurement.Value.ToString());
             }
         }
 

@@ -392,8 +392,11 @@ namespace openHistorian.Adapters
                         outputmeasurements.Add(GSF.TimeSeries.Measurement.Clone(outmeas, unbalanced*100.0D, frame.Timestamp));
                     }
                 }
+                if (!this.saveStats)
+                    numberOfFrames = 0;
             }
 
+            
             // Reporting if neccesarry
             if ((numberOfFrames >= this.ReportingIntervall) && (this.saveStats))
             {
