@@ -12,14 +12,14 @@
          <Members>
           <Member Name="#DiffBisect(System.String,System.String,System.DateTime)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-10-17 04:00:34Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="DiffMatchPatch.cs" Line="397">'DiffMatchPatch.DiffBisect(string, string, DateTime)' has a cyclomatic complexity of 32. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#EncodeURI(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriReturnValuesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1055" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="Breaking">
+            <Message TypeName="UriReturnValuesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1055" Status="Active" Created="2019-10-17 04:00:34Z" FixCategory="Breaking">
              <Issue Certainty="60" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="DiffMatchPatch.cs" Line="2619">Change the return type of 'DiffMatchPatch.EncodeURI(string)' from string to System.Uri.</Issue>
             </Message>
            </Messages>
@@ -30,7 +30,7 @@
          <Members>
           <Member Name="#Diffs" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="Breaking">
+            <Message TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227" Status="Active" Created="2019-10-17 04:00:34Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="Patch.cs" Line="60">Change 'Patch.Diffs' to be read-only by removing the property setter.</Issue>
             </Message>
            </Messages>
