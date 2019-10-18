@@ -274,13 +274,18 @@ namespace openHistorian.Adapters
 
                 foreach (Target target in request)
                 {
+                    DataTable tmptable = new DataTable();
+
                     if (string.IsNullOrWhiteSpace(target.target))
                         return string.Empty;
 
                     DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{target.target}'") ?? new DataRow[0];
 
                     if (rows.Length > 0)
-                        table = rows.CopyToDataTable();
+                    {
+                        tmptable = rows.CopyToDataTable();
+                        table.Merge(tmptable);
+                    }
                 }
 
                 return JsonConvert.SerializeObject(table);
