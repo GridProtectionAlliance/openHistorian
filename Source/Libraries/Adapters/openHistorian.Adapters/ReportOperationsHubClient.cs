@@ -240,8 +240,12 @@ namespace openHistorian.Adapters
 
             if (reportingMeasurements.Count() < 1)
             {
-               
-                List <ActiveMeasurement> activeMeasuremnts = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
+
+                TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
+                tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
+
+
+                List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
                 reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
 
                 // Pull Data From the Open Historian
@@ -365,19 +369,23 @@ namespace openHistorian.Adapters
                 filterstring = "%V-UBAL";
 
 
+            TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
+            tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
 
-            if (new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordCountWhere("PointTag LIKE {0}", (filterstring + ":SUM")) > 0)
+
+            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", (filterstring + ":SUM")) > 0)
             {
-                List<ActiveMeasurement> sums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SUM").ToList();
-                List<ActiveMeasurement> squaredsums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SQR").ToList();
-                List<ActiveMeasurement> minimums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MIN").ToList();
-                List<ActiveMeasurement> maximums = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MAX").ToList();
-                List<ActiveMeasurement> number = new TableOperations<ActiveMeasurement>(dataContext.Connection).QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":NUM").ToList();
+                List<ActiveMeasurement> sumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SUM").ToList();
+                List<ActiveMeasurement> squaredSumMeasurments = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SQR").ToList();
+                List<ActiveMeasurement> minimumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MIN").ToList();
+                List<ActiveMeasurement> maximumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MAX").ToList();
+                List<ActiveMeasurement> countMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":NUM").ToList();
+                List<ActiveMeasurement> alertMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":ALT").ToList();
 
-                result = sums.Select(point => new ReportMeasurements(point)).ToList();
+                result = sumMeasurements.Select(point => new ReportMeasurements(point)).ToList();
 
                 // Pull Data From the Open Historian
-                List<ActiveMeasurement> all = sums.Concat(squaredsums).Concat(minimums).Concat(maximums).Concat(number).ToList();
+                List<ActiveMeasurement> all = sumMeasurements.Concat(squaredSumMeasurments).Concat(minimumMeasurements).Concat(maximumMeasurements).Concat(countMeasurements).ToList();
                 List<CondensedDataPoint> historiandata = new List<CondensedDataPoint>();
                 try
                 {
@@ -392,40 +400,47 @@ namespace openHistorian.Adapters
                 {
                     ReportMeasurements sum = item;
                     string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    ActiveMeasurement squared = squaredsums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement min = minimums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement max = maximums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement total = number.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+
 
                     return (historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(squared.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(min.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(max.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(total.PointID));
+                        historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
+                        historiandata.Select(point => point.PointID).Contains(countChannel.PointID));
                 }).ToList();
 
                 result = result.Select(item =>
                 {
 
                     string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    ActiveMeasurement sum = sums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement squared = squaredsums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement min = minimums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement max = maximums.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-                    ActiveMeasurement total = number.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
 
-                    double minimum = historiandata.Find(point => point.PointID == min.PointID).min;
-                    double maximum = historiandata.Find(point => point.PointID == max.PointID).max;
-                    double npoints = historiandata.Find(point => point.PointID == total.PointID).sum;
-                    double summation = historiandata.Find(point => point.PointID == sum.PointID).sum;
-                    double squaredsum = historiandata.Find(point => point.PointID == squared.PointID).sum;
+
+                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
+                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
+                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
+                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
+                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
+                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
 
                     item.Max = maximum;
                     item.Min = minimum;
-                    item.Mean = summation / npoints;
-                    item.NumberOfAlarms = 0;
-                    item.PercentAlarms = 0;
-                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + npoints * item.Mean * item.Mean) / npoints);
+                    item.Mean = summation / count;
+                    item.NumberOfAlarms = alarmCount;
+                    item.PercentAlarms = alarmCount * 100.0D / count;
+                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
+                    item.TimeInAlarm = item.NumberOfAlarms * 1000.0D / (double)item.FramesPerSecond;
 
                     item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
                     return item;
