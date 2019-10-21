@@ -216,8 +216,6 @@ namespace openHistorian
 
         #endregion
 
-
-
         #region [ ActiveMeasurement View Operations ]
 
         [RecordOperation(typeof(ActiveMeasurement), RecordOperation.QueryRecordCount)]

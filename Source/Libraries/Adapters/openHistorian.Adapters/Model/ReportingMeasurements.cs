@@ -49,19 +49,8 @@ namespace openHistorian.Model
             this.PointID = activemeasurement.PointID;
             this.SignalID = (Guid)activemeasurement.SignalID;
             this.PointTag = activemeasurement.PointTag;
-            this.AlternateTag = activemeasurement.AlternateTag;
             this.SignalReference = activemeasurement.SignalReference;
-            this.Device = activemeasurement.Device;
-            this.DeviceID = activemeasurement.DeviceID;
             this.FramesPerSecond = activemeasurement.FramesPerSecond;
-            this.SignalType = activemeasurement.SignalType;
-            this.EngineeringUnits = activemeasurement.EngineeringUnits;
-            this.PhasorID = activemeasurement.PhasorID;
-            this.PhasorType = activemeasurement.PhasorType;
-            this.Phase = activemeasurement.Phase;
-            this.Adder = activemeasurement.Adder;
-            this.Multiplier = activemeasurement.Multiplier;
-            this.Description = activemeasurement.Description;
            
 
             this.Mean = 0;
@@ -70,10 +59,10 @@ namespace openHistorian.Model
             this.NumberOfAlarms = 0;
             this.PercentAlarms = 0;
             this.TimeInAlarm = 0;
-            this.OriginalTag = "";
         }
 
         [Searchable]
+        [CSVExcludeField]
         public string ID
         {  get; set;   }
 
@@ -81,6 +70,7 @@ namespace openHistorian.Model
 
         [PrimaryKey(false)]
         [Label("Unique Signal ID")]
+        [CSVExcludeField]
         public Guid SignalID
         {
             get;
@@ -97,104 +87,25 @@ namespace openHistorian.Model
             set;
         }
 
-        [Label("Alternate Tag Name")]
-        [Searchable]
-        public string AlternateTag
-        {
-            get;
-            set;
-        }
-
+       
         [Label("Signal Reference")]
         [Required]
         [StringLength(200)]
         [Searchable]
+        [CSVExcludeField]
         public string SignalReference
         {
             get;
             set;
         }
 
-        
-
-        [Searchable]
-        public string Device
-        {
-            get;
-            set;
-        }
-
-        public int? DeviceID
-        {
-            get;
-            set;
-        }
-
         [Label("Frames per Second")]
+        [CSVExcludeField]
         public int? FramesPerSecond
         {
             get;
             set;
         }
-
-
-        [Label("Signal Type<span class='pull-right' data-bind='text: notNull(EngineeringUnits()).length > 0 ? \"&nbsp;(\" + EngineeringUnits()  + \")\" : \"\"'></span>")]
-        [Searchable(SearchType.FullValueMatch)]
-        public string SignalType
-        {
-            get;
-            set;
-        }
-
-
-        [Label("Engineering Units")]
-        public string EngineeringUnits
-        {
-            get;
-            set;
-        }
-
-        [Label("Phasor ID")]
-        public int? PhasorID
-        {
-            get;
-            set;
-        }
-
-        [Label("Phasor Type")]
-        public char? PhasorType
-        {
-            get;
-            set;
-        }
-
-        public char? Phase
-        {
-            get;
-            set;
-        }
-
-        public double Adder
-        {
-            get;
-            set;
-        }
-
-        public double Multiplier
-        {
-            get;
-            set;
-        }
-    
-
-        [Searchable]
-        public string Description
-        {
-            get;
-            set;
-        }
-
-      
 
         [NonRecordField]
         public string Source
@@ -225,11 +136,6 @@ namespace openHistorian.Model
 
         public double TimeInAlarm
         { get; set; }
-
-        public string OriginalTag
-        {
-            get; set;
-        }
 
     }
 }

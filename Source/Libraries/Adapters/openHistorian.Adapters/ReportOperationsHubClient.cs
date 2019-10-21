@@ -265,7 +265,7 @@ namespace openHistorian.Adapters
                     item.NumberOfAlarms = data.alert;
                     item.PercentAlarms = (double)data.alert * 100.0D / (double)data.totalPoints;
                     item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + (double)data.totalPoints * item.Mean * item.Mean) / (double)data.totalPoints);
-                    item.TimeInAlarm = item.NumberOfAlarms * 1000.0D / (double)item.FramesPerSecond;
+                    item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
 
                     return item;
                 }
@@ -291,11 +291,10 @@ namespace openHistorian.Adapters
             // Create Original Point Tag
             reportingMeasurements.Select(item =>
             {
-                item.OriginalTag = item.PointTag;
                 if (reportType == ReportType.SNR)
-                    item.OriginalTag = item.OriginalTag.Remove(item.OriginalTag.Length - 4);
+                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
                 else
-                    item.OriginalTag = item.OriginalTag.Remove(item.OriginalTag.Length - 5);
+                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
                 return item;
             }).ToList();
 
@@ -385,7 +384,7 @@ namespace openHistorian.Adapters
                 result = sumMeasurements.Select(point => new ReportMeasurements(point)).ToList();
 
                 // Pull Data From the Open Historian
-                List<ActiveMeasurement> all = sumMeasurements.Concat(squaredSumMeasurments).Concat(minimumMeasurements).Concat(maximumMeasurements).Concat(countMeasurements).ToList();
+                List<ActiveMeasurement> all = sumMeasurements.Concat(squaredSumMeasurments).Concat(minimumMeasurements).Concat(maximumMeasurements).Concat(countMeasurements).Concat(alertMeasurements).ToList();
                 List<CondensedDataPoint> historiandata = new List<CondensedDataPoint>();
                 try
                 {
@@ -396,55 +395,58 @@ namespace openHistorian.Adapters
                     return new List<ReportMeasurements>();
                 }
 
-                result = result.Where((item,index) =>
-                {
-                    ReportMeasurements sum = item;
-                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                result = result.Where((item, index) =>
+                    {
+                        ReportMeasurements sum = item;
+                        string tag = item.PointTag.Remove(item.PointTag.Length - 4);
+                        ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+
+                        if ((squaredSumChannel is null) || (minimumChannel is null) || (maximumChannel is null) || (countChannel is null) || (countAlertChannel is null))
+                            return false;
+
+                        return (historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
+                            historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
+                            historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
+                            historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
+                            historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
+                            historiandata.Select(point => point.PointID).Contains(countChannel.PointID));
+                    }).ToList();
+
+                    result = result.Select(item =>
+                    {
+
+                        string tag = item.PointTag.Remove(item.PointTag.Length - 4);
+                        ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                        ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
 
 
-                    return (historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
-                        historiandata.Select(point => point.PointID).Contains(countChannel.PointID));
-                }).ToList();
+                        double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
+                        double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
+                        double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
+                        double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
+                        double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
+                        double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
 
-                result = result.Select(item =>
-                {
+                        item.Max = maximum;
+                        item.Min = minimum;
+                        item.Mean = summation / count;
+                        item.NumberOfAlarms = alarmCount;
+                        item.PercentAlarms = alarmCount * 100.0D / count;
+                        item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
+                        item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
 
-                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-
-
-                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
-                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
-                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
-                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
-                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
-                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
-
-                    item.Max = maximum;
-                    item.Min = minimum;
-                    item.Mean = summation / count;
-                    item.NumberOfAlarms = alarmCount;
-                    item.PercentAlarms = alarmCount * 100.0D / count;
-                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
-                    item.TimeInAlarm = item.NumberOfAlarms * 1000.0D / (double)item.FramesPerSecond;
-
-                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    return item;
-                }).ToList();
+                        item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
+                        return item;
+                    }).ToList();
+                
             }
 
             return result;
