@@ -74,8 +74,8 @@ namespace openHistorian.Adapters
             public void Reset()
             {
                 this.count = 0;
-                this.maximum = double.MaxValue;
-                this.minimum = double.MinValue;
+                this.maximum = double.MinValue;
+                this.minimum = double.MaxValue;
                 this.summation = 0;
                 this.squaredsummation = 0;
                 this.alertcount = 0;

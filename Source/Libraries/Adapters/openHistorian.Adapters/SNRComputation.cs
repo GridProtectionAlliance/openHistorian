@@ -79,8 +79,8 @@ namespace openHistorian.Adapters
             public void Reset()
             {
                 this.count = 0;
-                this.maximum = double.MaxValue;
-                this.minimum = double.MinValue;
+                this.maximum = double.MinValue;
+                this.minimum = double.MaxValue;
                 this.summation = 0;
                 this.squaredsummation = 0;
                 this.alertcount = 0;
@@ -473,7 +473,10 @@ namespace openHistorian.Adapters
             double sampleAverage = values.Average();
             double totalVariance = values.Select(item => item - sampleAverage).Select(deviation => deviation * deviation).Sum();
 
-            return (10*Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / sampleCount))));
+            double result = (10 * Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / sampleCount))));
+            if (double.IsInfinity(result))
+                return double.NaN;
+            return result;
         }
 
         private openHistorian.Model.Device CreateDefaultDevice(GSF.Data.Model.TableOperations<openHistorian.Model.Device> table)
