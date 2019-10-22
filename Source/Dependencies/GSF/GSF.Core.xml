@@ -8254,6 +8254,11 @@
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
         </member>
+        <member name="T:GSF.Data.Model.CSVExcludeField">
+            <summary>
+            Defines an attribute that will exclude this Field in any CSV exports.
+            </summary>
+        </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
             <summary>
             Defines an attribute that will mark a property to not be serialized as a record field.
