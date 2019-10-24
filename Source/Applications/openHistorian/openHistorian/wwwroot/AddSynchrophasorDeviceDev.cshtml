@@ -85,6 +85,35 @@
             vertical-align: middle;
         }
 
+        span.org-label {
+            font-size: 9px;
+            display: block;
+            text-align: right;
+            margin-top: -5px;
+            margin-right: 2px;
+            margin-bottom: -1px;
+            color: darkgray;
+        }
+
+        span.tag-name-label {
+            font-size: 10.5px;
+            display: block;
+            text-align: left;
+            margin-top: -1px;
+            margin-left: 2px;
+            margin-bottom: -5px;
+            color: darkslategray;
+        }
+
+        span.tag-name {
+            font-size: 10px;
+            position: absolute;
+            margin-top: -9px;
+            margin-left: 52px;
+            white-space: nowrap;
+            color: darkslategray;
+        }
+
         .input-label {
             text-align: right;
             vertical-align: top;
@@ -408,6 +437,19 @@
             return  $d.promise();
         }
 
+        function updateTagName(evaluator, owner) {
+            let result = ko.observable();
+
+            ko.computed(function () {
+                evaluator.call(owner).done(function (tagName) {
+                    if (!isEmpty(tagName) && tagName.length > 4)
+                        result(tagName.substring(0, tagName.length - 4));
+                });
+            });
+
+            return result;
+        }
+
         function DeviceViewModel() {
             const self = this;
 
@@ -424,7 +466,8 @@
 
             // Internal fields
             self._addTagsAsVirtualPoints = ko.observable(undefined);
-            self._deviceAcronym = ko.observable("DEVICENAME");
+            self._deviceAcronym = ko.observable("DEVICEACRONYM");
+            self._deviceName = ko.observable("Device Name");
             self._instanceName = ko.observable("");
             self._templateType = ko.observable("");
             self._historianID = ko.observable(-1);
@@ -466,7 +509,24 @@
                         self._deviceAcronym(value);
                     }
                     else {
-                        self.deviceAcronym(value);
+                        self._deviceAcronym(value);
+                    }
+                },
+                owner: self
+            });
+
+            self.deviceName = ko.pureComputed({
+                read: self._deviceName,
+                write: function (value) {
+                    if (value === self._deviceName())
+                        return;
+
+                    if (value) {
+                        value = value.trim();
+                        self._deviceName(value);
+                    }
+                    else {
+                        self._deviceName(value);
                     }
                 },
                 owner: self
@@ -622,9 +682,14 @@
                 if (isEmpty(deviceAcronym) && !isEmpty(configFrame.StationName))
                     deviceAcronym = getCleanAcronym(configFrame.StationName.toUpperCase().replaceAll(" ", "_"));
                 else
-                    deviceAcronym = "DEVICENAME";
+                    deviceAcronym = "DEVICEACRONYM";
 
                 self.deviceAcronym(deviceAcronym);
+
+                if (!isEmpty(configFrame.StationName))
+                    self.deviceName(configFrame.StationName);
+                else
+                    self.deviceName("Device Name");
 
                 const deviceCount = self.configFrame().Cells.length;
 
@@ -665,6 +730,7 @@
 
                     if (deviceCount === 1) {
                         self.deviceAcronym(cellAcronym);
+                        self.deviceName(cell.StationName);
                         cell.IDLabel = self.deviceAcronym;
                     } else {
                         cell.IDLabel = ko.observable(cellAcronym);
@@ -807,14 +873,19 @@
                 const phasorLabel = phasorDefinition.Label;
                 const nominalVoltage = guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
                 const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
+                const vphmSignalType = getPhasorSignalType("VPHM");
 
                 voltage.ID = phasorDefinition.ID;
                 voltage.Device = cell;
                 voltage.Label = ko.observable(phasorLabel);
+                voltage.OriginalLabel = phasorLabel;
                 voltage.Phase = ko.observable(phase);
                 voltage.NominalVoltage = ko.observable(nominalVoltage);
                 voltage.FirstVoltage = firstVoltage;
                 voltage.Enabled = ko.observable(true);
+                voltage.TagName = updateTagName(function () {
+                    return phasorHub.createPhasorPointTag(self.deviceAcronym(), vphmSignalType.Acronym, voltage.Label(), voltage.Phase(), phasorDefinition.SourceIndex, voltage.NominalVoltage());
+                }, voltage);
 
                 voltage.Label.extend({ required: true });
                 voltage.Phase.extend({
@@ -837,10 +908,12 @@
             self.createObservableCurrent = function (cell, phasorDefinition, firstCurrent) {
                 const current = {};
                 const phasorLabel = phasorDefinition.Label;
+                const iphmSignalType = getPhasorSignalType("IPHM");
 
                 current.ID = phasorDefinition.ID;
                 current.Device = cell;
                 current.Label = ko.observable(phasorLabel);
+                current.OriginalLabel = phasorLabel;
                 current.FirstCurrent = firstCurrent;
                 current.Enabled = ko.observable(true);
 
@@ -894,6 +967,10 @@
                     },
                     owner: current
                 });
+
+                current.TagName = updateTagName(function () {
+                    return phasorHub.createPhasorPointTag(self.deviceAcronym(), iphmSignalType.Acronym, current.Label(), current.Phase(), phasorDefinition.SourceIndex, current.AssociatedVoltage());
+                }, current);
 
                 current.DeviceVoltages = ko.pureComputed({
                     read: function () {
@@ -954,6 +1031,10 @@
                     params: "@Raw(AcronymValidationAttribute.ValidationPattern.JavaScriptEncode())"
                 },
                 deviceUniqueInDatabase: deviceID
+            });
+
+            self.deviceName.extend({
+                required: true
             });
 
             self.validationErrors = ko.pureComputed(function () {
@@ -2407,6 +2488,7 @@
                 }
 
                 device.Acronym = viewModel.deviceAcronym();
+                device.Name = viewModel.deviceName();
                 device.HistorianID = viewModel.historianID();
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
@@ -2491,8 +2573,11 @@
         }
 
         function resizePageElements() {
-            if (deviceID === 0)
-                $("#inputDeviceAcronym").width($("#inputConfigFile").width());
+            if (deviceID === 0) {
+                let inputConfigFileWidth = $("#inputConfigFile").width();
+                $("#inputDeviceAcronym").width(inputConfigFileWidth);
+                $("#inputDeviceName").width(inputConfigFileWidth);
+            }
 
             $("#contentWell").height(calculateRemainingBodyHeight() - $("#headerArea").outerHeight(true));
         }
@@ -2754,13 +2839,24 @@
             </tr>
             <tr>
                 <td class="input-label">
+                    <label for="inputDeviceName"><span data-bind="text: configFrame().Cells.length == 1 ? 'Device' : 'Connection'">Connection</span> Name:</label>
+                </td>
+                <td>
+                    <div class="input-group" data-bind="css: { 'has-error': !fieldHasValue(deviceName, true), 'has-feedback': !fieldHasValue(deviceName, true) }">
+                        <input id="inputDeviceName" type="text" class="form-control" style="width: 250px" data-bind="textInput: deviceName, disable: readOnly" required>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
                     <label for="templateType">Tag Template:</label>
                 </td>
                 <td>
                     <div class="input-group">
                         <select class="form-control" id="templateType" data-bind="value: templateType; valueAllowUnset: false" style="border: 0; width: 250px"></select>
                         <div class="checkbox" style="display:inline; margin-left: 15px">
-                            <label class="disabled" style="margin-top: 6px"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
+                            <label class="disabled" style="margin-top: 6px; display: none"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
                     </div>
                 </td>
@@ -2823,19 +2919,20 @@
                 <tbody data-bind="foreach: { data: voltages }">
                 <tr id="voltageRow" style="visibility: hidden" data-bind="css: { 'top-border': FirstVoltage }">
                     <!-- ko if: !FirstVoltage && $parent.configFrame().Cells.length > 1 -->
-                    <td width="190px" class="text-left valign-middle">
+                    <td width="190px" class="text-left">
                         <div class="input-group"></div>
                     </td>
                     <!-- /ko -->
                     <!-- ko if: FirstVoltage && $parent.configFrame().Cells.length > 1 -->
-                    <td width="190px" class="text-left valign-middle">
+                    <td width="190px" class="text-left">
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
                             <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                         </div>
                     </td>
                     <!-- /ko -->
-                    <td width="210px" class="text-left valign-middle">
+                    <td width="210px" class="text-left">
+                        <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
                         <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
                             <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
                         </div>
@@ -2843,14 +2940,15 @@
                             <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                         </div>
+                        <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
                     </td>
-                    <td width="55px" class="text-center valign-middle">
+                    <td width="55px" class="text-center">
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
                             <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                         </div>
                     </td>
-                    <td class="text-left valign-middle">
+                    <td class="text-left">
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
                             <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage, enable: Enabled" required>&nbsp;<span class="table-cell-text">kV</span>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
@@ -2878,19 +2976,20 @@
                 <tbody data-bind="foreach: { data: currents }">
                     <tr id="currentRow" style="visibility: hidden" data-bind="css: { 'top-border': FirstCurrent }">
                         <!-- ko if: !FirstCurrent && $parent.configFrame().Cells.length > 1 -->
-                        <td width="190px" class="text-left valign-middle">
+                        <td width="190px" class="text-left">
                             <div class="input-group"></div>
                         </td>
                         <!-- /ko -->
                         <!-- ko if: FirstCurrent && $parent.configFrame().Cells.length > 1 -->
-                        <td width="190px" class="text-left valign-middle">
+                        <td width="190px" class="text-left">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
                                 <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
                         <!-- /ko -->
-                        <td width="210px" class="text-left valign-middle">
+                        <td width="210px" class="text-left">
+                            <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
                             <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
                                 <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
                             </div>
@@ -2898,14 +2997,15 @@
                                 <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
+                            <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
                         </td>
-                        <td width="55px" class="text-center valign-middle">
+                        <td width="55px" class="text-center">
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
                                 <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                             </div>
                         </td>
-                        <td class="text-left valign-middle">
+                        <td class="text-left">
                             <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true, enable: Enabled"></select>
                         </td>
                     </tr>
