@@ -6090,19 +6090,57 @@
             <param name="item">Object to evaluate.</param>
             <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
         </member>
+        <member name="M:GSF.Common.IsNumericType(System.TypeCode)">
+            <summary>
+            Determines if <paramref name="typeCode"/> is a numeric type, i.e., one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <param name="typeCode"><see cref="T:System.TypeCode"/> value to check.</param>
+            <returns><c>true</c> if <paramref name="typeCode"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumericType(System.Type)">
+            <summary>
+            Determines if <paramref name="type"/> is a numeric type, i.e., has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to check.</param>
+            <returns><c>true</c> if <paramref name="type"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Common.IsNumericType``1">
+            <summary>
+            Determines if <typeparamref name="T"/> is a numeric type, i.e., has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to check.</typeparam>
+            <returns><c>true</c> if <typeparamref name="T"/> is a numeric type; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Common.IsNumericType(System.Object)">
             <summary>
-            Determines if given <paramref name="item"/> is a numeric type.
+            Determines if <see cref="T:System.Type"/> of <paramref name="item"/> is a numeric type, i.e., <paramref name="item"/>
+            is <see cref="T:System.IConvertible"/> and has a <see cref="T:System.TypeCode"/> that is one of:
+            <see cref="F:System.TypeCode.Boolean"/>, <see cref="F:System.TypeCode.SByte"/>, <see cref="F:System.TypeCode.Byte"/>,
+            <see cref="F:System.TypeCode.Int16"/>, <see cref="F:System.TypeCode.UInt16"/>, <see cref="F:System.TypeCode.Int32"/>,
+            <see cref="F:System.TypeCode.UInt32"/>, <see cref="F:System.TypeCode.Int64"/>, <see cref="F:System.TypeCode.UInt64"/>
+            <see cref="F:System.TypeCode.Single"/>, <see cref="F:System.TypeCode.Double"/> or <see cref="F:System.TypeCode.Decimal"/>.
             </summary>
             <param name="item">Object to evaluate.</param>
             <returns><c>true</c> if <paramref name="item"/> is a numeric type; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Common.IsNumeric(System.Object)">
             <summary>
-            Determines if given <paramref name="item"/> is, or can be interpreted to be, a numeric type.
+            Determines if given <paramref name="item"/> is or can be interpreted as numeric.
             </summary>
             <param name="item">Object to evaluate.</param>
-            <returns><c>true</c> if <paramref name="item"/> is, or can be interpreted to be, a numeric type; otherwise, <c>false</c>.</returns>
+            <returns><c>true</c> if <paramref name="item"/> is or can be interpreted as numeric; otherwise, <c>false</c>.</returns>
             <remarks>
             If type of <paramref name="item"/> is a <see cref="T:System.Char"/> or a <see cref="T:System.String"/>, then if value can be parsed as a numeric
             value, result will be <c>true</c>.
