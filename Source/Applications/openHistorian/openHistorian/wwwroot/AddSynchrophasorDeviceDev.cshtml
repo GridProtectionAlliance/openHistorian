@@ -112,6 +112,7 @@
             margin-left: 52px;
             white-space: nowrap;
             color: darkslategray;
+            -webkit-text-stroke-width: thin;
         }
 
         .input-label {
@@ -130,6 +131,10 @@
         tr.top-border {
             border-top-width: 2px;
             border-top-style: solid;
+        }
+
+        div.error-margin {
+            padding-bottom: 10px;
         }
 
         @@media screen {
@@ -857,7 +862,7 @@
                     showErrorMessage(String.format("Failed to analyze config file: {0}", error));
 
                     self.configFrameDetails("Unavailable");
-                        $("[id=voltageRow]").css("visibility", "visible");
+                    $("[id=voltageRow]").css("visibility", "visible");
                     $("[id=currentRow]").css("visibility", "visible");
                     hideLoadingLabel();
                 });
@@ -2907,54 +2912,65 @@
             <h3>Voltages</h3>
             <table class="table table-condensed table-striped table-hover">
                 <thead>
-                <tr>
-                    <!-- ko if: configFrame().Cells.length > 1 -->
-                    <th class="text-left">Device&nbsp;Acronym</th>
-                    <!-- /ko -->
-                    <th class="text-left">Phasor&nbsp;Label</th>
-                    <th class="text-center">Phase</th>
-                    <th class="text-left">Nominal&nbsp;Voltage</th>
-                </tr>
+                    <tr>
+                        <!-- ko if: configFrame().Cells.length > 1 -->
+                        <th class="text-left">Device&nbsp;Acronym</th>
+                        <!-- /ko -->
+                        <th class="text-left">Phasor&nbsp;Label</th>
+                        <th class="text-center">Phase</th>
+                        <th class="text-left">Nominal&nbsp;Voltage</th>
+                    </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: voltages }">
-                <tr id="voltageRow" style="visibility: hidden" data-bind="css: { 'top-border': FirstVoltage }">
-                    <!-- ko if: !FirstVoltage && $parent.configFrame().Cells.length > 1 -->
-                    <td width="190px" class="text-left">
-                        <div class="input-group"></div>
-                    </td>
+                    <!-- ko if: $index() > 0 && FirstVoltage && $parent.configFrame().Cells.length > 1 -->
+                    <tr id="voltageRow" style="visibility: hidden; border-bottom-width: 4px; border-bottom-style: solid; background-color: inherit">
+                        <td colspan="4" style="padding: 2px"></td>
+                    </tr>
+                    <tr id="voltageRow" style="visibility: hidden; background-color: inherit">
+                        <td colspan="4" style="padding: 2px"></td>
+                    </tr>
                     <!-- /ko -->
-                    <!-- ko if: FirstVoltage && $parent.configFrame().Cells.length > 1 -->
-                    <td width="190px" class="text-left">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
-                            <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
-                        </div>
-                    </td>
-                    <!-- /ko -->
-                    <td width="210px" class="text-left">
-                        <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
-                        <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
-                            <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
-                        </div>
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
-                            <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
-                        </div>
-                        <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
-                    </td>
-                    <td width="55px" class="text-center">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
-                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
-                        </div>
-                    </td>
-                    <td class="text-left">
-                        <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true) }">
-                            <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage, enable: Enabled" required>&nbsp;<span class="table-cell-text">kV</span>
-                            <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
-                        </div>
-                    </td>
-                </tr>
+                    <tr id="voltageRow" style="visibility: hidden" @*data-bind="css: { 'top-border': FirstVoltage }"*@>
+                        <!-- ko if: !FirstVoltage && $parent.configFrame().Cells.length > 1 -->
+                        <td width="190px" class="text-left" style="padding-right: 20px">
+                            <div class="input-group"></div>
+                        </td>
+                        <!-- /ko -->
+                        <!-- ko if: FirstVoltage && $parent.configFrame().Cells.length > 1 -->
+                        <td width="190px" class="text-left" style="padding-right: 20px">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
+                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
+                            </div>
+                        </td>
+                        <!-- /ko -->
+                        <td width="210px" class="text-left" style="position: sticky">
+                            <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
+                            <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
+                                <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
+                            </div>
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true), 'error-margin': !fieldIsValid(Label, true) }">
+                                <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
+                            </div>
+                            <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
+                        </td>
+                        <td width="55px" class="text-center">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true), 'error-margin': !fieldIsValid(Phase, true) }">
+                                <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
+                            </div>
+                        </td>
+                        <td class="text-left">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(NominalVoltage, true), 'has-feedback': !fieldIsValid(NominalVoltage, true), 'error-margin':! fieldIsValid(NominalVoltage, true) }">
+                                <input type="text" class="form-control" style="width: 70px; margin-left: 10px" data-bind="integer: NominalVoltage, textInput: NominalVoltage, enable: Enabled" required>&nbsp;<span class="table-cell-text">kV</span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5; width: 65px" data-bind="visible: !fieldIsValid(NominalVoltage, true)"></span>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -2974,38 +2990,49 @@
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: currents }">
-                    <tr id="currentRow" style="visibility: hidden" data-bind="css: { 'top-border': FirstCurrent }">
+                    <!-- ko if: $index() > 0 && FirstCurrent && $parent.configFrame().Cells.length > 1 -->
+                    <tr id="currentRow" style="visibility: hidden; border-bottom-width: 4px; border-bottom-style: solid; background-color: inherit">
+                        <td colspan="4" style="padding: 2px"></td>
+                    </tr>
+                    <tr id="currentRow" style="visibility: hidden; background-color: inherit">
+                        <td colspan="4" style="padding: 2px"></td>
+                    </tr>
+                    <!-- /ko -->
+                    <tr id="currentRow" style="visibility: hidden" @*data-bind="css: { 'top-border': FirstCurrent }"*@>
                         <!-- ko if: !FirstCurrent && $parent.configFrame().Cells.length > 1 -->
-                        <td width="190px" class="text-left">
+                        <td width="190px" class="text-left" style="padding-right: 20px">
                             <div class="input-group"></div>
                         </td>
                         <!-- /ko -->
                         <!-- ko if: FirstCurrent && $parent.configFrame().Cells.length > 1 -->
-                        <td width="190px" class="text-left">
+                        <td width="190px" class="text-left" style="padding-right: 20px">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
                                 <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
                         <!-- /ko -->
-                        <td width="210px" class="text-left">
+                        <td width="210px" class="text-left" style="position: sticky">
                             <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
                             <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
                                 <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
                             </div>
-                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true) }">
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true), 'error-margin': !fieldIsValid(Label, true) }">
                                 <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                             </div>
                             <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
                         </td>
                         <td width="55px" class="text-center">
-                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true) }">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
+                            <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true), 'error-margin': !fieldIsValid(Phase, true)}">
                                 <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                             </div>
                         </td>
                         <td class="text-left">
+                            <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                             <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true, enable: Enabled"></select>
                         </td>
                     </tr>
