@@ -875,7 +875,7 @@
 
             self.createObservableVoltage = function (cell, phasorDefinition, firstVoltage) {
                 const voltage = {};
-                const phasorLabel = phasorDefinition.Label;
+                const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
                 const nominalVoltage = guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
                 const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
                 const vphmSignalType = getPhasorSignalType("VPHM");
@@ -912,7 +912,7 @@
 
             self.createObservableCurrent = function (cell, phasorDefinition, firstCurrent) {
                 const current = {};
-                const phasorLabel = phasorDefinition.Label;
+                const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
                 const iphmSignalType = getPhasorSignalType("IPHM");
 
                 current.ID = phasorDefinition.ID;
