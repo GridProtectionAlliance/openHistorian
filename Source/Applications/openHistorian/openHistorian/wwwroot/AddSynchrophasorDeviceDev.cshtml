@@ -115,6 +115,31 @@
             -webkit-text-stroke-width: thin;
         }
 
+        div.save-button {
+            margin-top: -33px;
+            z-index: 10;
+        }
+
+        div.no-access {
+            margin-top: -33px;
+            z-index: 10;
+            width: 40%;
+            white-space: inherit;
+            position: relative;
+        }
+
+        tr.separator-top {
+            visibility: hidden;
+            border-bottom-width: 4px;
+            border-bottom-style: solid;
+            background-color: inherit;
+        }
+
+        tr.separator-bottom {
+            visibility: hidden;
+            background-color: inherit;
+        }
+
         .input-label {
             text-align: right;
             vertical-align: top;
@@ -2813,14 +2838,14 @@
 <div id="headerArea">
     <h3 style="margin-top: -10px;">
         @ViewBag.Title <span class="label label-info" id="editDeviceName"></span> <!--img class="page-logo pull-right" src="Images/AddDevice.png" /-->
-        <span style="padding-right: 10px" class="form-inline pull-right clearfix">
+        <span class="form-inline pull-right clearfix">
             <small>
                 Instance:&nbsp;<select class="form-control" id="instanceName" data-bind="value: instanceName; valueAllowUnset: true" style="border: 0; width: 140px"></select>
             </small>
         </span>
     </h3>
     <form>
-        <table style="width: 95%">
+        <table style="width: 100%">
             <tr data-bind="visible: !editMode()">
                 <td class="input-label">
                     <label for="inputConfigFile">Connection File:</label>
@@ -2840,6 +2865,20 @@
                         <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym, disable: readOnly" required>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
                     </div>
+                        @if (userIsEditor)
+                        {
+                            <div class="input-group save-button pull-right">
+                                <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: working() || validationErrors() > 0 || !phasorHubIsConnected() || (!editMode() && isEmpty(configFrame().ConnectionString))">
+                                    <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="label label-danger label-md no-access pull-right" style="">
+                                User "@GetCurrentUserID()" does not have rights to add or modify device data.
+                            </div>
+                        }
                 </td>
             </tr>
             <tr>
@@ -2875,29 +2914,17 @@
 <div id="contentWell" class="well well-dynamic-content">
     <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
         <span id="configFrameDetails">Config Frame: <span data-bind="html: configFrameDetails"></span></span>
-        <div id="saveDataButton" class="pull-right" style="text-align: right">
-            @if (userIsEditor)
-            {
-                <text>
-                    <div class="input-group pull-right" style="margin-top: -4px">
-                        <form class="form-inline" style="padding-bottom: 4px">
-                            <div class="checkbox">
-                                <label><input type="checkbox" data-bind="checked: addAnalogs"> Add Analogs</label>
-                            </div>
-                            <div class="checkbox" style="padding-left: 5px;">
-                                <label><input type="checkbox" data-bind="checked: addDigitals"> Add Digitals</label>
-                            </div>
-                        </form>
-                        <button type="button" class="btn btn-sm btn-primary pull-right" id="saveData" data-bind="disable: working() || validationErrors() > 0 || !phasorHubIsConnected() || (!editMode() && isEmpty(configFrame().ConnectionString))">
-                            <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device
-                        </button>
+        <div class="pull-right" style="text-align: right">
+            <div class="input-group pull-right" style="margin-top: -4px">
+                <form class="form-inline" style="padding-bottom: 4px">
+                    <div class="checkbox">
+                        <label><input type="checkbox" data-bind="checked: addAnalogs"> Add Analogs</label>
                     </div>
-                </text>
-            }
-            else
-            {
-                <span class="label label-danger label-md">User "@GetCurrentUserID()" does not have rights to add or modify device data.</span>
-            }
+                    <div class="checkbox" style="padding-left: 5px;">
+                        <label><input type="checkbox" data-bind="checked: addDigitals"> Add Digitals</label>
+                    </div>
+                </form>
+            </div>
         </div>
         <span><br />Connection String: <span data-bind="text: configFrame().ConnectionString"></span></span>
         <em data-bind="visible: validationErrors() > 0">
@@ -2923,10 +2950,10 @@
                 </thead>
                 <tbody data-bind="foreach: { data: voltages }">
                     <!-- ko if: $index() > 0 && FirstVoltage && $parent.configFrame().Cells.length > 1 -->
-                    <tr id="voltageRow" style="visibility: hidden; border-bottom-width: 4px; border-bottom-style: solid; background-color: inherit">
+                    <tr id="voltageRow" class="separator-top">
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
-                    <tr id="voltageRow" style="visibility: hidden; background-color: inherit">
+                    <tr id="voltageRow" class="separator-bottom">
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
                     <!-- /ko -->
@@ -2991,10 +3018,10 @@
                 </thead>
                 <tbody data-bind="foreach: { data: currents }">
                     <!-- ko if: $index() > 0 && FirstCurrent && $parent.configFrame().Cells.length > 1 -->
-                    <tr id="currentRow" style="visibility: hidden; border-bottom-width: 4px; border-bottom-style: solid; background-color: inherit">
+                    <tr id="currentRow" class="separator-top">
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
-                    <tr id="currentRow" style="visibility: hidden; background-color: inherit">
+                    <tr id="currentRow" class="separator-bottom">
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
                     <!-- /ko -->
