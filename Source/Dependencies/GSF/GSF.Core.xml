@@ -32874,6 +32874,9 @@
             <param name="endTokenDelimiter">Character that identifies the end of a token.</param>
             <param name="startExpressionDelimiter">Character that identifies the beginning of an expression.</param>
             <param name="endExpressionDelimiter">Character that identifies the beginning of an expression.</param>
+            <exception cref="T:System.ArgumentException">
+            All delimiters must be unique -- or -- the symbol <c>'u'</c> is reserved for encoding and cannot be used as a delimiter.
+            </exception>
         </member>
         <member name="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression">
             <summary>
@@ -32885,7 +32888,7 @@
             Gets the reserved symbols - this includes all delimiters and expression operators.
             </summary>
             <remarks>
-            The default reserved symbol list is: \, &lt;, &gt;, =, !, {, }, [ and ]
+            The default reserved symbol list is: <c>'\', '&lt;', '&gt;', '=', '!', '{', '}', '[', ']'</c>.
             </remarks>
         </member>
         <member name="P:GSF.Parsing.TemplatedExpressionParser.StartTokenDelimiter">
@@ -32908,7 +32911,7 @@
             Gets the character that identifies the end of an expression.
             </summary>
         </member>
-        <member name="M:GSF.Parsing.TemplatedExpressionParser.Execute(System.Collections.Generic.IDictionary{System.String,System.String},System.Boolean,System.Boolean)">
+        <member name="M:GSF.Parsing.TemplatedExpressionParser.Execute(System.Collections.Generic.IDictionary{System.String,System.String},System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Executes replacements using provided <paramref name="substitutions"/> dictionary on the currently defined
             <see cref="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression"/> value and optionally evaluates any expressions.
@@ -32916,6 +32919,7 @@
             <param name="substitutions">Dictionary of substitutions. Dictionary keys are tokens to be replaced by the values.</param>
             <param name="ignoreCase">Determines if substitutions should be case insensitive. Defaults to <c>true</c>.</param>
             <param name="evaluateExpressions">Determines if expressions should be evaluated. Defaults to <c>true</c>.</param>
+            <param name="escapeSubstitutionValues">Determines if reserved symbols in substitution values should be automatically escaped. Defaults to <c>true</c>.</param>
             <returns>A string that was based on <see cref="P:GSF.Parsing.TemplatedExpressionParser.TemplatedExpression"/> with tokens replaced and expressions evaluated.</returns>
             <remarks>
             <para>
@@ -32943,6 +32947,11 @@
             the default type of a numeric literal is assumed to be <see cref="T:System.Int32"/>. String literals should be specified using single quotes
             instead of double quotes, this includes substitution parameters, e.g., <c>eval{'{DeviceAcronym}'.Length + 1}</c>. Advanced evaluation
             expressions using the eval function are always parsed after common expressions. Eval functions cannot be nested.
+            </para>
+            <para>
+            When <paramref name="evaluateExpressions"/> is <c>true</c> and values in <paramref name="substitutions"/> intentionally contain
+            expressions to be evaluated, then <paramref name="escapeSubstitutionValues"/> should be set to <c>false</c> so that the reserved
+            symbols in the values are not automatically escaped.
             </para>
             </remarks>
         </member>
