@@ -482,6 +482,7 @@
 
         function DeviceViewModel() {
             const self = this;
+            const defaultDeviceAcronym = "DEVICEACRONYM";
 
             // Observable fields
             self.voltages = ko.observableArray();
@@ -496,7 +497,7 @@
 
             // Internal fields
             self._addTagsAsVirtualPoints = ko.observable(undefined);
-            self._deviceAcronym = ko.observable("DEVICEACRONYM");
+            self._deviceAcronym = ko.observable(defaultDeviceAcronym);
             self._deviceName = ko.observable("Device Name");
             self._instanceName = ko.observable("");
             self._templateType = ko.observable("");
@@ -707,14 +708,16 @@
                     return 0;
                 });
 
-                let deviceAcronym = configFrame.IDLabel;
+                if (isEmpty(self.deviceAcronym()) || self.deviceAcronym() === defaultDeviceAcronym) {
+                    let deviceAcronym = configFrame.IDLabel;
 
-                if (isEmpty(deviceAcronym) && !isEmpty(configFrame.StationName))
-                    deviceAcronym = getCleanAcronym(configFrame.StationName.toUpperCase().replaceAll(" ", "_"));
-                else
-                    deviceAcronym = "DEVICEACRONYM";
+                    if (isEmpty(deviceAcronym) && !isEmpty(configFrame.StationName))
+                        deviceAcronym = getCleanAcronym(configFrame.StationName.toUpperCase().replaceAll(" ", "_"));
+                    else
+                        deviceAcronym = defaultDeviceAcronym;
 
-                self.deviceAcronym(deviceAcronym);
+                    self.deviceAcronym(deviceAcronym);
+                }
 
                 if (!isEmpty(configFrame.StationName))
                     self.deviceName(configFrame.StationName);
@@ -914,7 +917,7 @@
                 voltage.FirstVoltage = firstVoltage;
                 voltage.Enabled = ko.observable(true);
                 voltage.TagName = updateTagName(function () {
-                    return phasorHub.createPhasorPointTag(self.deviceAcronym(), vphmSignalType.Acronym, voltage.Label(), voltage.Phase(), phasorDefinition.SourceIndex, voltage.NominalVoltage());
+                    return phasorHub.createPhasorPointTag(voltage.Device.IDLabel(), vphmSignalType.Acronym, voltage.Label(), voltage.Phase(), phasorDefinition.SourceIndex, voltage.NominalVoltage());
                 }, voltage);
 
                 voltage.Label.extend({ required: true });
@@ -999,7 +1002,7 @@
                 });
 
                 current.TagName = updateTagName(function () {
-                    return phasorHub.createPhasorPointTag(self.deviceAcronym(), iphmSignalType.Acronym, current.Label(), current.Phase(), phasorDefinition.SourceIndex, current.AssociatedVoltage());
+                    return phasorHub.createPhasorPointTag(current.Device.IDLabel(), iphmSignalType.Acronym, current.Label(), current.Phase(), phasorDefinition.SourceIndex, current.AssociatedVoltage());
                 }, current);
 
                 current.DeviceVoltages = ko.pureComputed({
@@ -1075,7 +1078,7 @@
         }
 
         function getCleanAcronym(acronym) {
-            // Remove any invalid characters from acronym - @@ is razor escaped single "at" symbol:
+            // Remove any invalid characters from acronym - @@ is Razor escaped single "at" symbol:
             return acronym.replace(/[^A-Z0-9\-!_\.@@#\$]/gi, "");
         }
 
@@ -2597,6 +2600,7 @@
 
             phasorHub.queryDeviceByID(id).done(function (device) {
                 $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
+                viewModel.deviceAcronym(device.Acronym);
             })
             .fail(function (error) {
                 showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
@@ -2958,7 +2962,7 @@
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
                     <!-- /ko -->
-                    <tr id="voltageRow" style="visibility: hidden" @*data-bind="css: { 'top-border': FirstVoltage }"*@>
+                    <tr id="voltageRow" style="visibility: hidden">
                         <!-- ko if: !FirstVoltage && $parent.configFrame().Cells.length > 1 -->
                         <td width="190px" class="text-left" style="padding-right: 20px">
                             <div class="input-group"></div>
@@ -3026,7 +3030,7 @@
                         <td colspan="4" style="padding: 2px"></td>
                     </tr>
                     <!-- /ko -->
-                    <tr id="currentRow" style="visibility: hidden" @*data-bind="css: { 'top-border': FirstCurrent }"*@>
+                    <tr id="currentRow" style="visibility: hidden">
                         <!-- ko if: !FirstCurrent && $parent.configFrame().Cells.length > 1 -->
                         <td width="190px" class="text-left" style="padding-right: 20px">
                             <div class="input-group"></div>
