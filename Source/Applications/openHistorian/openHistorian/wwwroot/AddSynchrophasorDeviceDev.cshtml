@@ -1075,7 +1075,7 @@
         }
 
         function getCleanAcronym(acronym) {
-            // Remove any invalid characters from acronym - @@ is escaped single at symbol:
+            // Remove any invalid characters from acronym - @@ is razor escaped single "at" symbol:
             return acronym.replace(/[^A-Z0-9\-!_\.@@#\$]/gi, "");
         }
 
@@ -1934,7 +1934,7 @@
                     const phase = phasorDefinition.Phase().toUpperCase();
 
                     if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
-                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage() * 1000; // Convert to kV
+                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage() * 1000; // Convert from kV
                         const nominalVoltage3 = nominalVoltage / 1.7320508075688772;
 
                         if (!phasorDefinition.hasOwnProperty("vphmMeasurement") || !phasorDefinition.hasOwnProperty("vphaMeasurement"))
@@ -2968,7 +2968,7 @@
                         <td width="190px" class="text-left" style="padding-right: 20px">
                             <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
-                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
+                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device.IDLabel, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
@@ -3036,7 +3036,7 @@
                         <td width="190px" class="text-left" style="padding-right: 20px">
                             <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                             <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Device.IDLabel, true), 'has-feedback': !fieldIsValid(Device.IDLabel, true) }">
-                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
+                                <input type="text" class="form-control" style="width: 180px" data-bind="acronym: Device.IDLabel, textInput: Device.IDLabel, disable: $parent.readOnly() || !$data.Enabled()" required>
                                 <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(Device.IDLabel, true)"></span>
                             </div>
                         </td>
