@@ -74,6 +74,8 @@
     bool userIsEditor = UserIsEditor();
 }
 @section StyleSheets {
+    <link href="@Resources.Root/Shared/Content/select2.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/select2-bootstrap.css" rel="stylesheet">
     <style>
 
         html, body {
@@ -113,6 +115,11 @@
             white-space: nowrap;
             color: darkslategray;
             -webkit-text-stroke-width: thin;
+        }
+
+        span.sub-text {
+            font-size: x-small;
+            vertical-align: baseline;
         }
 
         div.save-button {
@@ -279,6 +286,8 @@
     <script src="@Resources.Root/Shared/Scripts/knockout.validation.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout.reactor.js"></script>
     <script src="@Resources.Root/Shared/Scripts/gsf.web.knockout.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/select2.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/knockout-select2.js"></script>
     <script>
         "use script";
 
@@ -478,6 +487,27 @@
             });
 
             return result;
+        }
+
+        function associatedVoltageLabel(voltage) {
+            if (isEmpty(voltage.Label()) || voltage.Label() === voltage.OriginalLabel)
+                return voltage.Label();
+
+            return voltage.Label() + "~" + voltage.OriginalLabel;
+        }
+
+        function formatAssociatedVoltageLabel(state) {
+            let parts = state.text.split("~");
+            let label = parts[0];
+            let orgLabel = parts.length > 1 ? parts[1] : undefined;
+
+            if (isEmpty(orgLabel) || label === orgLabel) {
+                let $state = $("<span>" + state.text + "</span>");
+                return $state;
+            }
+
+            let $state = $("<span>" + label + " <span class='sub-text'>(" + orgLabel + ")</span></span>");
+            return $state;
         }
 
         function DeviceViewModel() {
@@ -1001,10 +1031,6 @@
                     owner: current
                 });
 
-                current.TagName = updateTagName(function () {
-                    return phasorHub.createPhasorPointTag(current.Device.IDLabel(), iphmSignalType.Acronym, current.Label(), current.Phase(), phasorDefinition.SourceIndex, current.AssociatedVoltage());
-                }, current);
-
                 current.DeviceVoltages = ko.pureComputed({
                     read: function () {
                         const allVoltages = self.voltages();
@@ -1032,6 +1058,22 @@
                     },
                     owner: current
                 });
+
+                current.AssociatedNominalVoltage = ko.pureComputed({
+                    read: function () {
+                        const voltage = lookupAssociatedVoltage(current.Device, current.AssociatedVoltage());
+
+                        if (voltage)
+                            return voltage.Voltage.NominalVoltage();
+
+                        return 0;
+                    },
+                    owner: current
+                });
+
+                current.TagName = updateTagName(function () {
+                    return phasorHub.createPhasorPointTag(current.Device.IDLabel(), iphmSignalType.Acronym, current.Label(), current.Phase(), phasorDefinition.SourceIndex, current.AssociatedNominalVoltage());
+                }, current);
 
                 current.Label.extend({ required: true });
                 current.Phase.extend({
@@ -1132,10 +1174,7 @@
                     baseKV = phasorDefinition.Voltage.NominalVoltage();
                 }
                 else if (phasorDefinition.Current) {
-                    const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
-
-                    if (voltage)
-                        baseKV = voltage.Voltage.NominalVoltage();
+                    baseKV = phasorDefinition.Current.AssociatedNominalVoltage();
                 }
 
                 // Create point tag using system defined naming convention
@@ -1383,19 +1422,13 @@
 
                     for (let i = 0; i < currents.length; i++) {
                         const current = currents[i];
-                        const associatedVoltage = current.Current.AssociatedVoltage();
-                        const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
-                        let baseKV = 0;
-
-                        if (voltage)
-                            baseKV = voltage.Voltage.NominalVoltage();
 
                         promises.push(phasorHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
                             phasor.DeviceID = cell.ID;
                             phasor.Label = current.Label();
                             phasor.Type = "I";
                             phasor.Phase = current.Phase();
-                            phasor.BaseKV = baseKV;
+                            phasor.BaseKV = current.Current.AssociatedNominalVoltage();
                             phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
                             phasor.SourceIndex = current.SourceIndex;
 
@@ -3065,7 +3098,7 @@
                         </td>
                         <td class="text-left">
                             <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
-                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: '', value: AssociatedVoltage, optionsText: 'Label', optionsValue: 'ID', valueAllowUnset: true, enable: Enabled"></select>
+                            <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: 'None', value: AssociatedVoltage, optionsText: associatedVoltageLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
                         </td>
                     </tr>
                 </tbody>
