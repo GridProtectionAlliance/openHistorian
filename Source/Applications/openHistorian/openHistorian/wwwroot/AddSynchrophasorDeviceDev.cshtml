@@ -470,19 +470,20 @@
             return -1;
         }
 
-        function delayedPromise(timeout) {
-            const $d = $.Deferred();
-            setTimeout(function () { $d.resolve(); }, timeout || 0);
-            return  $d.promise();
-        }
-
         function updateTagName(evaluator, owner) {
             let result = ko.observable();
 
             ko.computed(function () {
                 evaluator.call(owner).done(function (tagName) {
-                    if (!isEmpty(tagName) && tagName.length > 4)
-                        result(tagName.substring(0, tagName.length - 4));
+                    if (!isEmpty(tagName)) {
+                        if (tagName.length > 4)
+                            result(tagName.substring(0, tagName.length - 4) + " (:MAG/:ANG)");
+                        else
+                            result(tagName);
+                    }
+                    else {
+                        result(tagName);
+                    }    
                 });
             });
 
@@ -529,6 +530,8 @@
             self._addTagsAsVirtualPoints = ko.observable(undefined);
             self._deviceAcronym = ko.observable(defaultDeviceAcronym);
             self._deviceName = ko.observable("Device Name");
+            self._longitude = ko.observable(0.0);
+            self._latitude = ko.observable(0.0);
             self._instanceName = ko.observable("");
             self._templateType = ko.observable("");
             self._historianID = ko.observable(-1);
@@ -589,6 +592,34 @@
                     else {
                         self._deviceName(value);
                     }
+                },
+                owner: self
+            });
+
+            self.longitude = ko.pureComputed({
+                read: self._longitude,
+                write: function (value) {
+                    if (value === self._longitude())
+                        return;
+
+                    if (isNumber(value))
+                        self._longitude(parseFloat(value));
+                    else
+                        self._longitude(0.0);
+                },
+                owner: self
+            });
+
+            self.latitude = ko.pureComputed({
+                read: self._latitude,
+                write: function (value) {
+                    if (value === self._latitude())
+                        return;
+
+                    if (isNumber(value))
+                        self._latitude(parseFloat(value));
+                    else
+                        self._latitude(0.0);
                 },
                 owner: self
             });
@@ -1110,6 +1141,16 @@
 
             self.deviceName.extend({
                 required: true
+            });
+
+            self.longitude.extend({
+                required: false,
+                number: true
+            });
+
+            self.latitude.extend({
+                required: false,
+                number: true
             });
 
             self.validationErrors = ko.pureComputed(function () {
@@ -2555,6 +2596,8 @@
 
                 device.Acronym = viewModel.deviceAcronym();
                 device.Name = viewModel.deviceName();
+                device.Longitude = viewModel.longitude();
+                device.Latitude = viewModel.latitude();
                 device.HistorianID = viewModel.historianID();
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
@@ -2569,8 +2612,6 @@
 
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
-                //device.Longitude = viewModel.longitude();
-                //device.Latitude = viewModel.latitude();
                 device.Enabled = true;
 
                 // Check if this is a new device or an edit to an existing one
@@ -2634,6 +2675,8 @@
             phasorHub.queryDeviceByID(id).done(function (device) {
                 $("#editDeviceName").html("Editing&nbsp;" + device.Acronym);
                 viewModel.deviceAcronym(device.Acronym);
+                viewModel.longitude(device.Longitude);
+                viewModel.latitude(device.Latitude);
             })
             .fail(function (error) {
                 showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
@@ -2928,6 +2971,31 @@
                         <input id="inputDeviceName" type="text" class="form-control" style="width: 250px" data-bind="textInput: deviceName, disable: readOnly" required>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="input-label">
+                    <label for="longitude">Longitude:</label>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input class="form-control" id="longitude" type="number" style="width: 90px" data-bind="textInput: longitude">
+                                </div>
+                            </td>
+                            <td class="input-label" style="width: 10px; padding-right: 4px">
+                                <label for="latitude">Latitude:</label>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input class="form-control" id="latitude" type="number" style="width: 90px" data-bind="textInput: latitude">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
                 </td>
             </tr>
             <tr>
