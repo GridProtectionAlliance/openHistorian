@@ -100,8 +100,8 @@ namespace openHistorian.Adapters
         private bool m_writting;
         private CancellationTokenSource m_cancelation;
         //These are for the Progressbar
-        private DateTime startTime;
-        private TimeSpan totalTime;
+        private DateTime endTime;
+        private double totalTime;
         private double PercentComplete;
 
         #endregion
@@ -199,6 +199,8 @@ namespace openHistorian.Adapters
 
         private void UpdatePercentage(ulong current)
         {
+            this.PercentComplete = ((1.0D - new Ticks(this.endTime.Ticks - (long)current).ToSeconds() / this.totalTime) * 100.0D);
+
             //lastTimestamp = new DateTime((long)currentTimestamp);
         }
 
@@ -214,10 +216,10 @@ namespace openHistorian.Adapters
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int numberOfRecords, DataContext dataContext)
         {
-            this.startTime = startDate;
+            this.endTime = startDate;
             this.PercentComplete = 0;
-            this.totalTime = endDate - startDate;
-            
+            this.totalTime = (endDate - startDate).TotalSeconds;
+
 
             if (this.m_writting)
                 this.m_cancelation.Cancel();
@@ -292,7 +294,8 @@ namespace openHistorian.Adapters
                         return;
                     }
 
-                    List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token).ToList();
+                    Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
+                    List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
 
                     if (token.IsCancellationRequested)
                     {
@@ -454,7 +457,9 @@ namespace openHistorian.Adapters
                 }
                 try
                 {
-                    historiandata = this.historianOperations.ReadCondensed(start, end, all, double.MaxValue, cancelationToken).ToList();
+                    Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
+
+                    historiandata = this.historianOperations.ReadCondensed(start, end, all, double.MaxValue, cancelationToken, progress).ToList();
                 }
                 catch
                 {
