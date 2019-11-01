@@ -2095,6 +2095,200 @@
             <param name="seriesValueTypeID">The GUID tag which identifies the series value type.</param>
             <returns>The name of the given series value type.</returns>
         </member>
+        <member name="T:GSF.PQDIF.Logical.DisturbanceCategory">
+            <summary>
+            Disturbance Categories (as defined in IEEE 1159).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.None">
+            <summary>
+            The ID for no distrubance or undefined.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.Transient">
+            <summary>
+            The ID for a IEEE 1159 Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_nano">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with nanosecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_micro">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with microsecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_mili">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with milisecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient">
+            <summary>
+            The ID for a IEEE 1159 Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_low">
+            <summary>
+            The ID for a IEEE 1159 Low Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_medium">
+            <summary>
+            The ID for a IEEE 1159 Medium Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_high">
+            <summary>
+            The ID for a IEEE 1159 High Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation
+            </summary>n
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Instantaneous">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_InstantaneousSag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_InstantaneousSwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Momentary">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentaryInterruption">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentarySag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentarySwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Temporary">
+            <summary>
+            The ID for a IEEE 1159Short Duration RMS Variation - Temporary Duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporaryInterruption">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporarySag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporarySwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration">
+            <summary>
+            The ID for a IEEE 1159  Long Duration RMS Variation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_Interrruption">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_UnderVoltage">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Undervoltage.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_OverVoltage">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Overvoltage.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.Imbalance">
+            <summary>
+            The ID for a IEEE 1159 Imbalance.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.PowerFrequencyVariation">
+            <summary>
+            The ID for a IEEE 1159 Power Frequency Variation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.VoltageFuctuation">
+            <summary>
+            The ID for a IEEE 1159 Voltage Fluctuation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformDistortion">
+            <summary>
+            The ID for a IEEE 1159 Waveform Distortion.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.DCoffset">
+            <summary>
+            The ID for a IEEE 1159 DC offset of voltage or current waveform.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformHarmonics">
+            <summary>
+            The ID for a IEEE 1159 Waveform Harmonics Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformInterHarmonics">
+            <summary>
+            The ID for a IEEE 1159 Waveform Interharmonics Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformNotching">
+            <summary>
+            The ID for a IEEE 1159 Waveform Notching Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformNoise">
+            <summary>
+            The ID for a IEEE 1159 Waveform Noise Present.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DisturbanceCategory.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the Disturbance identified by the given ID.
+            </summary>
+            <param name="disturbanceCategoryID">Globally unique identifier for the Disturbance Category.</param>
+            <returns>The information about the vendor.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DisturbanceCategory.ToString(System.Guid)">
+            <summary>
+            Converts the given Disturbance ID to a string containing the name of the Disturbance.
+            </summary>
+            <param name="disturbanceCategoryID">The ID of the Disturbance to be converted to a string.</param>
+            <returns>A string containing the name of the Disturbance Category with the given ID.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.Vendor">
             <summary>
             Vendors for power quality hardware.
@@ -2470,6 +2664,16 @@
             Gets or sets the name of the data source.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceOwner">
+            <summary>
+            Gets or sets the name of the data source Owner.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceLocation">
+            <summary>
+            Gets or sets the name of the data source Location.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Longitude">
             <summary>
             Gets or sets the longitude at which the data source is located.
@@ -2526,6 +2730,16 @@
         <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceNameTag">
             <summary>
             Tag that identifies the data source name.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceOwnerTag">
+            <summary>
+            Tag that identifies the data source owner.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceLocationTag">
+            <summary>
+            Tag that identifies the data source owner.
             </summary>
         </member>
         <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceCoordinatesTag">
@@ -2593,6 +2807,12 @@
             <summary>
             Gets the container record from the PQDIF file. This is
             parsed as soon as the parser is <see cref="M:GSF.PQDIF.Logical.LogicalParser.Open"/>ed.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.LogicalParser.DataSourceRecords">
+            <summary>
+            Gets a list of all DataSource records from the PQDIF file. This is
+            parsed when passing throug the observation records <see cref="M:GSF.PQDIF.Logical.LogicalParser.NextObservationRecord"/>ed.
             </summary>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.Open">
@@ -2845,6 +3065,11 @@
             Gets the time the observation was triggered.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.DisturbanceCategoryID">
+            <summary>
+            Gets or sets the Disturbance Category ID
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.ChannelTriggerIndex">
             <summary>
             Gets or sets the index into <see cref="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag"/> collection within this record which initiated the observation.
@@ -2905,6 +3130,11 @@
         <member name="F:GSF.PQDIF.Logical.ObservationRecord.OneChannelInstanceTag">
             <summary>
             Tag that identifies a single channel instance in the collection.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.DisturbanceCategoryTag">
+            <summary>
+            Tag that identifies the Disturbance Category.
             </summary>
         </member>
         <member name="M:GSF.PQDIF.Logical.ObservationRecord.CreateObservationRecord(GSF.PQDIF.Logical.DataSourceRecord,GSF.PQDIF.Logical.MonitorSettingsRecord)">
