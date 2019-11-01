@@ -197,9 +197,9 @@ namespace openHistorian.Adapters
             return this.historianOperations.GetInstanceNames();
         }
 
-        private void UpdatePercentage(DateTime current)
+        private void UpdatePercentage(ulong current)
         {
-
+            //lastTimestamp = new DateTime((long)currentTimestamp);
         }
 
 

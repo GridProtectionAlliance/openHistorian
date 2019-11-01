@@ -448,7 +448,8 @@ namespace openHistorian.Adapters
         /// <param name="measurements">Measurements to be read.</param>
         /// <param name="threshold">Threshhold used to determine number of alerts.</param>   
         /// <param name="cancelationToken">Cancleation Token for the operation.</param>  
-        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, System.Threading.CancellationToken cancelationToken)
+        /// <param name="progress"> Progress Tracker <see cref="IProgress{T}"/>.</param>  
+        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, System.Threading.CancellationToken cancelationToken, IProgress<ulong> progress)
         {
             List<CondensedDataPoint> result = new List<CondensedDataPoint>(measurements.Count());
 
@@ -473,12 +474,21 @@ namespace openHistorian.Adapters
                 {
                     DataPoint point = new DataPoint();
 
+                    // this.mProgress.Report(this.m_prevProgress);
+
                     // Scan to first record
                     if (!reader.ReadNext(point))
                         throw new InvalidOperationException("No data for specified time range in openHistorian connection!");
 
+                    ulong currentTimeStamp = point.Timestamp;
+
                     while (reader.ReadNext(point))
                     {
+                        if (currentTimeStamp < point.Timestamp)
+                        {
+                            progress.Report(point.Timestamp);
+                        }
+
                         if (cancelationToken.IsCancellationRequested)
                         {
                             return result;
@@ -499,6 +509,8 @@ namespace openHistorian.Adapters
                                 frameRateResult[point.PointID].alert++;
                             }
                         }
+
+                        currentTimeStamp = point.Timestamp;
                     }
                 }
 
