@@ -182,6 +182,14 @@ namespace openHistorian
         }
 
         /// <summary>
+        /// Gets Progress of Setting Current Reporting Source.
+        /// </summary>
+        public double SetReportingSourceProgress()
+        {
+            return this.m_reportOperations.GetReportProgress();
+        }
+
+        /// <summary>
         /// Set selected Report instance name.
         /// </summary>
         /// <param name="instanceName">Instance name that is selected by user.</param>

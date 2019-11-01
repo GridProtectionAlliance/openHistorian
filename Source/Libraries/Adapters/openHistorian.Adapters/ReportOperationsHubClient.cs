@@ -189,6 +189,15 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets Progress of current Report.
+        /// </summary>
+        /// <returns>Selected Historian instance name.</returns>
+        public double GetReportProgress()
+        {
+            return this.PercentComplete;
+        }
+
+        /// <summary>
         /// Gets loaded historian adapter instance names.
         /// </summary>
         /// <returns>Historian adapter instance names.</returns>
@@ -200,8 +209,6 @@ namespace openHistorian.Adapters
         private void UpdatePercentage(ulong current)
         {
             this.PercentComplete = ((1.0D - new Ticks(this.endTime.Ticks - (long)current).ToSeconds() / this.totalTime) * 100.0D);
-
-            //lastTimestamp = new DateTime((long)currentTimestamp);
         }
 
 
