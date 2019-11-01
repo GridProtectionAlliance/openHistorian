@@ -447,7 +447,8 @@ namespace openHistorian.Adapters
         /// <param name="end">EndTime.</param>
         /// <param name="measurements">Measurements to be read.</param>
         /// <param name="threshold">Threshhold used to determine number of alerts.</param>   
-        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold)
+        /// <param name="cancelationToken">Cancleation Token for the operation.</param>  
+        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, System.Threading.CancellationToken cancelationToken)
         {
             List<CondensedDataPoint> result = new List<CondensedDataPoint>(measurements.Count());
 
@@ -462,6 +463,10 @@ namespace openHistorian.Adapters
                 foreach (ulong key in pointIDs)
                 {
                     frameRateResult.Add(key,CondensedDataPoint.EmptyPoint(key));
+                    if (cancelationToken.IsCancellationRequested)
+                    {
+                        return result;
+                    }
                 }
 
                 using (ReportHistorianReader reader = new ReportHistorianReader(server, this.m_instance, start, end, framerate, pointIDs))
@@ -474,6 +479,10 @@ namespace openHistorian.Adapters
 
                     while (reader.ReadNext(point))
                     {
+                        if (cancelationToken.IsCancellationRequested)
+                        {
+                            return result;
+                        }
 
                         if (!Single.IsNaN(point.ValueAsSingle))
                         {
@@ -494,6 +503,11 @@ namespace openHistorian.Adapters
                 }
 
                 result.AddRange(frameRateResult.Where(item => item.Value.totalPoints > 0).Select(item => { item.Value.PointID = item.Key; return item.Value; }));
+
+                if (cancelationToken.IsCancellationRequested)
+                {
+                    return result;
+                }
             }
             
 
