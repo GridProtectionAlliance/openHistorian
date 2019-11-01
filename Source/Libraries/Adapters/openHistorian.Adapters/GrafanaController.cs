@@ -260,6 +260,42 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Queries openHistorian Location Data for Grafana.
+        /// </summary>
+        /// <param name="request"> Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public virtual Task<string> GetLocationData(List<Target> request, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                DataTable table = new DataTable();
+
+                foreach (Target target in request)
+                {
+                    DataTable tmptable = new DataTable();
+
+                    if (string.IsNullOrWhiteSpace(target.target))
+                        return string.Empty;
+
+                    DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{target.target}'") ?? new DataRow[0];
+
+                    if (rows.Length > 0)
+                    {
+                        tmptable = rows.CopyToDataTable();
+                        table.Merge(tmptable);
+                    }
+                }
+
+                return JsonConvert.SerializeObject(table);
+            },
+            cancellationToken);
+        }
+
+
+
+        /// <summary>
         /// Search openHistorian for a target.
         /// </summary>
         /// <param name="request">Search target.</param>

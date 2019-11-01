@@ -6,20 +6,35 @@
    <Modules>
     <Module Name="gsf.core.dll">
      <Namespaces>
+      <Namespace Name="GSF">
+       <Types>
+        <Type Name="Common" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#IsNumericType`1()" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Active" Created="2019-10-31 17:50:44Z" FixCategory="Breaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core.Shared" File="Common.cs" Line="527">Consider a design where 'Common.IsNumericType&lt;T&gt;()' doesn't require explicit type parameter 'T' in any call to it.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
       <Namespace Name="GSF.Text">
        <Types>
         <Type Name="DiffMatchPatch" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Members>
           <Member Name="#DiffBisect(System.String,System.String,System.DateTime)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="NonBreaking">
+            <Message TypeName="AvoidExcessiveComplexity" Category="Microsoft.Maintainability" CheckId="CA1502" Status="Active" Created="2019-10-31 17:50:44Z" FixCategory="NonBreaking">
              <Issue Certainty="90" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="DiffMatchPatch.cs" Line="397">'DiffMatchPatch.DiffBisect(string, string, DateTime)' has a cyclomatic complexity of 32. Rewrite or refactor the method to reduce complexity to 25.</Issue>
             </Message>
            </Messages>
           </Member>
           <Member Name="#EncodeURI(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="UriReturnValuesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1055" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="Breaking">
+            <Message TypeName="UriReturnValuesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1055" Status="Active" Created="2019-10-31 17:50:44Z" FixCategory="Breaking">
              <Issue Certainty="60" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="DiffMatchPatch.cs" Line="2619">Change the return type of 'DiffMatchPatch.EncodeURI(string)' from string to System.Uri.</Issue>
             </Message>
            </Messages>
@@ -30,7 +45,7 @@
          <Members>
           <Member Name="#Diffs" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227" Status="Active" Created="2019-10-03 04:00:42Z" FixCategory="Breaking">
+            <Message TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227" Status="Active" Created="2019-10-31 17:50:44Z" FixCategory="Breaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Core\Text" File="Patch.cs" Line="60">Change 'Patch.Diffs' to be read-only by removing the property setter.</Issue>
             </Message>
            </Messages>
@@ -64,6 +79,16 @@
    <Email>[none]</Email>
    <MessageLevel Certainty="75">Warning</MessageLevel>
    <File Name="usagerules.dll" Version="15.0.0.0" />
+  </Rule>
+  <Rule TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004">
+   <Name>Generic methods should provide type parameter</Name>
+   <Description>Methods where the type parameter cannot be inferred from the parameters and therefore has to be defined in the method call are too difficult to understand. Methods with a formal parameter typed as the generic method type parameter support inference. Methods with no formal parameter typed as the generic method type parameter don't support inference.</Description>
+   <Resolution Name="Default">Consider a design where {0} doesn't require explicit type parameter {1} in any call to it.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182150.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="designrules.dll" Version="15.0.0.0" />
   </Rule>
   <Rule TypeName="UriReturnValuesShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1055">
    <Name>URI return values should not be strings</Name>
