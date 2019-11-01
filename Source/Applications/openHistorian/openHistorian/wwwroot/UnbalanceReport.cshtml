@@ -1,0 +1,546 @@
+﻿@*******************************************************************************************************
+    //  UnbalanceReport.cshtml - Gbtc
+    //
+    //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
+    //
+    //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+    //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+    //  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+    //  file except in compliance with the License. You may obtain a copy of the License at:
+    //
+    //      http://opensource.org/licenses/MIT
+    //
+    //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+    //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+    //  License for the specific language governing permissions and limitations.
+    //
+    //  Code Modification History:
+    //  ----------------------------------------------------------------------------------------------------
+    //  10/08/2019 - Christoph Lackner
+    //       Generated original version of source code.
+    //
+    //*****************************************************************************************************@
+@using System
+@using System.Globalization
+@using System.Threading
+@using System.Text
+@using GSF
+@using GSF.Data
+@using GSF.Identity
+@using GSF.IO
+@using GSF.Security
+@using GSF.Security.Cryptography
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@using openHistorian.Model
+@using openHistorian
+@using AssemblyInfo = GSF.Reflection.AssemblyInfo
+@inherits ExtendedTemplateBase<AppModel>
+@section StyleSheets {
+    <link href="@Resources.Root/Shared/Content/jquery-ui.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/primeui-theme.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/font-awesome.css" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/primeui.css" rel="stylesheet">
+    <link href="Content/bootstrap-datetimepicker.css" rel="stylesheet">
+
+    <style>
+        /* Auto font resize CSS for system health window - targeting fixed 80 char width without wrap and
+           allowing for responsive screen rearrangement when window is col-**-8 and on the right */
+        @@media screen {
+            .performance-statistics {
+                font-size: 5.25px;
+            }
+        }
+
+        @@media screen and (min-width: 430px) {
+            .performance-statistics {
+                font-size: 7px;
+            }
+        }
+
+        @@media screen and (min-width: 470px) {
+            .performance-statistics {
+                font-size: 8px;
+            }
+        }
+
+        @@media screen and (min-width: 515px) {
+            .performance-statistics {
+                font-size: 9px;
+            }
+        }
+
+        @@media screen and (min-width: 550px) {
+            .performance-statistics {
+                font-size: 10px;
+            }
+        }
+
+        @@media screen and (min-width: 600px) {
+            .performance-statistics {
+                font-size: 11px;
+            }
+        }
+
+        @@media screen and (min-width: 635px) {
+            .performance-statistics {
+                font-size: 12px;
+            }
+        }
+
+        @@media screen and (min-width: 685px) {
+            .performance-statistics {
+                font-size: 13px;
+            }
+        }
+
+        @@media screen and (min-width: 725px) {
+            .performance-statistics {
+                font-size: 14px;
+            }
+        }
+
+        @@media screen and (min-width: 768px) {
+            .performance-statistics {
+                font-size: 8px;
+            }
+        }
+
+        @@media screen and (min-width: 992px) {
+            .performance-statistics {
+                font-size: 12px;
+            }
+        }
+
+        @@media screen and (min-width: 1200px) {
+            .performance-statistics {
+                font-size: 14px;
+            }
+        }
+
+        .badge-fixed {
+            display: inline-block;
+            width: 150px;
+        }
+
+        #userInfoButton {
+            height: 0px;
+            margin-top: -22px;
+            color: inherit;
+            text-decoration: underline;
+            outline-style: none;
+        }
+    </style>
+}
+
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Unbalance and SNR Report";
+
+    DataContext dataContext = ViewBag.DataContext;
+    StringBuilder PageControlScripts = ViewBag.PageControlScripts;
+    if (PageControlScripts == null)
+    {
+        ViewBag.PageControlScripts = new StringBuilder();
+        PageControlScripts = ViewBag.PageControlScripts;
+    }
+
+    ViewBag.HideAddNewButton = true;
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.HeaderColumns = new[]
+       {   //    { "Field", "Label", "Classes" }
+        new[] { "OriginalTag", "Tag&nbsp;Name", "text-left" },
+        new[] { "NumberOfAlarms", "#&nbsp;of&nbsp;Alarms", "text-center" },
+        new[] { "TimeInAlarm", "Time &nbsp;in&nbsp;Alarm", "text-center" },
+        new[] { "PercentAlarms" , "Percent &nbsp;in&nbsp;Alarm", "text-center" },
+        new[] { "Mean" , "Mean", "text-center" },
+        new[] { "StandardDeviation" , "Standard &nbsp;Dev.", "text-center" },
+        new[] { "Max" , "Maximum", "text-center" },
+        new[] { "Min" , "Minimum", "text-center" },
+        };
+
+    // Prepend view model extension scripts to occur before model initialization
+    PageControlScripts.Insert(0, ExtendedViewModel(dataContext).ToString().TrimStart()); ;
+
+}
+    @helper BodyRows()
+    {
+    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag, click: $parent.viewPageRecord"></button></div></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: secondstoInterval(TimeInAlarm)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
+    <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
+    <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
+    <td width="5%" class="text-left valign-middle"><span data-bind="text: Max.toFixed(2)"></span></td>
+    <td width="5%" class="text-left valign-middle"><span data-bind="text: Min.toFixed(2)"></span></td>  
+}
+
+@section Scripts {
+    <script>
+        "use strict";
+
+        const LocalTimeFormat = DateFormat + " hh:mm:ss.fff";
+
+        @Raw(dataContext.RenderViewModelConfiguration<ReportMeasurements, DataHub>(ViewBag, "PointTag"))
+
+        viewModel.updateReport(function () {
+            return dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment() );
+        });
+
+        
+        function updateData() {
+            var reportType = "";
+
+            if (viewModel.selectedUnbalance() == 0) {
+                reportType = "SNR";
+            }
+            else if (viewModel.selectedUnbalance() == 1) {
+                reportType = "Current Unbalance";
+            }
+            else if (viewModel.selectedUnbalance() == 2) {
+                reportType = "Voltage Unbalance";
+            }
+            viewModel.ReportTitle("Worst 25 " + reportType + " Report");
+
+            dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment()).done(function (result) {
+                if (viewModel.worstBy() == 0) {
+                    viewModel.updateSortOrder("Mean", false);
+                }
+                else if (viewModel.worstBy() == 1) {
+                    viewModel.updateSortOrder("Max", false);
+                }
+                if (viewModel.worstBy() == 2) {
+                    viewModel.updateSortOrder("TimeinAlarm", false);
+                }
+            });
+            
+            
+
+        }
+
+
+
+
+    </script>
+}
+@functions {
+
+}
+
+@helper HistorianInstanceSelect()
+{
+    @* Make sure to use single quotes in this function: *@
+    <form class='form-inline pull-right clearfix' role='form'>
+        <small>
+            Instance:&nbsp;<select disabled class='form-control' id='instanceName' data-bind='value: instanceName; valueAllowUnset: false' style='border: 0; width: 80px'></select>&nbsp;&nbsp;&nbsp;&nbsp;
+        </small>
+    </form>
+}
+
+@helper ExtendedViewModel(DataContext dataContext)
+{
+    <script src="@Resources.Root/Shared/Scripts/moment.js"></script>
+    <script src="Scripts/bootstrap-datetimepicker.js"></script>
+    <script src="Scripts/dateFormat.js"></script>
+    <script>
+        const MomentDateTimeFormat = dateFormat.convert(DateTimeFormat, dateFormat.dotnet, dateFormat.moment);
+
+        const SubsecondDigits = function () {
+            const dotIndex = DateTimeFormat.indexOf(".");
+
+            if (dotIndex < 0 || dotIndex === DateTimeFormat.length - 1)
+                return 0;
+
+            return DateTimeFormat.substr(dotIndex + 1).trim().length;
+        }();
+
+
+        function adjustSubsecondDigits(timeValue) {
+            if (SubsecondDigits === 0)
+                return timeValue;
+
+            const dotIndex = timeValue.indexOf(".");
+
+            if (dotIndex < 0)
+                return timeValue + "." + Array(SubsecondDigits + 2).join("0");
+
+            return timeValue + Array(SubsecondDigits - timeValue.substr(dotIndex + 1).trim().length + 1).join("0");
+        }
+
+        function secondstoInterval(seconds) {
+            var day = 0;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+
+            second = seconds % 60.0;
+            minute = Math.floor(seconds / 60.0);
+            hour = Math.floor(minute / 60.0);
+            day = Math.floor(hour / 24.0);
+            hour = hour % 24.0;
+            minute = minute % 60;
+
+            return (day.toFixed(0) + "d " + hour.toFixed(0) + "h " + minute.toFixed(0) + "m " + second.toFixed(0) + "s"); 
+        }
+
+        function ExtendedViewModel() {
+            const self = this;
+
+            PagedViewModel.call(self);
+
+            self.ReportTitle = ko.observable("Worst 25 SNR Report");
+
+            self._selectedIntervall = ko.observable(1);
+           
+            self.selectedIntervall = ko.pureComputed({
+                read: function () {
+                    return self._selectedIntervall();
+                },
+                write: function (value) {
+                    var span = 30;
+                    if (value == 1) {
+                        span = 30;
+                    }
+                    else if (value == 2) {
+                        span = 60;
+                    }
+                    else if (value == 3) {
+                        span = 90;
+                    }
+                    else if (value == 4) {
+                        span = 7;
+                    }
+                    else if (value == 5) {
+                        span = 10;
+                    }
+                    else if (value == 6) {
+                        span = 14;
+                    }
+                    else if (value == -1) {
+                        span = 5;
+                        self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+                        self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'minutes').format(MomentDateTimeFormat));
+                        self._selectedIntervall(value);
+                        return;
+                    }
+                    self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+                    self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
+                    self._selectedIntervall(value);
+                   
+                },
+                owner: self
+            });
+
+
+            self._instanceName = ko.observable("");
+
+            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(30, "days").format(MomentDateTimeFormat)));
+            self._endTime = ko.observable(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+
+            self.startTime = ko.pureComputed({
+                read: function () {
+                    return self._startTime();
+                },
+                write: function (value) {
+                    self._startTime(value);
+                },
+                owner: self
+            });
+
+            self.endTime = ko.pureComputed({
+                read: function () {
+                    return self._endTime();
+                },
+                write: function (value) {
+                    self._endTime(value);
+                },
+                owner: self
+            });
+
+            self.startMoment = ko.pureComputed({
+                read: function () {
+                    return moment.utc(self.startTime(), MomentDateTimeFormat);
+                },
+                owner: self
+            });
+
+            self.endMoment = ko.pureComputed({
+                read: function () {
+                    return moment.utc(self.endTime(), MomentDateTimeFormat);
+                },
+                owner: self
+            });
+
+
+            self.instanceName = ko.pureComputed({
+                read: function () {
+                    if (self.dataHubIsConnected()) {
+                        dataHub.getSelectedReportInstanceName().done(function (result) {
+                            self._instanceName(result);
+                        });
+                    }
+                    return self._instanceName();
+                },
+                write: function (value) {
+                },
+                owner: self
+            });
+
+            self.useInterval = ko.pureComputed({
+                read: function () {
+                    if (self.selectedIntervall() == 0) 
+                        return false;
+                    else 
+                        return true;
+                    
+                },
+                owner: self
+            });
+
+            self.worstBy = ko.observable(1);
+            self.ReportDepth = ko.observable(25);
+            self.selectedUnbalance = ko.observable(0);
+
+            self.updateReport = function (result) {
+                return result;
+            }
+
+            
+        }
+
+        function extendViewModel(event, data) {
+            const newViewModel = new ExtendedViewModel();
+            data.viewModel.cloneConfiguration(newViewModel);
+            data.viewModel = newViewModel;
+
+            // Define instance name selector before binding
+            $("#titleText").parent("h3").append("@Raw(HistorianInstanceSelect().ToString().RemoveDuplicateWhiteSpace().Replace("\r\n", ""))");
+            
+            ko.bindingHandlers.dateTimePicker = {
+                init: function (element, valueAccessor, allBindingsAccessor) {
+                    // Initialize datepicker with some basic options
+                    const options = allBindingsAccessor().dateTimePickerOptions || { showClose: true, useCurrent: false, format: MomentDateTimeFormat };
+
+                    $(element).datetimepicker(options);
+
+                    // When user changes the date, update view model
+                    ko.utils.registerEventHandler(element, "dp.change", function (event) {
+                        const value = valueAccessor();
+
+                        if (ko.isObservable(value) && event.date != null) {
+                            if (event.date._isAMomentObject)
+                                value(event.date.format(MomentDateTimeFormat));
+                            else if (event.date instanceof Date)
+                                value(event.date.formatDate(DateTimeFormat, true));
+                        }
+                    });
+
+                    ko.utils.registerEventHandler(element, "dp.show", function (event) {
+                        const picker = $(element).data("DateTimePicker");
+
+                        if (picker)
+                            picker.date(moment.utc(ko.utils.unwrapObservable(valueAccessor()), MomentDateTimeFormat));
+                    });
+
+                    ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+                        const picker = $(element).data("DateTimePicker");
+
+                        if (picker)
+                            picker.destroy();
+                    });
+                }
+            }
+
+
+        ko.validation.init({
+            registerExtenders: true,
+            messagesOnModified: true,
+            insertMessages: true,
+            parseInputAttributes: true,
+            allowHtmlMessages: true,
+            messageTemplate: null,
+            decorateElement: true,
+            errorElementClass: "has-error",
+            errorMessageClass: "help-block",
+            grouping: { deep: true, observable: true, live: true }
+        }, true);
+        }
+
+        $(window).on("beforeApplyBindings", extendViewModel);
+
+        $(window).on("hubConnected", function () {
+            setTimeout(keepAlive, 1000);
+
+            // Load available historian instance names, if not already loaded
+            if ($("#instanceName").children("option").length > 0)
+                return;
+
+            const instanceNameSelect = $("#instanceName");
+
+            dataHub.getInstanceNames().done(function (names) {
+                for (let i = 0; i < names.length; i++) {
+                    const value = names[i];
+                    instanceNameSelect.append($("<option>", { value: value, text: value }));
+                }
+
+                // Select last value
+                var lastInstanceName = Cookies.get("instanceName");
+
+                if (lastInstanceName === undefined)
+                    lastInstanceName = instanceNameSelect.eq(0).val();
+
+                if (!isEmpty(lastInstanceName))
+                    instanceNameSelect.val(lastInstanceName);
+
+                setTimeout(function () {
+                    viewModel.instanceName(lastInstanceName);
+                }, 200);
+            });
+        });
+
+        function keepAlive() {
+            if (!hubIsConnected)
+                return;
+
+            serviceHub.getServerTime().done(function (serverTime) {
+                $("#serverTime").html(serverTime.formatDate());
+                setTimeout(keepAlive, 1000);
+            });
+        }
+
+    </script>
+}
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+           
+            <div class="well ui-tabs-panel ui-corner-bottom" ui-widget-content="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
+                @Raw(string.Format(Include("SelectReportRange.cshtml").ToString(), "report").Trim())
+            </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"> <h3 id="ReportHeader" data-bind="text: ReportTitle"> Worst 25 Unbalanced Report </h3></div>
+            <div class="panel-body">
+                @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
+        //     Visit JavaScript Kit (http://javascriptkit.com)
+        //     for free JavaScript tutorials and scripts
+        //     This notice must stay intact for use
+        function detectExistence(obj) {
+            return (typeof obj != "undefined");
+        }
+
+
+
+
+
+
+    </script>

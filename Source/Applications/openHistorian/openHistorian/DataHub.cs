@@ -60,6 +60,7 @@ namespace openHistorian
         // Fields
         private readonly HistorianOperations m_historianOperations;
         private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
+        private readonly ReportOperations m_reportOperations;
         private readonly ModbusOperations m_modbusOperations;
 
         #endregion
@@ -74,6 +75,8 @@ namespace openHistorian
             m_historianOperations = new HistorianOperations(this, logStatusMessage, logException);
             m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
             m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
+            m_reportOperations = new ReportOperations(this, logStatusMessage, logException);
+
         }
 
         #endregion
@@ -94,6 +97,7 @@ namespace openHistorian
                 m_historianOperations?.EndSession();
                 m_dataSubscriptionOperations?.EndSession();
                 m_modbusOperations?.EndSession();
+                m_reportOperations?.EndSession();
 
                 LogStatusMessage($"DataHub disconnect by {Context.User?.Identity?.Name ?? "Undefined User"} [{Context.ConnectionId}] - count = {ConnectionCount}", UpdateType.Information, false);
             }
@@ -144,6 +148,73 @@ namespace openHistorian
         #endregion
 
         // Client-side script functionality
+        #region [ Report View Operations ]
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecordCount)]
+        public int QuerySNRMeasurmentCount(string filterText)
+        {
+            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
+            if (tableOperations == null)
+                return 0;
+            return tableOperations.QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecords)]
+        public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
+
+            if (tableOperations == null)
+                return (new List<ReportMeasurements>());
+            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+
+        [RecordOperation(typeof(ReportMeasurements), RecordOperation.CreateNewRecord)]
+        public ReportMeasurements NewReportMeasurement()
+        {
+            //This is not really allowed need to check if we can disable that
+            return m_reportOperations.Table().NewRecord();
+        }
+
+        /// <summary>
+        /// Set selected Report Sources.
+        /// </summary>
+        /// <param name="ReportType">Type of the report requested <see cref="ReportType"/>.</param>
+        /// <param name="number">Depth of the report (0 is all).</param>
+        /// <param name="start">Start time of the report.</param>
+        /// <param name="end">End time of the report.</param>
+        /// <returns> Flag to ensure this is completed before creating a report.</returns>
+        public bool SetReportingSource(int ReportType, int ReportCriteria, int number, DateTime start, DateTime end)
+        {
+            this.m_reportOperations.UpdateReportSource(start, end, (ReportCriteria)ReportCriteria, (ReportType)ReportType, number, DataContext);
+            return true;
+        }
+
+        /// <summary>
+        /// Set selected Report instance name.
+        /// </summary>
+        /// <param name="instanceName">Instance name that is selected by user.</param>
+        public void SetSelectedReportInstanceName(string instanceName)
+        {
+            m_reportOperations.SetSelectedInstanceName(instanceName);
+        }
+
+        /// <summary>
+        /// Gets selected Report instance name.
+        /// </summary>
+        /// <returns>Selected Reportinstance name.</returns>
+        public string GetSelectedReportInstanceName()
+        {
+            return m_reportOperations.GetSelectedInstanceName();
+        }
+
+        /// <summary>
+        /// Gets loaded historian adapter instance names to Report from.
+        /// </summary>
+        /// <returns>Report Historian adapter instance names.</returns>
+        public IEnumerable<string> GetReportInstanceNames() => m_reportOperations.GetInstanceNames();
+
+        #endregion
 
         #region [ ActiveMeasurement View Operations ]
 
@@ -590,7 +661,7 @@ namespace openHistorian
         #region [ Historian Operations ]
 
         /// <summary>
-        /// Set selected instance name.
+        /// Set selected Historian instance name.
         /// </summary>
         /// <param name="instanceName">Instance name that is selected by user.</param>
         public void SetSelectedInstanceName(string instanceName)
@@ -612,7 +683,6 @@ namespace openHistorian
         /// </summary>
         /// <returns>Historian adapter instance names.</returns>
         public IEnumerable<string> GetInstanceNames() => m_historianOperations.GetInstanceNames();
-
 
         /// <summary>
         /// Begins a new historian write operation.

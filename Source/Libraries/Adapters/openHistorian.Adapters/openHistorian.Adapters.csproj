@@ -93,6 +93,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PhasorProtocolAdapters">
+      <HintPath>..\..\..\Dependencies\GSF\PhasorProtocolAdapters.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -124,12 +127,16 @@
     <Compile Include="GrafanaDeviceStatusController.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
+    <Compile Include="HistorianReportOperations.cs" />
+    <Compile Include="ReportOperationsHubClient.cs" />
+    <Compile Include="ReportOperations.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />
     <Compile Include="HistorianOperations.cs" />
     <Compile Include="HistorianQueryController.cs" />
     <Compile Include="LocalInputAdapter.cs" />
     <Compile Include="LocalOutputAdapter.cs" />
     <Compile Include="MeasurementAPI.cs" />
+    <Compile Include="Model\ReportingMeasurements.cs" />
     <Compile Include="Model\Alarm.cs" />
     <Compile Include="Model\AlarmDeviceStateView.cs" />
     <Compile Include="Model\AlarmLog.cs" />
@@ -164,6 +171,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteOutputAdapter.cs" />
     <Compile Include="Model\TimeSeriesPhasorValues.cs" />
+    <Compile Include="Unbalanced.cs" />
+    <Compile Include="SNRComputation.cs" />
     <Compile Include="TrendValueAPI.cs" />
   </ItemGroup>
   <ItemGroup>
