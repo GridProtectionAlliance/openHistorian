@@ -223,7 +223,7 @@ namespace openHistorian.Adapters
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int numberOfRecords, DataContext dataContext)
         {
-            this.endTime = startDate;
+            this.endTime = endDate;
             this.PercentComplete = 0;
             this.totalTime = (endDate - startDate).TotalSeconds;
 
@@ -368,6 +368,7 @@ namespace openHistorian.Adapters
                     tbl.AddNewRecord(reportingMeasurements[i]);
                 }
                 this.m_writting = false;
+                this.PercentComplete = 100.0;
             })
             {
                 IsBackground = true,
