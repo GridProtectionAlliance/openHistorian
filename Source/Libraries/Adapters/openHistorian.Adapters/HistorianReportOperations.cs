@@ -447,7 +447,9 @@ namespace openHistorian.Adapters
         /// <param name="end">EndTime.</param>
         /// <param name="measurements">Measurements to be read.</param>
         /// <param name="threshold">Threshhold used to determine number of alerts.</param>   
-        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold)
+        /// <param name="cancelationToken">Cancleation Token for the operation.</param>  
+        /// <param name="progress"> Progress Tracker <see cref="IProgress{T}"/>.</param>  
+        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, System.Threading.CancellationToken cancelationToken, IProgress<ulong> progress)
         {
             List<CondensedDataPoint> result = new List<CondensedDataPoint>(measurements.Count());
 
@@ -462,18 +464,35 @@ namespace openHistorian.Adapters
                 foreach (ulong key in pointIDs)
                 {
                     frameRateResult.Add(key,CondensedDataPoint.EmptyPoint(key));
+                    if (cancelationToken.IsCancellationRequested)
+                    {
+                        return result;
+                    }
                 }
 
                 using (ReportHistorianReader reader = new ReportHistorianReader(server, this.m_instance, start, end, framerate, pointIDs))
                 {
                     DataPoint point = new DataPoint();
 
+                    // this.mProgress.Report(this.m_prevProgress);
+
                     // Scan to first record
                     if (!reader.ReadNext(point))
                         throw new InvalidOperationException("No data for specified time range in openHistorian connection!");
 
+                    ulong currentTimeStamp = point.Timestamp;
+
                     while (reader.ReadNext(point))
                     {
+                        if (currentTimeStamp < point.Timestamp)
+                        {
+                            progress.Report(point.Timestamp);
+                        }
+
+                        if (cancelationToken.IsCancellationRequested)
+                        {
+                            return result;
+                        }
 
                         if (!Single.IsNaN(point.ValueAsSingle))
                         {
@@ -490,10 +509,17 @@ namespace openHistorian.Adapters
                                 frameRateResult[point.PointID].alert++;
                             }
                         }
+
+                        currentTimeStamp = point.Timestamp;
                     }
                 }
 
                 result.AddRange(frameRateResult.Where(item => item.Value.totalPoints > 0).Select(item => { item.Value.PointID = item.Key; return item.Value; }));
+
+                if (cancelationToken.IsCancellationRequested)
+                {
+                    return result;
+                }
             }
             
 

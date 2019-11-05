@@ -166,7 +166,7 @@
 }
     @helper BodyRows()
     {
-    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: OriginalTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: OriginalTag, click: $parent.viewPageRecord"></button></div></td>
+    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag, click: $parent.viewPageRecord"></button></div></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: secondstoInterval(TimeInAlarm)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
@@ -184,10 +184,18 @@
 
         @Raw(dataContext.RenderViewModelConfiguration<ReportMeasurements, DataHub>(ViewBag, "PointTag"))
 
+        $("#progressBar").hide();
+        $("#loadingLabel").hide();
+        $("#progressIcon").hide();
+
+
         viewModel.updateReport(function () {
             return dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment() );
         });
 
+        viewModel.getProgress(function () {
+            return dataHub.SetReportingSourceProgress();
+        });
         
         function updateData() {
             var reportType = "";
@@ -203,16 +211,23 @@
             }
             viewModel.ReportTitle("Worst 25 " + reportType + " Report");
 
+            const progressBar = $("#progressBar");
+            const progressLabel = $("#loadingLabel");
+            const reportTbl = $("#report-tbl");
+            const progressIcon = $("#progressIcon");
+
+            progressBar.show();
+            progressLabel.show();
+            progressIcon.show();
+            reportTbl.hide();
+            viewModel.updateProgress(0.0);
+
             dataHub.setReportingSource(viewModel.selectedUnbalance(), viewModel.worstBy(), viewModel.ReportDepth(), viewModel.startMoment(), viewModel.endMoment()).done(function (result) {
-                if (viewModel.worstBy() == 0) {
-                    viewModel.updateSortOrder("Mean", false);
-                }
-                else if (viewModel.worstBy() == 1) {
-                    viewModel.updateSortOrder("Max", false);
-                }
-                if (viewModel.worstBy() == 2) {
-                    viewModel.updateSortOrder("TimeinAlarm", false);
-                }
+                setTimeout(function () {
+                    dataHub.setReportingSourceProgress().done(function (result) {
+                        viewModel.updateProgress(result);
+                    });
+                }, 100);
             });
             
             
@@ -292,7 +307,7 @@
             self.ReportTitle = ko.observable("Worst 25 SNR Report");
 
             self._selectedIntervall = ko.observable(1);
-           
+
             self.selectedIntervall = ko.pureComputed({
                 read: function () {
                     return self._selectedIntervall();
@@ -327,7 +342,7 @@
                     self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
                     self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
                     self._selectedIntervall(value);
-                   
+
                 },
                 owner: self
             });
@@ -389,11 +404,11 @@
 
             self.useInterval = ko.pureComputed({
                 read: function () {
-                    if (self.selectedIntervall() == 0) 
+                    if (self.selectedIntervall() == 0)
                         return false;
-                    else 
+                    else
                         return true;
-                    
+
                 },
                 owner: self
             });
@@ -403,12 +418,55 @@
             self.selectedUnbalance = ko.observable(0);
 
             self.updateReport = function (result) {
-                return result;
+                return result
             }
 
-            
-        }
+            self.updateProgress = function (progress) {
+                const progressBar = $("#progressBar");
+                const progressLabel = $("#loadingLabel");
+                const reportTbl = $("#report-tbl");
+                const progressIcon = $("#progressIcon");
 
+                if (isNumber(progress)) {
+                    progressBar.text(progress.toString() + "%");
+                    progressBar.css("width", progress.toString() + "%");
+                } 
+
+                    if (progress == 100.0) {
+                        setTimeout(function () {
+                            if (viewModel.worstBy() == 0) {
+                                viewModel.updateSortOrder("Mean", false);
+                            }
+                            else if (viewModel.worstBy() == 1) {
+                                viewModel.updateSortOrder("Max", false);
+                            }
+                            if (viewModel.worstBy() == 2) {
+                                viewModel.updateSortOrder("TimeinAlarm", false);
+                            }
+
+                            progressBar.hide();
+                            progressLabel.hide();
+                            reportTbl.show();
+                            progressIcon.hide();
+                        }, 500);
+                    }
+                    else {
+                        setTimeout(function () {
+                            dataHub.setReportingSourceProgress().done(function (result) {
+                                viewModel.updateProgress(result);
+                            });
+                        }, 250);
+
+                    }
+
+               
+
+            }
+
+            self.getProgress = function (result) { return result; }
+
+             
+            }
         function extendViewModel(event, data) {
             const newViewModel = new ExtendedViewModel();
             data.viewModel.cloneConfiguration(newViewModel);
@@ -464,7 +522,9 @@
             errorElementClass: "has-error",
             errorMessageClass: "help-block",
             grouping: { deep: true, observable: true, live: true }
-        }, true);
+            }, true);
+
+            
         }
 
         $(window).on("beforeApplyBindings", extendViewModel);
@@ -522,8 +582,19 @@
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="panel panel-default">
+
+
             <div class="panel-heading"> <h3 id="ReportHeader" data-bind="text: ReportTitle"> Worst 25 Unbalanced Report </h3></div>
-            <div class="panel-body">
+
+            <div class="pull-right" style="font-weight: bold">
+                <span id="loadingLabel">Loading</span>&nbsp;<span id="progressLabel"></span>&nbsp;&nbsp;<span id="progressIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+            </div>
+            <br />
+            <div id="progressDiv" class="progress" style="margin-top: 5px; margin-bottom: -5px">
+                <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
+            </div>
+
+            <div class="panel-body" id="report-tbl">
                 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
             </div>
         </div>

@@ -74,6 +74,11 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <returns>Table Operations Object that is used to query report data.</returns>
         TableOperations<ReportMeasurements> Table();
+
+        /// <summary>
+        /// Gets Progress of current Report generation.
+        /// </summary>
+        double GetReportProgress();
     }
 
     /// <summary>
@@ -144,6 +149,14 @@ namespace openHistorian.Adapters
             return HubClient.Table();
         }
 
-            #endregion
+        /// <summary>
+        /// Gets Progress of current Report.
+        /// </summary>
+        public double GetReportProgress()
+        {
+            return HubClient.GetReportProgress();
         }
+
+        #endregion
+    }
 }
