@@ -26,6 +26,7 @@
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
         <ComponentRef Id="Sample1344"/>
+        <ComponentRef Id="ReportTemplate"/>
         <ComponentRef Id="TagTemplates"/>
 
         <!-- Web Files -->
@@ -263,6 +264,11 @@
         <File Id="Sample1344.PmuCapture" Name="Sample1344.PmuCapture" Source="$(var.openHistorian.ProjectDir)\Sample1344.PmuCapture" />
       </Component>
       
+      <!-- ReportTemplate.db -->
+      <Component Id="ReportTemplate">
+        <File Id="ReportTemplate.db" Name="ReportTemplate.db" Source="$(var.openHistorian.ProjectDir)\ReportTemplate.db" />
+      </Component>
+
       <!-- Included Tag Templates -->
       <Component Id="TagTemplates" Guid="{EB8CD69A-E9F5-4183-805F-455D2E3AF654}">
         <File Id="Full_Checkout_Calculations.TagTemplate" Name="Full Checkout Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Full Checkout Calculations.TagTemplate" />
