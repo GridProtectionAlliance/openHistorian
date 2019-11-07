@@ -415,7 +415,7 @@ CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Appl
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll"
 XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y
-XCOPY "$(SolutionDir)ReportTemplate.db" "$(TargetDir)" /Y
+XCOPY "$(ProjectDir)ReportTemplate.db" "$(TargetDir)" /Y
 "$(SolutionDir)Dependencies\GSF\ValidateAssemblyBindings.exe" "$(TargetPath).config"
 </PostBuildEvent>
   </PropertyGroup>
