@@ -45,6 +45,9 @@
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
   </Component>
+  <Component Id="SelectReportRange_cshtml">
+    <File Id="SelectReportRange.cshtml" Name="SelectReportRange.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectReportRange.cshtml" />
+  </Component>
   <Component Id="SelectTheme_cshtml">
     <File Id="SelectTheme.cshtml" Name="SelectTheme.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectTheme.cshtml" />
   </Component>
@@ -56,6 +59,9 @@
   </Component>
   <Component Id="TrendMeasurements_cshtml">
     <File Id="TrendMeasurements.cshtml" Name="TrendMeasurements.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\TrendMeasurements.cshtml" />
+  </Component>
+  <Component Id="UnbalanceReport_cshtml">
+    <File Id="UnbalanceReport.cshtml" Name="UnbalanceReport.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\UnbalanceReport.cshtml" />
   </Component>
   <Component Id="Users_cshtml">
     <File Id="Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Users.cshtml" />
