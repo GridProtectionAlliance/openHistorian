@@ -236,140 +236,149 @@ namespace openHistorian.Adapters
             
             new Thread(() =>
             {
+				try
+				{
+					string sourceFile = string.Format("{0}{1}ReportTemplate.db", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
+					this.databaseFile = string.Format("{0}{1}{2}.db", ConfigurationCachePath, Path.DirectorySeparatorChar, this.ConnectionID);
+					System.IO.File.Copy(sourceFile, this.databaseFile, true);
 
-                string sourceFile = string.Format("{0}{1}ReportTemplate.db", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
-                this.databaseFile = string.Format("{0}{1}{2}.db", ConfigurationCachePath, Path.DirectorySeparatorChar, this.ConnectionID);
-                System.IO.File.Copy(sourceFile, this.databaseFile, true);
+					string filterstring = "";
 
-                string filterstring = "";
+					if (reportType == ReportType.SNR)
+						filterstring = "%-SNR";
+					else if (reportType == ReportType.Unbalance_I)
+						filterstring = "%I-UBAL";
+					else if (reportType == ReportType.Unbalance_V)
+						filterstring = "%V-UBAL";
 
-                if (reportType == ReportType.SNR)
-                    filterstring = "%-SNR";
-                else if (reportType == ReportType.Unbalance_I)
-                    filterstring = "%I-UBAL";
-                else if (reportType == ReportType.Unbalance_V)
-                    filterstring = "%V-UBAL";
+					//Get AlertThreshold
+					CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
+					double threshold = 0;
+					if (reportType == ReportType.SNR)
+					{
+						reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
+						threshold = reportSettings["DefaultSNRThreshold"].ValueAs(threshold);
+					}
+					else if (reportType == ReportType.Unbalance_V)
+					{
+						reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
+						threshold = reportSettings["VUnbalanceThreshold"].ValueAs(threshold);
+					}
+					else if (reportType == ReportType.Unbalance_I)
+					{
+						reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
+						threshold = reportSettings["IUnbalanceThreshold"].ValueAs(threshold);
+					}
 
-                //Get AlertThreshold
-                CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
-                double threshold = 0;
-                if (reportType == ReportType.SNR)
-                {
-                    reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
-                    threshold = reportSettings["DefaultSNRThreshold"].ValueAs(threshold);
-                }
-                else if (reportType == ReportType.Unbalance_V)
-                {
-                    reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
-                    threshold = reportSettings["VUnbalanceThreshold"].ValueAs(threshold);
-                }
-                else if (reportType == ReportType.Unbalance_I)
-                {
-                    reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
-                    threshold = reportSettings["IUnbalanceThreshold"].ValueAs(threshold);
-                }
+					if (token.IsCancellationRequested)
+					{
+						this.m_writting = false;
+						return;
+					}
 
-                if (token.IsCancellationRequested)
-                {
-                    this.m_writting = false;
-                    return;
-                }
+					List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType, token);
 
-                List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType,token);
+					if (token.IsCancellationRequested)
+					{
+						this.m_writting = false;
+						return;
+					}
 
-                if (token.IsCancellationRequested)
-                {
-                    this.m_writting = false;
-                    return;
-                }
+					if (reportingMeasurements.Count() < 1)
+					{
 
-                if (reportingMeasurements.Count() < 1)
-                {
-
-                    TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
-                    tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
-
-
-                    List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
-                    reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
-
-                    // Pull Data From the Open Historian
-
-                    if (token.IsCancellationRequested)
-                    {
-                        this.m_writting = false;
-                        return;
-                    }
-
-                    Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
-                    List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
-
-                    if (token.IsCancellationRequested)
-                    {
-                        this.m_writting = false;
-                        return;
-                    }
-                    //remove any that don't have data
-                    reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
-
-                    // Deal with the not-aggregated signals
-                    reportingMeasurements = reportingMeasurements.Select(item =>
-                    {
-                        CondensedDataPoint data = historiandata.Find(point => point.PointID == item.PointID);
-                        item.Max = data.max;
-                        item.Min = data.min;
-                        item.Mean = data.sum / data.totalPoints;
-                        item.NumberOfAlarms = data.alert;
-                        item.PercentAlarms = (double)data.alert * 100.0D / (double)data.totalPoints;
-                        item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + (double)data.totalPoints * item.Mean * item.Mean) / (double)data.totalPoints);
-                        item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
-
-                        return item;
-                    }
-                    ).ToList();
-
-                }
+						TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
+						tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
 
 
-                if (reportCriteria == ReportCriteria.Mean)
-                    reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
-                if (reportCriteria == ReportCriteria.AlertTime)
-                    reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.TimeInAlarm).ToList();
-                if (reportCriteria == ReportCriteria.Maximum)
-                    reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Max).ToList();
+						List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
+						reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
 
-                string connectionstring = String.Format("Data Source={0}; Version=3; Foreign Keys=True; FailIfMissing=True", this.databaseFile);
-                string dataProviderstring = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
-                this.connection = new AdoDataConnection(connectionstring, dataProviderstring);
+						// Pull Data From the Open Historian
 
-                if (numberOfRecords == 0)
-                    numberOfRecords = reportingMeasurements.Count();
+						if (token.IsCancellationRequested)
+						{
+							this.m_writting = false;
+							return;
+						}
 
-                // Create Original Point Tag
-                reportingMeasurements.Select(item =>
-                {
-                    if (reportType == ReportType.SNR)
-                        item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    else
-                        item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
-                    return item;
-                }).ToList();
+						Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
+						List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
 
-                if (token.IsCancellationRequested)
-                {
-                    this.m_writting = false;
-                    return;
-                }
-                    
+						if (token.IsCancellationRequested)
+						{
+							this.m_writting = false;
+							return;
+						}
+						//remove any that don't have data
+						reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
 
-                TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(connection);
-                for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count()); i++)
-                {
-                    tbl.AddNewRecord(reportingMeasurements[i]);
-                }
-                this.m_writting = false;
-                this.PercentComplete = 100.0;
-            })
+						// Deal with the not-aggregated signals
+						reportingMeasurements = reportingMeasurements.Select(item =>
+						{
+							CondensedDataPoint data = historiandata.Find(point => point.PointID == item.PointID);
+							item.Max = data.max;
+							item.Min = data.min;
+							item.Mean = data.sum / data.totalPoints;
+							item.NumberOfAlarms = data.alert;
+							item.PercentAlarms = (double)data.alert * 100.0D / (double)data.totalPoints;
+							item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + (double)data.totalPoints * item.Mean * item.Mean) / (double)data.totalPoints);
+							item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
+
+							return item;
+						}
+						).ToList();
+
+					}
+
+
+					if (reportCriteria == ReportCriteria.Mean)
+						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
+					if (reportCriteria == ReportCriteria.AlertTime)
+						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.TimeInAlarm).ToList();
+					if (reportCriteria == ReportCriteria.Maximum)
+						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Max).ToList();
+
+					string connectionstring = String.Format("Data Source={0}; Version=3; Foreign Keys=True; FailIfMissing=True", this.databaseFile);
+					string dataProviderstring = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+					this.connection = new AdoDataConnection(connectionstring, dataProviderstring);
+
+					if (numberOfRecords == 0)
+						numberOfRecords = reportingMeasurements.Count();
+
+					// Create Original Point Tag
+					reportingMeasurements.Select(item =>
+					{
+						if (reportType == ReportType.SNR)
+							item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
+						else
+							item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
+						return item;
+					}).ToList();
+
+					if (token.IsCancellationRequested)
+					{
+						this.m_writting = false;
+						return;
+					}
+
+
+					TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(connection);
+					for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count()); i++)
+					{
+						tbl.AddNewRecord(reportingMeasurements[i]);
+					}
+					this.m_writting = false;
+					this.PercentComplete = 100.0;
+				}
+				catch (Exception e)
+				{
+					this.LogException(e);
+				}
+
+				this.m_writting = false;
+				this.PercentComplete = 100.0;
+			})
             {
                 IsBackground = true,
                 
