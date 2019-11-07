@@ -79,6 +79,10 @@
         databaseType = "Not Available";
         databaseName = "Not Available";
     }
+
+    string requiresAdmin = UserIsAdmin() ? "" : " disabled";
+    string requiresEditor = UserIsAdminOrEditor() ? "" : " disabled";
+    string grafanaInstalled = Model.Global.GrafanaServerInstalled ? "" : " disabled";
 }
 @section StyleSheets {
     <style>
@@ -230,6 +234,16 @@
 
         return securityPrincipal.IsInRole("Administrator");
     }
+
+    public bool UserIsAdminOrEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator,Editor");
+    }
 }
 <div class="row">
     <div class="col-lg-4 col-md-4 col-sm-5">
@@ -238,15 +252,11 @@
             <div class="panel-body">
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Browse Devices</a>
-                    <a href="AddDevice.cshtml" role="button" class="btn btn-default">Add Device / Import Data</a>
+                    <a href="AddDevice.cshtml" role="button" class="btn btn-default@(requiresEditor)"@requiresEditor>Add Device / Import Data</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Data</a>
-                    @if (Model.Global.GrafanaServerInstalled) {
-                        <a href="grafana" role="button" class="btn btn-default"><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
-                    }
+                    <a href="grafana" role="button" class="btn btn-default@(grafanaInstalled)"@grafanaInstalled><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
-                    @if (UserIsAdmin()) {
-                        <button type="button" class="btn btn-default" id="restartButton" hub-dependent>Restart Service</button>
-                    }
+                    <button type="button" class="btn btn-default@(requiresAdmin)" id="restartButton"@requiresAdmin hub-dependent>Restart Service</button>
                 </div>
             </div>
         </div>
