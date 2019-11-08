@@ -282,7 +282,7 @@ namespace openHistorian.Adapters
 
                 openHistorian.Model.Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
 
-				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", this.HistorianInstance));
+				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", new object[1] { this.HistorianInstance}));
 
 
 

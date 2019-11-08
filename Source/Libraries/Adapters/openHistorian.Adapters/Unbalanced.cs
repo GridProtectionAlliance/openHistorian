@@ -137,7 +137,7 @@ namespace openHistorian.Adapters
         /// </summary>
         [ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
-        [Description("Defines If aggregates are saved sepperately.")]
+        [Description("Defines if aggregates are saved sepperately.")]
         [DefaultValue(false)]
         public bool SaveAggregates
         {
@@ -249,7 +249,7 @@ namespace openHistorian.Adapters
 
                 openHistorian.Model.Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
 
-				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", this.HistorianInstance));
+				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", new object[1] { this.HistorianInstance }));
 
 				// Take Care of the Device
 				if ( this.InputMeasurementKeys.Count() < 1)
