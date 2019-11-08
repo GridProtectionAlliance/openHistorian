@@ -114,9 +114,14 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Default value for <see cref="ResultDeviceName"/>.
         /// </summary>
-        public const string DefaultResultDeviceName = "SNR!SERVICE";
+        public const string DefaultResultDeviceName = "UBAl!SERVICE";
 
-        private int numberOfFrames;
+		/// <summary>
+		/// Default value for <see cref="HistorianInstance"/>.
+		/// </summary>
+		public const string DefaultHistorian = "PPA";
+
+		private int numberOfFrames;
         private Guid nodeID;
         private List<ThreePhaseSet> threePhaseComponent;
         private Dictionary<Guid, StatisticsCollection> statisticsMapping;
@@ -140,10 +145,23 @@ namespace openHistorian.Adapters
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the reporting Intervall of the results
-        /// </summary>
-        [ConnectionStringParameter]
+		/// <summary>
+		/// Gets or sets the default historian instance used by the output measurements
+		/// </summary>
+		[ConnectionStringParameter]
+		[CalculatedMesaurementAttribute]
+		[Description("Defines the Historian Instance used by the output measurements. Specified by Acronym")]
+		[DefaultValue(DefaultHistorian)]
+		public string HistorianInstance
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the reporting Intervall of the results
+		/// </summary>
+		[ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
         [Description("Defines the Reporting Intervall of the Statistics.")]
         [DefaultValue(DefaultReportingIntervall)]
@@ -231,8 +249,10 @@ namespace openHistorian.Adapters
 
                 openHistorian.Model.Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
 
-                // Take Care of the Device
-                if ( this.InputMeasurementKeys.Count() < 1)
+				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", this.HistorianInstance));
+
+				// Take Care of the Device
+				if ( this.InputMeasurementKeys.Count() < 1)
                 {
                     return;
                 }
@@ -281,7 +301,7 @@ namespace openHistorian.Adapters
                             openHistorian.Model.Measurement inMeas = measTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
                             openHistorian.Model.Measurement outMeas = new openHistorian.Model.Measurement()
                             {
-                                HistorianID = inMeas.HistorianID,
+                                HistorianID = HistorianID,
                                 DeviceID = device.ID,
                                 PointTag = inMeas.PointTag + "-UBAL",
                                 AlternateTag = inMeas.AlternateTag + "-UBAL",
@@ -315,7 +335,7 @@ namespace openHistorian.Adapters
                         processed.Add(zero.SignalID);
 
                         if (this.saveStats)
-                            this.statisticsMapping.Add(key.SignalID, CreateStatistics(measTable, key, device));
+                            this.statisticsMapping.Add(key.SignalID, CreateStatistics(measTable, key, device, HistorianID));
 
                     }
 
@@ -452,7 +472,7 @@ namespace openHistorian.Adapters
             {
                 Enabled = true,
                 ProtocolID = protocolId,
-                Name = "SNR Results",
+                Name = "Unbalanced Results",
                 Acronym = this.ResultDeviceName,
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
@@ -508,7 +528,7 @@ namespace openHistorian.Adapters
             return (measurement.Phase == '0');
         }
 
-        private StatisticsCollection CreateStatistics(GSF.Data.Model.TableOperations<openHistorian.Model.Measurement> table, MeasurementKey key, Device device)
+        private StatisticsCollection CreateStatistics(GSF.Data.Model.TableOperations<openHistorian.Model.Measurement> table, MeasurementKey key, Device device, int HistorianID)
         {
             openHistorian.Model.Measurement inMeas = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
             int signaltype = 0;
@@ -518,7 +538,7 @@ namespace openHistorian.Adapters
                 signaltype = signalTypeTable.QueryRecordWhere("Acronym = {0}", "CALC").ID;
             }
 
-            string outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
+            string outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SUM";
 
 
             //Sum
@@ -527,13 +547,13 @@ namespace openHistorian.Adapters
 
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:SUM",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:SUM",
+                    PointTag = inMeas.PointTag + "-UBAL:SUM",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:SUM",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " Summ of SNR",
+                    Description = inMeas.Description + " Summ of UBAL",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -547,18 +567,18 @@ namespace openHistorian.Adapters
             }
 
             //sqrdSum
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SQR";
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:SQR",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:SQR",
+                    PointTag = inMeas.PointTag + "-UBAL:SQR",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:SQR",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " Summ of Sqared SNR",
+                    Description = inMeas.Description + " Summ of Sqared UBAL",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -572,18 +592,18 @@ namespace openHistorian.Adapters
             }
 
             //Min
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MIN";
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:MIN",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:MIN",
+                    PointTag = inMeas.PointTag + "-UBAL:MIN",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:MIN",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " Minimum SNR",
+                    Description = inMeas.Description + " Minimum UBAL",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -596,18 +616,18 @@ namespace openHistorian.Adapters
             }
 
             // Max
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MAX";
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:MAX",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:MAX",
+                    PointTag = inMeas.PointTag + "-UBAL:MAX",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:MAX",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
-                    Description = inMeas.Description + " Maximum SNR",
+                    Description = inMeas.Description + " Maximum UBAL",
                     Enabled = true,
                     CreatedOn = DateTime.UtcNow,
                     UpdatedOn = DateTime.UtcNow,
@@ -620,15 +640,15 @@ namespace openHistorian.Adapters
             }
 
             // Number of Points
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:NUM";
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:NUM",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:NUM",
+                    PointTag = inMeas.PointTag + "-UBAL:NUM",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:NUM",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
                     Description = inMeas.Description + " Number of Points",
@@ -644,15 +664,15 @@ namespace openHistorian.Adapters
             }
 
             // Number of Points above Alert 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:ALT";
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputRefference) < 1)
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
-                    PointTag = inMeas.PointTag + "-SNR:ALT",
-                    AlternateTag = inMeas.AlternateTag + "-SNR:ALT",
+                    PointTag = inMeas.PointTag + "-UBAL:ALT",
+                    AlternateTag = inMeas.AlternateTag + "-UBAL:ALT",
                     SignalTypeID = signaltype,
                     SignalReference = outputRefference,
                     Description = inMeas.Description + " number of Alerts",
@@ -669,22 +689,22 @@ namespace openHistorian.Adapters
 
             StatisticsCollection result = new StatisticsCollection();
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SUM";
             result.sum = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SQR";
             result.sqrd = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MIN";
             result.min = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MAX";
             result.max = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:NUM";
             result.total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
-            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
+            outputRefference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:ALT";
             result.alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputRefference).SignalID);
 
             result.Reset();

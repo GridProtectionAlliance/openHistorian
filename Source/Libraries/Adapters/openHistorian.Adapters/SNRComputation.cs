@@ -107,7 +107,14 @@ namespace openHistorian.Adapters
         /// </summary>
         public const string DefaultResultDeviceName = "SNR!SERVICE";
 
-        private int numberOfFrames;
+		/// <summary>
+		/// Default value for <see cref="HistorianInstance"/>.
+		/// </summary>
+		public const string DefaultHistorian = "PPA";
+
+
+
+		private int numberOfFrames;
         private Dictionary<Guid, List<double>> dataWindow;
         private List<double> refWindow;
         private Dictionary<Guid, MeasurementKey> outputMapping;
@@ -133,10 +140,23 @@ namespace openHistorian.Adapters
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the flag to determine of aggregates are saved
-        /// </summary>
-        [ConnectionStringParameter]
+		/// <summary>
+		/// Gets or sets the default historian instance used by the output measurements.
+		/// </summary>
+		[ConnectionStringParameter]
+		[CalculatedMesaurementAttribute]
+		[Description("Defines the Historian Instance used by the output measurements. Specified by Acronym")]
+		[DefaultValue(DefaultHistorian)]
+		public string HistorianInstance
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the flag to determine of aggregates are saved
+		/// </summary>
+		[ConnectionStringParameter]
         [CalculatedMesaurementAttribute]
         [Description("Defines If aggregates are saved sepperately.")]
         [DefaultValue(false)]
@@ -239,7 +259,10 @@ namespace openHistorian.Adapters
             this.statisticsMapping = new Dictionary<Guid, StatisticsCollection>();
             this.saveStats = this.SaveAggregates;
 
-            if( (double)this.ReportingIntervall % (double)this.WindowLength != 0)
+
+			
+
+			if ( (double)this.ReportingIntervall % (double)this.WindowLength != 0)
             {
                 this.ReportingIntervall = this.WindowLength * (this.ReportingIntervall / this.WindowLength);
                 OnStatusMessage(GSF.Diagnostics.MessageLevel.Warning, String.Format("Adjusting Reporting Interval to every {0} frames.", this.ReportingIntervall));
@@ -259,7 +282,11 @@ namespace openHistorian.Adapters
 
                 openHistorian.Model.Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
 
-                if ( this.InputMeasurementKeys.Count() < 1)
+				int HistorianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", this.HistorianInstance));
+
+
+
+				if ( this.InputMeasurementKeys.Count() < 1)
                 {
                     return;
                 }
@@ -291,7 +318,7 @@ namespace openHistorian.Adapters
                         openHistorian.Model.Measurement inMeas = measTable.QueryRecordWhere("SignalID = {0}", key.SignalID);
                         openHistorian.Model.Measurement outMeas = new openHistorian.Model.Measurement()
                         {
-                            HistorianID = inMeas.HistorianID,
+                            HistorianID = HistorianID,
                             DeviceID = device.ID,
                             PointTag = inMeas.PointTag + "-SNR",
                             AlternateTag = inMeas.AlternateTag + "-SNR",
@@ -315,7 +342,7 @@ namespace openHistorian.Adapters
                     }
 
                     if (this.saveStats)
-                        this.statisticsMapping.Add(key.SignalID, CreateStatistics(measTable, key, device));
+                        this.statisticsMapping.Add(key.SignalID, CreateStatistics(measTable, key, device, HistorianID));
                 }
 
                 if (this.Reference == null)
@@ -509,7 +536,7 @@ namespace openHistorian.Adapters
 
         }
 
-        private StatisticsCollection CreateStatistics(GSF.Data.Model.TableOperations<openHistorian.Model.Measurement> table, MeasurementKey key, Device device)
+        private StatisticsCollection CreateStatistics(GSF.Data.Model.TableOperations<openHistorian.Model.Measurement> table, MeasurementKey key, Device device, int HistorianID)
         {
             openHistorian.Model.Measurement inMeas = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
             int signaltype = 0;
@@ -528,7 +555,7 @@ namespace openHistorian.Adapters
                 
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:SUM",
                     AlternateTag = inMeas.AlternateTag + "-SNR:SUM",
@@ -553,7 +580,7 @@ namespace openHistorian.Adapters
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:SQR",
                     AlternateTag = inMeas.AlternateTag + "-SNR:SQR",
@@ -578,7 +605,7 @@ namespace openHistorian.Adapters
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:MIN",
                     AlternateTag = inMeas.AlternateTag + "-SNR:MIN",
@@ -602,7 +629,7 @@ namespace openHistorian.Adapters
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:MAX",
                     AlternateTag = inMeas.AlternateTag + "-SNR:MAX",
@@ -626,7 +653,7 @@ namespace openHistorian.Adapters
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:NUM",
                     AlternateTag = inMeas.AlternateTag + "-SNR:NUM",
@@ -650,7 +677,7 @@ namespace openHistorian.Adapters
             {
                 table.AddNewRecord(new openHistorian.Model.Measurement()
                 {
-                    HistorianID = inMeas.HistorianID,
+                    HistorianID = HistorianID,
                     DeviceID = device.ID,
                     PointTag = inMeas.PointTag + "-SNR:ALT",
                     AlternateTag = inMeas.AlternateTag + "-SNR:ALT",
