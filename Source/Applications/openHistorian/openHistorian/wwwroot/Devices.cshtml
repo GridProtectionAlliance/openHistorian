@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using GSF.Security
 @using GSF.Web.Model
 @using GSF.Web.Shared.Model
 @using openHistorian
@@ -50,6 +51,17 @@
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
     ViewBag.ParentKeys = Model.Global.NodeID.ToString();
+}
+@functions {
+    public bool UserIsAdminOrEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if ((object)securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator,Editor");
+    }
 }
 @helper BodyRows()
 {
@@ -104,11 +116,22 @@
         });
 
         function navigateToDeviceScreen(record) {
-            if (record.ProtocolID === modbusProtocolID) {
-                window.location.href = "ModbusConfig.cshtml?DeviceID=" + record.ID;
+            @if (UserIsAdminOrEditor()) 
+            {
+                <text>
+                if (record.ProtocolID === modbusProtocolID) {
+                    window.location.href = "ModbusConfig.cshtml?DeviceID=" + record.ID;
+                }
+                else {
+                    window.location.href = "AddSynchrophasorDevice.cshtml?DeviceID=" + record.ID;
+                }
+                </text>
             }
-            else {
-                window.location.href = "AddSynchrophasorDevice.cshtml?DeviceID=" + record.ID;
+            else
+            {
+                <text>
+                viewModel.viewPageRecord(record);
+                </text>
             }
         }
 
