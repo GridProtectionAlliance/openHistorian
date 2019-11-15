@@ -3256,6 +3256,11 @@
             Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.TlsClient"/>.
             </summary>
         </member>
+        <member name="P:GSF.Communication.TlsClient.SslStream">
+            <summary>
+            Gets the <see cref="P:GSF.Communication.TlsClient.SslStream"/> object for the <see cref="T:GSF.Communication.TlsClient"/>.
+            </summary>
+        </member>
         <member name="P:GSF.Communication.TlsClient.ServerUri">
             <summary>
             Gets the server URI of the <see cref="T:GSF.Communication.TlsClient"/>.
