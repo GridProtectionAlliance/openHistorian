@@ -658,6 +658,21 @@
             Gets or sets the security mode used by the data publisher.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.UseSTTP">
+            <summary>
+            Gets or sets flag that determines if STTP protocol should be used.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.UseGEP">
+            <summary>
+            Gets or sets flag that determines if GEP protocol should be used.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.UseSourcePrefix">
+            <summary>
+            Gets or sets flag that determines if source prefix should be used.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.ReceiveInternalMetadata">
             <summary>
             Gets or sets the flag that determines whether the subscriber is
