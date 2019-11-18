@@ -680,6 +680,7 @@
             self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(0);
             self.frameRate = ko.observable(30);
+            self.frameBase = ko.observable(0);
             self.missingAsNaN = ko.observable(true);
             self.fillMissingTimestamps = ko.observable(false);
             self.selectAllProgress = ko.observable("0%");
@@ -1397,12 +1398,19 @@
 
             if (selectedPointIDs.length === 0)
                 return;
+            let adjframerate = viewModel.frameRate();
+            if (viewModel.frameBase() == 1) {
+                adjframerate = adjframerate / 60.0;
+            }
+            if (viewModel.frameBase() == 2) {
+                adjframerate = adjframerate / (60.0*60.0);
+            }
 
             $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
                 "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) + 
                 "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) + 
-                "&FrameRate=" + encodeURIComponent(viewModel.frameRate()) + 
+                "&FrameRate=" + encodeURIComponent(adjframerate) + 
                 "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
                 "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
                 "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
@@ -2023,8 +2031,15 @@
                                 <label for="exportFrameRate">Frame Rate:</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="exportFrameRate" style="width: 65px" data-bind="integer, textInput: frameRate">
-                                    <span class="input-group-addon">frames per second</span>
+                                    &nbsp;
                                 </div>
+
+                                <select class="form-control" id="exportFrameRateQualifier" data-bind="value: frameBase">
+                                    <option value="0" selected>frames per second</option>
+                                    <option value="1">frames per minute</option>
+                                    <option value="2">frames per hour</option>
+                                </select>
+
                             </div>
                         </form>
                         <hr class="quarter-break" />
