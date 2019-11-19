@@ -21407,6 +21407,11 @@
             Default value for the <see cref="P:GSF.IO.FileProcessor.Filter"/> property.
             </summary>
         </member>
+        <member name="F:GSF.IO.FileProcessor.DefaultFolderExclusion">
+            <summary>
+            Default value for the <see cref="P:GSF.IO.FileProcessor.FolderExclusion"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultTrackChanges">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.TrackChanges"/> property.
@@ -21452,6 +21457,11 @@
         <member name="P:GSF.IO.FileProcessor.Filter">
             <summary>
             Gets or sets the filter used to determine whether a file should be processed.
+            </summary>
+        </member>
+        <member name="P:GSF.IO.FileProcessor.FolderExclusion">
+            <summary>
+            Gets or sets the pattern used to determine whether a folder should be excluded from enumeration.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.FilterMethod">
@@ -21585,6 +21595,13 @@
             </summary>
             <param name="filePath">The path to the file to be tested against the filter method.</param>
             <returns>True if the file matches the filter method; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.MatchesFolderExclusion(System.String)">
+            <summary>
+            Determines if the given folder matches the exclusion string provided through the <see cref="P:GSF.IO.FileProcessor.FolderExclusion"/> property.
+            </summary>
+            <param name="folderPath">The path to the folder to be tested against the exclusion string.</param>
+            <returns>True if the folder matches the exclusion string; false otherwise.</returns>
         </member>
         <member name="M:GSF.IO.FileProcessor.StopEnumeration">
             <summary>
@@ -46979,7 +46996,7 @@
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
             <returns>The nearest sub-second distribution timestamp for given <paramref name="timestamp"/>.</returns>
         </member>
-        <member name="M:GSF.Ticks.RoundToSecondDistribution(GSF.Ticks,System.Double)">
+        <member name="M:GSF.Ticks.RoundToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks)">
             <summary>
             Returns the nearest distribution timestamp for given <paramref name="timestamp"/>.
             </summary>
