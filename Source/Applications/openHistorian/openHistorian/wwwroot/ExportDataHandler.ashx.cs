@@ -127,7 +127,7 @@ namespace openHistorian
 
         private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
-            const int DefaultFrameRate = 30;
+            const double DefaultFrameRate = 30;
 
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
 
@@ -199,9 +199,9 @@ namespace openHistorian
                 headers = GetHeaders(dataContext, pointIDs.Select(id => (int)id));
             }
 
-            int frameRate;
+            double frameRate;
 
-            if (!int.TryParse(frameRateParam, out frameRate))
+            if (!double.TryParse(frameRateParam, out frameRate))
                 frameRate = DefaultFrameRate;
 
             bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
@@ -241,8 +241,19 @@ namespace openHistorian
                         for (int i = 0; i < values.Length; i++)
                             values[i] = float.NaN;
 
-                        Ticks[] subseconds = Ticks.SubsecondDistribution(frameRate);
-                        ulong interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+                        ulong interval;
+
+                        if (Math.Abs(frameRate % 1) <= (Double.Epsilon * 100))
+                        {
+                            Ticks[] subseconds = Ticks.SubsecondDistribution((int)frameRate);
+
+                            interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+                        }
+                        else
+                        {
+                            interval = (ulong)(Math.Floor(1.0d / frameRate) * Ticks.PerSecond);
+                        }
+                        
 
                         ulong lastTimestamp = 0;
 
@@ -276,7 +287,7 @@ namespace openHistorian
                             while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
                             {
                                 if (alignTimestamps)
-                                    timestamp = (ulong)Ticks.RoundToSubsecondDistribution((long)historianKey.Timestamp, frameRate).Value;
+                                    timestamp = (ulong)Ticks.RoundToSecondDistribution((long)historianKey.Timestamp, frameRate, startTime.Ticks).Value;
                                 else
                                     timestamp = historianKey.Timestamp;
 
@@ -299,7 +310,7 @@ namespace openHistorian
 
                                             for (ulong i = 1; i < difference / interval; i++)
                                             {
-                                                interpolated = (ulong)Ticks.RoundToSubsecondDistribution((long)(interpolated + interval), frameRate).Value;
+                                                interpolated = (ulong)Ticks.RoundToSecondDistribution((long)(interpolated + interval), frameRate, startTime.Ticks).Value;
                                                 readBuffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
                                                 bufferValues();
                                             }
