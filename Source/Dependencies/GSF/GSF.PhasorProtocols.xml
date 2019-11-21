@@ -4713,6 +4713,11 @@
             0101 Send configuration file 2.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.DeviceCommand.SendConfigurationFrame3">
+            <summary>
+            0110 Send configuration file 3.
+            </summary>
+        </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.ReceiveExtendedFrame">
             <summary>
             1000 Receive extended frame for IEEE C37.118 / receive reference phasor for IEEE 1344.
