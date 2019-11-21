@@ -284,10 +284,26 @@ namespace openHistorian
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
                             ulong timestamp = 0;
 
+                            // adjust timestamp to use first Time Stamp as Base
+                            bool AdjustTimeStamp = true;
+                            long baseTS = startTime.Ticks;
+
                             while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
                             {
                                 if (alignTimestamps)
-                                    timestamp = (ulong)Ticks.RoundToSecondDistribution((long)historianKey.Timestamp, frameRate, startTime.Ticks).Value;
+                                {
+                                    if (AdjustTimeStamp)
+                                    {
+                                        AdjustTimeStamp = false;
+                                        baseTS = (long)historianKey.Timestamp;
+                                    }
+                                    //Make sure the TS is actually close enough to the distribution
+                                    Ticks timestampTick = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTS,(int)Ticks.PerMillisecond/2);
+                                    if (timestampTick == Ticks.MinValue)
+                                        continue;
+
+                                    timestamp = (ulong)timestampTick.Value;
+                                }
                                 else
                                     timestamp = historianKey.Timestamp;
 
