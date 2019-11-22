@@ -33,6 +33,11 @@
   <ComponentGroupRef Id="Grafana_data_plugins_grafana_piechart_panel_src_img_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_grafana_piechart_panel_src_lib_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_grafana_piechart_panel_src_styles_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_css_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_data_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_images_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_partials_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1963126255_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1027920215_Components" />

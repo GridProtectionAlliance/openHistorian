@@ -401,6 +401,124 @@
     <File Id="data_plugins_grafana_piechart_panel_src_styles_piechart.scss" Name="piechart.scss" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-piechart-panel\src\styles\piechart.scss" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_pmumap_panel_Components" Directory="DATAPLUGINSGRAFANA_PMUMAP_PANELFOLDER">
+  <Component Id="data_plugins_grafana_pmumap_panel_CHANGELOG_md">
+    <File Id="data_plugins_grafana_pmumap_panel_CHANGELOG.md" Name="CHANGELOG.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\CHANGELOG.md" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_LICENSE">
+    <File Id="data_plugins_grafana_pmumap_panel_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\LICENSE" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_module_js">
+    <File Id="data_plugins_grafana_pmumap_panel_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\module.js" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_module_js_map">
+    <File Id="data_plugins_grafana_pmumap_panel_module.js.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\module.js.map" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_plugin_json">
+    <File Id="data_plugins_grafana_pmumap_panel_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_README_md">
+    <File Id="data_plugins_grafana_pmumap_panel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\README.md" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_pmumap_panel_css_Components" Directory="DATAPLUGINSGRAFANA_PMUMAP_PANELCSSFOLDER">
+  <Component Id="data_plugins_grafana_pmumap_panel_css_leaflet_css">
+    <File Id="data_plugins_grafana_pmumap_panel_css_leaflet.css" Name="leaflet.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\css\leaflet.css" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_css_worldmap_panel_css">
+    <File Id="data_plugins_grafana_pmumap_panel_css_worldmap_panel.css" Name="worldmap-panel.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\css\worldmap-panel.css" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_css_worldmap_dark_css">
+    <File Id="data_plugins_grafana_pmumap_panel_css_worldmap.dark.css" Name="worldmap.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\css\worldmap.dark.css" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_css_worldmap_light_css">
+    <File Id="data_plugins_grafana_pmumap_panel_css_worldmap.light.css" Name="worldmap.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\css\worldmap.light.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_pmumap_panel_data_Components" Directory="DATAPLUGINSGRAFANA_PMUMAP_PANELDATAFOLDER">
+  <Component Id="data_plugins_grafana_pmumap_panel_data_countries_json">
+    <File Id="data_plugins_grafana_pmumap_panel_data_countries.json" Name="countries.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\data\countries.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_data_countries_3letter_json">
+    <File Id="data_plugins_grafana_pmumap_panel_data_countries_3letter.json" Name="countries_3letter.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\data\countries_3letter.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_data_probes_json">
+    <File Id="data_plugins_grafana_pmumap_panel_data_probes.json" Name="probes.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\data\probes.json" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_data_states_json">
+    <File Id="data_plugins_grafana_pmumap_panel_data_states.json" Name="states.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\data\states.json" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_pmumap_panel_images_Components" Directory="DATAPLUGINSGRAFANA_PMUMAP_PANELIMAGESFOLDER">
+  <Component Id="data_plugins_grafana_pmumap_panel_images_countries_option_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_countries_option.png" Name="countries-option.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\countries-option.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_elasticsearch_query_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_elasticsearch_query.png" Name="elasticsearch-query.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\elasticsearch-query.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_es_options_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_es_options.png" Name="es-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\es-options.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_gpa_lock_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\gpa-lock.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_graphite_consolidateby_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_graphite_consolidateby.png" Name="graphite-consolidateby.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\graphite-consolidateby.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_graphite_maxdatapoints_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_graphite_maxdatapoints.png" Name="graphite-maxdatapoints.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\graphite-maxdatapoints.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_influx_query_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_influx_query.png" Name="influx-query.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\influx-query.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_json_endpoint_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_json_endpoint.png" Name="json-endpoint.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\json-endpoint.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_jsonp_endpoint_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_jsonp_endpoint.png" Name="jsonp-endpoint.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\jsonp-endpoint.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_layers_2x_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_layers_2x.png" Name="layers-2x.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\layers-2x.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_layers_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_layers.png" Name="layers.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\layers.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_marker_icon_2x_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_marker_icon_2x.png" Name="marker-icon-2x.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\marker-icon-2x.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_marker_icon_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_marker_icon.png" Name="marker-icon.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\marker-icon.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_marker_shadow_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_marker_shadow.png" Name="marker-shadow.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\marker-shadow.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_geohash_query_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_geohash_query.png" Name="worldmap-geohash-query.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap-geohash-query.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_light_theme_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_light_theme.png" Name="worldmap-light-theme.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap-light-theme.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_timeseries_query_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_timeseries_query.png" Name="worldmap-timeseries-query.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap-timeseries-query.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_usa_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_usa.png" Name="worldmap-usa.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap-usa.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_world_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_world.png" Name="worldmap-world.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap-world.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_worldmap_logo_svg">
+    <File Id="data_plugins_grafana_pmumap_panel_images_worldmap_logo.svg" Name="worldmap_logo.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\worldmap_logo.svg" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_grafana_pmumap_panel_partials_Components" Directory="DATAPLUGINSGRAFANA_PMUMAP_PANELPARTIALSFOLDER">
+  <Component Id="data_plugins_grafana_pmumap_panel_partials_editor_html">
+    <File Id="data_plugins_grafana_pmumap_panel_partials_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\partials\editor.html" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_partials_module_html">
+    <File Id="data_plugins_grafana_pmumap_panel_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\partials\module.html" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER">
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_gitignore">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\.gitignore" />

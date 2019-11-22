@@ -41,6 +41,12 @@
           <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELSRCSTYLESFOLDER" Name="styles" />
         </Directory>
       </Directory>
+      <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELFOLDER" Name="grafana-pmumap-panel">
+        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELCSSFOLDER" Name="css" />
+        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELDATAFOLDER" Name="data" />
+        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELIMAGESFOLDER" Name="images" />
+        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELPARTIALSFOLDER" Name="partials" />
+      </Directory>
       <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER" Name="gridprotectionalliance-openhistorian-datasource">
         <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTFOLDER" Name="dist">
           <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR2909013327FOLDER" Name="controllers" />
