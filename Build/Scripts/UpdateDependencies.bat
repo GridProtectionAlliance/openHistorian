@@ -47,6 +47,10 @@ SET targetschema=%target%\Source\Data
 SET sourcetools=%source%\Tools
 SET targettools=%target%\Source\Applications\openHistorian\openHistorianSetup
 
+::Grafana Panels
+SET GrafanaSource=\\GPAWEB\NightlyBuilds\GrafanaPanels\Binaries
+SET GrafanaTarget=%target%\Source\Applications\openHistorian\openHistorian\Grafana\data\plugins
+
 ECHO.
 ECHO Entering working directory...
 IF EXIST "%target%" IF NOT EXIST "%target%"\.git RMDIR /S /Q "%target%"
@@ -88,6 +92,7 @@ COPY /Y "%sourcetools%\StatHistorianReportGenerator\StatHistorianReportGenerator
 COPY /Y "%sourcetools%\NoInetFixUtil\NoInetFixUtil.exe" "%targettools%\NoInetFixUtil.exe"
 COPY /Y "%sourcetools%\DNP3ConfigGenerator\DNP3ConfigGenerator.exe" "%targettools%\DNP3ConfigGenerator.exe"
 COPY /Y "%sourcetools%\LogFileViewer\LogFileViewer.exe" "%targettools%\LogFileViewer.exe"
+XCOPY "%GrafanaSource%" "%GrafanaTarget%\" /Y /E /U
 
 :UpdateDbScripts
 ECHO.
