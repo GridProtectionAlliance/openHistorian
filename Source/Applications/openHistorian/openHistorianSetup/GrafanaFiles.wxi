@@ -921,6 +921,30 @@
     <File Id="data_plugins_gridprotectionalliance_osisoftpi_datasource_4126474795.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-osisoftpi-datasource\src\partials\query.options.html" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_Components" Directory="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELFOLDER">
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_module_js">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\module.js" />
+  </Component>
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_plugin_json">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\plugin.json" />
+  </Component>
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_README_md">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\README.md" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_images_Components" Directory="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELIMAGESFOLDER">
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_images_Settings_PNG">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_images_Settings.PNG" Name="Settings.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\images\Settings.PNG" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_partials_Components" Directory="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELPARTIALSFOLDER">
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_partials_editor_html">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_partials_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\partials\editor.html" />
+  </Component>
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_partials_module_html">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\partials\module.html" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELFOLDER">
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_gitignore">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\.gitignore" />
@@ -7372,20 +7396,6 @@
   <Component Id="scripts_trigger_windows_build_sh">
     <File Id="scripts_trigger_windows_build.sh" Name="trigger_windows_build.sh" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\scripts\trigger_windows_build.sh" />
   </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_build_Components" Directory="SCRIPTSBUILDFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_cli_Components" Directory="SCRIPTSCLIFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_go_Components" Directory="SCRIPTSGOFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_grunt_Components" Directory="SCRIPTSGRUNTFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_helpers_Components" Directory="SCRIPTSHELPERSFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_verify_repo_update_Components" Directory="SCRIPTSVERIFY_REPO_UPDATEFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_webpack_Components" Directory="SCRIPTSWEBPACKFOLDER">
 </ComponentGroup>
 <ComponentGroup Id="Grafana_tools_Components" Directory="TOOLSFOLDER">
 </ComponentGroup>

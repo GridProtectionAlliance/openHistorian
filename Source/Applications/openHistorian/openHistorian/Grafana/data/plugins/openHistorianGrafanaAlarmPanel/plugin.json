@@ -1,0 +1,31 @@
+{ 
+"type":"panel", 
+"name":"OpenHistorianAlarm Panel",  
+"id":"openhistorian-alarm-panel", 
+"info":{ 
+"description":"PluginTemplatefor grafana",  
+"author":{ 
+"name":"GridProtectionAlliance",  
+"url":"http//www.gridprotectionalliance.org" 
+}, 
+"keywords":["template","panel" ],  
+"logos":{ 
+"small":"", 
+"large":"" 
+}, 
+"links":[ 
+{ 
+"name":"Projectsite", 
+"url":"https//github.com/grafana/piechart-panel" 
+} 
+], 
+"screenshots":[ 
+], 
+"version":"1.2.0", 
+"updated": "2019-11-22" 
+}, 
+"dependencies":{ 
+"grafanaVersion":"4.6", 
+"plugins":[] 
+} 
+} 
