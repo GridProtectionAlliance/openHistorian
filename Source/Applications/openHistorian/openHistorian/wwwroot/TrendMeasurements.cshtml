@@ -647,18 +647,39 @@
                 })
             }]);
 
-            self.tsTolerance = ko.observable(false);
-            self.tsTolerance.subscribe(function (val) {
-                if (val) {
-                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000)
-                }
-            });
+           
 
 
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
             if (trendSeriesLimitValue === undefined)
                 trendSeriesLimitValue = "500";
+
+            var timesStampSnap = Cookies.get("timesStampSnap");
+            var alignTimestamps = Cookies.get("alignTimestamps");
+            var missingAsNaN = Cookies.get("missingAsNaN");
+            var fillMissingTimestamps = Cookies.get("fillMissingTimestamps");
+            var tsTolerance = Cookies.get("tsTolerance");
+
+            if (timesStampSnap === undefined)
+                timesStampSnap = 0;
+            if (alignTimestamps === undefined)
+                alignTimestamps = true;
+            if (missingAsNaN === undefined)
+                missingAsNaN = true;
+            if (fillMissingTimestamps === undefined)
+                fillMissingTimestamps = false;
+            if (tsTolerance === undefined)
+                tsTolerance = true;
+
+            self.tsTolerance = ko.observable(tsTolerance);
+            self.tsTolerance.subscribe(function (val) {
+                Cookies.set("tsTolerance", val.toString(), { expires: 365 });
+                if (val) {
+                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000)
+                }
+            });
+
 
             var autoEstimateResolutionValue = Cookies.get("autoEstimateResolution");
 
@@ -675,7 +696,7 @@
                 autoTrendValue = (autoTrendValue === "true");
 
             self._instanceName = ko.observable("");
-            self._alignTimestamps = ko.observable(true);
+            self._alignTimestamps = ko.observable(alignTimestamps);
             self._trendSeriesLimit = ko.observable(parseInt(trendSeriesLimitValue));
             self._autoEstimateResolution = ko.observable(autoEstimateResolutionValue);
             self._autoTrend = ko.observable(autoTrendValue);
@@ -689,12 +710,29 @@
             self.fileFormat = ko.observable(0);
             self.frameRate = ko.observable(30);
             self.frameBase = ko.observable(0);
-            self.timesStampSnap = ko.observable(0);
+            self.timesStampSnap = ko.observable(timesStampSnap);
 
            
-            self.missingAsNaN = ko.observable(true);
-            self.fillMissingTimestamps = ko.observable(false);
+            self.missingAsNaN = ko.observable(missingAsNaN);
+            self.fillMissingTimestamps = ko.observable(fillMissingTimestamps);
             self.selectAllProgress = ko.observable("0%");
+
+            self.fillMissingTimestamps.subscribe(function (val) {
+                Cookies.set("fillMissingTimestamps", val.toString(), { expires: 365 });
+            });
+            self.missingAsNaN.subscribe(function (val) {
+                Cookies.set("missingAsNaN", val.toString(), { expires: 365 });
+            });
+            self.timesStampSnap.subscribe(function (val) {
+                Cookies.set("timesStampSnap", val.toString(), { expires: 365 });
+            });
+            self.tsTolerance.subscribe(function (val) {
+                Cookies.set("tsTolerance", val.toString(), { expires: 365 });
+                if (val) {
+                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000)
+                }
+            });
+
 
             self.instanceName = ko.pureComputed({
                 read: function() {
@@ -797,9 +835,11 @@
                 },
                 write: function(value) {
                     self._alignTimestamps(value);
-
-                    if (!value)
+                    Cookies.set("alignTimestamps", value.toString(), { expires: 365 });
+                    if (!value) {
                         self.fillMissingTimestamps(false);
+                        self.tsTolerance(false);
+                    }
                 },
                 owner: self
             });
