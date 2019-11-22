@@ -128,6 +128,7 @@ namespace openHistorian
         private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const double DefaultFrameRate = 30;
+            const int DefaultTSSnap = 0;
 
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
 
@@ -137,14 +138,17 @@ namespace openHistorian
             // with a "download" param and unique ID associated with cached parameters.
             // Then extract params based on unique ID and follow normal steps...
 
+            // Note TSTolerance is in ms
             string pointIDsParam = requestParameters["PointIDs"];
             string startTimeParam = requestParameters["StartTime"];
             string endTimeParam = requestParameters["EndTime"];
+            string TSSnapParam = requestParameters["TSSnap"];
             string frameRateParam = requestParameters["FrameRate"];
             string alignTimestampsParam = requestParameters["AlignTimestamps"];
             string missingAsNaNParam = requestParameters["MissingAsNaN"];
             string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
             string instanceName = requestParameters["InstanceName"];
+            string toleranceParam = requestParameters["TSTolerance"];
             ulong[] pointIDs;
             string headers;
 
@@ -200,9 +204,19 @@ namespace openHistorian
             }
 
             double frameRate;
+            int tSSnap;
+            double tSTolerancems;
+            int tSToleranceTicks;
 
             if (!double.TryParse(frameRateParam, out frameRate))
                 frameRate = DefaultFrameRate;
+            if (!int.TryParse(TSSnapParam, out tSSnap))
+                tSSnap = DefaultTSSnap;
+            if (!double.TryParse(toleranceParam, out tSTolerancems))
+                tSTolerancems = 0.5;
+
+            tSToleranceTicks = (int)Math.Ceiling(tSTolerancems * (double)Ticks.PerMillisecond);
+
 
             bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
@@ -287,6 +301,22 @@ namespace openHistorian
                             // adjust timestamp to use first Time Stamp as Base
                             bool AdjustTimeStamp = true;
                             long baseTS = startTime.Ticks;
+                            if (tSSnap==0)
+                            {
+                                AdjustTimeStamp = false;
+                                baseTS = Ticks.RoundToSecondDistribution(startTime.Ticks,frameRate,startTime.Ticks - startTime.Ticks % Ticks.PerSecond);
+
+                            }
+                            else if (tSSnap == 1)
+                            {
+                                AdjustTimeStamp = true;
+                            }
+                            else if (tSSnap == 2)
+                            {
+                                AdjustTimeStamp = false;
+                                baseTS = startTime.Ticks;
+                            }
+                                
 
                             while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
                             {
@@ -298,7 +328,7 @@ namespace openHistorian
                                         baseTS = (long)historianKey.Timestamp;
                                     }
                                     //Make sure the TS is actually close enough to the distribution
-                                    Ticks timestampTick = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTS,(int)Ticks.PerMillisecond/2);
+                                    Ticks timestampTick = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTS, tSToleranceTicks);
                                     if (timestampTick == Ticks.MinValue)
                                         continue;
 
