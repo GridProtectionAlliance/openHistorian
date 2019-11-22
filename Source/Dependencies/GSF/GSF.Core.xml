@@ -47002,7 +47002,18 @@
             </summary>
             <param name="timestamp">Timestamp to align.</param>
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <param name="Baseline"> Starting Timestamp of the Distribution.</param>
             <returns>The nearest distribution timestamp for given <paramref name="timestamp"/>.</returns>
+        </member>
+        <member name="M:GSF.Ticks.ToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks,System.Int32)">
+            <summary>
+            Returns the distribution timestamp for given <paramref name="timestamp"/> or <see cref="F:GSF.Ticks.MinValue"/> if there is no TS within the specified Tolerance.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <param name="tolerance">Tolerance of the TS in ticks.</param>
+            <param name="baseline"> Starting Timestamp of the Distribution.</param>
+            <returns>The distribution timestamp for given <paramref name="timestamp"/>or <see cref="F:GSF.Ticks.MinValue"/> .</returns>
         </member>
         <member name="T:GSF.TimeTagBase">
             <summary>
