@@ -1,14 +1,14 @@
 { 
 "type":"panel", 
-"name":"OpenHistorianAlarmPanel",   
+"name":"OpenHistorianAlarmPanel", 
 "id":"openhistorian-alarm-panel", 
 "info":{ 
-"description":"Panelfor openHistorian Device Status Alarms",   
+"description":"PanelforopenHistorian Device Status Alarms",    
 "author":{ 
 "name":"GridProtectionAlliance", 
 "url":"http//www.gridprotectionalliance.org" 
 }, 
-"keywords":["openHistorian","panel","DeviceStatus" ], 
+"keywords":["openHistorian","panel","DeviceStatus"],  
 "logos":{ 
 "small":"images/gpa-lock.png", 
 "large":"images/gpa-lock.png" 
@@ -21,8 +21,8 @@
 ], 
 "screenshots":[ 
 ], 
-"version":"1.3.0", 
-"updated": "2019-11-22" 
+"version":"1.4.0", 
+"updated": "2019-11-23" 
 }, 
 "dependencies":{ 
 "grafanaVersion":"4.6", 
