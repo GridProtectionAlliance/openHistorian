@@ -457,9 +457,54 @@
             Name field.
             </summary>
         </member>
+        <member name="P:GSF.Security.Model.Node.CompanyID">
+            <summary>
+            Company ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Longitude">
+            <summary>
+            Longitude field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Latitude">
+            <summary>
+            Latitude field.
+            </summary>
+        </member>
         <member name="P:GSF.Security.Model.Node.Description">
             <summary>
             Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.ImagePath">
+            <summary>
+            Image path field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Settings">
+            <summary>
+            Settings field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.MenuType">
+            <summary>
+            Menu type field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.MenuData">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Master">
+            <summary>
+            Master field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.LoadOrder">
+            <summary>
+            Load order field.
             </summary>
         </member>
         <member name="P:GSF.Security.Model.Node.Enabled">

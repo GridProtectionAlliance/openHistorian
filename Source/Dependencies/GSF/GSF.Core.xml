@@ -35936,7 +35936,7 @@
         <member name="T:GSF.Text.DiffMatchPatch">
             <summary>
             Class containing the diff, match and patch methods.
-            Also Contains the behaviour settings.
+            Also Contains the behavior settings.
             </summary>
         </member>
         <member name="F:GSF.Text.DiffMatchPatch.DiffTimeout">
@@ -36283,7 +36283,7 @@
         </member>
         <member name="M:GSF.Text.DiffMatchPatch.MatchAlphabet(System.String)">
             <summary>
-            Initialise the alphabet for the Bitap algorithm.
+            Initialize the alphabet for the Bitap algorithm.
             </summary>
             <param name="pattern">The text to encode</param>
             <returns>Hash of character locations</returns>
