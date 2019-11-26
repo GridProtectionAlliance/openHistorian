@@ -10,8 +10,8 @@
 }, 
 "keywords":["worldmap","panel","openhistorian"], 
 "logos":{ 
-"small":"images/gpa-lock.png", 
-"large":"images/gpa-lock.png" 
+"small":"images/GPM-logo.png", 
+"large":"images/GPM-logo.png" 
 }, 
 "links":[ 
 { 
@@ -37,8 +37,8 @@
 "path":"images/worldmap-light-theme.png" 
 } 
 ], 
-"version":"0.15.1", 
-"updated": "2019-11-25" 
+"version":"0.16.1", 
+"updated": "2019-11-26" 
 }, 
 "dependencies":{ 
 "grafanaVersion":"3.x.x", 
