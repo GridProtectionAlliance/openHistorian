@@ -3,7 +3,7 @@
 "name":"OpenHistorianAlarmPanel", 
 "id":"openhistorian-alarm-panel", 
 "info":{ 
-"description":"PanelforopenHistorianDeviceStatusAlarms",       
+"description":"PanelforopenHistorianDeviceStatusAlarms", 
 "author":{ 
 "name":"GridProtectionAlliance", 
 "url":"http//www.gridprotectionalliance.org" 
@@ -21,7 +21,7 @@
 ], 
 "screenshots":[ 
 ], 
-"version":"1.7.0", 
+"version":"1.8.0", 
 "updated": "2019-11-26" 
 }, 
 "dependencies":{ 
