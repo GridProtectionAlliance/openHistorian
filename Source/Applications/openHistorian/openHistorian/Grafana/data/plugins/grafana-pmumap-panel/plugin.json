@@ -37,8 +37,8 @@
 "path":"images/worldmap-light-theme.png" 
 } 
 ], 
-"version":"0.18.1", 
-"updated": "2019-11-27" 
+"version":"0.19.1", 
+"updated": "2019-11-28" 
 }, 
 "dependencies":{ 
 "grafanaVersion":"3.x.x", 
