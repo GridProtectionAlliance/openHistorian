@@ -1241,6 +1241,21 @@
             Gets or sets reference to <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>, attaching and/or detaching to events as needed.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.UdpPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> publication channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> publication channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpClientPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.TcpClient"/> publication channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TotalBytesReceived">
             <summary>
             Gets total data packet bytes received during this session.
@@ -1407,6 +1422,23 @@
             <param name="index">Index <see cref="T:GSF.Units.EE.SignalKind"/> to request signal reference for.</param>
             <param name="count">Number of signals defined for this <see cref="T:GSF.Units.EE.SignalKind"/>.</param>
             <returns>Signal reference of given <see cref="T:GSF.Units.EE.SignalKind"/> and <paramref name="index"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetConnectionID(GSF.Communication.IServer,System.Guid)">
+            <summary>
+            Gets connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.
+            </summary>
+            <param name="server">Server connection of associated <paramref name="clientID"/>.</param>
+            <param name="clientID">Guid of client for ID lookup.</param>
+            <returns>Connection ID (i.e., IP:Port) for specified <paramref name="clientID"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
+            <summary>
+            Handles incoming commands from devices connected over the command channel.
+            </summary>
+            <param name="clientID">Guid of client that sent the command.</param>
+            <param name="connectionID">Remote client connection identification (i.e., IP:Port).</param>
+            <param name="commandBuffer">Data buffer received from connected client device.</param>
+            <param name="length">Valid length of data within the buffer.</param>
         </member>
         <member name="T:PhasorProtocolAdapters.SignalReferenceMeasurement">
             <summary>
