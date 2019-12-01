@@ -39,6 +39,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF.PhasorProtocols;
 using Measurement = openHistorian.Model.Measurement;
 
 namespace openHistorian
@@ -1021,6 +1022,21 @@ namespace openHistorian
         public Task<string> GetElapsedTimeString(DateTime startTime, DateTime stopTime)
         {
             return Task.Factory.StartNew(() => new Ticks(stopTime - startTime).ToElapsedTimeString(2));
+        }
+
+        public class SynchrophasorProtocol
+        {
+            public string Acronym;
+            public string Name;
+        }
+
+        public IEnumerable<SynchrophasorProtocol> GetSynchrophasorProtocols()
+        {
+            return Enum.GetValues(typeof(PhasorProtocol)).Cast<PhasorProtocol>().Select(protocol => new SynchrophasorProtocol
+            {
+                Acronym = protocol.ToString(),
+                Name = protocol.GetFormattedProtocolName()
+            });
         }
 
         #endregion
