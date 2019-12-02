@@ -78,7 +78,6 @@
     <link href="@Resources.Root/Shared/Content/select2.css" rel="stylesheet">
     <link href="@Resources.Root/Shared/Content/select2-bootstrap.css" rel="stylesheet">
     <style>
-
         html, body {
             height: 100%;
         }
@@ -302,15 +301,15 @@
             float: right !important;
         }
 
-            /* Collapsable button icon when content is shown - arrow down */
-            .btn-collapsable.btn:after {
-                content: "\e114";
-            }
+        /* Collapsable button icon when content is shown - arrow down */
+        .btn-collapsable.btn:after {
+            content: "\e114";
+        }
 
-            /* Collapsable button icon when content is hidden - arrow right */
-            .btn-collapsable.btn.collapsed:after {
-                content: "\e080";
-            }
+        /* Collapsable button icon when content is hidden - arrow right */
+        .btn-collapsable.btn.collapsed:after {
+            content: "\e080";
+        }
 
         @@media screen {
             .page-logo {
@@ -3060,12 +3059,12 @@
         $(function () {
             $("#tabs").tabs({
                 active: 0,
-                activate: function(event, ui) {
+                activate: function (event, ui) {
                     switch (ui.newPanel.attr("id")) {
-                        case "tab1":
-                            break;
-                        case "tab2":
-                            break;
+                    case "tab1":
+                        break;
+                    case "tab2":
+                        break;
                     }
 
                     resizePageElements();
@@ -3423,7 +3422,7 @@
                                 Connection&nbsp;Settings
                             </label>
                             <div class="pull-right">
-                                <span id="notConnected">Not&nbsp;Connected&nbsp;&nbsp;<span class="glyphicon glyphicon-ban-circle" style="color: #FF003B;"></span></span>&nbsp;&nbsp;
+                                <span id="notConnected" style="display: none">Not&nbsp;Connected&nbsp;&nbsp;<span class="glyphicon glyphicon-ban-circle" style="color: #FF003B;"></span></span>&nbsp;&nbsp;
                                 <span id="attemptingConnection" style="display: none">Attempting&nbsp;Connection&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin" style="color: yellow"></span></span>&nbsp;&nbsp;
                                 <span id="connected" style="display: none">Connected&nbsp;&nbsp;<span class="glyphicon glyphicon-check" style="color: chartreuse"></span></span>
                                 <button type="button" class="btn btn-xs btn-collapsable" data-toggle="collapse" data-target="#connectionSettings"></button>
@@ -3452,7 +3451,7 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div id="tab2">
+                                <div id="tab2" style="display: none">
                                     <form class="form-hortizontal" role="form">
                                         <div class="row">
                                             <div class="form-group">
@@ -3775,8 +3774,8 @@
         </div>
     </div>
 </div>
-@* JSON Sequences Display Panel *@
-<hr class="thick-spacer" @*data-bind="visible: sequences().length > 0"*@ />
+@* JSON Serialized Configuration Display Panel *@
+<hr class="thick-spacer" />
 <div class="panel panel-default">
     <div class="panel-heading panel-heading-condensed" onclick="$('#serializedConfiguration').collapse('toggle')">
         <label>Serialized&nbsp;Configuration</label>

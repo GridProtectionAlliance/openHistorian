@@ -1999,7 +1999,7 @@
                 <div id="tab1" class="ui-tabs-active">
                     @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
                 </div>
-                <div id="tab2">
+                <div id="tab2" style="display: none">
                     <button type="button" class="btn btn-xs btn-collapsable pull-right" id="collapseTrendSetup" data-toggle="collapse" data-target="#trendTimeRangeSelection"></button>
                     <div class="well collapse in clearfix" style="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "plot").Trim())
@@ -2072,7 +2072,7 @@
                         <span>Total processed points: <span id="pointCount"></span></span>&nbsp;&nbsp;
                     </span>
                 </div>
-                <div id="tab3">
+                <div id="tab3" style="display: none">
                     <div class="well clearfix" style="padding: 10px 20px 10px 20px" id="exportTimeRangeSelection">
                         @Raw(string.Format(Include("SelectTimeRange.cshtml").ToString(), "export").Trim())
                         <form class="form-inline" role="form">
