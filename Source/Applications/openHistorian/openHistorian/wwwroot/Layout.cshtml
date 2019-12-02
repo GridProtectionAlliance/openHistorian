@@ -274,6 +274,8 @@ else {
         @RenderBody()
 
     </div><!--/.container -->
+    @* jquery-ui.js needs to precede boostrap.js *@
+    <script src="@Resources.Root/Shared/Scripts/jquery-ui.js"></script>
     <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
     <script src="@Resources.Root/Shared/Scripts/jquery.signalR.js"></script>
     <script src="@Resources.Root/Shared/Scripts/js.cookie.js"></script>

@@ -317,12 +317,20 @@
                 margin-bottom: 2px;
                 margin-top: -38px;
             }
+
+            .offset-width {
+                width: 10px
+            }
         }
 
         @@media screen and (min-width: 638px) {
             .page-logo {
                 margin-bottom: 2px;
                 margin-top: -12px;
+            }
+
+            .offset-width {
+                width: 10px
             }
         }
 
@@ -331,12 +339,20 @@
                 margin-bottom: 2px;
                 margin-top: -12px;
             }
+
+            .offset-width {
+                width: 10px
+            }
         }
 
         @@media screen and (min-width: 992px) {
             .page-logo {
                 margin-bottom: -25px;
                 margin-top: -4px;
+            }
+
+            .offset-width {
+                width: 150px
             }
         }
     </style>
@@ -424,7 +440,6 @@
     }
 }
 @section Scripts {
-    <script src="@Resources.Root/Shared/Scripts/jquery-ui.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout.mapping.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout.validation.js"></script>
@@ -1010,6 +1025,41 @@
                             firstCurrent = false;
                         }
                     }
+
+                    cell.serializeCell = function () {
+                        var voltages = [];
+                        var currents = [];
+
+                        self.voltages().forEach(function (voltage) {
+                            voltages.push({
+                                id: voltage.ID,
+                                label: voltage.Label(),
+                                originalLabel: voltage.OriginalLabel,
+                                phase: voltage.Phase(),
+                                nominalVoltage: voltage.NominalVoltage(),
+                                enabled: voltage.Enabled()
+                            });
+                        });
+
+                        self.currents().forEach(function (current) {
+                            currents.push({
+                                id: current.ID,
+                                label: current.Label(),
+                                originalLabel: current.OriginalLabel,
+                                phase: current.Phase(),
+                                associatedVoltage: current.AssociatedVoltage(),
+                                enabled: current.Enabled()
+                            });
+                        });
+
+                        return {
+                            idLabel: cell.IDLabel(),
+                            acronym: cell.Acronym,
+                            originalAcronym: cell.OriginalAcronym(),
+                            voltages: voltages,
+                            currents: currents
+                        };
+                    };
                 }
 
                 // Make sure table is refreshed
@@ -1271,6 +1321,21 @@
                 phasorDefinition.Enabled = current.Enabled;
 
                 return current;
+            };
+
+            self.serializeConfiguration = function () {
+                const cells = self.configFrame().Cells;
+                var serializedCells = [];
+
+                if (cells) {
+                    cells.forEach(function (cell) {
+                        serializedCells.push(cell.serializeCell());
+                    });
+                }
+
+                return {
+                    configuration: serializedCells
+                };
             };
 
             // Validations
@@ -3250,7 +3315,7 @@
                 <td colspan="2">
                     @* Connection Settings and Status Panel *@
                     <div class="panel panel-primary" id="connectionSettingsPanel" style="margin: 2px">
-                        <div class="panel-heading panel-heading-condensed clearfix">
+                        <div class="panel-heading panel-heading-condensed clearfix" onclick="$('#connectionSettings').collapse('toggle')">
                             <label>
                                 Connection&nbsp;Settings
                             </label>
@@ -3288,7 +3353,7 @@
                                     <form class="form-hortizontal" role="form">
                                         <div class="row">
                                             <div class="form-group">
-                                                <label class="col-md-2 control-label top-padding text-right text-nowrap col-input" style="width: 150px" for="selectProtocol">Protocol:</label>
+                                                <label class="col-md-2 control-label top-padding text-right text-nowrap col-input offset-width" for="selectProtocol">Protocol:</label>
                                                 <div class="col-md-3">
                                                     <select class="form-control" id="selectProtocol" @*data-bind="value: frameFormat"*@>
                                                     </select>
@@ -3312,7 +3377,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group">
-                                                <label class="col-md-2 control-label top-padding text-right text-nowrap col-input" style="width: 150px" for="inputConnectionString">Connection String:</label>
+                                                <label class="col-md-2 control-label top-padding text-right text-nowrap col-input offset-width" for="inputConnectionString">Connection String:</label>
                                                 <div class="col-md-10">
                                                     <div class="input-group">
                                                         <input type="text" class="form-control" id="inputConnectionString" @*data-bind="textInput: connectionString"*@>
@@ -3569,7 +3634,7 @@
                     </td>
                     <td class="text-left">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
-                        <select class="form-control" style="width: 90%" data-bind="options: DeviceVoltages, optionsCaption: 'None', value: AssociatedVoltage, optionsText: associatedVoltageLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
+                        <select class="form-control" style="width: 85%" data-bind="options: DeviceVoltages, optionsCaption: 'None', value: AssociatedVoltage, optionsText: associatedVoltageLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
                     </td>
                 </tr>
                 </tbody>
@@ -3580,12 +3645,12 @@
 @* JSON Sequences Display Panel *@
 <hr class="thick-spacer" @*data-bind="visible: sequences().length > 0"*@ />
 <div class="panel panel-default">
-    <div class="panel-heading" style="height: 30px; padding-top: 5px">
+    <div class="panel-heading panel-heading-condensed" onclick="$('#serializedConfiguration').collapse('toggle')">
         <label>Serialized&nbsp;Configuration</label>
         <button type="button" class="btn btn-xs btn-collapsable collapsed" style="top: 0; right: -10px" data-toggle="collapse" data-target="#serializedConfiguration"></button>
     </div>
     <div class="panel-body collapse" style="padding: 2px; margin-bottom: -10px" id="serializedConfiguration">
-        <pre @*data-bind="text: JSON.stringify(serializeMapping(), null, 4)"*@></pre>
+        <pre data-bind="text: JSON.stringify(serializeConfiguration(), null, 2)"></pre>
     </div>
 </div>
 @* TCP Connection String Builder *@
