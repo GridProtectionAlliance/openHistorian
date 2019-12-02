@@ -3279,8 +3279,7 @@
 
                 // Load available synchrophasor protocols, if not already loaded
                 if (protocolSelect.children("option").length === 0) {
-                    // TODO: Switch to phasorHub when synchronizing to GSF
-                    dataHub.getSynchrophasorProtocols().done(function (protocols) {
+                    phasorHub.getSynchrophasorProtocols().done(function (protocols) {
                         for (let i = 0; i < protocols.length; i++) {
                             const protocol = protocols[i];
                             protocolSelect.append($("<option>", { value: protocol.Acronym, text: protocol.Name }));
