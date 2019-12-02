@@ -1027,37 +1027,32 @@
                     }
 
                     cell.serializeCell = function () {
-                        var voltages = [];
-                        var currents = [];
+                        var phasorDefinitions = [];
 
-                        self.voltages().forEach(function (voltage) {
-                            voltages.push({
-                                id: voltage.ID,
-                                label: voltage.Label(),
-                                originalLabel: voltage.OriginalLabel,
-                                phase: voltage.Phase(),
-                                nominalVoltage: voltage.NominalVoltage(),
-                                enabled: voltage.Enabled()
-                            });
-                        });
+                        cell.PhasorDefinitions.forEach(function (phasorDefinition) {
+                            const isVoltage = phasorDefinition.PhasorType.toLowerCase() === "voltage";
 
-                        self.currents().forEach(function (current) {
-                            currents.push({
-                                id: current.ID,
-                                label: current.Label(),
-                                originalLabel: current.OriginalLabel,
-                                phase: current.Phase(),
-                                associatedVoltage: current.AssociatedVoltage(),
-                                enabled: current.Enabled()
+                            phasorDefinitions.push({
+                                ID: phasorDefinition.ID,
+                                Label: phasorDefinition.Label(),
+                                PhasorType: phasorDefinition.PhasorType,
+                                Phase: phasorDefinition.Phase(),
+                                DestinationPhasorID: isVoltage ? phasorDefinition.DestinationPhasorID : phasorDefinition.Current.AssociatedVoltage(),
+                                NominalVoltage: isVoltage ? phasorDefinition.Voltage.NominalVoltage() : phasorDefinition.Current.AssociatedNominalVoltage(),
+                                SourceIndex: phasorDefinition.SourceIndex
                             });
                         });
 
                         return {
-                            idLabel: cell.IDLabel(),
-                            acronym: cell.Acronym,
-                            originalAcronym: cell.OriginalAcronym(),
-                            voltages: voltages,
-                            currents: currents
+                            ID: cell.ID,
+                            ParentID: cell.ParentID,
+                            IDCode: cell.IDCode,
+                            StationName: self.configFrame().Cells.length === 1 ? self.deviceName() : cell.IDLabel(),
+                            IDLabel: cell.IDLabel(),
+                            FrequencyDefinition: cell.FrequencyDefinition,
+                            PhasorDefinitions: phasorDefinitions,
+                            AnalogDefinitions: cell.AnalogDefinitions,
+                            DigitalDefinitions: cell.DigitalDefinitions
                         };
                     };
                 }
@@ -1324,7 +1319,8 @@
             };
 
             self.serializeConfiguration = function () {
-                const cells = self.configFrame().Cells;
+                const configFrame = self.configFrame();
+                const cells = configFrame.Cells;
                 var serializedCells = [];
 
                 if (cells) {
@@ -1334,8 +1330,61 @@
                 }
 
                 return {
-                    configuration: serializedCells
+                    IDCode: configFrame.IDCode,
+                    StationName: self.deviceName(),
+                    IDLabel: self.deviceAcronym(),
+                    FrameRate: configFrame.FrameRate,
+                    ConnectionString: configFrame.ConnectionString,
+                    ProtocolID: configFrame.ProtocolID,
+                    Cells: serializedCells
                 };
+            };
+
+            self.saveConfiguration = function (fileName) {
+                const data = JSON.stringify(self.serializeConfiguration(), null, 2);
+                const anchor = $("#saveConfigurationFileLink");
+
+                if (typeof anchor[0].download != "undefined") {
+                    anchor.attr("href", "data:text/json;charset=utf-8," + encodeURIComponent(data));
+                    anchor.attr("download", fileName);
+                    anchor[0].click();
+                } else {
+                    if (isIE)
+                        window.navigator.msSaveBlob(new Blob([data]), fileName);
+                    else
+                        window.open("data:text/json;charset=utf-8," + encodeURIComponent(data), "_blank", "");
+                }
+            };
+
+            self.loadConfiguration = function (fileBlob) {
+                var reader = new FileReader();
+
+                reader.onload = function () {
+                    if (!self.phasorHubIsConnected())
+                        return;
+
+                    const configFrame = JSON.parse(reader.result);
+
+                    self.voltages.removeAll();
+                    self.currents.removeAll();
+
+                    $("#responsiveTableDiv").show();
+                    $("[id=voltageRow]").css("visibility", "hidden");
+                    $("[id=currentRow]").css("visibility", "hidden");
+                    $("#bulkSelectionButtons").hide();
+                    showLoadingLabel();
+
+                    self.configFrameDetails("Loading...");
+
+                    self.loadConfigFrame(configFrame);
+                }
+
+                reader.onloadend = function () {
+                    if (reader.error && reader.error.message)
+                        showErrorMessage("Failed to load configuration: " + reader.error.message);
+                };
+
+                reader.readAsText(fileBlob);
             };
 
             // Validations
@@ -2989,6 +3038,24 @@
             connectionStatusWindow.scrollTop(connectionStatusWindow[0].scrollHeight);
         }
 
+        function showSaveConfigurationFileNameDialog() {
+            $("#saveConfigurationFileNameDialog").toggle();
+
+            if ($("#saveConfigurationFileNameDialog").is(":visible")) {
+                $("#inputConfigurationFileName").val(viewModel.deviceAcronym() + ".json");
+                $("#inputConfigurationFileName").focus();
+            }
+        }
+
+        function showLoadConfigurationFileNameDialog() {
+            $("#loadConfigurationFileName").trigger("click");
+        }
+
+        function loadConfigurationFile(event) {
+            viewModel.loadConfiguration(event.target.files[0]);
+            $("#loadConfigurationFileName").val("");
+        }
+
         // Page initialization function
         $(function () {
             $("#tabs").tabs({
@@ -3292,6 +3359,43 @@
 
                 $("#inputConfigFile").tooltip("hide");
             });
+            
+            // Setup save configuration file name dialog functionality
+            $("#saveConfigurationFile").click(function() {
+                $("#saveConfigurationFileNameDialog").hide();
+
+                var fileName = notNull($("#inputConfigurationFileName").val());
+
+                if (fileName.length === 0)
+                    fileName = viewModel.deviceAcronym() + ".json";
+
+                if (!fileName.endsWith(".json"))
+                    fileName += ".json";
+
+                viewModel.saveConfiguration(fileName);
+            });
+
+            // Make enter key auto-click save
+            $("#inputConfigurationFileName").keyup(function(event) {
+                if (event.keyCode === 13)
+                    $("#saveConfigurationFile").click();
+            });
+
+            // Auto-select all text on focus
+            $("#inputConifgurationFileName").focus(function() {
+                $(this).select();
+            });
+            
+            // Prevent default form submission when user presses enter
+            $("#saveConfigurationFileNameDialog").submit(function() {
+                return false;
+            });
+
+            // Auto-hide pop-up form when user clicks outside form area
+            $("#saveConfigurationFileNameDialog").focusout(function() {
+                if (!$("#saveConfigurationFileNameDialog").is(":hover") && !$("#saveConfigurationFileNameDialogButton").is(":hover"))
+                    $("#saveConfigurationFileNameDialog").hide();
+            });
 
             resizePageElements();
 
@@ -3390,7 +3494,7 @@
                                             </div>
                                         </div>
                                         <div class="panel panel-default" style="margin: 5px 1px">
-                                            <div class="panel-heading panel-heading-condensed">
+                                            <div class="panel-heading panel-heading-condensed" onclick="$('#connectionStatus').collapse('toggle')">
                                                 <label>Connection&nbsp;Status</label>
                                                 <button type="button" class="btn btn-xs btn-collapsable collapsed" data-toggle="collapse" data-target="#connectionStatus"></button>
                                             </div>
@@ -3418,7 +3522,7 @@
                     {
                         <div class="input-group save-button pull-right">
                             <button type="button" class="btn btn-primary pull-right" id="saveData" data-bind="disable: working() || validationErrors() > 0 || !phasorHubIsConnected() || (!editMode() && isEmpty(configFrame().ConnectionString))">
-                                <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device
+                                <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device&nbsp;
                             </button>
                         </div>
                     }
@@ -3439,6 +3543,28 @@
                         <input id="inputDeviceName" type="text" class="form-control" style="width: 250px" data-bind="textInput: deviceName, disable: readOnly" required>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
                     </div>
+                    @if (userIsEditor)
+                    {
+                        <div class="input-group save-button pull-right">
+                            <button type="button" class="btn btn-default pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
+                                <span class="glyphicon glyphicon-floppy-save glyphicon-action-button"></span>&nbsp;Export&nbsp;Config
+                            </button>
+                        </div>
+                        <div class="well well-sm floating-form" id="saveConfigurationFileNameDialog" style="z-index: 1000">
+                            <form class="form-inline" role="form">
+                                <div class="form-group form-group-sm">
+                                    <button type="button" class="close" onclick="$('#saveConfigurationFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="inputConfigurationFileName" placeholder="File name..." />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" id="saveConfigurationFile" style="margin-right: -3px; font-weight: bold">Save</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <a href="#" id="saveConfigurationFileLink" target="_blank" style="display: none"></a>
+                    }
                 </td>
             </tr>
             <tr>
@@ -3463,7 +3589,15 @@
                             </td>
                         </tr>
                     </table>
-
+                    @if (userIsEditor)
+                    {
+                        <div class="input-group save-button pull-right">
+                            <button type="button" class="btn btn-default pull-right" onclick="showLoadConfigurationFileNameDialog()">
+                                <span class="glyphicon glyphicon-import glyphicon-action-button"></span>&nbsp;Import&nbsp;Config
+                            </button>
+                        </div>
+                        <input id="loadConfigurationFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadConfigurationFile(event)">
+                    }
                 </td>
             </tr>
             <tr>
