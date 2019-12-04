@@ -311,6 +311,10 @@
             content: "\e080";
         }
 
+        #templateType:focus {
+            border-color: #66afe9;
+        }
+
         @@media screen {
             .page-logo {
                 margin-bottom: 2px;
@@ -3624,8 +3628,8 @@
                 <td>
                     <div class="input-group" data-bind="css: { 'has-error': !fieldHasValue(deviceName, true), 'has-feedback': !fieldHasValue(deviceName, true) }">
                         <input id="inputDeviceName" type="text" class="form-control" style="width: 260px" data-bind="textInput: deviceName, disable: readOnly" required>
-                        <button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>
-                        <span class="glyphicon glyphicon-remove form-control-feedback" style="margin-right: 48px" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
+                        <button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" data-bind="hidden: readOnly" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true), style: { 'margin-right': readOnly() ? undefined: '54px' }"></span>
                     </div>
                     @if (userIsEditor) {
                         <div class="input-group save-button pull-right">
@@ -3689,7 +3693,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <select class="form-control" id="templateType" data-bind="value: templateType, valueAllowUnset: false, disable: forwardOnly" style="border: 1px solid #ccc; width: 260px;"></select>
+                        <select class="form-control" id="templateType" data-bind="value: templateType, valueAllowUnset: false, disable: forwardOnly" style="border: 1px solid #ccc; width: 260px"></select>
                         <div class="checkbox" style="display:inline; margin-left: 15px">
                             <label class="disabled" style="margin-top: 6px; display: none"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
@@ -3882,11 +3886,11 @@
                 <form role="form">
                     <div class="form-group" @*data-bind="validationElement: hostName"*@>
                         <label for="inputTcpHostName">Host Name or IP:</label>
-                        <input type="text" class="form-control" id="inputTcpHostName" maxlength="200" size="200" @*data-bind="textInput: hostName"*@>
+                        <input type="text" class="form-control" id="inputTcpHostName" maxlength="200" size="200" placeholder="localhost">
                     </div>
                     <div class="form-group" @*data-bind="validationElement: ipPort"*@>
                         <label for="inputTcpPort">Port:</label>
-                        <input type="number" class="form-control" id="inputTcpPort" maxlength="5" size="5" @*data-bind="integer, textInput: ipPort"*@>
+                        <input type="number" class="form-control" id="inputTcpPort" maxlength="5" size="5" placeholder="4712">
                     </div>
                 </form>
             </div>
@@ -3909,11 +3913,11 @@
                 <form role="form">
                     <div class="form-group" @*data-bind="validationElement: ipPort"*@>
                         <label for="inputUdpPort">Port:</label>
-                        <input type="number" class="form-control" id="inputUdpPort" maxlength="5" size="5" @*data-bind="integer, textInput: ipPort"*@>
+                        <input type="number" class="form-control" id="inputUdpPort" maxlength="5" size="5" placeholder="4713">
                     </div>
                     <div class="form-group" @*data-bind="validationElement: interface"*@>
                         <label for="inputUdpInterface">Interface IP:</label>
-                        <input type="text" class="form-control" id="inputUdpInterface" maxlength="200" size="200" @*data-bind="textInput: interface"*@>
+                        <input type="text" class="form-control" id="inputUdpInterface" maxlength="200" size="200">
                     </div>
                 </form>
             </div>
@@ -3938,7 +3942,7 @@
                         <label for="inputSerialPort">Port:</label>
                         <div class="input-group">
                             <span class="input-group-addon">COM</span>
-                            <input type="number" class="form-control" id="inputSerialPort" maxlength="5" size="5" @*data-bind="integer, textInput: comPort"*@>
+                            <input type="number" class="form-control" id="inputSerialPort" maxlength="5" size="5">
                         </div>
                     </div>
                     <div class="form-group">
@@ -3995,30 +3999,33 @@
             </div>
             <div class="modal-body">
                 <form role="form">
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="includeCompanyAcronym"> Company Acronym</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
+                    <div class="form-group form-inline">
+                        <label for="kv765">Voltage Levels:</label><br/>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv765"> 765kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv500"> 500kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv345"> 345kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv230"> 230kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv138"> 138kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv115"> 115kV</label>
                         </div>
+                        &nbsp;
                         <div class="checkbox">
                             <label><input type="checkbox" id="kv69"> 69kV</label>
                         </div>
@@ -4026,26 +4033,27 @@
                     <div class="form-group">
                         <label for="selectDeviceType">Device Type:</label>
                         <select class="form-control" id="selectDeviceType">
-                            <option value="PMU" selected>PMU</option>
-                            <option value="DFR">DFR</option>
-                            <option value="PQMETER">PQ Meter</option>
-                            <option value="RELAY">Relay</option>
-                            <option value="IED">Intelligent Electronic Device</option>
+                            <option value="PMU" selected>Phasor Measurement Unit</option>
+                            <option value="DFR">Digital Fault Recorder</option>
+                            <option value="PQMETER">Power Quality Meter</option>
+                            <option value="IED">Other Intelligent Electronic Device</option>
                         </select>
                     </div>
-                    <div class="form-inline">
-                        <div class="form-group form-group-sm">
-                            <label class="radio-inline" for="esp">
-                                <input type="radio" value="ESP" name="esp" id="esp" checked> ESP
-                            </label>
-                            <span class="input-group-addon">Marker</span>
-                            <input type="text" class="form-control" size="3" id="inputESPMarker" value="#">
-
-                            <label class="radio-inline" for="nonesp">
-                                <input type="radio" value="NONESP" name="nonesp" id="nonesp"> Non-ESP
-                            </label>
-                            <span class="input-group-addon">Marker</span>
-                            <input type="text" class="form-control" size="3" id="inputNonESPMarker" value="!">
+                    <div class="form-group form-inline">
+                        <label for="esp">Security Zone:</label><br/>
+                        <label class="radio-inline" for="esp">
+                            <input type="radio" value="ESP" name="esp" id="esp" checked> ESP
+                        </label>
+                        <input type="text" class="form-control" size="2" id="inputESPMarker" value="#">
+                        &nbsp;&nbsp;
+                        <label class="radio-inline" for="nonesp">
+                            <input type="radio" value="NONESP" name="esp" id="nonesp"> Non-ESP
+                        </label>
+                        <input type="text" class="form-control" size="2" id="inputNonESPMarker" value="!">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="includeCompanyAcronym"> Include Company Acronym "@Model.Global.CompanyAcronym"</label>
                         </div>
                     </div>
                 </form>
