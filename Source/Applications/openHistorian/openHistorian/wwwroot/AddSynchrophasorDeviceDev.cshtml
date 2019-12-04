@@ -952,7 +952,7 @@
             };
 
             self.loadConfigFrame = function (configFrame) {
-                self.connectionString(configFrame.ConnectionString);
+                self.connectionString(configFrame.ConnectionString + "");
                 self.configFrame(configFrame);
                 self.voltageCount = 0;
 
@@ -3056,7 +3056,7 @@
                 $("#inputTcpHostName").val(),
                 $("#inputTcpPort").val()));
 
-            $('#tcpBuilderDialog').hide();
+            $("#tcpBuilderDialog").hide();
         }
 
         function applyUdpConnectionSettings() {
@@ -3064,7 +3064,7 @@
                 $("#inputUdpPort").val(),
                 $("#inputUdpInterface").val()));
 
-            $('#udpBuilderDialog').hide();
+            $("#udpBuilderDialog").hide();
         }
 
         function applySerialConnectionSettings() {
@@ -3075,7 +3075,12 @@
                 $("#selectSerialParity").val(),
                 $("#selectSerialStopBits").val()));
 
-            $('#serialBuilderDialog').hide();
+            $("#serialBuilderDialog").hide();
+        }
+
+        function applyDeviceNameParameters() {
+            // TODO: Build device name
+            $("#deviceNameBuilderDialog").hide();
         }
 
         function connectToDevice() {
@@ -3252,6 +3257,12 @@
                 keyboard: false
             });
 
+            $("#deviceNameBuilderDialog").modal({
+                show: false,
+                backdrop: "static",
+                keyboard: false
+            });
+
             $("#inputTcpHostName").focus(function() {
                 $(this).select();
             });
@@ -3283,6 +3294,14 @@
             $("#inputDeviceName").focus(function() {
                 $(this).select();
             });
+
+            $("#inputESPMarker").focus(function() {
+                $(this).select();
+            })
+
+            $("#inputNonESPMarker").focus(function() {
+                $(this).select();
+            })
 
             $("#latitude").focus(function() {
                 $(this).select();
@@ -3470,7 +3489,7 @@
             </small>
         </span>
     </h3>
-    <form>
+    <div>
         <table style="width: 100%">
             <tr>
                 <td colspan="2">
@@ -3579,7 +3598,7 @@
                 </td>
                 <td>
                     <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(deviceAcronym, true), 'has-feedback': !fieldIsValid(deviceAcronym, true) }">
-                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 250px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym, disable: readOnly" required>
+                        <input id="inputDeviceAcronym" type="text" class="form-control" style="width: 260px" data-bind="acronym: deviceAcronym, textInput: deviceAcronym, disable: readOnly" required>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldIsValid(deviceAcronym, true)"></span>
                     </div>
                     @if (userIsEditor)
@@ -3604,11 +3623,11 @@
                 </td>
                 <td>
                     <div class="input-group" data-bind="css: { 'has-error': !fieldHasValue(deviceName, true), 'has-feedback': !fieldHasValue(deviceName, true) }">
-                        <input id="inputDeviceName" type="text" class="form-control" style="width: 250px" data-bind="textInput: deviceName, disable: readOnly" required>
-                        <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
+                        <input id="inputDeviceName" type="text" class="form-control" style="width: 260px" data-bind="textInput: deviceName, disable: readOnly" required>
+                        <button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>
+                        <span class="glyphicon glyphicon-remove form-control-feedback" style="margin-right: 48px" data-bind="visible: !fieldHasValue(deviceName, true)"></span>
                     </div>
-                    @if (userIsEditor)
-                    {
+                    @if (userIsEditor) {
                         <div class="input-group save-button pull-right">
                             <button type="button" class="btn btn-default pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
                                 <span class="glyphicon glyphicon-floppy-save glyphicon-action-button"></span>&nbsp;Export&nbsp;Config
@@ -3619,7 +3638,7 @@
                                 <div class="form-group form-group-sm">
                                     <button type="button" class="close" onclick="$('#saveConfigurationFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="inputConfigurationFileName" placeholder="File name..." />
+                                        <input type="text" class="form-control" id="inputConfigurationFileName" placeholder="File name..."/>
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default btn-sm" id="saveConfigurationFile" style="margin-right: -3px; font-weight: bold">Save</button>
                                         </span>
@@ -3633,22 +3652,22 @@
             </tr>
             <tr>
                 <td class="input-label">
-                    <label for="longitude">Longitude:</label>
+                    <label for="latitude">Latitude:</label>
                 </td>
                 <td>
                     <table>
                         <tr>
                             <td>
                                 <div class="input-group">
-                                    <input class="form-control" id="longitude" type="number" style="width: 90px" data-bind="textInput: longitude">
+                                    <input class="form-control" id="latitude" type="number" data-bind="textInput: latitude" style="width: 89px; border-radius: 4px; border-top-right-radius: 0; border-bottom-right-radius: 0">
                                 </div>
                             </td>
                             <td class="input-label" style="width: 10px; padding-right: 4px">
-                                <label for="latitude">Latitude:</label>
+                                <label for="longitude">Longitude:</label>
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input class="form-control" id="latitude" type="number" style="width: 90px" data-bind="textInput: latitude">
+                                    <input class="form-control" id="longitude" type="number" data-bind="textInput: longitude" style="width: 89px; border-radius: 4px; border-top-right-radius: 0; border-bottom-right-radius: 0">
                                 </div>
                             </td>
                         </tr>
@@ -3670,7 +3689,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <select class="form-control" id="templateType" data-bind="value: templateType, valueAllowUnset: false, disable: forwardOnly" style="border: 0; width: 250px"></select>
+                        <select class="form-control" id="templateType" data-bind="value: templateType, valueAllowUnset: false, disable: forwardOnly" style="border: 1px solid #ccc; width: 260px;"></select>
                         <div class="checkbox" style="display:inline; margin-left: 15px">
                             <label class="disabled" style="margin-top: 6px; display: none"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
@@ -3681,7 +3700,7 @@
         <span class="pull-right clearfix" id="loadingDataLabel" style="display: inline; margin-top: -27px">
             Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
         </span>
-    </form>
+    </div>
 </div>
 <div id="contentWell" class="well well-dynamic-content">
     <div id="responsiveTableDiv" class="table-responsive" style="display: none; border: none">
@@ -3962,6 +3981,78 @@
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" onclick="applySerialConnectionSettings()">Save</button>
                 <button type="button" class="btn btn-default" onclick="$('#serialBuilderDialog').hide()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* Device Name String Builder *@
+<div id="deviceNameBuilderDialog" class="modal" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#deviceNameBuilderDialog').hide()">&times;</button>
+                <h4 class="modal-title">Define Device Name Parameters</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="includeCompanyAcronym"> Company Acronym</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv765"> 765kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv500"> 500kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv345"> 345kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv230"> 230kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv138"> 138kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv115"> 115kV</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="kv69"> 69kV</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectDeviceType">Device Type:</label>
+                        <select class="form-control" id="selectDeviceType">
+                            <option value="PMU" selected>PMU</option>
+                            <option value="DFR">DFR</option>
+                            <option value="PQMETER">PQ Meter</option>
+                            <option value="RELAY">Relay</option>
+                            <option value="IED">Intelligent Electronic Device</option>
+                        </select>
+                    </div>
+                    <div class="form-inline">
+                        <div class="form-group form-group-sm">
+                            <label class="radio-inline" for="esp">
+                                <input type="radio" value="ESP" name="esp" id="esp" checked> ESP
+                            </label>
+                            <span class="input-group-addon">Marker</span>
+                            <input type="text" class="form-control" size="3" id="inputESPMarker" value="#">
+
+                            <label class="radio-inline" for="nonesp">
+                                <input type="radio" value="NONESP" name="nonesp" id="nonesp"> Non-ESP
+                            </label>
+                            <span class="input-group-addon">Marker</span>
+                            <input type="text" class="form-control" size="3" id="inputNonESPMarker" value="!">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" onclick="applyDeviceNameParameters()">Save</button>
+                <button type="button" class="btn btn-default" onclick="$('#deviceNameBuilderDialog').hide()">Cancel</button>
             </div>
         </div>
     </div>
