@@ -107,8 +107,8 @@ namespace openHistorian.Adapters
         public ReportOperationsHubClient()
         {
             m_historianOperations = new ReportHistorianOperations();
-
             m_writing = false;
+            
             // Override the Historian Instance with the value from the config File
             // Any changes after this will take effect
 
@@ -131,35 +131,34 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
-            {
-                // Dispose of Historian operations and connection
-                // This is called on endSession and should be triggered in all cases
-                m_historianOperations.Dispose();
-                m_connection.Dispose();
-                m_cancellation.Dispose();
+            if (m_disposed)
+                return;
 
-                //also remove Database File to avoid filling up cache
-                try
+            // Dispose of Historian operations and connection
+            // This is called on endSession and should be triggered in all cases
+            m_historianOperations.Dispose();
+            m_connection.Dispose();
+            m_cancellation.Dispose();
+
+            //also remove Database File to avoid filling up cache
+            try
+            {
+                if (disposing)
                 {
-                    if (disposing)
+                    try
                     {
-                        try
-                        {
-                            File.Delete(m_databaseFile);
-                        }
-                        catch
-                        {
-                            throw new Exception("Unable to delete temporary SQL Lite DB for Reports");
-                        }
+                        File.Delete(m_databaseFile);
+                    }
+                    catch
+                    {
+                        throw new Exception("Unable to delete temporary SQL Lite DB for Reports");
                     }
                 }
-                finally
-                {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    
-                    base.Dispose(disposing);    // Call base class Dispose().
-                }
+            }
+            finally
+            {
+                m_disposed = true;          // Prevent duplicate dispose.
+                base.Dispose(disposing);    // Call base class Dispose().
             }
         }
 
@@ -218,7 +217,6 @@ namespace openHistorian.Adapters
             m_endTime = endDate;
             m_percentComplete = 0;
             m_totalTime = (endDate - startDate).TotalSeconds;
-
 
             if (m_writing)
                 m_cancellation.Cancel();
@@ -308,12 +306,12 @@ namespace openHistorian.Adapters
 						reportingMeasurements = reportingMeasurements.Select(item =>
 						{
 							CondensedDataPoint data = historiandata.Find(point => point.PointID == item.PointID);
-							item.Max = data.max;
-							item.Min = data.min;
-							item.Mean = data.sum / data.totalPoints;
-							item.NumberOfAlarms = data.alert;
-							item.PercentAlarms = data.alert * 100.0D / data.totalPoints;
-							item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + data.totalPoints * item.Mean * item.Mean) / data.totalPoints);
+							item.Max = data.Max;
+							item.Min = data.Min;
+							item.Mean = data.Sum / data.TotalPoints;
+							item.NumberOfAlarms = data.Alert;
+							item.PercentAlarms = data.Alert * 100.0D / data.TotalPoints;
+							item.StandardDeviation = Math.Sqrt((data.SqrSum - 2 * data.Sum * item.Mean + data.TotalPoints * item.Mean * item.Mean) / data.TotalPoints);
 							item.TimeInAlarm = item.NumberOfAlarms / item.FramesPerSecond.GetValueOrDefault().NotZero();
 
 							return item;
@@ -354,12 +352,10 @@ namespace openHistorian.Adapters
 						return;
 					}
 
-					TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(m_connection);
+					TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
 					
                     for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
-					{
-						tbl.AddNewRecord(reportingMeasurements[i]);
-					}
+						reportMeasurements.AddNewRecord(reportingMeasurements[i]);
 
 					m_writing = false;
 					m_percentComplete = 100.0;
@@ -384,12 +380,8 @@ namespace openHistorian.Adapters
         /// <returns> Table Operations Object that is used to query report data.</returns>
         public TableOperations<ReportMeasurements> Table()
         {
-            if (m_connection == null)
-                return null;
-
-            return new TableOperations<ReportMeasurements>(m_connection);
+            return m_connection == null ? null : new TableOperations<ReportMeasurements>(m_connection);
         }
-
 
         /// <summary>
         /// Gets the path for storing Report Database configurations.
@@ -430,26 +422,26 @@ namespace openHistorian.Adapters
         {
             List<ReportMeasurements> result = new List<ReportMeasurements>();
 
-            string filterstring = "";
+            string filterString = "";
 
             if (type == ReportType.SNR)
-                filterstring = "%-SNR";
+                filterString = "%-SNR";
             else if (type == ReportType.Unbalance_I)
-                filterstring = "%I-UBAL";
+                filterString = "%I-UBAL";
             else if (type == ReportType.Unbalance_V)
-                filterstring = "%V-UBAL";
+                filterString = "%V-UBAL";
 
             TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
             tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
 
-            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", filterstring + ":SUM") > 0)
+            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", filterString + ":SUM") > 0)
             {
-                List<ActiveMeasurement> sumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SUM").ToList();
-                List<ActiveMeasurement> squaredSumMeasurments = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SQR").ToList();
-                List<ActiveMeasurement> minimumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MIN").ToList();
-                List<ActiveMeasurement> maximumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":MAX").ToList();
-                List<ActiveMeasurement> countMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":NUM").ToList();
-                List<ActiveMeasurement> alertMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":ALT").ToList();
+                List<ActiveMeasurement> sumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":SUM").ToList();
+                List<ActiveMeasurement> squaredSumMeasurments = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":SQR").ToList();
+                List<ActiveMeasurement> minimumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":MIN").ToList();
+                List<ActiveMeasurement> maximumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":MAX").ToList();
+                List<ActiveMeasurement> countMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":NUM").ToList();
+                List<ActiveMeasurement> alertMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":ALT").ToList();
 
                 result = sumMeasurements.Select(point => new ReportMeasurements(point)).ToList();
 
@@ -506,12 +498,12 @@ namespace openHistorian.Adapters
                     ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
                     ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
 
-                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
-                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
-                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
-                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
-                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
-                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
+                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).Min;
+                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).Max;
+                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).Sum;
+                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).Sum;
+                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).Sum;
+                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).Sum;
 
                     item.Max = maximum;
                     item.Min = minimum;

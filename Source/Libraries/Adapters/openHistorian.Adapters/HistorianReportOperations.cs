@@ -64,7 +64,6 @@ namespace openHistorian.Adapters
         /// </summary>
         public ulong Flags;
 
-
         /// <summary>
         /// Value as a Float.
         /// </summary>
@@ -145,10 +144,9 @@ namespace openHistorian.Adapters
         public static int CompareTimestamps(ulong left, ulong right, int frameRate) => RoundTimestamp(left, frameRate).CompareTo(RoundTimestamp(right, frameRate));
     }
 
-
     /// <summary>
     /// Defines a Condensed DataPoint from the Historian.
-    ///  Includes Sums; number of points; min; max;
+    /// Includes Sums; number of points; min; max;
     /// </summary>
     public class CondensedDataPoint
     {
@@ -160,32 +158,32 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Minimum.
         /// </summary>
-        public double min;
+        public double Min;
 
         /// <summary>
         /// Maximum.
         /// </summary>
-        public double max;
+        public double Max;
 
         /// <summary>
         /// Total Number of Points.
         /// </summary>
-        public int totalPoints;
+        public int TotalPoints;
 
         /// <summary>
         /// Sum (X).
         /// </summary>
-        public double sum;
+        public double Sum;
 
         /// <summary>
         /// Sum (X*X).
         /// </summary>
-        public double sqrsum;
+        public double SqrSum;
 
         /// <summary>
         /// nu,ber of points exceeding alert threshold.
         /// </summary>
-        public int alert;
+        public int Alert;
 
         /// <summary>
         /// Intializes a new condesed data point.
@@ -193,15 +191,16 @@ namespace openHistorian.Adapters
         /// <param name="PointID">PointID.</param>
         public static CondensedDataPoint EmptyPoint(ulong PointID)
         {
-            CondensedDataPoint point = new CondensedDataPoint();
-            point.max = double.MinValue;
-            point.min = double.MaxValue;
-            point.sqrsum = 0;
-            point.sum = 0;
-            point.totalPoints = 0;
-            point.PointID = PointID;
-            point.alert = 0;
-            return point;
+            return new CondensedDataPoint
+            {
+                Max = double.MinValue,
+                Min = double.MaxValue,
+                SqrSum = 0,
+                Sum = 0,
+                TotalPoints = 0,
+                PointID = PointID,
+                Alert = 0
+            };
         }
     }
 
@@ -284,7 +283,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Read DataPoint and advance to the next point.
         /// </summary>
-        /// <param name="point"> Datapoint object to be updated.</param>
+        /// <param name="point">DataPoint object to be updated.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadNext(DataPoint point)
         {
@@ -302,7 +301,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Read DataPoint.
         /// </summary>
-        /// <param name="point"> Datapoint object to be updated.</param>
+        /// <param name="point">DataPoint object to be updated.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadCurrent(DataPoint point)
         {
@@ -314,24 +313,23 @@ namespace openHistorian.Adapters
     }
 
     /// <summary>
-    /// Defines a Client to read distorian data using <see cref="ReportHistorianReader"/>.
+    /// Defines a Client to read historian data using <see cref="ReportHistorianReader"/>.
     /// </summary>
-    public sealed class ReportHistorianOperations : IDisposable
+    public sealed class ReportHistorianOperations
     {
         private string m_instance;
-        private string s_defaultInstanceName;
-        private int s_portNumber;
-        private bool m_disposed;
+        private string m_defaultInstanceName;
+        private int m_portNumber;
 
         /// <summary>
         /// Gets configured instance name for historian.
         /// </summary>
-        public string DefaultInstanceName => s_defaultInstanceName;
+        public string DefaultInstanceName => m_defaultInstanceName;
 
         /// <summary>
         /// Gets configured port number for historian.
         /// </summary>
-        public int PortNumber => s_portNumber;
+        public int PortNumber => m_portNumber;
 
         /// <summary>
         /// Creates a new <see cref="ReportHistorianOperations"/>.
@@ -355,17 +353,17 @@ namespace openHistorian.Adapters
 
                     Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
 
-                    if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out s_portNumber))
-                        s_portNumber = Connection.DefaultHistorianPort;
+                    if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out m_portNumber))
+                        m_portNumber = Connection.DefaultHistorianPort;
 
-                    if (!settings.TryGetValue("instanceName", out s_defaultInstanceName) || string.IsNullOrWhiteSpace(s_defaultInstanceName))
-                        s_defaultInstanceName = record.AdapterName ?? "PPA";
+                    if (!settings.TryGetValue("instanceName", out m_defaultInstanceName) || string.IsNullOrWhiteSpace(m_defaultInstanceName))
+                        m_defaultInstanceName = record.AdapterName ?? "PPA";
                 }
             }
             catch
             {
-                s_defaultInstanceName = "PPA";
-                s_portNumber = Connection.DefaultHistorianPort;
+                m_defaultInstanceName = "PPA";
+                m_portNumber = Connection.DefaultHistorianPort;
             }
         }
 
@@ -394,44 +392,6 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Destructor for <see cref="ReportHistorianOperations"/>.
-        /// </summary>
-        ~ReportHistorianOperations()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="ReportHistorianOperations"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="ReportHistorianOperations"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (disposing)
-                    {
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
-            }
-        }
-
-        /// <summary>
         /// Reads Data From the Historian and returns condensed DataPoints.
         /// </summary>
         /// <param name="start">Starttime.</param>
@@ -448,10 +408,10 @@ namespace openHistorian.Adapters
 
             SnapServer server = GetServer(m_instance)?.Host;
             
-            // start by sepperating all framerates
-            foreach (int framerate in activeMeasurements.Select(item => item.FramesPerSecond.GetValueOrDefault()).Distinct())
+            // start by separating all framerates
+            foreach (int frameRate in activeMeasurements.Select(item => item.FramesPerSecond.GetValueOrDefault()).Distinct())
             {
-                ulong[] pointIDs= activeMeasurements.Where(item => item.FramesPerSecond == framerate).Select(item => item.PointID).ToArray();
+                ulong[] pointIDs= activeMeasurements.Where(item => item.FramesPerSecond == frameRate).Select(item => item.PointID).ToArray();
                 Dictionary<ulong, CondensedDataPoint> frameRateResult = new Dictionary<ulong, CondensedDataPoint>();
 
                 foreach (ulong key in pointIDs)
@@ -462,7 +422,7 @@ namespace openHistorian.Adapters
                         return result;
                 }
 
-                using (ReportHistorianReader reader = new ReportHistorianReader(server, m_instance, start, end, framerate, pointIDs))
+                using (ReportHistorianReader reader = new ReportHistorianReader(server, m_instance, start, end, frameRate, pointIDs))
                 {
                     DataPoint point = new DataPoint();
 
@@ -486,18 +446,18 @@ namespace openHistorian.Adapters
                         {
                             if (frameRateResult.TryGetValue(point.PointID, out CondensedDataPoint dataPoint) && dataPoint != null)
                             {
-                                if (point.ValueAsSingle > dataPoint.max)
-                                    dataPoint.max = point.ValueAsSingle;
+                                if (point.ValueAsSingle > dataPoint.Max)
+                                    dataPoint.Max = point.ValueAsSingle;
 
-                                if (point.ValueAsSingle < dataPoint.min)
-                                    dataPoint.min = point.ValueAsSingle;
+                                if (point.ValueAsSingle < dataPoint.Min)
+                                    dataPoint.Min = point.ValueAsSingle;
 
-                                dataPoint.sum += point.ValueAsSingle;
-                                dataPoint.sqrsum += point.ValueAsSingle * point.ValueAsSingle;
-                                dataPoint.totalPoints++;
+                                dataPoint.Sum += point.ValueAsSingle;
+                                dataPoint.SqrSum += point.ValueAsSingle * point.ValueAsSingle;
+                                dataPoint.TotalPoints++;
 
                                 if (point.ValueAsSingle > threshold)
-                                    dataPoint.alert++;
+                                    dataPoint.Alert++;
                             }
                         }
 
@@ -505,7 +465,7 @@ namespace openHistorian.Adapters
                     }
                 }
 
-                result.AddRange(frameRateResult.Where(item => item.Value.totalPoints > 0).Select(item => { item.Value.PointID = item.Key; return item.Value; }));
+                result.AddRange(frameRateResult.Where(item => item.Value.TotalPoints > 0).Select(item => { item.Value.PointID = item.Key; return item.Value; }));
 
                 if (cancelationToken.IsCancellationRequested)
                     return result;

@@ -230,6 +230,7 @@ namespace openHistorian.Adapters
             reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
             double i_threshold = reportSettings["IUnbalanceThreshold"].ValueAs(1.0D);
             double v_threshold = reportSettings["VUnbalanceThreshold"].ValueAs(1.0D);
+
             List<Guid> processed = new List<Guid>();
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
@@ -304,12 +305,7 @@ namespace openHistorian.Adapters
                             OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
                         }
 
-                        double threshold;
-
-                        if (InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == key)] == SignalType.IPHM)
-                            threshold = i_threshold;
-                        else
-                            threshold = v_threshold;
+                        double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == key)] == SignalType.IPHM ? i_threshold : v_threshold;
 
                         m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
 
@@ -358,12 +354,12 @@ namespace openHistorian.Adapters
 
                 if (hasP && hasN)
                 {
-                    double v1p = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Positive.SignalID)?.Value ?? 0.0D;
-                    double v2n = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Negative.SignalID)?.Value ?? 0.0D;
+                    double v1P = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Positive.SignalID)?.Value ?? 0.0D;
+                    double v2N = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Negative.SignalID)?.Value ?? 0.0D;
                     
-                    if (v1p != 0.0D)
+                    if (v1P != 0.0D)
                     {
-                        double unbalanced = v2n / v1p;
+                        double unbalanced = v2N / v1P;
                         Measurement outputMeasurement = new Measurement { Metadata = set.OutMapping.Metadata };
 
                         if (m_saveStats)
@@ -391,7 +387,7 @@ namespace openHistorian.Adapters
                     m_numberOfFrames = 0;
             }
 
-            // Reporting if neccesarry
+            // Reporting if necessary
             if (m_numberOfFrames >= ReportingInterval && m_saveStats)
             {
                 foreach (ThreePhaseSet set in m_threePhaseComponent)

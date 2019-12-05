@@ -44,11 +44,6 @@ using SignalTypeRecord = openHistorian.Model.SignalType;
 
 namespace openHistorian.Adapters
 {
-    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
-    internal sealed class CalculatedMesaurementAttribute : Attribute
-    {
-    }
-
     /// <summary>
     /// Defines an Adapter that calculates Signal to Noise Ratios.
     /// </summary>
@@ -289,13 +284,13 @@ namespace openHistorian.Adapters
                     if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
                     {
                         // Measurement Exists
-                        m_outputMapping.Add(key.SignalID, MeasurementKey.LookUpBySignalID(
-                            measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID));
+                        m_outputMapping.Add(key.SignalID, MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID));
                     }
                     else
                     {
                         // Add Measurment to Database and make a statement
                         MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", key.SignalID);
+
                         MeasurementRecord outMeasurement = new MeasurementRecord
                         {
                             HistorianID = historianID,
@@ -375,6 +370,7 @@ namespace openHistorian.Adapters
                 List<IMeasurement> outputmeasurements = new List<IMeasurement>();
 
                 List<Guid> Keys = m_dataWindow.Keys.ToList();
+
                 foreach (Guid key in Keys)
                 {
                     double snr = CalculateSignalToNoise(m_dataWindow[key], key);
@@ -407,7 +403,7 @@ namespace openHistorian.Adapters
 
                 m_refWindow = new List<double>();
 
-                // Reporting if neccesarry
+                // Reporting if necessary
                 if (m_numberOfFrames >= ReportingInterval && m_saveStats)
                 {
                     m_numberOfFrames = 0;
