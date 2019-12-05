@@ -462,6 +462,21 @@
   <Component Id="data_plugins_grafana_pmumap_panel_images_gpa_lock_png">
     <File Id="data_plugins_grafana_pmumap_panel_images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\gpa-lock.png" />
   </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_GPM_logo_png">
+    <File Id="data_plugins_grafana_pmumap_panel_images_GPM_logo.png" Name="GPM-logo.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\GPM-logo.png" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_GPM_Example1_PNG">
+    <File Id="data_plugins_grafana_pmumap_panel_images_GPM_Example1.PNG" Name="GPM_Example1.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\GPM_Example1.PNG" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_GPM_Example2_PNG">
+    <File Id="data_plugins_grafana_pmumap_panel_images_GPM_Example2.PNG" Name="GPM_Example2.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\GPM_Example2.PNG" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_GPM_Example4_PNG">
+    <File Id="data_plugins_grafana_pmumap_panel_images_GPM_Example4.PNG" Name="GPM_Example4.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\GPM_Example4.PNG" />
+  </Component>
+  <Component Id="data_plugins_grafana_pmumap_panel_images_GPM_Settings_PNG">
+    <File Id="data_plugins_grafana_pmumap_panel_images_GPM_Settings.PNG" Name="GPM_Settings.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\GPM_Settings.PNG" />
+  </Component>
   <Component Id="data_plugins_grafana_pmumap_panel_images_graphite_consolidateby_png">
     <File Id="data_plugins_grafana_pmumap_panel_images_graphite_consolidateby.png" Name="graphite-consolidateby.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\grafana-pmumap-panel\images\graphite-consolidateby.png" />
   </Component>
@@ -1051,6 +1066,12 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_images_Components" Directory="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELIMAGESFOLDER">
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_images_gpa_lock_png">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\images\gpa-lock.png" />
+  </Component>
+  <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_images_PAPanel_png">
+    <File Id="data_plugins_openHistorianGrafanaAlarmPanel_images_PAPanel.png" Name="PAPanel.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\images\PAPanel.png" />
+  </Component>
   <Component Id="data_plugins_openHistorianGrafanaAlarmPanel_images_Settings_PNG">
     <File Id="data_plugins_openHistorianGrafanaAlarmPanel_images_Settings.PNG" Name="Settings.PNG" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\images\Settings.PNG" />
   </Component>
