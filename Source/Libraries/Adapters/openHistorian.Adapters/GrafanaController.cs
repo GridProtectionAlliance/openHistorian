@@ -133,6 +133,7 @@ namespace openHistorian.Adapters
 
         // Fields
         private HistorianDataSource m_dataSource;
+        private LocationData m_locationData;
         private string m_defaultApiPath;
 
         #endregion
@@ -206,6 +207,8 @@ namespace openHistorian.Adapters
             }
         }
 
+        private LocationData LocationData => m_locationData ?? (m_locationData = new LocationData { DataSource = DataSource });
+
         #endregion
 
         #region [ Methods ]
@@ -271,6 +274,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetLocationData([FromUri] double radius, [FromUri] double zoom, [FromBody] List<Target> request, CancellationToken cancellationToken)
         {
+            return LocationData.GetLocationData(radius, zoom, request, cancellationToken);
         }
 
         /// <summary>
@@ -283,6 +287,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetLocationData(List<Target> request, CancellationToken cancellationToken)
         {
+            return LocationData.GetLocationData(request, cancellationToken);
         }
 
         /// <summary>
