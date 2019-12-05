@@ -3631,27 +3631,25 @@
                         <button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" data-bind="hidden: readOnly" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true), style: { 'margin-right': readOnly() ? undefined: '54px' }"></span>
                     </div>
-                    @if (userIsEditor) {
-                        <div class="input-group save-button pull-right">
-                            <button type="button" class="btn btn-default pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
-                                <span class="glyphicon glyphicon-floppy-save glyphicon-action-button"></span>&nbsp;Export&nbsp;Config
-                            </button>
-                        </div>
-                        <div class="well well-sm floating-form" id="saveConfigurationFileNameDialog" style="z-index: 1000">
-                            <form class="form-inline" role="form">
-                                <div class="form-group form-group-sm">
-                                    <button type="button" class="close" onclick="$('#saveConfigurationFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="inputConfigurationFileName" placeholder="File name..."/>
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" id="saveConfigurationFile" style="margin-right: -3px; font-weight: bold">Save</button>
-                                        </span>
-                                    </div>
+                    <div class="input-group save-button pull-right">
+                        <button type="button" class="btn btn-default pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
+                            <span class="glyphicon glyphicon-floppy-save glyphicon-action-button"></span>&nbsp;Export&nbsp;Config
+                        </button>
+                    </div>
+                    <div class="well well-sm floating-form" id="saveConfigurationFileNameDialog" style="z-index: 1000">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <button type="button" class="close" onclick="$('#saveConfigurationFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="inputConfigurationFileName" placeholder="File name..."/>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-sm" id="saveConfigurationFile" style="margin-right: -3px; font-weight: bold">Save</button>
+                                    </span>
                                 </div>
-                            </form>
-                        </div>
-                        <a href="#" id="saveConfigurationFileLink" target="_blank" style="display: none"></a>
-                    }
+                            </div>
+                        </form>
+                    </div>
+                    <a href="#" id="saveConfigurationFileLink" target="_blank" style="display: none"></a>
                 </td>
             </tr>
             <tr>
