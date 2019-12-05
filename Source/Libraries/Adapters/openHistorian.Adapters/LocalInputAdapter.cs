@@ -96,10 +96,7 @@ namespace openHistorian.Adapters
 
                 return m_instanceName;
             }
-            set
-            {
-                m_instanceName = value;
-            }
+            set => m_instanceName = value;
         }
 
         /// <summary>
@@ -110,10 +107,7 @@ namespace openHistorian.Adapters
         DefaultValue("127.0.0.1")]
         public string HistorianServer
         {
-            get
-            {
-                return m_historianServer;
-            }
+            get => m_historianServer;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
@@ -189,10 +183,7 @@ namespace openHistorian.Adapters
         /// </remarks>
         public override int ProcessingInterval
         {
-            get
-            {
-                return base.ProcessingInterval;
-            }
+            get => base.ProcessingInterval;
             set
             {
                 base.ProcessingInterval = value;
@@ -245,14 +236,14 @@ namespace openHistorian.Adapters
                 {
                     if (disposing)
                     {
-                        if ((object)m_readTimer != null)
+                        if (m_readTimer != null)
                         {
                             m_readTimer.Elapsed -= m_readTimer_Elapsed;
                             m_readTimer.Dispose();
                             m_readTimer = null;
                         }
 
-                        if ((object)m_archiveReader != null)
+                        if (m_archiveReader != null)
                         {
                             m_archiveReader.Dispose();
                             m_archiveReader = null;
@@ -278,20 +269,18 @@ namespace openHistorian.Adapters
             base.Initialize();
 
             Dictionary<string, string> settings = Settings;
-            string setting;
-            long value;
 
             // Validate settings.
-            settings.TryGetValue("instanceName", out setting);
+            settings.TryGetValue("instanceName", out string setting);
             InstanceName = setting;
 
-            if (((object)OutputSourceIDs == null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(InstanceName))
+            if ((OutputSourceIDs == null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(InstanceName))
                 throw new ArgumentException(string.Format(errorMessage, "instanceName"));
 
             if (settings.TryGetValue("historianServer", out setting))
                 HistorianServer = setting;
 
-            if (settings.TryGetValue("publicationInterval", out setting) && long.TryParse(setting, out value))
+            if (settings.TryGetValue("publicationInterval", out setting) && long.TryParse(setting, out long value))
                 PublicationInterval = value;
             else
                 PublicationInterval = DefaultPublicationInterval;
@@ -330,7 +319,7 @@ namespace openHistorian.Adapters
                 // Turn off read timer if it's active
                 m_readTimer.Enabled = false;
 
-                if ((object)m_archiveReader != null)
+                if (m_archiveReader != null)
                 {
                     m_archiveReader.Dispose();
                     m_archiveReader = null;
@@ -347,7 +336,7 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            if ((object)m_readTimer != null)
+            if (m_readTimer != null)
             {
                 m_readTimer.Enabled = false;
 
@@ -355,7 +344,7 @@ namespace openHistorian.Adapters
                     m_dataReader = null;
             }
 
-            if ((object)m_archiveReader != null)
+            if (m_archiveReader != null)
             {
                 m_archiveReader.Dispose();
                 m_archiveReader = null;
@@ -367,7 +356,7 @@ namespace openHistorian.Adapters
         {
             MeasurementKey[] requestedKeys = SupportsTemporalProcessing ? RequestedOutputMeasurementKeys : OutputMeasurements.MeasurementKeys().ToArray();
 
-            if (Enabled && (object)m_archiveReader != null && (object)requestedKeys != null && requestedKeys.Length > 0)
+            if (Enabled && m_archiveReader != null && requestedKeys != null && requestedKeys.Length > 0)
             {
                 m_historianIDs = requestedKeys.Select(key => unchecked((int)key.ID)).ToArray();
                 m_publicationTime = 0;

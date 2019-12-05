@@ -22,26 +22,18 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.IO;
-using GSF.Snap.Services;
-using GSF.Threading;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using openHistorian.Model;
-using openHistorian.Net;
-using openHistorian.Snap;
-using CancellationToken = GSF.Threading.CancellationToken;
-using Random = GSF.Security.Cryptography.Random;
 
 namespace openHistorian.Adapters
 {
@@ -93,16 +85,17 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Fields
-        private ReportHistorianOperations historianOperations;
-        private string databaseFile;
-        private AdoDataConnection connection;
+        private readonly ReportHistorianOperations m_historianOperations;
+        private string m_databaseFile;
+        private AdoDataConnection m_connection;
         private bool m_disposed;
         private bool m_writting;
-        private CancellationTokenSource m_cancelation;
-        //These are for the Progressbar
-        private DateTime endTime;
-        private double totalTime;
-        private double PercentComplete;
+        private readonly CancellationTokenSource m_cancellation;
+        
+        // These are for the Progressbar
+        private DateTime m_endTime;
+        private double m_totalTime;
+        private double m_percentComplete;
 
         #endregion
 
@@ -113,9 +106,9 @@ namespace openHistorian.Adapters
         /// </summary>
         public ReportOperationsHubClient()
         {
-            this.historianOperations = new ReportHistorianOperations();
+            m_historianOperations = new ReportHistorianOperations();
 
-            this.m_writting = false;
+            m_writting = false;
             // Override the Historian Instance with the value from the config File
             // Any changes after this will take effect
 
@@ -123,9 +116,9 @@ namespace openHistorian.Adapters
             CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
             reportSettings.Add("historianInstance", "PPA" , "Default historian instance used for reporting");
             string historian = reportSettings["historianInstance"].ValueAs("PPA");
-            this.SetSelectedInstanceName(historian);
+            SetSelectedInstanceName(historian);
 
-            this.m_cancelation = new CancellationTokenSource();
+            m_cancellation = new CancellationTokenSource();
         }
 
         #endregion
@@ -142,9 +135,9 @@ namespace openHistorian.Adapters
             {
                 // Dispose of Historian operations and connection
                 // This is called on endSession and should be triggered in all cases
-                this.historianOperations.Dispose();
-                this.connection.Dispose();
-                this.m_cancelation.Dispose();
+                m_historianOperations.Dispose();
+                m_connection.Dispose();
+                m_cancellation.Dispose();
 
                 //also remove Database File to avoid filling up cache
                 try
@@ -153,7 +146,7 @@ namespace openHistorian.Adapters
                     {
                         try
                         {
-                            System.IO.File.Delete(this.databaseFile);
+                            File.Delete(m_databaseFile);
                         }
                         catch
                         {
@@ -176,7 +169,7 @@ namespace openHistorian.Adapters
         /// <param name="instanceName">Historian instance name that is selected by user.</param>
         public void SetSelectedInstanceName(string instanceName)
         {
-            this.historianOperations.SetSelectedInstanceName(instanceName);
+            m_historianOperations.SetSelectedInstanceName(instanceName);
         }
 
         /// <summary>
@@ -185,7 +178,7 @@ namespace openHistorian.Adapters
         /// <returns>Selected Historian instance name.</returns>
         public string GetSelectedInstanceName()
         {
-            return this.historianOperations.GetSelectedInstanceName();
+            return m_historianOperations.GetSelectedInstanceName();
         }
 
         /// <summary>
@@ -194,7 +187,7 @@ namespace openHistorian.Adapters
         /// <returns>Selected Historian instance name.</returns>
         public double GetReportProgress()
         {
-            return this.PercentComplete;
+            return m_percentComplete;
         }
 
         /// <summary>
@@ -203,14 +196,13 @@ namespace openHistorian.Adapters
         /// <returns>Historian adapter instance names.</returns>
         public IEnumerable<string> GetInstanceNames()
         {
-            return this.historianOperations.GetInstanceNames();
+            return m_historianOperations.GetInstanceNames();
         }
 
         private void UpdatePercentage(ulong current)
         {
-            this.PercentComplete = ((1.0D - new Ticks(this.endTime.Ticks - (long)current).ToSeconds() / this.totalTime) * 100.0D);
+            m_percentComplete = (1.0D - new Ticks(m_endTime.Ticks - (long)current).ToSeconds() / m_totalTime) * 100.0D;
         }
-
 
         /// <summary>
         /// Updates the Report Data Source.
@@ -223,37 +215,38 @@ namespace openHistorian.Adapters
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int numberOfRecords, DataContext dataContext)
         {
-            this.endTime = endDate;
-            this.PercentComplete = 0;
-            this.totalTime = (endDate - startDate).TotalSeconds;
+            m_endTime = endDate;
+            m_percentComplete = 0;
+            m_totalTime = (endDate - startDate).TotalSeconds;
 
 
-            if (this.m_writting)
-                this.m_cancelation.Cancel();
+            if (m_writting)
+                m_cancellation.Cancel();
 
-            this.m_writting = true;
-            System.Threading.CancellationToken token = this.m_cancelation.Token;
+            m_writting = true;
+            CancellationToken token = m_cancellation.Token;
             
             new Thread(() =>
             {
 				try
 				{
-					string sourceFile = string.Format("{0}{1}ReportTemplate.db", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
-					this.databaseFile = string.Format("{0}{1}{2}.db", ConfigurationCachePath, Path.DirectorySeparatorChar, this.ConnectionID);
-					System.IO.File.Copy(sourceFile, this.databaseFile, true);
+					string sourceFile = $"{FilePath.GetAbsolutePath("")}{Path.DirectorySeparatorChar}ReportTemplate.db";
+					m_databaseFile = $"{ConfigurationCachePath}{Path.DirectorySeparatorChar}{ConnectionID}.db";
+					File.Copy(sourceFile, m_databaseFile, true);
 
-					string filterstring = "";
+					string filterString = "";
 
 					if (reportType == ReportType.SNR)
-						filterstring = "%-SNR";
+						filterString = "%-SNR";
 					else if (reportType == ReportType.Unbalance_I)
-						filterstring = "%I-UBAL";
+						filterString = "%I-UBAL";
 					else if (reportType == ReportType.Unbalance_V)
-						filterstring = "%V-UBAL";
+						filterString = "%V-UBAL";
 
-					//Get AlertThreshold
+					// Get AlertThreshold
 					CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
 					double threshold = 0;
+
 					if (reportType == ReportType.SNR)
 					{
 						reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
@@ -272,7 +265,7 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						this.m_writting = false;
+						m_writting = false;
 						return;
 					}
 
@@ -280,36 +273,34 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						this.m_writting = false;
+						m_writting = false;
 						return;
 					}
 
-					if (reportingMeasurements.Count() < 1)
+					if (!reportingMeasurements.Any())
 					{
+                        TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
+						tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
 
-						TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
-						tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
-
-
-						List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring).ToList();
+						List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString).ToList();
 						reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
 
 						// Pull Data From the Open Historian
-
-						if (token.IsCancellationRequested)
+                        if (token.IsCancellationRequested)
 						{
-							this.m_writting = false;
+							m_writting = false;
 							return;
 						}
 
-						Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
-						List<CondensedDataPoint> historiandata = this.historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
+						Progress<ulong> progress = new Progress<ulong>(UpdatePercentage);
+						List<CondensedDataPoint> historiandata = m_historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
 
 						if (token.IsCancellationRequested)
 						{
-							this.m_writting = false;
+							m_writting = false;
 							return;
 						}
+
 						//remove any that don't have data
 						reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
 
@@ -321,33 +312,34 @@ namespace openHistorian.Adapters
 							item.Min = data.min;
 							item.Mean = data.sum / data.totalPoints;
 							item.NumberOfAlarms = data.alert;
-							item.PercentAlarms = (double)data.alert * 100.0D / (double)data.totalPoints;
-							item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + (double)data.totalPoints * item.Mean * item.Mean) / (double)data.totalPoints);
-							item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
+							item.PercentAlarms = data.alert * 100.0D / data.totalPoints;
+							item.StandardDeviation = Math.Sqrt((data.sqrsum - 2 * data.sum * item.Mean + data.totalPoints * item.Mean * item.Mean) / data.totalPoints);
+							item.TimeInAlarm = item.NumberOfAlarms / item.FramesPerSecond.GetValueOrDefault().NotZero();
 
 							return item;
 						}
 						).ToList();
+                    }
 
-					}
-
-
-					if (reportCriteria == ReportCriteria.Mean)
+                    if (reportCriteria == ReportCriteria.Mean)
 						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
+
 					if (reportCriteria == ReportCriteria.AlertTime)
 						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.TimeInAlarm).ToList();
+
 					if (reportCriteria == ReportCriteria.Maximum)
 						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Max).ToList();
 
-					string connectionstring = String.Format("Data Source={0}; Version=3; Foreign Keys=True; FailIfMissing=True", this.databaseFile);
-					string dataProviderstring = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
-					this.connection = new AdoDataConnection(connectionstring, dataProviderstring);
+					string connectionString = $"Data Source={m_databaseFile}; Version=3; Foreign Keys=True; FailIfMissing=True";
+					string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
+					
+                    m_connection = new AdoDataConnection(connectionString, dataProviderString);
 
 					if (numberOfRecords == 0)
-						numberOfRecords = reportingMeasurements.Count();
+						numberOfRecords = reportingMeasurements.Count;
 
-					// Create Original Point Tag
-					reportingMeasurements.Select(item =>
+                    // Create Original Point Tag
+                    reportingMeasurements = reportingMeasurements.Select(item =>
 					{
 						if (reportType == ReportType.SNR)
 							item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
@@ -358,46 +350,44 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						this.m_writting = false;
+						m_writting = false;
 						return;
 					}
 
-
-					TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(connection);
-					for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count()); i++)
+					TableOperations<ReportMeasurements> tbl = new TableOperations<ReportMeasurements>(m_connection);
+					
+                    for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
 					{
 						tbl.AddNewRecord(reportingMeasurements[i]);
 					}
-					this.m_writting = false;
-					this.PercentComplete = 100.0;
+
+					m_writting = false;
+					m_percentComplete = 100.0;
 				}
 				catch (Exception e)
 				{
-					this.LogException(e);
+					LogException(e);
 				}
 
-				this.m_writting = false;
-				this.PercentComplete = 100.0;
+				m_writting = false;
+				m_percentComplete = 100.0;
 			})
             {
                 IsBackground = true,
                 
             }.Start();
-
         }
         
-
-
         /// <summary>
         /// Returns the Table Operation Object that Queries are build against.
         /// </summary>
         /// <returns> Table Operations Object that is used to query report data.</returns>
         public TableOperations<ReportMeasurements> Table()
         {
-            if (this.connection == null)
+            if (m_connection == null)
                 return null;
 
-            return (new TableOperations<ReportMeasurements>(this.connection));
+            return new TableOperations<ReportMeasurements>(m_connection);
         }
 
 
@@ -409,21 +399,21 @@ namespace openHistorian.Adapters
             get
             {
                 // Define default configuration cache directory relative to path of host application
-                string s_configurationCachePath = string.Format("{0}{1}ConfigurationCache{1}", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
+                string configurationCachePath = string.Format("{0}{1}ConfigurationCache{1}", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
 
                 // Make sure configuration cache path setting exists within system settings section of config file
                 ConfigurationFile configFile = ConfigurationFile.Current;
                 CategorizedSettingsElementCollection systemSettings = configFile.Settings["systemSettings"];
-                systemSettings.Add("ConfigurationCachePath", s_configurationCachePath, "Defines the path used to cache serialized phasor protocol configurations");
+                systemSettings.Add("ConfigurationCachePath", configurationCachePath, "Defines the path used to cache serialized phasor protocol configurations");
 
                 // Retrieve configuration cache directory as defined in the config file
-                s_configurationCachePath = FilePath.AddPathSuffix(systemSettings["ConfigurationCachePath"].Value);
+                configurationCachePath = FilePath.AddPathSuffix(systemSettings["ConfigurationCachePath"].Value);
 
                 // Make sure configuration cache directory exists
-                if (!Directory.Exists(s_configurationCachePath))
-                    Directory.CreateDirectory(s_configurationCachePath);
+                if (!Directory.Exists(configurationCachePath))
+                    Directory.CreateDirectory(configurationCachePath);
 
-                return s_configurationCachePath;
+                return configurationCachePath;
             }
         }
 
@@ -436,7 +426,7 @@ namespace openHistorian.Adapters
         /// <param name="type"> Type of Report <see cref="ReportType"/>.</param>
         /// <param name="cancelationToken"> Cancleation Token for the historian read operation.</param>
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
-        private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type, System.Threading.CancellationToken cancelationToken)
+        private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type, CancellationToken cancelationToken)
         {
             List<ReportMeasurements> result = new List<ReportMeasurements>();
 
@@ -449,12 +439,10 @@ namespace openHistorian.Adapters
             else if (type == ReportType.Unbalance_V)
                 filterstring = "%V-UBAL";
 
-
             TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
-            tableOperations.RootQueryRestriction[0] = $"{this.GetSelectedInstanceName()}:%";
+            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
 
-
-            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", (filterstring + ":SUM")) > 0)
+            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", filterstring + ":SUM") > 0)
             {
                 List<ActiveMeasurement> sumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SUM").ToList();
                 List<ActiveMeasurement> squaredSumMeasurments = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterstring + ":SQR").ToList();
@@ -467,16 +455,15 @@ namespace openHistorian.Adapters
 
                 // Pull Data From the Open Historian
                 List<ActiveMeasurement> all = sumMeasurements.Concat(squaredSumMeasurments).Concat(minimumMeasurements).Concat(maximumMeasurements).Concat(countMeasurements).Concat(alertMeasurements).ToList();
-                List<CondensedDataPoint> historiandata = new List<CondensedDataPoint>();
+                List<CondensedDataPoint> historiandata;
+
                 if (cancelationToken.IsCancellationRequested)
-                {
                     return new List<ReportMeasurements>();
-                }
+
                 try
                 {
-                    Progress<ulong> progress = new Progress<ulong>(this.UpdatePercentage);
-
-                    historiandata = this.historianOperations.ReadCondensed(start, end, all, double.MaxValue, cancelationToken, progress).ToList();
+                    Progress<ulong> progress = new Progress<ulong>(UpdatePercentage);
+                    historiandata = m_historianOperations.ReadCondensed(start, end, all, double.MaxValue, cancelationToken, progress).ToList();
                 }
                 catch
                 {
@@ -484,69 +471,64 @@ namespace openHistorian.Adapters
                 }
 
                 if (cancelationToken.IsCancellationRequested)
-                {
                     return new List<ReportMeasurements>();
-                }
 
                 result = result.Where((item, index) =>
-                    {
-                        ReportMeasurements sum = item;
-                        string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                        ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                {
+                    ReportMeasurements sum = item;
+                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
 
-                        if ((squaredSumChannel is null) || (minimumChannel is null) || (maximumChannel is null) || (countChannel is null) || (countAlertChannel is null))
-                            return false;
+                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
 
-                        return (historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
-                            historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
-                            historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
-                            historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
-                            historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
-                            historiandata.Select(point => point.PointID).Contains(countChannel.PointID));
-                    }).ToList();
+                    if (squaredSumChannel is null || minimumChannel is null || maximumChannel is null || countChannel is null || countAlertChannel is null)
+                        return false;
 
-                    result = result.Select(item =>
-                    {
+                    return historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
+                           historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
+                           historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
+                           historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
+                           historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
+                           historiandata.Select(point => point.PointID).Contains(countChannel.PointID);
+                }).ToList();
 
-                        string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                        ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                        ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
+                result = result.Select(item =>
+                {
+                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
+                    
+                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
+                    ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
 
+                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
+                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
+                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
+                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
+                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
+                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
 
-                        double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).min;
-                        double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).max;
-                        double count = historiandata.Find(point => point.PointID == countChannel.PointID).sum;
-                        double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).sum;
-                        double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).sum;
-                        double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).sum;
+                    item.Max = maximum;
+                    item.Min = minimum;
+                    item.Mean = summation / count;
+                    item.NumberOfAlarms = alarmCount;
+                    item.PercentAlarms = alarmCount * 100.0D / count;
+                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
+                    item.TimeInAlarm = item.NumberOfAlarms / item.FramesPerSecond.GetValueOrDefault().NotZero();
 
-                        item.Max = maximum;
-                        item.Min = minimum;
-                        item.Mean = summation / count;
-                        item.NumberOfAlarms = alarmCount;
-                        item.PercentAlarms = alarmCount * 100.0D / count;
-                        item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
-                        item.TimeInAlarm = (double)item.NumberOfAlarms / (double)item.FramesPerSecond;
-
-                        item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                        return item;
-                    }).ToList();
-                
+                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
+                    return item;
+                }).ToList();
             }
 
             return result;
         }
         
-
-
         #endregion
     }
 }

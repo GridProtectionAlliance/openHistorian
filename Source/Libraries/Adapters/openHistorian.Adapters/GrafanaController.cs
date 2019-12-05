@@ -72,13 +72,13 @@ namespace openHistorian.Adapters
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
-                if ((object)server == null)
+                if (server == null)
                     yield break;
 
                 using (SnapClient connection = SnapClient.Connect(server))
                 using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                 {
-                    if ((object)database == null)
+                    if (database == null)
                         yield break; 
 
                     Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
@@ -168,7 +168,7 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if ((object)m_dataSource != null)
+                if (m_dataSource != null)
                     return m_dataSource;
 
                 string uriPath = Request.RequestUri.PathAndQuery;
@@ -193,7 +193,7 @@ namespace openHistorian.Adapters
                 {
                     LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
 
-                    if ((object)adapterInstance != null)
+                    if (adapterInstance != null)
                     {
                         m_dataSource = new HistorianDataSource
                         {

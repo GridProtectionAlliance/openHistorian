@@ -104,14 +104,8 @@ namespace openHistorian.Adapters
         /// </summary>
         public long StopTime
         {
-            get
-            {
-                return m_stopTime > 0 ? m_stopTime : DateTime.UtcNow.Ticks;
-            }
-            set
-            {
-                m_stopTime = value;
-            }
+            get => m_stopTime > 0 ? m_stopTime : DateTime.UtcNow.Ticks;
+            set => m_stopTime = value;
         }
 
         /// <summary>
@@ -165,24 +159,24 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (disposing)
-                    {
-                        HistorianWriteOperationState[] operationStates = m_historianWriteOperationStates.Values.ToArray();
-                        m_historianWriteOperationStates.Clear();
+            if (m_disposed)
+                return;
 
-                        foreach (HistorianWriteOperationState operationState in operationStates)
-                            operationState.CancellationToken?.Cancel();
-                    }
-                }
-                finally
+            try
+            {
+                if (disposing)
                 {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
+                    HistorianWriteOperationState[] operationStates = m_historianWriteOperationStates.Values.ToArray();
+                    m_historianWriteOperationStates.Clear();
+
+                    foreach (HistorianWriteOperationState operationState in operationStates)
+                        operationState.CancellationToken?.Cancel();
                 }
+            }
+            finally
+            {
+                m_disposed = true;          // Prevent duplicate dispose.
+                base.Dispose(disposing);    // Call base class Dispose().
             }
         }
 
@@ -238,13 +232,13 @@ namespace openHistorian.Adapters
                 {
                     SnapServer server = GetServer(instanceName)?.Host;
 
-                    if ((object)server == null)
+                    if (server == null)
                         throw new InvalidOperationException($"Server is null for instance [{instanceName}].");
 
                     using (SnapClient connection = SnapClient.Connect(server))
                     using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
                     {
-                        if ((object)database == null)
+                        if (database == null)
                             throw new InvalidOperationException($"Database is null for instance [{instanceName}].");
 
                         HistorianKey key = new HistorianKey();
@@ -305,9 +299,7 @@ namespace openHistorian.Adapters
         /// <returns>Current historian write operation state.</returns>
         public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
         {
-            HistorianWriteOperationState operationState;
-
-            if (m_historianWriteOperationStates.TryGetValue(operationHandle, out operationState))
+            if (m_historianWriteOperationStates.TryGetValue(operationHandle, out HistorianWriteOperationState operationState))
                 return operationState;
 
             // Returned a cancelled operation state if operation handle was not found
@@ -329,9 +321,7 @@ namespace openHistorian.Adapters
         /// </remarks>
         public bool CancelHistorianWrite(uint operationHandle)
         {
-            HistorianWriteOperationState operationState;
-
-            if (!m_historianWriteOperationStates.TryGetValue(operationHandle, out operationState))
+            if (!m_historianWriteOperationStates.TryGetValue(operationHandle, out HistorianWriteOperationState operationState))
                 return false;
 
             // Immediately signal for operation cancellation

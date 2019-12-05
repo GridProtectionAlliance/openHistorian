@@ -93,10 +93,7 @@ namespace openHistorian.Adapters
 
                 return m_instanceName;
             }
-            set
-            {
-                m_instanceName = value;
-            }
+            set => m_instanceName = value;
         }
 
         /// <summary>
@@ -107,14 +104,8 @@ namespace openHistorian.Adapters
          DefaultValue(DefaultServer)]
         public string Server
         {
-            get
-            {
-                return m_server;
-            }
-            set
-            {
-                m_server = value;
-            }
+            get => m_server;
+            set => m_server = value;
         }
 
         /// <summary>
@@ -125,37 +116,19 @@ namespace openHistorian.Adapters
          DefaultValue(LocalOutputAdapter.DefaultPort)]
         public int Port
         {
-            get
-            {
-                return m_port;
-            }
-            set
-            {
-                m_port = value;
-            }
+            get => m_port;
+            set => m_port = value;
         }
 
         /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="RemoteOutputAdapter"/> are destined for archival.
         /// </summary>
-        public override bool OutputIsForArchive
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool OutputIsForArchive => true;
 
         /// <summary>
         /// Gets flag that determines if this <see cref="RemoteOutputAdapter"/> uses an asynchronous connection.
         /// </summary>
-        protected override bool UseAsyncConnect
-        {
-            get
-            {
-                return false;
-            }
-        }
+        protected override bool UseAsyncConnect => false;
 
         /// <summary>
         /// Returns the detailed status of the data output source.
@@ -170,7 +143,7 @@ namespace openHistorian.Adapters
                 status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
                 status.AppendFormat("         Remote connection: {0}:{1}\r\n", Server, Port);
 
-                if ((object)m_inputQueue != null)
+                if (m_inputQueue != null)
                     status.AppendFormat("        Current queue size: {0}\r\n", m_inputQueue.Size);
 
                 return status.ToString();
@@ -191,16 +164,14 @@ namespace openHistorian.Adapters
 
             const string errorMessage = "{0} is missing from Settings - Example: instanceName=PPA; server=localhost; port=38402";
             Dictionary<string, string> settings = Settings;
-            string setting;
 
             // Validate settings.
-            if (!settings.TryGetValue("instanceName", out m_instanceName))
-                m_instanceName = null;
+            settings.TryGetValue("instanceName", out m_instanceName);
 
             if (!settings.TryGetValue("server", out m_server))
                 throw new ArgumentException(string.Format(errorMessage, "server"));
 
-            if (settings.TryGetValue("port", out setting))
+            if (settings.TryGetValue("port", out string setting))
                 m_port = int.Parse(setting);
         }
 
@@ -211,7 +182,7 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return string.Format("Published {0} measurements for processing.", m_measurementsPublished).CenterText(maxLength);
+            return $"Published {m_measurementsPublished} measurements for processing.".CenterText(maxLength);
         }
 
         /// <summary>
@@ -220,22 +191,19 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+
+            try
             {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
-                    {
-                        if (m_client != null)
-                            m_client.Dispose();
-                    }
-                }
-                finally
-                {
-                    m_disposed = true; // Prevent duplicate dispose.
-                    base.Dispose(disposing); // Call base class Dispose().
-                }
+                // This will be done regardless of whether the object is finalized or disposed.
+                if (disposing)
+                    m_client?.Dispose();
+            }
+            finally
+            {
+                m_disposed = true; // Prevent duplicate dispose.
+                base.Dispose(disposing); // Call base class Dispose().
             }
         }
 
@@ -253,8 +221,7 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            if (m_client != null)
-                m_client.Dispose();
+            m_client?.Dispose();
         }
 
         /// <summary>

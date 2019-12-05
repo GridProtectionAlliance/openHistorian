@@ -201,7 +201,7 @@ namespace openHistorian.Adapters
         {
             string target = request.target == "select metric" ? "" : request.target;
 
-            if ((object)DataSource == null)
+            if (DataSource == null)
                 return Task.FromResult(Enumerable.Empty<Tuple<string, string, string>>());
 
             return Task.Factory.StartNew(() =>
@@ -312,7 +312,7 @@ namespace openHistorian.Adapters
 
         private double Get360Angle(double angle)
         {
-            return (angle < 0 ? 360 + angle : angle);
+            return angle < 0 ? 360 + angle : angle;
         }
 
         #endregion

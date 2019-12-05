@@ -21,7 +21,6 @@
 //
 //******************************************************************************************************
 
-
 // ReSharper disable CheckNamespace
 #pragma warning disable 1591
 
@@ -29,44 +28,40 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using GSF.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
-using GSF.TimeSeries;
 
 namespace openHistorian.Model
 {
-
-    
     public class ReportMeasurements 
     {
-        
-
         public ReportMeasurements()
-        {}
+        {
+        }
 
         public ReportMeasurements(ActiveMeasurement activemeasurement)
         {
-            this.ID = activemeasurement.ID;
-            this.Source = activemeasurement.Source;
-            this.PointID = activemeasurement.PointID;
-            this.SignalID = (Guid)activemeasurement.SignalID;
-            this.PointTag = activemeasurement.PointTag;
-            this.SignalReference = activemeasurement.SignalReference;
-            this.FramesPerSecond = activemeasurement.FramesPerSecond;
-           
-
-            this.Mean = 0;
-            this.Min = 0;
-            this.StandardDeviation = 0;
-            this.NumberOfAlarms = 0;
-            this.PercentAlarms = 0;
-            this.TimeInAlarm = 0;
+            ID = activemeasurement.ID;
+            Source = activemeasurement.Source;
+            PointID = activemeasurement.PointID;
+            SignalID = activemeasurement.SignalID.GetValueOrDefault();
+            PointTag = activemeasurement.PointTag;
+            SignalReference = activemeasurement.SignalReference;
+            FramesPerSecond = activemeasurement.FramesPerSecond;
+            
+            Mean = 0;
+            Min = 0;
+            StandardDeviation = 0;
+            NumberOfAlarms = 0;
+            PercentAlarms = 0;
+            TimeInAlarm = 0;
         }
 
         [Searchable]
         [CSVExcludeField]
         public string ID
-        {  get; set;   }
-
-
+        {
+            get;
+            set;
+        }
 
         [PrimaryKey(false)]
         [Label("Unique Signal ID")]
@@ -109,33 +104,59 @@ namespace openHistorian.Model
 
         [NonRecordField]
         public string Source
-        { get; set; }
+        {
+            get; 
+            set;
+        }
 
         [NonRecordField]
         public ulong PointID
-        { get; set; }
+        {
+            get;
+            set;
+        }
 
         // Fields populated by historian data
         public double Mean
-        { get; set; }
+        {
+            get; 
+            set;
+        }
 
         public double Min
-        { get; set; }
+        {
+            get;
+            set;
+        }
 
         public double Max
-        { get; set; }
+        {
+            get;
+            set;
+        }
 
         public double StandardDeviation
-        { get; set; }
+        {
+            get; 
+            set;
+        }
 
         public double NumberOfAlarms
-        { get; set; }
+        {
+            get;
+            set;
+        }
 
         public double PercentAlarms
-        { get; set; }
+        {
+            get;
+            set;
+        }
 
         public double TimeInAlarm
-        { get; set; }
-
+        {
+            get;
+            set;
+        }
     }
 }

@@ -185,10 +185,7 @@ namespace openHistorian.Adapters
 
                 return m_instanceName;
             }
-            set
-            {
-                m_instanceName = value;
-            }
+            set => m_instanceName = value;
         }
 
         /// <summary>
@@ -199,14 +196,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultDataChannel)]
         public string DataChannel
         {
-            get
-            {
-                return m_dataChannel;
-            }
-            set
-            {
-                m_dataChannel = value;
-            }
+            get => m_dataChannel;
+            set => m_dataChannel = value;
         }
 
         /// <summary>
@@ -217,10 +208,7 @@ namespace openHistorian.Adapters
         DefaultValue("")]
         public string WorkingDirectory
         {
-            get
-            {
-                return m_workingDirectory;
-            }
+            get => m_workingDirectory;
             set
             {
                 string localPath = FilePath.GetAbsolutePath(value);
@@ -251,7 +239,7 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if ((object)m_archiveDirectories != null)
+                if (m_archiveDirectories != null)
                     return string.Join(";", m_archiveDirectories);
 
                 return "";
@@ -298,14 +286,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultDirectoryNamingMode)]
         public ArchiveDirectoryMethod DirectoryNamingMode
         {
-            get
-            {
-                return m_directoryNamingMode;
-            }
-            set
-            {
-                m_directoryNamingMode = value;
-            }
+            get => m_directoryNamingMode;
+            set => m_directoryNamingMode = value;
         }
 
         /// <summary>
@@ -330,7 +312,7 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if ((object)m_attachedPaths != null)
+                if (m_attachedPaths != null)
                     return string.Join(";", m_attachedPaths);
 
                 return "";
@@ -368,14 +350,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultWatchAttachedPaths)]
         public bool WatchAttachedPaths
         {
-            get
-            {
-                return m_watchAttachedPaths;
-            }
-            set
-            {
-                m_watchAttachedPaths = value;
-            }
+            get => m_watchAttachedPaths;
+            set => m_watchAttachedPaths = value;
         }
 
         /// <summary>
@@ -386,10 +362,7 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultTargetFileSize)]
         public double TargetFileSize
         {
-            get
-            {
-                return m_targetFileSize;
-            }
+            get => m_targetFileSize;
             set
             {
                 if (value < 0.1D || value > SI2.Tera)
@@ -407,10 +380,7 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultDesiredRemainingSpace)]
         public double DesiredRemainingSpace
         {
-            get
-            {
-                return m_desiredRemainingSpace;
-            }
+            get => m_desiredRemainingSpace;
             set
             {
                 if (value < 0.1D || value > SI2.Tera)
@@ -428,14 +398,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultMaximumArchiveDays)]
         public int MaximumArchiveDays
         {
-            get
-            {
-                return m_maximumArchiveDays;
-            }
-            set
-            {
-                m_maximumArchiveDays = value;
-            }
+            get => m_maximumArchiveDays;
+            set => m_maximumArchiveDays = value;
         }
 
         /// <summary>
@@ -446,14 +410,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultEnableTimeReasonabilityCheck)]
         public bool EnableTimeReasonabilityCheck
         {
-            get
-            {
-                return m_enableTimeReasonabilityCheck;
-            }
-            set
-            {
-                m_enableTimeReasonabilityCheck = value;
-            }
+            get => m_enableTimeReasonabilityCheck;
+            set => m_enableTimeReasonabilityCheck = value;
         }
 
         /// <summary>
@@ -464,14 +422,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultPastTimeReasonabilityLimit)]
         public double PastTimeReasonabilityLimit
         {
-            get
-            {
-                return new Ticks(m_pastTimeReasonabilityLimit).ToSeconds();
-            }
-            set
-            {
-                m_pastTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
-            }
+            get => new Ticks(m_pastTimeReasonabilityLimit).ToSeconds();
+            set => m_pastTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
         }
 
         /// <summary>
@@ -482,14 +434,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultFutureTimeReasonabilityLimit)]
         public double FutureTimeReasonabilityLimit
         {
-            get
-            {
-                return new Ticks(m_futureTimeReasonabilityLimit).ToSeconds();
-            }
-            set
-            {
-                m_futureTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
-            }
+            get => new Ticks(m_futureTimeReasonabilityLimit).ToSeconds();
+            set => m_futureTimeReasonabilityLimit = Ticks.FromSeconds(Math.Abs(value));
         }
 
         /// <summary>
@@ -500,14 +446,8 @@ namespace openHistorian.Adapters
         DefaultValue(DefaultSwingingDoorCompressionEnabled)]
         public bool SwingingDoorCompressionEnabled
         {
-            get
-            {
-                return m_swingingDoorCompressionEnabled;
-            }
-            set
-            {
-                m_swingingDoorCompressionEnabled = value;
-            }
+            get => m_swingingDoorCompressionEnabled;
+            set => m_swingingDoorCompressionEnabled = value;
         }
 
         /// <summary>
@@ -525,16 +465,13 @@ namespace openHistorian.Adapters
         /// </summary>
         public override DataSet DataSource
         {
-            get
-            {
-                return base.DataSource;
-            }
+            get => base.DataSource;
 
             set
             {
                 base.DataSource = value;
 
-                if ((object)value == null)
+                if (value == null)
                     return;
 
                 Dictionary<ulong, DataRow> measurements = new Dictionary<ulong, DataRow>();
@@ -608,13 +545,13 @@ namespace openHistorian.Adapters
                     status.AppendFormat(" Maximum future time limit: {0:N4}s, i.e., {1}\r\n", FutureTimeReasonabilityLimit, new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4));
                 }
 
-                if ((object)m_dataServices != null)
+                if (m_dataServices != null)
                     status.Append(m_dataServices.Status);
 
-                if ((object)m_replicationProviders != null)
+                if (m_replicationProviders != null)
                     status.Append(m_replicationProviders.Status);
 
-                if ((object)m_server != null && (object)m_server.Host != null)
+                if (m_server != null && m_server.Host != null)
                     m_server.Host?.GetFullStatus(status);
 
                 return status.ToString();
@@ -633,13 +570,9 @@ namespace openHistorian.Adapters
 
         private SafeFileWatcher[] AttachedPathWatchers
         {
-            get
-            {
-                return m_attachedPathWatchers;
-            }
             set
             {
-                if ((object)m_attachedPathWatchers != null)
+                if (m_attachedPathWatchers != null)
                 {
                     foreach (SafeFileWatcher watcher in m_attachedPathWatchers)
                     {
@@ -672,7 +605,7 @@ namespace openHistorian.Adapters
                         // This will be done only when the object is disposed by calling Dispose().
                         AttachedPathWatchers = null;
 
-                        if ((object)m_dataServices != null)
+                        if (m_dataServices != null)
                         {
                             m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
                             m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
@@ -681,7 +614,7 @@ namespace openHistorian.Adapters
                             m_dataServices.Dispose();
                         }
 
-                        if ((object)m_replicationProviders != null)
+                        if (m_replicationProviders != null)
                         {
                             m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
                             m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
@@ -690,7 +623,7 @@ namespace openHistorian.Adapters
                             m_replicationProviders.Dispose();
                         }
 
-                        if ((object)m_archiveCurtailmentTimer != null)
+                        if (m_archiveCurtailmentTimer != null)
                         {
                             m_archiveCurtailmentTimer.Stop();
                             m_archiveCurtailmentTimer.Elapsed -= m_archiveCurtailmentTimerElapsed;
@@ -798,10 +731,10 @@ namespace openHistorian.Adapters
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
 
-            if ((object)m_archiveDirectories != null)
+            if (m_archiveDirectories != null)
                 m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
 
-            if ((object)m_attachedPaths != null)
+            if (m_attachedPaths != null)
                 m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
 
             m_archiveInfo.ImportAttachedPathsAtStartup = false;
@@ -954,7 +887,7 @@ namespace openHistorian.Adapters
 
         private ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase()
         {
-            if ((object)m_archive != null && (object)m_archive.ClientDatabase != null)
+            if (m_archive != null && m_archive.ClientDatabase != null)
                 return m_archive.ClientDatabase;
 
             throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
@@ -988,7 +921,7 @@ namespace openHistorian.Adapters
 
             OnConnected();
 
-            if ((object)m_attachedPathWatchers != null)
+            if (m_attachedPathWatchers != null)
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = true;
@@ -1002,7 +935,7 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            if ((object)m_attachedPathWatchers != null)
+            if (m_attachedPathWatchers != null)
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = false;
@@ -1048,7 +981,7 @@ namespace openHistorian.Adapters
                     Tuple<int, int, double> settings = null;
 
                     // Attempt to lookup compression settings for this measurement
-                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && (object)settings != null)
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && settings != null)
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
@@ -1072,7 +1005,7 @@ namespace openHistorian.Adapters
                             // CompressionMinTime is in effect
                             archiveData = false;
                         }
-                        else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || (compressionMaxTime > 0 && previousData.Value - archivedData.Timestamp > compressionMaxTime))
+                        else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || compressionMaxTime > 0 && previousData.Value - archivedData.Timestamp > compressionMaxTime)
                         {
                             // Quality changed or CompressionMaxTime is exceeded
                             archiveData = true;

@@ -72,13 +72,12 @@ namespace openHistorian.Adapters
                     TableOperations<IaonOutputAdapter> operations = new TableOperations<IaonOutputAdapter>(connection);
                     IaonOutputAdapter record = operations.QueryRecordWhere("TypeName = {0}", typeof(LocalOutputAdapter).FullName);
 
-                    if ((object)record == null)
+                    if (record == null)
                         throw new NullReferenceException("Primary openHistorian adapter instance not found.");
 
                     Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
-                    string setting;
 
-                    if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out s_portNumber))
+                    if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out s_portNumber))
                         s_portNumber = Connection.DefaultHistorianPort;
 
                     if (!settings.TryGetValue("instanceName", out s_defaultInstanceName) || string.IsNullOrWhiteSpace(s_defaultInstanceName))
@@ -158,10 +157,10 @@ namespace openHistorian.Adapters
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
         public static IEnumerable<TrendValue> GetHistorianData(SnapServer server, string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, ICancellationToken cancellationToken = null)
         {
-            if ((object)cancellationToken == null)
+            if (cancellationToken == null)
                 cancellationToken = new CancellationToken();
 
-            if ((object)server == null)
+            if (server == null)
                 yield break;
 
             // Setting series limit to zero requests full resolution data, which overrides provided parameter
@@ -197,22 +196,21 @@ namespace openHistorian.Adapters
             }
 
             Dictionary<ulong, DataRow> metadata = null;
-            LocalOutputAdapter historianAdapter;
 
             using (SnapClient connection = SnapClient.Connect(server))
             using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
             {
-                if ((object)database == null)
+                if (database == null)
                     yield break;
 
-                if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out historianAdapter))
+                if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out LocalOutputAdapter historianAdapter))
                     metadata = historianAdapter?.Measurements;
 
-                if ((object)metadata == null)
+                if (metadata == null)
                     yield break;
 
                 // Setup point ID selections
-                if ((object)measurementIDs != null)
+                if (measurementIDs != null)
                     pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
                 else
                     measurementIDs = metadata.Keys.ToArray();
@@ -224,7 +222,6 @@ namespace openHistorian.Adapters
                 double range = (stopTime - startTime).TotalSeconds;
                 ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
                 long pointCount;
-                DataRow row;
 
                 if (resolutionSpan <= 1UL)
                     resolutionSpan = Ticks.PerSecond;
@@ -236,7 +233,7 @@ namespace openHistorian.Adapters
                 foreach (ulong measurementID in measurementIDs)
                 {
                     if (resolution == Resolution.Full)
-                        pointCounts[measurementID] = metadata.TryGetValue(measurementID, out row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
+                        pointCounts[measurementID] = metadata.TryGetValue(measurementID, out DataRow row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
                     else
                         pointCounts[measurementID] = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
                 }
@@ -252,7 +249,7 @@ namespace openHistorian.Adapters
                         timestamp = key.Timestamp;
                         pointCount = pointCounts[pointID];
 
-                        if (pointCount++ % intervals[pointID] == 0 || (!forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan))
+                        if (pointCount++ % intervals[pointID] == 0 || !forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
                             yield return new TrendValue
                             {
                                 ID = (long)pointID,

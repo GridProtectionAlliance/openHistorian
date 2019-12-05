@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using GSF;
 using GSF.Data;
 using GSF.Data.Model;
@@ -32,9 +33,6 @@ using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using GSF.Web.Hubs;
-using GSF.Web.Model;
-using Microsoft.AspNet.SignalR.Hubs;
 using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
@@ -216,7 +214,6 @@ namespace openHistorian.Adapters
         private readonly SnapClient m_client;
         private readonly ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
         private readonly TreeStream<HistorianKey, HistorianValue> m_stream;
-        private readonly MatchFilterBase<HistorianKey, HistorianValue> m_pointFilter;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
         private bool m_disposed;
@@ -238,9 +235,9 @@ namespace openHistorian.Adapters
             m_value = new HistorianValue();
 
             SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(DataPoint.RoundTimestamp(startTime, frameRate), DataPoint.RoundTimestamp(endTime, frameRate));
-            m_pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
+            MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
 
-            m_stream = m_database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, m_pointFilter);
+            m_stream = m_database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
         }
 
         /// <summary>
@@ -266,26 +263,21 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+            
+            try
             {
-                try
+                if (disposing)
                 {
-                    if (disposing)
-                    {
-                        if ((object)m_stream != null)
-                            m_stream.Dispose();
-
-                        if ((object)m_database != null)
-                            m_database.Dispose();
-
-                        if ((object)m_client != null)
-                            m_client.Dispose();
-                    }
+                    m_stream?.Dispose();
+                    m_database?.Dispose();
+                    m_client?.Dispose();
                 }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
+            }
+            finally
+            {
+                m_disposed = true;  // Prevent duplicate dispose.
             }
         }
 
@@ -326,7 +318,7 @@ namespace openHistorian.Adapters
     /// </summary>
     public sealed class ReportHistorianOperations : IDisposable
     {
-        private String m_instance;
+        private string m_instance;
         private string s_defaultInstanceName;
         private int s_portNumber;
         private bool m_disposed;
@@ -358,13 +350,12 @@ namespace openHistorian.Adapters
                     TableOperations<IaonOutputAdapter> operations = new TableOperations<IaonOutputAdapter>(connection);
                     IaonOutputAdapter record = operations.QueryRecordWhere("TypeName = {0}", typeof(LocalOutputAdapter).FullName);
 
-                    if ((object)record == null)
+                    if (record == null)
                         throw new NullReferenceException("Primary openHistorian adapter instance not found.");
 
                     Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
-                    string setting;
 
-                    if (!settings.TryGetValue("port", out setting) || !int.TryParse(setting, out s_portNumber))
+                    if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out s_portNumber))
                         s_portNumber = Connection.DefaultHistorianPort;
 
                     if (!settings.TryGetValue("instanceName", out s_defaultInstanceName) || string.IsNullOrWhiteSpace(s_defaultInstanceName))
@@ -449,28 +440,29 @@ namespace openHistorian.Adapters
         /// <param name="threshold">Threshhold used to determine number of alerts.</param>   
         /// <param name="cancelationToken">Cancleation Token for the operation.</param>  
         /// <param name="progress"> Progress Tracker <see cref="IProgress{T}"/>.</param>  
-        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, System.Threading.CancellationToken cancelationToken, IProgress<ulong> progress)
+        public IEnumerable<CondensedDataPoint> ReadCondensed(DateTime start, DateTime end, IEnumerable<ActiveMeasurement> measurements, double threshold, CancellationToken cancelationToken, IProgress<ulong> progress)
         {
-            List<CondensedDataPoint> result = new List<CondensedDataPoint>(measurements.Count());
+            // Enumerate measurements once
+            ActiveMeasurement[] activeMeasurements = measurements.ToArray();
+            List<CondensedDataPoint> result = new List<CondensedDataPoint>(activeMeasurements.Length);
 
-            SnapServer server = GetServer(this.m_instance)?.Host;
+            SnapServer server = GetServer(m_instance)?.Host;
             
-            //start by sepperating all framerates
-            foreach (int framerate in measurements.Select(item => item.FramesPerSecond).Distinct())
+            // start by sepperating all framerates
+            foreach (int framerate in activeMeasurements.Select(item => item.FramesPerSecond.GetValueOrDefault()).Distinct())
             {
-                ulong[] pointIDs= measurements.Where(item => item.FramesPerSecond == framerate).Select(item => item.PointID).ToArray();
+                ulong[] pointIDs= activeMeasurements.Where(item => item.FramesPerSecond == framerate).Select(item => item.PointID).ToArray();
                 Dictionary<ulong, CondensedDataPoint> frameRateResult = new Dictionary<ulong, CondensedDataPoint>();
 
                 foreach (ulong key in pointIDs)
                 {
                     frameRateResult.Add(key,CondensedDataPoint.EmptyPoint(key));
+
                     if (cancelationToken.IsCancellationRequested)
-                    {
                         return result;
-                    }
                 }
 
-                using (ReportHistorianReader reader = new ReportHistorianReader(server, this.m_instance, start, end, framerate, pointIDs))
+                using (ReportHistorianReader reader = new ReportHistorianReader(server, m_instance, start, end, framerate, pointIDs))
                 {
                     DataPoint point = new DataPoint();
 
@@ -485,28 +477,27 @@ namespace openHistorian.Adapters
                     while (reader.ReadNext(point))
                     {
                         if (currentTimeStamp < point.Timestamp)
-                        {
                             progress.Report(point.Timestamp);
-                        }
 
                         if (cancelationToken.IsCancellationRequested)
-                        {
                             return result;
-                        }
 
-                        if (!Single.IsNaN(point.ValueAsSingle))
+                        if (!float.IsNaN(point.ValueAsSingle))
                         {
-                            if (point.ValueAsSingle > frameRateResult[point.PointID].max)
-                                frameRateResult[point.PointID].max = point.ValueAsSingle;
-                            if (point.ValueAsSingle < frameRateResult[point.PointID].min)
-                                frameRateResult[point.PointID].min = point.ValueAsSingle;
-
-                            frameRateResult[point.PointID].sum += point.ValueAsSingle;
-                            frameRateResult[point.PointID].sqrsum += point.ValueAsSingle * point.ValueAsSingle;
-                            frameRateResult[point.PointID].totalPoints++;
-                            if (point.ValueAsSingle > threshold)
+                            if (frameRateResult.TryGetValue(point.PointID, out CondensedDataPoint dataPoint) && dataPoint != null)
                             {
-                                frameRateResult[point.PointID].alert++;
+                                if (point.ValueAsSingle > dataPoint.max)
+                                    dataPoint.max = point.ValueAsSingle;
+
+                                if (point.ValueAsSingle < dataPoint.min)
+                                    dataPoint.min = point.ValueAsSingle;
+
+                                dataPoint.sum += point.ValueAsSingle;
+                                dataPoint.sqrsum += point.ValueAsSingle * point.ValueAsSingle;
+                                dataPoint.totalPoints++;
+
+                                if (point.ValueAsSingle > threshold)
+                                    dataPoint.alert++;
                             }
                         }
 
@@ -517,16 +508,12 @@ namespace openHistorian.Adapters
                 result.AddRange(frameRateResult.Where(item => item.Value.totalPoints > 0).Select(item => { item.Value.PointID = item.Key; return item.Value; }));
 
                 if (cancelationToken.IsCancellationRequested)
-                {
                     return result;
-                }
             }
             
-
             return result;
         }
 
-     
         private HistorianServer GetServer(string instanceName)
         {
             if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter historianAdapter))
@@ -534,6 +521,5 @@ namespace openHistorian.Adapters
 
             return null;
         }
-
     }
 }

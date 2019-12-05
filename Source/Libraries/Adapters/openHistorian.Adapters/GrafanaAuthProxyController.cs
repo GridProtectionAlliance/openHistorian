@@ -50,6 +50,7 @@ using Http = System.Net.WebRequestMethods.Http;
 #pragma warning disable 169, 414, 649
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable InconsistentNaming
+// ReSharper disable NotAccessedField.Local
 namespace openHistorian.Adapters
 {
     /// <summary>
@@ -157,7 +158,7 @@ namespace openHistorian.Adapters
             // Proxy all other requests
             SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
 
-            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null)
+            if (securityPrincipal?.Identity == null)
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
             Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
@@ -172,7 +173,7 @@ namespace openHistorian.Adapters
             if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
             {
                 // HACK: Internet Explorer sometimes applies cached authorization headers to concurrent AJAX requests
-                if ((object)Request.Headers.Authorization != null)
+                if (Request.Headers.Authorization != null)
                 {
                     // Clone request to allow modification
                     HttpRequestMessage retryRequest = await CloneRequest();
@@ -203,7 +204,7 @@ namespace openHistorian.Adapters
                         // Validate user has a role defined in latest security context
                         Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
-                        if ((object)securityContext == null)
+                        if (securityContext == null)
                             return;
 
                         Dictionary<string, string[]> userRoles = StartUserSynchronization(userName);
@@ -320,10 +321,9 @@ namespace openHistorian.Adapters
                 s_initializationWaitHandle = new ManualResetEventSlim();
 
                 // Establish a synchronized operation for handling Grafana user synchronizations
-                s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex => {
-                    AggregateException aggregate = ex as AggregateException;
-
-                    if ((object)aggregate != null)
+                s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex =>
+                {
+                    if (ex is AggregateException aggregate)
                     {
                         foreach (Exception innerException in aggregate.Flatten().InnerExceptions)
                             OnStatusMessage($"ERROR: {innerException.Message}");
@@ -382,7 +382,7 @@ namespace openHistorian.Adapters
         {
             Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
-            if ((object)securityContext == null)
+            if (securityContext == null)
                 return;
 
             // Skip user synchronization if security context has not changed
@@ -458,7 +458,7 @@ namespace openHistorian.Adapters
                 string organizationalRole = TranslateRole(roles);
 
                 // Update user's organizational status / role as needed
-                if ((object)orgUserDetail == null && !createdUser)
+                if (orgUserDetail == null && !createdUser)
                     success = AddUserToOrganization(s_organizationID, userName, organizationalRole, out message);
                 else if (createdUser || !orgUserDetail.role.Equals(organizationalRole, StringComparison.OrdinalIgnoreCase))
                     success = UpdateUserOrganizationalRole(s_organizationID, userDetail.id, organizationalRole, out message);
@@ -593,7 +593,7 @@ namespace openHistorian.Adapters
             if (left == right)
                 return true;
 
-            if ((object)left == null || (object)right == null)
+            if (left == null || right == null)
                 return false;
 
             if (left.Count != right.Count)

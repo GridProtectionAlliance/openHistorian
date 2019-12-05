@@ -124,9 +124,8 @@ namespace openHistorian.Adapters
 
             string[] parts = historianServer.Split(':');
             string hostName = parts[0];
-            int port;
 
-            if (parts.Length < 2 || !int.TryParse(parts[1], out port))
+            if (parts.Length < 2 || !int.TryParse(parts[1], out int port))
                 port = DefaultHistorianPort;
 
             m_client = new HistorianClient(hostName, port);
@@ -140,24 +139,12 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets reference to <see cref="HistorianClient"/> instance of this <see cref="Connection"/>.
         /// </summary>
-        public HistorianClient Client
-        {
-            get
-            {
-                return m_client;
-            }
-        }
+        public HistorianClient Client => m_client;
 
         /// <summary>
         /// Gets instance name of this <see cref="Connection"/>.
         /// </summary>
-        public string InstanceName
-        {
-            get
-            {
-                return m_instanceName;
-            }
-        }
+        public string InstanceName => m_instanceName;
 
         #endregion
 
@@ -178,20 +165,17 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+
+            try
             {
-                try
-                {
-                    if (disposing)
-                    {
-                        if ((object)m_client != null)
-                            m_client.Dispose();
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
+                if (disposing)
+                    m_client?.Dispose();
+            }
+            finally
+            {
+                m_disposed = true;  // Prevent duplicate dispose.
             }
         }
 
@@ -248,7 +232,7 @@ namespace openHistorian.Adapters
 
             // TODO: This was based on code that aligns data and fills time - this function will
             // need to be re-worked to provide data on an interval based on slopes and time...
-            Measurement[] values = measurementIDs.Split(',').Select(uint.Parse).Select(id => new Measurement() { Metadata = MeasurementKey.LookUpBySource(connection.InstanceName, id).Metadata }).ToArray();
+            Measurement[] values = measurementIDs.Split(',').Select(uint.Parse).Select(id => new Measurement { Metadata = MeasurementKey.LookUpBySource(connection.InstanceName, id).Metadata }).ToArray();
             long tickInterval = interval.Ticks;
             long lastTimestamp = 0L;
 
@@ -260,7 +244,7 @@ namespace openHistorian.Adapters
                 if (timestamp != lastTimestamp)
                 {
                     if (lastTimestamp > 0)
-                        foreach (IMeasurement value in values)
+                        foreach (Measurement value in values)
                             yield return value;
 
                     for (int i = 0; i < values.Length; i++)
@@ -278,7 +262,7 @@ namespace openHistorian.Adapters
                             {
                                 interpolated = interpolated + tickInterval;
 
-                                foreach (IMeasurement value in values)
+                                foreach (Measurement value in values)
                                     yield return value;
                             }
                         }
@@ -361,7 +345,7 @@ namespace openHistorian.Adapters
             }
 
             // Setup point ID selections
-            if ((object)measurementIDs != null)
+            if (measurementIDs != null)
                 pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurementIDs);
 
             // Start stream reader for the provided time window and selected points
@@ -370,7 +354,7 @@ namespace openHistorian.Adapters
                 TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
 
                 while (stream.Read(key, value))
-                    yield return new Measurement()
+                    yield return new Measurement
                     {
                         Metadata = MeasurementKey.LookUpOrCreate(connection.InstanceName, (uint)key.PointID).Metadata,
                         Timestamp = key.TimestampAsDate,

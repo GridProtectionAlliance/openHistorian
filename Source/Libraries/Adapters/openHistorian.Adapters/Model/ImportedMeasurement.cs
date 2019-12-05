@@ -116,9 +116,8 @@ namespace openHistorian.Model
                 ConfigurationFile configurationFile = ConfigurationFile.Current;
                 CategorizedSettingsElementCollection systemSettings = configurationFile.Settings["systemSettings"];
                 string nodeIDSetting = systemSettings["NodeID"].Value;
-                Guid nodeID;
 
-                if (!Guid.TryParse(nodeIDSetting, out nodeID))
+                if (!Guid.TryParse(nodeIDSetting, out Guid nodeID))
                     return Guid.Empty;
 
                 return nodeID;
@@ -231,7 +230,7 @@ namespace openHistorian.Model
         {
             TransactionScopeOption transactionScopeOption = TransactionScopeOption.Required;
 
-            TransactionOptions transactionOptions = new TransactionOptions()
+            TransactionOptions transactionOptions = new TransactionOptions
             {
                 IsolationLevel = IsolationLevel.ReadCommitted,
                 Timeout = TransactionManager.MaximumTimeout
