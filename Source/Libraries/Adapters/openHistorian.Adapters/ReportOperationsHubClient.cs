@@ -136,7 +136,6 @@ namespace openHistorian.Adapters
 
             // Dispose of Historian operations and connection
             // This is called on endSession and should be triggered in all cases
-            m_historianOperations.Dispose();
             m_connection.Dispose();
             m_cancellation.Dispose();
 
