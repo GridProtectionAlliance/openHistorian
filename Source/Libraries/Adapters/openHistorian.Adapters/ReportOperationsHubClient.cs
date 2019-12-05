@@ -89,7 +89,7 @@ namespace openHistorian.Adapters
         private string m_databaseFile;
         private AdoDataConnection m_connection;
         private bool m_disposed;
-        private bool m_writting;
+        private bool m_writing;
         private readonly CancellationTokenSource m_cancellation;
         
         // These are for the Progressbar
@@ -108,7 +108,7 @@ namespace openHistorian.Adapters
         {
             m_historianOperations = new ReportHistorianOperations();
 
-            m_writting = false;
+            m_writing = false;
             // Override the Historian Instance with the value from the config File
             // Any changes after this will take effect
 
@@ -220,10 +220,10 @@ namespace openHistorian.Adapters
             m_totalTime = (endDate - startDate).TotalSeconds;
 
 
-            if (m_writting)
+            if (m_writing)
                 m_cancellation.Cancel();
 
-            m_writting = true;
+            m_writing = true;
             CancellationToken token = m_cancellation.Token;
             
             new Thread(() =>
@@ -265,7 +265,7 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						m_writting = false;
+						m_writing = false;
 						return;
 					}
 
@@ -273,7 +273,7 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						m_writting = false;
+						m_writing = false;
 						return;
 					}
 
@@ -288,7 +288,7 @@ namespace openHistorian.Adapters
 						// Pull Data From the Open Historian
                         if (token.IsCancellationRequested)
 						{
-							m_writting = false;
+							m_writing = false;
 							return;
 						}
 
@@ -297,7 +297,7 @@ namespace openHistorian.Adapters
 
 						if (token.IsCancellationRequested)
 						{
-							m_writting = false;
+							m_writing = false;
 							return;
 						}
 
@@ -350,7 +350,7 @@ namespace openHistorian.Adapters
 
 					if (token.IsCancellationRequested)
 					{
-						m_writting = false;
+						m_writing = false;
 						return;
 					}
 
@@ -361,7 +361,7 @@ namespace openHistorian.Adapters
 						tbl.AddNewRecord(reportingMeasurements[i]);
 					}
 
-					m_writting = false;
+					m_writing = false;
 					m_percentComplete = 100.0;
 				}
 				catch (Exception e)
@@ -369,7 +369,7 @@ namespace openHistorian.Adapters
 					LogException(e);
 				}
 
-				m_writting = false;
+				m_writing = false;
 				m_percentComplete = 100.0;
 			})
             {
