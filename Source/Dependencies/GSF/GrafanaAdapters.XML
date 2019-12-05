@@ -1064,6 +1064,34 @@
             Validates that openHistorian Grafana data source is responding as expected.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.LocationData">
+            <summary>
+            Defines location meta-data functions for Grafana controllers.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.LocationData.DataSource">
+            <summary>
+            Gets or sets associated <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> instance.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.LocationData.GetLocationData(System.Double,System.Double,System.Collections.Generic.List{GrafanaAdapters.Target},System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+            </summary>
+            <param name="radius">Radius of overlapping coordinate distribution.</param>
+            <param name="zoom">Zoom level.</param>
+            <param name="request"> Query request.</param>
+            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+            <returns>JSON serialized location metadata for specified targets.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.LocationData.GetLocationData(System.Collections.Generic.List{GrafanaAdapters.Target},System.Threading.CancellationToken)">
+            <summary>
+            Queries openHistorian location data for Grafana.
+            </summary>
+            <param name="request"> Query request.</param>
+            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+            <returns>JSON serialized location metadata for specified targets.</returns>
+        </member>
         <member name="T:GrafanaAdapters.QueryRequest">
             <summary>
             Defines a Grafana query request.
