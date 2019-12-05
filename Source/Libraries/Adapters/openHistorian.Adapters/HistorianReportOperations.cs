@@ -315,8 +315,9 @@ namespace openHistorian.Adapters
     /// <summary>
     /// Defines a Client to read historian data using <see cref="ReportHistorianReader"/>.
     /// </summary>
-    public sealed class ReportHistorianOperations
+    public sealed class ReportHistorianOperations : IDisposable
     {
+        private bool m_disposed;
         private string m_instance;
         private string m_defaultInstanceName;
         private int m_portNumber;
@@ -474,6 +475,38 @@ namespace openHistorian.Adapters
             return result;
         }
 
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="ReportHistorianOperations"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="ReportHistorianOperations"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            try
+            {
+                if (disposing)
+                {
+                    
+                }
+            }
+            finally
+            {
+                m_disposed = true;  // Prevent duplicate dispose.
+            }
+        }
+
+
         private HistorianServer GetServer(string instanceName)
         {
             if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter historianAdapter))
@@ -481,5 +514,6 @@ namespace openHistorian.Adapters
 
             return null;
         }
+
     }
 }
