@@ -260,40 +260,30 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Queries openHistorian Location Data for Grafana.
+        /// Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+        /// </summary>
+        /// <param name="radius">Radius of overlapping coordinate distribution.</param>
+        /// <param name="zoom">Zoom level.</param>
+        /// <param name="request"> Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        /// <returns>JSON serialized location metadata for specified targets.</returns>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
+        public virtual Task<string> GetLocationData([FromUri] double radius, [FromUri] double zoom, [FromBody] List<Target> request, CancellationToken cancellationToken)
+        {
+        }
+
+        /// <summary>
+        /// Queries openHistorian location data for Grafana.
         /// </summary>
         /// <param name="request"> Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        /// <returns>JSON serialized location metadata for specified targets.</returns>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetLocationData(List<Target> request, CancellationToken cancellationToken)
         {
-            return Task.Factory.StartNew(() =>
-            {
-                DataTable table = new DataTable();
-
-                foreach (Target target in request)
-                {
-                    DataTable tmptable = new DataTable();
-
-                    if (string.IsNullOrWhiteSpace(target.target))
-                        return string.Empty;
-
-                    DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{target.target}'") ?? new DataRow[0];
-
-                    if (rows.Length > 0)
-                    {
-                        tmptable = rows.CopyToDataTable();
-                        table.Merge(tmptable);
-                    }
-                }
-
-                return JsonConvert.SerializeObject(table);
-            },
-            cancellationToken);
         }
-
-
 
         /// <summary>
         /// Search openHistorian for a target.
