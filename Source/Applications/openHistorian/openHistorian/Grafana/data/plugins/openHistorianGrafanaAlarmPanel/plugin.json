@@ -8,7 +8,7 @@
 "name":"GridProtectionAlliance", 
 "url":"http//www.gridprotectionalliance.org" 
 }, 
-"keywords":["openHistorian","panel","DeviceStatus" ], 
+"keywords":["openHistorian","panel","DeviceStatus"],  
 "logos":{ 
 "small":"images/PAPanel.png", 
 "large":"images/PAPanel.png" 
@@ -21,8 +21,8 @@
 ], 
 "screenshots":[ 
 ], 
-"version":"1.18.0", 
-"updated": "2019-12-05" 
+"version":"1.19.0", 
+"updated": "2019-12-06" 
 }, 
 "dependencies":{ 
 "grafanaVersion":"4.6", 

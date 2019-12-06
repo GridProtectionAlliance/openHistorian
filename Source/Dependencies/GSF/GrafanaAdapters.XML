@@ -1076,7 +1076,7 @@
         </member>
         <member name="M:GrafanaAdapters.LocationData.GetLocationData(System.Double,System.Double,System.Collections.Generic.List{GrafanaAdapters.Target},System.Threading.CancellationToken)">
             <summary>
-            Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+            Queries Grafana data source for location data offsetting duplicate coordinates using a radial distribution.
             </summary>
             <param name="radius">Radius of overlapping coordinate distribution.</param>
             <param name="zoom">Zoom level.</param>
@@ -1086,7 +1086,7 @@
         </member>
         <member name="M:GrafanaAdapters.LocationData.GetLocationData(System.Collections.Generic.List{GrafanaAdapters.Target},System.Threading.CancellationToken)">
             <summary>
-            Queries openHistorian location data for Grafana.
+            Queries Grafana data source for location data.
             </summary>
             <param name="request"> Query request.</param>
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
