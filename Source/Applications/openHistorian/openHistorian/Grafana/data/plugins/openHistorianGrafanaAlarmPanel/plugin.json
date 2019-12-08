@@ -21,8 +21,8 @@
 ], 
 "screenshots":[ 
 ], 
-"version":"1.20.0", 
-"updated": "2019-12-07" 
+"version":"1.21.0", 
+"updated": "2019-12-08" 
 }, 
 "dependencies":{ 
 "grafanaVersion":"4.6", 
