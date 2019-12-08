@@ -4103,7 +4103,12 @@
         </member>
         <member name="T:GSF.TimeSeries.Common">
             <summary>
-            Defines common functions for the time-series library.
+            Defines common properties and functions for the time-series library.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Common.DynamicAssembliesFolderName">
+            <summary>
+            Folder name for dyanmically compiled assemblies.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Configuration.ConfigurationLoaderBase">
