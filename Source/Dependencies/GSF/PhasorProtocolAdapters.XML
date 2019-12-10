@@ -1129,14 +1129,14 @@
             Gets the number of missing frames of data, taking into account redundant frames.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TotalFrames">
-            <summary>
-            Gets the the total number of frames that have been received by the current mapper connection.
-            </summary>
-        </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.LastReportTime">
             <summary>
             Gets or set last report time for current mapper connection.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TotalFrames">
+            <summary>
+            Gets the the total number of frames that have been received by the current mapper connection.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingFrames">
@@ -1236,26 +1236,6 @@
             it is expected that this would not be desired in a temporal data streaming session.
             </remarks>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.FrameParser">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.UdpPublishChannel">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> publication channel, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpPublishChannel">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> publication channel, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
-        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpClientPublishChannel">
-            <summary>
-            Gets or sets reference to <see cref="T:GSF.Communication.TcpClient"/> publication channel, attaching and/or detaching to events as needed.
-            </summary>
-        </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TotalBytesReceived">
             <summary>
             Gets total data packet bytes received during this session.
@@ -1304,6 +1284,26 @@
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.ConnectionInfo">
             <summary>
             Gets connection info for adapter, if any.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.FrameParser">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.UdpPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> publication channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> publication channel, attaching and/or detaching to events as needed.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TcpClientPublishChannel">
+            <summary>
+            Gets or sets reference to <see cref="T:GSF.Communication.TcpClient"/> publication channel, attaching and/or detaching to events as needed.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.Status">

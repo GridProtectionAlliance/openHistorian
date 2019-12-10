@@ -5852,7 +5852,6 @@
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
-            <filterpriority>2</filterpriority>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.SendTo(System.Guid,System.Byte[],System.Int32,System.Int32)">
             <summary>
