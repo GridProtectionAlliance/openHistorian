@@ -125,6 +125,7 @@
   <ItemGroup>
     <Compile Include="CalculatedMesaurementAttribute.cs" />
     <Compile Include="GrafanaAuthProxyController.cs" />
+    <Compile Include="ExcelController.cs" />
     <Compile Include="GrafanaDeviceStatusController.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
