@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 10 AS VersionNumber;
+SELECT 11 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -1725,6 +1725,32 @@ BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SE
 CREATE TRIGGER SignalType_UpdateTracker AFTER UPDATE ON SignalType FOR EACH ROW
 WHEN OLD.Acronym <> NEW.Acronym
 BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE SignalTypeID = NEW.ID; END;
+
+-- **************************
+-- Alarm Panel Data
+-- **************************
+
+CREATE TABLE AlarmState(
+	ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	State VARCHAR(50) NULL,
+	Color VARCHAR(50) NULL
+);
+
+CREATE TABLE AlarmDevice(
+	ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	DeviceID INTEGER NULL,
+	StateID INTEGER NULL,
+	TimeStamp DATETIME NULL,
+	DisplayData VARCHAR(10) NULL,
+	CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device (ID) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_AlarmDevice_AlarmState FOREIGN KEY(StateID) REFERENCES AlarmState (ID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE VIEW AlarmDeviceStateView AS
+SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData
+FROM AlarmDevice
+    INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
+    INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID;
  
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!

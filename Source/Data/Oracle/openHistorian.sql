@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 10 AS VersionNumber
+SELECT 11 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -2753,7 +2753,49 @@ CREATE PACKAGE BODY context AS
         RETURN current_user;
     END;
 END;
-/ 
+/
+
+-- **************************
+-- Alarm Panel Data
+-- **************************
+CREATE TABLE AlarmState(
+	ID NUMBER NOT NULL,
+	State varchar(50) NULL,
+	Color varchar(50) NULL,
+);
+
+ALTER TABLE AlarmState ADD CONSTRAINT PK_AlarmState PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_AlarmState START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_AlarmState BEFORE INSERT ON AlarmState
+    FOR EACH ROW BEGIN SELECT SEQ_AlarmState.nextval INTO :NEW.ID FROM dual;
+END;
+
+CREATE TABLE AlarmDevice(
+	ID NUMBER IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	DeviceID NUMBER NULL,
+	StateID NUMBER NULL,
+	TimeStamp datetime NULL,
+	DisplayData varchar(10) NULL
+);
+
+ALTER TABLE AlarmDevice ADD CONSTRAINT PK_AlarmDevice PRIMARY KEY (ID);
+ALTER TABLE AlarmDevice ADD CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device(ID) ON DELETE CASCADE;
+ALTER TABLE AlarmDevice ADD CONSTRAINT FK_AlarmDevice_State FOREIGN KEY(StateID) REFERENCES AlarmState(ID) ON DELETE CASCADE;
+
+CREATE SEQUENCE SEQ_AlarmDevice START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_AlarmDevice BEFORE INSERT ON AlarmDevice
+    FOR EACH ROW BEGIN SELECT SEQ_AlarmDevice.nextval INTO :NEW.ID FROM dual;
+END;
+
+CREATE VIEW AlarmDeviceStateView AS
+SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData
+FROM AlarmDevice
+    INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
+    INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID;
+ 
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************

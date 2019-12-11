@@ -2453,6 +2453,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.SerialClient.DefaultReceivedBytesThreshold">
+            <summary>
+            Default value for <see cref="P:GSF.Communication.SerialClient.ReceivedBytesThreshold"/> property.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.SerialClient.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Communication.SerialClient"/> class.

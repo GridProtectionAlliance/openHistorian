@@ -320,6 +320,238 @@
             Defines flag that determines if empty series are produced.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter">
+            <summary>
+            Represents an adapter that will monitor and report device alarm states.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultMonitoringRate">
+            <summary>
+            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.MonitoringRate"/>.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultAlarmMinutes">
+            <summary>
+            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AlarmMinutes"/>.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultAcknowledgedTransitionHysteresisDelay">
+            <summary>
+            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay"/>.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay">
+            <summary>
+            Defines the default value for the <see cref="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay"/>.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.MonitoringRate">
+            <summary>
+            Gets or sets monitoring rate, in milliseconds, for devices.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AlarmMinutes">
+            <summary>
+            Gets or sets the time, in minutes, for which to change the device state to alarm when no data is received.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.TargetParentDevices">
+            <summary>
+            Gets or sets the flag that determines if alarm states should only target parent devices, i.e., PDCs and direct connect PMUs, or all devices.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay">
+            <summary>
+            Gets or sets delay time, in minutes, before transitioning the Acknowledged state back to Good.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay">
+            <summary>
+            Gets or sets the delay time, in minutes, before reporting the external database state.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisMinimumState">
+            <summary>
+            Gets or sets the minimum state for application of <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay"/>. Defaults to setting Good and Alarm states immediately and applying delay to all other states.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.EnableExternalDatabaseSynchronization">
+            <summary>
+            Gets or sets the flag that determines if an external database connection should be enabled for synchronization of alarm states.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseConnnectionString">
+            <summary>
+            Gets or sets the external database connection string used for synchronization of alarm states. Leave blank to use local configuration database defined in "systemSettings".
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseProviderString">
+            <summary>
+            Gets or sets the external database provider string used for synchronization of alarm states.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseCommand">
+            <summary>
+            Gets or sets the external database command used for synchronization of alarm states.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseCommandParameters">
+            <summary>
+            Gets or sets the external database command parameters with value substitutions used for synchronization of alarm states.
+            </summary>
+            <remarks>
+            Examples for composite state reporting:
+            <code>
+            'openPDC Overall Device Status = {AlarmState}[?{AlarmState}!=Good[ -- for \[{Device.Acronym}\]]]'
+            </code>
+            <code>
+            'Good = {GoodStateCount} / Alarmed = {AlarmStateCount} / Unavailable = {NotAvailableStateCount} / Bad Data = {BadDataStateCount} / Bad Time = {BadTimeStateCount} / Out of Service = {OutOfServiceStateCount}[?{AlarmState}!=Good[ -- \&lt;a href=\"http://localhost:8280/DeviceStatus.cshtml?DeviceID={Device.ID}\"\&gt;\[{Device.Acronym}\] Device Status\&lt;/a\&gt;]]'
+            </code>
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseMappedAlarmStates">
+            <summary>
+            Gets or sets the external database mapped alarm states defining the {MappedAlarmState} command parameter substitution parameter used for synchronization of alarm states.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseReportSingleCompositeState">
+            <summary>
+            Gets or sets the flag that determines if external database should report a single composite state or a state for each device.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the adapter expects, if any.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the adapter will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter" />.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.QueueStateUpdate">
+            <summary>
+            Queues monitoring operation to update alarm state for immediate execution.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.UpdateAlarmStates">
+            <summary>
+            Updates alarm states from database.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this adapter.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this adapter.</returns>
+        </member>
+        <member name="T:GrafanaAdapters.AlarmState">
+            <summary>
+            Represents the Alarm State of a connected Device.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmState.ID">
+            <summary>
+            Unique ID.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmState.State">
+            <summary>
+            Description of the <see cref="T:GrafanaAdapters.AlarmState"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmState.Color">
+            <summary>
+            Color associated with the <see cref="T:GrafanaAdapters.AlarmState"/>.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.AlarmDevice">
+            <summary>
+            Represents the a connected Device in an AlarmState.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDevice.ID">
+            <summary>
+            Unique ID.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDevice.DeviceID">
+            <summary>
+            Device ID of the Alarmed Device.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDevice.StateID">
+            <summary>
+            ID of the <see cref="T:GrafanaAdapters.AlarmState"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDevice.TimeStamp">
+            <summary>
+            Time of the last update.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDevice.DisplayData">
+            <summary>
+            String to Diplay on the Grafana Alarm Dashboard.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.AlarmDeviceStateView">
+            <summary>
+            Represents a Grafana Alarm Panel Block
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.ID">
+            <summary>
+            Unique ID.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.Name">
+            <summary>
+            name of the Device.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.State">
+            <summary>
+            Description of the Device State.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.Color">
+            <summary>
+            Color of the Device State.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.DisplayData">
+            <summary>
+            Additional data to be displayed.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.GrafanaDataService">
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
@@ -331,6 +563,12 @@
         <member name="M:GrafanaAdapters.GrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
             <summary>
             Queries openHistorian as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openPDC Alarmstates as a Grafana data source.
             </summary>
             <param name="request">Query request.</param>
         </member>
@@ -991,6 +1229,14 @@
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Queried annotations from data source.</returns>
         </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarmState(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries current alarm device state.
+            </summary>
+            <param name="request">Alarm request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> Queried device alarm states.</returns>
+        </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
             <summary>
             Queries data source returning data as Grafana time-series data set.
@@ -1020,6 +1266,12 @@
         <member name="M:GrafanaAdapters.IGrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
             <summary>
             Queries openHistorian as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openPDC Alarmstates as a Grafana data source.
             </summary>
             <param name="request">Query request.</param>
         </member>
