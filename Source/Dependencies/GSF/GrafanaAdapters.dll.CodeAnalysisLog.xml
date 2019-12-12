@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message Id="m_lastDeviceStateChange" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-12-11 00:23:47Z" FixCategory="NonBreaking">
+            <Message Id="m_lastDeviceStateChange" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2019-12-12 05:02:38Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\Adapters\GrafanaAdapters" File="DeviceAlarmStateAdapter.cs" Line="382">'GSFDeviceAlarmStateAdapter' contains field 'GSFDeviceAlarmStateAdapter.m_lastDeviceStateChange' that is of IDisposable type: 'FileBackedDictionary&lt;int, long&gt;'. Change the Dispose method on 'GSFDeviceAlarmStateAdapter' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
