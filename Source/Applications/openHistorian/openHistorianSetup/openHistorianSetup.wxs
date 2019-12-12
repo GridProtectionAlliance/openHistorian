@@ -674,6 +674,9 @@
       <Component Id="GSF.Core">
         <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
       </Component>
+      <Component Id="GSF.Geo">
+        <File Id="GSF.Geo.dll" Name="GSF.Geo.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Geo.dll" />
+      </Component>
       <Component Id="GSF.Historian">
         <File Id="GSF.Historian.dll" Name="GSF.Historian.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Historian.dll" />
       </Component>
