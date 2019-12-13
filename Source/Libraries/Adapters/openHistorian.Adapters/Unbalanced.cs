@@ -314,7 +314,7 @@ namespace openHistorian.Adapters
                         processed.Add(zero.SignalID);
 
                         if (m_saveStats)
-                            m_statisticsMapping.Add(key.SignalID, CreateStatistics(measurementTable, key, device, historianID));
+                            m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID));
                     }
 
                     else
@@ -345,6 +345,7 @@ namespace openHistorian.Adapters
             IMeasurement[] available = frame.Measurements.Values.ToArray();
             List<Guid> availableGuids = available.Select(item => item.Key.SignalID).ToList();
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
+            m_numberOfFrames++;
 
             foreach (ThreePhaseSet set in m_threePhaseComponent)
             {
