@@ -332,7 +332,15 @@ namespace openHistorian.Adapters
 					
                     m_connection = new AdoDataConnection(connectionString, dataProviderString);
 
-					if (numberOfRecords == 0)
+                    // Remove Points that are all NaN
+                    reportingMeasurements = reportingMeasurements.Where(item =>
+                    {
+                        return (!(double.IsNaN(item.Mean)));
+                    }).ToList();
+
+                    
+
+                    if (numberOfRecords == 0)
 						numberOfRecords = reportingMeasurements.Count;
 
                     // Create Original Point Tag
