@@ -388,7 +388,7 @@ namespace openHistorian.Adapters
             }
 
             // Reporting if necessary
-            if (m_numberOfFrames >= ReportingInterval && m_saveStats)
+            if ((m_numberOfFrames >= ReportingInterval && m_saveStats) && (m_threePhaseComponent.Count > 0))
             {
                 foreach (ThreePhaseSet set in m_threePhaseComponent)
                 {
@@ -452,7 +452,7 @@ namespace openHistorian.Adapters
 
         private string GetDescription(MeasurementKey key, TableOperations<ActiveMeasurement> table)
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
             string text = measurement.Description;
             string stopAt = measurement.PhasorType == 'I' ? "-I" : "-V";
 
@@ -469,25 +469,25 @@ namespace openHistorian.Adapters
 
         private bool SearchNegative(MeasurementKey key, TableOperations<ActiveMeasurement> table)
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
             return measurement.Phase == '-';
         }
 
         private bool SearchPositive(MeasurementKey key, TableOperations<ActiveMeasurement> table)
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
             return measurement.Phase == '+';
         }
 
         private bool SearchZero(MeasurementKey key, TableOperations<ActiveMeasurement> table)
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
             return measurement.Phase == '0';
         }
 
         private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID)
         {
-            MeasurementRecord inMeasurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
+            MeasurementRecord inMeasurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
             int signaltype;
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
@@ -496,7 +496,7 @@ namespace openHistorian.Adapters
                 signaltype = signalTypeTable.QueryRecordWhere("Acronym = {0}", "CALC").ID;
             }
 
-            string outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SUM";
+            string outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:SUM";
 
             // Sum
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
@@ -522,7 +522,7 @@ namespace openHistorian.Adapters
             }
 
             // sqrdSum
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SQR";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:SQR";
 
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
             {
@@ -547,7 +547,7 @@ namespace openHistorian.Adapters
             }
 
             // Min
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MIN";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:MIN";
 
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
             {
@@ -572,7 +572,7 @@ namespace openHistorian.Adapters
             }
 
             // Max
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MAX";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:MAX";
 
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
             {
@@ -597,7 +597,7 @@ namespace openHistorian.Adapters
             }
 
             // Number of Points
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:NUM";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:NUM";
 
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
             {
@@ -622,7 +622,7 @@ namespace openHistorian.Adapters
             }
 
             // Number of Points above Alert 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:ALT";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:ALT";
 
             if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
             {
@@ -648,22 +648,22 @@ namespace openHistorian.Adapters
 
             StatisticsCollection result = new StatisticsCollection();
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SUM";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:SUM";
             result.Sum = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:SQR";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:SQR";
             result.SqrD = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MIN";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:MIN";
             result.Min = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:MAX";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:MAX";
             result.Max = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:NUM";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:NUM";
             result.Total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-UBAL:ALT";
+            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-UBAL:ALT";
             result.Alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
 
             result.Reset();
