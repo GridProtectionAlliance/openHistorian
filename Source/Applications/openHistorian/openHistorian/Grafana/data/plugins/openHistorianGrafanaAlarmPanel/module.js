@@ -179,6 +179,7 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
         _this.events.on('refresh', _this.onRefresh.bind(_this));
         _this.panel.link = _this.panel.link != undefined ? _this.panel.link : '..';
         _this.panel.filter = _this.panel.filter != undefined ? _this.panel.filter : '';
+        _this.panel.showLegend = _this.panel.showLegend != undefined ? _this.panel.showLegend : true;
         return _this;
     }
     // #region Events from Graphana Handlers

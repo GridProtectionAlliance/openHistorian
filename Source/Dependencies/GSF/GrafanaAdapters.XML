@@ -320,87 +320,87 @@
             Defines flag that determines if empty series are produced.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter">
+        <member name="T:GrafanaAdapters.DeviceAlarmStateAdapter">
             <summary>
             Represents an adapter that will monitor and report device alarm states.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultMonitoringRate">
+        <member name="F:GrafanaAdapters.DeviceAlarmStateAdapter.DefaultMonitoringRate">
             <summary>
-            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.MonitoringRate"/>.
+            Defines the default value for the <see cref="P:GrafanaAdapters.DeviceAlarmStateAdapter.MonitoringRate"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultAlarmMinutes">
+        <member name="F:GrafanaAdapters.DeviceAlarmStateAdapter.DefaultAlarmMinutes">
             <summary>
-            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AlarmMinutes"/>.
+            Defines the default value for the <see cref="P:GrafanaAdapters.DeviceAlarmStateAdapter.AlarmMinutes"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultAcknowledgedTransitionHysteresisDelay">
+        <member name="F:GrafanaAdapters.DeviceAlarmStateAdapter.DefaultAcknowledgedTransitionHysteresisDelay">
             <summary>
-            Defines the default value for the <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay"/>.
+            Defines the default value for the <see cref="P:GrafanaAdapters.DeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay">
+        <member name="F:GrafanaAdapters.DeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay">
             <summary>
-            Defines the default value for the <see cref="F:GrafanaAdapters.GSFDeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay"/>.
+            Defines the default value for the <see cref="F:GrafanaAdapters.DeviceAlarmStateAdapter.DefaultExternalDatabaseHysteresisDelay"/>.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.#ctor">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.#ctor">
             <summary>
-            Creates a new <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter"/>.
+            Creates a new <see cref="T:GrafanaAdapters.DeviceAlarmStateAdapter"/>.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.MonitoringRate">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.MonitoringRate">
             <summary>
             Gets or sets monitoring rate, in milliseconds, for devices.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AlarmMinutes">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.AlarmMinutes">
             <summary>
             Gets or sets the time, in minutes, for which to change the device state to alarm when no data is received.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.TargetParentDevices">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.TargetParentDevices">
             <summary>
             Gets or sets the flag that determines if alarm states should only target parent devices, i.e., PDCs and direct connect PMUs, or all devices.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.AcknowledgedTransitionHysteresisDelay">
             <summary>
             Gets or sets delay time, in minutes, before transitioning the Acknowledged state back to Good.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay">
             <summary>
             Gets or sets the delay time, in minutes, before reporting the external database state.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisMinimumState">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseHysteresisMinimumState">
             <summary>
-            Gets or sets the minimum state for application of <see cref="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay"/>. Defaults to setting Good and Alarm states immediately and applying delay to all other states.
+            Gets or sets the minimum state for application of <see cref="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseHysteresisDelay"/>. Defaults to setting Good and Alarm states immediately and applying delay to all other states.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.EnableExternalDatabaseSynchronization">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.EnableExternalDatabaseSynchronization">
             <summary>
             Gets or sets the flag that determines if an external database connection should be enabled for synchronization of alarm states.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseConnnectionString">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseConnnectionString">
             <summary>
             Gets or sets the external database connection string used for synchronization of alarm states. Leave blank to use local configuration database defined in "systemSettings".
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseProviderString">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseProviderString">
             <summary>
             Gets or sets the external database provider string used for synchronization of alarm states.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseCommand">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseCommand">
             <summary>
             Gets or sets the external database command used for synchronization of alarm states.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseCommandParameters">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseCommandParameters">
             <summary>
             Gets or sets the external database command parameters with value substitutions used for synchronization of alarm states.
             </summary>
@@ -414,63 +414,70 @@
             </code>
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseMappedAlarmStates">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseMappedAlarmStates">
             <summary>
             Gets or sets the external database mapped alarm states defining the {MappedAlarmState} command parameter substitution parameter used for synchronization of alarm states.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.ExternalDatabaseReportSingleCompositeState">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.ExternalDatabaseReportSingleCompositeState">
             <summary>
             Gets or sets the flag that determines if external database should report a single composite state or a state for each device.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.InputMeasurementKeys">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.InputMeasurementKeys">
             <summary>
             Gets or sets primary keys of input measurements the adapter expects, if any.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.OutputMeasurements">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the adapter will produce, if any.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.SupportsTemporalProcessing">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Status">
+        <member name="P:GrafanaAdapters.DeviceAlarmStateAdapter.Status">
             <summary>
             Returns the detailed status of the data input source.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Dispose(System.Boolean)">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.Dispose(System.Boolean)">
             <summary>
-            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter"/> object and optionally releases the managed resources.
+            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.DeviceAlarmStateAdapter"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.Initialize">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.Initialize">
             <summary>
-            Initializes <see cref="T:GrafanaAdapters.GSFDeviceAlarmStateAdapter" />.
+            Initializes <see cref="T:GrafanaAdapters.DeviceAlarmStateAdapter" />.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.QueueStateUpdate">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.QueueStateUpdate">
             <summary>
             Queues monitoring operation to update alarm state for immediate execution.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.UpdateAlarmStates">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.UpdateAlarmStates">
             <summary>
             Updates alarm states from database.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GSFDeviceAlarmStateAdapter.GetShortStatus(System.Int32)">
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this adapter.
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this adapter.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.DeviceAlarmStateAdapter.GetShortElapsedTimeString(GSF.Ticks)">
+            <summary>
+            Get short elapsed time string for specified <paramref name="span"/>.
+            </summary>
+            <param name="span"><see cref="T:GSF.Ticks"/> representing time span.</param>
+            <returns>Short elapsed time string.</returns>
         </member>
         <member name="T:GrafanaAdapters.AlarmState">
             <summary>

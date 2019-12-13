@@ -15,7 +15,7 @@
             margin: 2px;
         }
     </style>
-    <ul class="legend">
+    <ul class="legend" ng-show="!ctrl.panel.showLegend">
         <li ng-repeat="c in colors"><span ng-style="{'background': c.Color}"></span>&nbsp;&nbsp;&nbsp;{{c.State}}</li>
     </ul>
     <br />

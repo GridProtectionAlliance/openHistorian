@@ -6139,6 +6139,16 @@
             Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AutoStartDataParsingSequence"/> property.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultSkipDisableRealTimeData">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SkipDisableRealTimeData"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultDisableRealTimeDataOnStop">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DisableRealTimeDataOnStop"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultAllowedParsingExceptions">
             <summary>
             Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AllowedParsingExceptions"/> property.
@@ -6147,6 +6157,16 @@
         <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultParsingExceptionWindow">
             <summary>
             Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ParsingExceptionWindow"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultTrustHeaderLength">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.TrustHeaderLength"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultKeepCommandChannelOpen">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.KeepCommandChannelOpen"/> property.
             </summary>
         </member>
         <member name="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ReceivedCommandFrame">
@@ -6306,8 +6326,8 @@
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.KeepCommandChannelOpen">
             <summary>
-            Gets or sets flag that determines whether to keep the
-            command channel open after the initial startup sequence.
+            Gets or sets flag that determines whether to keep the command channel open after the initial startup sequence.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultKeepCommandChannelOpen"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DeviceSupportsCommands">
@@ -6324,7 +6344,7 @@
             Gets or sets the device identification code often needed to establish a connection.
             </summary>
             <remarks>
-            Most devices validate this ID when sending commands, so it must be correct in order to start parsing sequence.
+            Many devices validate this ID when sending commands, so it may need to be correct in order to start parsing sequence.
             </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.BufferSize">
@@ -6336,12 +6356,14 @@
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.MaximumConnectionAttempts">
             <summary>
             Gets or sets the maximum number of times the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/> will attempt to connect to a device.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultMaximumConnectionAttempts"/>.
             </summary>
             <remarks>Set to -1 for infinite connection attempts.</remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AutoStartDataParsingSequence">
             <summary>
             Gets or sets flag to automatically send the ConfigFrame2 and EnableRealTimeData command frames used to start a typical data parsing sequence.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultAutoStartDataParsingSequence"/>.
             </summary>
             <remarks>
             For devices that support IEEE commands, setting this property to true will automatically start the data parsing sequence.
@@ -6350,19 +6372,32 @@
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SkipDisableRealTimeData">
             <summary>
             Gets or sets flag to skip automatic disabling of the real-time data stream on shutdown or startup.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultSkipDisableRealTimeData"/>.
             </summary>
             <remarks>
             This flag may important when using UDP multicast with several subscribed clients.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DisableRealTimeDataOnStop">
+            <summary>
+            Gets or sets flag to disable real-time data on stop.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultDisableRealTimeDataOnStop"/>.
+            </summary>
+            <remarks>
+            If <c>false</c>, disable real-time command will not be sent when parser is stopped regardless
+            of <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SkipDisableRealTimeData"/> value.
+            </remarks>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AllowedParsingExceptions">
             <summary>
             Gets or sets number of parsing exceptions allowed during <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ParsingExceptionWindow"/> before connection is reset.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultAllowedParsingExceptions"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ParsingExceptionWindow">
             <summary>
             Gets or sets time duration, in <see cref="T:GSF.Ticks"/>, to monitor parsing exceptions.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultParsingExceptionWindow"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SourceName">
@@ -6383,6 +6418,7 @@
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DefinedFrameRate">
             <summary>
             Gets or sets desired frame rate to use for maintaining captured frame replay timing.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultDefinedFrameRate"/>.
             </summary>
             <remarks>
             This is only applicable when connection is made to a file for replay purposes.
@@ -6443,6 +6479,7 @@
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.TrustHeaderLength">
             <summary>
             Gets or sets flag that determines if header lengths should be trusted over parsed byte count.
+            Defaults to <see cref="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultTrustHeaderLength"/>.
             </summary>
             <remarks>
             It is expected that this will normally be left as <c>true</c>.
