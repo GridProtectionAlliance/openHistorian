@@ -8292,7 +8292,7 @@
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
         </member>
-        <member name="T:GSF.Data.Model.CSVExcludeField">
+        <member name="T:GSF.Data.Model.CSVExcludeFieldAttribute">
             <summary>
             Defines an attribute that will exclude this Field in any CSV exports.
             </summary>

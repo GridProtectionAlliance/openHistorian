@@ -2527,6 +2527,11 @@
             This option is ignored under Mono deployments.
             </remarks>
         </member>
+        <member name="P:GSF.Communication.SerialClient.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.Communication.SerialClient"/>.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.SerialClient.Read(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
