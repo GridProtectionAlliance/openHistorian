@@ -97,17 +97,18 @@ namespace openHistorian
             // Load phasor hub into application domain, initializing default status and exception handlers
             try
             {
-                using (new PhasorHub(
+                using (PhasorHub hub = new PhasorHub(
                     (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
                     Program.Host.LogException
-                )) { }
+                ))
+                {
+                    WebExtensions.AddEmbeddedResourceAssembly(hub.GetType().Assembly);                  
+                }
             }
             catch (Exception ex)
             {
                 Program.Host.LogException(new SecurityException($"Failed to load Phasor Hub: {ex.Message}", ex));
             }
-
-            Load_PhasorWebUIAssembly();
 
             Load_ModbusAssembly();
             
@@ -236,25 +237,6 @@ namespace openHistorian
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
-        }
-
-        private void Load_PhasorWebUIAssembly()
-        {
-            try
-            {
-                // Wrap class reference in lambda function to force
-                // assembly load errors to occur within the try-catch
-                new Action(() =>
-                {
-                    // Make embedded resources of PhasorWebUI available to web server
-                    using (PhasorHub hub = new PhasorHub())
-                        WebExtensions.AddEmbeddedResourceAssembly(hub.GetType().Assembly);                  
-                })();
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new InvalidOperationException($"Failed to load Modbus assembly: {ex.Message}", ex));
-            }
         }
 
         private void Load_ModbusAssembly()
