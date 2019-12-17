@@ -36,10 +36,7 @@ namespace openHistorian.Model
         /// <summary>
         /// Creates a new <see cref="AppModel"/>.
         /// </summary>
-        public AppModel()
-        {
-            Global = (object)Program.Host.Model != null ? Program.Host.Model.Global : new GlobalSettings();
-        }
+        public AppModel() => Global = Program.Host.Model?.Global ?? new GlobalSettings();
 
         #endregion
         
@@ -48,10 +45,7 @@ namespace openHistorian.Model
         /// <summary>
         /// Gets global settings for application.
         /// </summary>
-        public GlobalSettings Global
-        {
-            get;
-        }
+        public GlobalSettings Global { get; }
 
         #endregion
     }
