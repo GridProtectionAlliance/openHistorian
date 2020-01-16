@@ -1,31 +1,38 @@
-{ 
-"type":"panel", 
-"name":"OpenHistorianAlarmPanel", 
-"id":"openhistorian-alarm-panel", 
-"info":{ 
-"description":"PanelforopenHistorianDeviceStatusAlarms", 
-"author":{ 
-"name":"GridProtectionAlliance", 
-"url":"http//www.gridprotectionalliance.org" 
-}, 
-"keywords":["openHistorian","panel","DeviceStatus"], 
-"logos":{ 
-"small":"images/PAPanel.png", 
-"large":"images/PAPanel.png" 
-}, 
-"links":[ 
-{ 
-"name":"Projectsite", 
-"url":"https//github.com/GridProtectionAlliance/openHistorianGrafanaAlarmPanel" 
-} 
-], 
-"screenshots":[ 
-], 
-"version":"1.59.0", 
-"updated": "2020-01-15" 
-}, 
-"dependencies":{ 
-"grafanaVersion":"4.6", 
-"plugins":[] 
-} 
-} 
+{
+    "type":  "panel",
+    "name":  "OpenHistorianAlarmPanel",
+    "id":  "openhistorian-alarm-panel",
+    "info":  {
+                 "description":  "PanelforopenHistorianDeviceStatusAlarms",
+                 "author":  {
+                                "name":  "GridProtectionAlliance",
+                                "url":  "http//www.gridprotectionalliance.org"
+                            },
+                 "keywords":  [
+                                  "openHistorian",
+                                  "panel",
+                                  "DeviceStatus"
+                              ],
+                 "logos":  {
+                               "small":  "images/PAPanel.png",
+                               "large":  "images/PAPanel.png"
+                           },
+                 "links":  [
+                               {
+                                   "name":  "Projectsite",
+                                   "url":  "https//github.com/GridProtectionAlliance/openHistorianGrafanaAlarmPanel"
+                               }
+                           ],
+                 "screenshots":  [
+
+                                 ],
+                 "version":  "1.59.1",
+                 "updated":  "2020-01-16"
+             },
+    "dependencies":  {
+                         "grafanaVersion":  "4.6",
+                         "plugins":  [
+
+                                     ]
+                     }
+}
