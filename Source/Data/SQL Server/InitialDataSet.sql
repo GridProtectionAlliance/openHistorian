@@ -729,7 +729,27 @@ GO
 
 INSERT INTO VendorDevice(VendorID, Name, Description, URL) VALUES(15, 'ePDC', 'ePDC & eSPDC', 'http://www.electricpowergroup.com/solutions/epdc/index.html')
 GO
- 
+
+INSERT INTO AlarmState (State, Color) VALUES ('Good', 'green')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Alarm', 'red')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Not Available', 'orange')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Bad Data', 'blue')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Bad Time', 'purple')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Out of Service', 'grey')
+GO
+
+INSERT INTO AlarmState (State, Color) VALUES ('Acknowledged', 'rosybrown')
+GO 
 INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 15)
 GO
 
