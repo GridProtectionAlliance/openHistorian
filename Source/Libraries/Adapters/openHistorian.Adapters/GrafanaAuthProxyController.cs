@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  12/02/2017 - J. Ritchie Carroll
 //       Generated original version of source code.
+//  01/24/2020 - C. Lackner
+//       Updated to avoid issues with accessing panel json directly for alarm setup.
 //
 //******************************************************************************************************
 
@@ -221,8 +223,12 @@ namespace openHistorian.Adapters
             }
 
             // Always keep last visited Grafana dashboard in a client session cookie
-            if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer.AbsolutePath))
-                response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
+            // Make Exception for Accessing dashboards directly through API for alarm changes
+            if (!(Request.Headers?.Referrer is null))
+            {
+                if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer.AbsolutePath))
+                    response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
+            }
 
             return response;
         }

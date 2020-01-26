@@ -56,6 +56,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DataQualityMonitoring">
+      <HintPath>..\..\..\Dependencies\GSF\DataQualityMonitoring.dll</HintPath>
+    </Reference>
     <Reference Include="ExpressionEvaluator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=90d9f15d622e2348, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\ExpressionEvaluator.dll</HintPath>
@@ -125,6 +128,7 @@
   <ItemGroup>
     <Compile Include="CalculatedMesaurementAttribute.cs" />
     <Compile Include="GrafanaAuthProxyController.cs" />
+    <Compile Include="GrafanaAlarmManagment.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HistorianReportOperations.cs" />

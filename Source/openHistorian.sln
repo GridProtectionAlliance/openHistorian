@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
 EndProject
@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C73F9DF6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72439A38-195C-4AAE-BED9-4B6D47C43FF6}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		buildmono.sh = buildmono.sh
 		..\LICENSE = ..\LICENSE
 		Local.testsettings = Local.testsettings

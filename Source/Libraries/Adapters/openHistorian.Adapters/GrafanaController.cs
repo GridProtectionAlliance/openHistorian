@@ -234,8 +234,30 @@ namespace openHistorian.Adapters
             if (request.targets.FirstOrDefault()?.target == null)
                 return Task.FromResult(new List<TimeSeriesValues>());
 
+            
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
         }
+
+        /// <summary>
+        /// Queries openHistorian for Alarms and Adds them to the Grafana DataBase.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual void QueryAlarms(QueryRequest request, CancellationToken cancellationToken)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                GrafanaAlarmManagment.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
+            },
+            cancellationToken);
+        }
+
+
+       
+
+
 
         /// <summary>
         /// Queries openHistorian as a Grafana Metadata source.
@@ -345,6 +367,21 @@ namespace openHistorian.Adapters
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
+
+
+        /// <summary>
+        /// Queries openPDC Alarms as a Grafana alarm data source.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<List<GrafanaAlarm>> GetAlarms(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
+        }
+       
+
 
         #endregion
 
