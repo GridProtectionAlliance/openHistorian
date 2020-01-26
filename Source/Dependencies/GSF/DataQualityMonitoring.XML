@@ -80,6 +80,13 @@
             </summary>
             <returns>A collection containing all the highest severity raised alarms.</returns>
         </member>
+        <member name="M:DataQualityMonitoring.AlarmAdapter.GetAlarmStatus(System.Guid)">
+            <summary>
+            Gets Status of an Alarm Based on PointID. 
+            </summary>
+            <param name="PointID"> PointID of the point the alarm is for. </param>
+            <returns>A List of <see cref="T:GSF.TimeSeries.Alarm"/> object including the state for a specific PointID.</returns>
+        </member>
         <member name="M:DataQualityMonitoring.AlarmAdapter.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:DataQualityMonitoring.AlarmAdapter"/> object and optionally releases the managed resources.
