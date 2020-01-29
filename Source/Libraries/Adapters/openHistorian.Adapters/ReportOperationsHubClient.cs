@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Transactions;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
@@ -329,41 +330,49 @@ namespace openHistorian.Adapters
 
 					string connectionString = $"Data Source={m_databaseFile}; Version=3; Foreign Keys=True; FailIfMissing=True";
 					string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
-					
-                    m_connection = new AdoDataConnection(connectionString, dataProviderString);
 
-                    // Remove Points that are all NaN
-                    reportingMeasurements = reportingMeasurements.Where(item =>
+                    // Make this a single Transaction for speed purpose
+                    using (TransactionScope scope = new TransactionScope())
                     {
-                        return (!(double.IsNaN(item.Mean)));
-                    }).ToList();
 
-                    
+                        using (m_connection = new AdoDataConnection(connectionString, dataProviderString))
+                        {
 
-                    if (numberOfRecords == 0)
-						numberOfRecords = reportingMeasurements.Count;
+                            // Remove Points that are all NaN
+                            reportingMeasurements = reportingMeasurements.Where(item =>
+                            {
+                                return (!(double.IsNaN(item.Mean)));
+                            }).ToList();
 
-                    // Create Original Point Tag
-                    reportingMeasurements = reportingMeasurements.Select(item =>
-					{
-						if (reportType == ReportType.SNR)
-							item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-						else
-							item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
-						return item;
-					}).ToList();
 
-					if (token.IsCancellationRequested)
-					{
-						m_writing = false;
-						return;
-					}
 
-					TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
-					
-                    for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
-						reportMeasurements.AddNewRecord(reportingMeasurements[i]);
+                            if (numberOfRecords == 0)
+                                numberOfRecords = reportingMeasurements.Count;
 
+                            // Create Original Point Tag
+                            reportingMeasurements = reportingMeasurements.Select(item =>
+                            {
+                                if (reportType == ReportType.SNR)
+                                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
+                                else
+                                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
+                                return item;
+                            }).ToList();
+
+                            if (token.IsCancellationRequested)
+                            {
+                                m_writing = false;
+                                return;
+                            }
+
+                            TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
+
+                            for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
+                                reportMeasurements.AddNewRecord(reportingMeasurements[i]);
+                        }
+
+                        scope.Complete();
+                    }
 					m_writing = false;
 					m_percentComplete = 100.0;
 				}
