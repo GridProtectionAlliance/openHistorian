@@ -223,12 +223,8 @@ namespace openHistorian.Adapters
             }
 
             // Always keep last visited Grafana dashboard in a client session cookie
-            // Make Exception for Accessing dashboards directly through API for alarm changes
-            if (!(Request.Headers?.Referrer is null))
-            {
-                if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer.AbsolutePath))
-                    response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
-            }
+            if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer?.AbsolutePath))
+                response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
 
             return response;
         }
