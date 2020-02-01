@@ -223,10 +223,16 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
 
             this.datasource.getAlarmStates().then(function (data) {
                 //console.log(data);
+                var filter = _this2.panel.filter;
+                try {
+                    filter = _this2.templateSrv.replace(_this2.panel.filter, _this2.panel.scopedVars, 'regex');
+                } catch (e) {
+                    console.log('Alarm panel error: ', e);
+                }
                 var filterdata = data.data;
                 if (_this2.panel.filter !== "") {
                     var filtereddata = [];
-                    var re = new RegExp(_this2.panel.filter);
+                    var re = new RegExp(filter);
                     filterdata.forEach(function (item) {
                         if (re.test(item.Name)) {
                             filtereddata.push(item);

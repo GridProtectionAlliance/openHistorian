@@ -13152,6 +13152,11 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.HeaderImage">
+            <summary>
+            Gets the binary header image of the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> object.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.TypeID">
             <summary>
             Gets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/>.
