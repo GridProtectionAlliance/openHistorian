@@ -286,7 +286,7 @@ namespace openHistorian.Adapters
                     return string.Empty;
 
                 DataTable table = new DataTable();
-                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{request.target}'") ?? new DataRow[0];
 
                 if (rows.Length > 0)
                     table = rows.CopyToDataTable();
