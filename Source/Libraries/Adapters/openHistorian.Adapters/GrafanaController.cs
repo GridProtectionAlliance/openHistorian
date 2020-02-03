@@ -261,7 +261,7 @@ namespace openHistorian.Adapters
         {
             Task.Factory.StartNew(() =>
             {
-                GrafanaAlarmManagment.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
+                GrafanaAlarmManagement.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
             },
             cancellationToken);
         }
