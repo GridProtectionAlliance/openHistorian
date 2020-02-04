@@ -259,19 +259,47 @@ namespace openHistorian.Adapters
                     if (processed.Contains(key.SignalID))
                         continue;
 
+                    // ensure only magnitudes are being used
+                    if (!(GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.IPHM || 
+                        GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.VPHM))
+                        continue;
+
+
+
+
+
+                    bool isNeg = SearchNegative(key, new TableOperations<ActiveMeasurement>(connection));
+                    bool isPos = SearchPositive(key, new TableOperations<ActiveMeasurement>(connection));
+                    bool isZero = SearchZero(key, new TableOperations<ActiveMeasurement>(connection));
+
+                    if (!(isNeg || isPos || isZero))
+                        continue;
+
                     string description = GetDescription(key, new TableOperations<ActiveMeasurement>(connection));
 
                     // Check to make sure can actually deal with this
                     if (description == string.Empty)
                     {
-                        processed.Add(key.SignalID);
                         OnStatusMessage(MessageLevel.Warning, "Failed to apply automatic Line bundling to " + key.SignalID );
                         continue;
                     }
 
-                    MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)));
-                    MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)));
-                    MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchZero(item, new TableOperations<ActiveMeasurement>(connection)));
+                    //Make sure only correct Type (V vs I) makes it here....
+                    SignalType type = GetSignalType(key, new TableOperations<ActiveMeasurement>(connection));
+
+                    MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item => 
+                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
+                        SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                    MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item => 
+                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && 
+                        SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                    MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item => 
+                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
+                        SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
+                        );
 
                     if (neg != null && zero != null && pos != null)
                     {
@@ -494,6 +522,21 @@ namespace openHistorian.Adapters
             return measurement.Phase == '0';
         }
 
+        private SignalType GetSignalType(MeasurementKey key, TableOperations<ActiveMeasurement> table)
+        {
+            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
+
+            if (measurement.SignalType == "IPHM")
+                return SignalType.IPHM;
+            if (measurement.SignalType == "IPHA")
+                return SignalType.IPHA;
+            if (measurement.SignalType == "VPHM")
+                return SignalType.VPHM;
+            if (measurement.SignalType == "VPHA")
+                return SignalType.VPHA;
+
+            return SignalType.NONE;
+        }
         private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID)
         {
             MeasurementRecord inMeasurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
