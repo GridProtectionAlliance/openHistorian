@@ -335,41 +335,41 @@ namespace openHistorian.Adapters
                     using (TransactionScope scope = new TransactionScope())
                     {
 
-                        using (m_connection = new AdoDataConnection(connectionString, dataProviderString))
+                        m_connection = new AdoDataConnection(connectionString, dataProviderString);
+                        
+
+                        // Remove Points that are all NaN
+                        reportingMeasurements = reportingMeasurements.Where(item =>
                         {
-
-                            // Remove Points that are all NaN
-                            reportingMeasurements = reportingMeasurements.Where(item =>
-                            {
-                                return (!(double.IsNaN(item.Mean)));
-                            }).ToList();
+                            return (!(double.IsNaN(item.Mean)));
+                        }).ToList();
 
 
 
-                            if (numberOfRecords == 0)
-                                numberOfRecords = reportingMeasurements.Count;
+                        if (numberOfRecords == 0)
+                            numberOfRecords = reportingMeasurements.Count;
 
-                            // Create Original Point Tag
-                            reportingMeasurements = reportingMeasurements.Select(item =>
-                            {
-                                if (reportType == ReportType.SNR)
-                                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                                else
-                                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
-                                return item;
-                            }).ToList();
+                        // Create Original Point Tag
+                        reportingMeasurements = reportingMeasurements.Select(item =>
+                        {
+                            if (reportType == ReportType.SNR)
+                                item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
+                            else
+                                item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
+                            return item;
+                        }).ToList();
 
-                            if (token.IsCancellationRequested)
-                            {
-                                m_writing = false;
-                                return;
-                            }
-
-                            TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
-
-                            for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
-                                reportMeasurements.AddNewRecord(reportingMeasurements[i]);
+                        if (token.IsCancellationRequested)
+                        {
+                            m_writing = false;
+                            return;
                         }
+
+                        TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
+
+                        for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
+                            reportMeasurements.AddNewRecord(reportingMeasurements[i]);
+                        
 
                         scope.Complete();
                     }
