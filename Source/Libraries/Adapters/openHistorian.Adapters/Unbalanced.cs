@@ -40,6 +40,8 @@ using Measurement = GSF.TimeSeries.Measurement;
 using MeasurementRecord = openHistorian.Model.Measurement;
 using SignalType = GSF.Units.EE.SignalType;
 using SignalTypeRecord = openHistorian.Model.SignalType;
+using System.IO;
+using GSF.IO;
 
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NotAccessedField.Local
@@ -116,6 +118,11 @@ namespace openHistorian.Adapters
         /// </summary>
         public const string DefaultHistorian = "PPA";
 
+        /// <summary>
+        /// Default value for <see cref="HistorianInstance"/>.
+        /// </summary>
+        public const string DefaultMappingFile = "";
+
         // Fields
         private int m_numberOfFrames;
         private Guid m_nodeID;
@@ -135,6 +142,19 @@ namespace openHistorian.Adapters
         [Description("Defines if aggregates are saved sepperately.")]
         [DefaultValue(false)]
         public bool SaveAggregates
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the File used for mapping 
+        /// </summary>
+        [ConnectionStringParameter]
+        [CalculatedMesaurement]
+        [Description("Sets the Path to the Mapping File If blank the adapter will attempt auto mapping.")]
+        [DefaultValue(DefaultMappingFile)]
+        public string MappingFilePath
         {
             get;
             set;
@@ -254,120 +274,228 @@ namespace openHistorian.Adapters
                     OnStatusMessage(MessageLevel.Warning, $"Default Device for Output Measurments not found. Created Device {device.Acronym}");
                 }
 
-                foreach (MeasurementKey key in InputMeasurementKeys)
+
+                if (MappingFilePath != "")
                 {
-                    if (processed.Contains(key.SignalID))
-                        continue;
-
-                    // ensure only magnitudes are being used
-                    if (!(GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.IPHM || 
-                        GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.VPHM))
-                        continue;
-
-
-
-
-
-                    bool isNeg = SearchNegative(key, new TableOperations<ActiveMeasurement>(connection));
-                    bool isPos = SearchPositive(key, new TableOperations<ActiveMeasurement>(connection));
-                    bool isZero = SearchZero(key, new TableOperations<ActiveMeasurement>(connection));
-
-                    if (!(isNeg || isPos || isZero))
-                        continue;
-
-                    string description = GetDescription(key, new TableOperations<ActiveMeasurement>(connection));
-
-                    // Check to make sure can actually deal with this
-                    if (description == string.Empty)
+                    // Read Mapping File
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(MappingFilePath)))
                     {
-                        OnStatusMessage(MessageLevel.Warning, "Failed to apply automatic Line bundling to " + key.SignalID );
-                        continue;
+                        string line;
+                        int index = -1;
+
+
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            index++;
+                            List<string> pointTags = line.Split(',').Select(item => item.Trim()).ToList();
+
+                            List<MeasurementKey> availableInputs = new List<MeasurementKey>(3);
+
+                            if (pointTags.Count != 3)
+                            {
+                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file.");
+                                continue;
+                            }
+
+
+                            // check if measurments are in inputmeasurments
+                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[0], new TableOperations<ActiveMeasurement>(connection))));
+                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[1], new TableOperations<ActiveMeasurement>(connection))));
+                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[2], new TableOperations<ActiveMeasurement>(connection))));
+
+                            if (availableInputs[0] == null || availableInputs[1] == null || availableInputs[2] == null)
+                            {
+                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file. PointTag not found");
+                                continue;
+                            }
+
+                            SignalType type = GetSignalType(availableInputs[0], new TableOperations<ActiveMeasurement>(connection));
+
+                            MeasurementKey neg = availableInputs.FirstOrDefault(item =>
+                                SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                            MeasurementKey pos = availableInputs.FirstOrDefault(item =>
+                                SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                            MeasurementKey zero = availableInputs.FirstOrDefault(item =>
+                                SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
+                                );
+
+                            if (neg != null && zero != null && pos != null)
+                            {
+                                MeasurementKey unBalance;
+                                string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID).SignalReference + "-UBAL";
+
+                                if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
+                                {
+                                    // Measurement Exists
+                                    unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
+                                }
+                                else
+                                {
+                                    // Add Measurment to Database and make a statement
+                                    MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
+
+                                    MeasurementRecord outMeasurement = new MeasurementRecord
+                                    {
+                                        HistorianID = historianID,
+                                        DeviceID = device.ID,
+                                        PointTag = inMeasurement.PointTag + "-UBAL",
+                                        AlternateTag = inMeasurement.AlternateTag + "-UBAL",
+                                        SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
+                                        SignalReference = outputReference,
+                                        Description = GetDescription(pos, new TableOperations<ActiveMeasurement>(connection)) + " UnBalanced",
+                                        Enabled = true,
+                                        CreatedOn = DateTime.UtcNow,
+                                        UpdatedOn = DateTime.UtcNow,
+                                        CreatedBy = UserInfo.CurrentUserID,
+                                        UpdatedBy = UserInfo.CurrentUserID,
+                                        SignalID = Guid.NewGuid(),
+                                        Adder = 0.0D,
+                                        Multiplier = 1.0D
+                                    };
+
+                                    measurementTable.AddNewRecord(outMeasurement);
+                                    unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
+
+                                    OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
+                                }
+
+                                double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == availableInputs[0])] == SignalType.IPHM ? i_threshold : v_threshold;
+
+                                m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
+
+                                if (m_saveStats)
+                                    m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID));
+
+
+                            }
+                            else
+                            {
+                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file. Did not find pos. neg. and zero seq.");
+                            }
+                        }
                     }
 
-                    //Make sure only correct Type (V vs I) makes it here....
-                    SignalType type = GetSignalType(key, new TableOperations<ActiveMeasurement>(connection));
-
-                    MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item => 
-                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
-                        SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                    MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item => 
-                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && 
-                        SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                    MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item => 
-                        GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
-                        SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                        GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
-                        );
-
-                    if (neg != null && zero != null && pos != null)
+                }
+                else
+                {
+                    foreach (MeasurementKey key in InputMeasurementKeys)
                     {
-                        MeasurementKey unBalance;
-                        string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID).SignalReference + "-UBAL";
+                        if (processed.Contains(key.SignalID))
+                            continue;
 
-                        if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
+                        // ensure only magnitudes are being used
+                        if (!(GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.IPHM ||
+                            GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.VPHM))
+                            continue;
+
+
+
+
+
+                        bool isNeg = SearchNegative(key, new TableOperations<ActiveMeasurement>(connection));
+                        bool isPos = SearchPositive(key, new TableOperations<ActiveMeasurement>(connection));
+                        bool isZero = SearchZero(key, new TableOperations<ActiveMeasurement>(connection));
+
+                        if (!(isNeg || isPos || isZero))
+                            continue;
+
+                        string description = GetDescription(key, new TableOperations<ActiveMeasurement>(connection));
+
+                        // Check to make sure can actually deal with this
+                        if (description == string.Empty)
                         {
-                            // Measurement Exists
-                            unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
+                            OnStatusMessage(MessageLevel.Warning, "Failed to apply automatic Line bundling to " + key.SignalID);
+                            continue;
                         }
+
+                        //Make sure only correct Type (V vs I) makes it here....
+                        SignalType type = GetSignalType(key, new TableOperations<ActiveMeasurement>(connection));
+
+                        MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item =>
+                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
+                            SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                        MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item =>
+                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
+                            SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
+                        MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item =>
+                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
+                            SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
+                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
+                            );
+
+                        if (neg != null && zero != null && pos != null)
+                        {
+                            MeasurementKey unBalance;
+                            string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID).SignalReference + "-UBAL";
+
+                            if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
+                            {
+                                // Measurement Exists
+                                unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
+                            }
+                            else
+                            {
+                                // Add Measurment to Database and make a statement
+                                MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
+
+                                MeasurementRecord outMeasurement = new MeasurementRecord
+                                {
+                                    HistorianID = historianID,
+                                    DeviceID = device.ID,
+                                    PointTag = inMeasurement.PointTag + "-UBAL",
+                                    AlternateTag = inMeasurement.AlternateTag + "-UBAL",
+                                    SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
+                                    SignalReference = outputReference,
+                                    Description = GetDescription(pos, new TableOperations<ActiveMeasurement>(connection)) + " UnBalanced",
+                                    Enabled = true,
+                                    CreatedOn = DateTime.UtcNow,
+                                    UpdatedOn = DateTime.UtcNow,
+                                    CreatedBy = UserInfo.CurrentUserID,
+                                    UpdatedBy = UserInfo.CurrentUserID,
+                                    SignalID = Guid.NewGuid(),
+                                    Adder = 0.0D,
+                                    Multiplier = 1.0D
+                                };
+
+                                measurementTable.AddNewRecord(outMeasurement);
+                                unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
+
+                                OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
+                            }
+
+                            double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == key)] == SignalType.IPHM ? i_threshold : v_threshold;
+
+                            m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
+
+                            processed.Add(pos.SignalID);
+                            processed.Add(neg.SignalID);
+                            processed.Add(zero.SignalID);
+
+                            if (m_saveStats)
+                                m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID));
+                        }
+
                         else
                         {
-                            // Add Measurment to Database and make a statement
-                            MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
+                            if (pos != null)
+                                processed.Add(pos.SignalID);
 
-                            MeasurementRecord outMeasurement = new MeasurementRecord
-                            {
-                                HistorianID = historianID,
-                                DeviceID = device.ID,
-                                PointTag = inMeasurement.PointTag + "-UBAL",
-                                AlternateTag = inMeasurement.AlternateTag + "-UBAL",
-                                SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
-                                SignalReference = outputReference,
-                                Description = GetDescription(pos, new TableOperations<ActiveMeasurement>(connection)) + " UnBalanced",
-                                Enabled = true,
-                                CreatedOn = DateTime.UtcNow,
-                                UpdatedOn = DateTime.UtcNow,
-                                CreatedBy = UserInfo.CurrentUserID,
-                                UpdatedBy = UserInfo.CurrentUserID,
-                                SignalID = Guid.NewGuid(),
-                                Adder = 0.0D,
-                                Multiplier = 1.0D
-                            };
+                            if (neg != null)
+                                processed.Add(neg.SignalID);
 
-                            measurementTable.AddNewRecord(outMeasurement);
-                            unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-                            OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
+                            if (zero != null)
+                                processed.Add(zero.SignalID);
                         }
-
-                        double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == key)] == SignalType.IPHM ? i_threshold : v_threshold;
-
-                        m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
-
-                        processed.Add(pos.SignalID);
-                        processed.Add(neg.SignalID);
-                        processed.Add(zero.SignalID);
-
-                        if (m_saveStats)
-                            m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID));
-                    }
-
-                    else
-                    {
-                        if (pos != null)
-                            processed.Add(pos.SignalID);
-
-                        if (neg != null)
-                            processed.Add(neg.SignalID);
-
-                        if (zero != null)
-                            processed.Add(zero.SignalID);
                     }
                 }
 
                 if (m_threePhaseComponent.Count == 0)
-                    OnStatusMessage(MessageLevel.Error, "No case with all 3 sequemnces was found");
+                    OnStatusMessage(MessageLevel.Error, "No case with all 3 sequences was found");
             }
         }
 
@@ -536,6 +664,12 @@ namespace openHistorian.Adapters
                 return SignalType.VPHA;
 
             return SignalType.NONE;
+        }
+
+        private Guid? GetSignalID(string pointTag, TableOperations<ActiveMeasurement> table)
+        {
+            ActiveMeasurement measurement = table.QueryRecordWhere("PointTag = {0}", pointTag);
+            return measurement.SignalID;
         }
         private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID)
         {
