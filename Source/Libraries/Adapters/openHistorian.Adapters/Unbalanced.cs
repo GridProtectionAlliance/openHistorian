@@ -261,6 +261,14 @@ namespace openHistorian.Adapters
 
                     string description = GetDescription(key, new TableOperations<ActiveMeasurement>(connection));
 
+                    // Check to make sure can actually deal with this
+                    if (description == string.Empty)
+                    {
+                        processed.Add(key.SignalID);
+                        OnStatusMessage(MessageLevel.Warning, "Failed to apply automatic Line bundling to " + key.SignalID );
+                        continue;
+                    }
+
                     MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)));
                     MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)));
                     MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item => GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description && SearchZero(item, new TableOperations<ActiveMeasurement>(connection)));
