@@ -165,7 +165,7 @@ namespace openHistorian
         public ReportMeasurements NewReportMeasurement()
         {
             //This is not really allowed need to check if we can disable that
-            return m_reportOperations.Table().NewRecord();
+            return m_reportOperations.Table()?.NewRecord();
         }
 
         /// <summary>
