@@ -825,136 +825,77 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_gitignore">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\.gitignore" />
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_editor_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\editor.html" />
   </Component>
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_Gruntfile_js">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_Gruntfile.js" Name="Gruntfile.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\Gruntfile.js" />
   </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_legend_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_legend.js" Name="legend.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\legend.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_legend_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_legend.js.map" Name="legend.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\legend.js.map" />
+  </Component>
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_LICENSE">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\LICENSE" />
   </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_package_json">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_package.json" Name="package.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\package.json" />
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_module_html">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\module.html" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_module_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\module.js" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_module_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_module.js.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\module.js.map" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_plugin_json">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\plugin.json" />
   </Component>
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_README_md">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\README.md" />
   </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_dist_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_editor_html">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\editor.html" />
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_scadavis_ctrl_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_scadavis_ctrl.js" Name="scadavis_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\scadavis_ctrl.js" />
   </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend.js" Name="legend.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\legend.js" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend_js_map">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_legend.js.map" Name="legend.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\legend.js.map" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_html">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.html" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.js" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module_js_map">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_module.js.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\module.js.map" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_plugin_json">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\plugin.json" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_README_md">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\README.md" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl.js" Name="scadavis_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\scadavis_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl_js_map">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_scadavis_ctrl.js.map" Name="scadavis_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\scadavis_ctrl.js.map" />
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_scadavis_ctrl_js_map">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_scadavis_ctrl.js.map" Name="scadavis_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\scadavis_ctrl.js.map" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa4053213142_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTCSSFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sca478399393_css">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sc3627090654.css" Name="scadavis.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\css\scadavis.dark.css" />
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_css_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELCSSFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_css_scadavis_dark_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_css_scadavis.dark.css" Name="scadavis.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\css\scadavis.dark.css" />
   </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sc3768785771_css">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_css_sca551404815.css" Name="scadavis.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\css\scadavis.light.css" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan849047970_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTIMGFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc3740031655_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc3740031655.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-donuts-radar.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2754918495_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2754918495.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-large.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sca274228903_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sca274228903.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-options.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1456836673_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1456836673.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-power.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2283437042_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc2283437042.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-small.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1971682696_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_img_sc1971682696.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\img\scadavis-speedometer.png" />
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_css_scadavis_light_css">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_css_scadavis.light.css" Name="scadavis.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\css\scadavis.light.css" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan542540482_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTLIBFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_lib_per3428903063_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_lib_perf534982510.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\lib\perfect-scrollbar.min.js" />
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_img_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELIMGFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavi1709464983_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavi1709464983.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-donuts-radar.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_large_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_large.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-large.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_options_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_options.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-options.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_power_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_power.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-power.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_small_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavis_small.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-small.png" />
+  </Component>
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavi1992642109_png">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_img_scadavi1992642109.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\img\scadavis-speedometer.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa3911032195_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTSRCFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa3660895712_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELDISTSRCIMGFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2027828175_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2027828175.png" Name="scadavis-donuts-radar.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-donuts-radar.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3943670867_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3943670867.png" Name="scadavis-large.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-large.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2834053855_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im2834053855.png" Name="scadavis-options.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-options.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_img435063885_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_img435063885.png" Name="scadavis-power.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-power.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3340855294_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im3340855294.png" Name="scadavis-small.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-small.png" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im4223365677_png">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_dist_src_im4223365677.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\dist\src\img\scadavis-speedometer.png" />
+<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_lib_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELLIBFOLDER">
+  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_lib_perfect_2003365799_js">
+    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_lib_perfect_2766874718.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\lib\perfect-scrollbar.min.js" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_src_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_editor_html">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\editor.html" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_legend_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_legend.js" Name="legend.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\legend.js" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module_html">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\module.html" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\module.js" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_plugin_json">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\plugin.json" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_scadavis_ctrl_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_scadavis_ctrl.js" Name="scadavis_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\scadavis_ctrl.js" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pa4154393988_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCCSSFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scadavis_dark_css">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scadavis.dark.css" Name="scadavis.dark.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\css\scadavis.dark.css" />
-  </Component>
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_sca3339181746_css">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_css_scad125370582.css" Name="scadavis.light.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\css\scadavis.light.css" />
-  </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan882076656_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCIMGFOLDER">
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_scad433077735_png">
@@ -974,11 +915,6 @@
   </Component>
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2655685107_png">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_img_sca2655685107.png" Name="scadavis-speedometer.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\img\scadavis-speedometer.png" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_pan643733648_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCLIBFOLDER">
-  <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_lib_perfe190615511_js">
-    <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_src_lib_perf3638511662.js" Name="perfect-scrollbar.min.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\src\lib\perfect-scrollbar.min.js" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_public_Components" Directory="PUBLICFOLDER">
