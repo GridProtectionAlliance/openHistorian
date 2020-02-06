@@ -57,6 +57,9 @@
   <ComponentGroupRef Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_images_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_openHistorianGrafanaAlarmPanel_partials_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_openhistporian_datadownload_panel_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_openhistporian_datadownload_panel_images_Components" />
+  <ComponentGroupRef Id="Grafana_data_plugins_openhistporian_datadownload_pan165024714_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_css_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_img_Components" />

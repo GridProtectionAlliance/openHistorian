@@ -824,6 +824,27 @@
     <File Id="data_plugins_openHistorianGrafanaAlarmPanel_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openHistorianGrafanaAlarmPanel\partials\module.html" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openhistporian_datadownload_panel_Components" Directory="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELFOLDER">
+  <Component Id="data_plugins_openhistporian_datadownload_panel_module_js">
+    <File Id="data_plugins_openhistporian_datadownload_panel_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openhistporian-datadownload-panel\module.js" />
+  </Component>
+  <Component Id="data_plugins_openhistporian_datadownload_panel_plugin_json">
+    <File Id="data_plugins_openhistporian_datadownload_panel_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openhistporian-datadownload-panel\plugin.json" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openhistporian_datadownload_panel_images_Components" Directory="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELIMAGESFOLDER">
+  <Component Id="data_plugins_openhistporian_datadownload_panel_images_gpa_lock_png">
+    <File Id="data_plugins_openhistporian_datadownload_panel_images_gpa_lock.png" Name="gpa-lock.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openhistporian-datadownload-panel\images\gpa-lock.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="Grafana_data_plugins_openhistporian_datadownload_pan165024714_Components" Directory="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELPARTIALSFOLDER">
+  <Component Id="data_plugins_openhistporian_datadownload_panel_partials_editor_html">
+    <File Id="data_plugins_openhistporian_datadownload_panel_partials_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openhistporian-datadownload-panel\partials\editor.html" />
+  </Component>
+  <Component Id="data_plugins_openhistporian_datadownload_panel_partials_module_html">
+    <File Id="data_plugins_openhistporian_datadownload_panel_partials_module.html" Name="module.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\openhistporian-datadownload-panel\partials\module.html" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_riclolsen_scadavis_synoptic_panel_Components" Directory="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELFOLDER">
   <Component Id="data_plugins_riclolsen_scadavis_synoptic_panel_editor_html">
     <File Id="data_plugins_riclolsen_scadavis_synoptic_panel_editor.html" Name="editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\riclolsen-scadavis-synoptic-panel\editor.html" />

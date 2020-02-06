@@ -1,0 +1,38 @@
+{
+    "type":  "panel",
+    "name":  "OpenHistorianDataDownloadPanel",
+    "id":  "openhistorian-datadownload-panel",
+    "info":  {
+                 "description":  "Panel to Dowload data from the OpenHistorian in CSV format",
+                 "author":  {
+                                "name":  "GridProtectionAlliance",
+                                "url":  "http//www.gridprotectionalliance.org"
+                            },
+                 "keywords":  [
+                                  "openHistorian",
+                                  "panel",
+                                  "DeviceStatus"
+                              ],
+                 "logos":  {
+                               "small":  "images/gpa-lock.png",
+                               "large":  "images/gpa-lock.png"
+                           },
+                 "links":  [
+                               {
+                                   "name":  "Projectsite",
+                                   "url":  "https//github.com/GridProtectionAlliance/"
+                               }
+                           ],
+                 "screenshots":  [
+
+                                 ],
+                 "version":  "0.1.0",
+                 "updated":  "2020-01-17"
+             },
+    "dependencies":  {
+                         "grafanaVersion":  "4.6",
+                         "plugins":  [
+
+                                     ]
+                     }
+}
