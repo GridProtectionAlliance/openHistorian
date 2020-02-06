@@ -535,329 +535,69 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_gitignore">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource.gitignore" Name=".gitignore" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\.gitignore" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3821424628_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3821424628.js" Name="Gruntfile.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\Gruntfile.js" />
-  </Component>
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_LICENSE">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\LICENSE" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_data4123763635_njsproj">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_data4123763635.njsproj" Name="openHistorian-grafana.njsproj" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\openHistorian-grafana.njsproj" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_module_js">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_module.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\module.js" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4123763635_sln">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4123763635.sln" Name="openHistorian-grafana.sln" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\openHistorian-grafana.sln" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_plugin_json">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\plugin.json" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour285770028_json">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour285770028.json" Name="package.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\package.json" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2474448982_md">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2474448982.md" Name="query_help.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\query_help.md" />
   </Component>
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_README_md">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\README.md" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1963126255_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_d1478022608">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_d1478022608" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\LICENSE" />
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhist290095546_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEIMGFOLDER">
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc254165479_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc254165479.png" Name="AlarmAnnotations.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\AlarmAnnotations.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2795464679_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2428186448.ts" Name="module.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\module.d.ts" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2169270902_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2169270902.png" Name="DataSourceConfiguration.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\DataSourceConfiguration.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2349079751_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2349079751.js" Name="module.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\module.js" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1022196252_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1022196252.png" Name="ElementList.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\ElementList.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3141863993_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4000712798.map" Name="module.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\module.js.map" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc496982475_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc496982475.png" Name="ExcludedDataFlags.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\ExcludedDataFlags.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2349079751_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2349079751.ts" Name="module.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\module.ts" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2808753866_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2808753866.png" Name="FilterExpression.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\FilterExpression.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2975471144_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2273205919.ts" Name="openHistorianDatasource.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\openHistorianDatasource.d.ts" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1252981422_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1252981422.png" Name="FilterExpressionWithFunctions.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\FilterExpressionWithFunctions.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1156515585_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1156515585.js" Name="openHistorianDatasource.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\openHistorianDatasource.js" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3714170428_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3714170428.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\openHistorian.png" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2961772649_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3854176782.map" Name="openHistorianDatasource.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\openHistorianDatasource.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1156515585_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1156515585.ts" Name="openHistorianDatasource.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\openHistorianDatasource.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou1766727035_json">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou1766727035.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\plugin.json" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3283648158_md">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3283648158.md" Name="query_help.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\query_help.md" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4159536026_md">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4159536026.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\README.md" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1955180017_png">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1955180017.png" Name="TextEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\TextEditor.png" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1027920215_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR2909013327FOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2854151768_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2621091567.ts" Name="openHistorianAnnotations_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianAnnotations_ctrl.d.ts" />
+<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1701262925_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEPARTIALFOLDER">
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou4150955226_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou3178583877.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\annotations.editor.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3468175148_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3468175148.js" Name="openHistorianAnnotations_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianAnnotations_ctrl.js" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou4255945882_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou4255945882.html" Name="config.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\config.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3768001957_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3047434178.map" Name="openHistorianAnnotations_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianAnnotations_ctrl.js.map" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou2896879305_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou3870623062.html" Name="query.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\query.editor.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3468175148_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3468175148.ts" Name="openHistorianAnnotations_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianAnnotations_ctrl.ts" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou4084966207_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2216423692.html" Name="query.elementPicker.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\query.elementPicker.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource469173314_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource768822517.ts" Name="openHistorianConfig_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianConfig_ctrl.d.ts" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3486967997_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour751103373.html" Name="query.filterExpression.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\query.filterExpression.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2113669349_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2113669349.js" Name="openHistorianConfig_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianConfig_ctrl.js" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour425296174_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2040729632.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\query.options.html" />
   </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc491009341_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1215772506.map" Name="openHistorianConfig_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianConfig_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2113669349_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2113669349.ts" Name="openHistorianConfig_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianConfig_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2424462652_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2795902347.ts" Name="openHistorianElementPicker_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianElementPicker_ctrl.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4259044949_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4259044949.js" Name="openHistorianElementPicker_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianElementPicker_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2859605087_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4282457656.map" Name="openHistorianElementPicker_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianElementPicker_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4259044949_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4259044949.ts" Name="openHistorianElementPicker_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianElementPicker_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2091085788_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1250371435.ts" Name="openHistorianFilterExpression_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianFilterExpression_ctrl.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2407887740_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2407887740.js" Name="openHistorianFilterExpression_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianFilterExpression_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc177528597_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1604836722.map" Name="openHistorianFilterExpression_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianFilterExpression_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2407887740_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2407887740.ts" Name="openHistorianFilterExpression_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianFilterExpression_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1874970407_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1508216720.ts" Name="openHistorianQueryOptions_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQueryOptions_ctrl.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1688230260_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1688230260.js" Name="openHistorianQueryOptions_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQueryOptions_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc552113705_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1977324622.map" Name="openHistorianQueryOptions_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQueryOptions_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1688230260_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1688230260.ts" Name="openHistorianQueryOptions_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQueryOptions_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1820411225_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1520766446.ts" Name="openHistorianQuery_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQuery_ctrl.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3186917537_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3186917537.js" Name="openHistorianQuery_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQuery_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2539031184_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3261434103.map" Name="openHistorianQuery_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQuery_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3186917537_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3186917537.ts" Name="openHistorianQuery_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianQuery_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3964273416_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3664661439.ts" Name="openHistorianTextEditor_ctrl.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianTextEditor_ctrl.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1292132169_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1292132169.js" Name="openHistorianTextEditor_ctrl.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianTextEditor_ctrl.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2344231092_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3733529299.map" Name="openHistorianTextEditor_ctrl.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianTextEditor_ctrl.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1292132169_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1292132169.ts" Name="openHistorianTextEditor_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\controllers\openHistorianTextEditor_ctrl.ts" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhist148523662_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTCSSFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4064609405_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4064609405.css" Name="bootstrap-multiselect.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\css\bootstrap-multiselect.css" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4258687382_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4258687382.css" Name="isteven-multi-select.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\css\isteven-multi-select.css" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2646701706_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2646701706.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\css\query-editor.css" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3419809018_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTIMGFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1520719736_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1520719736.png" Name="AlarmAnnotations.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\AlarmAnnotations.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2058783047_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2058783047.png" Name="DataSourceConfiguration.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\DataSourceConfiguration.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3592058918_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3592058918.png" Name="ElementList.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\ElementList.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2105169160_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2105169160.png" Name="ExcludedDataFlags.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\ExcludedDataFlags.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4075305045_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4075305045.png" Name="FilterExpression.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\FilterExpression.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3928368408_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3928368408.png" Name="FilterExpressionWithFunctions.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\FilterExpressionWithFunctions.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc382135198_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc382135198.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\openHistorian.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1456254581_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1456254581.png" Name="TextEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\img\TextEditor.png" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis1776248913_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEDISTJSFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1418946130_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1656172261.ts" Name="openHistorianConstants.d.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.d.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3875121232_js">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3875121232.js" Name="openHistorianConstants.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.js" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource12337467_map">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1435452252.map" Name="openHistorianConstants.js.map" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.js.map" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3875121232_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3875121232.ts" Name="openHistorianConstants.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\js\openHistorianConstants.ts" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2586971943_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR2047699740FOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3655194757_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2478965530.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\annotations.editor.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3756627742_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou3756627742.html" Name="config.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\config.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou4180199510_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou3006731209.html" Name="query.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.editor.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour142694414_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2145454653.html" Name="query.elementPicker.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.elementPicker.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou1079985301_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2739749285.html" Name="query.filterExpression.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.filterExpression.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou2042400237_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour424025315.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.options.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou2794141863_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2569516436.html" Name="query.textEditor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\dist\partial\query.textEditor.html" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3402395035_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource_src_LICENSE">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource_src_LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\LICENSE" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2577921105_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc2577921105.ts" Name="module.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\module.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1837624317_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1837624317.ts" Name="openHistorianDatasource.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\openHistorianDatasource.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou2095969773_json">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2095969773.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\plugin.json" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource345328191_md">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource345328191.md" Name="query_help.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\query_help.md" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2621599517_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR3520250448FOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1574364001_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1574364001.ts" Name="openHistorianAnnotations_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianAnnotations_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3910728067_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3910728067.ts" Name="openHistorianConfig_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianConfig_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource604338906_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource604338906.ts" Name="openHistorianElementPicker_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianElementPicker_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3471616294_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc3471616294.ts" Name="openHistorianFilterExpression_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianFilterExpression_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1818102429_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1818102429.ts" Name="openHistorianQueryOptions_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianQueryOptions_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1027498536_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc1027498536.ts" Name="openHistorianQuery_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianQuery_ctrl.ts" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasource708808644_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasource708808644.ts" Name="openHistorianTextEditor_ctrl.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\controllers\openHistorianTextEditor_ctrl.ts" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhisto51720728_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCCSSFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3824168439_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3824168439.css" Name="bootstrap-multiselect.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\css\bootstrap-multiselect.css" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1240776525_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1240776525.css" Name="isteven-multi-select.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\css\isteven-multi-select.css" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3250519761_css">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3250519761.css" Name="query-editor.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\css\query-editor.css" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis3222887532_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCIMGFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1676995845_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1676995845.png" Name="AlarmAnnotations.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\AlarmAnnotations.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour4184371295_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour4184371295.png" Name="DataSourceConfiguration.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\DataSourceConfiguration.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc452470685_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc452470685.png" Name="ElementList.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\ElementList.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1408698419_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1408698419.png" Name="ExcludedDataFlags.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\ExcludedDataFlags.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3417866792_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3417866792.png" Name="FilterExpression.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\FilterExpression.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour1702886577_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour1702886577.png" Name="FilterExpressionWithFunctions.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\FilterExpressionWithFunctions.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3928169578_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3928169578.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\openHistorian.png" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3101982913_png">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3101982913.png" Name="TextEditor.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\img\TextEditor.png" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2105073566_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCESRCJSFOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4148986330_ts">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasourc4148986330.ts" Name="openHistorianConstants.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\js\openHistorianConstants.ts" />
-  </Component>
-</ComponentGroup>
-<ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhis2202770110_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOUR1669280482FOLDER">
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3567323026_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2663308301.html" Name="annotations.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\annotations.editor.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour834779562_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour834779562.html" Name="config.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\config.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou3229119019_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou2322049460.html" Name="query.editor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.editor.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou2338300182_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou4232049445.html" Name="query.elementPicker.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.elementPicker.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou4135523321_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour359470793.html" Name="query.filterExpression.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.filterExpression.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou1462882518_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour936067544.html" Name="query.options.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.options.html" />
-  </Component>
-  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour313126524_html">
-    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour755327823.html" Name="query.textEditor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\src\partial\query.textEditor.html" />
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasou1236748581_html">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasou1981531158.html" Name="query.textEditor.html" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\partial\query.textEditor.html" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_osisoft1387172533_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEFOLDER">

@@ -16,19 +16,19 @@ Building a metric query using the openHistorian Grafana data source begins with 
 
 The _Element List_ query builder is used to directly select the series to trend. New elements can be selected and searched by clicking the `+` button at the end of the `ELEMENTS` row. Typing text into the drop-down box will start filtering the available data points for selection.
 
-![Element List Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/ElementList.png)
+![Element List Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/ElementList.png)
 
 ### Filter Expression Query Builder
 
 The _Filter Expression_ query builder is used to define an expression (see [filter expression syntax](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/FilterExpressions.md)) to select the series to trend. Complex expressions can be created that will dynamically query data series. Query results will mutate as the availability of the source point data changes, i.e., series derived from the query result will change as data points are added or removed in the openHistorian.
 
-![Filter Expression Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/FilterExpression.png)
+![Filter Expression Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/FilterExpression.png)
 
 ### Text Editor Query Builder
 
 The _Text Editor_ query builder is used to manually specify a text based query expression for openHistorian Grafana data source metrics. The expression can be any combination of directly specified point tag names, Guid identifiers or measurement keys separated by semi-colons - _or_ - a filter expression that will select several series at once.
 
-![Text Editor Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/TextEditor.png)
+![Text Editor Query Type](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/TextEditor.png)
 
 > Note that switching from the _Element List_ or _Filter Expression_ query builder screens to the _Text Editor_ will keep the expression as built so far to allow further manual updates to the expression. However, any manual changes made to the filter expression while on the _Text Editor_ query screen will not flow back to the _Element List_ or _Filter Expression_ query builder screens. Moreover, switching back to or between the _Element List_ and _Filter Expression_ query builder screens will automatically clear out any existing expression.
 
@@ -62,7 +62,7 @@ The openHistorian Grafana data source includes various aggregation and operation
 
 The _Element List_ and _Filter Expression_ query builder screens define the available functions as pick lists that get applied over the selected series by clicking the `+` button at the end of the `FUNCTIONS` row:
 
-![Filter Expression Query Type with Functions](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/FilterExpressionWithFunctions.png)
+![Filter Expression Query Type with Functions](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/FilterExpressionWithFunctions.png)
 
 Many series functions have parameters that are required or optional &ndash; optional parameter values will always define a default state. Parameter values must be a constant value or, where applicable, a named target available from the expression. Named targets are intended to work with group operations, i.e., [Set](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md#set) or [Slice](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md#slice), since group operations provide access to multiple series values from within a single series. The actual value used for a named target parameter will be the first encountered value for the target series &ndash; in the case of _Slice_ group operations, this will be the first value encountered in each time-slice. Named target parameters can optionally specify multiple fall-back series and one final default constant value each separated by a semi-colon to use when the named target series is not available, e.g.: `SliceSubtract(1, T1;T2;5.5, T1;T2;T3)`
 
@@ -72,7 +72,7 @@ The openHistorian Grafana data source supports _Annotation_ style queries for co
 
 Supported alarm annotation queries include `#ClearedAlarms` and `#RaisedAlarms`, which will return all alarms for the queried time period:
 
-![Alarm Annotations](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/AlarmAnnotations.png)
+![Alarm Annotations](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/AlarmAnnotations.png)
 
 Filter expressions of the configured time-series alarms are also supported, e.g.:
 
@@ -110,7 +110,7 @@ When the openHistorian service is hosting multiple historian instances, a specif
 
 The typical HTTP setting for `Access` in any instance of the openHistorian Grafana data source is _proxy_. However, when referencing a hosted Grafana instance that is integrated with the openHistorian 2.0 via reverse proxy, the `Access` setting can be set to _direct_ such that the user's authentication headers can flow back through the openHistorian for user security validation:
 
-![Direct Data Source Configuration](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/DataSourceConfiguration.png)
+![Direct Data Source Configuration](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/DataSourceConfiguration.png)
 
 Using _direct_ access allows the openHistorian authenticated user to be the authenticated user in Grafana. Otherwise, _proxy_ access will also work but will require a user for Grafana to use for authenticating to the data source.
 
@@ -174,7 +174,7 @@ netsh http add urlacl url=http://+:6357/api/grafana user="NT SERVICE\ProjectAlph
 
 All time-series data stored in the openHistorian includes [measurement state flags](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Libraries/GSF.TimeSeries/IMeasurement.cs#L46) that describe the data quality state of an archived value. The openHistorian Grafana data source includes the ability to filter queried data to the desired data quality states by excluding specified data flags. Default excluded data flag filters can by defined at a data source level and overridden at an individual metric query level. To change the default flags for an individual metric query, click the `Query Options` button near the end of the query `TYPE` row:
 
-![Excluded Data Flags](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/src/img/ExcludedDataFlags.png)
+![Excluded Data Flags](https://raw.githubusercontent.com/GridProtectionAlliance/openHistorian-grafana/master/img/ExcludedDataFlags.png)
 
  > The initial set of excluded data flags for an individual metric query is inherited from the flags defined for the associated data source and get established when the query is first created. The excluded data flags for an existing metric query will not be affected by any subsequent updates to the flags at the data source level, i.e., any changes made to the excluded data flags at the data source level will only be used as defaults for new metric queries and will not affect any existing queries.
 
