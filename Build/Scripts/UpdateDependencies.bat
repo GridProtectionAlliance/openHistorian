@@ -92,7 +92,11 @@ COPY /Y "%sourcetools%\StatHistorianReportGenerator\StatHistorianReportGenerator
 COPY /Y "%sourcetools%\NoInetFixUtil\NoInetFixUtil.exe" "%targettools%\NoInetFixUtil.exe"
 COPY /Y "%sourcetools%\DNP3ConfigGenerator\DNP3ConfigGenerator.exe" "%targettools%\DNP3ConfigGenerator.exe"
 COPY /Y "%sourcetools%\LogFileViewer\LogFileViewer.exe" "%targettools%\LogFileViewer.exe"
-XCOPY "%GrafanaSource%" "%GrafanaTarget%\" /Y /E /U
+ECHO Updating Grafana Panels...
+XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
+XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
+XCOPY "%GrafanaSource%\openHistorian-grafana" "%GrafanaTarget%\openHistorianGrafanaAlarmPanel\" /Y /E /U
+XCOPY "%GrafanaSource%\openHistorianGrafanaAlarmPanel" "%GrafanaTarget%\gridprotectionalliance-openhistorian-datasource\" /Y /E /U
 
 :UpdateDbScripts
 ECHO.
