@@ -1,38 +1,52 @@
 {
-    "type":  "panel",
-    "name":  "OpenHistorianAlarmPanel",
-    "id":  "openhistorian-alarm-panel",
+    "type":  "datasource",
+    "name":  "openHistorian",
+    "id":  "gridprotectionalliance-openhistorian-datasource",
     "info":  {
-                 "description":  "PanelforopenHistorianDeviceStatusAlarms",
+                 "description":  "Datasource plugin for openHistorian",
                  "author":  {
-                                "name":  "GridProtectionAlliance",
-                                "url":  "http//www.gridprotectionalliance.org"
+                                "name":  "Grid Protection Alliance",
+                                "url":  "https://www.gridprotectionalliance.org"
                             },
                  "keywords":  [
                                   "openHistorian",
-                                  "panel",
-                                  "DeviceStatus"
+                                  "openPDC",
+                                  "SIEGate",
+                                  "substationSBG",
+                                  "openMIC",
+                                  "PDQTracker",
+                                  "openECA",
+                                  "synchrophasor",
+                                  "GPA"
                               ],
                  "logos":  {
-                               "small":  "images/PAPanel.png",
-                               "large":  "images/PAPanel.png"
+                               "small":  "img/openHistorian.png",
+                               "large":  "img/openHistorian.png"
                            },
                  "links":  [
                                {
-                                   "name":  "Projectsite",
-                                   "url":  "https//github.com/GridProtectionAlliance/openHistorianGrafanaAlarmPanel"
+                                   "name":  "GitHub",
+                                   "url":  "https://github.com/GridProtectionAlliance/openHistorian-grafana"
+                               },
+                               {
+                                   "name":  "MIT License",
+                                   "url":  "https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/LICENSE"
+                               },
+                               {
+                                   "name":  "openHistorian",
+                                   "url":  "http://openHistorian.com"
                                }
                            ],
-                 "screenshots":  [
-
-                                 ],
-                 "version":  "1.59.4",
-                 "updated":  "2020-02-01"
+                 "version":  "1.0.4",
+                 "updated":  "2020-02-07"
              },
     "dependencies":  {
-                         "grafanaVersion":  "4.6",
+                         "grafanaVersion":  "4.5.x",
                          "plugins":  [
 
                                      ]
-                     }
+                     },
+    "metrics":  true,
+    "annotations":  true,
+    "alerting":  true
 }
