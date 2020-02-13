@@ -317,7 +317,6 @@ namespace openHistorian.Adapters
     /// </summary>
     public sealed class ReportHistorianOperations
     {
-        private bool m_disposed;
         private string m_instance;
         private string m_defaultInstanceName;
         private int m_portNumber;
