@@ -134,7 +134,7 @@ namespace MAS
         /// <summary>
         /// Defines the default point tag template for output measurements.
         /// </summary>
-        public const string DefaultPointTagTemplate = nameof(MAS) + ".OD!{0}";
+        public const string DefaultPointTagTemplate = nameof(MAS) + "!{0}";
 
         /// <summary>
         /// Defines the default signal reference template for output measurements.
@@ -145,6 +145,11 @@ namespace MAS
         /// Defines the default signal type for output measurements.
         /// </summary>
         public const string DefaultSignalType = "CALC";
+
+        /// <summary>
+        /// Defines the default target historian acronym for output measurements
+        /// </summary>
+        public const string DefaultTargetHistorianAcronym = "PPA";
 
         #endregion
 

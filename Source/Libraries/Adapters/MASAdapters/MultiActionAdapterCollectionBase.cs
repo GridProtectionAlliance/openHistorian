@@ -35,6 +35,7 @@ using GSF.Units.EE;
 using ConnectionStringParser = GSF.Configuration.ConnectionStringParser<GSF.TimeSeries.Adapters.ConnectionStringParameterAttribute>;
 using MeasurementRecord = MAS.Model.Measurement;
 using SignalTypeRecord = MAS.Model.SignalType;
+using HistorianRecord = MAS.Model.Historian;
 
 namespace MAS
 {
@@ -210,14 +211,19 @@ namespace MAS
         /// <param name="pointTag">Point tag of measurement.</param>
         /// <param name="signalReference">Signal reference of measurement.</param>
         /// <param name="signalType">Signal type of measurement.</param>
+        /// <param name="targetHistorianAcronym">Acronym of target historian for measurement.</param>
         /// <returns>Measurement record.</returns>
-        protected MeasurementRecord GetMeasurementRecord(string pointTag, string signalReference, SignalType signalType)
+        protected MeasurementRecord GetMeasurementRecord(string pointTag, string signalReference, SignalType signalType, string targetHistorianAcronym)
         {
             // Open database connection as defined in configuration file "systemSettings" category
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
                 TableOperations<MeasurementRecord> measurementTable = new TableOperations<MeasurementRecord>(connection);
+                TableOperations<HistorianRecord> historianTable = new TableOperations<HistorianRecord>(connection);
                 TableOperations<SignalTypeRecord> signalTypeTable = new TableOperations<SignalTypeRecord>(connection);
+
+                // Lookup target historian ID
+                int? historianID = historianTable.QueryRecordWhere("Acronym = {0}", targetHistorianAcronym)?.ID;
 
                 // Lookup signal type ID
                 int signalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", signalType.ToString())?.ID ?? 1;
@@ -226,10 +232,11 @@ namespace MAS
                 MeasurementRecord measurement = measurementTable.QueryRecordWhere("PointTag = {0}", pointTag) ?? measurementTable.NewRecord();
 
                 // Update record fields
+                measurement.HistorianID = historianID;
                 measurement.PointTag = pointTag;
                 measurement.SignalReference = signalReference;
                 measurement.SignalTypeID = signalTypeID;
-                measurement.Description = $"Local measurement created for \"{GetType().Name}\".";
+                measurement.Description = $"{signalType} measurement created for {Name} [{GetType().Name}].";
 
                 // Save record updates
                 measurementTable.AddNewOrUpdateRecord(measurement);

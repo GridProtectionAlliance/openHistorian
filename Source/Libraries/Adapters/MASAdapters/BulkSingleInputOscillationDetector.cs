@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using GSF;
 using GSF.Diagnostics;
@@ -45,6 +46,23 @@ namespace MAS
     {
         #region [ Members ]
 
+        // Constants
+
+        /// <summary>
+        /// Defines the default value for the <see cref="FramesPerSecond"/>.
+        /// </summary>
+        public const int DefaultFramesPerSecond = 30;
+
+        /// <summary>
+        /// Defines the default value for the <see cref="LagTime"/>.
+        /// </summary>
+        public const double DefaultLagTime = 5.0D;
+
+        /// <summary>
+        /// Defines the default value for the <see cref="LeadTime"/>.
+        /// </summary>
+        public const double DefaultLeadTime = 5.0D;
+
         // Fields
         private ShortSynchronizedOperation m_manageChildAdapters;
         private uint m_adapterID;
@@ -52,6 +70,56 @@ namespace MAS
         #endregion
 
         #region [ Properties ]
+
+        /// <summary>
+        /// Gets or sets primary keys of input measurements for the <see cref="BulkSingleInputOscillationDetector"/>.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines primary keys of input measurements the adapter expects; can be one of a filter expression, measurement key, point tag or Guid.")]
+        [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.MeasurementEditor")]
+        [DefaultValue(null)]
+        public override MeasurementKey[] InputMeasurementKeys
+        { 
+            get => base.InputMeasurementKeys;
+            set => base.InputMeasurementKeys = value;
+        }
+        
+        /// <summary>
+        /// Gets or sets the number of frames per second applied to each adapter.
+        /// </summary>
+        /// <remarks>
+        /// Valid frame rates for a <see cref="ConcentratorBase"/> are greater than 0 frames per second.
+        /// </remarks>
+        [ConnectionStringParameter]
+        [Description("Defines the number of frames per second applied to each adapter.")]
+        [DefaultValue(DefaultFramesPerSecond)]
+        public int FramesPerSecond { get; set; } = DefaultFramesPerSecond;
+
+        /// <summary>
+        /// Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
+        /// </summary>
+        /// <remarks>
+        /// <para>Defines the time sensitivity to past measurement timestamps.</para>
+        /// <para>The number of seconds allowed before assuming a measurement timestamp is too old.</para>
+        /// <para>This becomes the amount of delay introduced by the concentrator to allow time for data to flow into the system.</para>
+        /// </remarks>
+        [ConnectionStringParameter]
+        [Description("Defines the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
+        [DefaultValue(DefaultLagTime)]
+        public double LagTime { get; set; } = DefaultLagTime;
+
+        /// <summary>
+        /// Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
+        /// </summary>
+        /// <remarks>
+        /// <para>Defines the time sensitivity to future measurement timestamps.</para>
+        /// <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
+        /// <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
+        /// </remarks>
+        [ConnectionStringParameter]
+        [Description("Defines the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
+        [DefaultValue(DefaultLeadTime)]
+        public double LeadTime { get; set; } = DefaultLeadTime;
 
         /// <summary>
         /// Gets or sets the triggering threshold for band 1 oscillation energy applied to each adapter.
@@ -110,14 +178,28 @@ namespace MAS
         public SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
 
         /// <summary>
+        /// Gets or sets the target historian acronym for output measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the target historian acronym for output measurements.")]
+        [DefaultValue(DefaultTargetHistorianAcronym)]
+        public string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+
+        /// <summary>
         /// Returns the detailed status of the <see cref="BulkSingleInputOscillationDetector"/>.
         /// </summary>
         public override string Status
         {
             get
             {
+                const int MaxMeasurementsToShow = 10;
+                
                 StringBuilder status = new StringBuilder();
 
+                status.AppendFormat("         Frames Per Second: {0:N0}", FramesPerSecond);
+                status.AppendLine();
+                status.AppendFormat("      Lag Time / Lead Time: {0:N3} / {1:N3}", LagTime, LeadTime);
+                status.AppendLine();
                 status.AppendFormat("  Band 1 Trigger Threshold: {0:N3}", Band1TriggerThreshold);
                 status.AppendLine();
                 status.AppendFormat("  Band 2 Trigger Threshold: {0:N3}", Band2TriggerThreshold);
@@ -130,6 +212,26 @@ namespace MAS
                 status.AppendLine();
                 status.AppendFormat(" Signal Reference Template: {0}", SignalReferenceTemplate);
                 status.AppendLine();
+                status.AppendFormat("        Output Signal Type: {0}", SignalType);
+                status.AppendLine();
+                status.AppendFormat("  Target Historian Acronym: {0}", TargetHistorianAcronym);
+                status.AppendLine();
+                
+                if (InputMeasurementKeys != null && InputMeasurementKeys.Length > InputMeasurementKeys.Count(k => k == MeasurementKey.Undefined))
+                {
+                    status.AppendFormat("        Input measurements: {0:N0} defined measurements", InputMeasurementKeys.Length);
+                    status.AppendLine();
+                    status.AppendLine();
+
+                    for (int i = 0; i < Math.Min(InputMeasurementKeys.Length, MaxMeasurementsToShow); i++)
+                        status.AppendLine(InputMeasurementKeys[i].ToString().TruncateRight(25).CenterText(50));
+
+                    if (InputMeasurementKeys.Length > MaxMeasurementsToShow)
+                        status.AppendLine("...".CenterText(50));
+
+                    status.AppendLine();
+                }
+
                 status.Append(base.Status);
 
                 return status.ToString();
@@ -146,6 +248,19 @@ namespace MAS
         public override void Initialize()
         {
             base.Initialize();
+
+            // Parse input measurement keys like class was a typical adapter
+            if (Settings.TryGetValue(nameof(InputMeasurementKeys), out string setting))
+                InputMeasurementKeys = AdapterBase.ParseInputMeasurementKeys(DataSource, true, setting);
+
+            if (FramesPerSecond < 1)
+                FramesPerSecond = DefaultFramesPerSecond;
+
+            if (LagTime < 0.0D)
+                LagTime = DefaultLagTime;
+
+            if (LeadTime < 0.0D)
+                LeadTime = DefaultLeadTime;
 
             // Define a synchronized operation to manage bulk collection of child adapters
             m_manageChildAdapters = new ShortSynchronizedOperation(ManageChildAdapters, ex => OnProcessException(MessageLevel.Warning, ex));
@@ -167,9 +282,12 @@ namespace MAS
             // Create settings dictionary for connection string to use with primary child adapters
             Dictionary<string, string> settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                [nameof(Band1TriggerThreshold)] = $"{Band1TriggerThreshold}", 
-                [nameof(Band2TriggerThreshold)] = $"{Band2TriggerThreshold}", 
-                [nameof(Band3TriggerThreshold)] = $"{Band3TriggerThreshold}", 
+                [nameof(FramesPerSecond)] = $"{FramesPerSecond}",
+                [nameof(LagTime)] = $"{LagTime}",
+                [nameof(LeadTime)] = $"{LeadTime}",
+                [nameof(Band1TriggerThreshold)] = $"{Band1TriggerThreshold}",
+                [nameof(Band2TriggerThreshold)] = $"{Band2TriggerThreshold}",
+                [nameof(Band3TriggerThreshold)] = $"{Band3TriggerThreshold}",
                 [nameof(Band4TriggerThreshold)] = $"{Band4TriggerThreshold}"
             };
 
@@ -177,7 +295,7 @@ namespace MAS
             foreach (MeasurementKey key in InputMeasurementKeys)
             {
                 string inputPointTag = LookupPointTag(key);
-                string adapterName = $"{nameof(SingleInputOscillationDetector).ToUpper()}!{inputPointTag}";
+                string adapterName = $"{Name}!{inputPointTag}";
 
                 // Track active adapter names so that adapters that no longer have sources can be removed
                 activeAdapterNames.Add(adapterName);
@@ -192,12 +310,12 @@ namespace MAS
                 // Setup output measurements for child adapter
                 foreach (Output output in Outputs)
                 {
-                    string outputID = $"{output.ToString().ToUpper()}-{inputPointTag}";
+                    string outputID = $"{adapterName}-{output.ToString().ToUpper()}";
                     string outputPointTag = string.Format(PointTagTemplate, outputID);
                     string signalReference = string.Format(SignalReferenceTemplate, outputID);
 
                     // Get output measurement record, creating a new one if needed
-                    MeasurementRecord measurement = GetMeasurementRecord(outputPointTag, signalReference, SignalType);
+                    MeasurementRecord measurement = GetMeasurementRecord(outputPointTag, signalReference, SignalType, TargetHistorianAcronym);
                     
                     outputs[(int)output] = measurement.SignalID.ToString();
                 }
