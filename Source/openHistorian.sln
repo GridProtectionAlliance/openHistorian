@@ -239,6 +239,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.Test", "Libraries\Tests\GSF.SortedTreeStore.Test\GSF.SortedTreeStore.Test.csproj", "{69FCF69C-A782-40CF-A428-9A8B30370B7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Applications\openHistorian\openHistorian\openHistorian.csproj", "{F6986F10-FC76-475B-A7D0-10315EBF4910}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E0E5382E-6BAF-4F16-A1DB-72D3523FC949} = {E0E5382E-6BAF-4F16-A1DB-72D3523FC949}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianConsole", "Applications\openHistorian\openHistorianConsole\openHistorianConsole.csproj", "{018FDA38-8662-4733-A3C8-22EC24A0CE85}"
 EndProject

@@ -345,6 +345,8 @@ namespace MAS
 
             foreach (IActionAdapter adapter in adaptersToRemove)
                 Remove(adapter);
+
+            RecalculateRoutingTables();
         }
 
         #endregion

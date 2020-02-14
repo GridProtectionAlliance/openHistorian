@@ -116,14 +116,14 @@ namespace MAS
         /// </summary>
         public override void Initialize()
         {
-            base.Initialize();
-
             // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
             ConnectionStringParser parser = new ConnectionStringParser();
             parser.ParseConnectionString(ConnectionString, this);
 
-            int configuredInputCount = InputMeasurementKeys.Length;
-            int configuredOutputCount = OutputMeasurements.Length;
+            base.Initialize();
+
+            int configuredInputCount = InputMeasurementKeys?.Length ?? 0;
+            int configuredOutputCount = OutputMeasurements?.Length ?? 0;
 
             if (configuredInputCount == 0)
                 throw new InvalidOperationException("No inputs specified. Cannot initialize adapter.");

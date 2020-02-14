@@ -373,7 +373,7 @@ namespace MAS
                 yValues.Add(values[i]);
             }
 
-            if (xValues.Count < 2)
+            if (xValues.Count < 5)
                 return;
 
             CubicSpline spline = CubicSpline.InterpolateAkimaSorted(xValues.ToArray(), yValues.ToArray());

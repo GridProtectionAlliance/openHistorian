@@ -68,6 +68,9 @@ namespace MAS
             m_routingTables = new RoutingTables { ActionAdapters = this };
             m_routingTables.StatusMessage += RoutingTables_StatusMessage;
             m_routingTables.ProcessException += RoutingTables_ProcessException;
+
+            // Make sure routes are recalculated any time measurements are updated
+            InputMeasurementKeysUpdated += (sender, e) => m_routingTables?.CalculateRoutingTables(null);
         }
 
         #endregion
@@ -87,7 +90,7 @@ namespace MAS
                     return;
 
                 base.DataSource = value;
-                m_routingTables.CalculateRoutingTables(null);
+                m_routingTables?.CalculateRoutingTables(null);
 
                 if (AutoReparseConnectionString)
                 {
@@ -161,12 +164,7 @@ namespace MAS
             // data member - instead, the multi-adapter class implementation manages its own adapters
             Initialized = false;
 
-            Clear();
-
             ParseConnectionString();
-
-            // Trigger routing table calculation to route cached measurements to the cache
-            m_routingTables.CalculateRoutingTables(null);
 
             Initialized = true;
         }
@@ -177,6 +175,11 @@ namespace MAS
         protected virtual void DataSourceChanged()
         {
         }
+
+        /// <summary>
+        /// Recalculates routing tables.
+        /// </summary>
+        protected void RecalculateRoutingTables() => OnInputMeasurementKeysUpdated(); // Requests route recalculation by IonSession
 
         /// <summary>
         /// Finds child adapter with specified <paramref name="adapterName"/>.
