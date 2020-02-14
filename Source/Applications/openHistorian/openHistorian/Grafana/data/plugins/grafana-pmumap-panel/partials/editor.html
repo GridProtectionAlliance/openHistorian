@@ -8,7 +8,8 @@
 						ng-change="ctrl.setNewMapBackground()"></select>
 			</div>
 		</div>
-		<gf-form-switch class="gf-form" label="Use Multiple Maps" label-class="width-10" checked="ctrl.panel.multiMaps" on-change="ctrl.setNewMapBackground()"></gf-form-switch>
+		
+		<!-- <gf-form-switch class="gf-form" label="Use Multiple Maps" label-class="width-10" checked="ctrl.panel.multiMaps" on-change="ctrl.setNewMapBackground()"></gf-form-switch> -->
 
 		<div class="gf-form">
 			<label class="gf-form-label width-10">Center</label>
@@ -112,10 +113,12 @@
 		<div class="gf-form">
 			<label class="gf-form-label width-15">Feature Display</label>
 			<div class="gf-form-select-wrapper max-width-10">
-				<select class="input-small gf-form-input" ng-model="ctrl.panel.featureType" ng-options="t for t in ['circles','phasor-clock','4-bit bar']"
+				<select class="input-small gf-form-input" ng-model="ctrl.panel.featureType" ng-options="t for t in ['circles','4-bit bar']"
 						ng-change="ctrl.setfeaturetype()"></select>
 			</div>
 		</div>
+
+		<!-- 'phasor-clock', -->
 
 		<!-- Circles -->
 		<div ng-show="ctrl.panel.featureType === 'circles'">
