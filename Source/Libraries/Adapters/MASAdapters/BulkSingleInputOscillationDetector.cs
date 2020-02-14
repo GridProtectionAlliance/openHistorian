@@ -249,10 +249,6 @@ namespace MAS
         {
             base.Initialize();
 
-            // Parse input measurement keys like class was a typical adapter
-            if (Settings.TryGetValue(nameof(InputMeasurementKeys), out string setting))
-                InputMeasurementKeys = AdapterBase.ParseInputMeasurementKeys(DataSource, true, setting);
-
             if (FramesPerSecond < 1)
                 FramesPerSecond = DefaultFramesPerSecond;
 
@@ -267,6 +263,18 @@ namespace MAS
 
             // Kick off initial child adapter management operations
             m_manageChildAdapters.RunOnceAsync();
+        }
+
+        /// <summary>
+        /// Parses connection string.
+        /// </summary>
+        protected override void ParseConnectionString()
+        {
+            base.ParseConnectionString();
+
+            // Parse input measurement keys like class was a typical adapter
+            if (Settings.TryGetValue(nameof(InputMeasurementKeys), out string setting))
+                InputMeasurementKeys = AdapterBase.ParseInputMeasurementKeys(DataSource, true, setting);
         }
 
         /// <summary>

@@ -170,6 +170,16 @@ namespace MAS
         }
 
         /// <summary>
+        /// Parses connection string. Derived classes should override for custom connection string parsing.
+        /// </summary>
+        protected virtual void ParseConnectionString()
+        {
+            // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
+            ConnectionStringParser parser = new ConnectionStringParser();
+            parser.ParseConnectionString(ConnectionString, this);
+        }
+
+        /// <summary>
         /// Notifies derived classes that data source has changed.
         /// </summary>
         protected virtual void DataSourceChanged()
@@ -288,13 +298,6 @@ namespace MAS
                 // Function is for optimization, reason for failure is irrelevant
                 return true;
             }
-        }
-
-        private void ParseConnectionString()
-        {
-            // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
-            ConnectionStringParser parser = new ConnectionStringParser();
-            parser.ParseConnectionString(ConnectionString, this);
         }
 
         // Make sure to expose any routing table messages
