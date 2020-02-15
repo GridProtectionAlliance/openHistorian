@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  MultiActionAdapterCollectionBase.cs - Gbtc
+//  IndependentActionAdapterManagerBase.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -42,7 +42,7 @@ namespace MAS
     /// <summary>
     /// Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters.
     /// </summary>
-    public abstract class MultiActionAdapterCollectionBase : ActionAdapterCollection
+    public abstract class IndependentActionAdapterManagerBase : ActionAdapterCollection
     {
         #region [ Members ]
 
@@ -56,9 +56,9 @@ namespace MAS
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new <see cref="MultiActionAdapterCollectionBase"/>.
+        /// Creates a new <see cref="IndependentActionAdapterManagerBase"/>.
         /// </summary>
-        protected MultiActionAdapterCollectionBase()
+        protected IndependentActionAdapterManagerBase()
         {
             m_originalDataMember = base.DataMember;
             base.DataMember = "[internal]";
@@ -79,7 +79,7 @@ namespace MAS
 
         /// <summary>
         /// Gets or sets <see cref="DataSet"/> based data source used to load each <see cref="IAdapter"/>. Updates
-        /// to this property will cascade to all adapters in this <see cref="MultiActionAdapterCollectionBase"/>.
+        /// to this property will cascade to all adapters in this <see cref="IndependentActionAdapterManagerBase"/>.
         /// </summary>
         public override DataSet DataSource
         {
@@ -116,7 +116,7 @@ namespace MAS
         }
 
         /// <summary>
-        /// Gets or sets flag that determines if the <see cref="MultiActionAdapterCollectionBase"/> adapter
+        /// Gets or sets flag that determines if the <see cref="IndependentActionAdapterManagerBase"/> adapter
         /// <see cref="AdapterCollectionBase{T}.ConnectionString"/> should be automatically parsed every time
         /// the <see cref="DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
         /// to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
@@ -128,7 +128,7 @@ namespace MAS
         #region [ Methods ]
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="MultiActionAdapterCollectionBase"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="IndependentActionAdapterManagerBase"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
@@ -156,7 +156,7 @@ namespace MAS
         }
 
         /// <summary>
-        /// Initializes the <see cref="MultiActionAdapterCollectionBase" />.
+        /// Initializes the <see cref="IndependentActionAdapterManagerBase" />.
         /// </summary>
         public override void Initialize()
         {
@@ -263,7 +263,7 @@ namespace MAS
         }
 
         /// <summary>
-        /// Queues a collection of measurements for processing to each <see cref="IActionAdapter"/> connected to this <see cref="MultiActionAdapterCollectionBase"/>.
+        /// Queues a collection of measurements for processing to each <see cref="IActionAdapter"/> connected to this <see cref="IndependentActionAdapterManagerBase"/>.
         /// </summary>
         /// <param name="measurements">Measurements to queue for processing.</param>
         public override void QueueMeasurementsForProcessing(IEnumerable<IMeasurement> measurements)
@@ -274,10 +274,10 @@ namespace MAS
         }
 
         /// <summary>
-        /// Gets a short one-line status of this <see cref="MultiActionAdapterCollectionBase"/>.
+        /// Gets a short one-line status of this <see cref="IndependentActionAdapterManagerBase"/>.
         /// </summary>
         /// <param name="maxLength">Maximum number of available characters for display.</param>
-        /// <returns>A short one-line summary of the current status of the <see cref="MultiActionAdapterCollectionBase"/>.</returns>
+        /// <returns>A short one-line summary of the current status of the <see cref="IndependentActionAdapterManagerBase"/>.</returns>
         public override string GetShortStatus(int maxLength)
         {
             if (Enabled)

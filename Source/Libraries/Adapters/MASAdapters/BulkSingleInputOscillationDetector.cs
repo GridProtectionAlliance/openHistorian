@@ -42,7 +42,7 @@ namespace MAS
     /// </summary>
     [Description("MAS Oscillation Detector [Bulk Single Input]: Manages bulk detection of oscillations based on individual inputs.")]
     [EditorBrowsable(EditorBrowsableState.Always)]
-    public class BulkSingleInputOscillationDetector : MultiActionAdapterCollectionBase
+    public class BulkSingleInputOscillationDetector : IndependentActionAdapterManagerBase
     {
         #region [ Members ]
 

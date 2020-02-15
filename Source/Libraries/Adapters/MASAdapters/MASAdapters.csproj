@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
     <Compile Include="Model\Historian.cs" />
-    <Compile Include="MultiActionAdapterCollectionBase.cs" />
+    <Compile Include="IndependentActionAdapterManagerBase.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\Measurement.cs" />
