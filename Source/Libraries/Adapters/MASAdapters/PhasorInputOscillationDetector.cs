@@ -56,7 +56,7 @@ namespace MAS
         public const string DefaultAdjustmentStrategy = "LineToNeutral";
 
         // Fields
-        private readonly OscillationDetector m_detector = new OscillationDetector();
+        private readonly OscillationDetector m_detector;
         private MeasurementKey m_voltageMagnitude;
         private MeasurementKey m_voltageAngle;
         private MeasurementKey m_currentMagnitude;
@@ -64,39 +64,22 @@ namespace MAS
 
         #endregion
 
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates a new <see cref="SingleInputOscillationDetector"/>.
+        /// </summary>
+        public PhasorInputOscillationDetector()
+        {
+            m_detector = new OscillationDetector(
+                (level, message) => OnStatusMessage(level, message),
+                (level, ex) => OnProcessException(level, ex),
+                OnNewMeasurements);
+        }
+
+        #endregion
+
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 1 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 1 oscillation energy.")]
-        [DefaultValue(DefaultBand1TriggerThreshold)]
-        public double Band1TriggerThreshold { get; set; } = DefaultBand1TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 2 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 2 oscillation energy.")]
-        [DefaultValue(DefaultBand2TriggerThreshold)]
-        public double Band2TriggerThreshold { get; set; } = DefaultBand2TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 3 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 3 oscillation energy.")]
-        [DefaultValue(DefaultBand3TriggerThreshold)]
-        public double Band3TriggerThreshold { get; set; } = DefaultBand3TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 4 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 4 oscillation energy.")]
-        [DefaultValue(DefaultBand4TriggerThreshold)]
-        public double Band4TriggerThreshold { get; set; } = DefaultBand4TriggerThreshold;
 
         /// <summary>
         /// Gets or sets the default strategy used to adjust voltage values for based on the nature of the voltage measurements.
@@ -148,12 +131,21 @@ namespace MAS
             InputMeasurementKeys = new[] { m_voltageMagnitude, m_voltageAngle, m_currentMagnitude, m_currentAngle };
 
             // Provide algorithm with parameters as configured by adapter
+            PseudoConfiguration configuration = new PseudoConfiguration
+            {
+                FramesPerSecond = FramesPerSecond,
+                IsLineToNeutral = AdjustmentStrategy == VoltageAdjustmentStrategy.LineToNeutral
+            };
+
+            m_detector.DetectorAPI = new PseudoDetectorAPI
+            {
+                Configuration = configuration
+            };
+
             m_detector.OutputMeasurements = OutputMeasurements;
             m_detector.FramesPerSecond = FramesPerSecond;
-            m_detector.Band1TriggerThreshold = Band1TriggerThreshold;
-            m_detector.Band2TriggerThreshold = Band2TriggerThreshold;
-            m_detector.Band3TriggerThreshold = Band3TriggerThreshold;
-            m_detector.Band4TriggerThreshold = Band4TriggerThreshold;
+            m_detector.InputTypes = InputMeasurementKeyTypes;
+            m_detector.Initialize();
         }
 
         /// <summary>
@@ -163,60 +155,8 @@ namespace MAS
         /// <param name="dataWindow">1-second data window.</param>
         protected override void ProcessDataWindow(Ticks timestamp, IMeasurement[,] dataWindow)
         {
-            IMeasurement[] results = new IMeasurement[FramesPerSecond];
-
-            void addResult(double value, int index, MeasurementStateFlags flags)
-            {
-                results[index] = new Measurement
-                {
-                    Metadata = MeasurementMetadata.Undefined,
-                    Value = value,
-                    Timestamp = timestamp + SubsecondOffsets[index],
-                    StateFlags = flags
-                };
-            }
-
-            for (int i = 0; i < FramesPerSecond; i++)
-            {
-                IMeasurement voltageMagnitudeMeasurement = dataWindow[VoltageMagnitude, i];
-                IMeasurement voltageAngleMeasurement = dataWindow[VoltageAngle, i];
-                IMeasurement currentMagnitudeMeasurement = dataWindow[CurrentMagnitude, i];
-                IMeasurement currentAngleMeasurement = dataWindow[CurrentAngle, i];
-
-                if (voltageMagnitudeMeasurement == null || voltageAngleMeasurement == null || currentMagnitudeMeasurement == null || currentAngleMeasurement == null)
-                {
-                    addResult(double.NaN, i, MeasurementStateFlags.BadData);
-                    continue;
-                }
-
-                Voltage voltageMagnitude = voltageMagnitudeMeasurement.AdjustedValue;
-                Angle voltageAngle = Angle.FromDegrees(voltageAngleMeasurement.AdjustedValue);
-                Current currentMagnitude = currentMagnitudeMeasurement.AdjustedValue;
-                Angle currentAngle = Angle.FromDegrees(currentAngleMeasurement.AdjustedValue);
-
-                switch (AdjustmentStrategy)
-                {
-                    case VoltageAdjustmentStrategy.LineToNeutral:
-                        voltageMagnitude *= 3;
-                        break;
-
-                    case VoltageAdjustmentStrategy.LineToLine:
-                        voltageMagnitude *= SqrtOf3;
-                        break;
-                }
-
-                Phasor voltage = new Phasor(PhasorType.Voltage, new ComplexNumber(voltageAngle, voltageMagnitude));
-                Phasor current = new Phasor(PhasorType.Current, new ComplexNumber(currentAngle, currentMagnitude));
-                Power activePower = Phasor.CalculateActivePower(voltage, current);
-
-                addResult(activePower, i, Common.DerivedQualityFlags(new[] { voltageMagnitudeMeasurement, voltageAngleMeasurement, currentMagnitudeMeasurement, currentAngleMeasurement }));
-            }
-            
-            // Process detection algorithm against calculated power results
-            Measurement[] measurements = m_detector.ProcessDataWindow(timestamp, results);
-
-            // Publish new result measurements
-            OnNewMeasurements(measurements);
+            // Process detection algorithm against single input window
+            m_detector.ProcessDataWindow(timestamp, dataWindow);
         }
 
         #endregion

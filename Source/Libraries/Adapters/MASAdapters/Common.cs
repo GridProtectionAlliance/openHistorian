@@ -23,8 +23,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using GSF.TimeSeries;
+using GSF.Units.EE;
 
 namespace MAS
 {
@@ -33,6 +35,41 @@ namespace MAS
     /// </summary>
     public static class Common
     {
+        /// <summary>
+        /// Lookups up metadata record from provided <see cref="MeasurementKey"/>.
+        /// </summary>
+        /// <param name="dataSource">Target <see cref="DataSet"/>.</param>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookip.</param>
+        /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+        /// <returns>Metadata data row, if found; otherwise, <c>null</c>.</returns>
+        public static DataRow LookupMetadata(this DataSet dataSource, Guid signalID, string measurementTable = "ActiveMeasurements")
+        {
+            if (dataSource == null)
+                throw new ArgumentNullException(nameof(dataSource));
+
+            DataRow[] records = dataSource.Tables[measurementTable].Select($"SignalID = '{signalID}'");
+            return records.Length > 0 ? records[0] : null;
+        }
+
+        /// <summary>
+        /// Gets signal type for given measurement key
+        /// </summary>
+        /// <param name="dataSource">Target <see cref="DataSet"/>.</param>
+        /// <param name="key">Source <see cref="MeasurementKey"/>.</param>
+        /// <returns><see cref="SignalType"/> as defined for measurent key in data source.</returns>
+        public static SignalType GetSignalType(this DataSet dataSource, MeasurementKey key)
+        {
+            if (dataSource == null)
+                throw new ArgumentNullException(nameof(dataSource));
+
+            DataRow record = dataSource.LookupMetadata(key.SignalID);
+
+            if (record != null && Enum.TryParse(record["SignalType"].ToString(), out SignalType signalType))
+                return signalType;
+
+            return SignalType.NONE;
+        }
+
         /// <summary>
         /// Gets derived quality flags from a set of source measurements.
         /// </summary>
@@ -112,13 +149,20 @@ namespace MAS
             if (columnIndex < 0 || columnIndex >= dataWindow.GetLength(0))
                 throw new ArgumentOutOfRangeException(nameof(columnIndex));
 
-            IEnumerable<IMeasurement> getDataColumn()
-            {
-                for (int i = 0; i < dataWindow.GetLength(1); i++)
-                    yield return dataWindow[columnIndex, i];
-            }
+            return dataWindow.GetColumn(columnIndex).ToArray();
+        }
 
-            return getDataColumn().ToArray();
+        /// <summary>
+        /// Gets a column of data out of a 2-dimensional array.
+        /// </summary>
+        /// <typeparam name="T">Type of array.</typeparam>
+        /// <param name="source">Source array.</param>
+        /// <param name="columnIndex">Column index to retrieve.</param>
+        /// <returns>Values from specified <paramref name="columnIndex"/>.</returns>
+        public static IEnumerable<T> GetColumn<T>(this T[,] source, int columnIndex)
+        {
+            for (int i = 0; i < source.GetLength(1); i++)
+                yield return source[columnIndex, i];
         }
     }
 }

@@ -98,11 +98,11 @@ namespace MAS
         /// <returns>Point tag name, if found; otherwise, string representation of provided measurement key.</returns>
         public static string LookupPointTag(this IIndependentAdapterManager instance, MeasurementKey key, string measurementTable = "ActiveMeasurements")
         {
-            DataRow[] records = instance.DataSource.Tables[measurementTable].Select($"SignalID = '{key.SignalID}'");
+            DataRow record = instance.DataSource.LookupMetadata(key.SignalID, measurementTable);
             string pointTag = null;
 
-            if (records.Length > 0)
-                pointTag = records[0]["PointTag"].ToString();
+            if (record != null)
+                pointTag = record["PointTag"].ToString();
 
             if (string.IsNullOrWhiteSpace(pointTag))
                 pointTag = key.ToString();
@@ -117,7 +117,7 @@ namespace MAS
         /// <param name="signalID">Signal ID to find.</param>
         /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
         /// <returns><c>true</c>, if <paramref name="signalID"/> is found; otherwise, <c>false</c>.</returns>
-        public static bool SignalIDExists(this IIndependentAdapterManager instance, Guid signalID, string measurementTable = "ActiveMeasurements") => instance.DataSource.Tables[measurementTable].Select($"SignalID = '{signalID}'").Length > 0;
+        public static bool SignalIDExists(this IIndependentAdapterManager instance, Guid signalID, string measurementTable = "ActiveMeasurements") => instance.DataSource.LookupMetadata(signalID, measurementTable) != null;
 
         /// <summary>
         /// Gets measurement record, creating it if needed.

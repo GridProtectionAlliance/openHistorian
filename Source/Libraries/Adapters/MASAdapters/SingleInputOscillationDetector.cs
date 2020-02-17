@@ -25,7 +25,6 @@ using System.ComponentModel;
 using System.Text;
 using GSF;
 using GSF.TimeSeries;
-using GSF.TimeSeries.Adapters;
 using static MAS.OscillationDetector;
 
 namespace MAS
@@ -39,43 +38,26 @@ namespace MAS
         #region [ Members ]
 
         // Fields
-        private readonly OscillationDetector m_detector = new OscillationDetector();
+        private readonly OscillationDetector m_detector;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates a new <see cref="SingleInputOscillationDetector"/>.
+        /// </summary>
+        public SingleInputOscillationDetector()
+        {
+            m_detector = new OscillationDetector(
+                (level, message) => OnStatusMessage(level, message), 
+                (level, ex) => OnProcessException(level, ex), 
+                OnNewMeasurements);
+        }
 
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 1 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 1 oscillation energy.")]
-        [DefaultValue(DefaultBand1TriggerThreshold)]
-        public double Band1TriggerThreshold { get; set; } = DefaultBand1TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 2 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 2 oscillation energy.")]
-        [DefaultValue(DefaultBand2TriggerThreshold)]
-        public double Band2TriggerThreshold { get; set; } = DefaultBand2TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 3 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 3 oscillation energy.")]
-        [DefaultValue(DefaultBand3TriggerThreshold)]
-        public double Band3TriggerThreshold { get; set; } = DefaultBand3TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 4 oscillation energy.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the triggering threshold for band 4 oscillation energy.")]
-        [DefaultValue(DefaultBand4TriggerThreshold)]
-        public double Band4TriggerThreshold { get; set; } = DefaultBand4TriggerThreshold;
 
         /// <summary>
         /// Returns the detailed status of the <see cref="SingleInputOscillationDetector"/>.
@@ -108,12 +90,20 @@ namespace MAS
             base.Initialize();
 
             // Provide algorithm with parameters as configured by adapter
+            PseudoConfiguration configuration = new PseudoConfiguration
+            {
+                FramesPerSecond = FramesPerSecond
+            };
+
+            m_detector.DetectorAPI = new PseudoDetectorAPI
+            {
+                Configuration = configuration
+            };
+            
             m_detector.OutputMeasurements = OutputMeasurements;
             m_detector.FramesPerSecond = FramesPerSecond;
-            m_detector.Band1TriggerThreshold = Band1TriggerThreshold;
-            m_detector.Band2TriggerThreshold = Band2TriggerThreshold;
-            m_detector.Band3TriggerThreshold = Band3TriggerThreshold;
-            m_detector.Band4TriggerThreshold = Band4TriggerThreshold;
+            m_detector.InputTypes = InputMeasurementKeyTypes;
+            m_detector.Initialize();
         }
 
         /// <summary>
@@ -124,10 +114,7 @@ namespace MAS
         protected override void ProcessDataWindow(Ticks timestamp, IMeasurement[,] dataWindow)
         {
             // Process detection algorithm against single input window
-            Measurement[] measurements = m_detector.ProcessDataWindow(timestamp, dataWindow.GetDataColumn(0));
-
-            // Publish new result measurements
-            OnNewMeasurements(measurements);
+            m_detector.ProcessDataWindow(timestamp, dataWindow);
         }
 
         #endregion

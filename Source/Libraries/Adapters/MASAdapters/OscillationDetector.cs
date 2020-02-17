@@ -25,15 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using GSF;
+using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.Units.EE;
-using MathNet.Filtering;
-using MathNet.Numerics.IntegralTransforms;
-using MathNet.Numerics.Interpolation;
-using Range = GSF.Range<double>;
 
 #pragma warning disable CA1819
 
@@ -90,50 +86,48 @@ namespace MAS
             /// Band 4, with a pass-band of 5.0-Hz to Nyquist, may be associated with torsional dynamics of a generator, for example,
             /// or may be related to voltage or other relatively high-speed controllers.
             /// </remarks>
-            Band4Energy,
-
-            /// <summary>
-            /// Band alarm summary value.
-            /// </summary>
-            /// <remarks>
-            /// This measurement value provides a bit-wise representation that represents if any bands are currently in alarm,
-            /// useful for driving displays.
-            /// <list type="table">
-            /// <listheader><term>Bit Index</term> <term>Alarm Target (when set)</term></listheader>
-            /// <item><term>Bit 0</term> <term>Band 1 alarm triggered.</term></item>
-            /// <item><term>Bit 1</term> <term>Band 2 alarm triggered.</term></item>
-            /// <item><term>Bit 2</term> <term>Band 3 alarm triggered.</term></item>
-            /// <item><term>Bit 3</term> <term>Band 4 alarm triggered.</term></item>
-            /// </list>
-            /// </remarks>
-            BandAlarms
+            Band4Energy
         }
 
-        // Constants
+        // Fields
+        private readonly Action<MessageLevel, string> m_statusMessage;
+        private readonly Action<MessageLevel, Exception> m_processException;
+        private readonly Action<ICollection<IMeasurement>> m_publishMeasurements;
+        private bool m_timeQualityIsGood;
+
+        #endregion
+
+        #region [ Constructors ]
 
         /// <summary>
-        /// Defines the default value for the <see cref="Band1TriggerThreshold"/>.
+        /// Creates a new <see cref="OscillationDetector"/>.
         /// </summary>
-        public const double DefaultBand1TriggerThreshold = 10.0D;
-        
-        /// <summary>
-        /// Defines the default value for the <see cref="Band2TriggerThreshold"/>.
-        /// </summary>
-        public const double DefaultBand2TriggerThreshold = 10.0D;
-        
-        /// <summary>
-        /// Defines the default value for the <see cref="Band3TriggerThreshold"/>.
-        /// </summary>
-        public const double DefaultBand3TriggerThreshold = 10.0D;
-
-        /// <summary>
-        /// Defines the default value for the <see cref="Band4TriggerThreshold"/>.
-        /// </summary>
-        public const double DefaultBand4TriggerThreshold = 10.0D;
+        /// <param name="statusMessage">Status message callback.</param>
+        /// <param name="processException">Process exception callback.</param>
+        /// <param name="publishMeasurements">Publish measurements callback.</param>
+        public OscillationDetector(
+            Action<MessageLevel, string> statusMessage,
+            Action<MessageLevel, Exception> processException,
+            Action<ICollection<IMeasurement>> publishMeasurements)
+        {
+            m_statusMessage = statusMessage;
+            m_processException = processException;
+            m_publishMeasurements = publishMeasurements;
+        }
 
         #endregion
 
         #region [ Properties ]
+
+        /// <summary>
+        /// Gets or sets detector API.
+        /// </summary>
+        public PseudoDetectorAPI DetectorAPI { get; set; } // TODO: Change "dynamic" to proper API type
+        
+        /// <summary>
+        /// Gets or sets input types.
+        /// </summary>
+        public SignalType[] InputTypes { get; set; }
 
         /// <summary>
         /// Gets or sets output measurements that algorithm will produce.
@@ -146,24 +140,9 @@ namespace MAS
         public int FramesPerSecond { get; set; }
 
         /// <summary>
-        /// Gets or sets the triggering threshold for band 1 oscillation energy.
+        /// Gets or sets oscillation detector configuration.
         /// </summary>
-        public double Band1TriggerThreshold { get; set; } = DefaultBand1TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 2 oscillation energy.
-        /// </summary>
-        public double Band2TriggerThreshold { get; set; } = DefaultBand2TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 3 oscillation energy.
-        /// </summary>
-        public double Band3TriggerThreshold { get; set; } = DefaultBand3TriggerThreshold;
-
-        /// <summary>
-        /// Gets or sets the triggering threshold for band 4 oscillation energy.
-        /// </summary>
-        public double Band4TriggerThreshold { get; set; } = DefaultBand4TriggerThreshold;
+        public PseudoConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Returns the detailed status of the <see cref="OscillationDetector"/>.
@@ -174,13 +153,7 @@ namespace MAS
             {
                 StringBuilder status = new StringBuilder();
 
-                status.AppendFormat("  Band 1 Trigger Threshold: {0:N3}", Band1TriggerThreshold);
-                status.AppendLine();
-                status.AppendFormat("  Band 2 Trigger Threshold: {0:N3}", Band2TriggerThreshold);
-                status.AppendLine();
-                status.AppendFormat("  Band 3 Trigger Threshold: {0:N3}", Band3TriggerThreshold);
-                status.AppendLine();
-                status.AppendFormat("  Band 4 Trigger Threshold: {0:N3}", Band4TriggerThreshold);
+                status.AppendFormat("         Frames Per Second: {0:N0}", FramesPerSecond);
                 status.AppendLine();
 
                 return status.ToString();
@@ -192,117 +165,115 @@ namespace MAS
         #region [ Methods ]
 
         /// <summary>
+        /// Initializes <see cref="OscillationDetector"/>.
+        /// </summary>
+        public void Initialize() => DetectorAPI.ReportCallback = PublishResults;
+
+        /// <summary>
         /// Processes 1-second data window consisting of measurements.
         /// </summary>
         /// <param name="timestamp">Top of second window timestamp.</param>
-        /// <param name="dataWindow">1-second data window for single value.</param>
+        /// <param name="dataWindow">1-second data window for input values.</param>
         /// <returns>New result measurements ready for publication.</returns>
-        public Measurement[] ProcessDataWindow(Ticks timestamp, IMeasurement[] dataWindow)
+        public void ProcessDataWindow(Ticks timestamp, IMeasurement[,] dataWindow)
         {
-            Debug.Assert(dataWindow.Length == FramesPerSecond, $"Expected {FramesPerSecond} data window inputs, received {dataWindow.Length}.");
+            Debug.Assert(dataWindow.GetLength(1) == FramesPerSecond, $"Expected {FramesPerSecond} data window inputs, received {dataWindow.Length}.");
+
+            int inputCount = InputTypes.Length;
 
             // Break measurement data window into parallel value, time and quality vectors
-            double[] values = dataWindow.Select(measurement => measurement.AdjustedValue).ToArray();
-            DateTime[] times = dataWindow.Select(measurement => (DateTime)measurement.Timestamp).ToArray();
-            bool[] valueQualities = dataWindow.Select(measurement => measurement.ValueQualityIsGood()).ToArray();
-            bool[] timeQualities = dataWindow.Select(measurement => measurement.TimestampQualityIsGood()).ToArray();
+            double[,] values = new double[inputCount, FramesPerSecond];
+            bool[,] valueQualities = new bool[inputCount, FramesPerSecond];
+            bool[,] timeQualities = new bool[inputCount, FramesPerSecond];
 
-            // Process vector based data window
-            (double, bool, bool)[] results = ProcessDataWindow(values, times, valueQualities, timeQualities);
-            
-            Debug.Assert(results.Length == Outputs.Length, $"Expected {Outputs.Length} data window processing results, received {results.Length}.");
-            
-            // Turn results into output measurements
-            Measurement[] measurements = new Measurement[Outputs.Length];
-
-            for (int i = 0; i < Outputs.Length; i++)
+            for (int i = 0; i < inputCount; i++)
             {
-                (double value, bool valueQualityIsGood, bool timeQualityIsGood) = results[i];
-                measurements[i] = Measurement.Clone(OutputMeasurements[i], value, timestamp);
-                measurements[i].StateFlags = Common.DerivedQualityFlags(valueQualityIsGood, timeQualityIsGood);
-            }
-
-            return measurements;
-        }
-
-        // Process 1-second data window consisting of parallel value, time and quality vectors
-        private (double, bool, bool)[] ProcessDataWindow(double[] values, DateTime[] times, bool[] valueQualities, bool[] timeQualities)
-        {
-            // Create results array which consists of a tuple of result value, value quality flag and time quality flag
-            (double value, bool, bool)[] results = new (double, bool, bool)[Outputs.Length];
-
-            bool areGood(bool state) => state;
-            bool areNotNaN(double value) => !double.IsNaN(value);
-
-            // Derive result quality state based on all incoming values and states
-            bool valueQualityIsGood = valueQualities.All(areGood) && values.All(areNotNaN);
-            bool timeQualityIsGood = timeQualities.All(areGood);
-
-            InterpolateMissingValues(values);
-            
-            foreach (Output output in Outputs)
-            {
-                double value;
-                
-                switch (output)
+                switch(InputTypes[i])
                 {
-                    case Output.Band1Energy:
-                        value = CalculateOscillationEnergy(Band1Range, FramesPerSecond, values, times);
+                    case SignalType.VPHM:
+                        for (int j = 0; j < FramesPerSecond; j++)
+                        {
+                            values[i, j] = dataWindow[i, j].AdjustedValue;
+                            valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                        }
                         break;
-                    case Output.Band2Energy:
-                        value = CalculateOscillationEnergy(Band2Range, FramesPerSecond, values, times);
+                    case SignalType.VPHA:
+                        for (int j = 0; j < FramesPerSecond; j++)
+                        {
+                            values[i, j] = dataWindow[i, j].AdjustedValue;
+                            valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                        }
                         break;
-                    case Output.Band3Energy:
-                        value = CalculateOscillationEnergy(Band3Range, FramesPerSecond, values, times);
+                    case SignalType.IPHM:
+                        for (int j = 0; j < FramesPerSecond; j++)
+                        {
+                            values[i, j] = dataWindow[i, j].AdjustedValue;
+                            valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                        }
                         break;
-                    case Output.Band4Energy:
-                        value = CalculateOscillationEnergy(Band4Range, FramesPerSecond, values, times);
-                        break;
-                    case Output.BandAlarms:
-                        value = CalculateBandAlarms(results.Select(result => result.value).ToArray());
+                    case SignalType.IPHA:
+                        for (int j = 0; j < FramesPerSecond; j++)
+                        {
+                            values[i, j] = dataWindow[i, j].AdjustedValue;
+                            valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                        }
                         break;
                     default:
-                        value = double.NaN;
+                        for (int j = 0; j < FramesPerSecond; j++)
+                        {
+                            values[i, j] = dataWindow[i, j].AdjustedValue;
+                            valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                        }
                         break;
                 }
-
-                results[(int)output] = (value, valueQualityIsGood, timeQualityIsGood);
             }
 
-            return results;
+            // Derive overall time result quality state based on all incoming states
+            bool[] allQualities = new bool[inputCount * FramesPerSecond];
+
+            for (int i = 0; i < inputCount; i++)
+                for (int j = 0; j < FramesPerSecond; j++)
+                    allQualities[i * FramesPerSecond + j] = timeQualities[i, j];
+
+            m_timeQualityIsGood = allQualities.All(state => state);
+
+            // Process vector based data window
+            DetectorAPI.Load(timestamp, values, valueQualities);
         }
 
-        private double CalculateBandAlarms(double[] results)
+        private void PublishResults(PseudoResult result)
         {
-            uint bandAlarmBits = 0;
+            // Turn results into output measurements
+            Measurement[] measurements = new Measurement[Outputs.Length];
 
             foreach (Output output in Outputs)
             {
                 int index = (int)output;
-                double result = results[index];
-                bool alarmTriggered = false;
 
                 switch (output)
                 {
                     case Output.Band1Energy:
-                        alarmTriggered = result > Band1TriggerThreshold;
+                        measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band1Energy, result.Timestamp);
+                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band1EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band2Energy:
-                        alarmTriggered = result > Band2TriggerThreshold;
+                        measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band2Energy, result.Timestamp);
+                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band2EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band3Energy:
-                        alarmTriggered = result > Band3TriggerThreshold;
+                        measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band3Energy, result.Timestamp);
+                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band3EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band4Energy:
-                        alarmTriggered = result > Band4TriggerThreshold;
+                        measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band4Energy, result.Timestamp);
+                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band4EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-
-                if (alarmTriggered)
-                    bandAlarmBits |= (uint)BitExtensions.BitVal(index);
             }
 
-            return bandAlarmBits;
+            m_publishMeasurements(measurements);
         }
 
         #endregion
@@ -316,67 +287,65 @@ namespace MAS
         /// </summary>
         public static readonly Output[] Outputs = Enum.GetValues(typeof(Output)) as Output[];
 
-        /// <summary>
-        /// Band 1 pass-band limits.
-        /// </summary>
-        public static readonly Range Band1Range = new Range(0.01D, 0.15D);
-
-        /// <summary>
-        /// Band 2 pass-band limits.
-        /// </summary>
-        public static readonly Range Band2Range = new Range(0.15D, 1.0D);
-
-        /// <summary>
-        /// Band 3 pass-band limits.
-        /// </summary>
-        public static readonly Range Band3Range = new Range(1.0D, 5.0D);
-
-        /// <summary>
-        /// Band 4 pass-band limits.
-        /// </summary>
-        public static readonly Range Band4Range = new Range(5.0D, 120.0D);
-
-        // Static Methods
-
-        private static void InterpolateMissingValues(double[] values)
-        {
-            // Create an x/y data set of all non-NAN values
-            List<double> yValues = new List<double>();
-            List<double> xValues = new List<double>();
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                if (double.IsNaN(values[i]))
-                    continue;
-
-                xValues.Add(i);
-                yValues.Add(values[i]);
-            }
-
-            if (xValues.Count < 5)
-                return;
-
-            CubicSpline spline = CubicSpline.InterpolateAkimaSorted(xValues.ToArray(), yValues.ToArray());
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                if (double.IsNaN(values[i]))
-                    values[i] = spline.Interpolate(i);
-            }
-        }
-
-        // TODO: This function simply produces a value, math is not intended to be accurate
-        private static double CalculateOscillationEnergy(Range range, int framesPerSecond, double[] values, DateTime[] times)
-        {
-            OnlineFilter bandpass = OnlineFilter.CreateBandpass(ImpulseResponse.Finite, framesPerSecond, range.Start, range.End);
-            
-            Complex[] data = bandpass.ProcessSamples(values).Select(value => new Complex(value, 0.0D)).ToArray();
-
-            Fourier.Inverse(data, FourierOptions.AsymmetricScaling);
-
-            return data.Select(value => value.Magnitude).Take(data.Length / 2).Average();
-        }
-
         #endregion
+    }
+
+    // TODO: Delete these psuedo classes
+    #pragma warning disable 1591
+
+    public class PseudoConfiguration
+    {
+        public int FramesPerSecond { get; set; }
+        public bool IsLineToNeutral { get; set; }
+    }
+
+    public class PseudoResult
+    {
+        public DateTime Timestamp { get; set; }
+        public double Band1Energy { get; set; }
+        public bool Band1EnergyQualityIsGood { get; set; }
+        public double Band2Energy { get; set; }
+        public bool Band2EnergyQualityIsGood { get; set; }
+        public double Band3Energy { get; set; }
+        public bool Band3EnergyQualityIsGood { get; set; }
+        public double Band4Energy { get; set; }
+        public bool Band4EnergyQualityIsGood { get; set; }
+    }
+
+    public class PseudoDetectorAPI
+    {
+        public PseudoConfiguration Configuration { get; set; }
+
+        public void Load(DateTime timestamp, double[,] values, bool[,] qualities)
+        {
+            PseudoResult result = new PseudoResult { Timestamp = timestamp };
+
+            for (int i = 0; i < values.GetLength(0); i++)
+            {
+                switch ((OscillationDetector.Output)i)
+                {
+                    case OscillationDetector.Output.Band1Energy:
+                        result.Band1Energy = values.GetColumn(i).Average();
+                        result.Band1EnergyQualityIsGood = qualities.GetColumn(i).All(state => state);
+                        break;
+                    case OscillationDetector.Output.Band2Energy:
+                        result.Band2Energy = values.GetColumn(i).Average();
+                        result.Band2EnergyQualityIsGood = qualities.GetColumn(i).All(state => state);
+                        break;
+                    case OscillationDetector.Output.Band3Energy:
+                        result.Band3Energy = values.GetColumn(i).Average();
+                        result.Band3EnergyQualityIsGood = qualities.GetColumn(i).All(state => state);
+                        break;
+                    case OscillationDetector.Output.Band4Energy:
+                        result.Band4Energy = values.GetColumn(i).Average();
+                        result.Band4EnergyQualityIsGood = qualities.GetColumn(i).All(state => state);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        public Action<PseudoResult> ReportCallback { get; set; }
     }
 }

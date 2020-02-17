@@ -67,7 +67,7 @@ namespace MAS
         public const double DefaultLeadTime = 5.0D;
 
         // Fields
-        ShortSynchronizedOperation m_manageChildAdapters;
+        private ShortSynchronizedOperation m_manageChildAdapters;
         private bool m_disposed;
 
         #endregion
