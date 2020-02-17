@@ -62,6 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
+    <Compile Include="IIndependentAdapterManager.cs" />
+    <Compile Include="IndependentOutputAdapterManagerBase.cs" />
+    <Compile Include="IndependentInputAdapterManagerBase.cs" />
+    <Compile Include="IndependentAdapterManagerExtensions.cs" />
+    <Compile Include="IndependentAdapterManagerHandlers.cs" />
+    <Compile Include="Model\Device.cs" />
     <Compile Include="Model\Historian.cs" />
     <Compile Include="IndependentActionAdapterManagerBase.cs" />
     <Compile Include="Common.cs" />

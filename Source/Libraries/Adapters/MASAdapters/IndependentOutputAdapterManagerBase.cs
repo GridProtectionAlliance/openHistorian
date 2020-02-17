@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IndependentActionAdapterManagerBase.cs - Gbtc
+//  IndependentOutputAdapterManagerBase.cs - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,15 +26,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
-using GSF;
 using GSF.Data;
 using GSF.Diagnostics;
-using GSF.Reflection;
-using GSF.Threading;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units.EE;
@@ -43,31 +38,13 @@ using static MAS.IndependentAdapterManagerExtensions;
 namespace MAS
 {
     /// <summary>
-    /// Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters.
+    /// Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of output adapters.
     /// </summary>
-    public abstract class IndependentActionAdapterManagerBase<TAdapter> : ActionAdapterCollection, IIndependentAdapterManager where TAdapter : IAdapter, new()
+    public abstract class IndependentOutputAdapterManagerBase : OutputAdapterCollection, IIndependentAdapterManager
     {
         #region [ Members ]
 
-        // Constants
-        
-        /// <summary>
-        /// Defines the default value for the <see cref="FramesPerSecond"/>.
-        /// </summary>
-        public const int DefaultFramesPerSecond = 30;
-
-        /// <summary>
-        /// Defines the default value for the <see cref="LagTime"/>.
-        /// </summary>
-        public const double DefaultLagTime = 5.0D;
-
-        /// <summary>
-        /// Defines the default value for the <see cref="LeadTime"/>.
-        /// </summary>
-        public const double DefaultLeadTime = 5.0D;
-
         // Fields
-        ShortSynchronizedOperation m_manageChildAdapters;
         private bool m_disposed;
 
         #endregion
@@ -75,16 +52,16 @@ namespace MAS
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// Creates a new <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
-        protected IndependentActionAdapterManagerBase() => this.HandleConstruct();
+        protected IndependentOutputAdapterManagerBase() => this.HandleConstruct();
 
         #endregion
 
         #region [ Properties ]
 
         /// <summary>
-        /// Gets or sets primary keys of input measurements for the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// Gets or sets primary keys of input measurements for the <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines primary keys of input measurements the adapter expects; can be one of a filter expression, measurement key, point tag or Guid.")]
@@ -95,56 +72,6 @@ namespace MAS
             get => base.InputMeasurementKeys;
             set => base.InputMeasurementKeys = value;
         }
-
-        /// <summary>
-        /// Gets or sets output measurements that the <see cref="AdapterBase"/> will produce, if any.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines primary keys of output measurements the adapter expects; can be one of a filter expression, measurement key, point tag or Guid.")]
-        [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.MeasurementEditor")]
-        [DefaultValue(null)]
-        public override IMeasurement[] OutputMeasurements
-        {
-            get => base.OutputMeasurements;
-            set => base.OutputMeasurements = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the number of frames per second applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// Valid frame rates for a <see cref="ConcentratorBase"/> are greater than 0 frames per second.
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the number of frames per second applied to each adapter.")]
-        [DefaultValue(DefaultFramesPerSecond)]
-        public int FramesPerSecond { get; set; } = DefaultFramesPerSecond;
-
-        /// <summary>
-        /// Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// <para>Defines the time sensitivity to past measurement timestamps.</para>
-        /// <para>The number of seconds allowed before assuming a measurement timestamp is too old.</para>
-        /// <para>This becomes the amount of delay introduced by the concentrator to allow time for data to flow into the system.</para>
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
-        [DefaultValue(DefaultLagTime)]
-        public double LagTime { get; set; } = DefaultLagTime;
-
-        /// <summary>
-        /// Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// <para>Defines the time sensitivity to future measurement timestamps.</para>
-        /// <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
-        /// <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
-        [DefaultValue(DefaultLeadTime)]
-        public double LeadTime { get; set; } = DefaultLeadTime;
 
         /// <summary>
         /// Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
@@ -212,7 +139,7 @@ namespace MAS
 
         /// <summary>
         /// Gets or sets <see cref="DataSet"/> based data source used to load each <see cref="IAdapter"/>. Updates
-        /// to this property will cascade to all adapters in this <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// to this property will cascade to all adapters in this <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         public override DataSet DataSource
         {
@@ -230,15 +157,15 @@ namespace MAS
         /// <summary>
         /// Gets input measurement names.
         /// </summary>
-        public virtual ReadOnlyCollection<string> InputNames => Array.AsReadOnly(InputMeasurementKeys.Select(key => this.LookupPointTag(key)).ToArray());
+        public abstract ReadOnlyCollection<string> InputNames { get; }
 
         /// <summary>
         /// Gets output measurement names.
         /// </summary>
-        public abstract ReadOnlyCollection<string> OutputNames { get; }
+        public ReadOnlyCollection<string> OutputNames { get; } = null;
 
         /// <summary>
-        /// Gets or sets flag that determines if the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/> adapter
+        /// Gets or sets flag that determines if the <see cref="IndependentOutputAdapterManagerBase"/> adapter
         /// <see cref="AdapterCollectionBase{T}.ConnectionString"/> should be automatically parsed every time
         /// the <see cref="DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
         /// to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
@@ -246,7 +173,7 @@ namespace MAS
         protected bool AutoReparseConnectionString { get; set; } = true;
 
         /// <summary>
-        /// Returns the detailed status of the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// Returns the detailed status of the <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         public override string Status
         {
@@ -254,10 +181,6 @@ namespace MAS
             {
                 StringBuilder status = new StringBuilder();
 
-                status.AppendFormat("         Frames Per Second: {0:N0}", FramesPerSecond);
-                status.AppendLine();
-                status.AppendFormat("      Lag Time / Lead Time: {0:N3} / {1:N3}", LagTime, LeadTime);
-                status.AppendLine();
                 status.Append(this.HandleStatus());
                 status.Append(base.Status);
 
@@ -270,7 +193,7 @@ namespace MAS
         #region [ Methods ]
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="IndependentOutputAdapterManagerBase"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
@@ -293,43 +216,19 @@ namespace MAS
         }
 
         /// <summary>
-        /// Initializes the <see cref="IndependentActionAdapterManagerBase{TAdapter}" />.
+        /// Initializes the <see cref="IndependentOutputAdapterManagerBase" />.
         /// </summary>
-        public override void Initialize()
-        {
-            this.HandleInitialize();
-
-            if (!(InputNames?.Count > 0) || !(OutputNames?.Count > 0))
-                return;
-
-            // Define a synchronized operation to manage bulk collection of child adapters
-            m_manageChildAdapters = new ShortSynchronizedOperation(() => ManageChildAdapters(this), ex => OnProcessException(MessageLevel.Warning, ex));
-
-            // Kick off initial child adapter management operations
-            m_manageChildAdapters.RunOnceAsync();
-        }
+        public override void Initialize() => this.HandleInitialize();
 
         /// <summary>
         /// Parses connection string. Derived classes should override for custom connection string parsing.
         /// </summary>
-        public virtual void ParseConnectionString()
-        {
-            this.HandleParseConnectionString();
-
-            if (FramesPerSecond < 1)
-                FramesPerSecond = DefaultFramesPerSecond;
-
-            if (LagTime < 0.0D)
-                LagTime = DefaultLagTime;
-
-            if (LeadTime < 0.0D)
-                LeadTime = DefaultLeadTime;
-        }
+        public virtual void ParseConnectionString() => this.HandleParseConnectionString();
 
         /// <summary>
         /// Notifies derived classes that configuration has been reloaded
         /// </summary>
-        public virtual void ConfigurationReloaded() => m_manageChildAdapters?.RunOnceAsync();
+        public virtual void ConfigurationReloaded() { }
 
         /// <summary>
         /// Recalculates routing tables.
@@ -337,16 +236,16 @@ namespace MAS
         public void RecalculateRoutingTables() => this.HandleRecalculateRoutingTables();
 
         /// <summary>
-        /// Queues a collection of measurements for processing to each <see cref="IActionAdapter"/> connected to this <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// Queues a collection of measurements for processing to each <see cref="IOutputAdapter"/> connected to this <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         /// <param name="measurements">Measurements to queue for processing.</param>
         public override void QueueMeasurementsForProcessing(IEnumerable<IMeasurement> measurements) => this.HandleQueueMeasurementsForProcessing(measurements);
 
         /// <summary>
-        /// Gets a short one-line status of this <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
+        /// Gets a short one-line status of this <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         /// <param name="maxLength">Maximum number of available characters for display.</param>
-        /// <returns>A short one-line summary of the current status of the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.</returns>
+        /// <returns>A short one-line summary of the current status of the <see cref="IndependentOutputAdapterManagerBase"/>.</returns>
         public override string GetShortStatus(int maxLength) => this.HandleGetShortStatus(maxLength);
 
         /// <summary>
@@ -354,81 +253,6 @@ namespace MAS
         /// </summary>
         /// <returns>New ADO data connection based on configured settings.</returns>
         public AdoDataConnection GetConfiguredConnection() => this.HandleGetConfiguredConnection();
-
-        private static void ManageChildAdapters(IIndependentAdapterManager instance)
-        {
-            HashSet<string> activeAdapterNames = new HashSet<string>(StringComparer.Ordinal);
-            List<IAdapter> adapters = new List<IAdapter>();
-            HashSet<Guid> signalIDs = new HashSet<Guid>();
-
-            // Create settings dictionary for connection string to use with primary child adapters
-            Dictionary<string, string> settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (PropertyInfo property in instance.GetType().GetProperties())
-            {
-                if (property.AttributeExists<PropertyInfo, ConnectionStringParameterAttribute>())
-                    settings[property.Name] = $"{property.GetValue(instance)}";
-            }
-
-            // Create a child adapter for every input name value provided to the parent bulk collection-based adapter
-            foreach (string inputName in instance.InputNames)
-            {
-                string adapterName = $"{instance.Name}!{inputName}";
-
-                // Track active adapter names so that adapters that no longer have sources can be removed
-                activeAdapterNames.Add(adapterName);
-
-                // See if child adapter already exists
-                if (instance.FindAdapter(adapterName) != null)
-                    continue;
-
-                // Setup new child adapter
-                string[] outputs = new string[instance.OutputNames.Count];
-
-                // Setup output measurements for child adapter
-                for (int i = 0; i < instance.OutputNames.Count; i++)
-                {
-                    string outputID = $"{adapterName}-{instance.OutputNames[i].ToUpper()}";
-                    string outputPointTag = string.Format(instance.PointTagTemplate, outputID);
-                    string signalReference = string.Format(instance.SignalReferenceTemplate, outputID);
-
-                    // Get output measurement record, creating a new one if needed
-                    Model.Measurement measurement = instance.GetMeasurementRecord(outputPointTag, signalReference, instance.SignalType, instance.TargetHistorianAcronym);
-
-                    // Track output signal IDs
-                    signalIDs.Add(measurement.SignalID);
-                    outputs[i] = measurement.SignalID.ToString();
-                }
-
-                // Add inputs and outputs to connection string settings for child adapter
-                settings[nameof(instance.InputMeasurementKeys)] = inputName;
-                settings[nameof(instance.OutputMeasurements)] = string.Join(";", outputs);
-
-                adapters.Add(new TAdapter
-                {
-                    Name = adapterName,
-                    ID = instance.AdapterIDCounter++,
-                    ConnectionString = settings.JoinKeyValuePairs(),
-                    DataSource = instance.DataSource
-                });
-            }
-
-            // Check for adapters that are no longer referenced and need to be removed
-            IEnumerable<IAdapter> adaptersToRemove = instance.Where(adapter => !activeAdapterNames.Contains(adapter.Name));
-
-            foreach (IAdapter adapter in adaptersToRemove)
-                instance.Remove(adapter);
-
-            // Host system was notified about configuration changes, i.e., new or updated output measurements.
-            // Before initializing child adapters, we wait for this process to complete.
-            instance.WaitForSignalsToLoad(signalIDs.ToArray());
-
-            // Add new adapters to parent bulk adapter collection, this will auto-initialize each child adapter
-            foreach (IAdapter adapter in adapters)
-                instance.Add(adapter);
-
-            instance.RecalculateRoutingTables();
-        }
 
         #endregion
 

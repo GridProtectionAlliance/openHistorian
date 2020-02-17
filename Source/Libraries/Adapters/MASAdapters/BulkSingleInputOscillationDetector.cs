@@ -22,18 +22,12 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using GSF;
-using GSF.Diagnostics;
-using GSF.Threading;
-using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
-using GSF.Units.EE;
 using static MAS.OscillationDetector;
-using MeasurementRecord = MAS.Model.Measurement;
 
 namespace MAS
 {
@@ -42,84 +36,9 @@ namespace MAS
     /// </summary>
     [Description("MAS Oscillation Detector [Bulk Single Input]: Manages bulk detection of oscillations based on individual inputs.")]
     [EditorBrowsable(EditorBrowsableState.Always)]
-    public class BulkSingleInputOscillationDetector : IndependentActionAdapterManagerBase
+    public class BulkSingleInputOscillationDetector : IndependentActionAdapterManagerBase<SingleInputOscillationDetector>
     {
-        #region [ Members ]
-
-        // Constants
-
-        /// <summary>
-        /// Defines the default value for the <see cref="FramesPerSecond"/>.
-        /// </summary>
-        public const int DefaultFramesPerSecond = 30;
-
-        /// <summary>
-        /// Defines the default value for the <see cref="LagTime"/>.
-        /// </summary>
-        public const double DefaultLagTime = 5.0D;
-
-        /// <summary>
-        /// Defines the default value for the <see cref="LeadTime"/>.
-        /// </summary>
-        public const double DefaultLeadTime = 5.0D;
-
-        // Fields
-        private ShortSynchronizedOperation m_manageChildAdapters;
-        private uint m_adapterID;
-
-        #endregion
-
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets or sets primary keys of input measurements for the <see cref="BulkSingleInputOscillationDetector"/>.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines primary keys of input measurements the adapter expects; can be one of a filter expression, measurement key, point tag or Guid.")]
-        [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.MeasurementEditor")]
-        [DefaultValue(null)]
-        public override MeasurementKey[] InputMeasurementKeys
-        { 
-            get => base.InputMeasurementKeys;
-            set => base.InputMeasurementKeys = value;
-        }
-        
-        /// <summary>
-        /// Gets or sets the number of frames per second applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// Valid frame rates for a <see cref="ConcentratorBase"/> are greater than 0 frames per second.
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the number of frames per second applied to each adapter.")]
-        [DefaultValue(DefaultFramesPerSecond)]
-        public int FramesPerSecond { get; set; } = DefaultFramesPerSecond;
-
-        /// <summary>
-        /// Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// <para>Defines the time sensitivity to past measurement timestamps.</para>
-        /// <para>The number of seconds allowed before assuming a measurement timestamp is too old.</para>
-        /// <para>This becomes the amount of delay introduced by the concentrator to allow time for data to flow into the system.</para>
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
-        [DefaultValue(DefaultLagTime)]
-        public double LagTime { get; set; } = DefaultLagTime;
-
-        /// <summary>
-        /// Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
-        /// </summary>
-        /// <remarks>
-        /// <para>Defines the time sensitivity to future measurement timestamps.</para>
-        /// <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
-        /// <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
-        /// </remarks>
-        [ConnectionStringParameter]
-        [Description("Defines the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
-        [DefaultValue(DefaultLeadTime)]
-        public double LeadTime { get; set; } = DefaultLeadTime;
 
         /// <summary>
         /// Gets or sets the triggering threshold for band 1 oscillation energy applied to each adapter.
@@ -154,36 +73,9 @@ namespace MAS
         public double Band4TriggerThreshold { get; set; } = DefaultBand4TriggerThreshold;
 
         /// <summary>
-        /// Gets or sets template for output measurement point tag names.
+        /// Gets output measurement names.
         /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\".")]
-        [DefaultValue(DefaultPointTagTemplate)]
-        public string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
-
-        /// <summary>
-        /// Gets or sets template for local signal reference measurement name for source historian point.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\".")]
-        [DefaultValue(DefaultSignalReferenceTemplate)]
-        public string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
-
-        /// <summary>
-        /// Gets or sets signal type for output measurements.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the signal type for output measurements.")]
-        [DefaultValue(typeof(SignalType), DefaultSignalType)]
-        public SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
-
-        /// <summary>
-        /// Gets or sets the target historian acronym for output measurements.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the target historian acronym for output measurements.")]
-        [DefaultValue(DefaultTargetHistorianAcronym)]
-        public string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+        public override ReadOnlyCollection<string> OutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
 
         /// <summary>
         /// Returns the detailed status of the <see cref="BulkSingleInputOscillationDetector"/>.
@@ -192,14 +84,8 @@ namespace MAS
         {
             get
             {
-                const int MaxMeasurementsToShow = 10;
-                
                 StringBuilder status = new StringBuilder();
 
-                status.AppendFormat("         Frames Per Second: {0:N0}", FramesPerSecond);
-                status.AppendLine();
-                status.AppendFormat("      Lag Time / Lead Time: {0:N3} / {1:N3}", LagTime, LeadTime);
-                status.AppendLine();
                 status.AppendFormat("  Band 1 Trigger Threshold: {0:N3}", Band1TriggerThreshold);
                 status.AppendLine();
                 status.AppendFormat("  Band 2 Trigger Threshold: {0:N3}", Band2TriggerThreshold);
@@ -208,153 +94,10 @@ namespace MAS
                 status.AppendLine();
                 status.AppendFormat("  Band 4 Trigger Threshold: {0:N3}", Band4TriggerThreshold);
                 status.AppendLine();
-                status.AppendFormat("        Point Tag Template: {0}", PointTagTemplate);
-                status.AppendLine();
-                status.AppendFormat(" Signal Reference Template: {0}", SignalReferenceTemplate);
-                status.AppendLine();
-                status.AppendFormat("        Output Signal Type: {0}", SignalType);
-                status.AppendLine();
-                status.AppendFormat("  Target Historian Acronym: {0}", TargetHistorianAcronym);
-                status.AppendLine();
-                
-                if (InputMeasurementKeys != null && InputMeasurementKeys.Length > InputMeasurementKeys.Count(k => k == MeasurementKey.Undefined))
-                {
-                    status.AppendFormat("        Input measurements: {0:N0} defined measurements", InputMeasurementKeys.Length);
-                    status.AppendLine();
-                    status.AppendLine();
-
-                    for (int i = 0; i < Math.Min(InputMeasurementKeys.Length, MaxMeasurementsToShow); i++)
-                        status.AppendLine(InputMeasurementKeys[i].ToString().TruncateRight(25).CenterText(50));
-
-                    if (InputMeasurementKeys.Length > MaxMeasurementsToShow)
-                        status.AppendLine("...".CenterText(50));
-
-                    status.AppendLine();
-                }
-
                 status.Append(base.Status);
 
                 return status.ToString();
             }
-        }
-
-        #endregion
-
-        #region [ Methods ]
-
-        /// <summary>
-        /// Initializes the <see cref="BulkSingleInputOscillationDetector" />.
-        /// </summary>
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (FramesPerSecond < 1)
-                FramesPerSecond = DefaultFramesPerSecond;
-
-            if (LagTime < 0.0D)
-                LagTime = DefaultLagTime;
-
-            if (LeadTime < 0.0D)
-                LeadTime = DefaultLeadTime;
-
-            // Define a synchronized operation to manage bulk collection of child adapters
-            m_manageChildAdapters = new ShortSynchronizedOperation(ManageChildAdapters, ex => OnProcessException(MessageLevel.Warning, ex));
-
-            // Kick off initial child adapter management operations
-            m_manageChildAdapters.RunOnceAsync();
-        }
-
-        /// <summary>
-        /// Parses connection string.
-        /// </summary>
-        protected override void ParseConnectionString()
-        {
-            base.ParseConnectionString();
-
-            // Parse input measurement keys like class was a typical adapter
-            if (Settings.TryGetValue(nameof(InputMeasurementKeys), out string setting))
-                InputMeasurementKeys = AdapterBase.ParseInputMeasurementKeys(DataSource, true, setting);
-        }
-
-        /// <summary>
-        /// Base class calls this method when data source has changed. Data source updates indicate a change
-        /// in system configuration, so we update the child adapters, adding or removing as needed.
-        /// </summary>
-        protected override void DataSourceChanged() => m_manageChildAdapters?.RunOnceAsync();
-
-        private void ManageChildAdapters()
-        {
-            HashSet<string> activeAdapterNames = new HashSet<string>(StringComparer.Ordinal);
-
-            // Create settings dictionary for connection string to use with primary child adapters
-            Dictionary<string, string> settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                [nameof(FramesPerSecond)] = $"{FramesPerSecond}",
-                [nameof(LagTime)] = $"{LagTime}",
-                [nameof(LeadTime)] = $"{LeadTime}",
-                [nameof(Band1TriggerThreshold)] = $"{Band1TriggerThreshold}",
-                [nameof(Band2TriggerThreshold)] = $"{Band2TriggerThreshold}",
-                [nameof(Band3TriggerThreshold)] = $"{Band3TriggerThreshold}",
-                [nameof(Band4TriggerThreshold)] = $"{Band4TriggerThreshold}"
-            };
-
-            // Create a child adapter for every input value provided to the parent bulk collection-based adapter
-            foreach (MeasurementKey key in InputMeasurementKeys)
-            {
-                string inputPointTag = LookupPointTag(key);
-                string adapterName = $"{Name}!{inputPointTag}";
-
-                // Track active adapter names so that adapters that no longer have sources can be removed
-                activeAdapterNames.Add(adapterName);
-
-                // See if child adapter already exists
-                if (FindAdapter(adapterName) != null)
-                    continue;
-
-                // Setup new child adapter
-                string[] outputs = new string[Outputs.Length];
-
-                // Setup output measurements for child adapter
-                foreach (Output output in Outputs)
-                {
-                    string outputID = $"{adapterName}-{output.ToString().ToUpper()}";
-                    string outputPointTag = string.Format(PointTagTemplate, outputID);
-                    string signalReference = string.Format(SignalReferenceTemplate, outputID);
-
-                    // Get output measurement record, creating a new one if needed
-                    MeasurementRecord measurement = GetMeasurementRecord(outputPointTag, signalReference, SignalType, TargetHistorianAcronym);
-                    
-                    outputs[(int)output] = measurement.SignalID.ToString();
-                }
-
-                // Add inputs and outputs to connection string settings for child adapter
-                settings[nameof(InputMeasurementKeys)] = inputPointTag;
-                settings[nameof(OutputMeasurements)] = string.Join(";", outputs);
-
-                // Add new adapter to parent bulk adapter collection, this will auto-initialize child adapter
-                Add(new SingleInputOscillationDetector
-                {
-                    Name = adapterName,
-                    ID = m_adapterID++,
-                    ConnectionString = settings.JoinKeyValuePairs(),
-                    DataSource = DataSource
-                });
-            }
-
-            // Check for adapters that are no longer referenced and need to be removed
-            List<IActionAdapter> adaptersToRemove = new List<IActionAdapter>();
-
-            foreach (IActionAdapter adapter in this)
-            {
-                if (!activeAdapterNames.Contains(adapter.Name))
-                    adaptersToRemove.Add(adapter);
-            }
-
-            foreach (IActionAdapter adapter in adaptersToRemove)
-                Remove(adapter);
-
-            RecalculateRoutingTables();
         }
 
         #endregion
