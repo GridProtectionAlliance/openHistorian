@@ -112,6 +112,9 @@ namespace MAS
             if (instance.ConfigurationReloadWaitTimeout < 0)
                 instance.ConfigurationReloadWaitTimeout = 0;
 
+            if (instance.InputMeasurementUsedForName < 0 || instance.InputMeasurementUsedForName > instance.InputsPerAdapter - 1)
+                instance.InputMeasurementUsedForName = 0;
+
             instance.Initialized = true;
         }
 
@@ -168,7 +171,47 @@ namespace MAS
             status.AppendLine();
             status.AppendFormat("  Target Historian Acronym: {0}", instance.TargetHistorianAcronym);
             status.AppendLine();
+            status.AppendFormat("        Inputs per Adapter: {0:N0}", instance.InputsPerAdapter);
+            status.AppendLine();
+            status.AppendFormat("Input Measurement for Name: {0:N0}", instance.InputMeasurementUsedForName);
+            status.AppendLine();
+            status.AppendFormat("              Output Names: {0}", string.Join(", ", instance.OutputNames.AsEnumerable() ?? new[] { "" }));
+            status.AppendLine();
+            status.AppendFormat("Re-parse Connection String: {0}", instance.AutoReparseConnectionString);
+            status.AppendLine();
+            status.AppendFormat("      Original Data Member: {0}", instance.OriginalDataMember);
+            status.AppendLine();
+            status.AppendFormat("     Config Reload Timeout: {0:N0} ms", instance.ConfigurationReloadWaitAttempts);
+            status.AppendLine();
+            status.AppendFormat("    Config Reload Attempts: {0:N0}", instance.ConfigurationReloadWaitTimeout);
+            status.AppendLine();
+            status.AppendFormat("Database Connection String: {0}", instance.DatabaseConnnectionString ?? "Using <systemSettings>");
+            status.AppendLine();
+            
+            if (!string.IsNullOrWhiteSpace(instance.DatabaseConnnectionString))
+            {
+                status.AppendFormat("  Custom Database Provider: {0}", instance.DatabaseProviderString ?? "");
+                status.AppendLine();
+            }
 
+            if (instance.OutputMeasurements != null && instance.OutputMeasurements.Length > instance.OutputMeasurements.Count(m => m.Key == MeasurementKey.Undefined))
+            {
+                status.AppendFormat("       Output measurements: {0:N0} defined measurements", instance.OutputMeasurements.Length);
+                status.AppendLine();
+                status.AppendLine();
+
+                for (int i = 0; i < Math.Min(instance.OutputMeasurements.Length, MaxMeasurementsToShow); i++)
+                {
+                    status.Append(instance.OutputMeasurements[i].ToString().TruncateRight(40).PadLeft(40));
+                    status.Append(" ");
+                    status.AppendLine(instance.OutputMeasurements[i].ID.ToString());
+                }
+
+                if (instance.OutputMeasurements.Length > MaxMeasurementsToShow)
+                    status.AppendLine("...".PadLeft(26));
+
+                status.AppendLine();
+            }
             if (instance.InputMeasurementKeys != null && instance.InputMeasurementKeys.Length > instance.InputMeasurementKeys.Count(k => k == MeasurementKey.Undefined))
             {
                 status.AppendFormat("        Input measurements: {0:N0} defined measurements", instance.InputMeasurementKeys.Length);

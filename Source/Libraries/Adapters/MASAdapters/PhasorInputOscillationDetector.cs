@@ -28,7 +28,6 @@ using System.Text;
 using GSF;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
-using GSF.Units;
 using GSF.Units.EE;
 using PowerCalculations;
 using static MAS.OscillationDetector;
@@ -43,17 +42,32 @@ namespace MAS
     {
         #region [ Members ]
 
-        // Constants
-        private const double SqrtOf3 = 1.7320508075688772935274463415059D;
-        private const int VoltageMagnitude = 0;
-        private const int VoltageAngle = 1;
-        private const int CurrentMagnitude = 2;
-        private const int CurrentAngle = 3;
+        // Nested Types
+        
+        /// <summary>
+        /// Defines possible calcualtion types for the <see cref="PhasorInputOscillationDetector"/>.
+        /// </summary>
+        public enum CalculationType
+        {
+            /// <summary>
+            /// Megawatts.
+            /// </summary>
+            MW,
+            /// <summary>
+            /// Megavars.
+            /// </summary>
+            MVar
+        }
 
         /// <summary>
         /// Defines the default value for the <see cref="AdjustmentStrategy"/>.
         /// </summary>
         public const string DefaultAdjustmentStrategy = "LineToNeutral";
+
+        /// <summary>
+        /// Defaults the default value for the <see cref="CalculationType" />
+        /// </summary>
+        public const string DefaultCalculationType = "MW";
 
         // Fields
         private readonly OscillationDetector m_detector;
@@ -88,6 +102,14 @@ namespace MAS
         [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
         [DefaultValue(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy)]
         public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
+        
+        /// <summary>
+        /// Gets or sets the default calculation type.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines default calculation type.")]
+        [DefaultValue(typeof(CalculationType), DefaultCalculationType)]
+        public CalculationType ResultCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
 
         /// <summary>
         /// Returns the detailed status of the <see cref="PhasorInputOscillationDetector"/>.

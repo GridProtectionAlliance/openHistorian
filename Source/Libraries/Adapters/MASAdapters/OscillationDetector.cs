@@ -195,6 +195,7 @@ namespace MAS
                         {
                             values[i, j] = dataWindow[i, j].AdjustedValue;
                             valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                            timeQualities[i, j] = dataWindow[i, j].TimestampQualityIsGood();
                         }
                         break;
                     case SignalType.VPHA:
@@ -202,6 +203,7 @@ namespace MAS
                         {
                             values[i, j] = dataWindow[i, j].AdjustedValue;
                             valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                            timeQualities[i, j] = dataWindow[i, j].TimestampQualityIsGood();
                         }
                         break;
                     case SignalType.IPHM:
@@ -209,6 +211,7 @@ namespace MAS
                         {
                             values[i, j] = dataWindow[i, j].AdjustedValue;
                             valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                            timeQualities[i, j] = dataWindow[i, j].TimestampQualityIsGood();
                         }
                         break;
                     case SignalType.IPHA:
@@ -216,6 +219,7 @@ namespace MAS
                         {
                             values[i, j] = dataWindow[i, j].AdjustedValue;
                             valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                            timeQualities[i, j] = dataWindow[i, j].TimestampQualityIsGood();
                         }
                         break;
                     default:
@@ -223,6 +227,7 @@ namespace MAS
                         {
                             values[i, j] = dataWindow[i, j].AdjustedValue;
                             valueQualities[i, j] = dataWindow[i, j].ValueQualityIsGood();
+                            timeQualities[i, j] = dataWindow[i, j].TimestampQualityIsGood();
                         }
                         break;
                 }
@@ -344,6 +349,8 @@ namespace MAS
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            ReportCallback(result);
         }
 
         public Action<PseudoResult> ReportCallback { get; set; }

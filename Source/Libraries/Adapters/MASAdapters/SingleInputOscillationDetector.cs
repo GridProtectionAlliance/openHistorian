@@ -21,10 +21,13 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.ComponentModel;
 using System.Text;
 using GSF;
 using GSF.TimeSeries;
+using GSF.TimeSeries.Adapters;
+using PowerCalculations;
 using static MAS.OscillationDetector;
 
 namespace MAS
@@ -36,6 +39,13 @@ namespace MAS
     public class SingleInputOscillationDetector : OneSecondDataWindowAdapterBase
     {
         #region [ Members ]
+
+        // Constants
+
+        /// <summary>
+        /// Defines the default value for the <see cref="AdjustmentStrategy"/>.
+        /// </summary>
+        public const string DefaultAdjustmentStrategy = "LineToNeutral";
 
         // Fields
         private readonly OscillationDetector m_detector;
@@ -58,6 +68,14 @@ namespace MAS
         #endregion
 
         #region [ Properties ]
+		
+        /// <summary>
+        /// Gets or sets the default strategy used to adjust voltage values for based on the nature of the voltage measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
+        [DefaultValue(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy)]
+        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
 
         /// <summary>
         /// Returns the detailed status of the <see cref="SingleInputOscillationDetector"/>.

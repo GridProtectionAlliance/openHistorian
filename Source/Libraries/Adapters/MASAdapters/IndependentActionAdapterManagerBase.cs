@@ -228,9 +228,16 @@ namespace MAS
         }
 
         /// <summary>
-        /// Gets input measurement names.
+        /// Gets number of input measurement required by each adapter.
         /// </summary>
-        public virtual ReadOnlyCollection<string> InputNames => Array.AsReadOnly(InputMeasurementKeys.Select(key => this.LookupPointTag(key)).ToArray());
+        public abstract int InputsPerAdapter { get; }
+
+        /// <summary>
+        /// Gets or sets the index into the per adapter input measurements to use for target adapter name.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the index into the per adapter input measurements to use for target adapter name.")]
+        public int InputMeasurementUsedForName { get; set; }
 
         /// <summary>
         /// Gets output measurement names.
@@ -299,7 +306,7 @@ namespace MAS
         {
             this.HandleInitialize();
 
-            if (!(InputNames?.Count > 0) || !(OutputNames?.Count > 0))
+            if (InputsPerAdapter <= 0 || OutputNames?.Count <= 0)
                 return;
 
             // Define a synchronized operation to manage bulk collection of child adapters
@@ -370,9 +377,21 @@ namespace MAS
                     settings[property.Name] = $"{property.GetValue(instance)}";
             }
 
-            // Create a child adapter for every input name value provided to the parent bulk collection-based adapter
-            foreach (string inputName in instance.InputNames)
+            MeasurementKey[] measurementKeys = instance.InputMeasurementKeys;
+            int inputsPerAdapter = instance.InputsPerAdapter;
+            int nameIndex = instance.InputMeasurementUsedForName;
+
+            // Create child adapter for provided inputs to the parent bulk collection-based adapter
+            for (int i = 0; i < measurementKeys.Length; i += inputsPerAdapter)
             {
+                Guid[] inputs = new Guid[inputsPerAdapter];
+                Guid[] outputs = new Guid[instance.OutputNames.Count];
+
+                // Adapter inputs are presumed to be grouped together
+                for (int j = 0; j < inputsPerAdapter; j++)
+                    inputs[j] = measurementKeys[i * inputsPerAdapter + j].SignalID;
+
+                string inputName = instance.LookupPointTag(inputs[nameIndex]);
                 string adapterName = $"{instance.Name}!{inputName}";
 
                 // Track active adapter names so that adapters that no longer have sources can be removed
@@ -382,13 +401,10 @@ namespace MAS
                 if (instance.FindAdapter(adapterName) != null)
                     continue;
 
-                // Setup new child adapter
-                string[] outputs = new string[instance.OutputNames.Count];
-
-                // Setup output measurements for child adapter
-                for (int i = 0; i < instance.OutputNames.Count; i++)
+                // Setup output measurements for new child adapter
+                for (int j = 0; j < instance.OutputNames.Count; j++)
                 {
-                    string outputID = $"{adapterName}-{instance.OutputNames[i].ToUpper()}";
+                    string outputID = $"{adapterName}-{instance.OutputNames[j].ToUpper()}";
                     string outputPointTag = string.Format(instance.PointTagTemplate, outputID);
                     string signalReference = string.Format(instance.SignalReferenceTemplate, outputID);
 
@@ -397,11 +413,11 @@ namespace MAS
 
                     // Track output signal IDs
                     signalIDs.Add(measurement.SignalID);
-                    outputs[i] = measurement.SignalID.ToString();
+                    outputs[j] = measurement.SignalID;
                 }
 
                 // Add inputs and outputs to connection string settings for child adapter
-                settings[nameof(instance.InputMeasurementKeys)] = inputName;
+                settings[nameof(instance.InputMeasurementKeys)] = string.Join(";", inputs);
                 settings[nameof(instance.OutputMeasurements)] = string.Join(";", outputs);
 
                 adapters.Add(new TAdapter

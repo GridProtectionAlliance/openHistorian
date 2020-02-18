@@ -100,9 +100,14 @@ namespace MAS
         ManualResetEventSlim ConfigurationReloadedWaitHandle { get; set; }
 
         /// <summary>
-        /// Gets input measurement names.
+        /// Gets number of input measurement required by each adapter.
         /// </summary>
-        ReadOnlyCollection<string> InputNames { get; }
+        int InputsPerAdapter { get; }
+
+        /// <summary>
+        /// Gets or sets the index into the per adapter input measurements to use for target adapter name.
+        /// </summary>
+        int InputMeasurementUsedForName { get; set; }
 
         /// <summary>
         /// Gets output measurement names.

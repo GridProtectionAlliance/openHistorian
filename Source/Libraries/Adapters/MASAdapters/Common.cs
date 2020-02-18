@@ -39,7 +39,7 @@ namespace MAS
         /// Lookups up metadata record from provided <see cref="MeasurementKey"/>.
         /// </summary>
         /// <param name="dataSource">Target <see cref="DataSet"/>.</param>
-        /// <param name="signalID"><see cref="Guid"/> signal ID to lookip.</param>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
         /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
         /// <returns>Metadata data row, if found; otherwise, <c>null</c>.</returns>
         public static DataRow LookupMetadata(this DataSet dataSource, Guid signalID, string measurementTable = "ActiveMeasurements")

@@ -25,6 +25,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using GSF.TimeSeries;
+using GSF.TimeSeries.Adapters;
 using static MAS.OscillationDetector;
 
 namespace MAS
@@ -39,9 +41,24 @@ namespace MAS
         #region [ Properties ]
 
         /// <summary>
+        /// Gets number of input measurement required by each adapter.
+        /// </summary>
+        public override int InputsPerAdapter => 1;
+
+        /// <summary>
         /// Gets output measurement names.
         /// </summary>
         public override ReadOnlyCollection<string> OutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
+
+        /// <summary>
+        /// Gets or sets output measurements that the <see cref="AdapterBase"/> will produce, if any.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - outputs managed automatically
+        public override IMeasurement[] OutputMeasurements
+        {
+            get => base.OutputMeasurements;
+            set => base.OutputMeasurements = value;
+        }
 
         #endregion
     }

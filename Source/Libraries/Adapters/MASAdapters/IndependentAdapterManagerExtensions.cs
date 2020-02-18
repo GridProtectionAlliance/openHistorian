@@ -93,19 +93,19 @@ namespace MAS
         /// Lookups up point tag name from provided <see cref="MeasurementKey"/>.
         /// </summary>
         /// <param name="instance">Target <see cref="IIndependentAdapterManager"/> instance.</param>
-        /// <param name="key">Key to lookup.</param>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
         /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
-        /// <returns>Point tag name, if found; otherwise, string representation of provided measurement key.</returns>
-        public static string LookupPointTag(this IIndependentAdapterManager instance, MeasurementKey key, string measurementTable = "ActiveMeasurements")
+        /// <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        public static string LookupPointTag(this IIndependentAdapterManager instance, Guid signalID, string measurementTable = "ActiveMeasurements")
         {
-            DataRow record = instance.DataSource.LookupMetadata(key.SignalID, measurementTable);
+            DataRow record = instance.DataSource.LookupMetadata(signalID, measurementTable);
             string pointTag = null;
 
             if (record != null)
                 pointTag = record["PointTag"].ToString();
 
             if (string.IsNullOrWhiteSpace(pointTag))
-                pointTag = key.ToString();
+                pointTag = signalID.ToString();
 
             return pointTag.ToUpper();
         }

@@ -154,9 +154,14 @@ namespace MAS
         }
 
         /// <summary>
-        /// Gets input measurement names.
+        /// Gets number of input measurement required by each adapter.
         /// </summary>
-        public ReadOnlyCollection<string> InputNames { get; } = null;
+        public int InputsPerAdapter { get; } = 0;
+
+        /// <summary>
+        /// Gets or sets the the index into the per adapter input measurements to use for target adapter name.
+        /// </summary>
+        public int InputMeasurementUsedForName { get; set; } = 0;
 
         /// <summary>
         /// Gets output measurement names.
