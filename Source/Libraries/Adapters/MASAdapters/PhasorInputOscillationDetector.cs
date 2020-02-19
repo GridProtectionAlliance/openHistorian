@@ -65,7 +65,7 @@ namespace MAS
         public const string DefaultAdjustmentStrategy = "LineToNeutral";
 
         /// <summary>
-        /// Defaults the default value for the <see cref="CalculationType" />
+        /// Defaults the default value for the <see cref="TargetCalculationType" />
         /// </summary>
         public const string DefaultCalculationType = "MW";
 
@@ -102,14 +102,14 @@ namespace MAS
         [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
         [DefaultValue(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy)]
         public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
-        
+
         /// <summary>
-        /// Gets or sets the default calculation type.
+        /// Gets or sets the target calculation type for the oscillation detector.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines default calculation type.")]
+        [Description("Defines the target calculation type for the oscillation detector.")]
         [DefaultValue(typeof(CalculationType), DefaultCalculationType)]
-        public CalculationType ResultCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
+        public CalculationType TargetCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
 
         /// <summary>
         /// Returns the detailed status of the <see cref="PhasorInputOscillationDetector"/>.
@@ -121,6 +121,10 @@ namespace MAS
                 StringBuilder status = new StringBuilder();
 
                 status.Append(m_detector.Status);
+                status.AppendFormat("        Voltage Adjustment: {0}", AdjustmentStrategy);
+                status.AppendLine();
+                status.AppendFormat("   Target Calculation Type: {0}", TargetCalculationType);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();

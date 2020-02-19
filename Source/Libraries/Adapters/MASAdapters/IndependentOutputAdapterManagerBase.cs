@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using GSF.Data;
@@ -70,7 +71,11 @@ namespace MAS
         public override MeasurementKey[] InputMeasurementKeys
         {
             get => base.InputMeasurementKeys;
-            set => base.InputMeasurementKeys = value;
+            set
+            {
+                base.InputMeasurementKeys = value;
+                InputMeasurementKeyTypes = DataSource.GetSignalTypes(value);
+            }
         }
 
         /// <summary>
@@ -180,6 +185,13 @@ namespace MAS
         protected bool AutoReparseConnectionString { get; set; } = true;
 
         /// <summary>
+        /// Gets input measurement <see cref="SignalType"/>'s for each of the <see cref="AdapterBase.InputMeasurementKeys"/>, if any.
+        /// </summary>
+        public virtual SignalType[] InputMeasurementKeyTypes { get; private set; }
+
+        SignalType[] IIndependentAdapterManager.OutputMeasurementTypes { get; } = null;
+
+        /// <summary>
         /// Returns the detailed status of the <see cref="IndependentOutputAdapterManagerBase"/>.
         /// </summary>
         public override string Status
@@ -226,6 +238,21 @@ namespace MAS
         /// Initializes the <see cref="IndependentOutputAdapterManagerBase" />.
         /// </summary>
         public override void Initialize() => this.HandleInitialize();
+
+        /// <summary>
+        /// Validates that an even number of inputs are provided for specified <see cref="InputsPerAdapter"/>.
+        /// </summary>
+        protected void ValidateEvenInputCount()
+        {
+            int remainder = InputMeasurementKeys.Length % InputsPerAdapter;
+
+            if (remainder == 0)
+                return;
+
+            int adjustedCount = InputMeasurementKeys.Length - remainder;
+            OnStatusMessage(MessageLevel.Warning, $"Uneven number of inputs provided, adjusting total number of inputs to {adjustedCount:N0}. Expected {InputsPerAdapter:N0} per adapter, received {InputMeasurementKeys.Length:N0} total measurements, leaving {InputsPerAdapter - remainder:N0} needed.");
+            InputMeasurementKeys = InputMeasurementKeys.Take(adjustedCount).ToArray();
+        }
 
         /// <summary>
         /// Parses connection string. Derived classes should override for custom connection string parsing.

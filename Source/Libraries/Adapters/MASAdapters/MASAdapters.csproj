@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BulkPhasorInputOscillationDetector.cs" />
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
     <Compile Include="IIndependentAdapterManager.cs" />
     <Compile Include="IndependentOutputAdapterManagerBase.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\Measurement.cs" />
+    <Compile Include="Model\Phasor.cs" />
     <Compile Include="Model\SignalType.cs" />
     <Compile Include="OscillationDetector.cs" />
     <Compile Include="OneSecondDataWindowAdapterBase.cs" />

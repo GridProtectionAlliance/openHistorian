@@ -87,6 +87,8 @@ namespace MAS
                 StringBuilder status = new StringBuilder();
 
                 status.Append(m_detector.Status);
+                status.AppendFormat("        Voltage Adjustment: {0}", AdjustmentStrategy);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();

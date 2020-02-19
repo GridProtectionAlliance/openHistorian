@@ -25,8 +25,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
+using PowerCalculations;
 using static MAS.OscillationDetector;
 
 namespace MAS
@@ -39,6 +41,14 @@ namespace MAS
     public class BulkSingleInputOscillationDetector : IndependentActionAdapterManagerBase<SingleInputOscillationDetector>
     {
         #region [ Properties ]
+
+        /// <summary>
+        /// Gets or sets the default strategy used to adjust voltage values for based on the nature of the voltage measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
+        [DefaultValue(typeof(VoltageAdjustmentStrategy), SingleInputOscillationDetector.DefaultAdjustmentStrategy)]
+        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), SingleInputOscillationDetector.DefaultAdjustmentStrategy);
 
         /// <summary>
         /// Gets number of input measurement required by each adapter.
@@ -58,6 +68,36 @@ namespace MAS
         {
             get => base.OutputMeasurements;
             set => base.OutputMeasurements = value;
+        }
+
+        /// <summary>
+        /// Returns the detailed status of the <see cref="BulkSingleInputOscillationDetector"/>.
+        /// </summary>
+        public override string Status
+        {
+            get
+            {
+                StringBuilder status = new StringBuilder();
+
+                status.AppendFormat("        Voltage Adjustment: {0}", AdjustmentStrategy);
+                status.AppendLine();
+                status.Append(base.Status);
+
+                return status.ToString();
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
+        /// <summary>
+        /// Initializes the <see cref="BulkSingleInputOscillationDetector" />.
+        /// </summary>
+        public override void Initialize()
+        {
+            base.Initialize();
+            InitializeChildAdapterManagement();
         }
 
         #endregion

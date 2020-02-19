@@ -93,7 +93,11 @@ namespace MAS
         public override MeasurementKey[] InputMeasurementKeys
         {
             get => base.InputMeasurementKeys;
-            set => base.InputMeasurementKeys = value;
+            set
+            {
+                base.InputMeasurementKeys = value;
+                InputMeasurementKeyTypes = DataSource.GetSignalTypes(value);
+            }
         }
 
         /// <summary>
@@ -106,7 +110,11 @@ namespace MAS
         public override IMeasurement[] OutputMeasurements
         {
             get => base.OutputMeasurements;
-            set => base.OutputMeasurements = value;
+            set
+            {
+                base.OutputMeasurements = value;
+                OutputMeasurementTypes = DataSource.GetSignalTypes(value);
+            }
         }
 
         /// <summary>
@@ -253,6 +261,16 @@ namespace MAS
         protected bool AutoReparseConnectionString { get; set; } = true;
 
         /// <summary>
+        /// Gets input measurement <see cref="SignalType"/>'s for each of the <see cref="ActionAdapterBase.InputMeasurementKeys"/>, if any.
+        /// </summary>
+        public virtual SignalType[] InputMeasurementKeyTypes { get; private set; }
+
+        /// <summary>
+        /// Gets output measurement <see cref="SignalType"/>'s for each of the <see cref="ActionAdapterBase.OutputMeasurements"/>, if any.
+        /// </summary>
+        public virtual SignalType[] OutputMeasurementTypes { get; private set; }
+
+        /// <summary>
         /// Returns the detailed status of the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
         /// </summary>
         public override string Status
@@ -302,11 +320,17 @@ namespace MAS
         /// <summary>
         /// Initializes the <see cref="IndependentActionAdapterManagerBase{TAdapter}" />.
         /// </summary>
-        public override void Initialize()
-        {
-            this.HandleInitialize();
+        public override void Initialize() => this.HandleInitialize();
 
-            if (InputsPerAdapter <= 0 || OutputNames?.Count <= 0)
+        /// <summary>
+        /// Initializes management operations for child adapters.
+        /// </summary>
+        protected void InitializeChildAdapterManagement()
+        {
+            if (m_manageChildAdapters != null)
+                return;
+
+            if (InputsPerAdapter <= 0 || OutputNames?.Count <= 0 || InputMeasurementKeys.Length <= 0)
                 return;
 
             // Define a synchronized operation to manage bulk collection of child adapters
@@ -314,6 +338,21 @@ namespace MAS
 
             // Kick off initial child adapter management operations
             m_manageChildAdapters.RunOnceAsync();
+        }
+
+        /// <summary>
+        /// Validates that an even number of inputs are provided for specified <see cref="InputsPerAdapter"/>.
+        /// </summary>
+        protected void ValidateEvenInputCount()
+        {
+            int remainder = InputMeasurementKeys.Length % InputsPerAdapter;
+
+            if (remainder == 0)
+                return;
+
+            int adjustedCount = InputMeasurementKeys.Length - remainder;
+            OnStatusMessage(MessageLevel.Warning, $"Uneven number of inputs provided, adjusting total number of inputs to {adjustedCount:N0}. Expected {InputsPerAdapter:N0} per adapter, received {InputMeasurementKeys.Length:N0} total measurements, leaving {InputsPerAdapter - remainder:N0} needed.");
+            InputMeasurementKeys = InputMeasurementKeys.Take(adjustedCount).ToArray();
         }
 
         /// <summary>
@@ -389,7 +428,7 @@ namespace MAS
 
                 // Adapter inputs are presumed to be grouped together
                 for (int j = 0; j < inputsPerAdapter; j++)
-                    inputs[j] = measurementKeys[i * inputsPerAdapter + j].SignalID;
+                    inputs[j] = measurementKeys[i / inputsPerAdapter * inputsPerAdapter + j].SignalID;
 
                 string inputName = instance.LookupPointTag(inputs[nameIndex]);
                 string adapterName = $"{instance.Name}!{inputName}";

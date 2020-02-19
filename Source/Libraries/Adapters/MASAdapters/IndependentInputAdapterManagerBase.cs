@@ -69,7 +69,11 @@ namespace MAS
         public override IMeasurement[] OutputMeasurements
         {
             get => base.OutputMeasurements;
-            set => base.OutputMeasurements = value;
+            set
+            {
+                base.OutputMeasurements = value;
+                OutputMeasurementTypes = DataSource.GetSignalTypes(value);
+            }
         }
 
         /// <summary>
@@ -175,6 +179,13 @@ namespace MAS
         /// to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
         /// </summary>
         protected bool AutoReparseConnectionString { get; set; } = true;
+
+        SignalType[] IIndependentAdapterManager.InputMeasurementKeyTypes { get; } = null;
+
+        /// <summary>
+        /// Gets output measurement <see cref="SignalType"/>'s for each of the <see cref="AdapterBase.OutputMeasurements"/>, if any.
+        /// </summary>
+        public virtual SignalType[] OutputMeasurementTypes { get; private set; }
 
         /// <summary>
         /// Returns the detailed status of the <see cref="IndependentInputAdapterManagerBase"/>.

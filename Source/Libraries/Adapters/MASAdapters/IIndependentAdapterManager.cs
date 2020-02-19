@@ -94,6 +94,16 @@ namespace MAS
         bool AutoReparseConnectionString { get; set; }
 
         /// <summary>
+        /// Gets input measurement <see cref="SignalType"/>'s for each of the <see cref="AdapterBase.InputMeasurementKeys"/>, if any.
+        /// </summary>
+        SignalType[] InputMeasurementKeyTypes { get; }
+        
+        /// <summary>
+        /// Gets output measurement <see cref="SignalType"/>'s for each of the <see cref="AdapterBase.OutputMeasurements"/>, if any.
+        /// </summary>
+        SignalType[] OutputMeasurementTypes { get; }
+
+        /// <summary>
         /// Gets or sets wait handle used by <see cref="IndependentActionAdapterManagerBase{TAdapter}"/> instance to
         /// manage waiting for changes to be loaded in system configuration.
         /// </summary>

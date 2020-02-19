@@ -71,6 +71,50 @@ namespace MAS
         }
 
         /// <summary>
+        /// Gets signal types for given measurement keys.
+        /// </summary>
+        /// <param name="dataSource">Target <see cref="DataSet"/>.</param>
+        /// <param name="keys">Source set of <see cref="MeasurementKey"/> values.</param>
+        /// <returns><see cref="SignalType"/> values for each defined measurement key as configured in data source.</returns>
+        public static SignalType[] GetSignalTypes(this DataSet dataSource, MeasurementKey[] keys)
+        {
+            if (dataSource == null)
+                throw new ArgumentNullException(nameof(dataSource));
+
+            if (keys == null || keys.Length == 0)
+                return Array.Empty<SignalType>();
+
+            SignalType[] signalTypes = new SignalType[keys.Length];
+
+            for (int i = 0; i < signalTypes.Length; i++)
+                signalTypes[i] = dataSource.GetSignalType(keys[i]);
+
+            return signalTypes;
+        }
+
+        /// <summary>
+        /// Gets signal types for given measurement keys.
+        /// </summary>
+        /// <param name="dataSource">Target <see cref="DataSet"/>.</param>
+        /// <param name="measurements">Source set of <see cref="IMeasurement"/> values.</param>
+        /// <returns><see cref="SignalType"/> values for each defined measurement key as configured in data source.</returns>
+        public static SignalType[] GetSignalTypes(this DataSet dataSource, IMeasurement[] measurements)
+        {
+            if (dataSource == null)
+                throw new ArgumentNullException(nameof(dataSource));
+
+            if (measurements == null || measurements.Length == 0)
+                return Array.Empty<SignalType>();
+
+            SignalType[] signalTypes = new SignalType[measurements.Length];
+
+            for (int i = 0; i < signalTypes.Length; i++)
+                signalTypes[i] = dataSource.GetSignalType(measurements[i].Key);
+
+            return signalTypes;
+        }
+
+        /// <summary>
         /// Gets derived quality flags from a set of source measurements.
         /// </summary>
         /// <param name="measurements">Source measurements.</param>
