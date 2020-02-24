@@ -669,7 +669,7 @@ namespace openHistorian.Adapters
         private Guid? GetSignalID(string pointTag, TableOperations<ActiveMeasurement> table)
         {
             ActiveMeasurement measurement = table.QueryRecordWhere("PointTag = {0}", pointTag);
-            return measurement.SignalID;
+            return measurement?.SignalID;
         }
         private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID)
         {
