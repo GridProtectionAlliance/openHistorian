@@ -95,8 +95,8 @@ COPY /Y "%sourcetools%\LogFileViewer\LogFileViewer.exe" "%targettools%\LogFileVi
 ECHO Updating Grafana Panels...
 XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
 XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
-XCOPY "%GrafanaSource%\openHistorian-grafana" "%GrafanaTarget%\openHistorianGrafanaAlarmPanel\" /Y /E /U
-XCOPY "%GrafanaSource%\openHistorianGrafanaAlarmPanel" "%GrafanaTarget%\gridprotectionalliance-openhistorian-datasource\" /Y /E /U
+XCOPY "%GrafanaSource%\openHistorianGrafanaAlarmPanel" "%GrafanaTarget%\openHistorianGrafanaAlarmPanel\" /Y /E /U
+XCOPY "%GrafanaSource%\openHistorian-grafana" "%GrafanaTarget%\gridprotectionalliance-openhistorian-datasource\" /Y /E /U
 
 :UpdateDbScripts
 ECHO.
