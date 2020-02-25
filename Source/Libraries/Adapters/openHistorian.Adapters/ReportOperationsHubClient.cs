@@ -237,9 +237,9 @@ namespace openHistorian.Adapters
 					if (reportType == ReportType.SNR)
 						filterString = "%-SNR";
 					else if (reportType == ReportType.Unbalance_I)
-						filterString = "%I-UBAL";
+						filterString = "%-IUBAL";
 					else if (reportType == ReportType.Unbalance_V)
-						filterString = "%V-UBAL";
+						filterString = "%-VUBAL";
 
 					// Get AlertThreshold
 					CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
@@ -443,9 +443,9 @@ namespace openHistorian.Adapters
             if (type == ReportType.SNR)
                 filterString = "%-SNR";
             else if (type == ReportType.Unbalance_I)
-                filterString = "%I-UBAL";
+                filterString = "%-IUBAL";
             else if (type == ReportType.Unbalance_V)
-                filterString = "%V-UBAL";
+                filterString = "%-VUBAL";
 
             TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
             tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
