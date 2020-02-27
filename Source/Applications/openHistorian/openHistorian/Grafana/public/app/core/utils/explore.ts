@@ -1,30 +1,37 @@
 // Libraries
 import _ from 'lodash';
 import { Unsubscribable } from 'rxjs';
-import { isLive } from '@grafana/ui/src/components/RefreshPicker/RefreshPicker';
 // Services & Utils
 import {
+  DataQuery,
+  CoreApp,
+  DataQueryError,
+  DataQueryRequest,
+  DataSourceApi,
   dateMath,
-  toUtc,
-  TimeRange,
-  RawTimeRange,
-  TimeZone,
-  TimeFragment,
-  LogRowModel,
-  LogsModel,
-  LogsDedupStrategy,
-  IntervalValues,
   DefaultTimeZone,
+  HistoryItem,
+  IntervalValues,
+  LogRowModel,
+  LogsDedupStrategy,
+  LogsModel,
+  PanelModel,
+  RawTimeRange,
+  TimeFragment,
+  TimeRange,
+  TimeZone,
+  toUtc,
 } from '@grafana/data';
 import { renderUrl } from 'app/core/utils/url';
 import store from 'app/core/store';
 import kbn from 'app/core/utils/kbn';
 import { getNextRefIdChar } from './query';
 // Types
-import { DataQuery, DataSourceApi, DataQueryError, DataQueryRequest, PanelModel } from '@grafana/ui';
-import { ExploreUrlState, HistoryItem, QueryTransaction, QueryOptions, ExploreMode } from 'app/types/explore';
+import { RefreshPicker } from '@grafana/ui';
+import { ExploreMode, ExploreUrlState, QueryOptions, QueryTransaction } from 'app/types/explore';
 import { config } from '../config';
 import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
+import { DataSourceSrv } from '@grafana/runtime';
 
 export const DEFAULT_RANGE = {
   from: 'now-1h',
@@ -51,13 +58,15 @@ export const lastUsedDatasourceKeyForOrgId = (orgId: number) => `${LAST_USED_DAT
  * @param datasourceSrv Datasource service to query other datasources in case the panel datasource is mixed
  * @param timeSrv Time service to get the current dashboard range from
  */
-export async function getExploreUrl(
-  panel: PanelModel,
-  panelTargets: DataQuery[],
-  panelDatasource: any,
-  datasourceSrv: any,
-  timeSrv: TimeSrv
-) {
+export interface GetExploreUrlArguments {
+  panel: PanelModel;
+  panelTargets: DataQuery[];
+  panelDatasource: DataSourceApi;
+  datasourceSrv: DataSourceSrv;
+  timeSrv: TimeSrv;
+}
+export async function getExploreUrl(args: GetExploreUrlArguments) {
+  const { panel, panelTargets, panelDatasource, datasourceSrv, timeSrv } = args;
   let exploreDatasource = panelDatasource;
   let exploreTargets: DataQuery[] = panelTargets;
   let url: string;
@@ -78,12 +87,19 @@ export async function getExploreUrl(
   if (exploreDatasource) {
     const range = timeSrv.timeRangeForUrl();
     let state: Partial<ExploreUrlState> = { range };
-    if (exploreDatasource.getExploreState) {
-      state = { ...state, ...exploreDatasource.getExploreState(exploreTargets) };
+    if (exploreDatasource.interpolateVariablesInQueries) {
+      const scopedVars = panel.scopedVars || {};
+      state = {
+        ...state,
+        datasource: exploreDatasource.name,
+        context: 'explore',
+        queries: exploreDatasource.interpolateVariablesInQueries(exploreTargets, scopedVars),
+      };
     } else {
       state = {
         ...state,
         datasource: exploreDatasource.name,
+        context: 'explore',
         queries: exploreTargets.map(t => ({ ...t, datasource: exploreDatasource.name })),
       };
     }
@@ -91,8 +107,7 @@ export async function getExploreUrl(
     const exploreState = JSON.stringify({ ...state, originPanelId: panel.id });
     url = renderUrl('/explore', { left: exploreState });
   }
-  const finalUrl = config.appSubUrl + url;
-  return finalUrl;
+  return url;
 }
 
 export function buildQueryTransaction(
@@ -116,6 +131,7 @@ export function buildQueryTransaction(
   const panelId = `${key}`;
 
   const request: DataQueryRequest = {
+    app: CoreApp.Explore,
     dashboardId: 0,
     // TODO probably should be taken from preferences but does not seem to be used anyway.
     timezone: DefaultTimeZone,
@@ -134,6 +150,7 @@ export function buildQueryTransaction(
       __interval_ms: { text: intervalMs, value: intervalMs },
     },
     maxDataPoints: queryOptions.maxDataPoints,
+    exploreMode: queryOptions.mode,
   };
 
   return {
@@ -403,13 +420,9 @@ export const getTimeRangeFromUrl = (range: RawTimeRange, timeZone: TimeZone): Ti
   };
 };
 
-export const getValueWithRefId = (value: any): any | null => {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value !== 'object') {
-    return null;
+export const getValueWithRefId = (value?: any): any => {
+  if (!value || typeof value !== 'object') {
+    return undefined;
   }
 
   if (value.refId) {
@@ -425,12 +438,12 @@ export const getValueWithRefId = (value: any): any | null => {
     }
   }
 
-  return null;
+  return undefined;
 };
 
-export const getFirstQueryErrorWithoutRefId = (errors: DataQueryError[]) => {
+export const getFirstQueryErrorWithoutRefId = (errors?: DataQueryError[]) => {
   if (!errors) {
-    return null;
+    return undefined;
   }
 
   return errors.filter(error => (error && error.refId ? false : true))[0];
@@ -460,11 +473,11 @@ export const getRefIds = (value: any): string[] => {
 };
 
 export const sortInAscendingOrder = (a: LogRowModel, b: LogRowModel) => {
-  if (a.timestamp < b.timestamp) {
+  if (a.timeEpochMs < b.timeEpochMs) {
     return -1;
   }
 
-  if (a.timestamp > b.timestamp) {
+  if (a.timeEpochMs > b.timeEpochMs) {
     return 1;
   }
 
@@ -472,11 +485,11 @@ export const sortInAscendingOrder = (a: LogRowModel, b: LogRowModel) => {
 };
 
 const sortInDescendingOrder = (a: LogRowModel, b: LogRowModel) => {
-  if (a.timestamp > b.timestamp) {
+  if (a.timeEpochMs > b.timeEpochMs) {
     return -1;
   }
 
-  if (a.timestamp < b.timestamp) {
+  if (a.timeEpochMs < b.timeEpochMs) {
     return 1;
   }
 
@@ -488,8 +501,8 @@ export enum SortOrder {
   Ascending = 'Ascending',
 }
 
-export const refreshIntervalToSortOrder = (refreshInterval: string) =>
-  isLive(refreshInterval) ? SortOrder.Ascending : SortOrder.Descending;
+export const refreshIntervalToSortOrder = (refreshInterval?: string) =>
+  RefreshPicker.isLive(refreshInterval) ? SortOrder.Ascending : SortOrder.Descending;
 
 export const sortLogsResult = (logsResult: LogsModel, sortOrder: SortOrder): LogsModel => {
   const rows = logsResult ? logsResult.rows : [];
@@ -503,7 +516,7 @@ export const convertToWebSocketUrl = (url: string) => {
   const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
   let backend = `${protocol}${window.location.host}${config.appSubUrl}`;
   if (backend.endsWith('/')) {
-    backend = backend.slice(0, backend.length - 1);
+    backend = backend.slice(0, -1);
   }
   return `${backend}${url}`;
 };
@@ -520,4 +533,8 @@ export function getIntervals(range: TimeRange, lowLimit: string, resolution: num
   }
 
   return kbn.calculateInterval(range, resolution, lowLimit);
+}
+
+export function deduplicateLogRowsById(rows: LogRowModel[]) {
+  return _.uniqBy(rows, 'uid');
 }

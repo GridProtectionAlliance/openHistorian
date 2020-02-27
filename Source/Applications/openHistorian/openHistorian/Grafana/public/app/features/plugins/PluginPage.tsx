@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import find from 'lodash/find';
 // Types
 import { UrlQueryMap } from '@grafana/runtime';
-import { AppNotificationSeverity, StoreState } from 'app/types';
+import { StoreState, AppNotificationSeverity, CoreEvents } from 'app/types';
+import { Alert, Tooltip } from '@grafana/ui';
 import {
   AppPlugin,
   GrafanaPlugin,
@@ -15,9 +16,9 @@ import {
   PluginMeta,
   PluginMetaInfo,
   PluginType,
-  Tooltip,
-} from '@grafana/ui';
-import { NavModel, NavModelItem } from '@grafana/data';
+  NavModel,
+  NavModelItem,
+} from '@grafana/data';
 
 import Page from 'app/core/components/Page/Page';
 import { getPluginSettings } from './PluginSettingsCache';
@@ -29,7 +30,6 @@ import { PluginDashboards } from './PluginDashboards';
 import { appEvents } from 'app/core/core';
 import { config } from 'app/core/config';
 import { ContextSrv } from '../../core/services/context_srv';
-import { AlertBox } from 'app/core/components/AlertBox/AlertBox';
 
 export function getLoadingNav(): NavModel {
   const node = {
@@ -143,7 +143,7 @@ class PluginPage extends PureComponent<Props, State> {
     const { plugin, nav } = this.state;
 
     if (!plugin) {
-      return <AlertBox severity={AppNotificationSeverity.Error} title="Plugin Not Found" />;
+      return <Alert severity={AppNotificationSeverity.Error} title="Plugin Not Found" />;
     }
 
     const active = nav.main.children.find(tab => tab.active);
@@ -173,7 +173,7 @@ class PluginPage extends PureComponent<Props, State> {
   }
 
   showUpdateInfo = () => {
-    appEvents.emit('show-modal', {
+    appEvents.emit(CoreEvents.showModal, {
       src: 'public/app/features/plugins/partials/update_instructions.html',
       model: this.state.plugin.meta,
     });
@@ -302,10 +302,10 @@ class PluginPage extends PureComponent<Props, State> {
             <div className="sidebar-container">
               <div className="sidebar-content">
                 {plugin.loadError && (
-                  <AlertBox
+                  <Alert
                     severity={AppNotificationSeverity.Error}
                     title="Error Loading Plugin"
-                    body={
+                    children={
                       <>
                         Check the server startup logs for more information. <br />
                         If this plugin was loaded from git, make sure it was compiled.
@@ -374,7 +374,7 @@ function getPluginTabsNav(
           pages.push({
             text: page.title,
             icon: page.icon,
-            url: path + '?page=' + page.id,
+            url: `${appSubUrl}${path}?page=${page.id}`,
             id: page.id,
           });
           if (!defaultPage) {
@@ -403,7 +403,7 @@ function getPluginTabsNav(
     text: meta.name,
     img: meta.info.logos.large,
     subTitle: meta.info.author.name,
-    breadcrumbs: [{ title: 'Plugins', url: '/plugins' }],
+    breadcrumbs: [{ title: 'Plugins', url: 'plugins' }],
     url: `${appSubUrl}${path}`,
     children: setActivePage(query.page as string, pages, defaultPage),
   };

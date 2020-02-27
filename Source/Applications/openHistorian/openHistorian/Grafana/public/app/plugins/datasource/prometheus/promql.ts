@@ -1,6 +1,4 @@
-/* tslint:disable max-line-length */
-
-import { CompletionItem } from 'app/types/explore';
+import { CompletionItem } from '@grafana/ui';
 
 export const RATE_RANGES: CompletionItem[] = [
   { label: '$__interval', sortText: '$__interval' },
@@ -379,8 +377,7 @@ export const FUNCTIONS = [
 
 const tokenizer = {
   comment: {
-    pattern: /(^|[^\n])#.*/,
-    lookbehind: true,
+    pattern: /#.*/,
   },
   'context-aggregation': {
     pattern: /((by|without)\s*)\([^)]*\)/, // by ()
@@ -395,10 +392,15 @@ const tokenizer = {
   },
   'context-labels': {
     pattern: /\{[^}]*(?=})/,
+    greedy: true,
     inside: {
+      comment: {
+        pattern: /#.*/,
+      },
       'label-key': {
         pattern: /[a-z_]\w*(?=\s*(=|!=|=~|!~))/,
         alias: 'attr-name',
+        greedy: true,
       },
       'label-value': {
         pattern: /"(?:\\.|[^\\"])*"/,

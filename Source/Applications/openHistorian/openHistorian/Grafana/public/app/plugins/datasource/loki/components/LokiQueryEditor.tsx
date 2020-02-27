@@ -2,8 +2,7 @@
 import React, { memo } from 'react';
 
 // Types
-import { AbsoluteTimeRange } from '@grafana/data';
-import { QueryEditorProps, DataSourceStatus } from '@grafana/ui';
+import { AbsoluteTimeRange, QueryEditorProps } from '@grafana/data';
 import { LokiDatasource } from '../datasource';
 import { LokiQuery } from '../types';
 import { LokiQueryField } from './LokiQueryField';
@@ -12,11 +11,11 @@ import { useLokiSyntax } from './useLokiSyntax';
 type Props = QueryEditorProps<LokiDatasource, LokiQuery>;
 
 export const LokiQueryEditor = memo(function LokiQueryEditor(props: Props) {
-  const { query, panelData, datasource, onChange, onRunQuery } = props;
+  const { query, data, datasource, onChange, onRunQuery } = props;
 
   let absolute: AbsoluteTimeRange;
-  if (panelData && panelData.request) {
-    const { range } = panelData.request;
+  if (data && data.request) {
+    const { range } = data.request;
     absolute = {
       from: range.from.valueOf(),
       to: range.to.valueOf(),
@@ -30,8 +29,6 @@ export const LokiQueryEditor = memo(function LokiQueryEditor(props: Props) {
 
   const { isSyntaxReady, setActiveOption, refreshLabels, ...syntaxProps } = useLokiSyntax(
     datasource.languageProvider,
-    // TODO maybe use real status
-    DataSourceStatus.Connected,
     absolute
   );
 
@@ -39,12 +36,11 @@ export const LokiQueryEditor = memo(function LokiQueryEditor(props: Props) {
     <div>
       <LokiQueryField
         datasource={datasource}
-        datasourceStatus={DataSourceStatus.Connected}
         query={query}
         onChange={onChange}
         onRunQuery={onRunQuery}
         history={[]}
-        panelData={panelData}
+        data={data}
         onLoadOptions={setActiveOption}
         onLabelsRefresh={refreshLabels}
         syntaxLoaded={isSyntaxReady}

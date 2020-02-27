@@ -1,8 +1,7 @@
 import { PostgresDatasource } from '../datasource';
 import { CustomVariable } from 'app/features/templating/custom_variable';
-import { toUtc, dateTime } from '@grafana/data';
+import { dateTime, toUtc } from '@grafana/data';
 import { BackendSrv } from 'app/core/services/backend_srv';
-import { IQService } from 'angular';
 import { TemplateSrv } from 'app/features/templating/template_srv';
 
 describe('PostgreSQLDatasource', () => {
@@ -26,13 +25,7 @@ describe('PostgreSQLDatasource', () => {
   } as any;
 
   beforeEach(() => {
-    ctx.ds = new PostgresDatasource(
-      instanceSettings,
-      backendSrv as BackendSrv,
-      {} as IQService,
-      templateSrv,
-      ctx.timeSrvMock
-    );
+    ctx.ds = new PostgresDatasource(instanceSettings, backendSrv as BackendSrv, templateSrv, ctx.timeSrvMock);
   });
 
   describe('When performing annotationQuery', () => {
@@ -105,7 +98,11 @@ describe('PostgreSQLDatasource', () => {
           tables: [
             {
               columns: [{ text: 'title' }, { text: 'text' }],
-              rows: [['aTitle', 'some text'], ['aTitle2', 'some text2'], ['aTitle3', 'some text3']],
+              rows: [
+                ['aTitle', 'some text'],
+                ['aTitle2', 'some text2'],
+                ['aTitle3', 'some text3'],
+              ],
             },
           ],
         },
@@ -128,6 +125,90 @@ describe('PostgreSQLDatasource', () => {
     });
   });
 
+  describe('When performing metricFindQuery with $__searchFilter and a searchFilter is given', () => {
+    let results: any;
+    let calledWith: any = {};
+    const query = "select title from atable where title LIKE '$__searchFilter'";
+    const response = {
+      results: {
+        tempvar: {
+          meta: {
+            rowCount: 3,
+          },
+          refId: 'tempvar',
+          tables: [
+            {
+              columns: [{ text: 'title' }, { text: 'text' }],
+              rows: [
+                ['aTitle', 'some text'],
+                ['aTitle2', 'some text2'],
+                ['aTitle3', 'some text3'],
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    beforeEach(() => {
+      ctx.backendSrv.datasourceRequest = jest.fn(options => {
+        calledWith = options;
+        return Promise.resolve({ data: response, status: 200 });
+      });
+      ctx.ds.metricFindQuery(query, { searchFilter: 'aTit' }).then((data: any) => {
+        results = data;
+      });
+    });
+
+    it('should return list of all column values', () => {
+      expect(ctx.backendSrv.datasourceRequest).toBeCalledTimes(1);
+      expect(calledWith.data.queries[0].rawSql).toBe("select title from atable where title LIKE 'aTit%'");
+      expect(results.length).toBe(6);
+    });
+  });
+
+  describe('When performing metricFindQuery with $__searchFilter but no searchFilter is given', () => {
+    let results: any;
+    let calledWith: any = {};
+    const query = "select title from atable where title LIKE '$__searchFilter'";
+    const response = {
+      results: {
+        tempvar: {
+          meta: {
+            rowCount: 3,
+          },
+          refId: 'tempvar',
+          tables: [
+            {
+              columns: [{ text: 'title' }, { text: 'text' }],
+              rows: [
+                ['aTitle', 'some text'],
+                ['aTitle2', 'some text2'],
+                ['aTitle3', 'some text3'],
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    beforeEach(() => {
+      ctx.backendSrv.datasourceRequest = jest.fn(options => {
+        calledWith = options;
+        return Promise.resolve({ data: response, status: 200 });
+      });
+      ctx.ds.metricFindQuery(query, {}).then((data: any) => {
+        results = data;
+      });
+    });
+
+    it('should return list of all column values', () => {
+      expect(ctx.backendSrv.datasourceRequest).toBeCalledTimes(1);
+      expect(calledWith.data.queries[0].rawSql).toBe("select title from atable where title LIKE '%'");
+      expect(results.length).toBe(6);
+    });
+  });
+
   describe('When performing metricFindQuery with key, value columns', () => {
     let results: any;
     const query = 'select * from atable';
@@ -141,7 +222,11 @@ describe('PostgreSQLDatasource', () => {
           tables: [
             {
               columns: [{ text: '__value' }, { text: '__text' }],
-              rows: [['value1', 'aTitle'], ['value2', 'aTitle2'], ['value3', 'aTitle3']],
+              rows: [
+                ['value1', 'aTitle'],
+                ['value2', 'aTitle2'],
+                ['value3', 'aTitle3'],
+              ],
             },
           ],
         },
@@ -179,7 +264,11 @@ describe('PostgreSQLDatasource', () => {
           tables: [
             {
               columns: [{ text: '__text' }, { text: '__value' }],
-              rows: [['aTitle', 'same'], ['aTitle', 'same'], ['aTitle', 'diff']],
+              rows: [
+                ['aTitle', 'same'],
+                ['aTitle', 'same'],
+                ['aTitle', 'diff'],
+              ],
             },
           ],
         },
