@@ -73,7 +73,6 @@
     <Compile Include="Model\Historian.cs" />
     <Compile Include="IndependentActionAdapterManagerBase.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Model\CustomActionAdapter.cs" />
     <Compile Include="Model\Measurement.cs" />
     <Compile Include="Model\Phasor.cs" />
     <Compile Include="Model\SignalType.cs" />

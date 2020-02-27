@@ -117,7 +117,7 @@ namespace MAS
         /// <summary>
         /// Gets or sets the index into the per adapter input measurements to use for target adapter name.
         /// </summary>
-        int InputMeasurementUsedForName { get; set; }
+        int InputMeasurementIndexUsedForName { get; set; }
 
         /// <summary>
         /// Gets output measurement names.
@@ -149,6 +149,18 @@ namespace MAS
         /// </summary>
         /// <returns>New ADO data connection based on configured settings.</returns>
         AdoDataConnection GetConfiguredConnection();
+
+        /// <summary>
+        /// Enumerates child adapters
+        /// </summary>
+        void EnumerateAdapters();
+
+        /// <summary>
+        /// Gets subscriber information for specified client connection.
+        /// </summary>
+        /// <param name="adapterIndex">Enumerated index for child adapter.</param>
+        /// <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        string GetAdapterStatus(int adapterIndex);
 
         /// <summary>
         /// Raises <see cref="AdapterCollectionBase{T}.ConfigurationChanged"/> event.

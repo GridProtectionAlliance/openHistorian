@@ -52,11 +52,11 @@ namespace MAS
             /// <summary>
             /// Megawatts.
             /// </summary>
-            MW,
+            Megawatts,
             /// <summary>
             /// Megavars.
             /// </summary>
-            MVar
+            Megavars
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MAS
         /// <summary>
         /// Defaults the default value for the <see cref="TargetCalculationType" />
         /// </summary>
-        public const string DefaultCalculationType = "MW";
+        public const string DefaultCalculationType = "Megawatts";
 
         // Fields
         private readonly OscillationDetector m_detector;
@@ -171,7 +171,7 @@ namespace MAS
             m_detector.OutputMeasurements = OutputMeasurements;
             m_detector.FramesPerSecond = FramesPerSecond;
             m_detector.InputTypes = InputMeasurementKeyTypes;
-            m_detector.Initialize();
+            m_detector.Initialize(Name);
         }
 
         /// <summary>

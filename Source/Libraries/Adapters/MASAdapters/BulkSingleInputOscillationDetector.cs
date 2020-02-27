@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -29,6 +30,7 @@ using System.Text;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using PowerCalculations;
+using static MAS.SingleInputOscillationDetector;
 using static MAS.OscillationDetector;
 
 namespace MAS
@@ -40,6 +42,38 @@ namespace MAS
     [EditorBrowsable(EditorBrowsableState.Always)]
     public class BulkSingleInputOscillationDetector : IndependentActionAdapterManagerBase<SingleInputOscillationDetector>
     {
+        #region [ Members ]
+
+        // Constants
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IndependentActionAdapterManagerBase{TAdapter}.InputMeasurementKeys"/>
+        /// when <see cref="TargetCalculationType"/> is <see cref="CalculationType.VoltageMagnitude"/>.
+        /// </summary>
+        public const string DefaultVoltageMagnitudeInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType = 'VPHM' AND Phase='+'";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IndependentActionAdapterManagerBase{TAdapter}.InputMeasurementKeys"/>
+        /// when <see cref="TargetCalculationType"/> is <see cref="CalculationType.Frequency"/>.
+        /// </summary>
+        public const string DefaultFrequencyInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType = 'VPHA' AND Phase='+'";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="InputMeasurementIndexUsedForName"/>.
+        /// </summary>
+        public const int DefaultInputMeasurementIndexUsedForName = 0;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates new <see cref="BulkSingleInputOscillationDetector"/>.
+        /// </summary>
+        public BulkSingleInputOscillationDetector() => base.InputMeasurementIndexUsedForName = DefaultInputMeasurementIndexUsedForName;
+
+        #endregion
+
         #region [ Properties ]
 
         /// <summary>
@@ -47,8 +81,28 @@ namespace MAS
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
-        [DefaultValue(typeof(VoltageAdjustmentStrategy), SingleInputOscillationDetector.DefaultAdjustmentStrategy)]
-        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), SingleInputOscillationDetector.DefaultAdjustmentStrategy);
+        [DefaultValue(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy)]
+        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
+
+        /// <summary>
+        /// Gets or sets the target calculation type for the oscillation detector.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the target calculation type for the oscillation detector.")]
+        [DefaultValue(typeof(CalculationType), DefaultCalculationType)]
+        public CalculationType TargetCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
+
+        /// <summary>
+        /// Gets or sets the index into the per adapter input measurements to use for target adapter name.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the index into the per adapter input measurements to use for target adapter name.")]
+        [DefaultValue(DefaultInputMeasurementIndexUsedForName)]
+        public override int InputMeasurementIndexUsedForName // Overriding to provide implementation specific default value
+        {
+            get => base.InputMeasurementIndexUsedForName;
+            set => base.InputMeasurementIndexUsedForName = value;
+        }
 
         /// <summary>
         /// Gets number of input measurement required by each adapter.
@@ -81,6 +135,8 @@ namespace MAS
 
                 status.AppendFormat("        Voltage Adjustment: {0}", AdjustmentStrategy);
                 status.AppendLine();
+                status.AppendFormat("   Target Calculation Type: {0}", TargetCalculationType);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();
@@ -92,11 +148,18 @@ namespace MAS
         #region [ Methods ]
 
         /// <summary>
-        /// Initializes the <see cref="BulkSingleInputOscillationDetector" />.
+        /// Parses connection string.
         /// </summary>
-        public override void Initialize()
+        public override void ParseConnectionString()
         {
-            base.Initialize();
+            Dictionary<string, string> settings = Settings;
+
+            if (!settings.TryGetValue(nameof(InputMeasurementKeys), out string inputMeasurementKeys) || string.IsNullOrWhiteSpace(inputMeasurementKeys))
+                settings[nameof(InputMeasurementKeys)] = TargetCalculationType == CalculationType.Frequency ?
+                    DefaultFrequencyInputMeasurementKeys : DefaultVoltageMagnitudeInputMeasurementKeys;
+
+            base.ParseConnectionString();
+
             InitializeChildAdapterManagement();
         }
 

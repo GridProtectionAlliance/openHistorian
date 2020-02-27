@@ -140,6 +140,11 @@ namespace MAS
         public int FramesPerSecond { get; set; }
 
         /// <summary>
+        /// Gets adapter name associated with the algorithm.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
         /// Gets or sets oscillation detector configuration.
         /// </summary>
         public PseudoConfiguration Configuration { get; set; }
@@ -167,7 +172,15 @@ namespace MAS
         /// <summary>
         /// Initializes <see cref="OscillationDetector"/>.
         /// </summary>
-        public void Initialize() => DetectorAPI.ReportCallback = PublishResults;
+        /// <param name="name">Adapter name.</param>
+        public void Initialize(string name)
+        {
+            Name = name;
+			
+			DetectorAPI.ReportCallback = PublishResults;
+
+            m_statusMessage(MessageLevel.Info, $"Oscillation detector \"{Name}\" using \"{string.Join(", ", InputTypes)}\" inputs initialized.");
+		}
 
         /// <summary>
         /// Processes 1-second data window consisting of measurements.

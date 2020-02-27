@@ -82,7 +82,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the wait timeout, in milliseconds, that system wait for system configuration reload to complete.")]
         [DefaultValue(DefaultConfigurationReloadWaitTimeout)]
-        public int ConfigurationReloadWaitTimeout { get; set; } = DefaultConfigurationReloadWaitTimeout;
+        public virtual int ConfigurationReloadWaitTimeout { get; set; } = DefaultConfigurationReloadWaitTimeout;
 
         /// <summary>
         /// Gets or sets the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.
@@ -90,7 +90,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.")]
         [DefaultValue(DefaultConfigurationReloadWaitAttempts)]
-        public int ConfigurationReloadWaitAttempts { get; set; } = DefaultConfigurationReloadWaitAttempts;
+        public virtual int ConfigurationReloadWaitAttempts { get; set; } = DefaultConfigurationReloadWaitAttempts;
 
         /// <summary>
         /// Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
@@ -98,7 +98,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the connection string used for database operations. Leave blank to use local configuration database defined in \"systemSettings\".")]
         [DefaultValue(DefaultDatabaseConnectionString)]
-        public string DatabaseConnnectionString { get; set; }
+        public virtual string DatabaseConnnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
@@ -106,7 +106,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the provider string used for database operations. Defaults to a SQL Server provider string.")]
         [DefaultValue(DefaultDatabaseProviderString)]
-        public string DatabaseProviderString { get; set; }
+        public virtual string DatabaseProviderString { get; set; }
 
         /// <summary>
         /// Gets or sets template for output measurement point tag names.
@@ -114,7 +114,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\".")]
         [DefaultValue(DefaultPointTagTemplate)]
-        public string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
+        public virtual string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
 
         /// <summary>
         /// Gets or sets template for local signal reference measurement name for source historian point.
@@ -122,7 +122,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\".")]
         [DefaultValue(DefaultSignalReferenceTemplate)]
-        public string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
+        public virtual string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
 
         /// <summary>
         /// Gets or sets signal type for output measurements.
@@ -130,7 +130,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the signal type for output measurements.")]
         [DefaultValue(typeof(SignalType), DefaultSignalType)]
-        public SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
+        public virtual SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
 
         /// <summary>
         /// Gets or sets the target historian acronym for output measurements.
@@ -138,7 +138,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the target historian acronym for output measurements.")]
         [DefaultValue(DefaultTargetHistorianAcronym)]
-        public string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+        public virtual string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
 
         /// <summary>
         /// Gets or sets <see cref="DataSet"/> based data source used to load each <see cref="IAdapter"/>. Updates
@@ -160,12 +160,12 @@ namespace MAS
         /// <summary>
         /// Gets number of input measurement required by each adapter.
         /// </summary>
-        public int InputsPerAdapter { get; } = 0;
+        public virtual int InputsPerAdapter { get; } = 0;
 
         /// <summary>
         /// Gets or sets the the index into the per adapter input measurements to use for target adapter name.
         /// </summary>
-        public int InputMeasurementUsedForName { get; set; } = 0;
+        public virtual int InputMeasurementIndexUsedForName { get; set; } = 0;
 
         /// <summary>
         /// Gets output measurement names.
@@ -178,7 +178,7 @@ namespace MAS
         /// the <see cref="DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
         /// to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
         /// </summary>
-        protected bool AutoReparseConnectionString { get; set; } = true;
+        protected virtual bool AutoReparseConnectionString { get; set; } = true;
 
         SignalType[] IIndependentAdapterManager.InputMeasurementKeyTypes { get; } = null;
 
@@ -248,7 +248,7 @@ namespace MAS
         /// <summary>
         /// Recalculates routing tables.
         /// </summary>
-        public void RecalculateRoutingTables() => this.HandleRecalculateRoutingTables();
+        public virtual void RecalculateRoutingTables() => this.HandleRecalculateRoutingTables();
 
         /// <summary>
         /// Gets a short one-line status of this <see cref="IndependentInputAdapterManagerBase"/>.
@@ -256,6 +256,20 @@ namespace MAS
         /// <param name="maxLength">Maximum number of available characters for display.</param>
         /// <returns>A short one-line summary of the current status of the <see cref="IndependentInputAdapterManagerBase"/>.</returns>
         public override string GetShortStatus(int maxLength) => this.HandleGetShortStatus(maxLength);
+
+        /// <summary>
+        /// Enumerates child adapters.
+        /// </summary>
+        [AdapterCommand("Enumerates child adapters.")]
+        public virtual void EnumerateAdapters() => this.HandleEnumerateAdapters();
+
+        /// <summary>
+        /// Gets subscriber information for specified client connection.
+        /// </summary>
+        /// <param name="adapterIndex">Enumerated index for child adapter.</param>
+        /// <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        [AdapterCommand("Gets subscriber information for specified client connection.")]
+        public virtual string GetAdapterStatus(int adapterIndex) => this.HandleGetAdapterStatus(adapterIndex);
 
         /// <summary>
         /// Gets configured database connection.

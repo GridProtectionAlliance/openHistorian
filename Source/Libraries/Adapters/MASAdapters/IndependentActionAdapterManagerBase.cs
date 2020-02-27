@@ -38,6 +38,7 @@ using GSF.Threading;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units.EE;
+using MeasurementRecord = MAS.Model.Measurement;
 using static MAS.IndependentAdapterManagerExtensions;
 
 namespace MAS
@@ -68,6 +69,8 @@ namespace MAS
 
         // Fields
         private ShortSynchronizedOperation m_manageChildAdapters;
+        private readonly object m_adapterInputSync;
+        private bool m_adapterInputReady;
         private bool m_disposed;
 
         #endregion
@@ -77,7 +80,11 @@ namespace MAS
         /// <summary>
         /// Creates a new <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
         /// </summary>
-        protected IndependentActionAdapterManagerBase() => this.HandleConstruct();
+        protected IndependentActionAdapterManagerBase()
+        {
+            this.HandleConstruct();
+            m_adapterInputSync = new object();
+        }
 
         #endregion
 
@@ -95,7 +102,9 @@ namespace MAS
             get => base.InputMeasurementKeys;
             set
             {
-                base.InputMeasurementKeys = value;
+                lock (m_adapterInputSync)
+                    base.InputMeasurementKeys = value;
+                
                 InputMeasurementKeyTypes = DataSource.GetSignalTypes(value);
             }
         }
@@ -126,7 +135,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the number of frames per second applied to each adapter.")]
         [DefaultValue(DefaultFramesPerSecond)]
-        public int FramesPerSecond { get; set; } = DefaultFramesPerSecond;
+        public virtual int FramesPerSecond { get; set; } = DefaultFramesPerSecond;
 
         /// <summary>
         /// Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
@@ -139,7 +148,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
         [DefaultValue(DefaultLagTime)]
-        public double LagTime { get; set; } = DefaultLagTime;
+        public virtual double LagTime { get; set; } = DefaultLagTime;
 
         /// <summary>
         /// Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
@@ -152,7 +161,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.")]
         [DefaultValue(DefaultLeadTime)]
-        public double LeadTime { get; set; } = DefaultLeadTime;
+        public virtual double LeadTime { get; set; } = DefaultLeadTime;
 
         /// <summary>
         /// Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
@@ -168,7 +177,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.")]
         [DefaultValue(DefaultConfigurationReloadWaitAttempts)]
-        public int ConfigurationReloadWaitAttempts { get; set; } = DefaultConfigurationReloadWaitAttempts;
+        public virtual int ConfigurationReloadWaitAttempts { get; set; } = DefaultConfigurationReloadWaitAttempts;
 
         /// <summary>
         /// Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
@@ -176,7 +185,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the connection string used for database operations. Leave blank to use local configuration database defined in \"systemSettings\".")]
         [DefaultValue(DefaultDatabaseConnectionString)]
-        public string DatabaseConnnectionString { get; set; }
+        public virtual string DatabaseConnnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
@@ -184,7 +193,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the provider string used for database operations. Defaults to a SQL Server provider string.")]
         [DefaultValue(DefaultDatabaseProviderString)]
-        public string DatabaseProviderString { get; set; }
+        public virtual string DatabaseProviderString { get; set; }
 
         /// <summary>
         /// Gets or sets template for output measurement point tag names.
@@ -192,7 +201,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\".")]
         [DefaultValue(DefaultPointTagTemplate)]
-        public string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
+        public virtual string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
 
         /// <summary>
         /// Gets or sets template for local signal reference measurement name for source historian point.
@@ -200,7 +209,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\".")]
         [DefaultValue(DefaultSignalReferenceTemplate)]
-        public string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
+        public virtual string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
 
         /// <summary>
         /// Gets or sets signal type for output measurements.
@@ -208,7 +217,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the signal type for output measurements.")]
         [DefaultValue(typeof(SignalType), DefaultSignalType)]
-        public SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
+        public virtual SignalType SignalType { get; set; } = (SignalType)Enum.Parse(typeof(SignalType), DefaultSignalType);
 
         /// <summary>
         /// Gets or sets the target historian acronym for output measurements.
@@ -216,7 +225,7 @@ namespace MAS
         [ConnectionStringParameter]
         [Description("Defines the target historian acronym for output measurements.")]
         [DefaultValue(DefaultTargetHistorianAcronym)]
-        public string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+        public virtual string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
 
         /// <summary>
         /// Gets or sets <see cref="DataSet"/> based data source used to load each <see cref="IAdapter"/>. Updates
@@ -245,7 +254,7 @@ namespace MAS
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines the index into the per adapter input measurements to use for target adapter name.")]
-        public int InputMeasurementUsedForName { get; set; }
+        public virtual int InputMeasurementIndexUsedForName { get; set; }
 
         /// <summary>
         /// Gets output measurement names.
@@ -258,7 +267,7 @@ namespace MAS
         /// the <see cref="DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
         /// to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
         /// </summary>
-        protected bool AutoReparseConnectionString { get; set; } = true;
+        protected virtual bool AutoReparseConnectionString { get; set; } = true;
 
         /// <summary>
         /// Gets input measurement <see cref="SignalType"/>'s for each of the <see cref="ActionAdapterBase.InputMeasurementKeys"/>, if any.
@@ -270,6 +279,11 @@ namespace MAS
         /// </summary>
         public virtual SignalType[] OutputMeasurementTypes { get; private set; }
 
+        /// <summary>
+        /// Gets or sets current adapter ID counter.
+        /// </summary>
+        public uint AdapterIDCounter { get; set; }
+        
         /// <summary>
         /// Returns the detailed status of the <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
         /// </summary>
@@ -325,8 +339,11 @@ namespace MAS
         /// <summary>
         /// Initializes management operations for child adapters.
         /// </summary>
-        protected void InitializeChildAdapterManagement()
+        protected virtual void InitializeChildAdapterManagement()
         {
+            lock (m_adapterInputSync)
+                m_adapterInputReady = true;
+
             if (m_manageChildAdapters != null)
                 return;
 
@@ -334,7 +351,7 @@ namespace MAS
                 return;
 
             // Define a synchronized operation to manage bulk collection of child adapters
-            m_manageChildAdapters = new ShortSynchronizedOperation(() => ManageChildAdapters(this), ex => OnProcessException(MessageLevel.Warning, ex));
+            m_manageChildAdapters = new ShortSynchronizedOperation(ManageChildAdapters, ex => OnProcessException(MessageLevel.Warning, ex));
 
             // Kick off initial child adapter management operations
             m_manageChildAdapters.RunOnceAsync();
@@ -360,7 +377,11 @@ namespace MAS
         /// </summary>
         public virtual void ParseConnectionString()
         {
-            this.HandleParseConnectionString();
+            lock (m_adapterInputSync)
+            {
+                m_adapterInputReady = false;
+                this.HandleParseConnectionString();
+            }
 
             if (FramesPerSecond < 1)
                 FramesPerSecond = DefaultFramesPerSecond;
@@ -375,12 +396,19 @@ namespace MAS
         /// <summary>
         /// Notifies derived classes that configuration has been reloaded
         /// </summary>
-        public virtual void ConfigurationReloaded() => m_manageChildAdapters?.RunOnceAsync();
+        public virtual void ConfigurationReloaded()
+        {
+            lock (m_adapterInputSync)
+            {
+                if (m_adapterInputReady)
+                    m_manageChildAdapters?.RunOnceAsync();
+            }
+        }
 
         /// <summary>
         /// Recalculates routing tables.
         /// </summary>
-        public void RecalculateRoutingTables() => this.HandleRecalculateRoutingTables();
+        public virtual void RecalculateRoutingTables() => this.HandleRecalculateRoutingTables();
 
         /// <summary>
         /// Queues a collection of measurements for processing to each <see cref="IActionAdapter"/> connected to this <see cref="IndependentActionAdapterManagerBase{TAdapter}"/>.
@@ -396,59 +424,83 @@ namespace MAS
         public override string GetShortStatus(int maxLength) => this.HandleGetShortStatus(maxLength);
 
         /// <summary>
+        /// Enumerates child adapters.
+        /// </summary>
+        [AdapterCommand("Enumerates child adapters.")]
+        public virtual void EnumerateAdapters() => this.HandleEnumerateAdapters();
+
+        /// <summary>
+        /// Gets subscriber information for specified client connection.
+        /// </summary>
+        /// <param name="adapterIndex">Enumerated index for child adapter.</param>
+        /// <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        [AdapterCommand("Gets subscriber information for specified client connection.")]
+        public virtual string GetAdapterStatus(int adapterIndex) => this.HandleGetAdapterStatus(adapterIndex);
+        
+        /// <summary>
         /// Gets configured database connection.
         /// </summary>
         /// <returns>New ADO data connection based on configured settings.</returns>
         public AdoDataConnection GetConfiguredConnection() => this.HandleGetConfiguredConnection();
 
-        private static void ManageChildAdapters(IIndependentAdapterManager instance)
+        private void ManageChildAdapters()
         {
+            MeasurementKey[] measurementKeys;
+
+            lock (m_adapterInputSync)
+            {
+                if (!m_adapterInputReady)
+                    return;
+
+                measurementKeys = InputMeasurementKeys;
+            }
+
             HashSet<string> activeAdapterNames = new HashSet<string>(StringComparer.Ordinal);
-            List<IAdapter> adapters = new List<IAdapter>();
+            List<TAdapter> adapters = new List<TAdapter>();
             HashSet<Guid> signalIDs = new HashSet<Guid>();
 
             // Create settings dictionary for connection string to use with primary child adapters
             Dictionary<string, string> settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (PropertyInfo property in instance.GetType().GetProperties())
+            foreach (PropertyInfo property in GetType().GetProperties())
             {
                 if (property.AttributeExists<PropertyInfo, ConnectionStringParameterAttribute>())
-                    settings[property.Name] = $"{property.GetValue(instance)}";
+                    settings[property.Name] = $"{property.GetValue(this)}";
             }
 
-            MeasurementKey[] measurementKeys = instance.InputMeasurementKeys;
-            int inputsPerAdapter = instance.InputsPerAdapter;
-            int nameIndex = instance.InputMeasurementUsedForName;
+            int inputsPerAdapter = InputsPerAdapter;
+            int outputsPerAdapter = OutputNames.Count;
+            int nameIndex = InputMeasurementIndexUsedForName;
 
             // Create child adapter for provided inputs to the parent bulk collection-based adapter
             for (int i = 0; i < measurementKeys.Length; i += inputsPerAdapter)
             {
                 Guid[] inputs = new Guid[inputsPerAdapter];
-                Guid[] outputs = new Guid[instance.OutputNames.Count];
+                Guid[] outputs = new Guid[outputsPerAdapter];
 
                 // Adapter inputs are presumed to be grouped together
-                for (int j = 0; j < inputsPerAdapter; j++)
-                    inputs[j] = measurementKeys[i / inputsPerAdapter * inputsPerAdapter + j].SignalID;
+                for (int j = 0; j < inputsPerAdapter && i + j < measurementKeys.Length; j++)
+                    inputs[j] = measurementKeys[i + j].SignalID;
 
-                string inputName = instance.LookupPointTag(inputs[nameIndex]);
-                string adapterName = $"{instance.Name}!{inputName}";
+                string inputName = this.LookupPointTag(inputs[nameIndex]);
+                string adapterName = $"{Name}!{inputName}";
 
                 // Track active adapter names so that adapters that no longer have sources can be removed
                 activeAdapterNames.Add(adapterName);
 
                 // See if child adapter already exists
-                if (instance.FindAdapter(adapterName) != null)
+                if (this.FindAdapter(adapterName) != null)
                     continue;
 
                 // Setup output measurements for new child adapter
-                for (int j = 0; j < instance.OutputNames.Count; j++)
+                for (int j = 0; j < outputsPerAdapter; j++)
                 {
-                    string outputID = $"{adapterName}-{instance.OutputNames[j].ToUpper()}";
-                    string outputPointTag = string.Format(instance.PointTagTemplate, outputID);
-                    string signalReference = string.Format(instance.SignalReferenceTemplate, outputID);
+                    string outputID = $"{adapterName}-{OutputNames[j].ToUpper()}";
+                    string outputPointTag = string.Format(PointTagTemplate, outputID);
+                    string signalReference = string.Format(SignalReferenceTemplate, outputID);
 
                     // Get output measurement record, creating a new one if needed
-                    Model.Measurement measurement = instance.GetMeasurementRecord(outputPointTag, signalReference, instance.SignalType, instance.TargetHistorianAcronym);
+                    MeasurementRecord measurement = this.GetMeasurementRecord(outputPointTag, signalReference, SignalType, TargetHistorianAcronym);
 
                     // Track output signal IDs
                     signalIDs.Add(measurement.SignalID);
@@ -456,33 +508,33 @@ namespace MAS
                 }
 
                 // Add inputs and outputs to connection string settings for child adapter
-                settings[nameof(instance.InputMeasurementKeys)] = string.Join(";", inputs);
-                settings[nameof(instance.OutputMeasurements)] = string.Join(";", outputs);
+                settings[nameof(InputMeasurementKeys)] = string.Join(";", inputs);
+                settings[nameof(OutputMeasurements)] = string.Join(";", outputs);
 
                 adapters.Add(new TAdapter
                 {
                     Name = adapterName,
-                    ID = instance.AdapterIDCounter++,
+                    ID = AdapterIDCounter++,
                     ConnectionString = settings.JoinKeyValuePairs(),
-                    DataSource = instance.DataSource
+                    DataSource = DataSource
                 });
             }
 
             // Check for adapters that are no longer referenced and need to be removed
-            IEnumerable<IAdapter> adaptersToRemove = instance.Where(adapter => !activeAdapterNames.Contains(adapter.Name));
+            IEnumerable<IActionAdapter> adaptersToRemove = this.Where<IActionAdapter>(adapter => !activeAdapterNames.Contains(adapter.Name));
 
-            foreach (IAdapter adapter in adaptersToRemove)
-                instance.Remove(adapter);
+            foreach (IActionAdapter adapter in adaptersToRemove)
+                Remove(adapter);
 
             // Host system was notified about configuration changes, i.e., new or updated output measurements.
             // Before initializing child adapters, we wait for this process to complete.
-            instance.WaitForSignalsToLoad(signalIDs.ToArray());
+            this.WaitForSignalsToLoad(signalIDs.ToArray());
 
             // Add new adapters to parent bulk adapter collection, this will auto-initialize each child adapter
-            foreach (IAdapter adapter in adapters)
-                instance.Add(adapter);
+            foreach (TAdapter adapter in adapters)
+                Add(adapter as IActionAdapter);
 
-            instance.RecalculateRoutingTables();
+            RecalculateRoutingTables();
         }
 
         #endregion
@@ -492,8 +544,6 @@ namespace MAS
         RoutingTables IIndependentAdapterManager.RoutingTables { get; set; }
 
         string IIndependentAdapterManager.OriginalDataMember { get; set; }
-
-        uint IIndependentAdapterManager.AdapterIDCounter { get; set; }
 
         ManualResetEventSlim IIndependentAdapterManager.ConfigurationReloadedWaitHandle { get; set; }
 

@@ -112,8 +112,8 @@ namespace MAS
             if (instance.ConfigurationReloadWaitTimeout < 0)
                 instance.ConfigurationReloadWaitTimeout = 0;
 
-            if (instance.InputMeasurementUsedForName < 0 || instance.InputMeasurementUsedForName > instance.InputsPerAdapter - 1)
-                instance.InputMeasurementUsedForName = 0;
+            if (instance.InputMeasurementIndexUsedForName < 0 || instance.InputMeasurementIndexUsedForName > instance.InputsPerAdapter - 1)
+                instance.InputMeasurementIndexUsedForName = 0;
 
             instance.Initialized = true;
         }
@@ -173,7 +173,7 @@ namespace MAS
             status.AppendLine();
             status.AppendFormat("        Inputs per Adapter: {0:N0}", instance.InputsPerAdapter);
             status.AppendLine();
-            status.AppendFormat("Input Measurement for Name: {0:N0}", instance.InputMeasurementUsedForName);
+            status.AppendFormat(" Input Index Used for Name: {0:N0}", instance.InputMeasurementIndexUsedForName);
             status.AppendLine();
             status.AppendFormat("              Output Names: {0}", string.Join(", ", instance.OutputNames.AsEnumerable() ?? new[] { "" }));
             status.AppendLine();
@@ -280,6 +280,30 @@ namespace MAS
 
             return "Processing not enabled".CenterText(maxLength);
         }
+
+        /// <summary>
+        /// Enumerates child adapters.
+        /// </summary>
+        /// <param name="instance">Target <see cref="IIndependentAdapterManager"/> instance.</param>
+        public static void HandleEnumerateAdapters(this IIndependentAdapterManager instance)
+        {
+            StringBuilder enumeratedAdapters = new StringBuilder();
+            IAdapter[] adapters = instance.ToArray();
+
+            enumeratedAdapters.AppendLine($"{instance.Name} Indexed Adapter Enumeration - {adapters.Length:N0} Total:\r\n");
+
+            for (int i = 0; i < adapters.Length; i++)
+                enumeratedAdapters.AppendLine($"{i.ToString("N0").PadLeft(5)}: {adapters[i].Name}".TrimWithEllipsisMiddle(79));
+
+            instance.OnStatusMessage(MessageLevel.Info, enumeratedAdapters.ToString());
+        }
+
+        /// <summary>
+        /// Gets subscriber information for specified client connection.
+        /// </summary>
+        /// <param name="instance">Target <see cref="IIndependentAdapterManager"/> instance.</param>
+        /// <param name="adapterIndex">Enumerated index for child adapter.</param>
+        public static string HandleGetAdapterStatus(this IIndependentAdapterManager instance, int adapterIndex) => instance[adapterIndex].Status;
 
         /// <summary>
         /// Gets configured database connection.

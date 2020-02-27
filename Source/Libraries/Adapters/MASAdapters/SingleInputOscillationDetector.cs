@@ -40,12 +40,34 @@ namespace MAS
     {
         #region [ Members ]
 
+        // Nested Types
+
+        /// <summary>
+        /// Defines possible calculation types for the <see cref="SingleInputOscillationDetector"/>.
+        /// </summary>
+        public enum CalculationType
+        {
+            /// <summary>
+            /// Megavars.
+            /// </summary>
+            Frequency,
+            /// <summary>
+            /// Voltage Magnitude.
+            /// </summary>
+            VoltageMagnitude
+        }
+
         // Constants
 
         /// <summary>
         /// Defines the default value for the <see cref="AdjustmentStrategy"/>.
         /// </summary>
         public const string DefaultAdjustmentStrategy = "LineToNeutral";
+
+        /// <summary>
+        /// Defaults the default value for the <see cref="TargetCalculationType" />
+        /// </summary>
+        public const string DefaultCalculationType = "Frequency";
 
         // Fields
         private readonly OscillationDetector m_detector;
@@ -78,6 +100,14 @@ namespace MAS
         public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
 
         /// <summary>
+        /// Gets or sets the target calculation type for the oscillation detector.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the target calculation type for the oscillation detector.")]
+        [DefaultValue(typeof(CalculationType), DefaultCalculationType)]
+        public CalculationType TargetCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
+
+        /// <summary>
         /// Returns the detailed status of the <see cref="SingleInputOscillationDetector"/>.
         /// </summary>
         public override string Status
@@ -88,6 +118,8 @@ namespace MAS
 
                 status.Append(m_detector.Status);
                 status.AppendFormat("        Voltage Adjustment: {0}", AdjustmentStrategy);
+                status.AppendLine();
+                status.AppendFormat("   Target Calculation Type: {0}", TargetCalculationType);
                 status.AppendLine();
                 status.Append(base.Status);
 
@@ -123,7 +155,7 @@ namespace MAS
             m_detector.OutputMeasurements = OutputMeasurements;
             m_detector.FramesPerSecond = FramesPerSecond;
             m_detector.InputTypes = InputMeasurementKeyTypes;
-            m_detector.Initialize();
+            m_detector.Initialize(Name);
         }
 
         /// <summary>

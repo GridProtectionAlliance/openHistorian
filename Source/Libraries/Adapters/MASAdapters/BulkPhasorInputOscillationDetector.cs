@@ -33,18 +33,19 @@ using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using PowerCalculations;
-using static MAS.OscillationDetector;
 using MeasurementRecord = MAS.Model.Measurement;
 using PhasorRecord = MAS.Model.Phasor;
 using SignalTypeRecord = MAS.Model.SignalType;
 using SignalType = GSF.Units.EE.SignalType;
+using static MAS.PhasorInputOscillationDetector;
+using static MAS.OscillationDetector;
 
 namespace MAS
 {
     /// <summary>
     /// Represents an adapter that manages bulk detection of oscillations based on individual inputs.
     /// </summary>
-    [Description("MAS Oscillation Detector [Bulk Phasor Input]: Manages bulk detection of oscillations based on individual inputs.")]
+    [Description("MAS Oscillation Detector [Bulk Phasor Input]: Manages bulk detection of oscillations based on voltage and current phasor data inputs.")]
     [EditorBrowsable(EditorBrowsableState.Always)]
     public class BulkPhasorInputOscillationDetector : IndependentActionAdapterManagerBase<PhasorInputOscillationDetector>
     {
@@ -55,7 +56,21 @@ namespace MAS
         /// <summary>
         /// Defines the default value for the <see cref="IndependentActionAdapterManagerBase{TAdapter}.InputMeasurementKeys"/>.
         /// </summary>
-        public const string DefaultInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType LIKE '%PH%' ORDER BY PhasorID";
+        public const string DefaultInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType LIKE '%PH%' AND Phase='+' ORDER BY PhasorID";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="InputMeasurementIndexUsedForName"/>.
+        /// </summary>
+        public const int DefaultInputMeasurementIndexUsedForName = 2;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates new <see cref="BulkPhasorInputOscillationDetector"/>.
+        /// </summary>
+        public BulkPhasorInputOscillationDetector() => base.InputMeasurementIndexUsedForName = DefaultInputMeasurementIndexUsedForName;
 
         #endregion
 
@@ -66,16 +81,28 @@ namespace MAS
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines default strategy used to adjust voltage values for based on the nature of the voltage measurements.")]
-        [DefaultValue(typeof(VoltageAdjustmentStrategy), PhasorInputOscillationDetector.DefaultAdjustmentStrategy)]
-        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), PhasorInputOscillationDetector.DefaultAdjustmentStrategy);
+        [DefaultValue(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy)]
+        public VoltageAdjustmentStrategy AdjustmentStrategy { get; set; } = (VoltageAdjustmentStrategy)Enum.Parse(typeof(VoltageAdjustmentStrategy), DefaultAdjustmentStrategy);
 
         /// <summary>
         /// Gets or sets the target calculation type for the oscillation detector.
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines the target calculation type for the oscillation detector.")]
-        [DefaultValue(typeof(PhasorInputOscillationDetector.CalculationType), PhasorInputOscillationDetector.DefaultCalculationType)]
-        public PhasorInputOscillationDetector.CalculationType TargetCalculationType { get; set; } = (PhasorInputOscillationDetector.CalculationType)Enum.Parse(typeof(PhasorInputOscillationDetector.CalculationType), PhasorInputOscillationDetector.DefaultCalculationType);
+        [DefaultValue(typeof(CalculationType), DefaultCalculationType)]
+        public CalculationType TargetCalculationType { get; set; } = (CalculationType)Enum.Parse(typeof(CalculationType), DefaultCalculationType);
+
+        /// <summary>
+        /// Gets or sets the index into the per adapter input measurements to use for target adapter name.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the index into the per adapter input measurements to use for target adapter name.")]
+        [DefaultValue(DefaultInputMeasurementIndexUsedForName)]
+        public override int InputMeasurementIndexUsedForName // Overriding to provide implementation specific default value
+        {
+            get => base.InputMeasurementIndexUsedForName;
+            set => base.InputMeasurementIndexUsedForName = value;
+        }
 
         /// <summary>
         /// Gets number of input measurement required by each adapter.
@@ -231,9 +258,12 @@ namespace MAS
             if (unassociatedCount > 0)
                 OnStatusMessage(MessageLevel.Warning, $"{unassociatedCount:N0} of the specified input currents had no associated voltages and were excluded as inputs.");
 
-            // Define properly ordered and assocaited set of inputs
-            InputMeasurementKeys = inputs.ToArray();
+            if (inputs.Count % InputsPerAdapter != 0)
+                OnStatusMessage(MessageLevel.Warning, $"Unexpected number of input {inputs.Count:N0} for {InputsPerAdapter:N0} inputs per adapter.");
 
+            // Define properly ordered and associated set of inputs
+            InputMeasurementKeys = inputs.ToArray();
+            
             InitializeChildAdapterManagement();
         }
 
