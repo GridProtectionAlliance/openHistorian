@@ -204,15 +204,14 @@ namespace openHistorian.Adapters
                     try
                     {
                         // Validate user has a role defined in latest security context
-                        Dictionary<string, string[]> securityContext = s_latestSecurityContext;
+                        Dictionary<string, string[]> securityContext = s_latestSecurityContext ?? StartUserSynchronization(userName);
 
                         if (securityContext == null)
-                            return;
+                            throw new InvalidOperationException("Failed to load security context");
 
-                        Dictionary<string, string[]> userRoles = StartUserSynchronization(userName);
                         string newUserMessage = securityContext.ContainsKey(userName) ? "" : $"New user \"{userName}\" encountered. ";
 
-                        OnStatusMessage($"{newUserMessage}Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.");
+                        OnStatusMessage($"{newUserMessage}Security context with {securityContext.Count:N0} users and associated roles queued for Grafana user synchronization.");
                     }
                     catch (Exception ex)
                     {

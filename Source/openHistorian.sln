@@ -158,9 +158,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{2B538111-F7E
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}"
-	ProjectSection(SolutionItems) = preProject
-		Data\ReportingDB\ActiveMeasuremtnTable.sql = Data\ReportingDB\ActiveMeasuremtnTable.sql
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6735399A-CF7B-4585-8EE6-BC333C7D6EDF}"
 	ProjectSection(SolutionItems) = preProject
