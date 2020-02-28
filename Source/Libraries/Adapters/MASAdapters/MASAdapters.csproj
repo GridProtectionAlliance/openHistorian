@@ -66,8 +66,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
-IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"
-IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)MathNet.Numerics.dll" "$(TargetDir)..\..\Applications\openHistorian"
-IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)MathNet.Filtering.dll" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
   </PropertyGroup>
 </Project>
