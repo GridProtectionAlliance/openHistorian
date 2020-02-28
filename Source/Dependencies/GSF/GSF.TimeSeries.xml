@@ -505,6 +505,887 @@
             </summary>
             <param name="measurements">Measurements that have not yet been routed.</param>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager">
+            <summary>
+            Represents the interface for implementations of independent adapter collection managers.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloadWaitTimeout">
+            <summary>
+            Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloadWaitAttempts">
+            <summary>
+            Gets or sets the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.DatabaseConnectionString">
+            <summary>
+            Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.DatabaseProviderString">
+            <summary>
+            Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PointTagTemplate">
+            <summary>
+            Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalReferenceTemplate">
+            <summary>
+            Gets or sets template for local signal reference measurement name for source historian point.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType">
+            <summary>
+            Gets or sets signal type for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.TargetHistorianAcronym">
+            <summary>
+            Gets or sets the target historian acronym for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SourceMeasurementTable">
+            <summary>
+            Gets or sets the source measurement table to use for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.RoutingTables">
+            <summary>
+            Gets routing tables used by<see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OriginalDataMember">
+            <summary>
+            Gets original data member setting for <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.AutoReparseConnectionString">
+            <summary>
+            Gets or sets flag that determines if the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> instance
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time the
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.DataSource"/> is updated without requiring adapter to be reinitialized.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.InputMeasurementKeyTypes">
+            <summary>
+            Gets input measurement <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OutputMeasurementTypes">
+            <summary>
+            Gets output measurement <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.OutputMeasurements"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloadedWaitHandle">
+            <summary>
+            Gets or sets wait handle used by <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> instance to
+            manage waiting for changes to be loaded in system configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PerAdapterInputCount">
+            <summary>
+            Gets number of input measurement required by each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.InputMeasurementIndexUsedForName">
+            <summary>
+            Gets or sets the index into the per adapter input measurements to use for target adapter name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PerAdapterOutputNames">
+            <summary>
+            Gets output measurement names to use for each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.AdapterIDCounter">
+            <summary>
+            Gets or sets current adapter ID counter.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ParseConnectionString">
+            <summary>
+            Parses connection string. Derived classes should override for custom connection string parsing.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloaded">
+            <summary>
+            Notifies derived classes that configuration has been reloaded.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.RecalculateRoutingTables">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.GetConfiguredConnection">
+            <summary>
+            Gets configured database connection.
+            </summary>
+            <returns>New ADO data connection based on configured settings.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.EnumerateAdapters">
+            <summary>
+            Enumerates child adapters
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.GetAdapterStatus(System.Int32)">
+            <summary>
+            Gets subscriber information for specified client connection.
+            </summary>
+            <param name="adapterIndex">Enumerated index for child adapter.</param>
+            <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OnConfigurationChanged">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConfigurationChanged"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OnInputMeasurementKeysUpdated">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.InputMeasurementKeysUpdated"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="status">New status message.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception,System.String,GSF.Diagnostics.MessageFlags)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessException"/> event.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+            <param name="eventName">A fixed string to classify this event; defaults to <c>null</c>.</param>
+            <param name="flags"><see cref="T:GSF.Diagnostics.MessageFlags"/> to use, if any; defaults to <see cref="F:GSF.Diagnostics.MessageFlags.None"/>.</param>
+            <remarks>
+            <see pref="eventName"/> should be a constant string value associated with what type of message is being
+            generated. In general, there should only be a few dozen distinct event names per class. Exceeding this
+            threshold will cause the EventName to be replaced with a general warning that a usage issue has occurred.
+            </remarks>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1">
+            <summary>
+            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DefaultFramesPerSecond">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.FramesPerSecond"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DefaultLagTime">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LagTime"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DefaultLeadTime">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LeadTime"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements for the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.FramesPerSecond">
+            <summary>
+            Gets or sets the number of frames per second applied to each adapter.
+            </summary>
+            <remarks>
+            Valid frame rates for a <see cref="T:GSF.TimeSeries.ConcentratorBase"/> are greater than 0 frames per second.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
+            </summary>
+            <remarks>
+            <para>Defines the time sensitivity to past measurement timestamps.</para>
+            <para>The number of seconds allowed before assuming a measurement timestamp is too old.</para>
+            <para>This becomes the amount of delay introduced by the concentrator to allow time for data to flow into the system.</para>
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second) applied to each adapter.
+            </summary>
+            <remarks>
+            <para>Defines the time sensitivity to future measurement timestamps.</para>
+            <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
+            <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ConfigurationReloadWaitTimeout">
+            <summary>
+            Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ConfigurationReloadWaitAttempts">
+            <summary>
+            Gets or sets the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DatabaseConnectionString">
+            <summary>
+            Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DatabaseProviderString">
+            <summary>
+            Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PointTagTemplate">
+            <summary>
+            Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalReferenceTemplate">
+            <summary>
+            Gets or sets template for local signal reference measurement name for source historian point.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalType">
+            <summary>
+            Gets or sets signal type for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.TargetHistorianAcronym">
+            <summary>
+            Gets or sets the target historian acronym for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SourceMeasurementTable">
+            <summary>
+            Gets or sets the source measurement table to use for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source used to load each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>. Updates
+            to this property will cascade to all adapters in this <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerAdapterInputCount">
+            <summary>
+            Gets number of input measurement required by each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementIndexUsedForName">
+            <summary>
+            Gets or sets the index into the per adapter input measurements to use for target adapter name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerAdapterOutputNames">
+            <summary>
+            Gets output measurement names to use for each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString">
+            <summary>
+            Gets or sets flag that determines if the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> adapter
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time
+            the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
+            to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementKeyTypes">
+            <summary>
+            Gets input measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.OutputMeasurementTypes">
+            <summary>
+            Gets output measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.OutputMeasurements"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AdapterIDCounter">
+            <summary>
+            Gets or sets current adapter ID counter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1" />.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement">
+            <summary>
+            Initializes management operations for child adapters based on inputs.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ValidateEvenInputCount">
+            <summary>
+            Validates that an even number of inputs are provided for specified <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerAdapterInputCount"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParseConnectionString">
+            <summary>
+            Parses connection string. Derived classes should override for custom connection string parsing.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ConfigurationReloaded">
+            <summary>
+            Notifies derived classes that configuration has been reloaded
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.RecalculateRoutingTables">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing to each <see cref="T:GSF.TimeSeries.Adapters.IActionAdapter"/> connected to this <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.EnumerateAdapters">
+            <summary>
+            Enumerates child adapters.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.GetAdapterStatus(System.Int32)">
+            <summary>
+            Gets subscriber information for specified client connection.
+            </summary>
+            <param name="adapterIndex">Enumerated index for child adapter.</param>
+            <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.GetConfiguredConnection">
+            <summary>
+            Gets configured database connection.
+            </summary>
+            <returns>New ADO data connection based on configured settings.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions">
+            <summary>
+            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultConfigurationReloadWaitTimeout">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloadWaitTimeout"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultConfigurationReloadWaitAttempts">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ConfigurationReloadWaitAttempts"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultDatabaseConnectionString">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.DatabaseConnectionString"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultDatabaseProviderString">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.DatabaseProviderString"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultPointTagTemplate">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PointTagTemplate"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultSignalReferenceTemplate">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalReferenceTemplate"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultSignalType">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultTargetHistorianAcronym">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.TargetHistorianAcronym"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultSourceMeasurementTable">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SourceMeasurementTable"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.FindAdapter(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.String)">
+            <summary>
+            Finds child adapter with specified <paramref name="adapterName"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="adapterName">Adapter name to find.</param>
+            <returns><see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance with <paramref name="adapterName"/>, if found; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.LookupPointTag(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
+            <summary>
+            Lookups up point tag name from provided <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.SignalIDExists(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
+            <summary>
+            Determines if <paramref name="signalID"/> exists in local configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="signalID">Signal ID to find.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><c>true</c>, if <paramref name="signalID"/> is found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.GetMeasurementRecord(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.String,System.String,GSF.Units.EE.SignalType,System.String)">
+            <summary>
+            Gets measurement record, creating it if needed.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="pointTag">Point tag of measurement.</param>
+            <param name="signalReference">Signal reference of measurement.</param>
+            <param name="signalType">Signal type of measurement.</param>
+            <param name="targetHistorianAcronym">Acronym of target historian for measurement.</param>
+            <returns>Measurement record.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.WaitForSignalsToLoad(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid[],System.String)">
+            <summary>
+            Waits for <paramref name="signalIDs"/> to be loaded in system configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="signalIDs"></param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleConstruct(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Handles construction steps for a new <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleDispose(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Disposes resources used by the <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleInitialize(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Initializes the <see cref="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions" />.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleUpdateDataSource(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Sets <see cref="T:System.Data.DataSet"/> based data source used to load each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>. Updates to this
+            property will cascade to all adapters in this <see cref="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions"/> instance.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleStatus(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Returns the detailed status for the <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleParseConnectionString(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Parses connection string. Derived classes should override for custom connection string parsing.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleValidateEvenInputCount(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Validates that an even number of inputs are provided for specified <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PerAdapterInputCount"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleRecalculateRoutingTables(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleQueueMeasurementsForProcessing(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing to each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> connected to this <see cref="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleGetShortStatus(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleEnumerateAdapters(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Enumerates child adapters.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleGetAdapterStatus(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Int32)">
+            <summary>
+            Gets subscriber information for specified client connection.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="adapterIndex">Enumerated index for child adapter.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleGetConfiguredConnection(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
+            <summary>
+            Gets configured database connection.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <returns>New ADO data connection based on configured settings.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.DataSourceChanged(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Data.DataSet)">
+            <summary>
+            Determines whether the data in the data source has actually changed when receiving a new data source.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="newDataSource">New data source to check.</param>
+            <returns><c>true</c> if data source has changed; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase">
+            <summary>
+            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of input adapters.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ConfigurationReloadWaitTimeout">
+            <summary>
+            Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ConfigurationReloadWaitAttempts">
+            <summary>
+            Gets or sets the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.DatabaseConnectionString">
+            <summary>
+            Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.DatabaseProviderString">
+            <summary>
+            Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.PointTagTemplate">
+            <summary>
+            Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalReferenceTemplate">
+            <summary>
+            Gets or sets template for local signal reference measurement name for source historian point.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalType">
+            <summary>
+            Gets or sets signal type for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.TargetHistorianAcronym">
+            <summary>
+            Gets or sets the target historian acronym for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SourceMeasurementTable">
+            <summary>
+            Gets or sets the source measurement table to use for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source used to load each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>. Updates
+            to this property will cascade to all adapters in this <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.PerAdapterOutputNames">
+            <summary>
+            Gets output measurement names to use for each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.AutoReparseConnectionString">
+            <summary>
+            Gets or sets flag that determines if the <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/> adapter
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time
+            the <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
+            to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.OutputMeasurementTypes">
+            <summary>
+            Gets output measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.OutputMeasurements"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase" />.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ParseConnectionString">
+            <summary>
+            Parses connection string. Derived classes should override for custom connection string parsing.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ConfigurationReloaded">
+            <summary>
+            Notifies derived classes that configuration has been reloaded
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.RecalculateRoutingTables">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.EnumerateAdapters">
+            <summary>
+            Enumerates child adapters.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.GetAdapterStatus(System.Int32)">
+            <summary>
+            Gets subscriber information for specified client connection.
+            </summary>
+            <param name="adapterIndex">Enumerated index for child adapter.</param>
+            <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.GetConfiguredConnection">
+            <summary>
+            Gets configured database connection.
+            </summary>
+            <returns>New ADO data connection based on configured settings.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase">
+            <summary>
+            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of output adapters.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements for the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.ConfigurationReloadWaitTimeout">
+            <summary>
+            Gets or sets the wait timeout, in milliseconds, that system wait for system configuration reload to complete.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.ConfigurationReloadWaitAttempts">
+            <summary>
+            Gets or sets the total number of attempts to wait for system configuration reloads when waiting for configuration updates to be available.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.DatabaseConnectionString">
+            <summary>
+            Gets or sets the connection string used for database operations. Leave blank to use local configuration database defined in "systemSettings".
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.DatabaseProviderString">
+            <summary>
+            Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.PointTagTemplate">
+            <summary>
+            Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalReferenceTemplate">
+            <summary>
+            Gets or sets template for local signal reference measurement name for source historian point.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType">
+            <summary>
+            Gets or sets signal type for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.TargetHistorianAcronym">
+            <summary>
+            Gets or sets the target historian acronym for output measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SourceMeasurementTable">
+            <summary>
+            Gets or sets the source measurement table to use for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source used to load each <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/>. Updates
+            to this property will cascade to all adapters in this <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.PerAdapterInputCount">
+            <summary>
+            Gets number of input measurement required by each adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.InputMeasurementIndexUsedForName">
+            <summary>
+            Gets or sets the index into the per adapter input measurements to use for target adapter name.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.AutoReparseConnectionString">
+            <summary>
+            Gets or sets flag that determines if the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/> adapter
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time
+            the <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
+            to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.InputMeasurementKeyTypes">
+            <summary>
+            Gets input measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase" />.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.ValidateEvenInputCount">
+            <summary>
+            Validates that an even number of inputs are provided for specified <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.PerAdapterInputCount"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.ParseConnectionString">
+            <summary>
+            Parses connection string. Derived classes should override for custom connection string parsing.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.ConfigurationReloaded">
+            <summary>
+            Notifies derived classes that configuration has been reloaded
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.RecalculateRoutingTables">
+            <summary>
+            Recalculates routing tables.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing to each <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> connected to this <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.EnumerateAdapters">
+            <summary>
+            Enumerates child adapters.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.GetAdapterStatus(System.Int32)">
+            <summary>
+            Gets subscriber information for specified client connection.
+            </summary>
+            <param name="adapterIndex">Enumerated index for child adapter.</param>
+            <returns>Status for adapter with specified <paramref name="adapterIndex"/>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.GetConfiguredConnection">
+            <summary>
+            Gets configured database connection.
+            </summary>
+            <returns>New ADO data connection based on configured settings.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.IOptimizedRoutingConsumer">
             <summary>
             Provides an alternative means of routing messages one at a time if an adapter
@@ -548,6 +1429,84 @@
             </summary>
             <param name="sender">the sender object</param>
             <param name="measurements">the event arguments</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase">
+            <summary>
+            Represents an adapter base class that provides functionality to operate on a 1-second window of data.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.InputCount">
+            <summary>
+            Gets or sets the expected number of input measurements for a <see cref="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.OutputCount">
+            <summary>
+            Gets or sets the expected number of output measurements for a <see cref="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.SubsecondOffsets">
+            <summary>
+            Gets sub-second offsets based on current <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.FramesPerSecond"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the action adapter expects.
+            </summary>
+            <remarks>
+            If your adapter needs to receive all measurements, you must explicitly set InputMeasurementKeys to null.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.InputMeasurementKeyTypes">
+            <summary>
+            Gets or sets input measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.OutputMeasurementTypes">
+            <summary>
+            Gets or sets output measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.OutputMeasurements"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.Initialize">
+            <summary>
+            Initializes <see cref="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase" />.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.ProcessDataWindow(GSF.Ticks,GSF.TimeSeries.IMeasurement[0:,0:])">
+            <summary>
+            Processes 1-second data window.
+            </summary>
+            <param name="timestamp">Top of second window timestamp.</param>
+            <param name="dataWindow">1-second data window.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame" /> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement" />
+            values that arrived within defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime" />.
+            </summary>
+            <param name="frame">Collection of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime" /> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame" /> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond" /> - 1</c>.</param>
+            <remarks>
+            If user implemented publication function consistently exceeds available publishing time (i.e., <c>1 / <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond" /></c> seconds),
+            concentration will fall behind. A small amount of this time is required by the <see cref="T:GSF.TimeSeries.ConcentratorBase" /> for processing overhead, so actual total time
+            available for user function process will always be slightly less than <c>1 / <see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond" /></c> seconds.
+            </remarks>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.RoutingPassthroughMethod">
             <summary>
@@ -2753,7 +3712,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.RealTime">
             <summary>
-            Gets the the most accurate time value that is available. If <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> = <c>true</c>, then
+            Gets the most accurate time value that is available. If <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> = <c>true</c>, then
             this function will return <see cref="P:System.DateTime.UtcNow"/>. Otherwise, this function will return the timestamp of the
             most recent measurement.
             </summary>
@@ -4388,6 +5347,27 @@
             <param name="message">Exception message.</param>
             <param name="innerException">Inner exception.</param>
         </member>
+        <member name="T:GSF.TimeSeries.DeriveQualityFlags">
+            <summary>
+            Represents functions to derive <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> related to value and time quality.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DeriveQualityFlags.From(System.Collections.Generic.IEnumerable{System.Boolean},System.Collections.Generic.IEnumerable{System.Boolean})">
+            <summary>
+            Gets derived quality flags from a set of value and time quality vectors.
+            </summary>
+            <param name="valueQualities">Boolean vector where flag determines if value quality is good.</param>
+            <param name="timeQualities">Boolean vector where flag determines if time quality is good.</param>
+            <returns>Derived quality flags.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.DeriveQualityFlags.From(System.Boolean,System.Boolean)">
+            <summary>
+            Gets derived quality flags from specified value and time quality.
+            </summary>
+            <param name="valueQualityIsGood">Flag that determines if value quality is good.</param>
+            <param name="timeQualityIsGood">Flag that determines if time quality is good.</param>
+            <returns>Derived quality flags.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementMetadata">
             <summary>
             Represents a set of meta-data fields for <see cref="T:GSF.TimeSeries.IMeasurement"/> that should rarely change.
@@ -5296,6 +6276,42 @@
             <param name="dataSet"></param>
             <returns><see cref="T:GSF.TimeSeries.Data.ActiveMeasurementsTableLookup"/> for the provided dataset.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.LookupMetadata(System.Data.DataSet,System.Guid,System.String)">
+            <summary>
+            Lookups up metadata record from provided <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
+            </summary>
+            <param name="dataSource">Target <see cref="T:System.Data.DataSet"/>.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Metadata data row, if found; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.GetSignalType(System.Data.DataSet,GSF.TimeSeries.MeasurementKey,System.String)">
+            <summary>
+            Gets signal type for given measurement key
+            </summary>
+            <param name="dataSource">Target <see cref="T:System.Data.DataSet"/>.</param>
+            <param name="key">Source <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><see cref="T:GSF.Units.EE.SignalType"/> as defined for measurement key in data source.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.GetSignalTypes(System.Data.DataSet,GSF.TimeSeries.MeasurementKey[],System.String)">
+            <summary>
+            Gets signal types for given measurement keys.
+            </summary>
+            <param name="dataSource">Target <see cref="T:System.Data.DataSet"/>.</param>
+            <param name="keys">Source set of <see cref="T:GSF.TimeSeries.MeasurementKey"/> values.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><see cref="T:GSF.Units.EE.SignalType"/> values for each defined measurement key as configured in data source.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Data.DataSourceLookups.GetSignalTypes(System.Data.DataSet,GSF.TimeSeries.IMeasurement[],System.String)">
+            <summary>
+            Gets signal types for given measurement keys.
+            </summary>
+            <param name="dataSource">Target <see cref="T:System.Data.DataSet"/>.</param>
+            <param name="measurements">Source set of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><see cref="T:GSF.Units.EE.SignalType"/> values for each defined measurement key as configured in data source.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Data.DataSourceLookupCache">
             <summary>
             Represents a lookup cache for adapter data source data.
@@ -5327,6 +6343,13 @@
             </summary>
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to test.</param>
             <returns><c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.BadTime"/> is not set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.DeriveQualityFlags(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Gets derived quality flags from a set of source measurements.
+            </summary>
+            <param name="measurements">Source measurements.</param>
+            <returns>Derived quality flags.</returns>
         </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.IsDiscarded(GSF.TimeSeries.IMeasurement)">
             <summary>
@@ -5391,6 +6414,34 @@
             </summary>
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> to create new <see cref="T:GSF.TimeSeries.MeasurementMetadata"/> for.</param>
             <param name="multiplier">New multiplier value to assign to measurement's metadata.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.GetDataColumn(GSF.TimeSeries.IMeasurement[0:,0:],System.Int32)">
+            <summary>
+            Gets a single column of measurement data from a two dimensional data window.
+            </summary>
+            <param name="dataWindow">Target data window.</param>
+            <param name="columnIndex">Index of column to return.</param>
+            <returns>All values from <paramref name="columnIndex"/> in <paramref name="dataWindow"/>.</returns>
+        </member>
+        <member name="P:GSF.TimeSeries.Model.Historian.CreatedOn">
+            <summary>
+            Created on field.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Model.Historian.CreatedBy">
+            <summary>
+            Created by field.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Model.Historian.UpdatedOn">
+            <summary>
+            Updated on field.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Model.Historian.UpdatedBy">
+            <summary>
+            Updated by field.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Reports.CorrectnessReportingProcess">
             <summary>
@@ -10890,7 +11941,7 @@
             <para>
             When the <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StartTime"/> or <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> temporal processing constraints are defined (i.e., not <c>null</c>), this
             specifies the start and stop time over which the subscriber session will process data. Passing in <c>null</c> for the <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StartTime"/>
-            and <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> specifies the the subscriber session will process data in standard, i.e., real-time, operation.
+            and <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> specifies the subscriber session will process data in standard, i.e., real-time, operation.
             </para>
             
             <para>
@@ -10938,7 +11989,7 @@
             <para>
             When the <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StartTime"/> or <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> temporal processing constraints are defined (i.e., not <c>null</c>), this
             specifies the start and stop time over which the subscriber session will process data. Passing in <c>null</c> for the <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StartTime"/>
-            and <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> specifies the the subscriber session will process data in standard, i.e., real-time, operation.
+            and <see cref="P:GSF.TimeSeries.Transport.SubscriptionInfo.StopTime"/> specifies the subscriber session will process data in standard, i.e., real-time, operation.
             </para>
             
             <para>

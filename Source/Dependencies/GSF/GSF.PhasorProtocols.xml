@@ -14024,6 +14024,17 @@
             Represents the IEEE C37.118 implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>, type 1, that can be sent or received.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.FixedHeaderLength">
+            <summary>
+            Represents the Length of the fixed part of this header
+            (total length - length of point definitions).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.m_timebase">
+            <summary>
+            Represents the TimeBase of the configuration frame.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/>.
