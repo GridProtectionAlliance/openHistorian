@@ -166,7 +166,7 @@
 }
     @helper BodyRows()
     {
-    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag, click: $parent.viewPageRecord"></button></div></td>
+    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag"></button></div></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: secondstoInterval(TimeInAlarm)"></span></td>
     <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
@@ -428,7 +428,7 @@
                 const progressIcon = $("#progressIcon");
 
                 if (isNumber(progress)) {
-                    progressBar.text(progress.toString() + "%");
+                    progressBar.text(progress.toFixed(0) + "%");
                     progressBar.css("width", progress.toString() + "%");
                 } 
 
