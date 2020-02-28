@@ -90,7 +90,7 @@ namespace MAS
         #endregion
 
         #region [ Properties ]
-		
+        
         /// <summary>
         /// Gets or sets the default strategy used to adjust voltage values for based on the nature of the voltage measurements.
         /// </summary>

@@ -39,12 +39,6 @@
     <Reference Include="GSF.TimeSeries">
       <HintPath>..\..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Filtering, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Dependencies\NuGet Packages\MathNet.Filtering.0.6.0\lib\net461\MathNet.Filtering.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Dependencies\NuGet Packages\MathNet.Numerics.4.9.0\lib\net461\MathNet.Numerics.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PhasorProtocolAdapters">
       <HintPath>..\..\..\Dependencies\GSF\PhasorProtocolAdapters.dll</HintPath>
@@ -64,26 +58,10 @@
   <ItemGroup>
     <Compile Include="BulkPhasorInputOscillationDetector.cs" />
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
-    <Compile Include="IIndependentAdapterManager.cs" />
-    <Compile Include="IndependentOutputAdapterManagerBase.cs" />
-    <Compile Include="IndependentInputAdapterManagerBase.cs" />
-    <Compile Include="IndependentAdapterManagerExtensions.cs" />
-    <Compile Include="IndependentAdapterManagerHandlers.cs" />
-    <Compile Include="Model\Device.cs" />
-    <Compile Include="Model\Historian.cs" />
-    <Compile Include="IndependentActionAdapterManagerBase.cs" />
-    <Compile Include="Common.cs" />
-    <Compile Include="Model\Measurement.cs" />
-    <Compile Include="Model\Phasor.cs" />
-    <Compile Include="Model\SignalType.cs" />
     <Compile Include="OscillationDetector.cs" />
-    <Compile Include="OneSecondDataWindowAdapterBase.cs" />
     <Compile Include="SingleInputOscillationDetector.cs" />
     <Compile Include="PhasorInputOscillationDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

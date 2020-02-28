@@ -33,9 +33,9 @@ using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using PowerCalculations;
-using MeasurementRecord = MAS.Model.Measurement;
-using PhasorRecord = MAS.Model.Phasor;
-using SignalTypeRecord = MAS.Model.SignalType;
+using MeasurementRecord = GSF.TimeSeries.Model.Measurement;
+using PhasorRecord = GSF.TimeSeries.Model.Phasor;
+using SignalTypeRecord = GSF.TimeSeries.Model.SignalType;
 using SignalType = GSF.Units.EE.SignalType;
 using static MAS.PhasorInputOscillationDetector;
 using static MAS.OscillationDetector;
@@ -107,12 +107,12 @@ namespace MAS
         /// <summary>
         /// Gets number of input measurement required by each adapter.
         /// </summary>
-        public override int InputsPerAdapter => 4;
+        public override int PerAdapterInputCount => 4;
 
         /// <summary>
         /// Gets output measurement names.
         /// </summary>
-        public override ReadOnlyCollection<string> OutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
+        public override ReadOnlyCollection<string> PerAdapterOutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
 
         /// <summary>
         /// Gets or sets output measurements that the <see cref="AdapterBase"/> will produce, if any.
@@ -258,8 +258,8 @@ namespace MAS
             if (unassociatedCount > 0)
                 OnStatusMessage(MessageLevel.Warning, $"{unassociatedCount:N0} of the specified input currents had no associated voltages and were excluded as inputs.");
 
-            if (inputs.Count % InputsPerAdapter != 0)
-                OnStatusMessage(MessageLevel.Warning, $"Unexpected number of input {inputs.Count:N0} for {InputsPerAdapter:N0} inputs per adapter.");
+            if (inputs.Count % PerAdapterInputCount != 0)
+                OnStatusMessage(MessageLevel.Warning, $"Unexpected number of input {inputs.Count:N0} for {PerAdapterInputCount:N0} inputs per adapter.");
 
             // Define properly ordered and associated set of inputs
             InputMeasurementKeys = inputs.ToArray();

@@ -107,12 +107,12 @@ namespace MAS
         /// <summary>
         /// Gets number of input measurement required by each adapter.
         /// </summary>
-        public override int InputsPerAdapter => 1;
+        public override int PerAdapterInputCount => 1;
 
         /// <summary>
         /// Gets output measurement names.
         /// </summary>
-        public override ReadOnlyCollection<string> OutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
+        public override ReadOnlyCollection<string> PerAdapterOutputNames => Array.AsReadOnly(Outputs.Select(output => $"{output}").ToArray());
 
         /// <summary>
         /// Gets or sets output measurements that the <see cref="AdapterBase"/> will produce, if any.

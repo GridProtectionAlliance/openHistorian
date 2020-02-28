@@ -45,7 +45,7 @@ namespace MAS
         // Nested Types
         
         /// <summary>
-        /// Defines possible calcualtion types for the <see cref="PhasorInputOscillationDetector"/>.
+        /// Defines possible calculation types for the <see cref="PhasorInputOscillationDetector"/>.
         /// </summary>
         public enum CalculationType
         {

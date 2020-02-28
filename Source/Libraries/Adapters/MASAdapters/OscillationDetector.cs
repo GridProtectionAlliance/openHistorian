@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using GSF;
+using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.Units.EE;
@@ -176,11 +177,11 @@ namespace MAS
         public void Initialize(string name)
         {
             Name = name;
-			
-			DetectorAPI.ReportCallback = PublishResults;
+            
+            DetectorAPI.ReportCallback = PublishResults;
 
             m_statusMessage(MessageLevel.Info, $"Oscillation detector \"{Name}\" using \"{string.Join(", ", InputTypes)}\" inputs initialized.");
-		}
+        }
 
         /// <summary>
         /// Processes 1-second data window consisting of measurements.
@@ -272,19 +273,19 @@ namespace MAS
                 {
                     case Output.Band1Energy:
                         measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band1Energy, result.Timestamp);
-                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band1EnergyQualityIsGood, m_timeQualityIsGood);
+                        measurements[index].StateFlags = DeriveQualityFlags.From(result.Band1EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band2Energy:
                         measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band2Energy, result.Timestamp);
-                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band2EnergyQualityIsGood, m_timeQualityIsGood);
+                        measurements[index].StateFlags = DeriveQualityFlags.From(result.Band2EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band3Energy:
                         measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band3Energy, result.Timestamp);
-                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band3EnergyQualityIsGood, m_timeQualityIsGood);
+                        measurements[index].StateFlags = DeriveQualityFlags.From(result.Band3EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     case Output.Band4Energy:
                         measurements[index] = Measurement.Clone(OutputMeasurements[index], result.Band4Energy, result.Timestamp);
-                        measurements[index].StateFlags = Common.DerivedQualityFlags(result.Band4EnergyQualityIsGood, m_timeQualityIsGood);
+                        measurements[index].StateFlags = DeriveQualityFlags.From(result.Band4EnergyQualityIsGood, m_timeQualityIsGood);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
