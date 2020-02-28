@@ -70,7 +70,12 @@ namespace MAS
         /// <summary>
         /// Creates new <see cref="BulkPhasorInputOscillationDetector"/>.
         /// </summary>
-        public BulkPhasorInputOscillationDetector() => base.InputMeasurementIndexUsedForName = DefaultInputMeasurementIndexUsedForName;
+        public BulkPhasorInputOscillationDetector()
+        {
+            base.InputMeasurementIndexUsedForName = DefaultInputMeasurementIndexUsedForName;
+            base.PointTagTemplate = DefaultPointTagTemplate;
+            base.SignalReferenceTemplate = DefaultSignalReferenceTemplate;
+        }
 
         #endregion
 
@@ -102,6 +107,30 @@ namespace MAS
         {
             get => base.InputMeasurementIndexUsedForName;
             set => base.InputMeasurementIndexUsedForName = value;
+        }
+
+        /// <summary>
+        /// Gets or sets template for output measurement point tag names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\".")]
+        [DefaultValue(DefaultPointTagTemplate)]
+        public override string PointTagTemplate // Overriding to provide implementation specific default value
+        { 
+            get => base.PointTagTemplate; 
+            set => base.PointTagTemplate = value;
+        }
+
+        /// <summary>
+        /// Gets or sets template for local signal reference measurement name for source historian point.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\".")]
+        [DefaultValue(DefaultSignalReferenceTemplate)]
+        public override string SignalReferenceTemplate // Overriding to provide implementation specific default value
+        { 
+            get => base.SignalReferenceTemplate;
+            set => base.SignalReferenceTemplate = value;
         }
 
         /// <summary>

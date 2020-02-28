@@ -30,6 +30,7 @@ using GSF;
 using GSF.Collections;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
+using GSF.TimeSeries.Adapters;
 using GSF.Units.EE;
 
 #pragma warning disable CA1819
@@ -89,6 +90,18 @@ namespace MAS
             /// </remarks>
             Band4Energy
         }
+
+        // Constants
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IIndependentAdapterManager.PointTagTemplate"/>.
+        /// </summary>
+        public const string DefaultPointTagTemplate = "MAS!{0}";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IIndependentAdapterManager.SignalReferenceTemplate"/>.
+        /// </summary>
+        public const string DefaultSignalReferenceTemplate = DefaultPointTagTemplate + "-CV";
 
         // Fields
         private readonly Action<MessageLevel, string> m_statusMessage;
