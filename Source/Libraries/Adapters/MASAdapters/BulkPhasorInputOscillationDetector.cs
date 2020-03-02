@@ -246,17 +246,41 @@ namespace MAS
                     }
 
                     MeasurementRecord currentMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", currentMagnitude.SignalID);
+
+                    // If current measurement is not found, skip configuration
+                    if (currentMeasurement == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
                     PhasorRecord currentPhasor = phasorTable.QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", currentMeasurement.DeviceID, currentMeasurement.PhasorSourceIndex);
 
                     // If no associated voltage is assigned, skip configuration
-                    if (currentPhasor.DestinationPhasorID == null)
+                    if (currentPhasor?.DestinationPhasorID == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
                     PhasorRecord voltagePhasor = phasorTable.QueryRecordWhere("ID = {0}", currentPhasor.DestinationPhasorID);
+                    
+                    // If associated voltage is not found, skip configuration
+                    if (voltagePhasor == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
                     MeasurementRecord voltageMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageMagnitudeSignalTypeID);
+
+                    // If voltage measurement is not found, skip configuration
+                    if (voltageMeasurement == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
                     MeasurementKey voltageMagnitude = null;
                     MeasurementKey voltageAngle = null;
 
