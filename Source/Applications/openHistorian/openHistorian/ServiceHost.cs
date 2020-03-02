@@ -289,6 +289,7 @@ namespace openHistorian
                         webServer.PagedViewModelTypes.TryAdd("VendorDevices.cshtml", new Tuple<Type, Type>(typeof(VendorDevice), typeof(SharedHub)));
                         webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                         webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
+                        webServer.PagedViewModelTypes.TryAdd("DeviceGroups.cshtml", new Tuple<Type, Type>(typeof(DeviceGroup), typeof(DataHub)));
                     }
                     catch (Exception ex)
                     {

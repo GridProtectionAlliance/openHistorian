@@ -105,6 +105,7 @@ namespace openHistorian
         private static int s_modbusProtocolID;
         private static int s_comtradeProtocolID;
         private static int s_ieeeC37_118ID;
+        private static int s_virtualProtocolID;
         //private static int s_vphmSignalTypeID;
 
         // Static Constructor
@@ -156,7 +157,7 @@ namespace openHistorian
             TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
 
             if (tableOperations == null)
-                return (new List<ReportMeasurements>());
+                return new List<ReportMeasurements>();
             return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
@@ -244,11 +245,11 @@ namespace openHistorian
 
         #region [ Device Table Operations ]
 
-        private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : (s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'"));
+        private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'");
 
-        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : (s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'"));
+        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'");
 
-        private int IeeeC37_118ID => s_ieeeC37_118ID != 0 ? s_ieeeC37_118ID : (s_ieeeC37_118ID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='IeeeC37_118V1'"));
+        private int IeeeC37_118ID => s_ieeeC37_118ID != 0 ? s_ieeeC37_118ID : s_ieeeC37_118ID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='IeeeC37_118V1'");
 
         //private int VphmSignalTypeID => s_vphmSignalTypeID != 0 ? s_vphmSignalTypeID : (s_vphmSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='VPHM'"));
 
@@ -355,6 +356,75 @@ namespace openHistorian
         public void AddNewOrUpdateDevice(Device device)
         {
             DataContext.Table<Device>().AddNewOrUpdateRecord(device);
+        }
+
+        #endregion
+
+        #region [ DeviceGroup Operations ]
+
+        private int VirtualProtocolID => s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.QueryRecordCount)]
+        public int QueryDeviceGroupCount(Guid nodeID, string filterText)
+        {
+            TableOperations<DeviceGroup> deviceGroupTable = DataContext.Table<DeviceGroup>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                deviceGroupTable.GetSearchRestriction(filterText);
+
+            return deviceGroupTable.QueryRecordCount(restriction);
+        }
+
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.QueryRecords)]
+        public IEnumerable<DeviceGroup> QueryDeviceGroups(Guid nodeID, string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            TableOperations<DeviceGroup> deviceGroupTable = DataContext.Table<DeviceGroup>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                deviceGroupTable.GetSearchRestriction(filterText);
+
+            return deviceGroupTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.DeleteRecord)]
+        public void DeleteDeviceGroup(int id)
+        {
+            DataContext.Table<DeviceGroup>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.CreateNewRecord)]
+        public DeviceGroup NewDeviceGroup()
+        {
+            return DataContext.Table<DeviceGroup>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.AddNewRecord)]
+        public void AddNewDeviceGroup(DeviceGroup deviceGroup)
+        {
+            deviceGroup.ProtocolID = VirtualProtocolID;
+            deviceGroup.AccessID = DeviceGroup.DefaultAccessID;
+            DataContext.Table<DeviceGroup>().AddNewRecord(deviceGroup);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroup), RecordOperation.UpdateRecord)]
+        public void UpdateDeviceGroup(DeviceGroup deviceGroup)
+        {
+            deviceGroup.ProtocolID = VirtualProtocolID;
+            deviceGroup.AccessID = DeviceGroup.DefaultAccessID;
+            DataContext.Table<DeviceGroup>().UpdateRecord(deviceGroup);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        public void AddNewOrUpdateDeviceGroup(DeviceGroup deviceGroup)
+        {
+            deviceGroup.ProtocolID = VirtualProtocolID;
+            deviceGroup.AccessID = DeviceGroup.DefaultAccessID;
+            DataContext.Table<DeviceGroup>().AddNewOrUpdateRecord(deviceGroup);
         }
 
         #endregion
