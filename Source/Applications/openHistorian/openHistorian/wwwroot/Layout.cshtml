@@ -265,8 +265,8 @@ else {
                 <span id="error-msg-text"></span>
             </div>
             @if (!hidePageTitle) {
-            <h3>
-                @pageTitle <small class="pull-right" id="titleText" style="margin-top: 8px"></small>
+            <h3 id="pageTitle">
+                @Raw(pageTitle) <small class="pull-right" id="titleText" style="margin-top: 8px"></small>
             </h3>
             }
         </div>

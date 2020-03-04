@@ -245,31 +245,13 @@ namespace openHistorian
 
         #region [ Device Table Operations ]
 
-        private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'");
-
-        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'");
-
-        private int IeeeC37_118ID => s_ieeeC37_118ID != 0 ? s_ieeeC37_118ID : s_ieeeC37_118ID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='IeeeC37_118V1'");
-
-        //private int VphmSignalTypeID => s_vphmSignalTypeID != 0 ? s_vphmSignalTypeID : (s_vphmSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='VPHM'"));
-
-        /// <summary>
-        /// Gets protocol ID for "ModbusPoller" protocol.
-        /// </summary>
-        public int GetModbusProtocolID() => ModbusProtocolID;
-
-        /// <summary>
-        /// Gets protocol ID for "COMTRADE" protocol.
-        /// </summary>
-        public int GetComtradeProtocolID() => ComtradeProtocolID;
-
         [RecordOperation(typeof(Device), RecordOperation.QueryRecordCount)]
         public int QueryDeviceCount(Guid nodeID, string filterText)
         {
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0}", nodeID) +
+                new RecordRestriction("NodeID = {0} AND ProtocolID <> {1} AND AccessID <> {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 deviceTable.GetSearchRestriction(filterText);
 
             return deviceTable.QueryRecordCount(restriction);
@@ -281,7 +263,7 @@ namespace openHistorian
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0}", nodeID) +
+                new RecordRestriction("NodeID = {0} AND ProtocolID <> {1} AND AccessID <> {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 deviceTable.GetSearchRestriction(filterText);
 
             return deviceTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
@@ -361,8 +343,6 @@ namespace openHistorian
         #endregion
 
         #region [ DeviceGroup Operations ]
-
-        private int VirtualProtocolID => s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
 
         [RecordOperation(typeof(DeviceGroup), RecordOperation.QueryRecordCount)]
         public int QueryDeviceGroupCount(Guid nodeID, string filterText)
@@ -1045,6 +1025,31 @@ namespace openHistorian
         #endregion
 
         #region [ Miscellaneous Functions ]
+
+        private int ModbusProtocolID => s_modbusProtocolID != 0 ? s_modbusProtocolID : s_modbusProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='Modbus'");
+
+        private int ComtradeProtocolID => s_comtradeProtocolID != 0 ? s_comtradeProtocolID : s_comtradeProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='COMTRADE'");
+
+        private int IeeeC37_118ID => s_ieeeC37_118ID != 0 ? s_ieeeC37_118ID : s_ieeeC37_118ID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='IeeeC37_118V1'");
+
+        private int VirtualProtocolID => s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+
+        //private int VphmSignalTypeID => s_vphmSignalTypeID != 0 ? s_vphmSignalTypeID : (s_vphmSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='VPHM'"));
+
+        /// <summary>
+        /// Gets protocol ID for "ModbusPoller" protocol.
+        /// </summary>
+        public int GetModbusProtocolID() => ModbusProtocolID;
+
+        /// <summary>
+        /// Gets protocol ID for "COMTRADE" protocol.
+        /// </summary>
+        public int GetComtradeProtocolID() => ComtradeProtocolID;
+
+        public string GetProtocolCategory(int protocolID)
+        {
+            return DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID)?.Category ?? "Undefined";
+        }
 
         /// <summary>
         /// Determines if directory exists from server's perspective.

@@ -45,7 +45,7 @@
         new[] { "Acronym", "Acronym", "text-left" },
         new[] { "Name", "Name", "text-left" },
         new[] { "ConnectionString", "Connection String", "text-left" },
-        new[] { null, "Enabled", "text-center valign-middle"}
+        new[] { null, "Enabled", "text-center valign-middle" }
     };
 
     ViewBag.BodyRows = BodyRows().ToString();
@@ -70,7 +70,7 @@
     <td width="35%" class="text-left table-cell-hard-wrap"><div data-bind="text: notNull(ConnectionString).truncate(30), attr: { title: notNull(ConnectionString) }"></div></td>
     <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Enabled, click: enabledStateChanged.bind($data)" /></td>
     <td width="5%" class="text-center valign-middle" nowrap>
-        <button type="button" class="btn btn-xs" data-bind="click: showEditScreen.bind($data, false), enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: showEditScreen.bind($data, @(UserIsAdminOrEditor().ToString().ToLower())), enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
         <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
     </td>
 }
@@ -80,6 +80,7 @@
         @Raw(dataContext.AddInputField<Device>("ID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<Device>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<Device>("Acronym", initialFocus: true))
+        @Raw(dataContext.AddInputField<Device>("Name"))
         @Raw(dataContext.AddSelectField<Device, Protocol>("ProtocolID", "ID", "Acronym", allowUnset: true))
         @Raw(dataContext.AddSelectField<Device, Historian>("HistorianID", "ID", "Acronym", allowUnset: true, addEmptyRow: true))
         @Raw(dataContext.AddInputField<Device>("AccessID"))
@@ -118,28 +119,43 @@
         function navigateToDeviceScreen(record) {
             @if (UserIsAdminOrEditor()) 
             {
-                <text>
+            <text>
                 if (record.ProtocolID === modbusProtocolID) {
                     window.location.href = "ModbusConfig.cshtml?DeviceID=" + record.ID;
                 }
                 else {
-                    window.location.href = "AddSynchrophasorDevice.cshtml?DeviceID=" + record.ID;
+                    if (hubIsConnected) {
+                        dataHub.getProtocolCategory(record.ProtocolID).done(function(category) {
+                            category = notNull(category).toLowerCase().trim();
+
+                            if (category === "phasor" || category === "gateway")
+                                window.location.href = "AddSynchrophasorDevice.cshtml?DeviceID=" + record.ID;
+                            else
+                                viewModel.viewPageRecord(record);
+                        })
+                        .fail(function() {
+                            viewModel.viewPageRecord(record);
+                        });
+                    }
+                    else {
+                        viewModel.viewPageRecord(record);
+                    } 
                 }
-                </text>
+            </text>
             }
             else
             {
-                <text>
+            <text>
                 viewModel.viewPageRecord(record);
-                </text>
+            </text>
             }
         }
 
-        function showEditScreen(readOnly, record) {
-            if (readOnly)
-                viewModel.viewPageRecord(record);
-            else
+        function showEditScreen(editable, record) {
+            if (editable)
                 viewModel.editPageRecord(record);
+            else
+                viewModel.viewPageRecord(record);
         }
 
         function refreshEnabledState(record) {

@@ -31,20 +31,35 @@
         html, body {
             height: 100%;
         }
+
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 17px;
+            font-weight: 400;
+            line-height: 1;
+            color: #777777;
+        }
     </style>
 }
 @{
     DataContext dataContext = ViewBag.DataContext;
 
+    const string pageTitle = "Device&nbsp;Groups&nbsp;&nbsp;";
+
     Layout = "Layout.cshtml";
-    ViewBag.Title = "Device Groups";
+    ViewBag.Title = pageTitle + "<div id='subTitle' class='truncate'>Allows creation of groups of devices, e.g., for a region.</div>";
+    ViewBag.AddNewEditTitle = "Device Group";
     ViewBag.ShowSearchFilter = true;
 
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
         new[] { "Acronym", "Acronym", "text-left" },
         new[] { "Name", "Name", "text-left" },
-        new[] { null, "Enabled", "text-center valign-middle"}
+        new[] { null, "Enabled", "text-center valign-middle" }
     };
 
     ViewBag.BodyRows = BodyRows().ToString();
@@ -78,13 +93,14 @@
         @Raw(dataContext.AddInputField<DeviceGroup>("ID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<DeviceGroup>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<DeviceGroup>("Acronym", initialFocus: true))
-        @Raw(dataContext.AddSelectField<Device, Historian>("HistorianID", "ID", "Acronym", allowUnset: true, addEmptyRow: true))
-        @Raw(dataContext.AddInputField<DeviceGroup>("Longitude"))
-        @Raw(dataContext.AddInputField<DeviceGroup>("Latitude"))
+        @Raw(dataContext.AddInputField<DeviceGroup>("Name"))
+        @Raw(dataContext.AddSelectField<DeviceGroup, Historian>("HistorianID", "ID", "Acronym", allowUnset: true, addEmptyRow: true))
     </div>
     <div class="col-md-6">
-        @Raw(dataContext.AddSelectField<Device, Interconnection>("InterconnectionID", "ID", "Acronym"))
-        @Raw(dataContext.AddSelectField<Device, Company>("CompanyID", "ID", "Acronym"))
+        @Raw(dataContext.AddInputField<DeviceGroup>("Longitude"))
+        @Raw(dataContext.AddInputField<DeviceGroup>("Latitude"))
+        @Raw(dataContext.AddSelectField<DeviceGroup, Interconnection>("InterconnectionID", "ID", "Acronym"))
+        @Raw(dataContext.AddSelectField<DeviceGroup, Company>("CompanyID", "ID", "Acronym"))
         @Raw(dataContext.AddInputField<DeviceGroup>("ContactList"))
         <div class="form-inline pull-right">
             @Raw(dataContext.AddCheckBoxField<DeviceGroup>("Enabled"))
@@ -96,6 +112,8 @@
     <script>
         @Raw(dataContext.RenderViewModelConfiguration<DeviceGroup, DataHub>(ViewBag, "Acronym", null, Model.Global.NodeID))
         
+        var pageTitleWidth;
+
         function refreshEnabledState(record) {
             if (!hubIsConnected)
                 return;
@@ -117,6 +135,12 @@
             }
         }
 
+        function updateSubTitleProperties() {
+            const subTitle = $("#subTitle");
+            subTitle.width($("#pageHeader").width() - $("#titleText").width() - pageTitleWidth);
+            subTitle.prop("title", subTitle.text());
+        }
+
         $(viewModel).on("recordSaved", function(event, record, isNew) {
             refreshEnabledState(record);
         });
@@ -126,5 +150,18 @@
                 serviceHub.sendCommand("ReloadConfig");
         });
 
+        $(window).resize(updateSubTitleProperties);
+        
+        $(function() {
+            textMetrics.font = $("#pageTitle").css("font");
+
+            pageTitleWidth = textMetrics.measureText("@pageTitle.Replace("&nbsp;", " ")").width;
+
+            if (pageTitleWidth < 5)
+                pageTitleWidth = 100;
+
+            // Set initial sub-title width
+            updateSubTitleProperties();
+        });
     </script>
 }
