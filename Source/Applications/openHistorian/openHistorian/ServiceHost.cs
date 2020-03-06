@@ -393,10 +393,12 @@ namespace openHistorian
                     // Get settings as currently defined in configuration file
                     int initializationTimeout = grafanaHosting["InitializationTimeout"].ValueAs(DefaultInitializationTimeout);
                     DateTime startTime = DateTime.UtcNow;
+                    bool timeout = false;
 
-                #if DEBUG                    
+                #if DEBUG
                     // Debugging adds run-time overhead, provide more time for initialization
-                    initializationTimeout *= 3;                    
+                    initializationTimeout *= 3;
+                    int attempts = 0;
                 #endif
 
                     // Give initialization - which includes starting Grafana server process - a chance to start
@@ -404,10 +406,21 @@ namespace openHistorian
                     {
                         // Stop attempts after timeout has expired
                         if ((DateTime.UtcNow - startTime).TotalSeconds >= initializationTimeout)
+                        {
+                            timeout = true;
                             break;
+                        }
 
                         Thread.Sleep(500);
+
+                    #if DEBUG
+                        if (++attempts % 4 == 0)
+                            DisplayStatusMessage($"DEBUG: Awaiting Grafana initialization, {attempts:N0} attempts so far...", UpdateType.Warning);
+                    #endif
                     }
+
+                    if (timeout)
+                        DisplayStatusMessage($"WARNING: Service started handler reported timeout awaiting Grafana initialization. Timeout configured as {Ticks.FromMilliseconds(initializationTimeout).ToElapsedTimeString(2)}.", UpdateType.Warning);
                 }
                 catch (Exception ex)
                 {

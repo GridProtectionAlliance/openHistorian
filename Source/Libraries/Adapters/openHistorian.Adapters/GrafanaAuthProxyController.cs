@@ -98,7 +98,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Default timeout, in seconds, for system initialization.
         /// </summary>
-        public const int DefaultInitializationTimeout = 10;
+        public const int DefaultInitializationTimeout = 30;
 
         /// <summary>
         /// Default Grafana organization ID.
@@ -317,6 +317,11 @@ namespace openHistorian.Adapters
             s_organizationID = grafanaHosting["OrganizationID"].ValueAs(DefaultOrganizationID);
             s_lastDashboardCookieName = grafanaHosting["LastDashboardCookieName"].ValueAs(DefaultLastDashboardCookieName);
 
+        #if DEBUG
+            // Debugging adds run-time overhead, provide more time for initialization
+            s_initializationTimeout *= 3;
+        #endif
+
             if (File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
             {
                 s_initializationWaitHandle = new ManualResetEventSlim();
@@ -324,15 +329,7 @@ namespace openHistorian.Adapters
                 // Establish a synchronized operation for handling Grafana user synchronizations
                 s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex =>
                 {
-                    if (ex is AggregateException aggregate)
-                    {
-                        foreach (Exception innerException in aggregate.Flatten().InnerExceptions)
-                            OnStatusMessage($"ERROR: {innerException.Message}");
-                    }                    
-                    else
-                    {
-                        OnStatusMessage($"ERROR: {ex.Message}");
-                    }
+                    OnStatusMessage($"ERROR: {GetExceptionMessage(ex)}");
                 });
 
                 // Attach to event for notifications of when security context has been refreshed
@@ -356,16 +353,35 @@ namespace openHistorian.Adapters
         /// <returns><c>true</c> if Grafana server is responding; otherwise, <c>false</c>.</returns>
         public static bool ServerIsResponding()
         {
+            const string ServerCheckUrl = "/api/health";
+
+        #if DEBUG
+            const string DebugMessage = "DEBUG: ServerIsResponding check for \"{0}" + ServerCheckUrl + "\" result:\r\n{1}";
+
             try
             {
-                // Test server response by hitting root page
-                dynamic result = CallAPIFunction(HttpMethod.Get, s_baseUrl).Result;
-                return (object)result != null;
+                // Test server response by hitting health page
+                dynamic result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}{ServerCheckUrl}").Result;
+                OnStatusMessage(string.Format(DebugMessage, s_baseUrl, result?.ToString() ?? "null"));
+                return result != null;
+            }
+            catch (Exception ex)
+            {
+                OnStatusMessage(string.Format(DebugMessage, s_baseUrl, GetExceptionMessage(ex)));
+                return false;
+            }
+        #else
+            try
+            {
+                // Test server response by hitting health page
+                dynamic result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}{ServerCheckUrl}").Result;
+                return result != null;
             }
             catch
             {
                 return false;
             }
+        #endif
         }
 
         private static void OnStatusMessage(string status)
@@ -394,7 +410,8 @@ namespace openHistorian.Adapters
             Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
             // Give initialization - which includes starting Grafana server process - a chance to complete
-            s_initializationWaitHandle.Wait(s_initializationTimeout);
+            if (!s_initializationWaitHandle.Wait(s_initializationTimeout))
+                OnStatusMessage($"WARNING: Grafana user synchronization reported timeout awaiting Grafana initialization. Timeout configured as {Ticks.FromMilliseconds(s_initializationTimeout).ToElapsedTimeString(2)}.");
 
             // Lookup Grafana Administrative user
             if (!LookupUser(s_adminUser, out UserDetail userDetail, out string message))
@@ -475,8 +492,20 @@ namespace openHistorian.Adapters
 
         private static bool LookupUser(string userName, out UserDetail userDetail, out string message)
         {
-            JObject result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}/api/users/lookup?loginOrEmail={userName}").Result;
+            JObject result;
+
+            userDetail = null;
             message = null;
+
+            try
+            {
+                result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}/api/users/lookup?loginOrEmail={userName}").Result;
+            }
+            catch (Exception ex)
+            {
+                message = GetExceptionMessage(ex);
+                return false;
+            }
 
             if (result.TryGetValue("id", out JToken token))
             {
@@ -487,13 +516,10 @@ namespace openHistorian.Adapters
                 }
                 catch (Exception ex)
                 {
-                    userDetail = null;
                     message = ex.Message;
                     return false;
                 }
             }
-
-            userDetail = null;
 
             if (result.TryGetValue("message", out token))
                 message = token.Value<string>();
@@ -775,6 +801,14 @@ namespace openHistorian.Adapters
             response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_avatarResource}");
 
             return response;
+        }
+
+        private static string GetExceptionMessage(Exception ex)
+        {
+            if (ex is AggregateException aggEx)
+                return string.Join(", ", aggEx.InnerExceptions.Select(iex => iex.Message));
+
+            return ex.Message;
         }
 
         #endregion
