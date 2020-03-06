@@ -1146,7 +1146,7 @@
             viewModel = new DeviceViewModel();
 
             // Initialize primary view model
-            ko.applyBindings(viewModel);
+            ko.applyBindings(viewModel, document.getElementsByTagName("body")[0]);
 
             // Monitor for view model changes
             ko.watch(viewModel.devices, { depth: -1 }, function(parents, child, item) {
