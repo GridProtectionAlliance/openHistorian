@@ -995,7 +995,7 @@
             Waits for <paramref name="signalIDs"/> to be loaded in system configuration.
             </summary>
             <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
-            <param name="signalIDs"></param>
+            <param name="signalIDs">Signal IDs to wait for.</param>
             <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerHandlers.HandleConstruct(GSF.TimeSeries.Adapters.IIndependentAdapterManager)">
@@ -1435,6 +1435,11 @@
             Represents an adapter base class that provides functionality to operate on a 1-second window of data.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.DefaultSourceMeasurementTable">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.SourceMeasurementTable"/>.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.InputCount">
             <summary>
             Gets or sets the expected number of input measurements for a <see cref="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase"/> instance.
@@ -1461,6 +1466,11 @@
         <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the action adapter will produce, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.SourceMeasurementTable">
+            <summary>
+            Gets or sets the source measurement table to use for configuration.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase.InputMeasurementKeyTypes">
