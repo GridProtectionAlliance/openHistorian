@@ -1,0 +1,648 @@
+﻿@*******************************************************************************************************
+//  SelectGroupDevices.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  03/07/2020 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Text
+@using GSF
+@using GSF.Data.Model
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared.Model
+@using openHistorian
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        /* Collapsable button style */
+        .btn-collapsable.btn {
+            color: #606060;
+            font-family: "Glyphicons Halflings";
+            font-size: 8pt;
+            padding: 0 2px 2px 2px;
+            height: 18px;
+        }
+
+        /* Collapsable button icon when content is shown - arrow down */
+        .btn-collapsable.btn:after {
+            content: "\e114";
+        }
+
+        /* Collapsable button icon when content is hidden - arrow right */
+        .btn-collapsable.btn.collapsed:after {
+            content: "\e080";
+        }
+
+        #collapseSelectedDevices.btn-collapsable.btn {
+            position: absolute;
+            margin-top: 3px;
+            margin-left: -22px;
+            -webkit-transition: all .75s ease-out;
+            -moz-transition: all .75s ease-out;
+            transition: all .75s ease-out;
+        }
+
+        #collapseSelectedDevices.btn-collapsable.btn.collapsed {
+            margin-top: 1px;
+            margin-left: -18px;
+        }
+
+        span.fixed-font {
+            font-size: small;
+            font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+        }
+
+        span.input-group-addon i.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #scrollableDevicesArea {
+            overflow: -moz-scrollbars-vertical; 
+            overflow-y: scroll;
+        }
+
+        #selectAllProgress {
+            width: 250px;
+            margin-bottom: -15px;
+            font-size: smaller;
+        }
+
+        #selectAllProgressBar {
+            padding-left: 10px;
+            padding-bottom: 5px;
+            padding-top: 2px;
+        }
+
+        #selectAllProgressCancel {
+            font-size: small;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            margin-top: -20px;
+            margin-left: 1px
+        }
+
+        #selectAllMessage {
+            font-size: smaller;
+        }
+
+        #selectAllMessage a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        #selectAllMessage a:active, a:hover, a:focus {
+            color: #23527c;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+}
+@{
+    if (ViewBag.PageControlScripts == null) {
+        ViewBag.PageControlScripts = new StringBuilder();
+    }
+
+    DataContext dataContext = ViewBag.DataContext;
+    StringBuilder pageControlScripts = ViewBag.PageControlScripts;
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string parameter;
+    int deviceGroupID;
+
+    if (!parameters.TryGetValue("ID", out parameter) || !int.TryParse(parameter, out deviceGroupID)) {
+        deviceGroupID = 0;
+    }
+
+    string deviceGroupAcronym;
+    parameters.TryGetValue("Acronym", out deviceGroupAcronym);
+
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Select " + deviceGroupAcronym + " Group Devices";
+    ViewBag.AddNewEditTitle = "Device Detail";
+    ViewBag.ShowSearchFilter = true;
+    ViewBag.HideUnauthorizedControls = true;
+    ViewBag.CanEdit = false;
+    ViewBag.CanAddNew = false;
+    ViewBag.CanDelete = false;
+    ViewBag.ShowMenu = false;
+    ViewBag.BackgroundUnset = true;
+
+    ViewBag.HeaderColumns = new[]
+    {   //    { "Field", "Label", "Classes" }
+        new[] { null, "<input type='checkbox' id='selectAllCheckbox' title='Select All'/>", "text-center valign-middle non-sortable" },
+        new[] { "Acronym", "Acronym", "text-left" },
+        new[] { "Name", "Name", "text-left" }
+    };
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.PageRecordsForEachBinding = "afterRender: postRecordRendering";
+    ViewBag.ParentKeys = Model.Global.NodeID.ToString();
+
+    // Prepend view model extension scripts to occur before model initialization
+    pageControlScripts.Insert(0, ExtendedViewModel().ToString().TrimStart());
+}
+@helper BodyRows()
+{
+    <td width="5%" class="text-center valign-middle"><input type="checkbox" /></td>
+    <td width="50%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
+    <td width="40%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
+    </td>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    <div class="col-md-6">
+        @Raw(dataContext.AddInputField<Device>("ID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
+        @Raw(dataContext.AddInputField<Device>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
+        @Raw(dataContext.AddInputField<Device>("Acronym", initialFocus: true))
+        @Raw(dataContext.AddInputField<Device>("Name"))
+        @Raw(dataContext.AddSelectField<Device, Protocol>("ProtocolID", "ID", "Acronym", allowUnset: true))
+        @Raw(dataContext.AddSelectField<Device, VendorDevice>("VendorDeviceID", "ID", "Name", allowUnset: true))
+    </div>
+    <div class="col-md-6">
+        @Raw(dataContext.AddTextAreaField<Device>("ConnectionString", 4))
+        @Raw(dataContext.AddInputField<Device>("Longitude"))
+        @Raw(dataContext.AddInputField<Device>("Latitude"))
+        @Raw(dataContext.AddSelectField<Device, Company>("CompanyID", "ID", "Acronym"))
+        <div class="form-inline pull-right">
+            @Raw(dataContext.AddCheckBoxField<Device>("IsConcentrator"))&nbsp;
+            @Raw(dataContext.AddCheckBoxField<Device>("Enabled"))
+        </div>
+    </div>
+}
+@helper ExtendedViewModel()
+{
+    <script>
+        function postRecordRendering(elements, sequenceRecord) {
+            const checkbox = $(elements).find("input[type=checkbox]");
+
+            if (!checkbox)
+                return;
+
+            checkbox.click(function() {
+                const record = viewModel.pageRecords()[checkbox.parents("tr")[0].rowIndex - 1];
+
+                if (checkbox[0].checked)
+                    viewModel.addNewSelectedDeviceByRecord(record);
+                else
+                    viewModel.deleteSelectedDeviceByRecord(record);
+
+                $("#selectAllMessage").hide();
+            });
+
+            // Allow up/down arrow keys to change focus between each row's checkbox
+            checkbox.keydown(function(event) {
+                if (event.which === 38) {
+                    // Arrow up
+                    const previousIndex = $(event.target).parents("tr")[0].rowIndex - 1;
+
+                    if (previousIndex >= 0) {
+                        const previous = $("#recordsTable").find("input[type=checkbox]:eq(" + previousIndex + ")");
+
+                        if (!$.isEmptyObject(previous))
+                            previous.focus();
+                    }
+
+                } else if (event.which === 40) {
+                    // Arrow down
+                    const nextIndex = $(event.target).parents("tr")[0].rowIndex + 1;
+
+                    if (nextIndex <= viewModel.currentPageSize()) {
+                        const next = $("#recordsTable").find("input[type=checkbox]:eq(" + nextIndex + ")");
+
+                        if (!$.isEmptyObject(next))
+                            next.focus();
+                    }
+                }
+            });
+        }
+
+        function ExtendedViewModel() {
+            const self = this;
+
+            PagedViewModel.call(self);
+
+            self.selectedDevices = ko.observableArray().extend({ deferred: true });
+
+            self.addNewSelectedDevice = function(id, acronym, name) {
+                if (!self.selectedDevices().any(function(device) { return device.id === id }))
+                    self.selectedDevices.push({ id: id, acronym: acronym, name: name });
+            }
+
+            self.deleteSelectedDevice = function(device) {
+                self.selectedDevices.remove(device);
+            }
+
+            self.refreshSelectedDevices = function() {
+                self.selectedDevices.valueHasMutated();
+            }
+
+            self.clearSelectedDevices = function() {
+                const placeholder = $("#placeholder");
+
+                self.selectedDevices([]);
+                placeholder.empty();
+
+                $("#selectAllMessage").hide();
+                $("#selectAllCheckbox")[0].checked = false;
+
+                if (typeof selectPageRecords === "function")
+                    selectPageRecords(false);
+            }
+
+            self.addNewSelectedDeviceByRecord = function(record) {
+                self.addNewSelectedDevice(record.ID, record.Acronym, record.Name);
+            }
+
+            self.deleteSelectedDeviceByRecord = function(record) {
+                self.selectedDevices().any(function(device) {
+                    if (device.id === record.ID)
+                        self.deleteSelectedDevice(device);
+                });
+            }
+
+            self.getSelectedDeviceIDs = function() {
+                var selectedDeviceIDs = [];
+
+                self.selectedDevices().forEach(function(device) {
+                    selectedDeviceIDs.push(device.id);
+                });
+
+                return selectedDeviceIDs.join(",");
+            }
+
+            self.selectAllProgress = ko.observable("0%");
+
+            self.saveSelections = function(fileName) {
+                const data = JSON.stringify(self.selectedDevices(), null, 4);
+                const anchor = $("#saveSelectionsFileLink");
+
+                if (typeof anchor[0].download != "undefined") {
+                    anchor.attr("href", "data:text/json;charset=utf-8," + encodeURIComponent(data));
+                    anchor.attr("download", fileName);
+                    anchor[0].click();
+                } else {
+                    if (isIE)
+                        window.navigator.msSaveBlob(new Blob([data]), fileName);
+                    else
+                        window.open("data:text/json;charset=utf-8," + encodeURIComponent(data), "_blank", "");
+                }
+            }
+
+            self.loadSelections = function(fileBlob) {
+                var reader = new FileReader();
+
+                reader.onload = function() {
+                    self.clearSelectedDevices();
+                    self.selectedDevices(JSON.parse(reader.result));
+                }
+
+                reader.onloadend = function() {
+                    if (reader.error && reader.error.message)
+                        showErrorMessage("Failed to load device selections: " + reader.error.message);
+                };
+
+                reader.readAsText(fileBlob);
+            }
+        }
+
+        function extendViewModel(event, data) {
+            const newViewModel = new ExtendedViewModel();
+            data.viewModel.cloneConfiguration(newViewModel);
+            data.viewModel = newViewModel;
+        }
+
+        $(window).on("beforeApplyBindings", extendViewModel);
+    </script>
+}
+@section Scripts {
+    <script>        
+        "use strict";
+
+        @Raw(dataContext.RenderViewModelConfiguration<Device, DataHub>(ViewBag, "Acronym", null, Model.Global.NodeID))
+
+        function resizeScreenObjects() {
+            setTimeout(function() {
+                const selectedDevicesArea = $("#selectedDevicesArea");
+                selectedDevicesArea.height(calculateRemainingBodyHeight());
+                $("#scrollableDevicesArea").height(selectedDevicesArea.height() - $("#selectedDevicesHeader").outerHeight(true) - 5);
+            }, 100);
+
+            const selectedDevicesColumn = $("#selectedDevicesColumn");
+            const containerWidth = $("#bodyContainer").innerWidth();
+
+            if (selectedDevicesColumn.hasClass("in")) {
+                let areaWidth = containerWidth * 0.25;
+
+                if (areaWidth < 150)
+                    areaWidth = 150;
+
+                selectedDevicesColumn.width(areaWidth);
+            }
+        }
+
+        function selectPageRecords(checked) {
+            for (let i = 0; i < viewModel.pageRecords().length; i++) {
+                const next = $("#recordsTable").find("input[type=checkbox]:eq(" + (i + 1) + ")");
+
+                if (!$.isEmptyObject(next)) {
+                    if (next[0].checked !== checked)
+                        next.click();
+                }
+            }
+
+            if (checked && viewModel.totalPages() > 1) {
+                $("#selectAllProgress").hide();
+                cancelSelectAllRecords();
+                $("#selectAllMessage").show();
+            }
+        }
+
+        var selectAllRecordsCanceled = false;
+
+        function cancelSelectAllRecords() {
+            selectAllRecordsCanceled = true;
+        }
+
+        function selectAllRecords() {
+            $("#selectAllMessage").hide();
+            $("#tabs").tabs({ active: 0 });
+            $("a[href='#tab1']").parent().focus();
+
+            if (!hubIsConnected)
+                return;
+
+            const totalPages = viewModel.totalPages();
+            const sortField = viewModel.sortField();
+            const sortAscending = viewModel.sortAscending();
+            const currentPageSize = viewModel.currentPageSize();
+            const filterText = viewModel.filterText;
+
+            selectAllRecordsCanceled = false;
+            viewModel.selectAllProgress("0%");
+
+            $("#selectAllProgressCancel").text("Cancel");
+            $("#selectAllProgress").show();
+
+            var page = 1;
+            var processedPages = 0;
+
+            function selectPageRecords() {
+                if (!hubIsConnected) {
+                    $("#selectAllProgress").hide();
+                    return;
+                }
+
+                viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
+                    if (!selectAllRecordsCanceled) {
+                        records.forEach(function(record) {
+                            viewModel.addNewSelectedDeviceByRecord(record);
+                            return !selectAllRecordsCanceled;
+                        });
+                    }
+
+                    viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+
+                    if (page === totalPages) {
+                        $("#selectAllProgressCancel").text("Done!");
+
+                        setTimeout(function() {
+                            $("#selectAllProgress").hide();
+                        }, 2000);
+                    } else if (selectAllRecordsCanceled) {
+                        $("#selectAllProgressCancel").text("Canceled!");
+
+                        setTimeout(function() {
+                            $("#selectAllProgress").hide();
+                        }, 2000);
+                    } else {
+                        page++;
+
+                        if (page <= totalPages)
+                            selectPageRecords();
+                    }
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+
+                    if (page === totalPages)
+                        $("#selectAllProgress").hide();
+                });
+            }
+
+            // Start page level record selection
+            selectPageRecords();
+        }
+
+        $("#bodyContainer").width("95%");
+
+        $(function () {
+            let initialLoad = true;
+
+            $("#selectedDevicesColumn").on("shown.bs.collapse", function() {
+                resizeScreenObjects();
+            });
+
+            $("#selectedDevicesColumn").on("hidden.bs.collapse", function() {
+                resizeScreenObjects();
+            });
+
+            $(viewModel).on("pageSizeCalculated", function() {
+                resizeScreenObjects();
+            });
+
+            $(viewModel).on("pageRecordsQueried", function() {
+                $("#selectAllMessage").hide();
+            });
+
+            $(window).resize(function () {
+                $("#bodyContainer").width("95%");
+            });
+
+            const selectAllCheckbox = $("#selectAllCheckbox");
+            
+            selectAllCheckbox.click(function() {
+                selectPageRecords(selectAllCheckbox[0].checked);
+            });
+
+            selectAllCheckbox.keydown(function(event) {
+                if (event.which === 40) {
+                    // Arrow down
+                    if (viewModel.currentPageSize() > 0) {
+                        const next = $("#recordsTable").find("input[type=checkbox]:eq(1)");
+
+                        if (!$.isEmptyObject(next))
+                            next.focus();
+                    }
+                }
+            });
+
+            $(viewModel).on("pageRecordsQueried", function() {
+                selectAllCheckbox[0].checked = false;
+            });
+
+            ko.watch(viewModel.currentPage, function(parents, child, item) {
+                $("#selectAllMessage").hide();
+            });
+
+            // Setup save selections file name dialog functionality
+            $("#saveSelectionsFile").click(function() {
+                $("#saveSelectionsFileNameDialog").hide();
+
+                var fileName = notNull($("#inputSelectionsFileName").val());
+
+                if (fileName.length === 0)
+                    fileName = "SelectedDevices.json";
+
+                if (!fileName.endsWith(".json"))
+                    fileName += ".json";
+
+                viewModel.saveSelections(fileName);
+            });
+
+            // Make enter key auto-click save
+            $("#inputSelectionsFileName").keyup(function(event) {
+                if (event.keyCode === 13)
+                    $("#saveSelectionsFile").click();
+            });
+
+            // Auto-select all text on focus
+            $("#inputSelectionsFileName").focus(function() {
+                $(this).select();
+            });
+
+            // Prevent default form submission when user presses enter
+            $("#saveSelectionsFileNameDialog").submit(function() {
+                return false;
+            });
+
+            // Auto-hide pop-up form when user clicks outside form area
+            $("#saveSelectionsFileNameDialog").focusout(function() {
+                if (!$("#saveSelectionsFileNameDialog").is(":hover") && !$("#showSaveSelectionsFileNameDialog").is(":hover"))
+                    $("#saveSelectionsFileNameDialog").hide();
+            });
+
+            $(window).on("hubConnected", function() {
+                if (initialLoad) {
+                    initialLoad = false;
+
+                    dataHub.queryDeviceGroupDevices("@Model.Global.NodeID", @deviceGroupID).done(function(devices) {
+                        devices.forEach(function(device) {
+                            viewModel.addNewSelectedDeviceByRecord(device);
+                        });
+                    }).fail(function() {
+                        initialLoad = true;
+                    });
+                }
+            });
+
+            ko.watch(viewModel.selectedDevices, function(parents, child, item) {
+                if (viewModel.dataHubIsConnected()) {
+                    dataHub.queryDeviceGroup("@Model.Global.NodeID", @deviceGroupID).done(function(deviceGroup) {
+                        if (deviceGroup) {
+                            deviceGroup.ConnectionString = "deviceIDs=" + viewModel.getSelectedDeviceIDs();
+                            dataHub.updateDeviceGroup(deviceGroup);
+                        }
+                    });
+                }
+            });
+        });
+
+        function showSaveSelectionsFileNameDialog() {
+            $("#saveSelectionsFileNameDialog").toggle();
+
+            if ($("#saveSelectionsFileNameDialog").is(":visible"))
+                $("#inputSelectionsFileName").focus();
+        }
+
+        function showLoadSelectionsFileNameDialog() {
+            $("#loadSelectionsFileName").trigger("click");
+        }
+
+        function loadSelectionsFile(event) {
+            viewModel.loadSelections(event.target.files[0]);
+            $("#loadSelectionsFileName").val("");
+        }
+    </script>
+}
+<span id="selectAllMessage" style="display: none">Selected <span data-bind="text: pageRecords().length"></span> devices on the current page, <a class="active" onclick="selectAllRecords()">click here</a> to select all <span data-bind="text: recordCount"></span> devices on all pages.</span>
+<div class="input-group" id="selectAllProgress" style="display: none">
+    <span style="display: table-cell; font-size: small">Selecting&nbsp;Devices:&nbsp;</span>                            
+    <div class="progress" style="width: 180px; height: 22px">
+        <div class="progress-bar-info" id="selectAllProgressBar" role="progressbar" data-bind="style: { 'width': selectAllProgress }"><span data-bind="text: selectAllProgress">0%</span> Complete...</div>
+    </div>
+    <span class="input-group-btn">
+        <button class="btn btn-secondary" id="selectAllProgressCancel" type="button" onclick="cancelSelectAllRecords()">Cancel</button>
+    </span>
+</div>
+<table style="width: 100%">
+    <tr>
+        <td id="selectedDevicesColumn" style="width: 20%; vertical-align: top; padding-right: 3px" class="collapse in">
+            <div id="selectedDevicesArea" class="well" style="padding: 5px">
+                <div id="selectedDevicesHeader" class="clearfix">
+                    Selected Devices&nbsp;<span data-bind="text: selectedDevices().length"></span><br/>
+                    <button type="button" class="btn btn-sm" onclick="showSaveSelectionsFileNameDialog()" id="showSaveSelectionsFileNameDialog" data-bind="enable: selectedDevices().length > 0">Save</button>
+                    <div class="well well-sm floating-form" id="saveSelectionsFileNameDialog" style="z-index: 1000">
+                        <form class="form-inline" role="form">
+                            <div class="form-group form-group-sm">
+                                <button type="button" class="close" onclick="$('#saveSelectionsFileNameDialog').hide()" style="margin-top: -13px; margin-left: 8px">&times;</button>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="inputSelectionsFileName" placeholder="File name..." />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-sm" id="saveSelectionsFile" style="margin-right: -3px; font-weight: bold">Save</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <a href="#" id="saveSelectionsFileLink" target="_blank" style="display: none"></a>
+                    <button type="button" class="btn btn-sm" onclick="showLoadSelectionsFileNameDialog()">Load</button>
+                    <input id="loadSelectionsFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadSelectionsFile(event)">
+                    <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedDevices.bind($data)">Clear All</button>
+                </div>
+                <div id="scrollableDevicesArea" style="overflow-x: hidden">
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <tbody id="selectedDevices" data-bind="foreach: selectedDevices">
+                        <tr>
+                            <td style="width: 95%" class="table-cell-hard-wrap">
+                                <span class="fixed-font" data-bind="text: acronym, attr: { title: acronym }"></span>
+                            </td>
+                            <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Device" data-bind="click: $parent.deleteSelectedDevice"><span class="glyphicon glyphicon-remove"></span></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </td>
+        <td id="pagedViewColumn" style="width: 80%; vertical-align: top">
+            <button type="button" class="btn btn-xs btn-collapsable" id="collapseSelectedDevices" data-toggle="collapse" data-target="#selectedDevicesColumn"></button>
+            @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+        </td>
+    </tr>
+</table>

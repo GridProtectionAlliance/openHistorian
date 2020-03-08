@@ -197,6 +197,10 @@
     </style>
 }
 @{ 
+    if (ViewBag.PageControlScripts == null) {
+        ViewBag.PageControlScripts = new StringBuilder();
+    }
+
     DataContext dataContext = ViewBag.DataContext;
     StringBuilder pageControlScripts = ViewBag.PageControlScripts;
     HttpRequestMessage request = ViewBag.Request;

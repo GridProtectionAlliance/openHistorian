@@ -43,6 +43,7 @@
     bool setFullWidth = ViewBag.SetFullWidth ?? pageHasSidebar;
     bool hidePageTitle = false;
     bool showMenu = true;
+    bool backgroundUnset = false;
 
     if (ViewBag.HidePageTitle != null) {
         hidePageTitle = ViewBag.HidePageTitle;
@@ -54,6 +55,10 @@
 
     if (ViewBag.ShowMenu != null) {
         showMenu = ViewBag.ShowMenu;
+    }
+
+    if (ViewBag.BackgroundUnset != null) {
+        backgroundUnset = ViewBag.BackgroundUnset;
     }
 
     HttpRequestMessage request = ViewBag.Request;
@@ -181,11 +186,18 @@
             vertical-align: middle;
             font-size: 17px;
             font-weight: 400;
-            line-height: 1;
+            line-height: 1.4;
             color: #777777;
         }
     </style>
-    @if (!showMenu) {
+@if (!showMenu) { if (backgroundUnset){
+    <style>
+        body {
+            margin-top: -70px;
+            margin-right: 20px;
+        }
+    </style>
+} else {
     <style>
         body {
             margin-top: -70px;
@@ -197,7 +209,7 @@
             color: white;
         }
     </style>
-    }
+}}
     <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
     <script>
         const DateFormat = "@Model.Global.DateFormat";
@@ -206,7 +218,7 @@
     </script>
 </head>
 <body role="document">
-@if (ViewBag.ShowMenu ?? true) {
+@if (showMenu) {
     <div class="navbar navbar-inverse navbar-fixed-top" id="menuBar">
         <div class="container">
             <div class="navbar-header">
@@ -227,6 +239,8 @@
                         <ul class="dropdown-menu">
                             <li><a href="Devices.cshtml">Browse Devices</a></li>
                             <li><a href="AddDevice.cshtml" class="@(requiresEditor)"@requiresEditor>Add Device / Import Data</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="DeviceGroups.cshtml">Device Groups</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -318,8 +332,6 @@ else {
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)
     <script>
-        var pageTitleWidth;
-
         $("#logoutButton").click(function () {
             if (!hubIsConnected)
                 return;
@@ -331,10 +343,16 @@ else {
 
         $("#logoutButton").show();
 
+    @if (!string.IsNullOrWhiteSpace(subTitle)) {
+    <text>
+        var pageTitleWidth;
+
         function updateSubTitleProperties() {
             const subTitle = $("#subTitle");
+
             subTitle.width($("#pageHeader").width() - $("#titleText").width() - pageTitleWidth);
             subTitle.prop("title", subTitle.text());
+            subTitle.show();
         }
 
         $(window).resize(updateSubTitleProperties);
@@ -350,7 +368,8 @@ else {
             // Set initial sub-title width
             updateSubTitleProperties();
         });
-
+    </text>
+    }
     </script>
 </body>
 </html>

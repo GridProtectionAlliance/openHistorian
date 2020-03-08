@@ -31,34 +31,21 @@
         html, body {
             height: 100%;
         }
-
-        .truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-            vertical-align: middle;
-            font-size: 17px;
-            font-weight: 400;
-            line-height: 1;
-            color: #777777;
-        }
     </style>
 }
 @{
     DataContext dataContext = ViewBag.DataContext;
 
-    const string pageTitle = "Device&nbsp;Groups&nbsp;&nbsp;";
-
     Layout = "Layout.cshtml";
-    ViewBag.Title = pageTitle + "<div id='subTitle' class='truncate'>Allows creation of groups of devices, e.g., for a region.</div>";
-    ViewBag.AddNewEditTitle = "Device Group";
+    ViewBag.Title = "Device Groups";
+    ViewBag.SubTitle = "Allows creation of groups of devices, e.g., for a region";
     ViewBag.ShowSearchFilter = true;
 
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
         new[] { "Acronym", "Acronym", "text-left" },
         new[] { "Name", "Name", "text-left" },
+        new[] { null, "Devices", "text-center" },
         new[] { null, "Enabled", "text-center valign-middle" }
     };
 
@@ -70,17 +57,14 @@
     public bool UserIsAdminOrEditor()
     {
         SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
-
-        if ((object)securityPrincipal == null)
-            return false;
-
-        return securityPrincipal.IsInRole("Administrator,Editor");
+        return securityPrincipal != null && securityPrincipal.IsInRole("Administrator,Editor");
     }
 }
 @helper BodyRows()
 {
-    <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
-    <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="30%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
+    <td width="40%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="20%" class="text-center valign-middle"><button type="button" class="btn btn-default btn-sm" data-bind="click: openDeviceSelector.bind($data)" hub-dependent><span data-bind="attr: {id: 'deviceMode' + ID}">Add</span>&nbsp;&nbsp;<span class="badge" data-bind="text: getDeviceCount(ID), attr: {id: 'deviceCount' + ID}">0</span></button></td>
     <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Enabled, click: enabledStateChanged.bind($data)" /></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-pencil"></span></button>
@@ -108,11 +92,59 @@
     </div>
 }
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+<div id="editDevicesDialog" class="modal modal-wide fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <iframe style="border: none" id="editDevicesFrame"></iframe>
+                <button type="button" class="btn btn-default pull-right popup-ok-button" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
         @Raw(dataContext.RenderViewModelConfiguration<DeviceGroup, DataHub>(ViewBag, "Acronym", null, Model.Global.NodeID))
+
+        function getDeviceCount(deviceGroupID) {
+            if (viewModel.dataHubIsConnected()) {
+                dataHub.queryDeviceGroup("@Model.Global.NodeID", deviceGroupID).done(function(deviceGroup) {
+                    if (notNull(deviceGroup.ConnectionString).length > 0) {
+                        const settings = deviceGroup.ConnectionString.parseKeyValuePairs();
+                        const deviceIDs = notNull(settings.get("deviceIDs"));
+                        const count = deviceIDs.length > 0 ? deviceIDs.split(",").length : 0;
+                        $("#deviceMode" + deviceGroupID).text(count > 0 ? "Edit" : "Add");
+                        $("#deviceCount" + deviceGroupID).text(count);
+                    }
+                });
+            }
+
+            return "0";
+        }
         
-        var pageTitleWidth;
+        $(window).resize(function() {
+            $("#editDevicesFrame").attr("height", $("#contentWell").outerHeight(true) + "px");
+        });
+
+        function openDeviceSelector(record) {
+            $("#editDevicesFrame").attr({
+                "src": "SelectGroupDevices.cshtml?ID=" + record.ID + "&Acronym=" + encodeURIComponent(record.Acronym) + "&timestamp=" + Date.now(),
+                "height": $("#contentWell").outerHeight(true) + "px",
+                "width": "100%"
+            });
+
+            $("#editDevicesDialog").modal("show");
+        }
+
+        $("#editDevicesDialog").on("hidden.bs.modal", function () {
+            // Refresh page counts after editing tasks
+            viewModel.queryPageRecords();
+        });
+
+        $(function() {
+            $("#editDevicesDialog").modal({ show: false, backdrop: "static", keyboard: false });
+        });
 
         function refreshEnabledState(record) {
             if (!hubIsConnected)
@@ -135,12 +167,6 @@
             }
         }
 
-        function updateSubTitleProperties() {
-            const subTitle = $("#subTitle");
-            subTitle.width($("#pageHeader").width() - $("#titleText").width() - pageTitleWidth);
-            subTitle.prop("title", subTitle.text());
-        }
-
         $(viewModel).on("recordSaved", function(event, record, isNew) {
             refreshEnabledState(record);
         });
@@ -148,20 +174,6 @@
         $(viewModel).on("recordDeleted", function(event, record) {
             if (hubIsConnected)
                 serviceHub.sendCommand("ReloadConfig");
-        });
-
-        $(window).resize(updateSubTitleProperties);
-        
-        $(function() {
-            textMetrics.font = $("#pageTitle").css("font");
-
-            pageTitleWidth = textMetrics.measureText("@pageTitle.Replace("&nbsp;", " ")").width;
-
-            if (pageTitleWidth < 5)
-                pageTitleWidth = 100;
-
-            // Set initial sub-title width
-            updateSubTitleProperties();
         });
     </script>
 }

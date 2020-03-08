@@ -274,7 +274,7 @@ namespace openHistorian
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0}", nodeID) +
+                new RecordRestriction("NodeID = {0} AND ProtocolID <> {1} AND AccessID <> {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 new RecordRestriction("Enabled <> 0") +
                 deviceTable.GetSearchRestriction(filterText);
 
@@ -366,6 +366,30 @@ namespace openHistorian
                 deviceGroupTable.GetSearchRestriction(filterText);
 
             return deviceGroupTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
+        }
+
+        public DeviceGroup QueryDeviceGroup(Guid nodeID, int id)
+        {
+            return DataContext.Table<DeviceGroup>().QueryRecordWhere("NodeID = {0} AND ID = {1}", nodeID, id);
+        }
+
+        public IEnumerable<Device> QueryDeviceGroupDevices(Guid nodeID, int id)
+        {
+            DeviceGroup deviceGroup = QueryDeviceGroup(nodeID, id);
+
+            if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
+                return Enumerable.Empty<Device>();
+
+            Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
+
+            if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
+                return Enumerable.Empty<Device>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0} AND ProtocolID <> {1} AND AccessID <> {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                $"ID IN ({deviceIDs})";
+
+            return DataContext.Table<Device>().QueryRecords(restriction);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
