@@ -2942,6 +2942,14 @@
             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             <returns>Rendered page result for given page.</returns>
         </member>
+        <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Common page post handler.
+            </summary>
+            <param name="pageName">Page name to render.</param>
+            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+            <returns>Rendered page result for given page.</returns>
+        </member>
         <member name="T:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions">
             <summary>
             Defines extension function for registering <see cref="T:GSF.Web.Hosting.WebPageController"/> in web server pipeline.
