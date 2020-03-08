@@ -12,6 +12,9 @@
   <Component Id="Companies_cshtml">
     <File Id="Companies.cshtml" Name="Companies.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Companies.cshtml" />
   </Component>
+  <Component Id="DeviceGroups_cshtml">
+    <File Id="DeviceGroups.cshtml" Name="DeviceGroups.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\DeviceGroups.cshtml" />
+  </Component>
   <Component Id="Devices_cshtml">
     <File Id="Devices.cshtml" Name="Devices.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Devices.cshtml" />
   </Component>
@@ -44,6 +47,9 @@
   </Component>
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
+  </Component>
+  <Component Id="SelectGroupDevices_cshtml">
+    <File Id="SelectGroupDevices.cshtml" Name="SelectGroupDevices.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectGroupDevices.cshtml" />
   </Component>
   <Component Id="SelectReportRange_cshtml">
     <File Id="SelectReportRange.cshtml" Name="SelectReportRange.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\SelectReportRange.cshtml" />

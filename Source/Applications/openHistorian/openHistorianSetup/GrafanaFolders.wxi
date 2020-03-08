@@ -542,15 +542,7 @@
     </Directory>
     <Directory Id="PUBLICVIEWSFOLDER" Name="views" />
   </Directory>
-  <Directory Id="SCRIPTSFOLDER2" Name="scripts">
-    <Directory Id="SCRIPTSBUILDFOLDER" Name="build" />
-    <Directory Id="SCRIPTSCLIFOLDER" Name="cli" />
-    <Directory Id="SCRIPTSGOFOLDER" Name="go" />
-    <Directory Id="SCRIPTSGRUNTFOLDER" Name="grunt" />
-    <Directory Id="SCRIPTSHELPERSFOLDER" Name="helpers" />
-    <Directory Id="SCRIPTSVERIFY_REPO_UPDATEFOLDER" Name="verify-repo-update" />
-    <Directory Id="SCRIPTSWEBPACKFOLDER" Name="webpack" />
-  </Directory>
+  <Directory Id="SCRIPTSFOLDER2" Name="scripts" />
   <Directory Id="TOOLSFOLDER" Name="tools">
     <Directory Id="TOOLSPHANTOMJSFOLDER" Name="phantomjs" />
   </Directory>

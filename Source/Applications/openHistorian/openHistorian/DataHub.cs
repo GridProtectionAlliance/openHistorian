@@ -342,7 +342,7 @@ namespace openHistorian
 
         #endregion
 
-        #region [ DeviceGroup Operations ]
+        #region [ DeviceGroup Table Operations ]
 
         [RecordOperation(typeof(DeviceGroup), RecordOperation.QueryRecordCount)]
         public int QueryDeviceGroupCount(Guid nodeID, string filterText)

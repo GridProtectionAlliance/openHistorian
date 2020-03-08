@@ -7551,20 +7551,6 @@
     <File Id="scripts_trigger_windows_build.sh" Name="trigger_windows_build.sh" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\scripts\trigger_windows_build.sh" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_build_Components" Directory="SCRIPTSBUILDFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_cli_Components" Directory="SCRIPTSCLIFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_go_Components" Directory="SCRIPTSGOFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_grunt_Components" Directory="SCRIPTSGRUNTFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_helpers_Components" Directory="SCRIPTSHELPERSFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_verify_repo_update_Components" Directory="SCRIPTSVERIFY_REPO_UPDATEFOLDER">
-</ComponentGroup>
-<ComponentGroup Id="Grafana_scripts_webpack_Components" Directory="SCRIPTSWEBPACKFOLDER">
-</ComponentGroup>
 <ComponentGroup Id="Grafana_tools_Components" Directory="TOOLSFOLDER">
   <Component Id="tools_zoneinfo_zip">
     <File Id="tools_zoneinfo.zip" Name="zoneinfo.zip" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\tools\zoneinfo.zip" />
