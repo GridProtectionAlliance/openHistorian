@@ -607,7 +607,7 @@
             <div id="selectedDevicesArea" class="well" style="padding: 5px">
                 <div id="selectedDevicesHeader" class="clearfix">
                     Selected Devices&nbsp;<span data-bind="text: selectedDevices().length"></span><br/>
-                    <button type="button" class="btn btn-sm" onclick="showSaveSelectionsFileNameDialog()" id="showSaveSelectionsFileNameDialog" data-bind="enable: selectedDevices().length > 0">Save</button>
+                    <button type="button" class="btn btn-sm" onclick="showSaveSelectionsFileNameDialog()" id="showSaveSelectionsFileNameDialog" data-bind="enable: selectedDevices().length > 0">Export</button>
                     <div class="well well-sm floating-form" id="saveSelectionsFileNameDialog" style="z-index: 1000">
                         <form class="form-inline" role="form">
                             <div class="form-group form-group-sm">
@@ -622,7 +622,7 @@
                         </form>
                     </div>
                     <a href="#" id="saveSelectionsFileLink" target="_blank" style="display: none"></a>
-                    <button type="button" class="btn btn-sm" onclick="showLoadSelectionsFileNameDialog()">Load</button>
+                    <button type="button" class="btn btn-sm" onclick="showLoadSelectionsFileNameDialog()">Import</button>
                     <input id="loadSelectionsFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadSelectionsFile(event)">
                     <button type="button" class="btn btn-sm pull-right" data-bind="click: clearSelectedDevices.bind($data)">Clear All</button>
                 </div>
