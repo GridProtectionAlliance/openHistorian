@@ -2888,11 +2888,6 @@
         }
 
         function saveDeviceConnection() {
-            if (isEmpty(viewModel.configFrame().ConnectionString)) {
-                showErrorMessage("Cannot save device connection without a connection string");
-                return $.Deferred().resolve().promise();
-            }
-
             if (!hubIsConnected) {
                 showErrorMessage("Cannot save device connection, cannot connect to server.");
                 return $.Deferred().resolve().promise();
@@ -2931,7 +2926,7 @@
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
                 device.AccessID = configFrame.IDCode;
-                device.IsConcentrator = configFrame.IsConcentrator || configFrame.Cells.length > 1;
+                device.IsConcentrator = !isEmpty(viewModel.configFrame().ConnectionString) && (configFrame.IsConcentrator || configFrame.Cells.length > 1);
 
                 if (isEmpty(device.Name))
                     device.Name = device.Acronym;
@@ -3615,7 +3610,7 @@
                     @if (userIsEditor)
                     {
                         <div class="input-group save-button pull-right">
-                            <button type="button" class="btn btn-primary pull-right" id="saveData" data-bind="disable: !isDirty() && (working() || validationErrors() > 0 || !phasorHubIsConnected() || isEmpty(configFrame().ConnectionString))">
+                            <button type="button" class="btn btn-primary pull-right" id="saveData" data-bind="disable: !isDirty() && (working() || validationErrors() > 0 || !phasorHubIsConnected())">
                                 <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device&nbsp;
                             </button>
                         </div>
