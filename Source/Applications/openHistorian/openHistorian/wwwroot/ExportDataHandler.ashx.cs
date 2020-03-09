@@ -128,7 +128,7 @@ namespace openHistorian
         private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const double DefaultFrameRate = 30;
-            const int DefaultTSSnap = 0;
+            const int DefaultTimestampSnap = 0;
 
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
 
@@ -142,7 +142,7 @@ namespace openHistorian
             string pointIDsParam = requestParameters["PointIDs"];
             string startTimeParam = requestParameters["StartTime"];
             string endTimeParam = requestParameters["EndTime"];
-            string TSSnapParam = requestParameters["TSSnap"];
+            string timestampSnapParam = requestParameters["TSSnap"];
             string frameRateParam = requestParameters["FrameRate"];
             string alignTimestampsParam = requestParameters["AlignTimestamps"];
             string missingAsNaNParam = requestParameters["MissingAsNaN"];
@@ -203,33 +203,25 @@ namespace openHistorian
                 headers = GetHeaders(dataContext, pointIDs.Select(id => (int)id));
             }
 
-            double frameRate;
-            int tSSnap;
-            double tSTolerancems;
-            int tSToleranceTicks;
-
-            if (!double.TryParse(frameRateParam, out frameRate))
+            if (!double.TryParse(frameRateParam, out double frameRate))
                 frameRate = DefaultFrameRate;
-            if (!int.TryParse(TSSnapParam, out tSSnap))
-                tSSnap = DefaultTSSnap;
-            if (!double.TryParse(toleranceParam, out tSTolerancems))
-                tSTolerancems = 0.5;
+            if (!int.TryParse(timestampSnapParam, out int timestampSnap))
+                timestampSnap = DefaultTimestampSnap;
+            if (!double.TryParse(toleranceParam, out double tolerance))
+                tolerance = 0.5;
 
-            tSToleranceTicks = (int)Math.Ceiling(tSTolerancems * (double)Ticks.PerMillisecond);
-
-
+            int toleranceTicks = (int)Math.Ceiling(tolerance * Ticks.PerMillisecond);
             bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
             bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
             bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
 
             if (string.IsNullOrEmpty(instanceName))
                 instanceName = TrendValueAPI.DefaultInstanceName;
-        
-            LocalOutputAdapter adapter;
-            LocalOutputAdapter.Instances.TryGetValue(instanceName, out adapter);
+
+            LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapter);
             HistorianServer serverInstance = adapter?.Server;
 
-            if ((object)serverInstance == null)
+            if (serverInstance == null)
                 throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
 
             const int TargetBufferSize = 524288;
@@ -257,7 +249,7 @@ namespace openHistorian
 
                         ulong interval;
 
-                        if (Math.Abs(frameRate % 1) <= (Double.Epsilon * 100))
+                        if (Math.Abs(frameRate % 1) <= (double.Epsilon * 100))
                         {
                             Ticks[] subseconds = Ticks.SubsecondDistribution((int)frameRate);
 
@@ -298,44 +290,47 @@ namespace openHistorian
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
                             ulong timestamp = 0;
 
-                            // adjust timestamp to use first Time Stamp as Base
-                            bool AdjustTimeStamp = true;
-                            long baseTS = startTime.Ticks;
-                            if (tSSnap==0)
+                            // Adjust timestamp to use first timestamp as base
+                            bool adjustTimeStamp = true;
+                            long baseTime = startTime.Ticks;
+
+                            if (timestampSnap == 0)
                             {
-                                AdjustTimeStamp = false;
-                                baseTS = Ticks.RoundToSecondDistribution(startTime.Ticks,frameRate,startTime.Ticks - startTime.Ticks % Ticks.PerSecond);
+                                adjustTimeStamp = false;
+                                baseTime = Ticks.RoundToSecondDistribution(startTime.Ticks,frameRate,startTime.Ticks - startTime.Ticks % Ticks.PerSecond);
 
                             }
-                            else if (tSSnap == 1)
+                            else if (timestampSnap == 1)
                             {
-                                AdjustTimeStamp = true;
+                                adjustTimeStamp = true;
                             }
-                            else if (tSSnap == 2)
+                            else if (timestampSnap == 2)
                             {
-                                AdjustTimeStamp = false;
-                                baseTS = startTime.Ticks;
+                                adjustTimeStamp = false;
+                                baseTime = startTime.Ticks;
                             }
-                                
 
                             while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
                             {
                                 if (alignTimestamps)
                                 {
-                                    if (AdjustTimeStamp)
+                                    if (adjustTimeStamp)
                                     {
-                                        AdjustTimeStamp = false;
-                                        baseTS = (long)historianKey.Timestamp;
+                                        adjustTimeStamp = false;
+                                        baseTime = (long)historianKey.Timestamp;
                                     }
-                                    //Make sure the TS is actually close enough to the distribution
-                                    Ticks timestampTick = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTS, tSToleranceTicks);
-                                    if (timestampTick == Ticks.MinValue)
+
+                                    // Make sure the timestamp is actually close enough to the distribution
+                                    Ticks ticks = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTime, toleranceTicks);
+                                    if (ticks == Ticks.MinValue)
                                         continue;
 
-                                    timestamp = (ulong)timestampTick.Value;
+                                    timestamp = (ulong)ticks.Value;
                                 }
                                 else
+                                {
                                     timestamp = historianKey.Timestamp;
+                                }
 
                                 // Start a new row for each encountered new timestamp
                                 if (timestamp != lastTimestamp)
@@ -457,7 +452,7 @@ namespace openHistorian
             {
                 hub = Activator.CreateInstance(hubType) as IRecordOperationsHub;
 
-                if ((object)hub == null)
+                if (hub == null)
                     throw new SecurityException("Cannot export data: hub type \"DataHub\" is not a IRecordOperationsHub, access cannot be validated.");
 
                 Tuple<string, string>[] recordOperations;
@@ -467,7 +462,7 @@ namespace openHistorian
                     // Get any authorized query roles as defined in hub records operations for modeled table, default to read allowed for query
                     recordOperations = hub.RecordOperationsCache.GetRecordOperations(modelType);
 
-                    if ((object)recordOperations == null)
+                    if (recordOperations == null)
                         throw new NullReferenceException();
                 }
                 catch (KeyNotFoundException ex)
@@ -478,7 +473,7 @@ namespace openHistorian
                 // Get record operation for querying records
                 queryRecordsOperation = recordOperations[(int)RecordOperation.QueryRecords];
 
-                if ((object)queryRecordsOperation == null)
+                if (queryRecordsOperation == null)
                     throw new NullReferenceException();
 
                 // Get any defined role restrictions for record query operation - access to CSV download will based on these roles

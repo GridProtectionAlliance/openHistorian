@@ -651,9 +651,6 @@
                 })
             }]);
 
-           
-
-
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
             
             if (trendSeriesLimitValue === undefined)
@@ -663,27 +660,24 @@
             var alignTimestamps = Cookies.get("alignTimestamps");
             var missingAsNaN = Cookies.get("missingAsNaN");
             var fillMissingTimestamps = Cookies.get("fillMissingTimestamps");
-            var tsTolerance = Cookies.get("tsTolerance");
+            var tolerance = Cookies.get("tolerance");
 
             if (timesStampSnap === undefined)
                 timesStampSnap = 0;
+
             if (alignTimestamps === undefined)
                 alignTimestamps = true;
+
             if (missingAsNaN === undefined)
                 missingAsNaN = true;
+
             if (fillMissingTimestamps === undefined)
                 fillMissingTimestamps = false;
-            if (tsTolerance === undefined)
-                tsTolerance = true;
 
-            self.tsTolerance = ko.observable(tsTolerance);
-            self.tsTolerance.subscribe(function (val) {
-                Cookies.set("tsTolerance", val.toString(), { expires: 365 });
-                if (val) {
-                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000)
-                }
-            });
+            if (tolerance === undefined)
+                tolerance = true;
 
+            self.tolerance = ko.observable(tolerance);
 
             var autoEstimateResolutionValue = Cookies.get("autoEstimateResolution");
 
@@ -716,7 +710,6 @@
             self.frameBase = ko.observable(0);
             self.timesStampSnap = ko.observable(timesStampSnap);
 
-           
             self.missingAsNaN = ko.observable(missingAsNaN);
             self.fillMissingTimestamps = ko.observable(fillMissingTimestamps);
             self.selectAllProgress = ko.observable("0%");
@@ -724,19 +717,22 @@
             self.fillMissingTimestamps.subscribe(function (val) {
                 Cookies.set("fillMissingTimestamps", val.toString(), { expires: 365 });
             });
-            self.missingAsNaN.subscribe(function (val) {
+
+            self.missingAsNaN.subscribe(function(val) {
                 Cookies.set("missingAsNaN", val.toString(), { expires: 365 });
             });
-            self.timesStampSnap.subscribe(function (val) {
+
+            self.timesStampSnap.subscribe(function(val) {
                 Cookies.set("timesStampSnap", val.toString(), { expires: 365 });
             });
-            self.tsTolerance.subscribe(function (val) {
-                Cookies.set("tsTolerance", val.toString(), { expires: 365 });
+
+            self.tolerance.subscribe(function(val) {
+                Cookies.set("tolerance", val.toString(), { expires: 365 });
+                
                 if (val) {
-                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000)
+                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000);
                 }
             });
-
 
             self.instanceName = ko.pureComputed({
                 read: function() {
@@ -842,7 +838,7 @@
                     Cookies.set("alignTimestamps", value.toString(), { expires: 365 });
                     if (!value) {
                         self.fillMissingTimestamps(false);
-                        self.tsTolerance(false);
+                        self.tolerance(false);
                     }
                 },
                 owner: self
@@ -877,12 +873,12 @@
 
             self.fromNowOption = ko.pureComputed({
                 read: function() {
-                    return self.fromNow() ? "FromNow" : "FromEndTime";  
+                    return self.fromNow() ? "FromNow" : "FromEndTime";
                 },
                 write: function(value) {
                     self.fromNow(value === "FromNow");
                 },
-                owner: self        
+                owner: self
             });          
 
             self.interval = ko.pureComputed({
@@ -1340,7 +1336,7 @@
         }
 
         function getHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, timestampType) {
-            var queryParameters = {
+            const queryParameters = {
                 instanceName: instanceName,
                 startTime: startTime,
                 stopTime: stopTime,
@@ -1452,25 +1448,25 @@
 
             if (selectedPointIDs.length === 0)
                 return;
-            let adjframerate = viewModel.frameRate();
-            if (viewModel.frameBase() == 1) {
-                adjframerate = adjframerate / 60.0;
-            }
-            if (viewModel.frameBase() == 2) {
-                adjframerate = adjframerate / (60.0*60.0);
-            }
+
+            let adjustedFrameRate = viewModel.frameRate();
+
+            if (viewModel.frameBase() === 1)
+                adjustedFrameRate = adjustedFrameRate / 60.0;
+
+            if (viewModel.frameBase() === 2)
+                adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
 
             let tolerance = 0.5;
             
-            if (viewModel.tsTolerance()) {
-                tolerance = 500 / adjframerate;
-            }
+            if (viewModel.tolerance())
+                tolerance = 500 / adjustedFrameRate;
 
             $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                 "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
                 "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) + 
                 "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) + 
-                "&FrameRate=" + encodeURIComponent(adjframerate) + 
+                "&FrameRate=" + encodeURIComponent(adjustedFrameRate) + 
                 "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
                 "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
                 "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
@@ -2125,7 +2121,7 @@
                             </div>
                             &nbsp;&nbsp;
                             <div class="checkbox">
-                                <label for="exportTolerance" data-bind="css: { 'disabled': !alignTimestamps()}"><input type="checkbox" id="exportTolerance" data-bind="checked: tsTolerance"> <strong>Round&nbsp;to&nbsp;Frame&nbsp;Rate&nbsp;Timestamps</strong><sup>**</sup></label>
+                                <label for="exportTolerance" data-bind="css: { 'disabled': !alignTimestamps()}"><input type="checkbox" id="exportTolerance" data-bind="checked: tolerance"> <strong>Round&nbsp;to&nbsp;Frame&nbsp;Rate&nbsp;Timestamps</strong><sup>**</sup></label>
                             </div>
                             &nbsp;&nbsp;
                         </form>
