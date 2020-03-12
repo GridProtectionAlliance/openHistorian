@@ -270,13 +270,13 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
+        public virtual void QueryAlarms(QueryRequest request, CancellationToken cancellationToken)
         {
-            if (request.targets.FirstOrDefault()?.target == null)
-                return Task.FromResult(new List<TimeSeriesValues>());
-
-
-            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+            Task.Factory.StartNew(() =>
+            {
+                GrafanaAlarmManagement.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
+            }, cancellationToken);
+            
         }
 
         /// <summary>
@@ -290,11 +290,6 @@ namespace openHistorian.Adapters
         {
             return DataSource?.GetDeviceGroups(request, cancellationToken) ?? Task.FromResult(new List<DeviceGroup>().AsEnumerable());
         }
-
-
-       
-
-
 
         /// <summary>
         /// Queries openHistorian as a Grafana Metadata source.
