@@ -238,6 +238,7 @@ namespace openHistorian.Adapters
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
         }
 
+
         /// <summary>
         /// Queries openHistorian for Device Alarm Status.
         /// </summary>
@@ -263,19 +264,31 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Queries openHistorian for Alarms and Adds them to the Grafana DataBase.
+        /// Queries openHistorian as a Grafana data source.
         /// </summary>
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual void QueryAlarms(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
-            Task.Factory.StartNew(() =>
-            {
-                GrafanaAlarmManagement.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
-            },
-            cancellationToken);
+            if (request.targets.FirstOrDefault()?.target == null)
+                return Task.FromResult(new List<TimeSeriesValues>());
+
+
+            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for DeviceGroups.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<IEnumerable<DeviceGroup>> GetDeviceGroups(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource?.GetDeviceGroups(request, cancellationToken) ?? Task.FromResult(new List<DeviceGroup>().AsEnumerable());
         }
 
 
