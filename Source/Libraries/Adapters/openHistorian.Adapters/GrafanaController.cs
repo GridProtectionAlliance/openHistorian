@@ -251,6 +251,18 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Queries openHistorian for Device Alarm States.
+        /// </summary>
+        /// <param name="request">Query request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<IEnumerable<GrafanaAdapters.AlarmState>> GetDeviceAlarms(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource?.GetDeviceAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAdapters.AlarmState>().AsEnumerable());
+        }
+
+        /// <summary>
         /// Queries openHistorian for Alarms and Adds them to the Grafana DataBase.
         /// </summary>
         /// <param name="request">Query request.</param>
