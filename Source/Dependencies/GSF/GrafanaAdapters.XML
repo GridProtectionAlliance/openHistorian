@@ -479,6 +479,27 @@
             <param name="span"><see cref="T:GSF.Ticks"/> representing time span.</param>
             <returns>Short elapsed time string.</returns>
         </member>
+        <member name="T:GrafanaAdapters.DeviceGroup">
+            <summary>
+            Represents a Group of Devices
+            Also modeled as a seperate virtual Device with connection string
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DeviceGroup.ID">
+            <summary>
+            Unique ID.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DeviceGroup.Name">
+            <summary>
+            name of the Device.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DeviceGroup.Devices">
+            <summary>
+            List of attached DeviceIds
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.AlarmState">
             <summary>
             Represents the Alarm State of a connected Device.
@@ -559,6 +580,11 @@
             Additional data to be displayed.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.AlarmDeviceStateView.DeviceID">
+            <summary>
+            Device ID of the Alarmed Device.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.GrafanaDataService">
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
@@ -576,6 +602,18 @@
         <member name="M:GrafanaAdapters.GrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
             <summary>
             Queries openPDC Alarmstates as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetDeviceAlarms(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian Device Alarmstates.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetDeviceGroups(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian Device Groups.
             </summary>
             <param name="request">Query request.</param>
         </member>
@@ -1262,13 +1300,29 @@
             <param name="cancellationToken">Cancellation token.</param>
             <returns> Queried device alarm states.</returns>
         </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries All Available Device Alarm states.
+            </summary>
+            <param name="request">Alarm request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> Queried device alarm states.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceGroups(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries All Available Device Groups.
+            </summary>
+            <param name="request">request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> List of Device Groups.</returns>
+        </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
             <summary>
             Query Current Alarms Based on list of Points.
             </summary>
             <param name="request">Alarm request.</param>
             <param name="cancellationToken">Cancellation token.</param>
-            <returns> Queried device alarm states.</returns>
+            <returns> Queried alarm states.</returns>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
             <summary>

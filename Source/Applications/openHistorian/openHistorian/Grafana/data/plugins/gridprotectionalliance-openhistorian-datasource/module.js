@@ -589,6 +589,19 @@ var OpenHistorianDataSource = function () {
             });
         }
     }, {
+        key: "getPossibleAlarmStates",
+        value: function getPossibleAlarmStates(options) {
+            var interpolated = {
+                target: this.templateSrv.replace(options, null, 'regex')
+            };
+            return this.backendSrv.datasourceRequest({
+                url: this.url + '/GetDeviceAlarms',
+                data: interpolated,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    }, {
         key: "getDataAvailability",
         value: function getDataAvailability(options) {
             var interpolated = {

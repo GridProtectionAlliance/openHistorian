@@ -180,6 +180,7 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
         _this.panel.link = _this.panel.link != undefined ? _this.panel.link : '..';
         _this.panel.filter = _this.panel.filter != undefined ? _this.panel.filter : '';
         _this.panel.showLegend = _this.panel.showLegend != undefined ? _this.panel.showLegend : true;
+        _this.panel.showAllStates = _this.panel.showAllStates != undefined ? _this.panel.showAllStates : false;
         return _this;
     }
     // #region Events from Graphana Handlers
@@ -241,8 +242,13 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
                     filterdata = filtereddata;
                 }
                 _this2.$scope.data = filterdata;
-                _this2.$scope.colors = _.uniqBy(filterdata, 'State');
+                if (!_this2.panel.showAllStates) _this2.$scope.colors = _.uniqBy(filterdata, 'State');
             });
+            if (this.panel.showAllStates) {
+                this.datasource.getPossibleAlarmStates().then(function (data) {
+                    _this2.$scope.colors = data.data;
+                });
+            }
             //console.log('data-recieved');
         }
     }, {

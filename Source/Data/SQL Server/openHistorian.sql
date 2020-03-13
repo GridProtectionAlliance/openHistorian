@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 11 AS VersionNumber
+SELECT 12 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -3140,7 +3140,7 @@ ON DELETE CASCADE
 GO
 
 CREATE VIEW AlarmDeviceStateView AS
-SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData
+SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData, Device.ID AS DeviceID
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID

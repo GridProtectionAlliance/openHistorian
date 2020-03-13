@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 11 AS VersionNumber
+SELECT 12 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -2791,7 +2791,7 @@ CREATE TRIGGER AI_AlarmDevice BEFORE INSERT ON AlarmDevice
 END;
 
 CREATE VIEW AlarmDeviceStateView AS
-SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData
+SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData, Device.ID AS DeviceID
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID;
