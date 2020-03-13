@@ -181,6 +181,10 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
         _this.panel.filter = _this.panel.filter != undefined ? _this.panel.filter : '';
         _this.panel.showLegend = _this.panel.showLegend != undefined ? _this.panel.showLegend : true;
         _this.panel.showAllStates = _this.panel.showAllStates != undefined ? _this.panel.showAllStates : false;
+        _this.panel.filterDevice = _this.panel.filterDevice != undefined ? _this.panel.filterDevice : true;
+        _this.panel.showAllStates = _this.panel.useRegex != undefined ? _this.panel.useRegex : false;
+        _this.panel.deviceGroups = _this.panel.deviceGroups != undefined ? _this.panel.deviceGroups : [];
+        _this.SelectedDeviceIds = [];
         return _this;
     }
     // #region Events from Graphana Handlers
@@ -223,7 +227,7 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
             var _this2 = this;
 
             this.datasource.getAlarmStates().then(function (data) {
-                //console.log(data);
+                _this2.getGroups();
                 var filter = _this2.panel.filter;
                 try {
                     filter = _this2.templateSrv.replace(_this2.panel.filter, _this2.panel.scopedVars, 'regex');
@@ -231,7 +235,7 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
                     console.log('Alarm panel error: ', e);
                 }
                 var filterdata = data.data;
-                if (_this2.panel.filter !== "") {
+                if (_this2.panel.filterDevice && _this2.panel.filter !== "") {
                     var filtereddata = [];
                     var re = new RegExp(filter);
                     filterdata.forEach(function (item) {
@@ -240,21 +244,78 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
                         }
                     });
                     filterdata = filtereddata;
+                } else if (!_this2.panel.filterDevice) {
+                    _this2.updateGroups();
+                    var _filtereddata = [];
+                    filterdata.forEach(function (item) {
+                        if (_this2.SelectedDeviceIds.indexOf(item.DeviceID) > -1) _filtereddata.push(item);
+                    });
+                    filterdata = _filtereddata;
                 }
                 _this2.$scope.data = filterdata;
                 if (!_this2.panel.showAllStates) _this2.$scope.colors = _.uniqBy(filterdata, 'State');
+                if (_this2.panel.showAllStates) {
+                    _this2.datasource.getPossibleAlarmStates().then(function (data) {
+                        _this2.$scope.colors = data.data;
+                    });
+                }
+                //console.log('data-recieved');
             });
-            if (this.panel.showAllStates) {
-                this.datasource.getPossibleAlarmStates().then(function (data) {
-                    _this2.$scope.colors = data.data;
-                });
-            }
-            //console.log('data-recieved');
         }
     }, {
         key: "onDataError",
         value: function onDataError(msg) {
             //console.log('data-error');
+        }
+    }, {
+        key: "updateGroups",
+        value: function updateGroups() {
+            var updatedDeviceGroups = this.panel.deviceGroups;
+            if (this.panel.useRegex) {
+                if (this.panel.filter == "") updatedDeviceGroups = updatedDeviceGroups.map(function (item) {
+                    return item.enabled = true;
+                });else {
+                    var filter = this.panel.filter;
+                    try {
+                        filter = this.templateSrv.replace(this.panel.filter, this.panel.scopedVars, 'regex');
+                    } catch (e) {
+                        console.log('Alarm panel error: ', e);
+                    }
+                    var re = new RegExp(filter);
+                    updatedDeviceGroups.forEach(function (item, i) {
+                        if (re.test(item.name)) updatedDeviceGroups[i].enabled = true;else updatedDeviceGroups[i].enabled = false;
+                    });
+                }
+            }
+            var enabledID = [];
+            updatedDeviceGroups.filter(function (item) {
+                return item.enabled;
+            }).forEach(function (item) {
+                enabledID = enabledID.concat(item.Devices);
+            });
+            this.SelectedDeviceIds = _.uniq(enabledID);
+        }
+    }, {
+        key: "getGroups",
+        value: function getGroups() {
+            var _this3 = this;
+
+            this.datasource.getDeviceGroups().then(function (data) {
+                var updatedDeviceGroups = [];
+                if (data.data.length == 0) {
+                    _this3.panel.filterDevice = true;
+                    return;
+                }
+                data.data.forEach(function (g) {
+                    var index = _this3.panel.deviceGroups.findIndex(function (item) {
+                        return item.ID == g.ID;
+                    });
+                    var enabled = false;
+                    if (index > -1) enabled = _this3.panel.deviceGroups[index].enabled;
+                    updatedDeviceGroups.push({ name: g.Name, ID: g.ID, enabled: enabled, Devices: g.Devices });
+                });
+                _this3.panel.deviceGroups = updatedDeviceGroups;
+            });
         }
     }, {
         key: "handleClick",
