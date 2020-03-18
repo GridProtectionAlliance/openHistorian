@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#GetColumn`1(!!0[,],System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
            <Messages>
-            <Message Id="0#" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Status="Active" Created="2020-03-13 18:14:24Z" FixCategory="Breaking">
+            <Message Id="0#" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Status="Active" Created="2020-03-18 04:02:04Z" FixCategory="Breaking">
              <Issue Certainty="25" Level="Warning">'source' is a multidimensional array. Replace it with a jagged array if possible.</Issue>
             </Message>
            </Messages>
