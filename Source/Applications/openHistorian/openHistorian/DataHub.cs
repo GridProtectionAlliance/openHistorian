@@ -386,7 +386,7 @@ namespace openHistorian
                 return Enumerable.Empty<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0} AND ProtocolID <> {1} AND AccessID <> {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("NodeID = {0} AND (ProtocolID <> {1} AND AccessID <> {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 $"ID IN ({deviceIDs})";
 
             return DataContext.Table<Device>().QueryRecords(restriction);

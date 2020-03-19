@@ -45,7 +45,9 @@ using openHistorian.Model;
 using openHistorian.Snap;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security;
@@ -461,6 +463,76 @@ namespace openHistorian
             }
         }
 
+        protected override bool PropagateDataSource(DataSet dataSource)
+        {
+            // Augment data source with device group measurements metadata table
+            DataTable activeMeasurements = dataSource.Tables["ActiveMeasurements"];
+            DataTable deviceGroupMeasurements = activeMeasurements.Clone();
+            deviceGroupMeasurements.TableName = "DeviceGroupMeasurements";
+
+            // Add device group specific columns
+            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroup", typeof(string)));
+            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupName", typeof(string)));
+            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupID", typeof(int)));
+
+            int deviceGroupIndex = deviceGroupMeasurements.Columns["DeviceGroup"].Ordinal;
+            int deviceGroupNameIndex = deviceGroupMeasurements.Columns["DeviceGroupName"].Ordinal;
+            int deviceGroupIDIndex = deviceGroupMeasurements.Columns["DeviceGroupID"].Ordinal;
+
+            // Add device group measurements metadata table to data source
+            dataSource.Tables.Add(deviceGroupMeasurements);
+
+            // Populate device group measurements metadata table
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+                TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
+                TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
+
+                // Query all device groups
+                foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
+                {
+                    if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
+                        continue;
+
+                    Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
+
+                    if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
+                        continue;
+
+                    // Convert database IDs to runtime IDs
+                    HashSet<int> databaseIDs = new HashSet<int>();
+
+                    foreach (string deviceID in deviceIDs.Split(','))
+                    {
+                        if (int.TryParse(deviceID, out int databaseID))
+                            databaseIDs.Add(databaseID);
+                    }
+
+                    HashSet<int> runtimeIDs = new HashSet<int>(runtimeTable.QueryRecordsWhere($"SourceTable = 'Device' AND SourceID IN ({string.Join(",", databaseIDs)})").Select(runtime => runtime.ID));
+
+                    // Get active measurements associated with device group device IDs
+                    foreach (DataRow row in activeMeasurements.Select($"DeviceID IN ({string.Join(",", runtimeIDs)})"))
+                    {
+                        DataRow newRow = deviceGroupMeasurements.NewRow();
+
+                        // Copy common columns from active measurements
+                        for (int i = 0; i < activeMeasurements.Columns.Count; i++)
+                            newRow[i] = row[i];
+
+                        // Add device group specific column values
+                        newRow[deviceGroupIndex] = deviceGroup.Acronym;
+                        newRow[deviceGroupNameIndex] = deviceGroup.Name;
+                        newRow[deviceGroupIDIndex] = deviceGroup.ID;
+
+                        deviceGroupMeasurements.Rows.Add(newRow);
+                    }
+                }
+            }
+
+            return base.PropagateDataSource(dataSource);
+        }
+
         private void GrafanaAuthProxyController_StatusMessage(object sender, EventArgs<string> e)
         {
             LogStatusMessage($"[GRAFANA!AUTHPROXY] {e.Argument}");
@@ -648,6 +720,13 @@ namespace openHistorian
                 log.Publish(MessageLevel.Error, "Error Message", "Failed to setup Grafana hosting adapter", null, ex);
             }
         }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+        private static int s_virtualProtocolID;
 
         #endregion
     }

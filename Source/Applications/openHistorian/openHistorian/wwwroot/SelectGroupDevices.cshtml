@@ -567,7 +567,10 @@
                     dataHub.queryDeviceGroup("@Model.Global.NodeID", @deviceGroupID).done(function(deviceGroup) {
                         if (deviceGroup) {
                             deviceGroup.ConnectionString = "deviceIDs=" + viewModel.getSelectedDeviceIDs();
-                            dataHub.updateDeviceGroup(deviceGroup);
+                            dataHub.updateDeviceGroup(deviceGroup).done(function() {
+                                if (hubIsConnected)
+                                    serviceHub.sendCommand("ReloadConfig");
+                            });
                         }
                     });
                 }
