@@ -497,7 +497,7 @@ namespace openHistorian
                     TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
 
                     // Query all device groups
-                    foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
+                    foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2} AND Enabled <> 0", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
                     {
                         if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
                             continue;
