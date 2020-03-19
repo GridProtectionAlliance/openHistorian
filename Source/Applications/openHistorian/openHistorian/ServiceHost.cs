@@ -465,75 +465,88 @@ namespace openHistorian
 
         protected override bool PropagateDataSource(DataSet dataSource)
         {
-            // Augment data source with device group measurements metadata table
-            DataTable activeMeasurements = dataSource.Tables["ActiveMeasurements"];
-            DataTable deviceGroupMeasurements = activeMeasurements.Clone();
-            deviceGroupMeasurements.TableName = "DeviceGroupMeasurements";
+            const string DeviceGroupMeasurementsTableName = "DeviceGroupMeasurements";
 
-            // Add device group specific columns
-            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroup", typeof(string)));
-            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupName", typeof(string)));
-            deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupID", typeof(int)));
-
-            int deviceGroupIndex = deviceGroupMeasurements.Columns["DeviceGroup"].Ordinal;
-            int deviceGroupNameIndex = deviceGroupMeasurements.Columns["DeviceGroupName"].Ordinal;
-            int deviceGroupIDIndex = deviceGroupMeasurements.Columns["DeviceGroupID"].Ordinal;
-
-            // Add device group measurements metadata table to data source
-            dataSource.Tables.Add(deviceGroupMeasurements);
-
-            // Populate device group measurements metadata table
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            try
             {
-                int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
-                TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
-                TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
+                // Augment data source with device group measurements metadata table
+                DataTable activeMeasurements = dataSource.Tables["ActiveMeasurements"];
+                DataTable deviceGroupMeasurements = activeMeasurements.Clone();
+                deviceGroupMeasurements.TableName = DeviceGroupMeasurementsTableName;
 
-                // Query all device groups
-                foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
+                // Add device group specific columns
+                deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroup", typeof(string)));
+                deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupName", typeof(string)));
+                deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupID", typeof(int)));
+
+                int deviceGroupIndex = deviceGroupMeasurements.Columns["DeviceGroup"].Ordinal;
+                int deviceGroupNameIndex = deviceGroupMeasurements.Columns["DeviceGroupName"].Ordinal;
+                int deviceGroupIDIndex = deviceGroupMeasurements.Columns["DeviceGroupID"].Ordinal;
+
+                if (dataSource.Tables.Contains(DeviceGroupMeasurementsTableName))
+                    dataSource.Tables.Remove(DeviceGroupMeasurementsTableName);
+
+                // Add device group measurements metadata table to data source
+                dataSource.Tables.Add(deviceGroupMeasurements);
+
+                // Populate device group measurements metadata table
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
-                    if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
-                        continue;
+                    int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+                    TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
+                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
 
-                    Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
-
-                    if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
-                        continue;
-
-                    // Convert database IDs to runtime IDs
-                    HashSet<int> databaseIDs = new HashSet<int>();
-
-                    foreach (string deviceID in deviceIDs.Split(','))
+                    // Query all device groups
+                    foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
                     {
-                        if (int.TryParse(deviceID, out int databaseID))
-                            databaseIDs.Add(databaseID);
-                    }
+                        if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
+                            continue;
 
-                    if (databaseIDs.Count == 0)
-                        continue;
+                        Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
 
-                    HashSet<int> runtimeIDs = new HashSet<int>(runtimeTable.QueryRecordsWhere($"SourceTable = 'Device' AND SourceID IN ({string.Join(",", databaseIDs)})").Select(runtime => runtime.ID));
+                        if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
+                            continue;
 
-                    if (runtimeIDs.Count == 0)
-                        continue;
+                        // Parse device ID list
+                        HashSet<int> deviceIDSet = new HashSet<int>();
 
-                    // Get active measurements associated with device group's device runtime IDs
-                    foreach (DataRow row in activeMeasurements.Select($"DeviceID IN ({string.Join(",", runtimeIDs)})"))
-                    {
-                        DataRow newRow = deviceGroupMeasurements.NewRow();
+                        foreach (string deviceID in deviceIDs.Split(','))
+                        {
+                            if (int.TryParse(deviceID, out int id))
+                                deviceIDSet.Add(id);
+                        }
 
-                        // Copy common columns from active measurements
-                        for (int i = 0; i < activeMeasurements.Columns.Count; i++)
-                            newRow[i] = row[i];
+                        if (deviceIDSet.Count == 0)
+                            continue;
 
-                        // Add device group specific column values
-                        newRow[deviceGroupIndex] = deviceGroup.Acronym;
-                        newRow[deviceGroupNameIndex] = deviceGroup.Name;
-                        newRow[deviceGroupIDIndex] = deviceGroup.ID;
+                        HashSet<string> deviceAcronyms = new HashSet<string>(deviceTable.QueryRecordsWhere($"ID IN ({string.Join(",", deviceIDSet)})").Select(device => $"'{device.Acronym}'"));
 
-                        deviceGroupMeasurements.Rows.Add(newRow);
+                        if (deviceAcronyms.Count == 0)
+                            continue;
+
+                        // Get active measurements associated with device group's device runtime IDs
+                        foreach (DataRow row in activeMeasurements.Select($"Device IN ({string.Join(",", deviceAcronyms)})"))
+                        {
+                            DataRow newRow = deviceGroupMeasurements.NewRow();
+
+                            // Copy common columns from active measurements
+                            for (int i = 0; i < activeMeasurements.Columns.Count; i++)
+                                newRow[i] = row[i];
+
+                            // Add device group specific column values
+                            newRow[deviceGroupIndex] = deviceGroup.Acronym;
+                            newRow[deviceGroupNameIndex] = deviceGroup.Name;
+                            newRow[deviceGroupIDIndex] = deviceGroup.ID;
+
+                            deviceGroupMeasurements.Rows.Add(newRow);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                DisplayStatusMessage($"Unable to inject \"{DeviceGroupMeasurementsTableName}\" selection metadata table during configuration dataset propagation due to exception: {0}", UpdateType.Alarm, ex.Message);
+                LogException(ex);
             }
 
             return base.PropagateDataSource(dataSource);
