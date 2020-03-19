@@ -78,12 +78,11 @@
         @Raw(dataContext.AddInputField<DeviceGroup>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<DeviceGroup>("Acronym", initialFocus: true))
         @Raw(dataContext.AddInputField<DeviceGroup>("Name"))
-        @Raw(dataContext.AddSelectField<DeviceGroup, Historian>("HistorianID", "ID", "Acronym", allowUnset: true, addEmptyRow: true))
+        @Raw(dataContext.AddSelectField<DeviceGroup, Interconnection>("InterconnectionID", "ID", "Acronym"))
     </div>
     <div class="col-md-6">
         @Raw(dataContext.AddInputField<DeviceGroup>("Longitude"))
         @Raw(dataContext.AddInputField<DeviceGroup>("Latitude"))
-        @Raw(dataContext.AddSelectField<DeviceGroup, Interconnection>("InterconnectionID", "ID", "Acronym"))
         @Raw(dataContext.AddSelectField<DeviceGroup, Company>("CompanyID", "ID", "Acronym"))
         @Raw(dataContext.AddInputField<DeviceGroup>("ContactList"))
         <div class="form-inline pull-right">
