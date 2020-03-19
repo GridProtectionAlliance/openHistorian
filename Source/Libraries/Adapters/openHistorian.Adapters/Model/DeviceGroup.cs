@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace openHistorian.Model
 {
+    // DeviceGroup is simply a special Device record, i.e., a device with AccessID=-99999 and a VirtualInput protocol
     [PrimaryLabel("Acronym")]
     [TableName("Device")]
     public class DeviceGroup
@@ -117,6 +118,7 @@ namespace openHistorian.Model
 
         public int LoadOrder { get; set; }
 
+        [DefaultValue(true)]
         public bool Enabled { get; set; }
 
         [DefaultValueExpression("DateTime.UtcNow")]
