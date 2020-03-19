@@ -474,12 +474,12 @@ namespace openHistorian
                 DataTable deviceGroupMeasurements = activeMeasurements.Clone();
                 deviceGroupMeasurements.TableName = DeviceGroupMeasurementsTableName;
 
-                // Add device group specific columns
+                // Append device group specific columns
                 deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroup", typeof(string)));
                 deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupName", typeof(string)));
                 deviceGroupMeasurements.Columns.Add(new DataColumn("DeviceGroupID", typeof(int)));
 
-                int deviceGroupIndex = deviceGroupMeasurements.Columns["DeviceGroup"].Ordinal;
+                int deviceGroupAcronymIndex = deviceGroupMeasurements.Columns["DeviceGroup"].Ordinal;
                 int deviceGroupNameIndex = deviceGroupMeasurements.Columns["DeviceGroupName"].Ordinal;
                 int deviceGroupIDIndex = deviceGroupMeasurements.Columns["DeviceGroupID"].Ordinal;
 
@@ -496,7 +496,7 @@ namespace openHistorian
                     TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
                     TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
 
-                    // Query all device groups
+                    // Query all enabled device groups
                     foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2} AND Enabled <> 0", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
                     {
                         if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
@@ -524,7 +524,7 @@ namespace openHistorian
                         if (deviceAcronyms.Count == 0)
                             continue;
 
-                        // Get active measurements associated with device group's device runtime IDs
+                        // Get active measurements associated with device group's device acronyms
                         foreach (DataRow row in activeMeasurements.Select($"Device IN ({string.Join(",", deviceAcronyms)})"))
                         {
                             DataRow newRow = deviceGroupMeasurements.NewRow();
@@ -534,7 +534,7 @@ namespace openHistorian
                                 newRow[i] = row[i];
 
                             // Add device group specific column values
-                            newRow[deviceGroupIndex] = deviceGroup.Acronym;
+                            newRow[deviceGroupAcronymIndex] = deviceGroup.Acronym;
                             newRow[deviceGroupNameIndex] = deviceGroup.Name;
                             newRow[deviceGroupIDIndex] = deviceGroup.ID;
 
