@@ -509,9 +509,15 @@ namespace openHistorian
                             databaseIDs.Add(databaseID);
                     }
 
+                    if (databaseIDs.Count == 0)
+                        continue;
+
                     HashSet<int> runtimeIDs = new HashSet<int>(runtimeTable.QueryRecordsWhere($"SourceTable = 'Device' AND SourceID IN ({string.Join(",", databaseIDs)})").Select(runtime => runtime.ID));
 
-                    // Get active measurements associated with device group device IDs
+                    if (runtimeIDs.Count == 0)
+                        continue;
+
+                    // Get active measurements associated with device group's device runtime IDs
                     foreach (DataRow row in activeMeasurements.Select($"DeviceID IN ({string.Join(",", runtimeIDs)})"))
                     {
                         DataRow newRow = deviceGroupMeasurements.NewRow();
