@@ -12831,6 +12831,13 @@
             Initializes the service helper.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.PropagateDataSource(System.Data.DataSet)">
+            <summary>
+            Handle assignment of data source to Iaon session.
+            </summary>
+            <param name="dataSource">New data source to assign.</param>
+            <returns><c>true</c> if data source was assigned; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.CacheCurrentConfiguration(System.Data.DataSet)">
             <summary>
             Caches the current system configuration.
