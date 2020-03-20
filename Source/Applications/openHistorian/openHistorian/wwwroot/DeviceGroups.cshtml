@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Text
 @using GSF.Security
 @using GSF.Web.Model
 @using GSF.Web.Shared.Model
@@ -34,7 +35,12 @@
     </style>
 }
 @{
+    if (ViewBag.PageControlScripts == null) {
+        ViewBag.PageControlScripts = new StringBuilder();
+    }
+
     DataContext dataContext = ViewBag.DataContext;
+    StringBuilder pageControlScripts = ViewBag.PageControlScripts;
 
     Layout = "Layout.cshtml";
     ViewBag.Title = "Device Groups";
@@ -52,6 +58,9 @@
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
     ViewBag.ParentKeys = Model.Global.NodeID.ToString();
+
+    // Prepend view model validation extension scripts to occur before normal model initialization
+    pageControlScripts.Insert(0, ExtendModelValidation().ToString().TrimStart());
 }
 @functions {
     public bool UserIsAdminOrEditor()
@@ -90,6 +99,89 @@
         </div>
     </div>
 }
+@helper ExtendModelValidation()
+{
+    <script>
+        var phasorHub, phasorHubClient;
+
+        $(function () {
+            // Connect to phasor hub
+            phasorHub = $.connection.phasorHub.server;
+            phasorHubClient = $.connection.phasorHub.client;
+
+            // Create hub client functions for message control
+            function encodeInfoMessage(message, timeout) {
+                // Html encode message
+                const encodedMessage = $("<div />").text(message).html();
+                showInfoMessage(encodedMessage, timeout);
+            }
+
+            function encodeErrorMessage(message, timeout) {
+                // Html encode message
+                const encodedMessage = $("<div />").text(message).html();
+                showErrorMessage(encodedMessage, timeout);
+            }
+
+            // Register info and error message handlers for hub client
+            phasorHubClient.sendInfoMessage = encodeInfoMessage;
+            phasorHubClient.sendErrorMessage = encodeErrorMessage;
+        });
+
+        $(window).on("beforeApplyBindings", function () {
+            // Define local rule that will check that device group acronym is unique in the database
+            ko.validation.rules["deviceUniqueInDatabase"] = {
+                async: true,
+                validator: function (newVal, options, callback) {
+                    if (phasorHub) {
+                        // Lookup Device record by Acronym - this will return an empty record if not found
+                        phasorHub.queryDevice(newVal).done(function (device) {
+                                // Valid if device doesn't exist or is itself
+                                callback(device.ID === 0 || notNull(device.Acronym).toLowerCase() === notNull(options).toLowerCase());
+                            })
+                            .fail(function (error) {
+                                showErrorMessage(error);
+
+                                // Do not display validation failure message for connection issues
+                                callback(true);
+                            });
+                    }
+                    else {
+                        callback(true);
+                    }
+                },
+                message: "This device acronym already exists in the database. Acronyms must be unique."
+            };
+
+            ko.bindingHandlers.selectOnError = {
+                init: function (element, valueAccessor) {
+                    $(element).on("input", function(event) {
+                        setTimeout(function () {
+                            if (!valueAccessor().isValid())
+                                element.select();
+                        }, 1);
+                    });
+                }
+            }
+            
+            // Enable knockout validation
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
+            }, true);
+
+            // Enable deferred updates for better performance
+            ko.options.deferUpdates = true;
+        });
+    </script>
+}
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 <div id="editDevicesDialog" class="modal modal-wide fade" role="dialog">
     <div class="modal-dialog">
@@ -104,6 +196,8 @@
 </div>
 @section Scripts {
     <script>
+        var modeledValidationParametersFunction;
+
         @Raw(dataContext.RenderViewModelConfiguration<DeviceGroup, DataHub>(ViewBag, "Acronym", null, Model.Global.NodeID))
 
         function getDeviceCount(deviceGroupID) {
@@ -143,6 +237,17 @@
 
         $(function() {
             $("#editDevicesDialog").modal({ show: false, backdrop: "static", keyboard: false });
+
+            modeledValidationParametersFunction = viewModel.applyValidationParameters;
+
+            viewModel.setApplyValidationParameters(function () {
+                modeledValidationParametersFunction();
+
+                viewModel.currentRecord().Acronym.extend({
+                    required: true,
+                    deviceUniqueInDatabase: viewModel.currentRecord().Acronym()
+                });
+            });
         });
 
         function refreshEnabledState(record) {
