@@ -251,8 +251,20 @@
             self.selectedDevices = ko.observableArray().extend({ deferred: true });
 
             self.addNewSelectedDevice = function(id, acronym, name) {
-                if (!self.selectedDevices().any(function(device) { return device.id === id }))
+                if (!self.selectedDevices().any(function(device) { return device.id === id })) {
                     self.selectedDevices.push({ id: id, acronym: acronym, name: name });
+
+                    setTimeout(function () {
+                        const container = $("#scrollableDevicesArea");
+
+                        if (container) {
+                            const row = $("#selectedDevices").parent().find("tr:last");
+
+                            if (row)
+                                container.scrollTop(row.position().top + row.height());
+                        }
+                    }, 100);
+                }
             }
 
             self.deleteSelectedDevice = function(device) {

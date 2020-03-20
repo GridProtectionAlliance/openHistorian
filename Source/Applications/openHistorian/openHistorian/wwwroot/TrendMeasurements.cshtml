@@ -455,8 +455,21 @@
             self.selectedPoints = ko.observableArray().extend({ deferred: true });
 
             self.addNewSelectedPoint = function(id, tag, signalType, description) {
-                if (!self.selectedPoints().any(function(point) { return point.id === id }))
+                if (!self.selectedPoints().any(function(point) { return point.id === id })) {
                     self.selectedPoints.push({ id: id, tag: tag, signalType: signalType, description: description });
+
+                    setTimeout(function () {
+                        const container = $("#scrollablePointsArea");
+
+                        if (container) {
+                            const row = $("#selectedPoints").parent().find("tr:last");
+
+                            if (row) {
+                                container.scrollTop(row.position().top + row.height());
+                            }
+                        }
+                    }, 100);
+                }
             }
 
             self.deleteSelectedPoint = function(point) {
