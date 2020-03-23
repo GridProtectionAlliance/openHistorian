@@ -240,6 +240,7 @@
     <Content Include="GrafanaFolders.wxi" />
     <Content Include="HistorianPlaybackUtility.exe" />
     <Content Include="HistorianView.exe" />
+    <Content Include="HistorianView.exe.config" />
     <Content Include="INSTALL_LICENSE.rtf" />
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -311,6 +312,12 @@
   </Target>
   <Target Name="RestoreBitmap">
     <Exec Command="Powershell -ExecutionPolicy ByPass -File &quot;$(ProjectDir)\RestoreBitmap.ps1&quot; &quot;$(ProjectDir)\openHistorianSetupDialog.bmp&quot;" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props'))" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

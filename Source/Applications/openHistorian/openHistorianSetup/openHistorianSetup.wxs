@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
   <Product Id="*" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{B34DA7F9-23D9-4573-9348-1414B653341E}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
@@ -74,6 +74,9 @@
         </Feature>
         <Feature Id="ArchiveUpgradeUtilityFeature" Title="Archive Upgrade Utility">
           <ComponentGroupRef Id="ArchiveUpgradeUtilityComponents" />
+        </Feature>
+        <Feature Id="DNP3ConfigGeneratorFeature" Title="DNP3 Configuration Generator">
+          <ComponentRef Id="DNP3ConfigGenerator" />
         </Feature>
         <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility">
           <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
@@ -157,6 +160,12 @@
     <CustomAction Id="ServiceAccountAction.SetProperty" Property="ServiceAccountAction" Value="SERVICENAME=[SERVICENAME];SERVICEACCOUNT=[SERVICEACCOUNT];HTTPSERVICEPORTS=[HTTPSERVICEPORTS]" />
     <CustomAction Id="ServiceAccountAction" BinaryKey="InstallerActions" DllEntry="ServiceAccountAction" Execute="deferred" Impersonate="no" />
 
+    <UI>
+      <ProgressText Action="ConfigureServiceAction">Configuring service failure recovery operations...</ProgressText>
+      <ProgressText Action="ServiceAccountAction">Applying minimum needed permissions for service user...</ProgressText>
+      <ProgressText Action="NetFxExecuteNativeImageInstall">Generating optimized native images for installation...</ProgressText>
+    </UI>
+
     <InstallExecuteSequence>
       <Custom Action="CompanyInfoAction.SetProperty" After="InstallFiles">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
       <Custom Action="CompanyInfoAction" After="CompanyInfoAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
@@ -164,6 +173,8 @@
       <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
       <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">NOT REMOVE</Custom>
       <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE</Custom>
+      <Custom Action="NetFxExecuteNativeImageCommitInstall" After="NetFxExecuteNativeImageUninstall">0</Custom>
+      <Custom Action="NetFxExecuteNativeImageInstall" After="NetFxExecuteNativeImageCommitInstall" />
     </InstallExecuteSequence>
   </Product>
 
@@ -305,7 +316,9 @@
     <!-- openHistorian -->
     <ComponentGroup Id="openHistorianComponents" Directory="INSTALLFOLDER">
       <Component Id="openHistorian">
-        <File Id="openHistorian.exe" Name="$(var.openHistorian.TargetFileName)" Source="$(var.openHistorian.TargetPath)" />
+        <File Id="openHistorian.exe" Name="$(var.openHistorian.TargetFileName)" Source="$(var.openHistorian.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openPDC.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <ServiceInstall Id="openHistorianService" Name="openHistorian" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Provides archive management and routing services for streaming time-series data in real-time for process applications." />
         <ServiceControl Id="openHistorianServiceControl" Name="openHistorian" Stop="both" Remove="uninstall" />
       </Component>
@@ -313,38 +326,54 @@
         <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.TargetPath).config" />
       </Component>
       <Component Id="DataMigrationUtility">
-        <File Id="DataMigrationUtility.exe" Name="DataMigrationUtility.exe" Source="$(var.ProjectDir)\DataMigrationUtility.exe" />
+        <File Id="DataMigrationUtility.exe" Name="DataMigrationUtility.exe" Source="$(var.ProjectDir)\DataMigrationUtility.exe">
+          <netfx:NativeImage Id="ngen_DataMigrationUtility.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="DataMigrationUtilityStartMenuShortcut" Name="Data Migration Utility" Icon="DataMigrationUtility.ico.exe" Description="Tool used to migrate data from an old configuration database to the latest version." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="DataMigrationUtilityConfig">
         <File Id="DataMigrationUtility.exe.config" Name="DataMigrationUtility.exe.config" Source="$(var.ProjectDir)\DataMigrationUtility.exe.config" />
       </Component>
       <Component Id="StatHistorianReportGenerator">
-        <File Id="StatHistorianReportGenerator.exe" Name="StatHistorianReportGenerator.exe" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe" />
+        <File Id="StatHistorianReportGenerator.exe" Name="StatHistorianReportGenerator.exe" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe">
+          <netfx:NativeImage Id="ngen_StatHistorianReportGenerator.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="StatHistorianReportGeneratorConfig">
         <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
       </Component>
       <Component Id="Reports">
-        <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll" />
+        <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll">
+          <netfx:NativeImage Id="ngen_Reports.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="SerializedSchema">
         <File Id="SerializedSchema.bin" Name="SerializedSchema.bin" Source="$(var.SolutionDir)\Data\SerializedSchema.bin" />
       </Component>
       <Component Id="openHistorian.Core">
-        <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
+        <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.Core.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.SortedTreeStore">
-        <File Id="GSF.SortedTreeStore.dll" Name="$(var.GSF.SortedTreeStore.TargetFileName)" Source="$(var.GSF.SortedTreeStore.TargetPath)" />
+        <File Id="GSF.SortedTreeStore.dll" Name="$(var.GSF.SortedTreeStore.TargetFileName)" Source="$(var.GSF.SortedTreeStore.TargetPath)" >
+          <netfx:NativeImage Id="ngen_GSF.SortedTreeStore.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="openHistorian.Adapters">
-        <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
+        <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.Adapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="openHistorian.eDNAGrafanaController">
-        <File Id="openHistorian.eDNAGrafanaController.dll" Name="$(var.openHistorian.eDNAGrafanaController.TargetFileName)" Source="$(var.openHistorian.eDNAGrafanaController.TargetPath)" />
+        <File Id="openHistorian.eDNAGrafanaController.dll" Name="$(var.openHistorian.eDNAGrafanaController.TargetFileName)" Source="$(var.openHistorian.eDNAGrafanaController.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.eDNAGrafanaController.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="openHistorian.OSIPIGrafanaController">
-        <File Id="openHistorian.OSIPIGrafanaController.dll" Name="$(var.openHistorian.OSIPIGrafanaController.TargetFileName)" Source="$(var.openHistorian.OSIPIGrafanaController.TargetPath)" />
+        <File Id="openHistorian.OSIPIGrafanaController.dll" Name="$(var.openHistorian.OSIPIGrafanaController.TargetFileName)" Source="$(var.openHistorian.OSIPIGrafanaController.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.OSIPIGrafanaController.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
 
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
@@ -358,7 +387,9 @@
     <!-- openHistorian Manager -->
     <ComponentGroup Id="openHistorianManagerComponents" Directory="INSTALLFOLDER">
       <Component Id="openHistorianManager">
-        <File Id="openHistorianManager.exe" Name="$(var.openHistorianManager.TargetFileName)" Source="$(var.openHistorianManager.TargetPath)" />
+        <File Id="openHistorianManager.exe" Name="$(var.openHistorianManager.TargetFileName)" Source="$(var.openHistorianManager.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorianManager.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="openHistorianManagerStartMenuShortcut" Name="openHistorian Manager" Icon="openHistorianManager.ico.exe" Description="Manager application for the openHistorian service." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="openHistorianManagerConfig">
@@ -368,17 +399,23 @@
         <File Id="Menu.xml" Name="Menu.xml" Source="$(var.openHistorianManager.ProjectDir)\Menu.xml" />
       </Component>
       <Component Id="openHistorian.UI">
-        <File Id="openHistorian.UI.dll" Name="$(var.openHistorian.UI.TargetFileName)" Source="$(var.openHistorian.UI.TargetPath)" />
+        <File Id="openHistorian.UI.dll" Name="$(var.openHistorian.UI.TargetFileName)" Source="$(var.openHistorian.UI.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.UI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="openHistorian.UI.WPF">
-        <File Id="openHistorian.UI.WPF.dll" Name="$(var.openHistorian.UI.WPF.TargetFileName)" Source="$(var.openHistorian.UI.WPF.TargetPath)" />
+        <File Id="openHistorian.UI.WPF.dll" Name="$(var.openHistorian.UI.WPF.TargetFileName)" Source="$(var.openHistorian.UI.WPF.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.UI.WPF.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
 
     <!-- openHistorian Console -->
     <ComponentGroup Id="openHistorianConsoleComponents" Directory="INSTALLFOLDER">
       <Component Id="openHistorianConsole">
-        <File Id="openHistorianConsole.exe" Name="$(var.openHistorianConsole.TargetFileName)" Source="$(var.openHistorianConsole.TargetPath)" />
+        <File Id="openHistorianConsole.exe" Name="$(var.openHistorianConsole.TargetFileName)" Source="$(var.openHistorianConsole.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorianConsole.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="openHistorianConsoleStartMenuShortcut" Name="openHistorian Console" Icon="openHistorianConsole.ico.exe" Description="Console application to monitor the openHistorian service." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="openHistorianConsoleConfig">
@@ -400,24 +437,36 @@
       <ComponentGroupRef Id="openVisNComponents" />
 
       <Component Id="NoInetFixUtil">
-        <File Id="NoInetFixUtil.exe" Name="NoInetFixUtil.exe" Source="$(var.ProjectDir)\NoInetFixUtil.exe" />
+        <File Id="NoInetFixUtil.exe" Name="NoInetFixUtil.exe" Source="$(var.ProjectDir)\NoInetFixUtil.exe">
+          <netfx:NativeImage Id="ngen_NoInetFixUtil.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="NoInetFixUtilStartMenuShortcut" Name="No-Internet Fix Utility" Icon="NoInetFixUtil.ico.exe" Description="Tool used to fix long timeouts on systems with no internet access available." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
-    </ComponentGroup>
 
+      <Component Id="DNP3ConfigGenerator">
+        <File Id="DNP3ConfigGenerator.exe" Name="DNP3ConfigGenerator.exe" Source="$(var.ProjectDir)\DNP3ConfigGenerator.exe">
+          <netfx:NativeImage Id="ngen_DNP3ConfigGenerator.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>      
+    </ComponentGroup>
+    
     <ComponentGroup Id="ConfigCrypterComponents" Directory="INSTALLFOLDER">
       <Component Id="ConfigCrypter">
-        <File Id="ConfigCrypter.exe" Name="ConfigCrypter.exe" Source="$(var.ProjectDir)\ConfigCrypter.exe" />
+        <File Id="ConfigCrypter.exe" Name="ConfigCrypter.exe" Source="$(var.ProjectDir)\ConfigCrypter.exe">
+          <netfx:NativeImage Id="ngen_ConfigCrypter.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="ConfigurationCrypterStartMenuShortcut" Name="Cipher Key Manager" Icon="ConfigCrypter.ico.exe" Description="Tool used to manage cryptographic cipher keys." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="ConfigCrypterConfig">
         <File Id="ConfigCrypter.exe.config" Name="ConfigCrypter.exe.config" Source="$(var.ProjectDir)\ConfigCrypter.exe.config" />
       </Component>
     </ComponentGroup>
-
+    
     <ComponentGroup Id="ConfigurationEditorComponents" Directory="INSTALLFOLDER">
       <Component Id="ConfigurationEditor">
-        <File Id="ConfigurationEditor.exe" Name="ConfigurationEditor.exe" Source="$(var.ProjectDir)\ConfigurationEditor.exe" />
+        <File Id="ConfigurationEditor.exe" Name="ConfigurationEditor.exe" Source="$(var.ProjectDir)\ConfigurationEditor.exe">
+          <netfx:NativeImage Id="ngen_ConfigurationEditor.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="ConfigurationEditorStartMenuShortcut" Name="XML Configuration Editor" Icon="ConfigurationEditor.ico.exe" Description="Tool used edit the XML configuration file for the openHistorian service and its components." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="ConfigurationEditorConfig">
@@ -427,7 +476,9 @@
 
     <ComponentGroup Id="CSVDataManagerComponents" Directory="INSTALLFOLDER">
       <Component Id="CSVDataManager">
-        <File Id="CSVDataManager.exe" Name="CSVDataManager.exe" Source="$(var.ProjectDir)\CSVDataManager.exe" />
+        <File Id="CSVDataManager.exe" Name="CSVDataManager.exe" Source="$(var.ProjectDir)\CSVDataManager.exe">
+          <netfx:NativeImage Id="ngen_CSVDataManager.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="CSVDataManagerStartMenuShortcut" Name="CSV Data Manager" Icon="CSVDataManager.ico.exe" Description="Tool used to manage database configuration through CSV files." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="CSVDataManagerConfig">
@@ -437,7 +488,9 @@
 
     <ComponentGroup Id="ConfigurationSetupUtilityComponents" Directory="INSTALLFOLDER">
       <Component Id="ConfigurationSetupUtility">
-        <File Id="ConfigurationSetupUtility.exe" Name="$(var.ConfigurationSetupUtility.TargetFileName)" Source="$(var.ConfigurationSetupUtility.TargetPath)" />
+        <File Id="ConfigurationSetupUtility.exe" Name="$(var.ConfigurationSetupUtility.TargetFileName)" Source="$(var.ConfigurationSetupUtility.TargetPath)">
+          <netfx:NativeImage Id="ngen_ConfigurationSetupUtility.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="ConfigurationSetupUtilityStartMenuShortcut" Name="Configuration Setup Utility" Icon="ConfigurationSetupUtility.ico.exe" Description="Utility used to set up openHistorian service configuration database." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="ConfigurationSetupUtilityConfig">
@@ -447,7 +500,9 @@
 
     <ComponentGroup Id="StatisticViewComponents" Directory="INSTALLFOLDER">
       <Component Id="StatisticView">
-        <File Id="StatisticView.exe" Name="StatisticView.exe" Source="$(var.ProjectDir)\HistorianView.exe" />
+        <File Id="StatisticView.exe" Name="StatisticView.exe" Source="$(var.ProjectDir)\HistorianView.exe" >
+          <netfx:NativeImage Id="ngen_StatisticView.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="StatisticViewStartMenuShortcut" Name="Statistics Trending Tool" Icon="StatisticView.ico.exe" Description="Tool used to analyze historic files to create charts and export statistic data to CSV format." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="StatisticViewConfig">
@@ -457,7 +512,9 @@
 
     <ComponentGroup Id="HistorianViewComponents" Directory="INSTALLFOLDER">
       <Component Id="HistorianView">
-        <File Id="HistorianView.exe" Name="HistorianView.exe" Source="$(var.HistorianView.TargetPath)" />
+        <File Id="HistorianView.exe" Name="HistorianView.exe" Source="$(var.ProjectDir)\HistorianView.exe">
+          <netfx:NativeImage Id="ngen_HistorianView.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="HistorianViewStartMenuShortcut" Name="Historian Trending Tool" Icon="HistorianView.ico.exe" Description="Tool used to analyze historic files to create charts and export archived data to CSV format." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="HistorianViewConfig">
@@ -467,14 +524,18 @@
 
     <ComponentGroup Id="LogFileViewerComponents" Directory="INSTALLFOLDER">
       <Component Id="LogFileViewer">
-        <File Id="LogFileViewer.exe" Name="LogFileViewer.exe" Source="$(var.ProjectDir)\LogFileViewer.exe" />
+        <File Id="LogFileViewer.exe" Name="LogFileViewer.exe" Source="$(var.ProjectDir)\LogFileViewer.exe">
+          <netfx:NativeImage Id="ngen_LogFileViewer.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="LogFileViewerStartMenuShortcut" Name="Log File Viewer" Icon="LogFileViewer.ico.exe" Description="Tool used to analyze log files produced by the openHistorian." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="ArchiveUpgradeUtilityComponents" Directory="INSTALLFOLDER">
       <Component Id="ArchiveUpgradeUtility">
-        <File Id="ArchiveUpgradeUtility.exe" Name="ArchiveUpgradeUtility.exe" Source="$(var.MigrationUtility.TargetPath)" />
+        <File Id="ArchiveUpgradeUtility.exe" Name="ArchiveUpgradeUtility.exe" Source="$(var.MigrationUtility.TargetPath)" >
+          <netfx:NativeImage Id="ngen_ArchiveUpgradeUtility.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="ArchiveUpgradeUtilityStartMenuShortcut" Name="Archive Upgrade Utility" Icon="ArchiveUpgradeUtility.ico.exe" Description="Tool used to migrate data from openHistorian 1.0 archives to openHistorian 2.0 archives." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="ArchiveUpgradeUtilityConfig">
@@ -484,7 +545,9 @@
 
     <ComponentGroup Id="ArchiveComparisonUtilityComponents" Directory="INSTALLFOLDER">
       <Component Id="ArchiveComparisonUtility">
-        <File Id="ArchiveComparisonUtility.exe" Name="ArchiveComparisonUtility.exe" Source="$(var.ComparisonUtility.TargetPath)" />
+        <File Id="ArchiveComparisonUtility.exe" Name="ArchiveComparisonUtility.exe" Source="$(var.ComparisonUtility.TargetPath)" >
+          <netfx:NativeImage Id="ngen_ArchiveComparisonUtility.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="ArchiveComparisonUtilityStartMenuShortcut" Name="Archive Comparison Utility" Icon="ArchiveComparisonUtility.ico.exe" Description="Tool used to compare data stored in separate archives." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="ArchiveComparisonUtilityConfig">
@@ -494,7 +557,9 @@
 
     <ComponentGroup Id="DataExtractionUtilityComponents" Directory="INSTALLFOLDER">
       <Component Id="DataExtractionUtility">
-        <File Id="DataExtractionUtility.exe" Name="DataExtractionUtility.exe" Source="$(var.DataExtractionUtility.TargetPath)" />
+        <File Id="DataExtractionUtility.exe" Name="DataExtractionUtility.exe" Source="$(var.DataExtractionUtility.TargetPath)" >
+          <netfx:NativeImage Id="ngen_DataExtractionUtility.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="DataExtractionUtilityConfig">
         <File Id="DataExtractionUtility.exe.config" Name="DataExtractionUtility.exe.config" Source="$(var.DataExtractionUtility.TargetPath).config" />
@@ -503,39 +568,62 @@
 
     <ComponentGroup Id="openVisNComponents" Directory="INSTALLFOLDER">
       <Component Id="openVisN">
-        <File Id="openVisN.exe" Name="openVisN.exe" Source="$(var.openVisN.TargetPath)" />
+        <File Id="openVisN.exe" Name="openVisN.exe" Source="$(var.openVisN.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openVisN.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
         <Shortcut Id="openVisNStartMenuShortcut" Name="openVisN" Icon="openVisN.ico.exe" Description="Synchrophasor visualization application for openHistorian 2.0 data." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
       <Component Id="openVisNConfig">
         <File Id="openVisN.exe.config" Name="openVisN.exe.config" Source="$(var.openVisN.TargetPath).config" />
       </Component>
       <Component Id="openVisN.Framework">
-        <File Id="openVisN.Framework.dll" Name="openVisN.Framework.dll" Source="$(var.openVisN.Framework.TargetPath)" />
+        <File Id="openVisN.Framework.dll" Name="openVisN.Framework.dll" Source="$(var.openVisN.Framework.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openVisN.Framework.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="openVisN.WinForms">
-        <File Id="openVisN.WinForms.dll" Name="openVisN.WinForms.dll" Source="$(var.openVisN.WinForms.TargetPath)" />
+        <File Id="openVisN.WinForms.dll" Name="openVisN.WinForms.dll" Source="$(var.openVisN.WinForms.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openVisN.WinForms.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="NPlot45">
-        <File Id="NPlot45.dll"  Name="$(var.NPlot45.TargetFileName)" Source="$(var.NPlot45.TargetPath)" />
+        <File Id="NPlot45.dll"  Name="$(var.NPlot45.TargetFileName)" Source="$(var.NPlot45.TargetPath)" >
+          <netfx:NativeImage Id="ngen_NPlot45.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
 
     <!-- Adapters -->
     <ComponentGroup Id="AdapterComponents" Directory="INSTALLFOLDER">
+      <Component Id="AudioAdapters">
+        <File Id="AudioAdapters.dll" Name="AudioAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AudioAdapters.dll">
+          <netfx:NativeImage Id="ngen_AudioAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
       <Component Id="AdoAdapters">
-        <File Id="AdoAdapters.dll" Name="AdoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AdoAdapters.dll" />
+        <File Id="AdoAdapters.dll" Name="AdoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AdoAdapters.dll">
+          <netfx:NativeImage Id="ngen_AdoAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Ciloci.Flee">
-        <File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Ciloci.Flee.dll" />
+        <File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Ciloci.Flee.dll">
+          <netfx:NativeImage Id="ngen_Ciloci.Flee.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="COMTRADEAdapters">
-        <File Id="COMTRADEAdapters.dll" Name="COMTRADEAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\COMTRADEAdapters.dll" />
+        <File Id="COMTRADEAdapters.dll" Name="COMTRADEAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\COMTRADEAdapters.dll">
+          <netfx:NativeImage Id="ngen_COMTRADEAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="CsvAdapters">
-        <File Id="CsvAdapters.dll" Name="CsvAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\CsvAdapters.dll" />
+        <File Id="CsvAdapters.dll" Name="CsvAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\CsvAdapters.dll">
+          <netfx:NativeImage Id="ngen_CsvAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="DataQualityMonitoring">
-        <File Id="DataQualityMonitoring.dll" Name="DataQualityMonitoring.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DataQualityMonitoring.dll" />
+        <File Id="DataQualityMonitoring.dll" Name="DataQualityMonitoring.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DataQualityMonitoring.dll">
+          <netfx:NativeImage Id="ngen_DataQualityMonitoring.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Dnp3Adapters">
         <File Id="Dnp3Adapters.dll" Name="Dnp3Adapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Dnp3Adapters.dll" />
@@ -544,286 +632,480 @@
         <File Id="DNP3CLRAdapter.dll" Name="DNP3CLRAdapter.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DNP3CLRAdapter.dll" />
       </Component>
       <Component Id="DNP3CLRInterface">
-        <File Id="DNP3CLRInterface.dll" Name="DNP3CLRInterface.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DNP3CLRInterface.dll" />
+        <File Id="DNP3CLRInterface.dll" Name="DNP3CLRInterface.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DNP3CLRInterface.dll">
+          <netfx:NativeImage Id="ngen_DNP3CLRInterface.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="DynamicCalculator">
-        <File Id="DynamicCalculator.dll" Name="DynamicCalculator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DynamicCalculator.dll" />
+        <File Id="DynamicCalculator.dll" Name="DynamicCalculator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DynamicCalculator.dll">
+          <netfx:NativeImage Id="ngen_DynamicCalculator.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="EpriExport">
-        <File Id="EpriExport.dll" Name="EpriExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EpriExport.dll" />
+        <File Id="EpriExport.dll" Name="EpriExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EpriExport.dll">
+          <netfx:NativeImage Id="ngen_EpriExport.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="FileAdapters">
-        <File Id="FileAdapters.dll" Name="FileAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FileAdapters.dll" />
+        <File Id="FileAdapters.dll" Name="FileAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FileAdapters.dll">
+          <netfx:NativeImage Id="ngen_FileAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="FtpAdapters">
-        <File Id="FtpAdapters.dll" Name="FtpAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FtpAdapters.dll" />
+        <File Id="FtpAdapters.dll" Name="FtpAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\FtpAdapters.dll">
+          <netfx:NativeImage Id="ngen_FtpAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Google.ProtocolBuffers">
+        <File Id="Google.ProtocolBuffers.dll" Name="Google.ProtocolBuffers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Google.ProtocolBuffers.dll">
+          <netfx:NativeImage Id="ngen_Google.ProtoBuffers.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GrafanaAdapters">
-        <File Id="GrafanaAdapters.dll" Name="GrafanaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GrafanaAdapters.dll" />
+        <File Id="GrafanaAdapters.dll" Name="GrafanaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GrafanaAdapters.dll">
+          <netfx:NativeImage Id="ngen_GrafanaAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Hadoop.Replication">
-        <File Id="Hadoop.Replication.dll" Name="Hadoop.Replication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Hadoop.Replication.dll" />
+        <File Id="Hadoop.Replication.dll" Name="Hadoop.Replication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Hadoop.Replication.dll">
+          <netfx:NativeImage Id="ngen_Hadoop.Replication.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="HistorianAdapters">
-        <File Id="HistorianAdapters.dll" Name="HistorianAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\HistorianAdapters.dll" />
+        <File Id="HistorianAdapters.dll" Name="HistorianAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\HistorianAdapters.dll">
+          <netfx:NativeImage Id="ngen_HistorianAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="ICCPExport">
-        <File Id="ICCPExport.dll" Name="ICCPExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ICCPExport.dll" />
+        <File Id="ICCPExport.dll" Name="ICCPExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ICCPExport.dll">
+          <netfx:NativeImage Id="ngen_ICCPExport.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="InfluxDBAdapters">
-        <File Id="InfluxDBAdapters.dll" Name="InfluxDBAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\InfluxDBAdapters.dll" />
+        <File Id="InfluxDBAdapters.dll" Name="InfluxDBAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\InfluxDBAdapters.dll">
+          <netfx:NativeImage Id="ngen_InfluxDBAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="KafkaAdapters">
-        <File Id="KafkaAdapters.dll" Name="KafkaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\KafkaAdapters.dll" />
+        <File Id="KafkaAdapters.dll" Name="KafkaAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\KafkaAdapters.dll">
+          <netfx:NativeImage Id="ngen_KafkaAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
-      <Component Id="Misakai.Kafka">
-        <!-- Dependency for KafkaAdapters -->
-        <File Id="Misakai.Kafka.dll" Name="Misakai.Kafka.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Misakai.Kafka.dll" />
+      <Component Id="NAudio"> <!-- Dependency for AudioAdapters -->
+        <File Id="NAudio.dll" Name="NAudio.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NAudio.dll">
+          <netfx:NativeImage Id="ngen_NAudio.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Misakai.Kafka"> <!-- Dependency for KafkaAdapters -->
+        <File Id="Misakai.Kafka.dll" Name="Misakai.Kafka.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Misakai.Kafka.dll">
+          <netfx:NativeImage Id="ngen_Misakai.Kafka.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="ModbusAdapters">
-        <File Id="ModbusAdapters.dll" Name="ModbusAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ModbusAdapters.dll" />
+        <File Id="ModbusAdapters.dll" Name="ModbusAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ModbusAdapters.dll">
+          <netfx:NativeImage Id="ngen_ModbusAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="MongoAdapters">
-        <File Id="MongoAdapters.dll" Name="MongoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoAdapters.dll" />
+        <File Id="MongoAdapters.dll" Name="MongoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoAdapters.dll">
+          <netfx:NativeImage Id="ngen_MonogAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="MongoDB">
-        <File Id="MongoDB.dll" Name="MongoDB.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.dll" />
+        <File Id="MongoDB.dll" Name="MongoDB.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.dll">
+          <netfx:NativeImage Id="ngen_MongoDB.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="MongoDB.GridFS">
-        <File Id="MongoDB.GridFS.dll" Name="MongoDB.GridFS.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.GridFS.dll" />
+        <File Id="MongoDB.GridFS.dll" Name="MongoDB.GridFS.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.GridFS.dll">
+          <netfx:NativeImage Id="ngen_MongoDB.GridFS.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="MySqlAdapters">
-        <File Id="MySqlAdapters.dll" Name="MySqlAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MySqlAdapters.dll" />
+        <File Id="MySqlAdapters.dll" Name="MySqlAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MySqlAdapters.dll">
+          <netfx:NativeImage Id="ngen_MySqlAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="OneSecondFrequencyAverager">
-        <File Id="OneSecondFrequencyAverager.dll" Name="OneSecondFrequencyAverager.dll" Source="$(var.SolutionDir)\Dependencies\GSF\OneSecondFrequencyAverager.dll" />
+        <File Id="OneSecondFrequencyAverager.dll" Name="OneSecondFrequencyAverager.dll" Source="$(var.SolutionDir)\Dependencies\GSF\OneSecondFrequencyAverager.dll">
+          <netfx:NativeImage Id="ngen_OneSecondFrequencyAverager.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="PhasorProtocolAdapters">
-        <File Id="PhasorProtocolAdapters.dll" Name="PhasorProtocolAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorProtocolAdapters.dll" />
+        <File Id="PhasorProtocolAdapters.dll" Name="PhasorProtocolAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorProtocolAdapters.dll">
+          <netfx:NativeImage Id="ngen_PhasorProtocolAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
-      <Component Id="PIAdapters">
-        <!-- OSI-PI Historian Adapters -->
-        <File Id="PIAdapters.dll" Name="PIAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PIAdapters.dll" />
+      <Component Id="PIAdapters"> <!-- OSI-PI Historian Adapters -->
+        <File Id="PIAdapters.dll" Name="PIAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PIAdapters.dll">
+          <netfx:NativeImage Id="ngen_PIAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="PowerCalculations">
-        <File Id="PowerCalculations.dll" Name="PowerCalculations.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.dll" />
+        <File Id="PowerCalculations.dll" Name="PowerCalculations.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.dll">
+          <netfx:NativeImage Id="ngen_PowerCalculations.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="PowerCalculations.UI">
-        <File Id="PowerCalculations.UI.dll" Name="PowerCalculations.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.dll" />
+        <File Id="PowerCalculations.UI.dll" Name="PowerCalculations.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.dll">
+          <netfx:NativeImage Id="ngen_PowerCalculations.UI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="PowerCalculations.UI.WPF">
-        <File Id="PowerCalculations.UI.WPF.dll" Name="PowerCalculations.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.WPF.dll" />
+        <File Id="PowerCalculations.UI.WPF.dll" Name="PowerCalculations.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.UI.WPF.dll">
+          <netfx:NativeImage Id="ngen_PowerCalculations.UI.WPF.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="TestingAdapters">
-        <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
+        <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll">
+          <netfx:NativeImage Id="ngen_TestingAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
-      <Component Id="NModbus4">
-        <!-- Dependency for Modbus connectivity -->
-        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll" />
+      <Component Id="WavInputAdapter">
+        <File Id="WavInputAdapter.dll" Name="WavInputAdapter.dll" Source="$(var.SolutionDir)\Dependencies\GSF\WavInputAdapter.dll">
+          <netfx:NativeImage Id="ngen_WavInputAdapter.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
-      <Component Id="eDNAAdapters">
-        <!-- eDNA Historian Adapters -->
-        <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll" />
+      <Component Id="eDNAAdapters"> <!-- eDNA Historian Adapters -->
+        <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll">
+          <netfx:NativeImage Id="ngen_eDNAAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="EzDnaApi64">
         <File Id="EzDnaApi64.dll" Name="EzDnaApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDnaApi64.dll" />
       </Component>
       <Component Id="EzDNAApiNet64">
-        <File Id="EzDNAApiNet64.dll" Name="EzDNAApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNet64.dll" />
+        <File Id="EzDNAApiNet64.dll" Name="EzDNAApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNet64.dll">
+          <netfx:NativeImage Id="ngen_EzDNAApiNet64.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="EzDNAApiNetSecure64">
-        <File Id="EzDNAApiNetSecure64.dll" Name="EzDNAApiNetSecure64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNetSecure64.dll" />
+        <File Id="EzDNAApiNetSecure64.dll" Name="EzDNAApiNetSecure64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAApiNetSecure64.dll">
+          <netfx:NativeImage Id="ngen_EzDNAApiNetSecure.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="EZDnaServApi64">
         <File Id="EZDnaServApi64.dll" Name="EZDnaServApi64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EZDnaServApi64.dll" />
       </Component>
       <Component Id="EzDNAServApiNet64">
-        <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll" />
+        <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll">
+          <netfx:NativeImage Id="ngen_ExDNAServApiNet64.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="NModbus4">
+        <!-- Dependency for Modbus connectivity -->
+        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll">
+          <netfx:NativeImage Id="ngen_NModbus4.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="AzureEventHubAdapters">
-        <File Id="AzureEventHubAdapters.dll" Name="AzureEventHubAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AzureEventHubAdapters.dll" />
+        <File Id="AzureEventHubAdapters.dll" Name="AzureEventHubAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AzureEventHubAdapters.dll">
+          <netfx:NativeImage Id="ngen_AzureEventHubAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Azure.Amqp">
-        <File Id="Microsoft.Azure.Amqp.dll" Name="Microsoft.Azure.Amqp.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.Amqp.dll" />
+        <File Id="Microsoft.Azure.Amqp.dll" Name="Microsoft.Azure.Amqp.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.Amqp.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Azure.Ampq.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Azure.EventHubs">
-        <File Id="Microsoft.Azure.EventHubs.dll" Name="Microsoft.Azure.EventHubs.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.EventHubs.dll" />
+        <File Id="Microsoft.Azure.EventHubs.dll" Name="Microsoft.Azure.EventHubs.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.EventHubs.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Azure.EventHubs.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
 
     <!-- BouncyCastle Dependencies -->
     <ComponentGroup Id="BouncyCastleDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="crypto">
-        <File Id="crypto.dll" Name="crypto.dll" Source="$(var.SolutionDir)\Dependencies\BouncyCastle\crypto.dll" />
+        <File Id="crypto.dll" Name="crypto.dll" Source="$(var.SolutionDir)\Dependencies\BouncyCastle\crypto.dll" >
+          <netfx:NativeImage Id="ngen_crypto.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
 
     <!-- GSF Dependencies -->
     <ComponentGroup Id="GSFDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="Antlr3.Runtime">
-        <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll" />
+        <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll">
+          <netfx:NativeImage Id="ngen_Antlr3.Runtime.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="ExpressionEvaluator">
-        <File Id="ExpressionEvaluator.dll" Name="ExpressionEvaluator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ExpressionEvaluator.dll" />
+        <File Id="ExpressionEvaluator.dll" Name="ExpressionEvaluator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ExpressionEvaluator.dll">
+          <netfx:NativeImage Id="ngen_ExpressionEvaluator.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Communication">
-        <File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
+        <File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll">
+          <netfx:NativeImage Id="ngen_GSF.Communication.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.COMTRADE">
-        <File Id="GSF.COMTRADE.dll" Name="GSF.COMTRADE.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.COMTRADE.dll" />
+        <File Id="GSF.COMTRADE.dll" Name="GSF.COMTRADE.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.COMTRADE.dll">
+          <netfx:NativeImage Id="ngen_GSF.COMTRADE.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Core">
-        <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
+        <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll">
+          <netfx:NativeImage Id="ngen_GSF.Core.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Geo">
-        <File Id="GSF.Geo.dll" Name="GSF.Geo.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Geo.dll" />
+        <File Id="GSF.Geo.dll" Name="GSF.Geo.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Geo.dll">
+          <netfx:NativeImage Id="ngen_GSF.Geo.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Historian">
-        <File Id="GSF.Historian.dll" Name="GSF.Historian.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Historian.dll" />
+        <File Id="GSF.Historian.dll" Name="GSF.Historian.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Historian.dll">
+          <netfx:NativeImage Id="ngen_GSF.Historian.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="GSF.Media">
+        <File Id="GSF.Media.dll" Name="GSF.Media.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Media.dll">
+          <netfx:NativeImage Id="ngen_GSF.Media.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="GSF.MMS">
+        <File Id="GSF.MMS.dll" Name="GSF.MMS.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.MMS.dll">
+          <netfx:NativeImage Id="ngen_GSF.MMS.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Net">
-        <File Id="GSF.Net.dll" Name="GSF.Net.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Net.dll" />
+        <File Id="GSF.Net.dll" Name="GSF.Net.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Net.dll">
+          <netfx:NativeImage Id="ngen_GSF.Net.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.PhasorProtocols">
-        <File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
+        <File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll">
+          <netfx:NativeImage Id="ngen_GSF.PhasorProtocols.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.PhasorProtocols.UI">
-        <File Id="GSF.PhasorProtocols.UI.dll" Name="GSF.PhasorProtocols.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.dll" />
+        <File Id="GSF.PhasorProtocols.UI.dll" Name="GSF.PhasorProtocols.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.dll">
+          <netfx:NativeImage Id="ngen_GSF.PhasorProtocols.UI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.PhasorProtocols.UI.WPF">
-        <File Id="GSF.PhasorProtocols.UI.WPF.dll" Name="GSF.PhasorProtocols.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.WPF.dll" />
+        <File Id="GSF.PhasorProtocols.UI.WPF.dll" Name="GSF.PhasorProtocols.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.WPF.dll">
+          <netfx:NativeImage Id="ngen_GSF.PhasorProtocols.UI.WPF.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Security">
-        <File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
+        <File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll">
+          <netfx:NativeImage Id="ngen_GSF.Security.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.ServiceBus">
-        <File Id="GSF.ServiceBus.dll" Name="GSF.ServiceBus.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceBus.dll" />
+        <File Id="GSF.ServiceBus.dll" Name="GSF.ServiceBus.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceBus.dll">
+          <netfx:NativeImage Id="ngen_GSF.ServiceBus.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.ServiceModel">
-        <File Id="GSF.ServiceModel.dll" Name="GSF.ServiceModel.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceModel.dll" />
+        <File Id="GSF.ServiceModel.dll" Name="GSF.ServiceModel.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceModel.dll">
+          <netfx:NativeImage Id="ngen_GSF.ServiceModel.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.ServiceProcess">
-        <File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll" />
+        <File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll">
+          <netfx:NativeImage Id="ngen_GSF.ServiceProcess.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.TimeSeries">
-        <File Id="GSF.TimeSeries.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
+        <File Id="GSF.TimeSeries.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.TimeSeries.Transport.UI">
-        <File Id="GSF.TimeSeries.Transport.UI.dll" Name="GSF.TimeSeries.Transport.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.dll" />
+        <File Id="GSF.TimeSeries.Transport.UI.dll" Name="GSF.TimeSeries.Transport.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.Transport.UI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.TimeSeries.Transport.UI.WPF">
-        <File Id="GSF.TimeSeries.Transport.UI.WPF.dll" Name="GSF.TimeSeries.Transport.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.WPF.dll" />
+        <File Id="GSF.TimeSeries.Transport.UI.WPF.dll" Name="GSF.TimeSeries.Transport.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.WPF.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.Transport.UI.WPF.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.TimeSeries.UI">
-        <File Id="GSF.TimeSeries.UI.dll" Name="GSF.TimeSeries.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.dll" />
+        <File Id="GSF.TimeSeries.UI.dll" Name="GSF.TimeSeries.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.UI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.TimeSeries.UI.WPF">
-        <File Id="GSF.TimeSeries.UI.WPF.dll" Name="GSF.TimeSeries.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.WPF.dll" />
+        <File Id="GSF.TimeSeries.UI.WPF.dll" Name="GSF.TimeSeries.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.WPF.dll">
+          <netfx:NativeImage Id="ngen_GSF.TimeSeries.UI.WPF.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Web">
-        <File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll" />
+        <File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll">
+          <netfx:NativeImage Id="ngen_GSF.Web.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="GSF.Windows">
-        <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
+        <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll">
+          <netfx:NativeImage Id="ngen_GSF.Windows.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Npgsql">
-        <File Id="Npgsql.dll" Name="Npgsql.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Npgsql.dll" />
+        <File Id="Npgsql.dll" Name="Npgsql.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Npgsql.dll">
+          <netfx:NativeImage Id="ngen_Npgsql.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Data.SQLite">
-        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Data.SQLite.dll" />
+        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Data.SQLite.dll">
+          <netfx:NativeImage Id="ngen_System.Data.SQLite.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="sttp.gsf">
-        <File Id="sttp.gsf.dll" Name="sttp.gsf.dll" Source="$(var.SolutionDir)\Dependencies\GSF\sttp.gsf.dll" />
+        <File Id="sttp.gsf.dll" Name="sttp.gsf.dll" Source="$(var.SolutionDir)\Dependencies\GSF\sttp.gsf.dll">
+          <netfx:NativeImage Id="ngen_sttp.gsf.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="PhasorWebUI">
-        <File Id="PhasorWebUI.dll" Name="PhasorWebUI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorWebUI.dll" />
+        <File Id="PhasorWebUI.dll" Name="PhasorWebUI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorWebUI.dll">
+          <netfx:NativeImage Id="ngen_PhasorWebUI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
-
+    
     <!-- Microsoft Dependencies -->
     <ComponentGroup Id="MicrosoftDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="DynamicDataDisplay">
-        <File Id="DynamicDataDisplay.dll" Name="DynamicDataDisplay.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\D3\DynamicDataDisplay.dll" />
+        <File Id="DynamicDataDisplay.dll" Name="DynamicDataDisplay.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\D3\DynamicDataDisplay.dll">
+          <netfx:NativeImage Id="ngen_DynamicDataDisplay.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Windows.Controls.DataVisualization.Toolkit">
-        <File Id="System.Windows.Controls.DataVisualization.Toolkit.dll" Name="System.Windows.Controls.DataVisualization.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.DataVisualization.Toolkit.dll" />
+        <File Id="System.Windows.Controls.DataVisualization.Toolkit.dll" Name="System.Windows.Controls.DataVisualization.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.DataVisualization.Toolkit.dll">
+          <netfx:NativeImage Id="ngen_System.Windows.Controls.DataVisualization.Toolkit.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Windows.Controls.Input.Toolkit">
-        <File Id="System.Windows.Controls.Input.Toolkit.dll" Name="System.Windows.Controls.Input.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Input.Toolkit.dll" />
+        <File Id="System.Windows.Controls.Input.Toolkit.dll" Name="System.Windows.Controls.Input.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Input.Toolkit.dll">
+          <netfx:NativeImage Id="ngen_System.Windows.Controls.Input.Toolkit.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Windows.Controls.Layout.Toolkit">
-        <File Id="System.Windows.Controls.Layout.Toolkit.dll" Name="System.Windows.Controls.Layout.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Layout.Toolkit.dll" />
+        <File Id="System.Windows.Controls.Layout.Toolkit.dll" Name="System.Windows.Controls.Layout.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Layout.Toolkit.dll">
+          <netfx:NativeImage Id="ngen_System.Windows.Controls.Layout.Toolkit.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="WPFToolkit">
-        <File Id="WPFToolkit.dll" Name="WPFToolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\WPFToolkit.dll" />
+        <File Id="WPFToolkit.dll" Name="WPFToolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\WPFToolkit.dll">
+          <netfx:NativeImage Id="ngen_WPFToolkit.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
 
       <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (these are managed as NuGet dependencies to GSF.Web) -->
       <Component Id="AjaxMin">
-        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll" />
+        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AjaxMin.dll">
+          <netfx:NativeImage Id="ngen_AjaxMin.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.AspNet.SignalR.Core">
-        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
+        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.AspNet.SignalR.Core.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Net.Http.Formatting">
-        <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.Formatting.dll" />
+        <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.Formatting.dll">
+          <netfx:NativeImage Id="ngen_System.Net.Http.Formatting.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Mvc">
-        <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Mvc.dll" />
+        <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Mvc.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Mvc.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Http">
-        <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.dll" />
+        <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Http.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Http.Owin">
-        <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Owin.dll" />
+        <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Owin.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Http.Owin.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Http.Cors">
-        <File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll" />
+        <File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Http.Cors.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Http.Cors.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin">
-        <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.dll" />
+        <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin.Cors">
-        <File Id="Microsoft.Owin.Cors.dll" Name="Microsoft.Owin.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Cors.dll" />
+        <File Id="Microsoft.Owin.Cors.dll" Name="Microsoft.Owin.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Cors.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.Cors.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin.Diagnostics">
-        <File Id="Microsoft.Owin.Diagnostics.dll" Name="Microsoft.Owin.Diagnostics.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Diagnostics.dll" />
+        <File Id="Microsoft.Owin.Diagnostics.dll" Name="Microsoft.Owin.Diagnostics.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Diagnostics.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.Diagnostics.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin.Host.HttpListener">
-        <File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll" />
+        <File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.Host.HttpListener.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin.Hosting">
-        <File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Hosting.dll" />
+        <File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Hosting.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.Hosting.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Microsoft.Owin.Security">
-        <File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Security.dll" />
+        <File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Owin.Security.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Owin.Security.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Newtonsoft.Json">
-        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Newtonsoft.Json.dll" />
+        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Newtonsoft.Json.dll">
+          <netfx:NativeImage Id="ngen_Newtonsoft.Json.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="Owin">
-        <File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Owin.dll" />
+        <File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Owin.dll">
+          <netfx:NativeImage Id="ngen_Owin.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="RazorEngine">
-        <File Id="RazorEngine.dll" Name="RazorEngine.dll" Source="$(var.SolutionDir)\Dependencies\GSF\RazorEngine.dll" />
+        <File Id="RazorEngine.dll" Name="RazorEngine.dll" Source="$(var.SolutionDir)\Dependencies\GSF\RazorEngine.dll">
+          <netfx:NativeImage Id="ngen_RazorEngine.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Razor">
-        <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Razor.dll" />
+        <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Razor.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Razor.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Cors">
-        <File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Cors.dll" />
+        <File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Cors.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Cors.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.Helpers">
-        <File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Helpers.dll" />
+        <File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.Helpers.dll">
+          <netfx:NativeImage Id="ngen_System.Web.Helpers.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.WebPages">
-        <File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.dll" />
+        <File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.dll">
+          <netfx:NativeImage Id="ngen_System.Web.WebPages.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.WebPages.Deployment">
-        <File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Deployment.dll" />
+        <File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Deployment.dll">
+          <netfx:NativeImage Id="ngen_System.Web.WebPages.Deployment.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
       <Component Id="System.Web.WebPages.Razor">
-        <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll" />
+        <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll">
+          <netfx:NativeImage Id="ngen_System.Web.WebPages.Razor.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
 
