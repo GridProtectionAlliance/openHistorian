@@ -646,7 +646,7 @@
                         <tbody id="selectedDevices" data-bind="foreach: selectedDevices">
                         <tr>
                             <td style="width: 95%" class="table-cell-hard-wrap">
-                                <span class="fixed-font" data-bind="text: acronym, attr: { title: acronym }"></span>
+                                <span class="fixed-font" data-bind="html: acronym + ': <small>' + name + '</small>', attr: { title: acronym }"></span>
                             </td>
                             <td style="width: 5%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Device" data-bind="click: $parent.deleteSelectedDevice"><span class="glyphicon glyphicon-remove"></span></button></td>
                         </tr>
