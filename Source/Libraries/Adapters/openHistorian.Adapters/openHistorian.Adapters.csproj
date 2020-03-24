@@ -99,6 +99,9 @@
     <Reference Include="PhasorProtocolAdapters">
       <HintPath>..\..\..\Dependencies\GSF\PhasorProtocolAdapters.dll</HintPath>
     </Reference>
+    <Reference Include="sttp.gsf">
+      <HintPath>..\..\..\Dependencies\GSF\sttp.gsf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />

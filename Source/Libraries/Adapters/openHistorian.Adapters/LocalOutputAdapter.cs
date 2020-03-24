@@ -37,6 +37,7 @@ using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.Data.Model;
 using GSF.Diagnostics;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
@@ -46,9 +47,13 @@ using GSF.Snap.Services;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units;
+using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
+using DeviceGroup = openHistorian.Model.DeviceGroup;
 using Timer = System.Timers.Timer;
+using GSFDataPublisher = GSF.TimeSeries.Transport.DataPublisher;
+using STTPDataPublisher = sttp.DataPublisher;
 
 namespace openHistorian.Adapters
 {
@@ -551,8 +556,7 @@ namespace openHistorian.Adapters
                 if (m_replicationProviders != null)
                     status.Append(m_replicationProviders.Status);
 
-                if (m_server != null && m_server.Host != null)
-                    m_server.Host?.GetFullStatus(status);
+                m_server?.Host?.GetFullStatus(status);
 
                 return status.ToString();
             }
@@ -887,7 +891,7 @@ namespace openHistorian.Adapters
 
         private ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase()
         {
-            if (m_archive != null && m_archive.ClientDatabase != null)
+            if (m_archive?.ClientDatabase != null)
                 return m_archive.ClientDatabase;
 
             throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
@@ -1163,10 +1167,14 @@ namespace openHistorian.Adapters
 
         #region [ Static ]
 
+        // Static Fields
+
         /// <summary>
         /// Accesses local output adapter instances (normally only one).
         /// </summary>
         public static readonly ConcurrentDictionary<string, LocalOutputAdapter> Instances = new ConcurrentDictionary<string, LocalOutputAdapter>(StringComparer.OrdinalIgnoreCase);
+
+        private static int s_virtualProtocolID;
 
         // Static Constructor
 
@@ -1265,6 +1273,56 @@ namespace openHistorian.Adapters
 
                 // Save any applied changes
                 configFile.Save();
+            }
+
+            // Make sure gateway protocol data publishers filter out device groups from metadata since groups reference local device IDs
+            const string DefaultDeviceFilter = "FROM DeviceDetail WHERE IsConcentrator = 0;";
+            const string GSFDataPublisherTypeName = nameof(GSF) + "." + nameof(GSF.TimeSeries) + "." + nameof(GSF.TimeSeries.Transport) + "." + nameof(GSF.TimeSeries.Transport.DataPublisher);
+            const string GSFMetadataTables = nameof(GSFDataPublisher.MetadataTables);
+            const string STTPDataPublisherTypeName = nameof(sttp) + "." + nameof(sttp.DataPublisher);
+            const string STTPMetadataTables = nameof(STTPDataPublisher.MetadataTables);
+            int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+            string deviceGroupFilter = $"FROM DeviceDetail WHERE IsConcentrator = 0 AND NOT (ProtocolID = {virtualProtocolID} AND AccessID = {DeviceGroup.DefaultAccessID});";
+
+            TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
+            IEnumerable<CustomActionAdapter> dataPublisherAdapters = actionAdapterTable.QueryRecordsWhere($"NodeID = {nodeIDQueryString} AND TypeName LIKE '%.DataPublisher'");
+
+            foreach (CustomActionAdapter actionAdapter in dataPublisherAdapters)
+            {
+                if (actionAdapter == null)
+                    continue;
+
+                Dictionary<string, string> connectionString = actionAdapter.ConnectionString?.ParseKeyValuePairs() ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                switch (actionAdapter.TypeName)
+                {
+                    case GSFDataPublisherTypeName:
+                        if (connectionString.ContainsKey(GSFMetadataTables))
+                            continue;
+                        
+                        connectionString[GSFMetadataTables] = GSFDataPublisher.DefaultMetadataTables.Replace(DefaultDeviceFilter, deviceGroupFilter);
+                        break;
+                    case STTPDataPublisherTypeName:
+                        // For down-stream identity matched metadata replication, check option to allow device groups replicate - this will OK when device IDs match, e.g.,
+                        // when STTP data subscribers enable the "useIdentityInsertsForMetadata" option
+                        if (connectionString.TryGetValue("allowDeviceGroupReplication", out string setting) && setting.ParseBoolean())
+                        {
+                            connectionString.Remove(STTPMetadataTables);
+                        }
+                        else
+                        {
+                            if (connectionString.ContainsKey(STTPMetadataTables))
+                                continue;
+
+                            connectionString[STTPMetadataTables] = STTPDataPublisher.DefaultMetadataTables.Replace(DefaultDeviceFilter, deviceGroupFilter);
+                        }
+                        break;
+                    default:
+                        continue;
+                }
+
+                actionAdapter.ConnectionString = connectionString.JoinKeyValuePairs();
+                actionAdapterTable.UpdateRecord(actionAdapter);
             }
         }
 
