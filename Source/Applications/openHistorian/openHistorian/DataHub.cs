@@ -251,7 +251,7 @@ namespace openHistorian
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0} AND (ProtocolID <> {1} AND AccessID <> {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 deviceTable.GetSearchRestriction(filterText);
 
             return deviceTable.QueryRecordCount(restriction);
@@ -263,7 +263,7 @@ namespace openHistorian
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0} AND (ProtocolID <> {1} AND AccessID <> {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 deviceTable.GetSearchRestriction(filterText);
 
             return deviceTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
@@ -274,7 +274,7 @@ namespace openHistorian
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0} AND (ProtocolID <> {1} AND AccessID <> {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 new RecordRestriction("Enabled <> 0") +
                 deviceTable.GetSearchRestriction(filterText);
 
@@ -386,7 +386,7 @@ namespace openHistorian
                 return Enumerable.Empty<Device>();
 
             RecordRestriction restriction =
-                new RecordRestriction("NodeID = {0} AND (ProtocolID <> {1} AND AccessID <> {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
                 $"ID IN ({deviceIDs})";
 
             return DataContext.Table<Device>().QueryRecords(restriction);
