@@ -364,8 +364,8 @@ namespace ConfigurationSetupUtility.Screens
             if (m_state != null)
                 m_state["newDatabaseType"] = "SQLite";
 
-            if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
-                m_sampleDataScriptCheckBox.IsChecked = true;
+            //if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
+            //    m_sampleDataScriptCheckBox.IsChecked = true;
 
             if (m_enableAuditLogCheckBox != null)
                 ManageEnableAuditLogCheckBox();
