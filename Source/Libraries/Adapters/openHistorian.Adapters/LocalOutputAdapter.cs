@@ -1203,6 +1203,11 @@ namespace openHistorian.Adapters
         // ReSharper disable UnusedParameter.Local
         private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<string> statusMessage, Action<Exception> processException)
         {
+            TableOperations<CustomInputAdapter> inputAdapterTable = new TableOperations<CustomInputAdapter>(connection);
+            TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
+            TableOperations<CustomOutputAdapter> outputAdapterTable = new TableOperations<CustomOutputAdapter>(connection);
+            TableOperations<Historian> historianTable = new TableOperations<Historian>(connection);
+
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup
             ConfigurationFile configFile = ConfigurationFile.Current;
             CategorizedSettingsElementCollection settings = configFile.Settings["systemSettings"];
@@ -1273,6 +1278,64 @@ namespace openHistorian.Adapters
 
                 // Save any applied changes
                 configFile.Save();
+
+                // Convert valid historian list to proper acronym casing (and remove stat historian)
+                IEnumerable<string> historianAcronyms = validHistorians.Where(value => !value.Equals("stat")).Select(value => value.ToUpperInvariant());
+
+                foreach (string historianAcronym in historianAcronyms)
+                {
+                    Historian historianAdapter = historianTable.QueryRecordWhere("Acronym = {0}", historianAcronym);
+                    CustomOutputAdapter outputAdapter = null;
+
+                    if (historianAdapter == null)
+                    {
+                        outputAdapter = outputAdapterTable.QueryRecordWhere("AdapterName = {0}", historianAcronym);
+
+                        if (outputAdapter == null)
+                        {
+                            statusMessage($"WARNING: Could not check for associated historian input reader after failing to find historian adapter \"{historianAcronym}\" in either \"Historian\" or \"CustomOutputAdapter\" table. Record was just found in the \"RuntimeHistorian\" view, verify schema integrity.");
+                            continue;
+                        }
+                    }
+
+                    // Parse connection string to get adapter settings for historian
+                    Dictionary<string, string> adapterSettings = (historianAdapter?.ConnectionString ?? outputAdapter.ConnectionString ?? "").ParseKeyValuePairs();
+
+                    // Get instance name for historian adapter
+                    if (!adapterSettings.TryGetValue("instanceName", out string instanceName) || string.IsNullOrWhiteSpace(instanceName))
+                        instanceName = historianAcronym;
+
+                    // Reader name will always be associated with instance name of historian (this often matches historian adapter name)
+                    string readerName = $"{instanceName}READER";
+                    CustomInputAdapter inputAdapter = inputAdapterTable.QueryRecordWhere("AdapterName = {0}", readerName);
+
+                    if (inputAdapter == null)
+                    {
+                        ushort? port = null;
+
+                        // Check if historian has defined a custom data channel, if so attempt to parse port number
+                        if (adapterSettings.ContainsKey(nameof(DataChannel)))
+                        {
+                            Dictionary<string, string> configSettings = adapterSettings[nameof(DataChannel)].ParseKeyValuePairs();
+
+                            if (configSettings.ContainsKey("port") && ushort.TryParse(configSettings["port"], out ushort value))
+                                port = value;
+                        }
+
+                        string serverConnection = port == null ? "127.0.0.1" : $"127.0.0.1:{port.Value}";
+
+                        // Add new associated historian input adapter reader to handle temporal queries
+                        inputAdapter = inputAdapterTable.NewRecord();
+                        inputAdapter.NodeID = new Guid(nodeIDQueryString.RemoveCharacter('\''));
+                        inputAdapter.AdapterName = $"{historianAcronym}READER";
+                        inputAdapter.AssemblyName = "openHistorian.Adapters.dll";
+                        inputAdapter.TypeName = "openHistorian.Adapters.LocalInputAdapter";
+                        inputAdapter.ConnectionString = $"{nameof(LocalInputAdapter.InstanceName)}={instanceName}; {nameof(LocalInputAdapter.HistorianServer)}={serverConnection}; ConnectOnDemand=true";
+                        inputAdapter.LoadOrder = 0;
+                        inputAdapter.Enabled = true;
+                        inputAdapterTable.AddNewRecord(inputAdapter);
+                    }
+                }
             }
 
             // Make sure gateway protocol data publishers filter out device groups from metadata since groups reference local device IDs
@@ -1284,7 +1347,6 @@ namespace openHistorian.Adapters
             int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
             string deviceGroupFilter = $"FROM DeviceDetail WHERE IsConcentrator = 0 AND NOT (ProtocolID = {virtualProtocolID} AND AccessID = {DeviceGroup.DefaultAccessID});";
 
-            TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
             IEnumerable<CustomActionAdapter> dataPublisherAdapters = actionAdapterTable.QueryRecordsWhere($"NodeID = {nodeIDQueryString} AND TypeName LIKE '%.DataPublisher'");
 
             foreach (CustomActionAdapter actionAdapter in dataPublisherAdapters)
