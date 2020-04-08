@@ -84,6 +84,12 @@
         <Feature Id="DataExtractionUtilityFeature" Title="Data Extraction Utility">
           <ComponentGroupRef Id="DataExtractionUtilityComponents" />
         </Feature>
+        <Feature Id="GEPDataExtractorFeature" Title="GEP Data Extractor">
+          <ComponentGroupRef Id="GEPDataExtractorComponents" />
+        </Feature>
+        <Feature Id="UpdateTagNamesFeature" Title="Update Tag Names Tool">
+          <ComponentGroupRef Id="UpdateTagNamesComponents" />
+        </Feature>
         <Feature Id="openVisNFeature" Title="openVisN">
           <ComponentGroupRef Id="openVisNComponents" />
         </Feature>
@@ -203,6 +209,8 @@
           <?include WebFolders.wxi ?>
           
           <?include GrafanaFolders.wxi ?>
+          
+          <Directory Id="OPTIONALINSTALLSFOLDER" Name="Installers" />
         </Directory>
       </Directory>
       <?else ?>
@@ -228,6 +236,8 @@
           <?include WebFolders.wxi ?>
           
           <?include GrafanaFolders.wxi ?>
+
+          <Directory Id="OPTIONALINSTALLSFOLDER" Name="Installers" />
         </Directory>
       </Directory>
       <?endif ?>
@@ -246,6 +256,17 @@
     <?include GrafanaFiles.wxi ?>
   </Fragment>
 
+  <Fragment>
+    <ComponentGroup Id="OptionalInstallsFiles" Directory="OPTIONALINSTALLSFOLDER">
+      <Component Id="PMUConnectionTesterSetup">
+        <File Id="PMUConnectionTesterSetup" Name="PMUConnectionTesterSetup" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterSetup.msi" />
+      </Component>
+      <Component Id="StreamSplitterSetup">
+        <File Id="StreamSplitterSetup" Name="StreamSplitterSetup" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\StreamSplitterSetup.msi" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+  
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- Applications -->
@@ -342,6 +363,14 @@
       <Component Id="StatHistorianReportGeneratorConfig">
         <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
       </Component>
+      <Component Id="BulkCalculationState">
+        <File Id="BulkCalculationState.exe" Name="$(var.BulkCalculationState.TargetFileName)" Source="$(var.BulkCalculationState.TargetPath)">
+          <netfx:NativeImage Id="ngen_BulkCalculationState.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="BulkCalculationStateConfig">
+        <File Id="BulkCalculationState.exe.config" Name="$(var.BulkCalculationState.TargetFileName).config" Source="$(var.BulkCalculationState.TargetPath).config" />
+      </Component>
       <Component Id="Reports">
         <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll">
           <netfx:NativeImage Id="ngen_Reports.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
@@ -382,6 +411,8 @@
       </Component>
 
       <ComponentGroupRef Id="SqlClrComponents" />
+
+      <ComponentGroupRef Id="OptionalInstallsFiles" />
     </ComponentGroup>
 
     <!-- openHistorian Manager -->
@@ -434,6 +465,8 @@
       <ComponentGroupRef Id="ArchiveUpgradeUtilityComponents" />
       <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
       <ComponentGroupRef Id="DataExtractionUtilityComponents" />
+      <ComponentGroupRef Id="GEPDataExtractorComponents" />
+      <ComponentGroupRef Id="UpdateTagNamesComponents" />
       <ComponentGroupRef Id="openVisNComponents" />
 
       <Component Id="NoInetFixUtil">
@@ -563,6 +596,28 @@
       </Component>
       <Component Id="DataExtractionUtilityConfig">
         <File Id="DataExtractionUtility.exe.config" Name="DataExtractionUtility.exe.config" Source="$(var.DataExtractionUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="GEPDataExtractorComponents" Directory="INSTALLFOLDER">
+      <Component Id="GEPDataExtractor">
+        <File Id="GEPDataExtractor.exe" Name="GEPDataExtractor.exe" Source="$(var.ProjectDir)\GEPDataExtractor.exe" >
+          <netfx:NativeImage Id="ngen_GEPDataExtractor.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="GEPDataExtractorConfig">
+        <File Id="GEPDataExtractor.exe.config" Name="GEPDataExtractor.exe.config" Source="$(var.ProjectDir)\GEPDataExtractor.exe.config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="UpdateTagNamesComponents" Directory="INSTALLFOLDER">
+      <Component Id="UpdateTagNames">
+        <File Id="UpdateTagNames.exe" Name="UpdateTagNames.exe" Source="$(var.ProjectDir)\UpdateTagNames.exe" >
+          <netfx:NativeImage Id="ngen_UpdateTagNames.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="UpdateTagNamesConfig">
+        <File Id="UpdateTagNames.exe.config" Name="UpdateTagNames.exe.config" Source="$(var.ProjectDir)\UpdateTagNames.exe.config" />
       </Component>
     </ComponentGroup>
 

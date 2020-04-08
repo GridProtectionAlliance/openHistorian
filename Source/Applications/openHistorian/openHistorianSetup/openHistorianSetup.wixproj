@@ -155,6 +155,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\BulkCalculationState\BulkCalculationState.csproj">
+      <Name>BulkCalculationState</Name>
+      <Project>{a4228442-039f-4dc0-8e9c-410a09f12c91}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Tools\ComparisonUtility\ComparisonUtility.csproj">
       <Name>ComparisonUtility</Name>
       <Project>{197dfd6f-98c2-4e30-9ba5-57c419ad44ae}</Project>
@@ -233,8 +241,13 @@
     <Content Include="ConfigCrypter.exe.config" />
     <Content Include="ConfigurationEditor.exe" />
     <Content Include="ConfigurationEditor.exe.Config" />
+    <Content Include="CSVDataManager.exe" />
+    <Content Include="CSVDataManager.exe.config" />
     <Content Include="DataMigrationUtility.exe" />
+    <Content Include="DataMigrationUtility.exe.config" />
     <Content Include="DNP3ConfigGenerator.exe" />
+    <Content Include="GEPDataExtractor.exe" />
+    <Content Include="GEPDataExtractor.exe.Config" />
     <Content Include="GrafanaFeatures.wxi" />
     <Content Include="GrafanaFiles.wxi" />
     <Content Include="GrafanaFolders.wxi" />
@@ -258,6 +271,8 @@
     </Content>
     <Content Include="StatHistorianReportGenerator.exe" />
     <Content Include="StatHistorianReportGenerator.exe.config" />
+    <Content Include="UpdateTagNames.exe" />
+    <Content Include="UpdateTagNames.exe.config" />
     <Content Include="WebFeatures.wxi" />
     <Content Include="WebFiles.wxi" />
     <Content Include="WebFolders.wxi" />
