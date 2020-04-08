@@ -7,6 +7,11 @@
       d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}" HorizontalAlignment="Center">
     <DockPanel>
         <Label Content="Welcome to the Configuration Setup Utility" DockPanel.Dock="Top" FontWeight="Bold" FontSize="16" HorizontalContentAlignment="Center" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10" />
-        <TextBlock Name="m_welcomeMessageTextBlock" Text="" TextAlignment="Center" TextWrapping="Wrap" Margin="20,0" DockPanel.Dock="Bottom" />
+        <TextBlock Name="m_welcomeMessageTextBlock" Text="" TextAlignment="Center" TextWrapping="Wrap" Margin="15,0,15,20" DockPanel.Dock="Bottom" />
+        <StackPanel Name="m_optionalInstalls" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Height="100" >
+            <TextBlock HorizontalAlignment="Center" FontWeight="Medium">Optional Installations:</TextBlock>
+            <Button Name="m_installConnectionTester" Content="Install PMU Connection Tester" Height="25" Width="250" Margin="10,10,10,0" IsDefault="True" Click="m_installConnectionTester_Click" />
+            <Button Name="m_installStreamSplitter" Content="Install Stream Splitter (Forwarding Engine)" Height="25" Width="250" Margin="10,10,10,10" IsCancel="True" Click="m_installStreamSplitter_Click" />
+        </StackPanel>
     </DockPanel>
 </UserControl>

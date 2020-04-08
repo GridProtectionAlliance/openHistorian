@@ -25,7 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ConfigurationSetupUtility.Screens
@@ -163,6 +166,31 @@ namespace ConfigurationSetupUtility.Screens
             // The historian setup screen takes time to load because of DLL scanning, so we cache it at startup
             if (m_state != null)
                 m_state["historianSetupScreen"] = new HistorianSetupScreen();
+
+            m_installConnectionTester.IsEnabled = File.Exists("Installers\\PMUConnectionTesterSetup.msi");
+            m_installStreamSplitter.IsEnabled = File.Exists("Installers\\StreamSplitterSetup.msi");
+        }
+
+        private void m_installConnectionTester_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            using (Process installProcess = new Process())
+            {
+                installProcess.StartInfo.FileName = "msiexec.exe";
+                installProcess.StartInfo.Arguments = "-i Installers\\PMUConnectionTesterSetup.msi";
+                installProcess.Start();
+                installProcess.WaitForExit();
+            }
+        }
+
+        private void m_installStreamSplitter_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            using (Process installProcess = new Process())
+            {
+                installProcess.StartInfo.FileName = "msiexec.exe";
+                installProcess.StartInfo.Arguments = "-i Installers\\StreamSplitterSetup.msi";
+                installProcess.Start();
+                installProcess.WaitForExit();
+            }
         }
 
         #endregion
