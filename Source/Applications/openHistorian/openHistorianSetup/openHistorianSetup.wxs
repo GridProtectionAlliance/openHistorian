@@ -259,10 +259,10 @@
   <Fragment>
     <ComponentGroup Id="OptionalInstallsFiles" Directory="OPTIONALINSTALLSFOLDER">
       <Component Id="PMUConnectionTesterSetup">
-        <File Id="PMUConnectionTesterSetup" Name="PMUConnectionTesterSetup" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterSetup.msi" />
+        <File Id="PMUConnectionTesterSetup" Name="PMUConnectionTesterSetup.msi" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterSetup.msi" />
       </Component>
       <Component Id="StreamSplitterSetup">
-        <File Id="StreamSplitterSetup" Name="StreamSplitterSetup" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\StreamSplitterSetup.msi" />
+        <File Id="StreamSplitterSetup" Name="StreamSplitterSetup.msi" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\StreamSplitterSetup.msi" />
       </Component>
     </ComponentGroup>
   </Fragment>
