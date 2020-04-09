@@ -585,6 +585,16 @@
             Gets or sets name of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ConfigAcronym">
+            <summary>
+            Gets or sets acronym from configuration frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ConfigName">
+            <summary>
+            Gets or sets name from configuration frame.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Longitude">
             <summary>
              Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> Longitude.
@@ -706,9 +716,29 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor"/> Type.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.ConfigLabel">
+            <summary>
+            Gets or sets label from configuration frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.ConfigType">
+            <summary>
+            Gets or sets type from configuration frame.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.Phase">
             <summary>
             Gets or sets the Phase of the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.BaseKV">
+            <summary>
+            Gets base kV integer value, i.e., nominal voltage level of line/bus associated with phasor.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.BaseKVInput">
+            <summary>
+            Gets or sets basekV string based binding value.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.Include">

@@ -1482,6 +1482,16 @@
             Gets or sets ID of the device to be configured.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DeviceIDs">
+            <summary>
+            Gets or sets device IDs.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DeviceAcronyms">
+            <summary>
+            Gets or sets device acronyms.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolID">
             <summary>
             Gets or sets protocol id for devices to be configured.
@@ -2167,7 +2177,7 @@
             <summary>
             Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.Phasors"/> class.
             </summary>
-            <param name="deviceID">ID of teh device to fileter phasors.</param>
+            <param name="deviceID">ID of the device to filter phasors.</param>
             <param name="itemsPerPage">Integer value to determine number of items per page.</param>
             <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
         </member>
