@@ -66,8 +66,7 @@
     string parameter;
     int deviceID;
 
-    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID))
-    {
+    if (!parameters.TryGetValue("DeviceID", out parameter) || !int.TryParse(parameter, out deviceID)) {
         deviceID = 0;
     }
 
@@ -512,7 +511,7 @@
             if (!isEmpty(nominalVoltage) && nominalVoltage > 0)
                 return nominalVoltage;
 
-            const commonVoltageLevels = ["69", "115", "230", "500", "765"];
+            const commonVoltageLevels = ["69", "115", "138", "230", "345", "500", "765"];
 
             // Check phasor label before device
             for (let i = 0; i < commonVoltageLevels.length; i++) {
