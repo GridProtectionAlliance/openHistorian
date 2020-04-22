@@ -2722,13 +2722,22 @@
             Defines extension functions related to manipulation of arrays and collections.
             </summary>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetRow``1(``0[0:,0:],System.Int32)">
+            <summary>
+            Gets a row of data out of a 2-dimensional array.
+            </summary>
+            <typeparam name="T">Type of array.</typeparam>
+            <param name="source">Source array.</param>
+            <param name="rowIndex">Row index, i.e., dimension zero value, to retrieve.</param>
+            <returns>Values from specified <paramref name="rowIndex"/>.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.GetColumn``1(``0[0:,0:],System.Int32)">
             <summary>
             Gets a column of data out of a 2-dimensional array.
             </summary>
             <typeparam name="T">Type of array.</typeparam>
             <param name="source">Source array.</param>
-            <param name="columnIndex">Column index, i.e., dimension zero value, to retrieve.</param>
+            <param name="columnIndex">Column index, i.e., dimension one value, to retrieve.</param>
             <returns>Values from specified <paramref name="columnIndex"/>.</returns>
         </member>
         <member name="M:GSF.Collections.CollectionExtensions.ToPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32,System.Int32)">
