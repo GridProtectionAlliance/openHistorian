@@ -2917,6 +2917,9 @@
                     connectionString = connectionStringMap.joinKeyValuePairs();
                 }
 
+                if (connectionString === "null")
+                    connectionString = "";
+
                 device.Acronym = viewModel.deviceAcronym();
                 device.Name = viewModel.deviceName();
                 device.Longitude = viewModel.longitude();
@@ -2925,14 +2928,12 @@
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
                 device.AccessID = configFrame.IDCode;
-                device.IsConcentrator = !isEmpty(viewModel.configFrame().ConnectionString) && (configFrame.IsConcentrator || configFrame.Cells.length > 1);
+                device.IsConcentrator = !isEmpty(connectionString) && (configFrame.IsConcentrator || configFrame.Cells.length > 1);
 
                 if (isEmpty(device.Name))
                     device.Name = device.Acronym;
 
-                if (!isEmpty(connectionString))
-                    device.ConnectionString = connectionString;
-
+                device.ConnectionString = connectionString;
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
                 device.Enabled = true;
