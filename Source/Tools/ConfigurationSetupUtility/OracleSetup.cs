@@ -142,21 +142,19 @@ namespace ConfigurationSetupUtility
             }
             set
             {
-                string tnsName, userName, password;
-
                 TnsName = null;
                 SchemaUserName = null;
                 SchemaPassword = null;
 
                 m_settings = value.ParseKeyValuePairs();
 
-                if (m_settings.TryGetValue("Data Source", out tnsName))
+                if (m_settings.TryGetValue("Data Source", out string tnsName))
                     TnsName = tnsName;
 
-                if (m_settings.TryGetValue("User Id", out userName) || m_settings.TryGetValue("Uid", out userName))
+                if (m_settings.TryGetValue("User Id", out string userName) || m_settings.TryGetValue("Uid", out userName))
                     SchemaUserName = userName;
 
-                if (m_settings.TryGetValue("Password", out password) || m_settings.TryGetValue("Pwd", out password))
+                if (m_settings.TryGetValue("Password", out string password) || m_settings.TryGetValue("Pwd", out password))
                     SchemaPassword = password;
             }
         }
@@ -201,13 +199,7 @@ namespace ConfigurationSetupUtility
         /// The connection string which defines the OLEDB
         /// connection by which to connect to the database.
         /// </summary>
-        public string OleDbConnectionString
-        {
-            get
-            {
-                return "Provider=OraOLEDB.Oracle; " + ConnectionString;
-            }
-        }
+        public string OleDbConnectionString => "Provider=OraOLEDB.Oracle; " + ConnectionString;
 
         #endregion
 
@@ -246,8 +238,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -280,8 +271,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -353,15 +343,13 @@ namespace ConfigurationSetupUtility
             }
             catch
             {
-                if ((object)transaction != null)
-                    transaction.Rollback();
+                transaction?.Rollback();
 
                 throw;
             }
             finally
             {
-                if ((object)scriptReader != null)
-                    scriptReader.Dispose();
+                scriptReader?.Dispose();
             }
         }
 

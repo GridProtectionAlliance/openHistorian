@@ -115,7 +115,7 @@ namespace ConfigurationSetupUtility
                 if (!string.IsNullOrEmpty(RoleName))
                     settings["User Id"] = RoleName.ToLower();
 
-                if ((object)RolePassword != null && RolePassword.Length > 0)
+                if (RolePassword != null && RolePassword.Length > 0)
                     settings["Password"] = RolePassword.ToUnsecureString();
 
                 return settings.JoinKeyValuePairs();
@@ -182,7 +182,7 @@ namespace ConfigurationSetupUtility
                 if (!string.IsNullOrEmpty(AdminUserName))
                     settings["User Id"] = AdminUserName.ToLower();
 
-                if ((object)AdminPassword != null && AdminPassword.Length > 0)
+                if (AdminPassword != null && AdminPassword.Length > 0)
                     settings["Password"] = AdminPassword.ToUnsecureString();
 
                 return settings.JoinKeyValuePairs();
@@ -226,8 +226,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -260,8 +259,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 

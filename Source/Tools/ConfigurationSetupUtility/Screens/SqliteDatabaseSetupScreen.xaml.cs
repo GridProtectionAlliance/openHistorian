@@ -101,37 +101,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -161,12 +143,11 @@ namespace ConfigurationSetupUtility.Screens
                             Dictionary<string, string> dataProviderSettings = DataProviderString.ParseKeyValuePairs();
                             string assemblyName = dataProviderSettings["AssemblyName"];
                             string connectionTypeName = dataProviderSettings["ConnectionType"];
-                            string connectionSetting;
 
                             Assembly assembly = Assembly.Load(new AssemblyName(assemblyName));
                             Type connectionType = assembly.GetType(connectionTypeName);
 
-                            if (settings.TryGetValue("Data Source", out connectionSetting))
+                            if (settings.TryGetValue("Data Source", out string connectionSetting))
                             {
                                 settings["Data Source"] = FilePath.GetAbsolutePath(connectionSetting);
                                 connectionString = settings.JoinKeyValuePairs();
@@ -190,8 +171,7 @@ namespace ConfigurationSetupUtility.Screens
                         }
                         finally
                         {
-                            if (connection != null)
-                                connection.Dispose();
+                            connection?.Dispose();
                         }
                     }
 
@@ -249,7 +229,6 @@ namespace ConfigurationSetupUtility.Screens
             string dataProviderString;
 
             Dictionary<string, string> settings;
-            string setting;
 
             m_sqliteDatabaseInstructionTextBlock.Text = (!existing || migrate) ? newDatabaseMessage : oldDatabaseMessage;
 
@@ -289,7 +268,7 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     settings = connectionString.ParseKeyValuePairs();
 
-                    if (settings.TryGetValue("Data Source", out setting) && File.Exists(setting))
+                    if (settings.TryGetValue("Data Source", out string setting) && File.Exists(setting))
                         m_sqliteDatabaseFilePathTextBox.Text = setting;
                 }
             }

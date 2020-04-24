@@ -108,37 +108,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -196,8 +178,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     finally
                     {
-                        if (connection != null)
-                            connection.Dispose();
+                        connection?.Dispose();
                     }
                 }
                 else
@@ -611,12 +592,12 @@ namespace ConfigurationSetupUtility.Screens
 
         private string GetServiceAccountName()
         {
-            SelectQuery selectQuery = new SelectQuery(string.Format("select name, startname from Win32_Service where name = '{0}'", "openHistorian"));
+            SelectQuery selectQuery = new SelectQuery($"select name, startname from Win32_Service where name = '{"openHistorian"}'");
 
             using (ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(selectQuery))
             {
                 ManagementObject service = managementObjectSearcher.Get().Cast<ManagementObject>().FirstOrDefault();
-                return ((object)service != null) ? service["startname"].ToString() : null;
+                return (service != null) ? service["startname"].ToString() : null;
             }
         }
 

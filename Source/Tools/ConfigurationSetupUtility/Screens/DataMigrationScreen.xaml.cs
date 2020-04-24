@@ -32,20 +32,6 @@ namespace ConfigurationSetupUtility.Screens
     /// </summary>
     public partial class DataMigrationScreen : UserControl, IScreen
     {
-        #region [ Members ]
-
-        // Nested Types
-
-        // Constants
-
-        // Delegates
-
-        // Events
-
-        // Fields
-
-        #endregion
-
         #region [ Constructors ]
 
         /// <summary>
@@ -63,60 +49,30 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        public IScreen NextScreen
-        {
-            get
-            {
-                return State["databaseSetupScreen"] as IScreen;
-            }
-        }
+        public IScreen NextScreen => State["databaseSetupScreen"] as IScreen;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
         /// </summary>
-        public bool UserInputIsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool UserInputIsValid => true;
 
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.
@@ -131,24 +87,5 @@ namespace ConfigurationSetupUtility.Screens
 
         #endregion
 
-        #region [ Methods ]
-
-        #endregion
-
-        #region [ Operators ]
-
-        #endregion
-
-        #region [ Static ]
-
-        // Static Fields
-
-        // Static Constructor
-
-        // Static Properties
-
-        // Static Methods
-
-        #endregion
     }
 }

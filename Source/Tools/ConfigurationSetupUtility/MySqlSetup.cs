@@ -234,8 +234,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -268,8 +267,7 @@ namespace ConfigurationSetupUtility
             {
                 DatabaseName = databaseName;
 
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -333,8 +331,7 @@ namespace ConfigurationSetupUtility
             }
             finally
             {
-                if ((object)scriptReader != null)
-                    scriptReader.Dispose();
+                scriptReader?.Dispose();
             }
         }
 

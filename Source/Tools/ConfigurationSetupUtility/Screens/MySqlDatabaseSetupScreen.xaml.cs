@@ -151,37 +151,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -239,8 +221,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     finally
                     {
-                        if (connection != null)
-                            connection.Dispose();
+                        connection?.Dispose();
                     }
                 }
                 return true;
@@ -472,8 +453,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
 
                 if (databaseName != null)
                     m_mySqlSetup.DatabaseName = databaseName;

@@ -456,7 +456,7 @@ namespace openHistorian
                 LogException(new InvalidOperationException($"Service stopping handler exception: {ex.Message}", ex));
             }
 
-            if ((object)helper != null)
+            if (helper != null)
             {
                 helper.UpdatedStatus -= UpdatedStatusHandler;
                 helper.LoggedException -= LoggedExceptionHandler;
@@ -490,56 +490,54 @@ namespace openHistorian
                 dataSource.Tables.Add(deviceGroupMeasurements);
 
                 // Populate device group measurements metadata table
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                using AdoDataConnection connection = new AdoDataConnection("systemSettings");
+                int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
+                TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
+                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+
+                // Query all enabled device groups
+                foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2} AND Enabled <> 0", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
                 {
-                    int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
-                    TableOperations<DeviceGroup> deviceGroupTable = new TableOperations<DeviceGroup>(connection);
-                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                    if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
+                        continue;
 
-                    // Query all enabled device groups
-                    foreach (DeviceGroup deviceGroup in deviceGroupTable.QueryRecordsWhere("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2} AND Enabled <> 0", Model.Global.NodeID, virtualProtocolID, DeviceGroup.DefaultAccessID))
+                    Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
+
+                    if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
+                        continue;
+
+                    // Parse device ID list
+                    HashSet<int> deviceIDSet = new HashSet<int>();
+
+                    foreach (string deviceID in deviceIDs.Split(','))
                     {
-                        if (string.IsNullOrWhiteSpace(deviceGroup?.ConnectionString))
-                            continue;
+                        if (int.TryParse(deviceID, out int id))
+                            deviceIDSet.Add(id);
+                    }
 
-                        Dictionary<string, string> settings = deviceGroup.ConnectionString.ParseKeyValuePairs();
+                    if (deviceIDSet.Count == 0)
+                        continue;
 
-                        if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
-                            continue;
+                    HashSet<string> deviceAcronyms = new HashSet<string>(deviceTable.QueryRecordsWhere($"ID IN ({string.Join(",", deviceIDSet)})").Select(device => $"'{device.Acronym}'"));
 
-                        // Parse device ID list
-                        HashSet<int> deviceIDSet = new HashSet<int>();
+                    if (deviceAcronyms.Count == 0)
+                        continue;
 
-                        foreach (string deviceID in deviceIDs.Split(','))
-                        {
-                            if (int.TryParse(deviceID, out int id))
-                                deviceIDSet.Add(id);
-                        }
+                    // Get active measurements associated with device group's device acronyms
+                    foreach (DataRow row in activeMeasurements.Select($"Device IN ({string.Join(",", deviceAcronyms)})"))
+                    {
+                        DataRow newRow = deviceGroupMeasurements.NewRow();
 
-                        if (deviceIDSet.Count == 0)
-                            continue;
+                        // Copy common columns from active measurements
+                        for (int i = 0; i < activeMeasurements.Columns.Count; i++)
+                            newRow[i] = row[i];
 
-                        HashSet<string> deviceAcronyms = new HashSet<string>(deviceTable.QueryRecordsWhere($"ID IN ({string.Join(",", deviceIDSet)})").Select(device => $"'{device.Acronym}'"));
+                        // Add device group specific column values
+                        newRow[deviceGroupAcronymIndex] = deviceGroup.Acronym;
+                        newRow[deviceGroupNameIndex] = deviceGroup.Name;
+                        newRow[deviceGroupIDIndex] = deviceGroup.ID;
 
-                        if (deviceAcronyms.Count == 0)
-                            continue;
-
-                        // Get active measurements associated with device group's device acronyms
-                        foreach (DataRow row in activeMeasurements.Select($"Device IN ({string.Join(",", deviceAcronyms)})"))
-                        {
-                            DataRow newRow = deviceGroupMeasurements.NewRow();
-
-                            // Copy common columns from active measurements
-                            for (int i = 0; i < activeMeasurements.Columns.Count; i++)
-                                newRow[i] = row[i];
-
-                            // Add device group specific column values
-                            newRow[deviceGroupAcronymIndex] = deviceGroup.Acronym;
-                            newRow[deviceGroupNameIndex] = deviceGroup.Name;
-                            newRow[deviceGroupIDIndex] = deviceGroup.ID;
-
-                            deviceGroupMeasurements.Rows.Add(newRow);
-                        }
+                        deviceGroupMeasurements.Rows.Add(newRow);
                     }
                 }
             }
@@ -597,7 +595,7 @@ namespace openHistorian
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
-            if ((object)request == null)
+            if (request == null)
                 return;
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
@@ -608,7 +606,7 @@ namespace openHistorian
 
             ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
 
-            if ((object)requestHandler == null)
+            if (requestHandler == null)
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
                 return;
@@ -687,50 +685,48 @@ namespace openHistorian
                 bool enabled = File.Exists(FilePath.GetAbsolutePath(grafanaServerPath));
 
                 // Open database connection as defined in configuration file "systemSettings" category
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                using AdoDataConnection connection = new AdoDataConnection("systemSettings");
+                // Make sure Grafana process adapter exists
+                TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
+                CustomActionAdapter actionAdapter = actionAdapterTable.QueryRecordWhere("AdapterName = {0}", GrafanaProcessAdapterName) ?? actionAdapterTable.NewRecord();
+
+                // Update record fields
+                actionAdapter.NodeID = nodeID;
+                actionAdapter.AdapterName = GrafanaProcessAdapterName;
+                actionAdapter.AssemblyName = "FileAdapters.dll";
+                actionAdapter.TypeName = "FileAdapters.ProcessLauncher";
+                actionAdapter.Enabled = enabled;
+
+                // Define default adapter connection string if none is defined
+                if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
+                    actionAdapter.ConnectionString =
+                        $"FileName={DefaultGrafanaServerPath}; " +
+                        "WorkingDirectory=Grafana; " +
+                        "ForceKillOnDispose=True; " +
+                        "ProcessOutputAsLogMessages=True; " +
+                        "LogMessageTextExpression={(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)subUrl\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
+                        "LogMessageLevelExpression={(?<=.*lvl\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
+                        "LogMessageLevelMappings={info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}";
+
+                // Preserve connection string on existing records except for Grafana server executable path that comes from configuration file
+                Dictionary<string, string> settings = actionAdapter.ConnectionString.ParseKeyValuePairs();
+                settings["FileName"] = grafanaServerPath;
+                actionAdapter.ConnectionString = settings.JoinKeyValuePairs();
+
+                // Save record updates
+                actionAdapterTable.AddNewOrUpdateRecord(actionAdapter);
+
+                // Make sure Grafana admin role exists
+                TableOperations<ApplicationRole> applicationRoleTable = new TableOperations<ApplicationRole>(connection);
+                ApplicationRole applicationRole = applicationRoleTable.QueryRecordWhere("Name = {0} AND NodeID = {1}", GrafanaAdminRoleName, nodeID);
+
+                if (applicationRole == null)
                 {
-                    // Make sure Grafana process adapter exists
-                    TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
-                    CustomActionAdapter actionAdapter = actionAdapterTable.QueryRecordWhere("AdapterName = {0}", GrafanaProcessAdapterName) ?? actionAdapterTable.NewRecord();
-
-                    // Update record fields
-                    actionAdapter.NodeID = nodeID;
-                    actionAdapter.AdapterName = GrafanaProcessAdapterName;
-                    actionAdapter.AssemblyName = "FileAdapters.dll";
-                    actionAdapter.TypeName = "FileAdapters.ProcessLauncher";
-                    actionAdapter.Enabled = enabled;
-
-                    // Define default adapter connection string if none is defined
-                    if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
-                        actionAdapter.ConnectionString =
-                            $"FileName={DefaultGrafanaServerPath}; " +
-                            "WorkingDirectory=Grafana; " +
-                            "ForceKillOnDispose=True; " +
-                            "ProcessOutputAsLogMessages=True; " +
-                            "LogMessageTextExpression={(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)subUrl\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
-                            "LogMessageLevelExpression={(?<=.*lvl\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
-                            "LogMessageLevelMappings={info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}";
-
-                    // Preserve connection string on existing records except for Grafana server executable path that comes from configuration file
-                    Dictionary<string, string> settings = actionAdapter.ConnectionString.ParseKeyValuePairs();
-                    settings["FileName"] = grafanaServerPath;
-                    actionAdapter.ConnectionString = settings.JoinKeyValuePairs();
-
-                    // Save record updates
-                    actionAdapterTable.AddNewOrUpdateRecord(actionAdapter);
-
-                    // Make sure Grafana admin role exists
-                    TableOperations<ApplicationRole> applicationRoleTable = new TableOperations<ApplicationRole>(connection);
-                    ApplicationRole applicationRole = applicationRoleTable.QueryRecordWhere("Name = {0} AND NodeID = {1}", GrafanaAdminRoleName, nodeID);
-
-                    if ((object)applicationRole == null)
-                    {
-                        applicationRole = applicationRoleTable.NewRecord();
-                        applicationRole.NodeID = nodeID;
-                        applicationRole.Name = GrafanaAdminRoleName;
-                        applicationRole.Description = GrafanaAdminRoleDescription;
-                        applicationRoleTable.AddNewRecord(applicationRole);
-                    }
+                    applicationRole = applicationRoleTable.NewRecord();
+                    applicationRole.NodeID = nodeID;
+                    applicationRole.Name = GrafanaAdminRoleName;
+                    applicationRole.Description = GrafanaAdminRoleDescription;
+                    applicationRoleTable.AddNewRecord(applicationRole);
                 }
             }
             catch (Exception ex)

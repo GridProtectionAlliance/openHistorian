@@ -90,37 +90,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -277,7 +259,7 @@ namespace ConfigurationSetupUtility.Screens
         // Initializes the state keys to their default values.
         private void InitializeState()
         {
-            if ((object)m_state != null)
+            if (m_state != null)
             {
                 m_state["authenticationType"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? "windows" : "database";
                 m_state["adminUserName"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? ToLoginID(WindowsUserNameTextBox.Text.Trim()) : DbUserNameTextBox.Text.Trim();
@@ -331,7 +313,7 @@ namespace ConfigurationSetupUtility.Screens
 
             textBox = sender as TextBox;
 
-            if ((object)textBox != null)
+            if (textBox != null)
             {
                 textBox.SelectAll();
             }
@@ -339,8 +321,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 passwordBox = sender as PasswordBox;
 
-                if ((object)passwordBox != null)
-                    passwordBox.SelectAll();
+                passwordBox?.SelectAll();
             }
         }
 
@@ -446,11 +427,11 @@ namespace ConfigurationSetupUtility.Screens
 
             XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/securityProvider");
 
-            if ((object)systemSettings != null)
+            if (systemSettings != null)
             {
                 foreach (XmlNode child in systemSettings.ChildNodes)
                 {
-                    if ((object)child.Attributes != null && (object)child.Attributes["name"] != null)
+                    if (child.Attributes != null && child.Attributes["name"] != null)
                     {
                         switch (child.Attributes["name"].Value.ToLower())
                         {

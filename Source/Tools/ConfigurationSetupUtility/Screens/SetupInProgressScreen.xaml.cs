@@ -93,13 +93,7 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        public IScreen NextScreen
-        {
-            get
-            {
-                return m_nextScreen;
-            }
-        }
+        public IScreen NextScreen => m_nextScreen;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
@@ -155,13 +149,7 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
         /// </summary>
-        public bool UserInputIsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool UserInputIsValid => true;
 
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.
@@ -294,11 +282,11 @@ namespace ConfigurationSetupUtility.Screens
                         foreach (string scriptName in scriptNames)
                         {
                             string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\MySQL\\" + scriptName;
-                            AppendStatusMessage(string.Format("Attempting to run {0} script...", scriptName));
+                            AppendStatusMessage($"Attempting to run {scriptName} script...");
                             mySqlSetup.ExecuteScript(scriptPath);
                             progress += 85 / scriptNames.Count;
                             UpdateProgressBar(progress);
-                            AppendStatusMessage(string.Format("{0} ran successfully.", scriptName));
+                            AppendStatusMessage($"{scriptName} ran successfully.");
                             AppendStatusMessage(string.Empty);
                         }
 
@@ -311,9 +299,9 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string user = m_state["newMySqlUserName"].ToString();
                             string pass = m_state["newMySqlUserPassword"].ToString();
-                            AppendStatusMessage(string.Format("Attempting to create new user {0}...", user));
+                            AppendStatusMessage($"Attempting to create new user {user}...");
 
-                            mySqlSetup.ExecuteStatement(string.Format("GRANT SELECT, UPDATE, INSERT, DELETE ON {0}.* TO {1} IDENTIFIED BY '{2}'", mySqlSetup.DatabaseName, user, pass));
+                            mySqlSetup.ExecuteStatement($"GRANT SELECT, UPDATE, INSERT, DELETE ON {mySqlSetup.DatabaseName}.* TO {user} IDENTIFIED BY '{pass}'");
 
                             mySqlSetup.UserName = user;
                             mySqlSetup.Password = pass;
@@ -334,7 +322,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke((Action)delegate()
+                        this.Dispatcher.Invoke(delegate ()
                         {
                             while (!(sm.CurrentScreen is MySqlDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -409,11 +397,11 @@ namespace ConfigurationSetupUtility.Screens
                         foreach (string scriptName in scriptNames)
                         {
                             string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQL Server\\" + scriptName;
-                            AppendStatusMessage(string.Format("Attempting to run {0} script...", scriptName));
+                            AppendStatusMessage($"Attempting to run {scriptName} script...");
                             sqlServerSetup.ExecuteScript(scriptPath);
                             progress += 80 / scriptNames.Count;
                             UpdateProgressBar(progress);
-                            AppendStatusMessage(string.Format("{0} ran successfully.", scriptName));
+                            AppendStatusMessage($"{scriptName} ran successfully.");
                             AppendStatusMessage(string.Empty);
                         }
 
@@ -427,11 +415,11 @@ namespace ConfigurationSetupUtility.Screens
                             string userName = m_state["newSqlServerUserName"].ToString();
                             string password = m_state["newSqlServerUserPassword"].ToString();
 
-                            AppendStatusMessage(string.Format("Attempting to create new login {0}...", userName));
+                            AppendStatusMessage($"Attempting to create new login {userName}...");
                             sqlServerSetup.CreateLogin(userName, password);
                             AppendStatusMessage("Database login created successfully.");
 
-                            AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, userName));
+                            AppendStatusMessage($"Attempting to grant access to database {sqlServerSetup.DatabaseName} for login {userName}...");
                             sqlServerSetup.GrantDatabaseAccess(userName, userName, "db_datareader");
                             sqlServerSetup.GrantDatabaseAccess(userName, userName, "db_datawriter");
                             AppendStatusMessage("Database access granted successfully.");
@@ -451,7 +439,7 @@ namespace ConfigurationSetupUtility.Screens
 
                             bool useGroupLogin = UserInfo.LocalGroupExists(GroupName) && (host == "." || Transport.IsLocalAddress(host));
                             string serviceAccountName = GetServiceAccountName();
-                            string groupAccountName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null;
+                            string groupAccountName = useGroupLogin ? $@"{Environment.MachineName}\{GroupName}" : null;
 
                             if ((object)serviceAccountName != null && serviceAccountName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
                                 serviceAccountName = @"NT Authority\System";
@@ -462,11 +450,11 @@ namespace ConfigurationSetupUtility.Screens
                             {
                                 if ((object)loginName != null)
                                 {
-                                    AppendStatusMessage(string.Format("Attempting to add Windows authenticated database login for {0}...", loginName));
+                                    AppendStatusMessage($"Attempting to add Windows authenticated database login for {loginName}...");
                                     sqlServerSetup.CreateLogin(loginName);
                                     AppendStatusMessage("Database login created successfully.");
 
-                                    AppendStatusMessage(string.Format("Attempting to grant access to database {0} for login {1}...", sqlServerSetup.DatabaseName, loginName));
+                                    AppendStatusMessage($"Attempting to grant access to database {sqlServerSetup.DatabaseName} for login {loginName}...");
                                     sqlServerSetup.GrantDatabaseAccess(loginName, loginName, "db_datareader");
                                     sqlServerSetup.GrantDatabaseAccess(loginName, loginName, "db_datawriter");
                                     AppendStatusMessage("Database access granted successfully.");
@@ -491,9 +479,7 @@ namespace ConfigurationSetupUtility.Screens
 
                         if (m_state.TryGetValue("screenManager", out object obj))
                         {
-                            ScreenManager screenManager = obj as ScreenManager;
-
-                            if ((object)screenManager != null)
+                            if (obj is ScreenManager screenManager)
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -646,12 +632,12 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             string user = oracleSetup.SchemaUserName;
 
-                            AppendStatusMessage(string.Format("Attempting to create new user {0}...", user));
-                            oracleSetup.ExecuteStatement(string.Format("CREATE TABLESPACE {0}_TS DATAFILE '{1}.dbf' SIZE 20M AUTOEXTEND ON", user.TruncateRight(27), user));
-                            oracleSetup.ExecuteStatement(string.Format("CREATE TABLESPACE {0}_INDEX DATAFILE '{1}_index.dbf' SIZE 20M AUTOEXTEND ON", user.TruncateRight(24), user));
-                            oracleSetup.ExecuteStatement(string.Format("CREATE USER {0} IDENTIFIED BY {1} DEFAULT TABLESPACE {2}_TS", user, oracleSetup.SchemaPassword, user.TruncateRight(27)));
-                            oracleSetup.ExecuteStatement(string.Format("GRANT UNLIMITED TABLESPACE TO {0}", user));
-                            oracleSetup.ExecuteStatement(string.Format("GRANT CREATE SESSION TO {0}", user));
+                            AppendStatusMessage($"Attempting to create new user {user}...");
+                            oracleSetup.ExecuteStatement($"CREATE TABLESPACE {user.TruncateRight(27)}_TS DATAFILE '{user}.dbf' SIZE 20M AUTOEXTEND ON");
+                            oracleSetup.ExecuteStatement($"CREATE TABLESPACE {user.TruncateRight(24)}_INDEX DATAFILE '{user}_index.dbf' SIZE 20M AUTOEXTEND ON");
+                            oracleSetup.ExecuteStatement($"CREATE USER {user} IDENTIFIED BY {oracleSetup.SchemaPassword} DEFAULT TABLESPACE {user.TruncateRight(27)}_TS");
+                            oracleSetup.ExecuteStatement($"GRANT UNLIMITED TABLESPACE TO {user}");
+                            oracleSetup.ExecuteStatement($"GRANT CREATE SESSION TO {user}");
 
                             UpdateProgressBar(8);
                             AppendStatusMessage("New database user created successfully.");
@@ -661,23 +647,22 @@ namespace ConfigurationSetupUtility.Screens
                         try
                         {
                             oracleSetup.OpenAdminConnection(ref dbConnection);
-                            oracleSetup.ExecuteStatement(dbConnection, string.Format("ALTER SESSION SET CURRENT_SCHEMA = {0}", oracleSetup.SchemaUserName));
+                            oracleSetup.ExecuteStatement(dbConnection, $"ALTER SESSION SET CURRENT_SCHEMA = {oracleSetup.SchemaUserName}");
 
                             foreach (string scriptName in scriptNames)
                             {
                                 string scriptPath = Directory.GetCurrentDirectory() + "\\Database scripts\\Oracle\\" + scriptName;
-                                AppendStatusMessage(string.Format("Attempting to run {0} script...", scriptName));
+                                AppendStatusMessage($"Attempting to run {scriptName} script...");
                                 oracleSetup.ExecuteScript(dbConnection, scriptPath);
                                 progress += 90 / scriptNames.Count;
                                 UpdateProgressBar(progress);
-                                AppendStatusMessage(string.Format("{0} ran successfully.", scriptName));
+                                AppendStatusMessage($"{scriptName} ran successfully.");
                                 AppendStatusMessage(string.Empty);
                             }
                         }
                         finally
                         {
-                            if ((object)dbConnection != null)
-                                dbConnection.Dispose();
+                            dbConnection?.Dispose();
                         }
 
                         // Set up the initial historian.
@@ -695,7 +680,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke((Action)delegate()
+                        this.Dispatcher.Invoke(delegate ()
                         {
                             while (!(sm.CurrentScreen is OracleDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -759,7 +744,7 @@ namespace ConfigurationSetupUtility.Screens
                         filePath = Directory.GetCurrentDirectory() + "\\Database scripts\\SQLite\\" + App.SqliteSampleData;
 
                     UpdateProgressBar(2);
-                    AppendStatusMessage(string.Format("Attempting to copy file {0} to {1}...", filePath, destination));
+                    AppendStatusMessage($"Attempting to copy file {filePath} to {destination}...");
 
                     // Create directory and set permissions
                     if ((object)destinationDirectory != null)
@@ -767,7 +752,7 @@ namespace ConfigurationSetupUtility.Screens
                         if (!Directory.Exists(destinationDirectory))
                             Directory.CreateDirectory(destinationDirectory);
 
-                        loginName = UserInfo.LocalGroupExists(GroupName) ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : GetServiceAccountName();
+                        loginName = UserInfo.LocalGroupExists(GroupName) ? $@"{Environment.MachineName}\{GroupName}" : GetServiceAccountName();
 
                         if ((object)loginName != null && !loginName.Equals("Local System", StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -893,7 +878,7 @@ namespace ConfigurationSetupUtility.Screens
                             {
                                 AppendStatusMessage($"Attempting to create new role {postgresSetup.RoleName}...");
                                 
-                                if ((object)postgresSetup.RolePassword != null && postgresSetup.RolePassword.Length > 0)
+                                if (postgresSetup.RolePassword != null && postgresSetup.RolePassword.Length > 0)
                                     postgresSetup.CreateLogin(postgresSetup.RoleName.ToLower(), postgresSetup.RolePassword.ToUnsecureString());
                                 else
                                     postgresSetup.CreateLogin(postgresSetup.RoleName.ToLower());
@@ -921,8 +906,7 @@ namespace ConfigurationSetupUtility.Screens
                         }
                         finally
                         {
-                            if ((object)dbConnection != null)
-                                dbConnection.Dispose();
+                            dbConnection?.Dispose();
                         }
 
                         // Grant access to the database for the new user
@@ -949,7 +933,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke((Action)delegate ()
+                        this.Dispatcher.Invoke(delegate ()
                         {
                             while (!(sm.CurrentScreen is PostgresDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -986,12 +970,12 @@ namespace ConfigurationSetupUtility.Screens
         /// <returns>The account name that the openHistorian service is running under.</returns>
         private string GetServiceAccountName()
         {
-            SelectQuery selectQuery = new SelectQuery(string.Format("select name, startname from Win32_Service where name = '{0}'", "openHistorian"));
+            SelectQuery selectQuery = new SelectQuery($"select name, startname from Win32_Service where name = '{"openHistorian"}'");
 
             using (ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(selectQuery))
             {
                 ManagementObject service = managementObjectSearcher.Get().Cast<ManagementObject>().FirstOrDefault();
-                return ((object)service != null) ? service["startname"].ToString() : null;
+                return (service != null) ? service["startname"].ToString() : null;
             }
         }
 
@@ -1004,7 +988,7 @@ namespace ConfigurationSetupUtility.Screens
         /// <returns>returns true if database exists and user says no to database delete, false if database does not exist or user says yes to database delete.</returns>
         private bool CheckIfDatabaseExists(string connectionString, string dataProviderString, string databaseName)
         {
-            AppendStatusMessage(string.Format("Checking if database {0} already exists.", databaseName));
+            AppendStatusMessage($"Checking if database {databaseName} already exists.");
 
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
@@ -1027,13 +1011,13 @@ namespace ConfigurationSetupUtility.Screens
                     IDbCommand command = connection.CreateCommand();
 
                     if (m_state["newDatabaseType"].ToString() == "SQLServer")
-                        command.CommandText = string.Format("SELECT COUNT(*) FROM sys.databases WHERE name = '{0}'", databaseName);
+                        command.CommandText = $"SELECT COUNT(*) FROM sys.databases WHERE name = '{databaseName}'";
                     else if (m_state["newDatabaseType"].ToString() == "Oracle")
-                        command.CommandText = string.Format("SELECT COUNT(*) FROM all_users WHERE USERNAME = '{0}'", databaseName.ToUpper());
+                        command.CommandText = $"SELECT COUNT(*) FROM all_users WHERE USERNAME = '{databaseName.ToUpper()}'";
                     else if (m_state["newDatabaseType"].ToString() == "PostgreSQL")
-                        command.CommandText = string.Format("SELECT COUNT(*) FROM pg_database WHERE datname = '{0}'", databaseName.ToLower());
+                        command.CommandText = $"SELECT COUNT(*) FROM pg_database WHERE datname = '{databaseName.ToLower()}'";
                     else
-                        command.CommandText = string.Format("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{0}'", databaseName);
+                        command.CommandText = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{databaseName}'";
 
                     dbCount = Convert.ToInt32(command.ExecuteScalar());
                 }
@@ -1044,8 +1028,7 @@ namespace ConfigurationSetupUtility.Screens
                 }
                 finally
                 {
-                    if (connection != null)
-                        connection.Dispose();
+                    connection?.Dispose();
                 }
 
                 MessageBoxResult messageBoxResult;
@@ -1089,11 +1072,11 @@ namespace ConfigurationSetupUtility.Screens
                             try
                             {
                                 sqlServerSetup.ExecuteStatement(string.Format("USE [master] ALTER DATABASE {0} SET SINGLE_USER WITH ROLLBACK IMMEDIATE DROP DATABASE {0}", databaseName));
-                                AppendStatusMessage(string.Format("Dropped database {0} successfully.", databaseName));
+                                AppendStatusMessage($"Dropped database {databaseName} successfully.");
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(string.Format("Failed to delete database {0} due to exception: {1}", databaseName, ex.Message), "Delete Database Failed");
+                                MessageBox.Show($"Failed to delete database {databaseName} due to exception: {ex.Message}", "Delete Database Failed");
                             }
 
                             sqlServerSetup.DatabaseName = databaseName;
@@ -1104,14 +1087,14 @@ namespace ConfigurationSetupUtility.Screens
 
                             try
                             {
-                                oracleSetup.ExecuteStatement(string.Format("DROP USER {0} CASCADE", databaseName));
-                                oracleSetup.ExecuteStatement(string.Format("DROP TABLESPACE {0}_TS INCLUDING CONTENTS AND DATAFILES", databaseName.TruncateRight(27)));
-                                oracleSetup.ExecuteStatement(string.Format("DROP TABLESPACE {0}_INDEX INCLUDING CONTENTS AND DATAFILES", databaseName.TruncateRight(24)));
-                                AppendStatusMessage(string.Format("Dropped database {0} successfully.", databaseName));
+                                oracleSetup.ExecuteStatement($"DROP USER {databaseName} CASCADE");
+                                oracleSetup.ExecuteStatement($"DROP TABLESPACE {databaseName.TruncateRight(27)}_TS INCLUDING CONTENTS AND DATAFILES");
+                                oracleSetup.ExecuteStatement($"DROP TABLESPACE {databaseName.TruncateRight(24)}_INDEX INCLUDING CONTENTS AND DATAFILES");
+                                AppendStatusMessage($"Dropped database {databaseName} successfully.");
                             }
                             catch
                             {
-                                MessageBox.Show(string.Format("Failed to delete database {0}", databaseName), "Delete Database Failed");
+                                MessageBox.Show($"Failed to delete database {databaseName}", "Delete Database Failed");
                             }
                         }
                         else if (m_state["newDatabaseType"].ToString() == "PostgreSQL")
@@ -1132,12 +1115,12 @@ namespace ConfigurationSetupUtility.Screens
                             try
                             {
                                 MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-                                mySqlSetup.ExecuteStatement(string.Format("DROP DATABASE {0}", databaseName));
-                                AppendStatusMessage(string.Format("Dropped database {0} successfully.", databaseName));
+                                mySqlSetup.ExecuteStatement($"DROP DATABASE {databaseName}");
+                                AppendStatusMessage($"Dropped database {databaseName} successfully.");
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(string.Format("Failed to delete database {0} due to exception: {1}", databaseName, ex.Message), "Delete Database Failed");
+                                MessageBox.Show($"Failed to delete database {databaseName} due to exception: {ex.Message}", "Delete Database Failed");
                             }
                         }
                         return false;
@@ -1151,8 +1134,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -1189,8 +1171,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
 
             return loginNames;
@@ -1288,7 +1269,7 @@ namespace ConfigurationSetupUtility.Screens
                 historianCommand = connection.CreateCommand();
 
                 if (sampleDataScript)
-                    historianCommand.CommandText = string.Format("UPDATE Historian SET AssemblyName='{0}', TypeName='{1}', Acronym='{2}', Name='{3}', Description='{4}', ConnectionString='{5}'", historianAssemblyName, historianTypeName, historianAcronym, historianName, historianDescription, historianConnectionString);
+                    historianCommand.CommandText = $"UPDATE Historian SET AssemblyName='{historianAssemblyName}', TypeName='{historianTypeName}', Acronym='{historianAcronym}', Name='{historianName}', Description='{historianDescription}', ConnectionString='{historianConnectionString}'";
                 else
                     historianCommand.CommandText = string.Format("INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES({0}, '{3}', '{4}', '{1}', '{2}', '{6}', 0, '{5}', 0, 1)", nodeIdQueryString, historianAssemblyName, historianTypeName, historianAcronym, historianName, historianDescription, historianConnectionString);
 
@@ -1301,8 +1282,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -1346,10 +1326,10 @@ namespace ConfigurationSetupUtility.Screens
                     AddRolesForNode(connection, nodeIdQueryString);
 
                 // Set up statistics historian.
-                statHistorianCount = Convert.ToInt32(connection.ExecuteScalar(string.Format("SELECT COUNT(*) FROM Historian WHERE Acronym = 'STAT' AND NodeID = {0}", nodeIdQueryString)));
+                statHistorianCount = Convert.ToInt32(connection.ExecuteScalar($"SELECT COUNT(*) FROM Historian WHERE Acronym = 'STAT' AND NodeID = {nodeIdQueryString}"));
 
                 if (statHistorianCount == 0)
-                    connection.ExecuteNonQuery(string.Format("INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES({0}, 'STAT', 'Statistics Archive', 'HistorianAdapters.dll', 'HistorianAdapters.LocalOutputAdapter', '', 1, 'Local historian used to archive system statistics', 9999, 1)", nodeIdQueryString));
+                    connection.ExecuteNonQuery($"INSERT INTO Historian(NodeID, Acronym, Name, AssemblyName, TypeName, ConnectionString, IsLocal, Description, LoadOrder, Enabled) VALUES({nodeIdQueryString}, 'STAT', 'Statistics Archive', 'HistorianAdapters.dll', 'HistorianAdapters.LocalOutputAdapter', '', 1, 'Local historian used to archive system statistics', 9999, 1)");
 
                 // Report success to the user.
                 AppendStatusMessage("Successfully set up statistics historian.");
@@ -1358,8 +1338,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -1442,9 +1421,9 @@ namespace ConfigurationSetupUtility.Screens
                     adminCredentialCommand.Parameters.Add(updatedByParameter);
 
                     if (oracle)
-                        adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (:name, {0}, :createdBy, :updatedBy)", nodeIdQueryString);
+                        adminCredentialCommand.CommandText = $"INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (:name, {nodeIdQueryString}, :createdBy, :updatedBy)";
                     else
-                        adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (@name, {0}, @createdBy, @updatedBy)", nodeIdQueryString);
+                        adminCredentialCommand.CommandText = $"INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) Values (@name, {nodeIdQueryString}, @createdBy, @updatedBy)";
                 }
                 else
                 {
@@ -1479,11 +1458,9 @@ namespace ConfigurationSetupUtility.Screens
                     adminCredentialCommand.Parameters.Add(updatedByParameter);
 
                     if (oracle)
-                        adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                            "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeIdQueryString);
+                        adminCredentialCommand.CommandText = "INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " + $"(:name, :password, :firstName, :lastName, {nodeIdQueryString}, 0, :createdBy, :updatedBy)";
                     else
-                        adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " +
-                            "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeIdQueryString);
+                        adminCredentialCommand.CommandText = "INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) Values " + $"(@name, @password, @firstName, @lastName, {nodeIdQueryString}, 0, @createdBy, @updatedBy)";
                 }
 
                 adminCredentialCommand.ExecuteNonQuery();
@@ -1509,7 +1486,7 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     adminUserID = "'" + adminUserID + "'";
                     adminRoleID = "'" + adminRoleID + "'";
-                    adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES ({0}, {1})", adminRoleID, adminUserID);
+                    adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES ({adminRoleID}, {adminUserID})";
                     adminCredentialCommand.ExecuteNonQuery();
                 }
 
@@ -1519,8 +1496,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
@@ -1624,8 +1600,7 @@ namespace ConfigurationSetupUtility.Screens
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
 
             AppendStatusMessage("Successfully created new node.");
@@ -1641,13 +1616,13 @@ namespace ConfigurationSetupUtility.Screens
             // When a new node added, also add 3 roles to it (Administrator, Editor, Viewer).
             IDbCommand adminCredentialCommand;
             adminCredentialCommand = connection.CreateCommand();
-            adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Administrator', 'Administrator Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+            adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Administrator', 'Administrator Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
             adminCredentialCommand.ExecuteNonQuery();
 
-            adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Editor', 'Editor Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+            adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Editor', 'Editor Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
             adminCredentialCommand.ExecuteNonQuery();
 
-            adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Viewer', 'Viewer Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+            adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Viewer', 'Viewer Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
             adminCredentialCommand.ExecuteNonQuery();
         }
 
@@ -1673,7 +1648,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
 
                     if (total > 0)
-                        AppendStatusMessage(string.Format("Stopped {0} openHistorian Manager instance{1}.", total, total > 1 ? "s" : ""));
+                        AppendStatusMessage($"Stopped {total} openHistorian Manager instance{(total > 1 ? "s" : "")}.");
 
                     // Add an extra line for visual separation of process termination status
                     AppendStatusMessage("");
@@ -1736,7 +1711,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
 
                     if (total > 0)
-                        AppendStatusMessage(string.Format("Stopped {0} openHistorian instance{1}.", total, total > 1 ? "s" : ""));
+                        AppendStatusMessage($"Stopped {total} openHistorian instance{(total > 1 ? "s" : "")}.");
 
                     // Add an extra line for visual separation of process termination status
                     AppendStatusMessage("");
@@ -1862,7 +1837,7 @@ namespace ConfigurationSetupUtility.Screens
                 XmlNode errorLoggerNode = configFile.SelectSingleNode("configuration/categorizedSettings/errorLogger");
 
                 // Ensure that error logger category exists
-                if ((object)errorLoggerNode == null)
+                if (errorLoggerNode == null)
                 {
                     errorLoggerNode = configFile.CreateElement("errorLogger");
                     configFile.SelectSingleNode("configuration/categorizedSettings").AppendChild(errorLoggerNode);
@@ -1872,7 +1847,7 @@ namespace ConfigurationSetupUtility.Screens
                 XmlNode logToDatabaseNode = errorLoggerNode.SelectNodes("add").Cast<XmlNode>()
                                                            .SingleOrDefault(node => node.Attributes != null && node.Attributes["name"].Value == "LogToDatabase");
 
-                if ((object)logToDatabaseNode == null)
+                if (logToDatabaseNode == null)
                 {
                     XmlElement addElement = configFile.CreateElement("add");
 
@@ -1902,7 +1877,7 @@ namespace ConfigurationSetupUtility.Screens
 
             // Make sure sttpDataPublisher settings exist
             XmlNode sttpDataPublisherNode = configFile.SelectSingleNode("configuration/categorizedSettings/sttpdatapublisher");
-            if (serviceConfigFile && (object)sttpDataPublisherNode == null)
+            if (serviceConfigFile && sttpDataPublisherNode == null)
             {
                 sttpDataPublisherNode = configFile.CreateElement("sttpdatapublisher");
 
@@ -1930,7 +1905,7 @@ namespace ConfigurationSetupUtility.Screens
 
             // Make sure sttpsDataPublisher settings exist
             XmlNode sttpsDataPublisher = configFile.SelectSingleNode("configuration/categorizedSettings/sttpsdatapublisher");
-            if (serviceConfigFile && (object)sttpsDataPublisher == null)
+            if (serviceConfigFile && sttpsDataPublisher == null)
             {
                 sttpsDataPublisher = configFile.CreateElement("sttpsdatapublisher");
 
@@ -1981,7 +1956,7 @@ namespace ConfigurationSetupUtility.Screens
             // Make sure alarm services settings exist
             XmlNode alarmServicesNode = configFile.SelectSingleNode("configuration/categorizedSettings/alarmservicesAlarmService");
 
-            if (serviceConfigFile && (object)alarmServicesNode == null)
+            if (serviceConfigFile && alarmServicesNode == null)
             {
                 alarmServicesNode = configFile.CreateElement("alarmservicesAlarmService");
 

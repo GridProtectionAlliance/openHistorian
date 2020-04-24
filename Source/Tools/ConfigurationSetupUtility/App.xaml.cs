@@ -110,13 +110,7 @@ namespace ConfigurationSetupUtility
         /// <summary>
         /// Gets reference to global error logger.
         /// </summary>
-        public ErrorLogger ErrorLogger
-        {
-            get
-            {
-                return m_errorLogger;
-            }
-        }
+        public ErrorLogger ErrorLogger => m_errorLogger;
 
         #endregion
 

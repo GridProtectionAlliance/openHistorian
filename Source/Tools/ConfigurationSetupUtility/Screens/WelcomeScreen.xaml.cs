@@ -65,60 +65,30 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        public IScreen NextScreen
-        {
-            get
-            {
-                return m_nextPage;
-            }
-        }
+        public IScreen NextScreen => m_nextPage;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool CanGoBack => false;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
         /// </summary>
-        public bool UserInputIsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool UserInputIsValid => true;
 
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.

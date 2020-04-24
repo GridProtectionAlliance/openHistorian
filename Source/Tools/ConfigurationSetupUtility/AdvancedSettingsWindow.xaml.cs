@@ -54,35 +54,17 @@ namespace ConfigurationSetupUtility
         /// <summary>
         /// Gets the connection string the user specified in the <see cref="AdvancedSettingsWindow"/>.
         /// </summary>
-        public string ConnectionString
-        {
-            get
-            {
-                return m_connectionStringTextBox.Text;
-            }
-        }
+        public string ConnectionString => m_connectionStringTextBox.Text;
 
         /// <summary>
         /// Gets the data provider string the user specified in the <see cref="AdvancedSettingsWindow"/>.
         /// </summary>
-        public string DataProviderString
-        {
-            get
-            {
-                return m_dataProviderStringTextBox.Text;
-            }
-        }
+        public string DataProviderString => m_dataProviderStringTextBox.Text;
 
         /// <summary>
         /// Gets a value to determine whether the user has selected to encrypt connection strings.
         /// </summary>
-        public bool Encrypt
-        {
-            get
-            {
-                return m_encryptCheckBox.IsChecked.Value;
-            }
-        }
+        public bool Encrypt => m_encryptCheckBox.IsChecked.Value;
 
         #endregion
 

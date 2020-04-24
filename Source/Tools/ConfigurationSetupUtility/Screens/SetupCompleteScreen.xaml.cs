@@ -33,7 +33,6 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
@@ -49,7 +48,7 @@ namespace ConfigurationSetupUtility.Screens
     /// <summary>
     /// Interaction logic for SetupCompleteScreen.xaml
     /// </summary>
-    public partial class SetupCompleteScreen : UserControl, IScreen
+    public partial class SetupCompleteScreen : IScreen
     {
         #region [ Members ]
 
@@ -80,49 +79,25 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        public IScreen NextScreen
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public IScreen NextScreen => null;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool CanGoBack => false;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool CanCancel => false;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -162,8 +137,8 @@ namespace ConfigurationSetupUtility.Screens
                             if (!Directory.Exists(dataMigrationUtilityUserSettingsFolder))
                                 Directory.CreateDirectory(dataMigrationUtilityUserSettingsFolder);
 
-                            oldConnectionString += string.Format("; dataProviderString={{ {0} }}; serializedSchema={1}", oldDataProviderString, SerializedSchemaPath);
-                            newConnectionString += string.Format("; dataProviderString={{ {0} }}; serializedSchema={1}", newDataProviderString, SerializedSchemaPath);
+                            oldConnectionString += $"; dataProviderString={{ {oldDataProviderString} }}; serializedSchema={SerializedSchemaPath}";
+                            newConnectionString += $"; dataProviderString={{ {newDataProviderString} }}; serializedSchema={SerializedSchemaPath}";
 
                             XDocument doc = new XDocument(
                                                 new XElement("settings",
@@ -187,14 +162,11 @@ namespace ConfigurationSetupUtility.Screens
                             try
                             {
                                 DependencyObject parent = VisualTreeHelper.GetParent(this);
-                                Window mainWindow;
-
+                                
                                 while (parent != null && !(parent is Window))
                                     parent = VisualTreeHelper.GetParent(parent);
 
-                                mainWindow = parent as Window;
-
-                                if (mainWindow != null)
+                                if (parent is Window mainWindow)
                                     mainWindow.WindowState = WindowState.Minimized;
                             }
                             catch
@@ -230,16 +202,18 @@ namespace ConfigurationSetupUtility.Screens
                         // Always make sure that all three needed roles are available for each defined node(s) in the database.
                         ValidateSecurityRoles();
 
+                        bool runningService = m_serviceStartCheckBox?.IsChecked.GetValueOrDefault() ?? false;
+
                         // If the user requested it, start or restart the openHistorian service.
-                        if (m_serviceStartCheckBox.IsChecked.Value)
+                        if (runningService)
                         {
                             try
                             {
-#if DEBUG
+                        #if DEBUG
                                 Process.Start(App.ApplicationExe);
-#else
+                        #else
                                 m_openHistorianServiceController.Start();
-#endif
+                        #endif
                             }
                             catch
                             {
@@ -248,18 +222,35 @@ namespace ConfigurationSetupUtility.Screens
                         }
 
                         // If the user requested it, start the openHistorian Manager.
-                        if (m_managerStartCheckBox.IsChecked.Value)
+                        if (m_managerStartCheckBox?.IsChecked.GetValueOrDefault() ?? false)
                         {
-                            try
+                            // Try to launch web app if service is running
+                            bool runWebManager = runningService;
+
+                            if (runWebManager)
                             {
-                                Process process = new Process();
-                                process.StartInfo.UseShellExecute = true;
-                                process.StartInfo.FileName = "http://localhost:8180/";
-                                process.Start();
+                                try
+                                {
+                                    Process process = new Process
+                                    {
+                                        StartInfo =
+                                        {
+                                            UseShellExecute = true,
+                                            FileName = "http://localhost:8180/"
+                                        }
+                                    };
+
+                                    process.Start();
+                                }
+                                catch
+                                {
+                                    // For now, fall-back on WPF manager if we can't launch a browser
+                                    runWebManager = false;
+                                }
                             }
-                            catch
+
+                            if (!runWebManager)
                             {
-                                // For now, fall-back on WPF manager if we can't launch a browser
                                 if (UserAccountControl.IsUacEnabled && UserAccountControl.IsCurrentProcessElevated)
                                 {
                                     try
@@ -280,8 +271,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     finally
                     {
-                        if (m_openHistorianServiceController != null)
-                            m_openHistorianServiceController.Close();
+                        m_openHistorianServiceController?.Close();
                     }
                 }
 
@@ -325,17 +315,18 @@ namespace ConfigurationSetupUtility.Screens
         private void InitializeopenHistorianServiceController()
         {
             ServiceController[] services = ServiceController.GetServices();
-            m_openHistorianServiceController = services.SingleOrDefault(svc => string.Compare(svc.ServiceName, "openHistorian", true) == 0);
+            m_openHistorianServiceController = services.SingleOrDefault(svc => string.Compare(svc.ServiceName, "openHistorian", StringComparison.OrdinalIgnoreCase) == 0);
         }
 
         // Initializes the state of the openHistorian service checkbox.
         private void InitializeServiceCheckboxState()
         {
-#if DEBUG
+        #if DEBUG
             bool serviceInstalled = File.Exists(App.ApplicationExe);
-#else
+        #else
             bool serviceInstalled = m_openHistorianServiceController != null;
-#endif
+        #endif
+
             m_serviceStartCheckBox.IsChecked = serviceInstalled;
             m_serviceStartCheckBox.IsEnabled = serviceInstalled;
         }
@@ -360,11 +351,11 @@ namespace ConfigurationSetupUtility.Screens
 
             XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
 
-            if ((object)categorizedSettings == null)
+            if (categorizedSettings == null)
             {
                 XmlNode config = configFile.SelectSingleNode("configuration");
 
-                if ((object)config == null)
+                if (config == null)
                     return;
 
                 categorizedSettings = configFile.CreateElement("categorizedSettings");
@@ -397,22 +388,19 @@ namespace ConfigurationSetupUtility.Screens
                 categorizedSettings.AppendChild(grafanaBindings);
             }
 
-            object setupHistorianValue;
             bool setupHistorian = false;
 
-            if (m_state.TryGetValue("setupHistorian", out setupHistorianValue))
+            if (m_state.TryGetValue("setupHistorian", out object setupHistorianValue))
                 setupHistorian = setupHistorianValue.ToNonNullNorWhiteSpace("False").ParseBoolean();
 
             if (setupHistorian)
             {
-                object historianAcronymValue;
                 string historianAcronym;
 
-                m_state.TryGetValue("historianAcronym", out historianAcronymValue);
+                m_state.TryGetValue("historianAcronym", out object historianAcronymValue);
                 historianAcronym = historianAcronymValue.ToNonNullNorWhiteSpace("ppa").ToLowerInvariant();
 
-                object historianTypeName;
-                m_state.TryGetValue("historianTypeName", out historianTypeName);
+                m_state.TryGetValue("historianTypeName", out object historianTypeName);
 
                 if (historianTypeName.ToNonNullString().Equals("openHistorian.Adapters.LocalOutputAdapter") && configFile.SelectSingleNode($"configuration/categorizedSettings/{historianAcronym}GrafanaDataService") == null)
                 {
@@ -447,11 +435,11 @@ namespace ConfigurationSetupUtility.Screens
 
             XmlNode timeformat = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='TimeFormat']");
 
-            if ((object)timeformat != null)
+            if (timeformat != null)
             {
                 XmlAttribute value = timeformat.Attributes?["value"];
 
-                if ((object)value != null)
+                if (value != null)
                 {
                     // For migrations, make sure time format supports high-resolution timestamps
                     if (!value.Value.Contains(".ffffff"))
@@ -464,11 +452,11 @@ namespace ConfigurationSetupUtility.Screens
 
             XmlNode authRedirectExpression = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='AuthFailureRedirectResourceExpression']");
 
-            if ((object)authRedirectExpression != null)
+            if (authRedirectExpression != null)
             {
                 XmlAttribute value = authRedirectExpression.Attributes?["value"];
 
-                if ((object)value != null)
+                if (value != null)
                 {
                     // Make sure non-api based grafana calls will redirect when unauthenticated
                     if (!value.Value.Contains("/grafana"))
@@ -485,192 +473,173 @@ namespace ConfigurationSetupUtility.Screens
 
         private void ValidateTimeSeriesStartupOperations()
         {
-            const string countQuery = "SELECT COUNT(*) FROM DataOperation WHERE MethodName = 'PerformTimeSeriesStartupOperations'";
-            const string insertQuery = "INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1)";
+            const string CountQuery = "SELECT COUNT(*) FROM DataOperation WHERE MethodName = 'PerformTimeSeriesStartupOperations'";
+            const string InsertQuery = "INSERT INTO DataOperation(Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('Time Series Startup Operations', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.TimeSeriesStartupOperations', 'PerformTimeSeriesStartupOperations', '', 0, 1)";
 
             IDbConnection connection = null;
-            int timeSeriesStartupOperationsCount;
-
+            
             try
             {
                 connection = OpenNewConnection();
-                timeSeriesStartupOperationsCount = Convert.ToInt32(connection.ExecuteScalar(countQuery));
+                int timeSeriesStartupOperationsCount = Convert.ToInt32(connection.ExecuteScalar(CountQuery));
 
                 if (timeSeriesStartupOperationsCount == 0)
-                    connection.ExecuteNonQuery(insertQuery);
+                    connection.ExecuteNonQuery(InsertQuery);
             }
             finally
             {
-                if (connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
-
         }
 
         private void ValidateConfigurationEntity()
         {
-            const string countNodeInfoQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
-            const string insertNodeInfoQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
+            const string CountNodeInfoQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
+            const string InsertNodeInfoQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeInfo', 'NodeInfo', 'Defines information about the nodes in the database', 18, 1)";
 
-            const string countCompressionSettingsQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'CompressionSettings'";
-            const string insertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1)";
+            const string CountCompressionSettingsQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'CompressionSettings'";
+            const string InsertCompressionSettingsQuery = "INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('NodeCompressionSetting', 'CompressionSettings', 'Defines information about measurement compression settings', 19, 1)";
 
             IDbConnection connection = null;
-            int configurationEntityCount;
-
+            
             try
             {
                 connection = OpenNewConnection();
 
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countNodeInfoQuery));
+                int configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(CountNodeInfoQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertNodeInfoQuery);
+                    connection.ExecuteNonQuery(InsertNodeInfoQuery);
 
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countCompressionSettingsQuery));
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(CountCompressionSettingsQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertCompressionSettingsQuery);
+                    connection.ExecuteNonQuery(InsertCompressionSettingsQuery);
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
         private void ValidateProtocols()
         {
-            const string countModbusQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'Modbus'";
-            const string insertModbusQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('Modbus', 'Modbus Poller', 'Measurement', 'Device', 'ModbusAdapters.dll', 'ModbusAdapters.ModbusPoller', 13)";
+            const string CountModbusQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'Modbus'";
+            const string InsertModbusQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('Modbus', 'Modbus Poller', 'Measurement', 'Device', 'ModbusAdapters.dll', 'ModbusAdapters.ModbusPoller', 13)";
 
-            const string countComtradeQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'COMTRADE'";
-            const string insertComtradeQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 14)";
+            const string CountComtradeQuery = "SELECT COUNT(*) FROM Protocol WHERE Acronym = 'COMTRADE'";
+            const string InsertComtradeQuery = "INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('COMTRADE', 'COMTRADE Import', 'Measurement', 'Imported', 'TestingAdapters.dll', 'TestingAdapters.VirtualInputAdapter', 14)";
 
             IDbConnection connection = null;
-            int configurationEntityCount;
-
+            
             try
             {
                 connection = OpenNewConnection();
 
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countModbusQuery));
+                int configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(CountModbusQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertModbusQuery);
+                    connection.ExecuteNonQuery(InsertModbusQuery);
 
-                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(countComtradeQuery));
+                configurationEntityCount = Convert.ToInt32(connection.ExecuteScalar(CountComtradeQuery));
 
                 if (configurationEntityCount == 0)
-                    connection.ExecuteNonQuery(insertComtradeQuery);
+                    connection.ExecuteNonQuery(InsertComtradeQuery);
             }
             finally
             {
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
         private void ValidateNodeSettings()
         {
-            const string settingsQuery = "SELECT Settings FROM Node WHERE ID = '{0}'";
+            const string SettingsQuery = "SELECT Settings FROM Node WHERE ID = '{0}'";
             string updateQuery = "UPDATE Node SET Settings = @settings WHERE ID = '{0}'";
-
-            object selectedNodeId;
-            string nodeIDQueryString;
-
             IDbConnection connection = null;
-            object nodeSettingsConnectionString;
-            Dictionary<string, string> nodeSettings;
-
-            string alarmServiceUrl;
-
+            
             try
             {
                 // Ensure that there is a selected node ID
-                if (m_state.TryGetValue("selectedNodeId", out selectedNodeId) && !string.IsNullOrWhiteSpace(selectedNodeId.ToNonNullString()))
-                {
-                    // Open new connection
-                    nodeIDQueryString = selectedNodeId.ToString();
-                    connection = OpenNewConnection();
+                if (!m_state.TryGetValue("selectedNodeId", out object selectedNodeId) || string.IsNullOrWhiteSpace(selectedNodeId.ToNonNullString()))
+                    return;
 
-                    // Get node settings from the database
-                    nodeSettingsConnectionString = connection.ExecuteScalar(string.Format(settingsQuery, nodeIDQueryString));
-                    nodeSettings = nodeSettingsConnectionString.ToNonNullString().ParseKeyValuePairs();
+                // Open new connection
+                string nodeIDQueryString = selectedNodeId.ToString();
+                connection = OpenNewConnection();
 
-                    // If the AlarmServiceUrl does not exist in node settings, add it and then update the database record
-                    if (!nodeSettings.TryGetValue("AlarmServiceUrl", out alarmServiceUrl))
-                    {
-                        if (connection.GetType().Name == "OracleConnection")
-                            updateQuery = updateQuery.Replace('@', ':');
+                // Get node settings from the database
+                object nodeSettingsConnectionString = connection.ExecuteScalar(string.Format(SettingsQuery, nodeIDQueryString));
+                Dictionary<string, string> nodeSettings = nodeSettingsConnectionString.ToNonNullString().ParseKeyValuePairs();
 
-                        nodeSettings.Add("AlarmServiceUrl", "http://localhost:5019/alarmservices");
-                        nodeSettingsConnectionString = nodeSettings.JoinKeyValuePairs();
-                        connection.ExecuteNonQuery(string.Format(updateQuery, nodeIDQueryString), nodeSettingsConnectionString);
-                    }
-                }
+                // If the AlarmServiceUrl does not exist in node settings, add it and then update the database record
+                if (nodeSettings.TryGetValue("AlarmServiceUrl", out string _))
+                    return;
+
+                if (connection.GetType().Name == "OracleConnection")
+                    updateQuery = updateQuery.Replace('@', ':');
+
+                nodeSettings.Add("AlarmServiceUrl", "http://localhost:5019/alarmservices");
+                nodeSettingsConnectionString = nodeSettings.JoinKeyValuePairs();
+                connection.ExecuteNonQuery(string.Format(updateQuery, nodeIDQueryString), nodeSettingsConnectionString);
             }
             finally
             {
                 // Dispose of the connection if it was opened
-                if ((object)connection != null)
-                    connection.Dispose();
+                connection?.Dispose();
             }
         }
 
         private void ValidateSecurityRoles()
         {
-            // For each Node in new database make sure all roles exist
-            IDataReader nodeReader = null;
             IDbConnection connection = OpenNewConnection();
 
-            if (connection != null)
+            if (connection == null)
+                return;
+
+            try
             {
-                try
+                IDataReader nodeReader;
+                IDbCommand nodeCommand;
+
+                nodeCommand = connection.CreateCommand();
+                nodeCommand.CommandText = "SELECT ID FROM Node";
+
+                // For each Node in new database make sure all roles exist
+                using (nodeReader = nodeCommand.ExecuteReader())
                 {
-                    IDbCommand nodeCommand;
+                    DataTable dataTable = new DataTable();
+                    dataTable.Load(nodeReader);
+                    nodeReader.Close();
 
-                    nodeCommand = connection.CreateCommand();
-                    nodeCommand.CommandText = "SELECT ID FROM Node";
-
-                    using (nodeReader = nodeCommand.ExecuteReader())
+                    foreach (DataRow row in dataTable.Rows)
                     {
-                        DataTable dataTable = new DataTable();
-                        dataTable.Load(nodeReader);
+                        string nodeID = $"'{row["ID"].ToNonNullString()}'";
+                        IDbCommand command = connection.CreateCommand();
 
-                        if (nodeReader != null)
-                            nodeReader.Close();
+                        command.CommandText = $"SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {nodeID} AND Name = 'Administrator'";
+                        if (Convert.ToInt32(command.ExecuteScalar()) == 0)
+                            AddRolesForNode(connection, nodeID, "Administrator");
+                        else // Verify an admin user exists for the node and attached to administrator role.
+                            VerifyAdminUser(connection, nodeID);
 
-                        foreach (DataRow row in dataTable.Rows)
-                        {
-                            string nodeID = string.Format("'{0}'", row["ID"].ToNonNullString());
-                            IDbCommand command = connection.CreateCommand();
+                        command.CommandText = $"SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {nodeID} AND Name = 'Editor'";
+                        if (Convert.ToInt32(command.ExecuteScalar()) == 0)
+                            AddRolesForNode(connection, nodeID, "Editor");
 
-                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Administrator'", nodeID);
-                            if (Convert.ToInt32(command.ExecuteScalar()) == 0)
-                                AddRolesForNode(connection, nodeID, "Administrator");
-                            else // Verify an admin user exists for the node and attached to administrator role.
-                                VerifyAdminUser(connection, nodeID);
-
-                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Editor'", nodeID);
-                            if (Convert.ToInt32(command.ExecuteScalar()) == 0)
-                                AddRolesForNode(connection, nodeID, "Editor");
-
-                            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {0} AND Name = 'Viewer'", nodeID);
-                            if (Convert.ToInt32(command.ExecuteScalar()) == 0)
-                                AddRolesForNode(connection, nodeID, "Viewer");
-                        }
+                        command.CommandText = $"SELECT COUNT(*) FROM ApplicationRole WHERE NodeID = {nodeID} AND Name = 'Viewer'";
+                        if (Convert.ToInt32(command.ExecuteScalar()) == 0)
+                            AddRolesForNode(connection, nodeID, "Viewer");
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to validate application roles: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    if (connection != null)
-                        connection.Dispose();
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to validate application roles: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Dispose();
             }
         }
 
@@ -678,18 +647,24 @@ namespace ConfigurationSetupUtility.Screens
         /// Adds role for newly added node (Administrator, Editor, Viewer).
         /// </summary>
         /// <param name="connection">IDbConnection to be used for database operations.</param>
-        /// <param name="nodeID">Node ID to which three roles are being assigned</param>        
+        /// <param name="nodeID">Node ID to which three roles are being assigned</param>
+        /// <param name="roleName">Role name to add.</param> 
         private void AddRolesForNode(IDbConnection connection, string nodeID, string roleName)
         {
-            IDbCommand adminCredentialCommand;
-            adminCredentialCommand = connection.CreateCommand();
+            IDbCommand adminCredentialCommand = connection.CreateCommand();
 
-            if (roleName == "Administrator")
-                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Administrator', 'Administrator Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
-            else if (roleName == "Editor")
-                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Editor', 'Editor Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
-            else
-                adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Viewer', 'Viewer Role', {0}, '{1}', '{2}')", nodeID, Thread.CurrentPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
+            switch (roleName)
+            {
+                case "Administrator":
+                    adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Administrator', 'Administrator Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
+                    break;
+                case "Editor":
+                    adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Editor', 'Editor Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
+                    break;
+                default:
+                    adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRole(Name, Description, NodeID, UpdatedBy, CreatedBy) VALUES('Viewer', 'Viewer Role', {nodeID}, '{Thread.CurrentPrincipal.Identity.Name}', '{Thread.CurrentPrincipal.Identity.Name}')";
+                    break;
+            }
 
             adminCredentialCommand.ExecuteNonQuery();
 
@@ -701,28 +676,29 @@ namespace ConfigurationSetupUtility.Screens
         {
             // Lookup administrator role ID
             IDbCommand command = connection.CreateCommand();
-            command.CommandText = string.Format("SELECT ID FROM ApplicationRole WHERE Name = 'Administrator' AND NodeID = {0}", nodeID);
+            command.CommandText = $"SELECT ID FROM ApplicationRole WHERE Name = 'Administrator' AND NodeID = {nodeID}";
             string adminRoleID = command.ExecuteScalar().ToNonNullString();
             string databaseType = m_state["newDatabaseType"].ToString();
 
             adminRoleID = adminRoleID.StartsWith("'") ? adminRoleID : "'" + adminRoleID + "'";
 
             // Check if there is any user associated with the administrator role ID in the ApplicationRoleUserAccount table.
-            // if so that means there is atleast one user associated with that role. So we do not need to take any action.
+            // if so that means there is at least one user associated with that role. So we do not need to take any action.
             // if not that means, user provided on the screen must be attached to this role. Also check if that user exists in 
             // the UserAccount table. If so, then get the ID otherwise add user and retrieve ID.
-            command.CommandText = string.Format("SELECT COUNT(*) FROM ApplicationRoleUserAccount WHERE ApplicationRoleID = {0}", adminRoleID);
+            command.CommandText = $"SELECT COUNT(*) FROM ApplicationRoleUserAccount WHERE ApplicationRoleID = {adminRoleID}";
+
             if (Convert.ToInt32(command.ExecuteScalar()) == 0)
             {
                 if (m_state.ContainsKey("adminUserName")) //i.e. if security setup screen was displayed during setup.
                 {
-                    command.CommandText = string.Format("Select ID FROM UserAccount WHERE Name = '{0}'", m_state["adminUserName"].ToString());
+                    command.CommandText = $"Select ID FROM UserAccount WHERE Name = '{m_state["adminUserName"]}'";
                     string adminUserID = command.ExecuteScalar().ToNonNullString();
 
                     if (!string.IsNullOrEmpty(adminUserID)) //if user exists then attach it to admin role and we'll be done with it.
                     {
                         adminUserID = adminUserID.StartsWith("'") ? adminUserID : "'" + adminUserID + "'";
-                        command.CommandText = string.Format("INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES({0}, {1})", adminRoleID, adminUserID);
+                        command.CommandText = $"INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES({adminRoleID}, {adminUserID})";
                         command.ExecuteNonQuery();
                     }
                     else //we need to add user to the UserAccount table and then attach it to admin role.
@@ -751,9 +727,9 @@ namespace ConfigurationSetupUtility.Screens
                             adminCredentialCommand.Parameters.Add(updatedByParameter);
 
                             if (databaseIsOracle)
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(:name, {0}, :createdBy, :updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = $"INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(:name, {nodeID}, :createdBy, :updatedBy)";
                             else
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(@name, {0}, @createdBy, @updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = $"INSERT INTO UserAccount(Name, DefaultNodeID, CreatedBy, UpdatedBy) VALUES(@name, {nodeID}, @createdBy, @updatedBy)";
                         }
                         else
                         {
@@ -786,18 +762,12 @@ namespace ConfigurationSetupUtility.Screens
                             adminCredentialCommand.Parameters.Add(updatedByParameter);
 
                             if (databaseIsOracle)
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" +
-                                    "(:name, :password, :firstName, :lastName, {0}, 0, :createdBy, :updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = "INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" + $"(:name, :password, :firstName, :lastName, {nodeID}, 0, :createdBy, :updatedBy)";
                             else
-                                adminCredentialCommand.CommandText = string.Format("INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" +
-                                    "(@name, @password, @firstName, @lastName, {0}, 0, @createdBy, @updatedBy)", nodeID);
+                                adminCredentialCommand.CommandText = "INSERT INTO UserAccount(Name, Password, FirstName, LastName, DefaultNodeID, UseADAuthentication, CreatedBy, UpdatedBy) VALUES" + $"(@name, @password, @firstName, @lastName, {nodeID}, 0, @createdBy, @updatedBy)";
                         }
 
                         adminCredentialCommand.ExecuteNonQuery();
-
-                        // Get the admin user ID from the database.
-                        IDataReader userIdReader = null;
-
                         IDbDataParameter newNameParameter = adminCredentialCommand.CreateParameter();
 
                         newNameParameter.ParameterName = paramChar + "name";
@@ -806,6 +776,10 @@ namespace ConfigurationSetupUtility.Screens
                         adminCredentialCommand.CommandText = "SELECT ID FROM UserAccount WHERE Name = " + paramChar + "name";
                         adminCredentialCommand.Parameters.Clear();
                         adminCredentialCommand.Parameters.Add(newNameParameter);
+
+                        // Get the admin user ID from the database.
+                        IDataReader userIdReader;
+
                         using (userIdReader = adminCredentialCommand.ExecuteReader())
                         {
                             if (userIdReader.Read())
@@ -816,7 +790,7 @@ namespace ConfigurationSetupUtility.Screens
                         if (!string.IsNullOrEmpty(adminRoleID) && !string.IsNullOrEmpty(adminUserID))
                         {
                             adminUserID = adminUserID.StartsWith("'") ? adminUserID : "'" + adminUserID + "'";
-                            adminCredentialCommand.CommandText = string.Format("INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES ({0}, {1})", adminRoleID, adminUserID);
+                            adminCredentialCommand.CommandText = $"INSERT INTO ApplicationRoleUserAccount(ApplicationRoleID, UserAccountID) VALUES ({adminRoleID}, {adminUserID})";
                             adminCredentialCommand.ExecuteNonQuery();
                         }
                     }
@@ -831,14 +805,13 @@ namespace ConfigurationSetupUtility.Screens
             try
             {
                 string databaseType = m_state["newDatabaseType"].ToString();
-                string connectionString = string.Empty;
-                string dataProviderString = string.Empty;
+                string connectionString, dataProviderString;
 
                 if (databaseType == "SQLServer")
                 {
                     SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
-                    connectionString = sqlServerSetup.ConnectionString;
-                    dataProviderString = sqlServerSetup.DataProviderString;
+                    connectionString = sqlServerSetup?.ConnectionString;
+                    dataProviderString = sqlServerSetup?.DataProviderString;
 
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
@@ -846,8 +819,8 @@ namespace ConfigurationSetupUtility.Screens
                 else if (databaseType == "MySQL")
                 {
                     MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-                    connectionString = mySqlSetup.ConnectionString;
-                    dataProviderString = mySqlSetup.DataProviderString;
+                    connectionString = mySqlSetup?.ConnectionString;
+                    dataProviderString = mySqlSetup?.DataProviderString;
 
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = "AssemblyName={MySql.Data, Version=6.5.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
@@ -855,8 +828,8 @@ namespace ConfigurationSetupUtility.Screens
                 else if (databaseType == "Oracle")
                 {
                     OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
-                    connectionString = oracleSetup.ConnectionString;
-                    dataProviderString = oracleSetup.DataProviderString;
+                    connectionString = oracleSetup?.ConnectionString;
+                    dataProviderString = oracleSetup?.DataProviderString;
 
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = OracleSetup.DefaultDataProviderString;
@@ -864,7 +837,7 @@ namespace ConfigurationSetupUtility.Screens
                 else if (databaseType == "PostgreSQL")
                 {
                     PostgresSetup postgresSetup = m_state["postgresSetup"] as PostgresSetup;
-                    connectionString = postgresSetup.ConnectionString;
+                    connectionString = postgresSetup?.ConnectionString;
                     dataProviderString = PostgresSetup.DataProviderString;
                 }
                 else
@@ -890,10 +863,7 @@ namespace ConfigurationSetupUtility.Screens
             catch (Exception ex)
             {
                 MessageBox.Show("Failed to open new database connection: " + ex.Message, "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                if (connection != null)
-                    connection.Dispose();
-
+                connection?.Dispose();
                 connection = null;
             }
 

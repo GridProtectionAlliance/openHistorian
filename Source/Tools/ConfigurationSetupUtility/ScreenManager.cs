@@ -70,13 +70,7 @@ namespace ConfigurationSetupUtility
         /// <summary>
         /// Gets the screen currently displayed in the setup window.
         /// </summary>
-        public IScreen CurrentScreen
-        {
-            get
-            {
-                return m_currentScreen;
-            }
-        }
+        public IScreen CurrentScreen => m_currentScreen;
 
         #endregion
 
@@ -128,14 +122,11 @@ namespace ConfigurationSetupUtility
         /// </summary>
         public void UpdateScreenPanel()
         {
-            Panel screenPanel = m_mainWindow.FindName("m_screenPanel") as Panel;
-            UIElement currentPage = m_currentScreen as UIElement;
-
-            if (screenPanel != null)
+            if (m_mainWindow.FindName("m_screenPanel") is Panel screenPanel)
             {
                 screenPanel.Children.Clear();
 
-                if (currentPage != null)
+                if (m_currentScreen is UIElement currentPage)
                     screenPanel.Children.Add(currentPage);
             }
         }
@@ -150,20 +141,16 @@ namespace ConfigurationSetupUtility
                 m_mainWindow.Dispatcher.Invoke(new Action(UpdateNavigation), null);
             else
             {
-                Button nextButton = m_mainWindow.FindName("m_nextButton") as Button;
-                Button backButton = m_mainWindow.FindName("m_backButton") as Button;
-                Button cancelButton = m_mainWindow.FindName("m_cancelButton") as Button;
-
-                if (nextButton != null)
+                if (m_mainWindow.FindName("m_nextButton") is Button nextButton)
                 {
                     nextButton.IsEnabled = m_currentScreen.CanGoForward;
                     nextButton.Content = (m_currentScreen.NextScreen == null) ? "Finish" : "Next >";
                 }
 
-                if (backButton != null)
+                if (m_mainWindow.FindName("m_backButton") is Button backButton)
                     backButton.IsEnabled = m_currentScreen.CanGoBack && m_history.Count > 0;
 
-                if (cancelButton != null)
+                if (m_mainWindow.FindName("m_cancelButton") is Button cancelButton)
                     cancelButton.IsEnabled = m_currentScreen.CanCancel;
             }
         }

@@ -74,24 +74,12 @@ namespace ConfigurationSetupUtility.Screens
             /// <summary>
             /// Gets type name of <see cref="HistorianAdapter"/>.
             /// </summary>
-            public string TypeName
-            {
-                get
-                {
-                    return m_type.FullName;
-                }
-            }
+            public string TypeName => m_type.FullName;
 
             /// <summary>
             /// Gets assembly name of <see cref="HistorianAdapter"/>.
             /// </summary>
-            public string AssemblyName
-            {
-                get
-                {
-                    return Path.GetFileName(m_type.Assembly.Location);
-                }
-            }
+            public string AssemblyName => Path.GetFileName(m_type.Assembly.Location);
 
             #endregion
 
@@ -195,37 +183,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -317,8 +287,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 try
                 {
-                    IOutputAdapter adapter = Activator.CreateInstance(type) as IOutputAdapter;
-                    return (adapter != null) && adapter.OutputIsForArchive;
+                    return (Activator.CreateInstance(type) is IOutputAdapter adapter) && adapter.OutputIsForArchive;
                 }
                 catch
                 {
@@ -340,9 +309,7 @@ namespace ConfigurationSetupUtility.Screens
         // It saves the selection made by the user for future steps in the setup process.
         private void HistorianAdapterListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            HistorianAdapter adapter = HistorianAdapterListBox.SelectedItem as HistorianAdapter;
-
-            if (adapter != null)
+            if (HistorianAdapterListBox.SelectedItem is HistorianAdapter adapter)
             {
                 m_assemblyName = adapter.AssemblyName;
                 m_typeName = adapter.TypeName;

@@ -102,37 +102,19 @@ namespace ConfigurationSetupUtility.Screens
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
@@ -391,7 +373,7 @@ namespace ConfigurationSetupUtility.Screens
         // Occurs when the user changes the administrator user name.
         private void AdminUserNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if ((object)m_state != null)
+            if (m_state != null)
             {
                 string adminUserName = m_adminUserNameTextBox.Text;
                 bool existing = Convert.ToBoolean(m_state["existing"]);
@@ -485,7 +467,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_databaseTextBox.Text = m_postgresSetup.DatabaseName;
                 m_roleNameTextBox.Text = m_postgresSetup.RoleName;
 
-                if ((object)m_postgresSetup.RolePassword == null || m_postgresSetup.RolePassword.Length == 0)
+                if (m_postgresSetup.RolePassword == null || m_postgresSetup.RolePassword.Length == 0)
                     m_postgresSetup.RolePassword = password;
                 else
                     m_rolePasswordTextBox.Password = m_postgresSetup.RolePassword.ToUnsecureString();

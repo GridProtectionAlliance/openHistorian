@@ -99,60 +99,30 @@ namespace ConfigurationSetupUtility.Screens
         /// <summary>
         /// Gets or sets the screen to be displayed when the user clicks the "Next" button.
         /// </summary>
-        public IScreen NextScreen
-        {
-            get
-            {
-                return (IScreen)m_state["setupReadyScreen"];
-            }
-        }
+        public IScreen NextScreen => (IScreen)m_state["setupReadyScreen"];
 
         /// <summary>
         /// Gets a boolean indicating whether the user can advance to
         /// the next screen from the current screen.
         /// </summary>
-        public bool CanGoForward
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoForward => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can return to
         /// the previous screen from the current screen.
         /// </summary>
-        public bool CanGoBack
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanGoBack => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user can cancel the
         /// setup process from the current screen.
         /// </summary>
-        public bool CanCancel
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool CanCancel => true;
 
         /// <summary>
         /// Gets a boolean indicating whether the user input is valid on the current page.
         /// </summary>
-        public bool UserInputIsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool UserInputIsValid => true;
 
         /// <summary>
         /// Collection shared among screens that represents the state of the setup.
@@ -253,9 +223,7 @@ namespace ConfigurationSetupUtility.Screens
 
             if (m_nodeList.Count == 1)
             {
-                ScreenManager manager = m_state["screenManager"] as ScreenManager;
-
-                if ((object)manager != null)
+                if (m_state["screenManager"] is ScreenManager manager)
                 {
                     manager.GoToNextScreen(false);
                     return;
@@ -276,7 +244,7 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     Name = "ConfigFile",
                     Company = GetCompanyNameFromConfigFile(),
-                    Description = string.Format("This node was found in {0}.", configFileName),
+                    Description = $"This node was found in {configFileName}.",
                     Id = nodeId
                 });
             }
@@ -290,7 +258,7 @@ namespace ConfigurationSetupUtility.Screens
             if (string.IsNullOrWhiteSpace(nodeName))
                 return;
 
-            if ((object)m_newNode == null)
+            if (m_newNode == null)
             {
                 m_newNode = new NodeInfo();
                 m_newNode.Company = GetCompanyNameFromConfigFile();
@@ -338,8 +306,7 @@ namespace ConfigurationSetupUtility.Screens
         // Gets a database connection to the SQL Server database configured earlier in the setup.
         private IDbConnection GetSqlServerConnection()
         {
-            SqlServerSetup sqlSetup = m_state["sqlServerSetup"] as SqlServerSetup;
-            return (sqlSetup == null) ? null : new SqlConnection(sqlSetup.ConnectionString);
+            return (!(m_state["sqlServerSetup"] is SqlServerSetup sqlSetup)) ? null : new SqlConnection(sqlSetup.ConnectionString);
         }
 
         // Gets a database connection to the MySQL database configured earlier in the setup.
@@ -458,9 +425,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         while (reader.Read())
                         {
-                            Guid nodeId;
-
-                            if (Guid.TryParse(reader["ID"].ToNonNullString(), out nodeId))
+                            if (Guid.TryParse(reader["ID"].ToNonNullString(), out Guid nodeId))
                             {
                                 nodes.Add(new NodeInfo()
                                 {
@@ -491,11 +456,10 @@ namespace ConfigurationSetupUtility.Screens
         private Guid GetNodeIdFromConfigFile(string configFileName)
         {
             string nodeIDString;
-            Guid nodeID;
 
             nodeIDString = GetValueOfSystemSetting(configFileName, "NodeID").ToNonNullString();
 
-            if (Guid.TryParse(nodeIDString, out nodeID))
+            if (Guid.TryParse(nodeIDString, out Guid nodeID))
                 return nodeID;
             
             return Guid.NewGuid();
@@ -542,7 +506,7 @@ namespace ConfigurationSetupUtility.Screens
         {
             // This method is called either now or when the state
             // object is initialized, whichever happens last.
-            if ((object)m_state != null)
+            if (m_state != null)
                 UpdateDataGrid();
         }
 
@@ -550,9 +514,8 @@ namespace ConfigurationSetupUtility.Screens
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             object selectedItem = m_dataGrid.SelectedItem;
-            NodeInfo info = selectedItem as NodeInfo;
 
-            if ((object)m_state != null && (object)info != null)
+            if (m_state != null && selectedItem is NodeInfo info)
                 m_state["selectedNodeId"] = info.Id;
 
             if (m_state != null)
