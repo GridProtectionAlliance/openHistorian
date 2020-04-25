@@ -575,6 +575,11 @@
             Represents a record from IConfigurationFrame.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ID">
+            <summary>
+            Gets or sets existing device ID, if any.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Acronym">
             <summary>
             Gets or sets acronym of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.

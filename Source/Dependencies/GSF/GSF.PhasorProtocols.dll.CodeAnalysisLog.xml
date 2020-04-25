@@ -10,7 +10,7 @@
        <Types>
         <Type Name="ConfigurationFrame3" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="ImplementISerializableCorrectly" Category="Microsoft.Usage" CheckId="CA2240" Status="Active" Created="2020-04-22 04:13:24Z" FixCategory="NonBreaking">
+          <Message TypeName="ImplementISerializableCorrectly" Category="Microsoft.Usage" CheckId="CA2240" Status="Active" Created="2020-04-25 04:13:19Z" FixCategory="NonBreaking">
            <Issue Certainty="60" Level="Error">Add an implementation of GetObjectData to type 'ConfigurationFrame3'.</Issue>
           </Message>
          </Messages>
