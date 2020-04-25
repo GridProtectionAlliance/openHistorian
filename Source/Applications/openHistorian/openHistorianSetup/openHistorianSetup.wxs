@@ -562,6 +562,9 @@
         </File>
         <Shortcut Id="LogFileViewerStartMenuShortcut" Name="Log File Viewer" Icon="LogFileViewer.ico.exe" Description="Tool used to analyze log files produced by the openHistorian." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
       </Component>
+      <Component Id="LogFileViewerConfig">
+        <File Id="LogFileViewer.exe.config" Name="LogFileViewer.exe.config" Source="$(var.ProjectDir)\LogFileViewer.exe.config" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="ArchiveUpgradeUtilityComponents" Directory="INSTALLFOLDER">

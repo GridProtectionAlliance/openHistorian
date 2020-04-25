@@ -259,6 +259,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="LogFileViewer.exe" />
+    <Content Include="LogFileViewer.exe.config" />
     <Content Include="makecert.exe" />
     <Content Include="NoInetFixUtil.exe" />
     <Content Include="openHistorianHelp.mht" />
