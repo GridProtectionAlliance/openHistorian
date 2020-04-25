@@ -305,6 +305,9 @@
     <Content Include="wwwroot\Images\openHistorian.png" />
     <Content Include="wwwroot\Images\openHistorianBanner.png" />
     <Content Include="wwwroot\Scripts\Site.js" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="AppDebug.config">
       <SubType>Designer</SubType>
     </None>
@@ -347,11 +350,6 @@
     <None Include="wwwroot\VendorDevices.cshtml" />
     <Content Include="wwwroot\Devices.cshtml" />
     <None Include="wwwroot\Vendors.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
