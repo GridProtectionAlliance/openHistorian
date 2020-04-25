@@ -407,7 +407,7 @@
 
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
         <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianWebManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\GPA\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="WebManagerShortcut" Type="string" Value="" KeyPath="yes" />
       </Component>
 
       <ComponentGroupRef Id="SqlClrComponents" />
