@@ -62,12 +62,12 @@ namespace MAS
         /// <summary>
         /// Defines the default value for the <see cref="AdjustmentStrategy"/>.
         /// </summary>
-        public const string DefaultAdjustmentStrategy = "LineToNeutral";
+        public const string DefaultAdjustmentStrategy = nameof(VoltageAdjustmentStrategy.LineToNeutral);
 
         /// <summary>
         /// Defaults the default value for the <see cref="TargetCalculationType" />
         /// </summary>
-        public const string DefaultCalculationType = "Megawatts";
+        public const string DefaultCalculationType = nameof(CalculationType.Megawatts);
 
         // Fields
         private readonly OscillationDetector m_detector;
