@@ -25,7 +25,7 @@ GO
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DOM', 'DOM', 'Dominion', 8)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EES', 'EES', 'Entergy Energy Services', 9)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ESI', 'ESI', 'Entergy Services Inc', 9)
 GO
 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EXE', 'EXE', 'Exelon Energy', 10)

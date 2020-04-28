@@ -8,7 +8,7 @@ INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BCH', 'BCH', '
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BPA', 'BPA', 'Bonneville Power Administration', 6);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CONED', 'CED', 'ConEdison', 7);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DOM', 'DOM', 'Dominion', 8);
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EES', 'EES', 'Entergy Energy Services', 9);
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ESI', 'ESI', 'Entergy Services Inc', 9);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EXE', 'EXE', 'Exelon Energy', 10);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('FEN', 'FEN', 'First Energy', 11);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('FPL', 'FPL', 'Florida Power & Light Company', 12);

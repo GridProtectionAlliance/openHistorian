@@ -549,7 +549,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.NotifyService(GSF.PhasorProtocols.UI.DataModels.Device,System.Nullable{System.Int32})">
             <summary>
-            Sends required commands to backend service to notify that <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> configuration has changed.
+            Sends required commands to back-end service to notify that <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> configuration has changed.
             </summary>
             <param name="device"><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> whose configuration has changed.</param>
             <param name="historianID">ID of the historian to refresh metadata if device is null.</param>
