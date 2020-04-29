@@ -48,7 +48,7 @@
         </member>
         <member name="F:PowerCalculations.BulkSequenceCalculator.DefaultInputMeasurementKeys">
             <summary>
-            Defines the default value for the <see cref="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementKeys"/>.
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementKeys"/>.
             </summary>
         </member>
         <member name="M:PowerCalculations.BulkSequenceCalculator.#ctor">
@@ -59,6 +59,11 @@
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterInputCount">
             <summary>
             Gets number of input measurement required by each adapter.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementIndexUsedForName">
+            <summary>
+            Gets or sets the index into the per adapter input measurements to use for target adapter name.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterOutputNames">
@@ -75,11 +80,6 @@
             <summary>
             Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
             settings that are custom per adapter.
-            </summary>
-        </member>
-        <member name="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementKeys">
-            <summary>
-            Gets or sets primary keys of input measurements for the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.OutputMeasurements">
@@ -488,32 +488,32 @@
             One output measurement should be defined for each enumeration value, in order:
             </remarks>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveMagnitude">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveSequenceMagnitude">
             <summary>
             Positive sequence magnitude measurement.
             </summary>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveAngle">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveSequenceAngle">
             <summary>
             Positive sequence angle measurement.
             </summary>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeMagnitude">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeSequenceMagnitude">
             <summary>
             Negative sequence magnitude measurement.
             </summary>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeAngle">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeSequenceAngle">
             <summary>
             Negative sequence angle measurement.
             </summary>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroMagnitude">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroSequenceMagnitude">
             <summary>
             Zero sequence magnitude measurement.
             </summary>
         </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroAngle">
+        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroSequenceAngle">
             <summary>
             Zero sequence angle measurement.
             </summary>

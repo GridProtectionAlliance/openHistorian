@@ -547,7 +547,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes">
             <summary>
-            Gets signal type for each output measurement, used when each output needs to be a different type.
+            Gets per adapter signal type for output measurements, used when each output needs to be a different type.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.CustomAdapterSettings">
@@ -622,6 +622,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.CurrentAdapterIndex">
             <summary>
             Get adapter index currently being processed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.CurrentOutputIndex">
+            <summary>
+            Get adapter output index currently being processed.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ParseConnectionString">
@@ -795,7 +800,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes">
             <summary>
-            Gets signal type for each output measurement, used when each output needs to be a different type.
+            Gets per adapter signal type for output measurements, used when each output needs to be a different type.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CustomAdapterSettings">
@@ -861,6 +866,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex">
             <summary>
             Get adapter index currently being processed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentOutputIndex">
+            <summary>
+            Get adapter output index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Status">
@@ -1174,7 +1184,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes">
             <summary>
-            Gets signal type for each output measurement, used when each output needs to be a different type.
+            Gets per adapter signal type for output measurements, used when each output needs to be a different type.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CustomAdapterSettings">
@@ -1220,6 +1230,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentAdapterIndex">
             <summary>
             Get adapter index currently being processed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentOutputIndex">
+            <summary>
+            Get adapter output index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Status">
@@ -1333,7 +1348,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalTypes">
             <summary>
-            Gets signal type for each output measurement, used when each output needs to be a different type.
+            Gets per adapter signal type for output measurements, used when each output needs to be a different type.
             </summary>
             <remarks>
             Not used by output adapters, inputs into <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> are not reentrant into time-series framework.
@@ -1387,6 +1402,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CurrentAdapterIndex">
             <summary>
             Get adapter index currently being processed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CurrentOutputIndex">
+            <summary>
+            Get adapter output index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.Status">
