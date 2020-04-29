@@ -41,6 +41,57 @@
             <param name="frame">Single frame of measurement data within a one second sample.</param>
             <param name="index">Index of frame within the one second sample.</param>
         </member>
+        <member name="T:PowerCalculations.BulkSequenceCalculator">
+            <summary>
+            Represents an adapter that manages bulk calculation of positive, negative and zero sequence values based on A, B and C phase data inputs.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.BulkSequenceCalculator.DefaultInputMeasurementKeys">
+            <summary>
+            Defines the default value for the <see cref="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementKeys"/>.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.BulkSequenceCalculator.#ctor">
+            <summary>
+            Creates new <see cref="T:PowerCalculations.BulkSequenceCalculator"/>.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterInputCount">
+            <summary>
+            Gets number of input measurement required by each adapter.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterOutputNames">
+            <summary>
+            Gets output measurement names.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.SignalTypes">
+            <summary>
+            Gets signal type for each output measurement, used when each output needs to be a different type.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.CustomAdapterSettings">
+            <summary>
+            Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
+            settings that are custom per adapter.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements for the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.BulkSequenceCalculator.ParseConnectionString">
+            <summary>
+            Parses connection string.
+            </summary>
+        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.MeasurementRepository">
             <summary>
             Class used to save measurement objects for power calculation adapter
@@ -429,6 +480,44 @@
             Calculates positive, negative and zero sequences using A, B and C phase voltage or current magnitude and angle signals input to the adapter.
             </summary>
         </member>
+        <member name="T:PowerCalculations.SequenceCalculator.Output">
+            <summary>
+            Defines the output measurements for the <see cref="T:PowerCalculations.SequenceCalculator"/>.
+            </summary>
+            <remarks>
+            One output measurement should be defined for each enumeration value, in order:
+            </remarks>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveMagnitude">
+            <summary>
+            Positive sequence magnitude measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.PositiveAngle">
+            <summary>
+            Positive sequence angle measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeMagnitude">
+            <summary>
+            Negative sequence magnitude measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.NegativeAngle">
+            <summary>
+            Negative sequence angle measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroMagnitude">
+            <summary>
+            Zero sequence magnitude measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Output.ZeroAngle">
+            <summary>
+            Zero sequence angle measurement.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.SequenceCalculator.TrackRecentValues">
             <summary>
             Gets or sets flag that determines if the last few values should be monitored.
@@ -460,6 +549,11 @@
             </summary>
             <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
             <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
+        </member>
+        <member name="F:PowerCalculations.SequenceCalculator.Outputs">
+            <summary>
+            Array of <see cref="T:PowerCalculations.SequenceCalculator.Output"/> enumeration values.
+            </summary>
         </member>
         <member name="T:PowerCalculations.PowerCalculator">
             <summary>

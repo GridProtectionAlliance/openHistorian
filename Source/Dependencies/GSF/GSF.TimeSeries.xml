@@ -542,7 +542,18 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType">
             <summary>
-            Gets or sets signal type for output measurements.
+            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes"/> array is not defined.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes">
+            <summary>
+            Gets signal type for each output measurement, used when each output needs to be a different type.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.CustomAdapterSettings">
+            <summary>
+            Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
+            settings that are custom per adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.TargetHistorianAcronym">
@@ -606,6 +617,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.AdapterIDCounter">
             <summary>
             Gets or sets current adapter ID counter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.CurrentAdapterIndex">
+            <summary>
+            Get adapter index currently being processed.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ParseConnectionString">
@@ -711,7 +727,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.OutputMeasurements">
             <summary>
-            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> will produce, if any.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.FramesPerSecond">
@@ -774,7 +790,18 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalType">
             <summary>
-            Gets or sets signal type for output measurements.
+            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes"/> array is not defined.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes">
+            <summary>
+            Gets signal type for each output measurement, used when each output needs to be a different type.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CustomAdapterSettings">
+            <summary>
+            Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
+            settings that are custom per adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.TargetHistorianAcronym">
@@ -829,6 +856,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AdapterIDCounter">
             <summary>
             Gets or sets current adapter ID counter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex">
+            <summary>
+            Get adapter index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Status">
@@ -1137,7 +1169,18 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalType">
             <summary>
-            Gets or sets signal type for output measurements.
+            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes"/> array is not defined.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes">
+            <summary>
+            Gets signal type for each output measurement, used when each output needs to be a different type.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CustomAdapterSettings">
+            <summary>
+            Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
+            settings that are custom per adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.TargetHistorianAcronym">
@@ -1172,6 +1215,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.OutputMeasurementTypes">
             <summary>
             Gets output measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.OutputMeasurements"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentAdapterIndex">
+            <summary>
+            Get adapter index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Status">
@@ -1277,7 +1325,24 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType">
             <summary>
-            Gets or sets signal type for output measurements.
+            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalTypes"/> array is not defined.
+            </summary>
+            <remarks>
+            Not used by output adapters, inputs into <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> are not reentrant into time-series framework.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalTypes">
+            <summary>
+            Gets signal type for each output measurement, used when each output needs to be a different type.
+            </summary>
+            <remarks>
+            Not used by output adapters, inputs into <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> are not reentrant into time-series framework.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CustomAdapterSettings">
+            <summary>
+            Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
+            settings that are custom per adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.TargetHistorianAcronym">
@@ -1317,6 +1382,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.InputMeasurementKeyTypes">
             <summary>
             Gets input measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CurrentAdapterIndex">
+            <summary>
+            Get adapter index currently being processed.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.Status">
