@@ -2419,6 +2419,8 @@
                     }
                 }
 
+                // TODO: Check option to update any sequence values with calculated counterparts
+
                 promises.push(phasorHub.queryMeasurement(label + "-FQ").then(function (measurement) {
                     vars.FREQ = measurement.SignalID;
                     return phasorHub.queryMeasurement(label + "-SF");
