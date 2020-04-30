@@ -1623,6 +1623,10 @@
                         else
                             currents.push(phasorDefinition);
                     }
+                    else {
+                        // This will cause unchecked phasors to be deleted when saved
+                        dropAndAdd = true;
+                    }
                 }
 
                 if (dropAndAdd) {
