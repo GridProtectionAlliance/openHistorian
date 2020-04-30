@@ -309,14 +309,43 @@
 		<h5 class="section-heading">Custom Map Options</h5>
 		<div class="gf-form" ng-repeat="map in ctrl.mapData[0].maps track by $index">
 			<label class="gf-form-label width-5" ng-show="$index > 0">at zoom</label>
-			<input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.mapData[0].transitions[$index - 1]" ng-change="ctrl.mapData[0].updateMap()"  ng-show="$index > 0"
+			<input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.mapData[0].transitions[$index - 1]" ng-change="ctrl.mapData[0].updateMap()" ng-show="$index > 0"
 				   ng-model-onblur />
 			<label class="gf-form-label width-5">use</label>
 			<select class="input-small gf-form-input" ng-model="ctrl.mapData[0].maps[$index]" ng-options="t for t in ctrl.mapOptions"
 					ng-change="ctrl.mapData[0].updateMap()"></select>
-			<button class="btn navbar-button" ng-mousedown="ctrl.mapData[0].deleteMap($index)"  ng-show="$index > 0">remove</button>
+			<button class="btn navbar-button" ng-mousedown="ctrl.mapData[0].deleteMap($index)" ng-show="$index > 0">remove</button>
 		</div>
 		<button class="btn navbar-button" ng-mousedown="ctrl.mapData[0].addMap(ctrl.mapOptions[0],100)">Add Map</button>
 	</div>
-		
+
+	<!-- Custom Map URL Single Map -->
+	<div class="section gf-form-group">
+		<h5 class="section-heading">Custom Map Sopurces</h5>
+		<div class="grafana-info-box max-width-28" ng-repeat="mapSource in ctrl.panel.customMapOptions">
+
+			<div class="gf-form">
+				<label class="gf-form-label width-5">Name</label>
+				<input type="text" class="input-small gf-form-input width-20" ng-model="mapSource.name" ng-change="ctrl.ChangeMapSource($index)" ng-model-onblur disabled/>
+			</div>
+			<div class="gf-form">
+				<label class="gf-form-label width-5">URL</label>
+				<input type="text" class="input-small gf-form-input width-20" ng-model="mapSource.url" ng-change="ctrl.ChangeMapSource($index)" ng-model-onblur />
+			</div>
+			<div class="gf-form">
+				<label class="gf-form-label width-15">Sub Domain</label>
+				<input type="text" class="input-small gf-form-input width-10" ng-model="mapSource.subdomains" ng-change="ctrl.ChangeMapSource($index)" ng-model-onblur />
+			</div>
+			<div class="gf-form">
+				<label class="gf-form-label width-15">Max Zoom</label>
+				<input type="number" class="input-small gf-form-input width-10" ng-model="mapSource.maxZoom" ng-change="ctrl.ChangeMapSource($index)" ng-model-onblur />
+			</div>
+			<div class="gf-form">
+				<button class="btn navbar-button" ng-mousedown="ctrl.RemoveMapSource($index)">remove</button>
+			</div>
+		</div>
+		<button class="btn navbar-button" ng-mousedown="ctrl.AddMapSource()">Add New Source</button>
 	</div>
+
+
+</div>
