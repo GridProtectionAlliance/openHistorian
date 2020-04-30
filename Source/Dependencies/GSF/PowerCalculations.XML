@@ -82,6 +82,26 @@
             settings that are custom per adapter.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.PointTagTemplate">
+            <summary>
+            Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.SignalReferenceTemplate">
+            <summary>
+            Gets or sets template for local signal reference measurement name for source historian point.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.DescriptionTemplate">
+            <summary>
+            Gets or sets template for output measurement descriptions.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.CurrentDeviceID">
+            <summary>
+            Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex"/>, if any, for measurement generation.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> will produce, if any.
