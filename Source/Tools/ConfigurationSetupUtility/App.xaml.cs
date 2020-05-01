@@ -101,6 +101,20 @@ namespace ConfigurationSetupUtility
             {
                 m_errorLogger.Log(new InvalidOperationException(string.Format("Warning: failed to create or validate the event log source for the openHistorian Manager: {0}", ex.Message), ex), false);
             }
+            try
+            {
+                using (Process util = new Process())
+                {
+                    util.StartInfo.FileName = "NoInetFixUtil.exe";
+                    util.StartInfo.Arguments = " --checkall";
+                    util.StartInfo.UseShellExecute = true;
+                    util.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                m_errorLogger.Log(new InvalidOperationException(string.Format("Warning: failed to run NoInetUtil: {0}", ex.Message), ex), false);
+            }
         }
 
         #endregion
