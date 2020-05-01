@@ -315,6 +315,8 @@ var OpenHistorianGrafanaAlarmPanel = function (_sdk_1$MetricsPanelCt) {
                     updatedDeviceGroups.push({ name: g.Name, ID: g.ID, enabled: enabled, Devices: g.Devices });
                 });
                 _this3.panel.deviceGroups = updatedDeviceGroups;
+            }).catch(function (error) {
+                console.log("Unable to get Device Groups from PDC");
             });
         }
     }, {

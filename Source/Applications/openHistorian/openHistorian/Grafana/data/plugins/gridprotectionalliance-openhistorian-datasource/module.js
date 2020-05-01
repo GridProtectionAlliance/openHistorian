@@ -602,6 +602,19 @@ var OpenHistorianDataSource = function () {
             });
         }
     }, {
+        key: "getDeviceGroups",
+        value: function getDeviceGroups(options) {
+            var interpolated = {
+                target: this.templateSrv.replace(options, null, 'regex')
+            };
+            return this.backendSrv.datasourceRequest({
+                url: this.url + '/GetDeviceGroups',
+                data: interpolated,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    }, {
         key: "getDataAvailability",
         value: function getDataAvailability(options) {
             var interpolated = {
