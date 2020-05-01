@@ -500,30 +500,45 @@
             setTimeout(function () { $("#loadingDataLabel").css("visibility", "hidden"); }, 500);
         }
 
+        function phaseMatch(phaseLabel, phaseMatches) {
+            for (let i = 0; i < phaseMatches.length; i++) {
+                const match = phaseMatches[i];
+                const variations = [ " " + match, match + " ", "_" + match, match + "_", "_" + match + "_", "." + match, match + ".", "." + match + "." ];
+
+                for (let j = 0; j < variations.length; j++) {
+                    if (phaseLabel.indexOf(variations[j]) > -1)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         function guessPhase(phase, phasorLabel) {
             if (!isEmpty(phase) && phase !== "+")
                 return phase;
 
-            if (phasorLabel.indexOf("_VA") > -1 || phasorLabel.indexOf("_IA") > -1 || phasorLabel.indexOf(" A ") > -1 || phasorLabel.indexOf(" APV") > -1 || phasorLabel.indexOf(" API") > -1 || phasorLabel.indexOf("VA ") > -1 || phasorLabel.indexOf("IA ") > -1 || phasorLabel.indexOf("VAPM") > -1 || phasorLabel.indexOf("IAPM") > -1 || phasorLabel.indexOf(".AV") > -1 || phasorLabel.indexOf(".AI") > -1)
+            if (phaseMatch(phasorLabel, [ "VA", " IA", "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
                 return "A";
 
-            if (phasorLabel.indexOf("_VB") > -1 || phasorLabel.indexOf("_IB") > -1 || phasorLabel.indexOf(" B ") > -1 || phasorLabel.indexOf(" BPV") > -1 || phasorLabel.indexOf(" BPI") > -1 || phasorLabel.indexOf("VB ") > -1 || phasorLabel.indexOf("IB ") > -1 || phasorLabel.indexOf("VBPM") > -1 || phasorLabel.indexOf("IBPM") > -1 || phasorLabel.indexOf(".BV") > -1 || phasorLabel.indexOf(".BI") > -1)
+            if (phaseMatch(phasorLabel, [ "VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
                 return "B";
 
-            if (phasorLabel.indexOf("_VC") > -1 || phasorLabel.indexOf("_IC") > -1 || phasorLabel.indexOf(" C ") > -1 || phasorLabel.indexOf(" CPV") > -1 || phasorLabel.indexOf(" CPI") > -1 || phasorLabel.indexOf("VC ") > -1 || phasorLabel.indexOf("IC ") > -1 || phasorLabel.indexOf("VCPM") > -1 || phasorLabel.indexOf("ICPM") > -1 || phasorLabel.indexOf(".CV") > -1 || phasorLabel.indexOf(".CI") > -1)
+            if (phaseMatch(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
                 return "C";
 
-            if (phasorLabel.indexOf("_VN") > -1 || phasorLabel.indexOf("_IN") > -1 || phasorLabel.indexOf(" NEUT ") > -1 || phasorLabel.indexOf(" NPV") > -1 || phasorLabel.indexOf(" NPI") > -1 || phasorLabel.indexOf("VN ") > -1 || phasorLabel.indexOf("IN ") > -1 || phasorLabel.indexOf("VNPM") > -1 || phasorLabel.indexOf("INPM") > -1 || phasorLabel.indexOf(".NV") > -1 || phasorLabel.indexOf(".NI") > -1)
+            if (phaseMatch(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
                 return "N";
 
-            if (phasorLabel.indexOf("_V0") > -1 || phasorLabel.indexOf("_I0") > -1 || phasorLabel.indexOf(" ZERO ") > -1 || phasorLabel.indexOf(" ZPV") > -1 || phasorLabel.indexOf(" ZPI") > -1 || phasorLabel.indexOf("VZ ") > -1 || phasorLabel.indexOf("IZ ") > -1 || phasorLabel.indexOf("VSPM") > -1 || phasorLabel.indexOf("VZPM") > -1 || phasorLabel.indexOf("IZPM") > -1 || phasorLabel.indexOf(".ZV") > -1 || phasorLabel.indexOf(".ZI") > -1 || phasorLabel.indexOf("_ZS") > -1)
+            if (phaseMatch(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI" ]))
                 return "0";
 
-            if (phasorLabel.indexOf("_V2") > -1 || phasorLabel.indexOf("_I2") > -1 || phasorLabel.indexOf(" NEG ") > -1 || phasorLabel.indexOf(" -SV") > -1 || phasorLabel.indexOf(" -SI") > -1 || phasorLabel.indexOf("V2 ") > -1 || phasorLabel.indexOf("I2 ") > -1 || phasorLabel.indexOf("V2PM") > -1 || phasorLabel.indexOf("I2PM") > -1 || phasorLabel.indexOf(".-V") > -1 || phasorLabel.indexOf(".-I") > -1 || phasorLabel.indexOf("_NS") > -1)
-                return "-";
-
-            if (phasorLabel.indexOf("_V1") > -1 || phasorLabel.indexOf("_I1") > -1 || phasorLabel.indexOf(" POS ") > -1 || phasorLabel.indexOf(" +SV") > -1 || phasorLabel.indexOf(" +SI") > -1 || phasorLabel.indexOf(" SI") > -1 || phasorLabel.indexOf("V1 ") > -1 || phasorLabel.indexOf("I1 ") > -1 || phasorLabel.indexOf("V1PM") > -1 || phasorLabel.indexOf("I1PM") > -1 || phasorLabel.indexOf(".+V") > -1 || phasorLabel.indexOf(".+I") > -1 || phasorLabel.indexOf("_PS") > -1)
+            if (phaseMatch(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
                 return "+";
+
+            // -V and -I may match too often, so check these last
+            if (phaseMatch(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI", "-V", "-I" ]))
+                return "-";
 
             return isEmpty(phase) ? "?" : phase;
         }
