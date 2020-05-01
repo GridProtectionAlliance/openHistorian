@@ -195,7 +195,28 @@
 
         div.panel-heading-condensed {
             height: 30px;
-            padding-top: 5px
+            padding-top: 5px;
+        }
+
+        div.include-phasor {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        input[type='checkbox'].include-phasor {
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        div.delete-phasor {
+            position: absolute;
+            margin-top: 32px;
+            margin-left: -20px;
+            cursor: pointer;
+        }
+
+        span.delete-phasor {
+            font-size: smaller;
         }
 
         tr.separator-top {
@@ -508,7 +529,7 @@
         }
 
         function guessNominalVoltage(nominalVoltage, phasorLabel, deviceLabel) {
-            if (!isEmpty(nominalVoltage) && nominalVoltage > 0)
+            if (!isEmpty(nominalVoltage) && nominalVoltage !== 0)
                 return nominalVoltage;
 
             const commonVoltageLevels = ["69", "115", "138", "161", "230", "345", "500", "765"];
@@ -641,7 +662,7 @@
         }
 
         function updateTagName(evaluator, owner) {
-            let result = ko.observable();
+            const result = ko.observable();
 
             ko.computed(function () {
                 evaluator.call(owner).done(function (tagName) {
@@ -668,16 +689,16 @@
         }
 
         function formatAssociatedVoltageLabel(state) {
-            let parts = state.text.split("~");
-            let label = parts[0];
-            let orgLabel = parts.length > 1 ? parts[1] : undefined;
+            const parts = state.text.split("~");
+            const label = parts[0];
+            const orgLabel = parts.length > 1 ? parts[1] : undefined;
 
             if (isEmpty(orgLabel) || label === orgLabel) {
-                let $state = $("<span>" + state.text + "</span>");
+                const $state = $("<span>" + state.text + "</span>");
                 return $state;
             }
 
-            let $state = $("<span>" + label + " <span class='sub-text'>(" + orgLabel + ")</span></span>");
+            const $state = $("<span>" + label + " <span class='sub-text'>(" + orgLabel + ")</span></span>");
             return $state;
         }
 
@@ -1115,6 +1136,8 @@
                     };
                 }
 
+                self.resortPhasors();
+
                 // Make sure table is refreshed
                 if (ko.options.deferUpdates)
                     ko.tasks.runEarly();
@@ -1210,12 +1233,59 @@
                 self.errors.showAllMessages();
             };
 
+            self.resortPhasors = function () {
+                const voltages = self.voltages();
+                const currents = self.currents();
+
+                function sortPhasors(phasors) {
+                    phasors.sort(function (left, right) {
+                        // Sort by IDLabel first - in case there are multiple devices
+                        const leftIDLabel = String(left.Device.IDLabel()).trim().toUpperCase();
+                        const rightIDLabel = String(right.Device.IDLabel()).trim().toUpperCase();
+
+                        if (leftIDLabel < rightIDLabel)
+                            return -1;
+
+                        if (leftIDLabel > rightIDLabel)
+                            return 1;
+
+                        // Sort next by enabled flag such that disabled devices drop to bottom
+                        if (left.Enabled() && !right.Enabled())
+                            return -1;
+
+                        if (!left.Enabled() && right.Enabled())
+                            return 1;
+
+                        // Finally sort by phasor label
+                        const leftLabel = String(left.Label()).trim().toUpperCase();
+                        const rightLabel = String(right.Label()).trim().toUpperCase();
+
+                        if (leftLabel < rightLabel)
+                            return -1;
+
+                        if (leftLabel > rightLabel)
+                            return 1;
+
+                        return 0;
+                    });
+                }
+
+                sortPhasors(voltages);
+                sortPhasors(currents);
+
+                self.voltages.valueHasMutated();
+                self.currents.valueHasMutated();
+            };
+
             self.createObservableVoltage = function (cell, phasorDefinition, firstVoltage) {
                 const voltage = {};
                 const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
                 const nominalVoltage = guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
                 const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
                 const vphmSignalType = getPhasorSignalType("VPHM");
+
+                voltage._enabled = ko.observable(!self.forwardOnly() && nominalVoltage >= 0);
+                voltage._taggedForDelete = ko.observable(false);
 
                 voltage.ID = phasorDefinition.ID;
                 voltage.Device = cell;
@@ -1224,12 +1294,50 @@
                 voltage.Phase = ko.observable(phase);
                 voltage.NominalVoltage = ko.observable(nominalVoltage);
                 voltage.FirstVoltage = firstVoltage;
-                voltage.Enabled = ko.observable(!self.forwardOnly());
+
+                voltage.Enabled = ko.pureComputed({
+                    read: voltage._enabled,
+                    write: function (value) {
+                        voltage._enabled(value);
+
+                        if (value) {
+                            // Un-tag for delete when enabled
+                            voltage.TaggedForDelete(false);
+                            voltage.NominalVoltage(Math.abs(voltage.NominalVoltage()));
+
+                            if (voltage.NominalVoltage() === 1)
+                                voltage.NominalVoltage(guessNominalVoltage(0, voltage.OriginalLabel, voltage.Device.IDLabel()));
+                        }
+                        else {
+                            if (voltage.NominalVoltage() === 0)
+                                voltage.NominalVoltage(-1);
+                            else
+                                voltage.NominalVoltage(Math.abs(voltage.NominalVoltage()) * -1);
+                        }
+
+                        self.resortPhasors();
+                    },
+                    owner: voltage
+                });
+
+                voltage.TaggedForDelete = ko.pureComputed({
+                    read: voltage._taggedForDelete,
+                    write: function (value) {
+                        voltage._taggedForDelete(value);
+
+                        // Uncheck enabled when tagging for deletion
+                        if (value)
+                            voltage.Enabled(false);
+                    },
+                    owner: voltage
+                });
+
                 voltage.TagName = updateTagName(function () {
                     return phasorHub.createPhasorPointTag(voltage.Device.IDLabel(), vphmSignalType.Acronym, voltage.Label(), voltage.Phase(), phasorDefinition.SourceIndex, voltage.NominalVoltage());
                 }, voltage);
 
                 voltage.Label.extend({ required: true });
+
                 voltage.Phase.extend({
                     required: true,
                     pattern: {
@@ -1237,12 +1345,14 @@
                         params: "^[A-C0+\\-N]$"
                     }
                 });
+
                 voltage.NominalVoltage.extend({ required: true });
 
                 phasorDefinition.Voltage = voltage;
                 phasorDefinition.Label = voltage.Label;
                 phasorDefinition.Phase = voltage.Phase;
                 phasorDefinition.Enabled = voltage.Enabled;
+                phasorDefinition.TaggedForDelete = voltage.TaggedForDelete;
 
                 return voltage;
             };
@@ -1260,7 +1370,8 @@
 
                 current._associatedVoltage = ko.observable(-1);
                 current._phase = ko.observable("");
-                current._enabled = ko.observable(!self.forwardOnly());
+                current._enabled = ko.observable(!self.forwardOnly() && phasorDefinition.NominalVoltage >= 0);
+                current._taggedForDelete = ko.observable(false);
 
                 current.AssociatedVoltage = ko.pureComputed({
                     read: function () {
@@ -1355,9 +1466,27 @@
                     write: function (value) {
                         current._enabled(value);
 
-                        // Re-select associated voltage when enabled
-                        if (value)
+                        if (value) {
+                            // Re-select associated voltage when enabled
                             current.Phase(current.Phase());
+
+                            // Un-tag for delete when enabled
+                            current.TaggedForDelete(false);
+                        }
+
+                        self.resortPhasors();
+                    },
+                    owner: current
+                });
+
+                current.TaggedForDelete = ko.pureComputed({
+                    read: current._taggedForDelete,
+                    write: function (value) {
+                        current._taggedForDelete(value);
+
+                        // Uncheck enabled when tagging for deletion
+                        if (value)
+                            current.Enabled(false);
                     },
                     owner: current
                 });
@@ -1367,6 +1496,7 @@
                 }, current);
 
                 current.Label.extend({ required: true });
+
                 current.Phase.extend({
                     required: true,
                     pattern: {
@@ -1385,6 +1515,7 @@
                 phasorDefinition.Label = current.Label;
                 phasorDefinition.Phase = current.Phase;
                 phasorDefinition.Enabled = current.Enabled;
+                phasorDefinition.TaggedForDelete = current.TaggedForDelete;
 
                 return current;
             };
@@ -1449,7 +1580,7 @@
 
                     self.forwardOnly(false);
                     self.loadConfigFrame(configFrame);
-                }
+                };
 
                 reader.onloadend = function () {
                     if (reader.error && reader.error.message)
@@ -1558,7 +1689,7 @@
                     measurement.SignalReference = signalReference;
                     measurement.SignalTypeID = signalType.ID;
                     measurement.Internal = true;
-                    measurement.Enabled = true;
+                    measurement.Enabled = phasorDefinition.Enabled();
 
                     return phasorHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
                         showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
@@ -1611,21 +1742,44 @@
                 }
 
                 // Separate voltage and current phasor definitions
+                const saveDevicePromises = [];
                 const voltages = [];
                 const currents = [];
 
                 for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
                     const phasorDefinition = cell.PhasorDefinitions[i];
 
-                    if (phasorDefinition.Enabled()) {
+                    if (phasorDefinition.TaggedForDelete()) {
+                        saveDevicePromises.push(phasorHub.queryDeviceMeasurements(cell.ID).then(function (measurements) {
+                            const promises = [];
+
+                            // Remove measurements associated with phasor
+                            for (let j = 0; j < measurements.length; j++) {
+                                const measurement = measurements[j];
+
+                                if (measurement.PhasorSourceIndex === phasorDefinition.SourceIndex) {
+                                    promises.push(phasorHub.deleteMeasurement(measurement.PointID).fail(function (error) {
+                                        showErrorMessage("Failed to delete phasor measurement: " + error);
+                                    }));
+                                }
+                            }
+
+                            // Remove phasor
+                            promises.push(phasorHub.deletePhasor(phasorDefinition.ID).fail(function (error) {
+                                showErrorMessage("Failed to delete phasor: " + error);
+                            }));
+
+                            return $(promises).whenAll();
+                        })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to query device measurements: " + error);
+                            }));
+                    }
+                    else {
                         if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
                             voltages.push(phasorDefinition);
                         else
                             currents.push(phasorDefinition);
-                    }
-                    else {
-                        // This will cause unchecked phasors to be deleted when saved
-                        dropAndAdd = true;
                     }
                 }
 
@@ -1633,7 +1787,7 @@
                     // Handle drop and (re)add phasors operation
                     const promise = cell.PhasorDefinitions.length > 0 ? phasorHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
 
-                    return promise.then(function () {
+                    saveDevicePromises.push(promise.then(function () {
                         const promises = [];
                         const voltageIDMap = [];
 
@@ -1696,6 +1850,13 @@
                                 if (voltage)
                                     baseKV = voltage.Voltage.NominalVoltage();
 
+                                if (!current.Enabled()) {
+                                    if (baseKV === 0)
+                                        baseKV = -1;
+                                    else
+                                        baseKV = Math.abs(baseKV) * -1;
+                                }
+
                                 phasor.DeviceID = cell.ID;
                                 phasor.Label = current.Label();
                                 phasor.Type = "I";
@@ -1739,17 +1900,16 @@
                     })
                     .fail(function (error) {
                         showErrorMessage("Failed to delete old phasors: " + error);
-                    });
+                    }));
                 }
                 else {
                     // Handle update phasors operation
-                    const promises = [];
                     const voltageIDMap = [];
 
                     for (let i = 0; i < voltages.length; i++) {
                         const voltage = voltages[i];
 
-                        promises.push(phasorHub.queryPhasorForDevice(cell.ID, voltage.SourceIndex).then(function (phasor) {
+                        saveDevicePromises.push(phasorHub.queryPhasorForDevice(cell.ID, voltage.SourceIndex).then(function (phasor) {
                             phasor.DeviceID = cell.ID;
                             phasor.Label = voltage.Label();
                             phasor.Type = "V";
@@ -1791,7 +1951,7 @@
                     for (let i = 0; i < currents.length; i++) {
                         const current = currents[i];
 
-                        promises.push(phasorHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
+                        saveDevicePromises.push(phasorHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
                             phasor.DeviceID = cell.ID;
                             phasor.Label = current.Label();
                             phasor.Type = "I";
@@ -1799,6 +1959,13 @@
                             phasor.BaseKV = current.Current.AssociatedNominalVoltage();
                             phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
                             phasor.SourceIndex = current.SourceIndex;
+
+                            if (!current.Enabled()) {
+                                if (phasor.BaseKV === 0)
+                                    phasor.BaseKV = -1;
+                                else
+                                    phasor.BaseKV = Math.abs(phasor.BaseKV) * -1;
+                            }
 
                             if (phasor.DestinationPhasorID === undefined)
                                 phasor.DestinationPhasorID = null;
@@ -1830,9 +1997,9 @@
                             showErrorMessage("Failed to query current phasor: " + error);
                         }));
                     }
-
-                    return $(promises).whenAll();
                 }
+
+                return $(saveDevicePromises).whenAll();
             })
             .fail(function (error) {
                 showErrorMessage("Failed to query phasor count: " + error);
@@ -2338,6 +2505,9 @@
                     const phasorDefinition = cell.PhasorDefinitions[j];
                     const phase = phasorDefinition.Phase().toUpperCase();
 
+                    if (!phasorDefinition.Enabled())
+                        continue;
+
                     if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
                         const nominalVoltage = phasorDefinition.Voltage.NominalVoltage() * 1000; // Convert from kV
                         const nominalVoltage3 = nominalVoltage / 1.7320508075688772;
@@ -2422,8 +2592,6 @@
                         }
                     }
                 }
-
-                // TODO: Check option to update any sequence values with calculated counterparts
 
                 promises.push(phasorHub.queryMeasurement(label + "-FQ").then(function (measurement) {
                     vars.FREQ = measurement.SignalID;
@@ -3205,7 +3373,7 @@
                         }, 1);
                     });
                 }
-            }
+            };
 
             // Enable knockout validation
             ko.validation.init({
@@ -3311,11 +3479,11 @@
 
             $("#inputESPMarker").focus(function() {
                 $(this).select();
-            })
+            });
 
             $("#inputNonESPMarker").focus(function() {
                 $(this).select();
-            })
+            });
 
             $("#latitude").focus(function() {
                 $(this).select();
@@ -3352,8 +3520,14 @@
                         // Select last value
                         var lastInstanceName = Cookies.get("instanceName");
 
-                        if (lastInstanceName === undefined)
-                            lastInstanceName = instanceNameSelect.eq(0).val();
+                        if (lastInstanceName === undefined) {
+                            // Assume name of PPA as default, if defined
+                            if (names.indexOf("PPA") !== -1)
+                                lastInstanceName = "PPA";
+                            // Otherwise select first available historian
+                            else if (names.length > 1)
+                                lastInstanceName = instanceNameSelect.eq(1).val();
+                        }
 
                         if (!isEmpty(lastInstanceName))
                             instanceNameSelect.val(lastInstanceName);
@@ -3637,7 +3811,7 @@
                 <td>
                     <div class="input-group" data-bind="css: { 'has-error': !fieldHasValue(deviceName, true), 'has-feedback': !fieldHasValue(deviceName, true) }">
                         <input id="inputDeviceName" type="text" class="form-control" style="width: 260px" data-bind="textInput: deviceName, disable: readOnly" required>
-                        <button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" data-bind="hidden: readOnly" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>
+                        @*<button type="button" class="input-group-addon" onclick="$('#deviceNameBuilderDialog').show()" data-bind="hidden: readOnly" style="line-height: inherit; width: 55px; margin-left: -1px; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0">Build</button>*@
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true), style: { 'margin-right': readOnly() ? undefined: '54px' }"></span>
                     </div>
                     <div class="input-group save-button pull-right">
@@ -3759,7 +3933,7 @@
                     <td colspan="4" style="padding: 2px"></td>
                 </tr>
                 <!-- /ko -->
-                <tr id="voltageRow" style="visibility: hidden">
+                <tr id="voltageRow" style="visibility: hidden" data-bind="style: { 'background-color': TaggedForDelete() ? 'red' : '' }">
                     <!-- ko if: !FirstVoltage && $parent.configFrame().Cells.length > 1 -->
                     <td width="190px" class="text-left" style="padding-right: 20px">
                         <div class="input-group"></div>
@@ -3776,14 +3950,15 @@
                     <!-- /ko -->
                     <td width="210px" class="text-left" style="position: sticky">
                         <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
-                        <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
-                            <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
+                        <div class="checkbox include-phasor" title="Include phasor when saving">
+                            <input type="checkbox" class="include-phasor" data-bind="checked: Enabled">
                         </div>
+                        <div class="delete-phasor" title="Mark phasor for deletion" data-bind="click: TaggedForDelete.bind($data, true)"><span class="glyphicon glyphicon-remove glyphicon-action-button delete-phasor"></span></div>
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true), 'error-margin': !fieldIsValid(Label, true) }">
                             <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                         </div>
-                        <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
+                        <span class="tag-name-label">Tag name:&nbsp;</span><span class="tag-name" data-bind="text: TaggedForDelete() ? '*** MARKED FOR DELETION ***' : Enabled() ? TagName() : '*** REMOVED FROM UPDATE ***'"></span>
                     </td>
                     <td width="55px" class="text-center">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
@@ -3827,7 +4002,7 @@
                     <td colspan="4" style="padding: 2px"></td>
                 </tr>
                 <!-- /ko -->
-                <tr id="currentRow" style="visibility: hidden">
+                <tr id="currentRow" style="visibility: hidden" data-bind="style: { 'background-color': TaggedForDelete() ? 'red' : '' }">
                     <!-- ko if: !FirstCurrent && $parent.configFrame().Cells.length > 1 -->
                     <td width="190px" class="text-left" style="padding-right: 20px">
                         <div class="input-group"></div>
@@ -3844,14 +4019,15 @@
                     <!-- /ko -->
                     <td width="210px" class="text-left" style="position: sticky">
                         <span class="org-label" data-bind="text: OriginalLabel, visible: OriginalLabel != Label()"></span>
-                        <div class="checkbox" style="margin-top: 0; margin-bottom: 0">
-                            <input type="checkbox" style="margin-top: 10px" data-bind="checked: Enabled">
+                        <div class="checkbox include-phasor" title="Include phasor when saving">
+                            <input type="checkbox" class="include-phasor" data-bind="checked: Enabled">
                         </div>
+                        <div class="delete-phasor" title="Mark phasor for deletion" data-bind="click: TaggedForDelete.bind($data, true)"><span class="glyphicon glyphicon-remove glyphicon-action-button delete-phasor"></span></div>
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true), 'error-margin': !fieldIsValid(Label, true) }">
                             <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                         </div>
-                        <span class="tag-name-label">Tag name:</span><span class="tag-name" data-bind="text: TagName"></span>
+                        <span class="tag-name-label">Tag name:&nbsp;</span><span class="tag-name" data-bind="text: TaggedForDelete() ? '*** MARKED FOR DELETION ***' : Enabled() ? TagName() : '*** REMOVED FROM UPDATE ***'"></span>
                     </td>
                     <td width="55px" class="text-center">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
