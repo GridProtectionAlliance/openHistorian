@@ -372,6 +372,12 @@
   <ItemGroup>
     <SplashScreen Include="SplashScreen.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Adapters\openHistorian.Adapters\openHistorian.Adapters.csproj">
+      <Project>{d170a1d6-834b-47bd-b05f-67dd4bc12f97}</Project>
+      <Name>openHistorian.Adapters</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <CallTarget Targets="SignBuild" />

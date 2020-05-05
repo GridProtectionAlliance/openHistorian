@@ -289,10 +289,15 @@ namespace ConfigurationSetupUtility.Screens
                 {
                     return (Activator.CreateInstance(type) is IOutputAdapter adapter) && adapter.OutputIsForArchive;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    ((App)Application.Current).ErrorLogger.Log(ex);
                     return false;
                 }
+            })
+            .Concat(new[]
+            {   /* Make certain openHistorian output adapters are in list in case LoadImplementations fails to load them */
+                typeof(openHistorian.Adapters.LocalOutputAdapter), typeof(openHistorian.Adapters.RemoteOutputAdapter)
             })
             .Distinct()
             .Where(type => GetEditorBrowsableState(type) == EditorBrowsableState.Always)
@@ -335,7 +340,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 string newValue = currentValue.RemoveWhiteSpace().RemoveControlCharacters().ToUpper();
 
-                if (string.Compare(currentValue, newValue) != 0)
+                if (string.CompareOrdinal(currentValue, newValue) != 0)
                     AcronymTextBox.Text = newValue;
 
                 if (m_state != null)
@@ -375,9 +380,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </returns>
         private static EditorBrowsableState GetEditorBrowsableState(Type type)
         {
-            EditorBrowsableAttribute editorBrowsableAttribute;
-
-            if (type.TryGetAttribute(out editorBrowsableAttribute))
+            if (type.TryGetAttribute(out EditorBrowsableAttribute editorBrowsableAttribute))
                 return editorBrowsableAttribute.State;
 
             return EditorBrowsableState.Always;
@@ -395,9 +398,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </returns>
         private static Tuple<string, bool> GetDescription(Type type)
         {
-            DescriptionAttribute descriptionAttribute;
-
-            if (type.TryGetAttribute(out descriptionAttribute))
+            if (type.TryGetAttribute(out DescriptionAttribute descriptionAttribute))
             {
                 // Treat null or empty string like there was no description
                 if (string.IsNullOrWhiteSpace(descriptionAttribute.Description))

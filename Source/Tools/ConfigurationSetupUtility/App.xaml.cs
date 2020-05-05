@@ -114,7 +114,10 @@ namespace ConfigurationSetupUtility
             }
             catch (Exception ex)
             {
-                m_errorLogger.Log(new InvalidOperationException($"Warning: failed to run NoInetUtil: {ex.Message}", ex), false);
+                if (!m_errorLogger.ErrorLog.IsOpen)
+                    m_errorLogger.ErrorLog.Open();
+
+                m_errorLogger.ErrorLog.WriteLine($"Warning: failed to run NoInetUtil: {ex.Message}");
             }
         }
 
