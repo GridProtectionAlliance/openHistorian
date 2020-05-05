@@ -73,7 +73,7 @@ namespace ConfigurationSetupUtility
             m_errorLogger.LogToEmail = false;
             m_errorLogger.LogToEventLog = true;
             m_errorLogger.LogToFile = true;
-            m_errorLogger.LogToScreenshot = true;
+            m_errorLogger.LogToScreenshot = false;
             m_errorLogger.LogToUI = true;
             m_errorLogger.Initialize();
 
@@ -99,8 +99,9 @@ namespace ConfigurationSetupUtility
             }
             catch (Exception ex)
             {
-                m_errorLogger.Log(new InvalidOperationException(string.Format("Warning: failed to create or validate the event log source for the openHistorian Manager: {0}", ex.Message), ex), false);
+                m_errorLogger.Log(new InvalidOperationException($"Warning: failed to create or validate the event log source for the openHistorian Manager: {ex.Message}", ex), false);
             }
+
             try
             {
                 using (Process util = new Process())
@@ -113,7 +114,7 @@ namespace ConfigurationSetupUtility
             }
             catch (Exception ex)
             {
-                m_errorLogger.Log(new InvalidOperationException(string.Format("Warning: failed to run NoInetUtil: {0}", ex.Message), ex), false);
+                m_errorLogger.Log(new InvalidOperationException($"Warning: failed to run NoInetUtil: {ex.Message}", ex), false);
             }
         }
 
@@ -140,7 +141,7 @@ namespace ConfigurationSetupUtility
                 if (string.Compare(ex.Message, "UnhandledException", true) == 0 && ex.InnerException != null)
                     ex = ex.InnerException;
 
-                errorMessage = string.Format("{0}\r\n\r\nError details: {1}", errorMessage, ex.Message);
+                errorMessage = $"{errorMessage}\r\n\r\nError details: {ex.Message}";
             }
 
             return errorMessage;
@@ -165,7 +166,7 @@ namespace ConfigurationSetupUtility
                 try
                 {
                     Version version = Assembly.GetEntryAssembly().GetName().Version;
-                    s_currentVersionLabel = string.Format("v{0}{1}", version.Major, version.Minor);
+                    s_currentVersionLabel = $"v{version.Major}{version.Minor}";
                 }
                 catch
                 {

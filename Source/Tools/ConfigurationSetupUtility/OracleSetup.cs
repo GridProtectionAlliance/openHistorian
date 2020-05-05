@@ -296,7 +296,7 @@ namespace ConfigurationSetupUtility
                 {
                     StringBuilder statementBuilder = new StringBuilder();
                     Regex comment = new Regex(@"/\*.*\*/|--.*\n", RegexOptions.Multiline);
-                    string indexTablespaceName = string.Format("{0}_INDEX", SchemaUserName.TruncateRight(24));
+                    string indexTablespaceName = $"{SchemaUserName.TruncateRight(24)}_INDEX";
 
                     transaction = connection.BeginTransaction();
                     command.Transaction = transaction;
