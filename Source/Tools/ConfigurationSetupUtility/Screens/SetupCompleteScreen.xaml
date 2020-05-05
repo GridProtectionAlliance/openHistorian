@@ -9,9 +9,19 @@
         <Label Content="Configuration setup complete" Margin="10" HorizontalContentAlignment="Center" DockPanel.Dock="Top" FontSize="16" FontWeight="Bold" />
         <StackPanel DockPanel.Dock="Bottom">
             <TextBlock Name="textBlock1" Text="The configuration setup is complete. Click Finish to exit the Configuration Setup Utility." TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10" />
-            <StackPanel HorizontalAlignment="Center">
-                <CheckBox Content="Start the openHistorian" Height="18" IsChecked="True" Name="m_serviceStartCheckBox" />
-                <CheckBox Content="Start the openHistorian Manager" Height="18" IsChecked="True" Name="m_managerStartCheckBox" />
+            <StackPanel HorizontalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock Name="m_updateTagNamesPrefix" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="Medium">
+                    For existing installations you can now<LineBreak/>
+                    update the point tag naming expression<LineBreak/>
+                    for improved historian tag names:
+                </TextBlock>
+                <Button Name="m_updateTagNames" Content="Update Point Tag Naming Expression" Height="25" Width="250" Margin="10,2,10,2" IsDefault="True" Click="m_updateTagNames_Click" />
+                <TextBlock Name="m_updateTagNamesSuffix"  HorizontalAlignment="Center" TextAlignment="Center" FontSize="10px" FontStyle="Italic" Margin="0,0,0,20">
+                    or update later at any time by running<LineBreak/>
+                    the UpdateTagNames utility manually.
+                </TextBlock>
+                <CheckBox Content="Start the openHistorian" Height="18" IsChecked="True" Margin="50,0,0,0" Name="m_serviceStartCheckBox" />
+                <CheckBox Content="Start the openHistorian Manager" Height="18" IsChecked="True" Margin="50,0,0,0"  Name="m_managerStartCheckBox" />
             </StackPanel>
         </StackPanel>
     </DockPanel>

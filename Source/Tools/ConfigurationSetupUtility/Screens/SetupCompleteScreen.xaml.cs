@@ -53,9 +53,9 @@ namespace ConfigurationSetupUtility.Screens
         #region [ Members ]
 
         // Fields
-
         private Dictionary<string, object> m_state;
         private ServiceController m_openHistorianServiceController;
+        private readonly string m_updateTagNamesExecutable;
 
         #endregion
 
@@ -70,6 +70,15 @@ namespace ConfigurationSetupUtility.Screens
             InitializeopenHistorianServiceController();
             InitializeServiceCheckboxState();
             InitializeManagerCheckboxState();
+
+            m_updateTagNamesExecutable = FilePath.GetAbsolutePath("UpdateTagNames.exe");
+
+            if (File.Exists(m_updateTagNamesExecutable))
+                return;
+
+            m_updateTagNamesPrefix.Visibility = Visibility.Collapsed;
+            m_updateTagNames.Visibility = Visibility.Collapsed;
+            m_updateTagNamesSuffix.Visibility = Visibility.Hidden;
         }
 
         #endregion
@@ -868,6 +877,24 @@ namespace ConfigurationSetupUtility.Screens
             }
 
             return connection;
+        }
+
+        private void m_updateTagNames_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Run the UpdateTagNames utility.
+                using (Process migrationProcess = new Process())
+                {
+                    migrationProcess.StartInfo.FileName = m_updateTagNamesExecutable;
+                    migrationProcess.Start();
+                    migrationProcess.WaitForExit();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to run update tag names utility - attempt to run the tool manually later: " + ex.Message, "Execution Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
