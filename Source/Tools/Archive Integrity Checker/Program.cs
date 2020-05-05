@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Archive_Integrity_Checker
+namespace ArchiveIntegrityChecker
 {
     static class Program
     {

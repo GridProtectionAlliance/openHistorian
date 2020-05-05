@@ -13,7 +13,7 @@ using GSF.IO;
 using GSF.IO.FileStructure;
 using GSF.IO.FileStructure.Media;
 
-namespace Archive_Integrity_Checker
+namespace ArchiveIntegrityChecker
 {
     public partial class FrmMain : Form
     {

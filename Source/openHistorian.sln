@@ -290,7 +290,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", 
 		Data\PostgreSQL\SampleDataSet.sql = Data\PostgreSQL\SampleDataSet.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive Integrity Checker", "Tools\Archive Integrity Checker\Archive Integrity Checker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveIntegrityChecker", "Tools\Archive Integrity Checker\ArchiveIntegrityChecker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{B21EB730-5DEC-431E-8366-BB3970140908}"
 EndProject

@@ -1,4 +1,4 @@
-﻿namespace Archive_Integrity_Checker
+﻿namespace ArchiveIntegrityChecker
 {
     partial class FrmMain
     {
