@@ -93,4 +93,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <CallTarget Targets="SignBuild" />
+  </Target>
+  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != ''">
+    <Exec Command="$(SIGNTOOL) $(TargetPath)" />
+  </Target>
 </Project>
