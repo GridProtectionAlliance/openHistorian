@@ -56,6 +56,7 @@ namespace ConfigurationSetupUtility.Screens
         private Dictionary<string, object> m_state;
         private ServiceController m_openHistorianServiceController;
         private readonly string m_updateTagNamesExecutable;
+        private bool m_runUpdateTagNamesPostMigration;
 
         #endregion
 
@@ -210,6 +211,10 @@ namespace ConfigurationSetupUtility.Screens
 
                         // Always make sure that all three needed roles are available for each defined node(s) in the database.
                         ValidateSecurityRoles();
+
+                        // If tag name updates was postponed till after migration, run the application now
+                        if (m_runUpdateTagNamesPostMigration)
+                            RunUpdateTagNames();
 
                         bool runningService = m_serviceStartCheckBox?.IsChecked.GetValueOrDefault() ?? false;
 
@@ -880,6 +885,22 @@ namespace ConfigurationSetupUtility.Screens
         }
 
         private void m_updateTagNames_Click(object sender, RoutedEventArgs e)
+        {
+            bool existing = Convert.ToBoolean(m_state["existing"]);
+            bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
+
+            if (migrate)
+            {
+                m_runUpdateTagNamesPostMigration = true;
+                MessageBox.Show("Request received to update tag names. Since database is being migrated to new schema, the update tag names utility will run after database migration utility.", "Execution Order Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                RunUpdateTagNames();
+            }
+        }
+
+        private void RunUpdateTagNames()
         {
             try
             {
