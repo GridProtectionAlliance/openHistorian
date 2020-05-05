@@ -45,7 +45,6 @@ namespace openHistorian.Model
         [Label("Is Concentrator")]
         public bool IsConcentrator { get; set; }
 
-        [Required]
         [Label("Company")]
         [DefaultValueExpression("Connection.ExecuteScalar(typeof(int), (object)null, 'SELECT ID FROM Company WHERE Acronym = {0}', Global.CompanyAcronym)", Cached = true)]
         public int? CompanyID { get; set; }
