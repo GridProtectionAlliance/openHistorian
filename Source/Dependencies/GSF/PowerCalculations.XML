@@ -56,9 +56,24 @@
             Creates new <see cref="T:PowerCalculations.BulkSequenceCalculator"/>.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.IncludePositiveSequence">
+            <summary>
+            Gets or sets flag that determines if positive sequence calculations should be included.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.IncludeNegativeSequence">
+            <summary>
+            Gets or sets flag that determines if negative sequence calculations should be included.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.IncludeZeroSequence">
+            <summary>
+            Gets or sets flag that determines if zero sequence calculations should be included.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterInputCount">
             <summary>
-            Gets number of input measurement required by each adapter.
+            Gets number of input measurements required by each adapter.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.InputMeasurementIndexUsedForName">
@@ -69,6 +84,11 @@
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterOutputNames">
             <summary>
             Gets output measurement names.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.OutputPhases">
+            <summary>
+            Gets output phase for each output measurement.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.SignalTypes">
@@ -548,6 +568,21 @@
             Gets or sets the sample size of the data to be monitored.
             </summary>
         </member>
+        <member name="P:PowerCalculations.SequenceCalculator.IncludePositiveSequence">
+            <summary>
+            Gets or sets flag that determines if positive sequence calculations should be included.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.SequenceCalculator.IncludeNegativeSequence">
+            <summary>
+            Gets or sets flag that determines if negative sequence calculations should be included.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.SequenceCalculator.IncludeZeroSequence">
+            <summary>
+            Gets or sets flag that determines if zero sequence calculations should be included.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.SequenceCalculator.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
@@ -569,11 +604,6 @@
             </summary>
             <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
             <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
-        </member>
-        <member name="F:PowerCalculations.SequenceCalculator.Outputs">
-            <summary>
-            Array of <see cref="T:PowerCalculations.SequenceCalculator.Output"/> enumeration values.
-            </summary>
         </member>
         <member name="T:PowerCalculations.PowerCalculator">
             <summary>
