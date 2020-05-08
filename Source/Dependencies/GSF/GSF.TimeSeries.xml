@@ -545,9 +545,14 @@
             Gets or sets template for output measurement descriptions.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ParentDeviceAcronymTemplate">
+            <summary>
+            Gets or sets template for the parent device acronym used to group associated output measurements.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalType">
             <summary>
-            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes"/> array is not defined.
+            Gets or sets default signal type to use for all output measurements when <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes"/> array is not defined.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalTypes">
@@ -808,9 +813,14 @@
             Gets or sets template for output measurement descriptions.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParentDeviceAcronymTemplate">
+            <summary>
+            Gets or sets template for the parent device acronym used to group associated output measurements.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalType">
             <summary>
-            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes"/> array is not defined.
+            Gets or sets default signal type to use for all output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes"/> array is not defined.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalTypes">
@@ -890,7 +900,8 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentDeviceID">
             <summary>
-            Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex"/>, if any, for measurement generation.
+            Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex"/>, if any, for measurement generation. If overridden to provide custom
+            device ID, <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParentDeviceAcronymTemplate"/> should be set to <c>null</c> so no parent device is created.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.Status">
@@ -1003,6 +1014,11 @@
         <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultDescriptionTemplate">
             <summary>
             Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.DescriptionTemplate"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultParentDeviceAcronymTemplate">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.ParentDeviceAcronymTemplate"/>.
             </summary>
         </member>
         <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultSignalType">
@@ -1209,9 +1225,14 @@
             Gets or sets template for output measurement descriptions.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ParentDeviceAcronymTemplate">
+            <summary>
+            Gets or sets template for the parent device acronym used to group associated output measurements.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalType">
             <summary>
-            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes"/> array is not defined.
+            Gets or sets default signal type to use for all output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes"/> array is not defined.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalTypes">
@@ -1271,7 +1292,8 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentDeviceID">
             <summary>
-            Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentAdapterIndex"/>, if any, for measurement generation.
+            Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.CurrentAdapterIndex"/>, if any, for measurement generation. If overridden to provide custom
+            device ID, <see cref="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.ParentDeviceAcronymTemplate"/> should be set to <c>null</c> so no parent device is created.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.Status">
@@ -1365,46 +1387,10 @@
             Gets or sets the provider string used for database operations. Defaults to a SQL Server provider string.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.PointTagTemplate">
-            <summary>
-            Gets or sets template for output measurement point tag names.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalReferenceTemplate">
-            <summary>
-            Gets or sets template for output measurement signal reference names.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.DescriptionTemplate">
-            <summary>
-            Gets or sets template for output measurement descriptions.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType">
-            <summary>
-            Gets or sets default signal type to use for output measurements when <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalTypes"/> array is not defined.
-            </summary>
-            <remarks>
-            Not used by output adapters, inputs into <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> are not reentrant into time-series framework.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalTypes">
-            <summary>
-            Gets per adapter signal type for output measurements, used when each output needs to be a different type.
-            </summary>
-            <remarks>
-            Not used by output adapters, inputs into <see cref="T:GSF.TimeSeries.Adapters.IOutputAdapter"/> are not reentrant into time-series framework.
-            </remarks>
-        </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CustomAdapterSettings">
             <summary>
             Gets any custom adapter settings to be added to each adapter connection string. Can be used to add
             settings that are custom per adapter.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.TargetHistorianAcronym">
-            <summary>
-            Gets or sets the target historian acronym for output measurements.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SourceMeasurementTable">
@@ -1438,7 +1424,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.InputMeasurementKeyTypes">
             <summary>
-            Gets input measurement <see cref="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>, if any.
+            Gets input measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>, if any.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentOutputAdapterManagerBase.CurrentAdapterIndex">

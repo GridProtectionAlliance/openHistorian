@@ -117,6 +117,11 @@
             Gets or sets template for output measurement descriptions.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.ParentDeviceAcronymTemplate">
+            <summary>
+            Gets or sets template for the parent device acronym used to group associated output measurements.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.CurrentDeviceID">
             <summary>
             Gets associated device ID for <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex"/>, if any, for measurement generation.
