@@ -1,52 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="15.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Core.dll">
-   <Modules>
-    <Module Name="gsf.core.dll">
-     <Namespaces>
-      <Namespace Name="GSF.Collections">
-       <Types>
-        <Type Name="CollectionExtensions" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Members>
-          <Member Name="#GetColumn`1(!!0[,],System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message Id="0#" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Status="Active" Created="2020-05-12 04:00:49Z" FixCategory="Breaking">
-             <Issue Certainty="25" Level="Warning">'source' is a multidimensional array. Replace it with a jagged array if possible.</Issue>
-            </Message>
-           </Messages>
-          </Member>
-          <Member Name="#GetRow`1(!!0[,],System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
-           <Messages>
-            <Message Id="0#" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Status="Active" Created="2020-05-12 04:00:49Z" FixCategory="Breaking">
-             <Issue Certainty="25" Level="Warning">'source' is a multidimensional array. Replace it with a jagged array if possible.</Issue>
-            </Message>
-           </Messages>
-          </Member>
-         </Members>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814">
-   <Name>Prefer jagged arrays over multidimensional</Name>
-   <Description>Multidimensional arrays can have a negative impact on performance. Use a jagged array if possible.</Description>
-   <Resolution Name="Body">{0} uses a multidimensional array of {1}. Replace it with a jagged array if possible.</Resolution>
-   <Resolution Name="Default">{0} is a multidimensional array. Replace it with a jagged array if possible.</Resolution>
-   <Resolution Name="Return">{0} returns a multidimensional array of {1}. Replace it with a jagged array if possible.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182277.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="25">Warning</MessageLevel>
-   <File Name="performancerules.dll" Version="15.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

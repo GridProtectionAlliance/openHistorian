@@ -1406,5 +1406,249 @@
             Contains classes used to create client connections to FTP servers for uploading and downloading files.
             </summary>
         </member>
+        <member name="T:GSF.Net.TFtp.Commands.CommandParser">
+            <summary>
+            Parses a ITFtpCommand.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.Commands.CommandParser.Parse(System.Byte[])">
+            <summary>
+            Parses an ITFtpCommand from the given byte array. If the byte array cannot be parsed for some reason, a TFtpParserException is thrown.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.Commands.CommandSerializer">
+            <summary>
+            Serializes an ITFtpCommand into a stream of bytes.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.Commands.CommandSerializer.Serialize(GSF.Net.TFtp.Commands.ITFtpCommand,System.IO.Stream)">
+            <summary>
+            Call this method to serialize the given <code>command</code> using the given <code>writer</code>.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.Commands.TransferOption">
+            <summary>
+            A single transfer options according to RFC2347.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.ITFtpTransfer">
+            <summary>
+            Represents a single data transfer between a TFTP server and client.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.ITFtpTransfer.OnProgress">
+            <summary>
+            Event that is being called while data is being transferred.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.ITFtpTransfer.OnFinished">
+            <summary>
+            Event that will be called once the data transfer is finished.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.ITFtpTransfer.OnError">
+            <summary>
+            Event that will be called if there is an error during the data transfer.
+            Currently, this will return instances of ErrorFromRemoteEndpoint or NetworkError.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.TransferMode">
+            <summary>
+            Requested TFTP transfer mode. For outgoing transfers, this member may be used to set the transfer mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.BlockSize">
+            <summary>
+            Transfer block size. Set this member to control the TFTP block size option (RFC 2349).
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.RetryTimeout">
+            <summary>
+            Timeout after which commands are sent again.
+            This member is also transmitted as the TFTP timeout interval option (RFC 2349).
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.RetryCount">
+            <summary>
+            Number of times that a RetryTimeout may occur before the transfer is cancelled with a TimeoutError.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.BlockCounterWrapping">
+            <summary>
+            TFTP can transfer up to 65535 blocks. After that, the block counter wraps to either zero or one, depending on the expectations of the client.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.ExpectedSize">
+            <summary>
+            Expected transfer size in bytes. 0 if size is unknown.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.Filename">
+            <summary>
+            Filename for the transferred file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.ITFtpTransfer.UserContext">
+            <summary>
+            You can set your own object here to associate custom data with this transfer.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.ITFtpTransfer.Start(System.IO.Stream)">
+            <summary>
+            Call this function to start the transfer.
+            </summary>
+            <param name="data">The stream from which data is either read (when sending) or written to (when receiving).</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.ITFtpTransfer.Cancel(GSF.Net.TFtp.TFtpErrorPacket)">
+            <summary>
+            Cancel the currently running transfer, possibly sending the provided reason to the remote endpoint.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.NamespaceDoc">
+            <summary>
+            Contains classes used to establish Trivial File Transfer Protocol (TFTP) clients and servers for uploading and downloading files.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.TFtpClient">
+            <summary>
+            A TFTP client that can connect to a TFTP server.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.#ctor(System.Net.IPEndPoint)">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="remoteAddress">Address of the server that you would like to connect to.</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.#ctor(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Connects to a server
+            </summary>
+            <param name="ip">Address of the server that you want connect to.</param>
+            <param name="port">Port on the server that you want connect to (default: 69)</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.#ctor(System.Net.IPAddress)">
+            <summary>
+            Connects to a server on port 69.
+            </summary>
+            <param name="ip">Address of the server that you want connect to.</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.#ctor(System.String)">
+            <summary>
+            Connect to a server by hostname.
+            </summary>
+            <param name="host">Hostname or IP to connect to</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.#ctor(System.String,System.Int32)">
+            <summary>
+            Connect to a server by hostname and port .
+            </summary>
+            <param name="host">Hostname or IP to connect to</param>
+            <param name="port">Port to connect to</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.Download(System.String)">
+            <summary>
+            GET a file from the server.
+            You have to call Start() on the returned ITFtpTransfer to start the transfer.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpClient.Upload(System.String)">
+            <summary>
+            PUT a file from the server.
+            You have to call Start() on the returned ITFtpTransfer to start the transfer.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.TFtpServer">
+            <summary>
+            A simple TFTP server class. <code>Dispose()</code> the server to close the socket that it listens on.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.TFtpServer.OnReadRequest">
+            <summary>
+            Fired when the server receives a new read request.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.TFtpServer.OnWriteRequest">
+            <summary>
+            Fired when the server receives a new write request.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.TFtp.TFtpServer.OnError">
+            <summary>
+            Fired when the server encounters an error (for example, a non-parseable request)
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpServer.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.TFtp.TFtpServer"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpServer.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.TFtp.TFtpServer"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.TFtp.TFtpServer.Start">
+            <summary>
+            Start accepting incoming connections.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.TFtpTransferError">
+            <summary>
+            Base class for all errors that may be passed to <code>ITFtpTransfer.OnError</code>.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.TFtpErrorPacket">
+            <summary>
+            Errors that are sent from the remote party using the TFTP Error Packet are represented
+            by this class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.TFtpErrorPacket.ErrorCode">
+            <summary>
+            Error code that was sent from the other party.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.TFtpErrorPacket.ErrorMessage">
+            <summary>
+            Error description that was sent by the other party.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.NetworkError">
+            <summary>
+            Network errors (i.e. socket exceptions) are represented by this class.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.TimeoutError">
+            <summary>
+            $(ITFtpTransfer.RetryTimeout) has been exceeded more than $(ITFtpTransfer.RetryCount) times in a row.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.TFtpTransferProgress.TransferredBytes">
+            <summary>
+            Number of bytes that have already been transferred.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.TFtpTransferProgress.TotalBytes">
+            <summary>
+            Total number of bytes being transferred. May be 0 if unknown.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.Trace.TFtpTrace">
+            <summary>
+            Class that controls all tracing in the TFTP module.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.TFtp.Trace.TFtpTrace.Enabled">
+            <summary>
+            Set this property to <code>false</code> to disable tracing.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.TFtp.Transfer.SimpleTimer">
+            <summary>
+            Simple implementation of a timer.
+            </summary>
+        </member>
     </members>
 </doc>
