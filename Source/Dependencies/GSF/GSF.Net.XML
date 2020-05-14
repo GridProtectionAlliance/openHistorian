@@ -4,6 +4,298 @@
         <name>GSF.Net</name>
     </assembly>
     <members>
+        <member name="T:GSF.Net.AbstractFtpClient.FtpType">
+            <summary>
+            Defines support FTP types for abstract FTP client.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.AbstractFtpClient.FtpType.Ftp">
+            <summary>
+            Standard File Transport Protocol (FTP)
+            </summary>
+        </member>
+        <member name="F:GSF.Net.AbstractFtpClient.FtpType.TFtp">
+            <summary>
+            Trivial File Transport Protocol (TFTP)
+            </summary>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.TransferDirection">
+            <summary>
+            FTP file transfer direction enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.AbstractFtpClient.TransferDirection.Upload">
+            <summary>
+            FTP transfer direction set to upload.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.AbstractFtpClient.TransferDirection.Download">
+            <summary>
+            FTP transfer direction set to download.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.FtpClient">
+            <summary>
+            Represents an abstract FTP session for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.BeginFileTransfer">
+            <summary>
+            Raised when file transfer begins.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is local filename,
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is remote filename, 
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.EndFileTransfer">
+            <summary>
+            Raised when file transfer completes.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is local filename,
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is remote filename, 
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.FileTransferProgress">
+            <summary>
+            Raised as file transfer is progressing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is current file transfer progress,
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.FileTransferNotification">
+            <summary>
+            Raised when file transfer process has completed (success or failure).
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is result of FTP transfer process.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.ResponseReceived">
+            <summary>
+            Raised when FTP response has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is received FTP response.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.CommandSent">
+            <summary>
+            Raised when FTP command has been sent.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is sent FTP command.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.Disposed">
+            <summary>
+            Raised when class is disposed;
+            </summary>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.#ctor(GSF.Net.AbstractFtpClient.FtpType,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/>.
+            </summary>
+            <param name="ftpType">Target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/> for this <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/></param>
+            <param name="caseSensitive">Set to true to be case sensitive with FTP file and directory names.</param>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.FtpType">
+            <summary>
+            Gets <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/> for this <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Server">
+            <summary>
+            Gets or sets FTP server name (DNS name or IP).
+            </summary>
+            <remarks>
+            FTP server name should not be prefixed with FTP://.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Port">
+            <summary>
+            Gets or sets FTP server port to use, defaults to 21.
+            </summary>
+            <remarks>
+            This only needs to be changed if the FTP server is established on a non-standard port number.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Timeout">
+            <summary>
+            Gets or sets the timeout, in milliseconds, for
+            read and write operations, defaults to 30 seconds.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.CaseSensitive">
+            <summary>
+            Gets or sets FTP case sensitivity of file and directory names.
+            </summary>
+            <remarks>
+            Set to true to be case sensitive with FTP file and directory names.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Passive">
+            <summary>
+            Gets or sets the passive/active mode of the server.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.ActiveAddress">
+            <summary>
+            Gets or sets the IP address to send with the PORT command.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.MinActivePort">
+            <summary>
+            Gets or sets the minimum value in the range of ports
+            used when listening for connections in active mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.MaxActivePort">
+            <summary>
+            Gets or sets the maximum value in the range of ports
+            used when listening for connections in active mode.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.IsConnected">
+            <summary>
+            Returns true if FTP session is currently connected.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Connect(System.String,System.String)">
+            <summary>
+            Connects to FTP server using specified credentials.
+            </summary>
+            <param name="userName">User name used to authenticate to FTP server.</param>
+            <param name="password">Password used to authenticate to FTP server.</param>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.SetCurrentDirectory(System.String)">
+            <summary>
+            Changes the current FTP session directory to the specified path.
+            </summary>
+            <param name="directoryPath">New directory.</param>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.FtpDirectory">
+            <summary>
+            Represents an abstract FTP directory for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.Name">
+            <summary>
+            Name of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.FullPath">
+            <summary>
+            Full path of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.Files">
+            <summary>
+            Gets the list of files in this <see cref="T:GSF.Net.AbstractFtpClient.FtpDirectory"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.SubDirectories">
+            <summary>
+            Gets the list of subdirectories in this <see cref="T:GSF.Net.AbstractFtpClient.FtpDirectory"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.FtpFile">
+            <summary>
+            Represents an abstract FTP file for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Name">
+            <summary>
+            Name of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.FullPath">
+            <summary>
+            Full path of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.IsFile">
+            <summary>
+            Returns true for file entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.IsDirectory">
+            <summary>
+            Returns false for directory entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Size">
+            <summary>
+            Gets or sets size of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Permission">
+            <summary>
+            Gets or sets permission of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Timestamp">
+            <summary>
+            Gets or sets timestamp of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Parent">
+            <summary>
+            Gets parent directory of file.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Get">
+            <summary>
+            Downloads remote file.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Get(System.String)">
+            <summary>
+            Downloads remote file using alternate local filename.
+            </summary>
+            <param name="localFile">Local filename to use for download.</param>
+        </member>
+        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Remove">
+            <summary>
+            Removes remote file.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.FtpTransferResult">
+            <summary>
+            Represents an abstract FTP transfer result for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpTransferResult.Message">
+            <summary>
+            Gets any message associated with transfer.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.AbstractFtpClient.FtpTransferResult.ResponseCode">
+            <summary>
+            Gets response code from transfer.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.AbstractFtpClient.NamespaceDoc">
+            <summary>
+            Contains classes used to create an abstract FTP-style client connection to either an FTP or TFTP server for uploading and downloading files.
+            </summary>
+        </member>
         <member name="T:GSF.Net.Ftp.FtpAsyncResult">
             <summary>
             Asynchronous transfer result.
@@ -88,7 +380,7 @@
         </member>
         <member name="E:GSF.Net.Ftp.FtpClient.FileTransferNotification">
             <summary>
-            Raised when ansynchronous file transfer process has completed (success or failure).
+            Raised when asynchronous file transfer process has completed (success or failure).
             </summary>
             <remarks>
             <see cref="F:GSF.EventArgs`1.Argument"/> is result of asynchronous FTP transfer process.
@@ -563,13 +855,13 @@
         </member>
         <member name="M:GSF.Net.Ftp.FtpDirectory.BeginPutFile(System.String)">
             <summary>
-            Starts asynchrnonous local file upload to directory.
+            Starts asynchronous local file upload to directory.
             </summary>
             <param name="localFile">Local file to upload.</param>
         </member>
         <member name="M:GSF.Net.Ftp.FtpDirectory.BeginPutFile(System.String,System.String)">
             <summary>
-            Starts asynchrnonous local file upload to directory using alternate name.
+            Starts asynchronous local file upload to directory using alternate name.
             </summary>
             <param name="localFile">Local file to upload.</param>
             <param name="remoteFile">Remote filename to use for upload.</param>
@@ -698,7 +990,7 @@
         </member>
         <member name="M:GSF.Net.Ftp.FtpExceptionBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            Derserializes the <see cref="T:GSF.Net.Ftp.FtpExceptionBase"/>.
+            Deserializes the <see cref="T:GSF.Net.Ftp.FtpExceptionBase"/>.
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
             <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>

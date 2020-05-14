@@ -1,6 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="15.0">
+ <Targets>
+  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.Net.dll">
+   <Modules>
+    <Module Name="gsf.net.dll">
+     <Namespaces>
+      <Namespace Name="GSF.Net.Ftp">
+       <Types>
+        <Type Name="FtpControlChannel" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
+           <Messages>
+            <Message Id="m_connection" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2020-05-14 04:02:29Z" FixCategory="NonBreaking">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Ftp" File="FtpControlChannel.cs" Line="204">'FtpControlChannel' contains field 'FtpControlChannel.m_connection' that is of IDisposable type: 'TcpClient'. Change the Dispose method on 'FtpControlChannel' to call Dispose or Close on this field.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213">
+   <Name>Disposable fields should be disposed</Name>
+   <Description>If a type that implements IDisposable owns fields that also implement IDisposable, the encapsulating type's Dispose() implementation should call Dispose() on each disposable field.</Description>
+   <Resolution Name="Default">{0} contains field {1} that is of IDisposable type: {2}. Change the Dispose method on {0} to call Dispose or Close on this field.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182328.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="usagerules.dll" Version="15.0.0.0" />
+  </Rule>
+ </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>
