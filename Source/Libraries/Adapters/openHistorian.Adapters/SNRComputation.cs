@@ -395,13 +395,13 @@ namespace openHistorian.Adapters
 
                     outputmeasurements.Add(Measurement.Clone(outputMeasurement, snr, frame.Timestamp));
 
-                    m_dataWindow[key] = new List<double>();
+                    m_dataWindow[key].RemoveAt(0);
 
                     if (!m_saveStats)
                         m_numberOfFrames = 0;
                 }
 
-                m_refWindow = new List<double>();
+                m_refWindow.RemoveAt(0);;
 
                 // Reporting if necessary
                 if (m_numberOfFrames >= ReportingInterval && m_saveStats)
