@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/10/2019 - Christoph Lackner
 //       Generated original version of source code.
+//  10/10/2019 - Christoph Lackner
+//       Generated original version of source code.
 //
 //******************************************************************************************************
 
@@ -312,9 +314,17 @@ namespace openHistorian.Adapters
 							item.NumberOfAlarms = data.Alert;
 							item.PercentAlarms = data.Alert * 100.0D / data.TotalPoints;
 							item.StandardDeviation = Math.Sqrt((data.SqrSum - 2 * data.Sum * item.Mean + data.TotalPoints * item.Mean * item.Mean) / data.TotalPoints);
-							item.TimeInAlarm = item.NumberOfAlarms / item.FramesPerSecond.GetValueOrDefault().NotZero();
+							item.TimeInAlarm = item.PercentAlarms * (endDate - startDate).TotalSeconds / 100.0D;
 
-							return item;
+                            //Fix Alarm Numbers for SNR
+                            if (reportType == ReportType.SNR)
+                            {
+                                item.NumberOfAlarms = data.TotalPoints - item.NumberOfAlarms;
+                                item.PercentAlarms = 100 - item.PercentAlarms;
+                                item.TimeInAlarm = item.PercentAlarms * (endDate - startDate).TotalSeconds / 100.0D;
+                            }
+
+                            return item;
 						}
 						).ToList();
                     }
@@ -349,7 +359,7 @@ namespace openHistorian.Adapters
                         if (numberOfRecords == 0)
                             numberOfRecords = reportingMeasurements.Count;
 
-                        // Create Original Point Tag
+                        // Create Original Point Tag and Fix Alarm Counters for SNR
                         reportingMeasurements = reportingMeasurements.Select(item =>
                         {
                             if (reportType == ReportType.SNR)
@@ -359,11 +369,14 @@ namespace openHistorian.Adapters
                             return item;
                         }).ToList();
 
+
                         if (token.IsCancellationRequested)
                         {
                             m_writing = false;
                             return;
                         }
+
+
 
                         TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
 
@@ -527,7 +540,15 @@ namespace openHistorian.Adapters
                     item.NumberOfAlarms = alarmCount;
                     item.PercentAlarms = alarmCount * 100.0D / count;
                     item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
-                    item.TimeInAlarm = item.NumberOfAlarms / item.FramesPerSecond.GetValueOrDefault().NotZero();
+                    item.TimeInAlarm = item.PercentAlarms * (end - start).TotalSeconds / 100.0D;
+
+                    if (type == ReportType.SNR)
+                    {
+                        item.NumberOfAlarms = count - item.NumberOfAlarms;
+                        item.PercentAlarms = 100 - item.PercentAlarms;
+                        item.TimeInAlarm = item.PercentAlarms * (end - start).TotalSeconds / 100.0D;
+                    }
+
 
                     item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
                     return item;
