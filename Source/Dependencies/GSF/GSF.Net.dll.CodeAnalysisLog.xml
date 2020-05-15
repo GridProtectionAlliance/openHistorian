@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#Dispose(System.Boolean)" Kind="Method" Static="False" Accessibility="Family" ExternallyVisible="True">
            <Messages>
-            <Message Id="m_connection" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2020-05-14 04:02:29Z" FixCategory="NonBreaking">
+            <Message Id="m_connection" TypeName="DisposableFieldsShouldBeDisposed" Category="Microsoft.Usage" CheckId="CA2213" Status="Active" Created="2020-05-15 04:02:29Z" FixCategory="NonBreaking">
              <Issue Certainty="75" Level="Warning" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Ftp" File="FtpControlChannel.cs" Line="204">'FtpControlChannel' contains field 'FtpControlChannel.m_connection' that is of IDisposable type: 'TcpClient'. Change the Dispose method on 'FtpControlChannel' to call Dispose or Close on this field.</Issue>
             </Message>
            </Messages>
