@@ -1,39 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
 <FxCopReport Version="15.0">
- <Targets>
-  <Target Name="C:\Users\buildbot\Projects\gsf\Build\Output\Release\Libraries\GSF.PhasorProtocols.dll">
-   <Modules>
-    <Module Name="gsf.phasorprotocols.dll">
-     <Namespaces>
-      <Namespace Name="GSF.PhasorProtocols.IEEEC37_118">
-       <Types>
-        <Type Name="ConfigurationFrame3" Kind="Class" Accessibility="Public" ExternallyVisible="True">
-         <Messages>
-          <Message TypeName="ImplementISerializableCorrectly" Category="Microsoft.Usage" CheckId="CA2240" Status="Active" Created="2020-05-15 04:02:00Z" FixCategory="NonBreaking">
-           <Issue Certainty="60" Level="Error">Add an implementation of GetObjectData to type 'ConfigurationFrame3'.</Issue>
-          </Message>
-         </Messages>
-        </Type>
-       </Types>
-      </Namespace>
-     </Namespaces>
-    </Module>
-   </Modules>
-  </Target>
- </Targets>
- <Rules>
-  <Rule TypeName="ImplementISerializableCorrectly" Category="Microsoft.Usage" CheckId="CA2240">
-   <Name>Implement ISerializable correctly</Name>
-   <Description>If a type is assignable to ISerializable, it should implement GetObjectData. For unsealed types, the GetObjectData method should be callable and overridable by derived types.</Description>
-   <Resolution Name="Default">Add an implementation of GetObjectData to type {0}.</Resolution>
-   <Owner />
-   <Url>http://msdn.microsoft.com/library/ms182342.aspx</Url>
-   <Email>[none]</Email>
-   <MessageLevel Certainty="60">Error</MessageLevel>
-   <File Name="usagerules.dll" Version="15.0.0.0" />
-  </Rule>
- </Rules>
  <Localized>
   <String Key="Category">Category</String>
   <String Key="Certainty">Certainty</String>

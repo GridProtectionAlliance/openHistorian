@@ -500,6 +500,173 @@
             <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
             <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is <see langword="null"/>.</exception>
         </member>
+        <member name="T:GSF.Communication.TcpSimpleClient">
+            <summary>
+            Represents a simple implementation of a TCP-based communication client.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.TcpSimpleClient.DefaultPayloadAware">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TcpSimpleClient.PayloadAware"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.TcpSimpleClient.DefaultNoDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.TcpSimpleClient.NoDelay"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Communication.TcpSimpleClient.DefaultConnectionString">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.TcpSimpleClient"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.TcpSimpleClient"/> class.
+            </summary>
+            <param name="connectString">Connect string of the <see cref="T:GSF.Communication.TcpSimpleClient"/>. See <see cref="F:GSF.Communication.TcpSimpleClient.DefaultConnectionString"/> for format.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Communication.TcpSimpleClient"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Communication.TcpSimpleClient"/>.</param>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.PayloadAware">
+            <summary>
+            Gets or sets a boolean value that indicates whether the payload boundaries are to be preserved during transmission.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.PayloadMarker">
+            <summary>
+            Gets or sets the byte sequence used to mark the beginning of a payload in a <see cref="P:GSF.Communication.TcpSimpleClient.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will create a zero-length payload marker.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.PayloadEndianOrder">
+            <summary>
+            Gets or sets the endian order to apply for encoding and decoding payload size in a <see cref="P:GSF.Communication.TcpSimpleClient.PayloadAware"/> transmission.
+            </summary>
+            <remarks>
+            Setting property to <c>null</c> will force use of little-endian encoding.
+            </remarks>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.NoDelay">
+            <summary>
+            Gets or sets a boolean value that determines if small packets are delivered to the remote host without delay.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.Client">
+            <summary>
+            Gets the <see cref="T:System.Net.Sockets.Socket"/> object for the <see cref="T:GSF.Communication.TcpSimpleClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.ServerUri">
+            <summary>
+            Gets the server URI of the <see cref="T:GSF.Communication.TcpSimpleClient"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.TcpSimpleClient.TrackStatistics">
+            <summary>
+            Determines whether the base class should track statistics.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Communication.TcpClient"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.Communication.TcpSimpleClient"/> settings to the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.Communication.TcpSimpleClient"/> settings from the config file if the <see cref="P:GSF.Communication.ClientBase.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.ConnectAsync">
+            <summary>
+            Connects the <see cref="T:GSF.Communication.TcpSimpleClient"/> to the server asynchronously.
+            </summary>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a number of bytes from the current received data buffer and writes those bytes into a byte array at the specified offset.
+            </summary>
+            <param name="buffer">Destination buffer used to hold copied bytes.</param>
+            <param name="startIndex">0-based starting index into destination <paramref name="buffer"/> to begin writing data.</param>
+            <param name="length">The number of bytes to read from current received data buffer and write into <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+            <remarks>
+            This function should only be called from within the <see cref="E:GSF.Communication.ClientBase.ReceiveData"/> event handler. Calling this method outside
+            this event will have unexpected results.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">Failed to get network stream.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the server asynchronously.
+            </summary>
+            <param name="data">The buffer that contains the binary data to be sent.</param>
+            <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
+            <param name="length">The number of bytes to be sent from <paramref name="data"/> starting at the <paramref name="offset"/>.</param>
+            <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+            <exception cref="T:System.InvalidOperationException">Failed to get network stream.</exception>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.Disconnect">
+            <summary>
+            Disconnects the <see cref="T:GSF.Communication.TcpSimpleClient"/> from the connected server synchronously.
+            </summary>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.ValidateConnectionString(System.String)">
+            <summary>
+            Validates the specified <paramref name="connectionString"/>.
+            </summary>
+            <param name="connectionString">Connection string to be validated.</param>
+            <exception cref="T:System.ArgumentException">Server property is missing.</exception>
+            <exception cref="T:System.FormatException">Server property is invalid.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Server port value is not between <see cref="F:GSF.Communication.Transport.PortRangeLow"/> and <see cref="F:GSF.Communication.Transport.PortRangeHigh"/>.</exception>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.OnConnectionException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.OnSendDataException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.OnReceiveDataException(System.Net.Sockets.SocketException)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event for <see cref="T:System.Net.Sockets.SocketException"/>.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.OnReceiveDataException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.
+            </summary>
+            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event.</param>
+        </member>
         <member name="T:GSF.Communication.ZeroMQServer">
             <summary>
             Represents a ZeroMQ ROUTER style socket as a communication server.

@@ -13152,15 +13152,22 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.TypeID">
+            <summary>
+            Gets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.HeaderImage">
             <summary>
             Gets the binary header image of the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> object.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.TypeID">
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            Gets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/>.
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
             </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
         </member>
         <member name="T:GSF.PhasorProtocols.IEEEC37_118.NamespaceDoc">
             <summary>

@@ -10740,6 +10740,11 @@
             Gets or sets flag that determines if ZeroMQ should be used for command channel communications.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseSimpleTcpClient">
+            <summary>
+            Gets or sets flag that determines if a <see cref="T:GSF.Communication.TcpSimpleClient"/> should be used for connection.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.LoggingPath">
             <summary>
             Gets or sets logging path to be used to be runtime and outage logs of the subscriber which are required for
