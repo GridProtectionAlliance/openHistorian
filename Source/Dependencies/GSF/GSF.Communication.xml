@@ -655,6 +655,13 @@
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.SendDataException"/> event.</param>
         </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.OnReceiveDataComplete(System.Byte[],System.Int32)">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataComplete"/> event.
+            </summary>
+            <param name="data">Data received from the client.</param>
+            <param name="size">Number of bytes received from the client.</param>
+        </member>
         <member name="M:GSF.Communication.TcpSimpleClient.OnReceiveDataException(System.Net.Sockets.SocketException)">
             <summary>
             Raises the <see cref="E:GSF.Communication.ClientBase.ReceiveDataException"/> event for <see cref="T:System.Net.Sockets.SocketException"/>.
