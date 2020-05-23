@@ -4,42 +4,42 @@
         <name>GSF.Net</name>
     </assembly>
     <members>
-        <member name="T:GSF.Net.AbstractFtpClient.FtpType">
+        <member name="T:GSF.Net.VirtualFtpClient.FtpType">
             <summary>
-            Defines support FTP types for abstract FTP client.
+            Defines support FTP types for virtual FTP client.
             </summary>
         </member>
-        <member name="F:GSF.Net.AbstractFtpClient.FtpType.Ftp">
+        <member name="F:GSF.Net.VirtualFtpClient.FtpType.Ftp">
             <summary>
             Standard File Transport Protocol (FTP)
             </summary>
         </member>
-        <member name="F:GSF.Net.AbstractFtpClient.FtpType.TFtp">
+        <member name="F:GSF.Net.VirtualFtpClient.FtpType.TFtp">
             <summary>
             Trivial File Transport Protocol (TFTP)
             </summary>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.TransferDirection">
+        <member name="T:GSF.Net.VirtualFtpClient.TransferDirection">
             <summary>
             FTP file transfer direction enumeration.
             </summary>
         </member>
-        <member name="F:GSF.Net.AbstractFtpClient.TransferDirection.Upload">
+        <member name="F:GSF.Net.VirtualFtpClient.TransferDirection.Upload">
             <summary>
             FTP transfer direction set to upload.
             </summary>
         </member>
-        <member name="F:GSF.Net.AbstractFtpClient.TransferDirection.Download">
+        <member name="F:GSF.Net.VirtualFtpClient.TransferDirection.Download">
             <summary>
             FTP transfer direction set to download.
             </summary>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.FtpClient">
+        <member name="T:GSF.Net.VirtualFtpClient.FtpClient">
             <summary>
-            Represents an abstract FTP session for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            Represents an virtual FTP session for the specified target <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/>.
             </summary>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.BeginFileTransfer">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.BeginFileTransfer">
             <summary>
             Raised when file transfer begins.
             </summary>
@@ -49,7 +49,7 @@
             <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.EndFileTransfer">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.EndFileTransfer">
             <summary>
             Raised when file transfer completes.
             </summary>
@@ -59,7 +59,7 @@
             <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.FileTransferProgress">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.FileTransferProgress">
             <summary>
             Raised as file transfer is progressing.
             </summary>
@@ -68,7 +68,7 @@
             <see cref="F:GSF.EventArgs`2.Argument2"/> is file transfer direction.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.FileTransferNotification">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.FileTransferNotification">
             <summary>
             Raised when file transfer process has completed (success or failure).
             </summary>
@@ -76,7 +76,7 @@
             <see cref="F:GSF.EventArgs`1.Argument"/> is result of FTP transfer process.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.ResponseReceived">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.ResponseReceived">
             <summary>
             Raised when FTP response has been received.
             </summary>
@@ -84,7 +84,7 @@
             <see cref="F:GSF.EventArgs`1.Argument"/> is received FTP response.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.CommandSent">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.CommandSent">
             <summary>
             Raised when FTP command has been sent.
             </summary>
@@ -92,24 +92,24 @@
             <see cref="F:GSF.EventArgs`1.Argument"/> is sent FTP command.
             </remarks>
         </member>
-        <member name="E:GSF.Net.AbstractFtpClient.FtpClient.Disposed">
+        <member name="E:GSF.Net.VirtualFtpClient.FtpClient.Disposed">
             <summary>
             Raised when class is disposed;
             </summary>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.#ctor(GSF.Net.AbstractFtpClient.FtpType,System.Boolean)">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpClient.#ctor(GSF.Net.VirtualFtpClient.FtpType,System.Boolean)">
             <summary>
-            Creates a new <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/>.
+            Creates a new <see cref="T:GSF.Net.VirtualFtpClient.FtpClient"/>.
             </summary>
-            <param name="ftpType">Target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/> for this <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/></param>
+            <param name="ftpType">Target <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/> for this <see cref="T:GSF.Net.VirtualFtpClient.FtpClient"/></param>
             <param name="caseSensitive">Set to true to be case sensitive with FTP file and directory names.</param>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.FtpType">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.FtpType">
             <summary>
-            Gets <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/> for this <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/>.
+            Gets <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/> for this <see cref="T:GSF.Net.VirtualFtpClient.FtpClient"/>.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Server">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.Server">
             <summary>
             Gets or sets FTP server name (DNS name or IP).
             </summary>
@@ -117,7 +117,7 @@
             FTP server name should not be prefixed with FTP://.
             </remarks>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Port">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.Port">
             <summary>
             Gets or sets FTP server port to use, defaults to 21.
             </summary>
@@ -125,13 +125,13 @@
             This only needs to be changed if the FTP server is established on a non-standard port number.
             </remarks>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Timeout">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.Timeout">
             <summary>
             Gets or sets the timeout, in milliseconds, for
             read and write operations, defaults to 30 seconds.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.CaseSensitive">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.CaseSensitive">
             <summary>
             Gets or sets FTP case sensitivity of file and directory names.
             </summary>
@@ -139,161 +139,161 @@
             Set to true to be case sensitive with FTP file and directory names.
             </remarks>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.Passive">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.Passive">
             <summary>
             Gets or sets the passive/active mode of the server.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.ActiveAddress">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.ActiveAddress">
             <summary>
             Gets or sets the IP address to send with the PORT command.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.MinActivePort">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.MinActivePort">
             <summary>
             Gets or sets the minimum value in the range of ports
             used when listening for connections in active mode.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.MaxActivePort">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.MaxActivePort">
             <summary>
             Gets or sets the maximum value in the range of ports
             used when listening for connections in active mode.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpClient.IsConnected">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.IsConnected">
             <summary>
             Returns true if FTP session is currently connected.
             </summary>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Dispose">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpClient.Dispose">
             <summary>
-            Releases all the resources used by the <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/> object.
+            Releases all the resources used by the <see cref="T:GSF.Net.VirtualFtpClient.FtpClient"/> object.
             </summary>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Dispose(System.Boolean)">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpClient.Dispose(System.Boolean)">
             <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Net.AbstractFtpClient.FtpClient"/> object and optionally releases the managed resources.
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.VirtualFtpClient.FtpClient"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.Connect(System.String,System.String)">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpClient.Connect(System.String,System.String)">
             <summary>
             Connects to FTP server using specified credentials.
             </summary>
             <param name="userName">User name used to authenticate to FTP server.</param>
             <param name="password">Password used to authenticate to FTP server.</param>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpClient.SetCurrentDirectory(System.String)">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpClient.SetCurrentDirectory(System.String)">
             <summary>
             Changes the current FTP session directory to the specified path.
             </summary>
             <param name="directoryPath">New directory.</param>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.FtpDirectory">
+        <member name="T:GSF.Net.VirtualFtpClient.FtpDirectory">
             <summary>
-            Represents an abstract FTP directory for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            Represents a virtual FTP directory for the specified target <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/>.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.Name">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpDirectory.Name">
             <summary>
             Name of directory.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.FullPath">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpDirectory.FullPath">
             <summary>
             Full path of directory.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.Files">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpDirectory.Files">
             <summary>
-            Gets the list of files in this <see cref="T:GSF.Net.AbstractFtpClient.FtpDirectory"/>.
+            Gets the list of files in this <see cref="T:GSF.Net.VirtualFtpClient.FtpDirectory"/>.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpDirectory.SubDirectories">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpDirectory.SubDirectories">
             <summary>
-            Gets the list of subdirectories in this <see cref="T:GSF.Net.AbstractFtpClient.FtpDirectory"/>.
+            Gets the list of subdirectories in this <see cref="T:GSF.Net.VirtualFtpClient.FtpDirectory"/>.
             </summary>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.FtpFile">
+        <member name="T:GSF.Net.VirtualFtpClient.FtpFile">
             <summary>
-            Represents an abstract FTP file for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            Represents a virtual FTP file for the specified target <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/>.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Name">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.Name">
             <summary>
             Name of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.FullPath">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.FullPath">
             <summary>
             Full path of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.IsFile">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.IsFile">
             <summary>
             Returns true for file entries.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.IsDirectory">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.IsDirectory">
             <summary>
             Returns false for directory entries.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Size">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.Size">
             <summary>
             Gets or sets size of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Permission">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.Permission">
             <summary>
             Gets or sets permission of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Timestamp">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.Timestamp">
             <summary>
             Gets or sets timestamp of file.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpFile.Parent">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpFile.Parent">
             <summary>
             Gets parent directory of file.
             </summary>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Get">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpFile.Get">
             <summary>
             Downloads remote file.
             </summary>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Get(System.String)">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpFile.Get(System.String)">
             <summary>
             Downloads remote file using alternate local filename.
             </summary>
             <param name="localFile">Local filename to use for download.</param>
         </member>
-        <member name="M:GSF.Net.AbstractFtpClient.FtpFile.Remove">
+        <member name="M:GSF.Net.VirtualFtpClient.FtpFile.Remove">
             <summary>
             Removes remote file.
             </summary>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.FtpTransferResult">
+        <member name="T:GSF.Net.VirtualFtpClient.FtpTransferResult">
             <summary>
-            Represents an abstract FTP transfer result for the specified target <see cref="T:GSF.Net.AbstractFtpClient.FtpType"/>.
+            Represents a virtual FTP transfer result for the specified target <see cref="T:GSF.Net.VirtualFtpClient.FtpType"/>.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpTransferResult.Message">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpTransferResult.Message">
             <summary>
             Gets any message associated with transfer.
             </summary>
         </member>
-        <member name="P:GSF.Net.AbstractFtpClient.FtpTransferResult.ResponseCode">
+        <member name="P:GSF.Net.VirtualFtpClient.FtpTransferResult.ResponseCode">
             <summary>
             Gets response code from transfer.
             </summary>
         </member>
-        <member name="T:GSF.Net.AbstractFtpClient.NamespaceDoc">
+        <member name="T:GSF.Net.VirtualFtpClient.NamespaceDoc">
             <summary>
-            Contains classes used to create an abstract FTP-style client connection to either an FTP or TFTP server for uploading and downloading files.
+            Contains classes used to create a a virtual FTP-style client connection to either an FTP or TFTP server for uploading and downloading files.
             </summary>
         </member>
         <member name="T:GSF.Net.Ftp.FtpAsyncResult">
