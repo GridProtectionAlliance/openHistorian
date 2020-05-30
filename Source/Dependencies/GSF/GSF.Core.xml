@@ -35898,7 +35898,7 @@
              </code>
             
              <para>
-             If <paramref name="parameters"/> can be safely cast to <see cref="!:IEnumerable&lt;KeyValuePair&lt;string, object&gt;&gt;"/>,
+             If <paramref name="parameters"/> can be safely cast to <code>IEnumerable{KeyValuePair{string, object}}</code>,
              this function will skip the reflection and call <see cref="M:GSF.StringExtensions.Interpolate(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})"/>
              directly.
              </para>
