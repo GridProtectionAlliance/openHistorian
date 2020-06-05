@@ -1053,25 +1053,43 @@ namespace openHistorian.Adapters
 
         private void AttachArchiveDirectoriesAndAttachedPaths()
         {
-            ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
-
-            string[] archivedirectories = m_archiveDirectories ?? new string[0];
-            string[] attachedPaths = m_attachedPaths ?? new string[0];
-
-            List<string> files = archivedirectories
-                .Concat(attachedPaths)
-                .SelectMany(dir => FilePath.EnumerateFiles(dir))
-                .ToList();
-
-            string[] filePtr = new string[1];
-
-            foreach (string file in files)
+            try
             {
-                if (!Enabled)
-                    return;
+                ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
 
-                filePtr[0] = file;
-                clientDatabase.AttachFilesOrPaths(filePtr);
+                string[] archivedirectories = m_archiveDirectories ?? new string[0];
+                string[] attachedPaths = m_attachedPaths ?? new string[0];
+
+                List<string> files = archivedirectories
+                    .Concat(attachedPaths)
+                    .SelectMany(dir => FilePath.EnumerateFiles(dir, exceptionHandler: ex => 
+                        OnProcessException(MessageLevel.Error, ex, nameof(AttachArchiveDirectoriesAndAttachedPaths))))
+                    .ToList();
+
+                string[] filePtr = new string[1];
+
+                foreach (string file in files)
+                {
+                    if (!Enabled)
+                        return;
+
+                    filePtr[0] = file;
+
+                    try
+                    {
+                        clientDatabase.AttachFilesOrPaths(filePtr);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnProcessException(MessageLevel.Error, new InvalidOperationException(
+                            $"{Name} failed while attempting to attach to file \"{file}\": {ex.Message}", ex),
+                            nameof(AttachArchiveDirectoriesAndAttachedPaths));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Critical, new InvalidOperationException($"{Name} failed while attempting to attach to existing archives: {ex.Message}", ex));
             }
         }
 
@@ -1299,7 +1317,7 @@ namespace openHistorian.Adapters
                     }
 
                     // Parse connection string to get adapter settings for historian
-                    Dictionary<string, string> adapterSettings = (historianAdapter?.ConnectionString ?? outputAdapter.ConnectionString ?? "").ParseKeyValuePairs();
+                    Dictionary<string, string> adapterSettings = (historianAdapter?.ConnectionString ?? outputAdapter?.ConnectionString ?? "").ParseKeyValuePairs();
 
                     // Get instance name for historian adapter
                     if (!adapterSettings.TryGetValue("instanceName", out string instanceName) || string.IsNullOrWhiteSpace(instanceName))
