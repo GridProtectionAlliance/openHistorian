@@ -16325,7 +16325,7 @@ var Layer = function () {
                         pointtag = lst[0];
                         formatstring = lst[1];
                     }
-                    var index = _.find(_this.ctrl.data, function (item) {
+                    var index = _.find(_this.ctrl.data.data, function (item) {
                         return item.key === pointtag;
                     });
                     if (index && index.hasOwnProperty('value')) {
