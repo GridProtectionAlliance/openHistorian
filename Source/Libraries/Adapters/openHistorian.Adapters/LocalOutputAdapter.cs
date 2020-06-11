@@ -138,7 +138,6 @@ namespace openHistorian.Adapters
         private string m_dataChannel;
         private double m_targetFileSize;
         private double m_desiredRemainingSpace;
-        private int m_maximumArchiveDays;
         private bool m_enableTimeReasonabilityCheck;
         private long m_pastTimeReasonabilityLimit;
         private long m_futureTimeReasonabilityLimit;
@@ -401,11 +400,15 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter,
         Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum."),
         DefaultValue(DefaultMaximumArchiveDays)]
-        public int MaximumArchiveDays
-        {
-            get => m_maximumArchiveDays;
-            set => m_maximumArchiveDays = value;
-        }
+        public int MaximumArchiveDays { get; set; } = DefaultMaximumArchiveDays;
+
+        /// <summary>
+        /// Gets or sets the maximum number of days of data to maintain in the archive.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum."),
+        DefaultValue(DefaultMaximumArchiveDays)]
+        public int MaximumArchiveSize { get; set; } = DefaultMaximumArchiveDays;
 
         /// <summary>
         /// Gets or sets flag that indicates if incoming timestamps to the historian should be validated for reasonability.
@@ -696,8 +699,8 @@ namespace openHistorian.Adapters
             if (desiredRemainingSpace < 0.1D || desiredRemainingSpace > SI2.Tera)
                 desiredRemainingSpace = DefaultDesiredRemainingSpace;
 
-            if (!settings.TryGetValue("MaximumArchiveDays", out setting) || !int.TryParse(setting, out m_maximumArchiveDays))
-                m_maximumArchiveDays = DefaultMaximumArchiveDays;
+            if (settings.TryGetValue("MaximumArchiveDays", out setting) && int.TryParse(setting, out int maximumArchiveDays))
+                MaximumArchiveDays = maximumArchiveDays;
 
             if (settings.TryGetValue("EnableTimeReasonabilityCheck", out setting))
                 m_enableTimeReasonabilityCheck = setting.ParseBoolean();
