@@ -98,6 +98,11 @@ namespace openHistorian.Adapters
         public const int DefaultMaximumArchiveDays = 0;
 
         /// <summary>
+        /// Defines the default value for <see cref="AutoRemoveOldestFilesBeforeFull"/>.
+        /// </summary>
+        public const bool DefaultAutoRemoveOldestFilesBeforeFull = true;
+
+        /// <summary>
         /// Defines the default value for <see cref="EnableTimeReasonabilityCheck"/>.
         /// </summary>
         public const bool DefaultEnableTimeReasonabilityCheck = false;
@@ -403,12 +408,12 @@ namespace openHistorian.Adapters
         public int MaximumArchiveDays { get; set; } = DefaultMaximumArchiveDays;
 
         /// <summary>
-        /// Gets or sets the maximum number of days of data to maintain in the archive.
+        /// Gets or sets the flag that determines if oldest archive files should be removed before running out of archive space.
         /// </summary>
         [ConnectionStringParameter,
-        Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum."),
-        DefaultValue(DefaultMaximumArchiveDays)]
-        public int MaximumArchiveSize { get; set; } = DefaultMaximumArchiveDays;
+        Description("Define the flag that determines if oldest archive files should be removed before running out of archive space."),
+        DefaultValue(DefaultAutoRemoveOldestFilesBeforeFull)]
+        public bool AutoRemoveOldestFilesBeforeFull { get; set; } = DefaultAutoRemoveOldestFilesBeforeFull;
 
         /// <summary>
         /// Gets or sets flag that indicates if incoming timestamps to the historian should be validated for reasonability.
@@ -544,6 +549,7 @@ namespace openHistorian.Adapters
                 status.AppendFormat("             Staging count: {0:N0}\r\n", m_archiveInfo.StagingCount);
                 status.AppendFormat("          Memory pool size: {0:N4}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
                 status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"));
+                status.AppendFormat("  Auto-remove old archives: {0}\r\n", AutoRemoveOldestFilesBeforeFull);
                 status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled");
                 status.AppendFormat(" Archive curtailment timer: {0}\r\n", Time.ToElapsedTimeString(ArchiveCurtailmentInterval, 0));
 
@@ -657,72 +663,75 @@ namespace openHistorian.Adapters
             Dictionary<string, string> settings = Settings;
 
             // Validate settings.
-            if (!settings.TryGetValue("instanceName", out m_instanceName) || string.IsNullOrWhiteSpace(m_instanceName))
+            if (!settings.TryGetValue(nameof(InstanceName), out m_instanceName) || string.IsNullOrWhiteSpace(m_instanceName))
                 m_instanceName = Name;
 
             // Track instance in static dictionary
             Instances[InstanceName] = this;
 
-            if (!settings.TryGetValue("WorkingDirectory", out string setting) || string.IsNullOrEmpty(setting))
+            if (!settings.TryGetValue(nameof(WorkingDirectory), out string setting) || string.IsNullOrEmpty(setting))
                 setting = "Archive";
 
             WorkingDirectory = setting;
 
-            if (settings.TryGetValue("ArchiveDirectories", out setting))
+            if (settings.TryGetValue(nameof(ArchiveDirectories), out setting))
                 ArchiveDirectories = setting;
 
-            if (settings.TryGetValue("ArchiveCurtailmentInterval", out setting))
+            if (settings.TryGetValue(nameof(ArchiveCurtailmentInterval), out setting))
                 ArchiveCurtailmentInterval = int.Parse(setting);
             else
                 ArchiveCurtailmentInterval = DefaultArchiveCurtailmentInterval;
 
-            if (settings.TryGetValue("AttachedPaths", out setting))
+            if (settings.TryGetValue(nameof(AttachedPaths), out setting))
                 AttachedPaths = setting;
 
-            if (settings.TryGetValue("WatchAttachedPaths", out setting))
+            if (settings.TryGetValue(nameof(WatchAttachedPaths), out setting))
                 m_watchAttachedPaths = setting.ParseBoolean();
             else
                 m_watchAttachedPaths = DefaultWatchAttachedPaths;
 
-            if (!settings.TryGetValue("DataChannel", out m_dataChannel))
+            if (!settings.TryGetValue(nameof(DataChannel), out m_dataChannel))
                 m_dataChannel = DefaultDataChannel;
 
-            if (!settings.TryGetValue("TargetFileSize", out setting) || !double.TryParse(setting, out double targetFileSize))
+            if (!settings.TryGetValue(nameof(TargetFileSize), out setting) || !double.TryParse(setting, out double targetFileSize))
                 targetFileSize = DefaultTargetFileSize;
 
             if (targetFileSize < 0.1D || targetFileSize > SI2.Tera)
                 targetFileSize = DefaultTargetFileSize;
 
-            if (!settings.TryGetValue("DesiredRemainingSpace", out setting) || !double.TryParse(setting, out double desiredRemainingSpace))
+            if (!settings.TryGetValue(nameof(DesiredRemainingSpace), out setting) || !double.TryParse(setting, out double desiredRemainingSpace))
                 desiredRemainingSpace = DefaultDesiredRemainingSpace;
 
             if (desiredRemainingSpace < 0.1D || desiredRemainingSpace > SI2.Tera)
                 desiredRemainingSpace = DefaultDesiredRemainingSpace;
 
-            if (settings.TryGetValue("MaximumArchiveDays", out setting) && int.TryParse(setting, out int maximumArchiveDays))
+            if (settings.TryGetValue(nameof(MaximumArchiveDays), out setting) && int.TryParse(setting, out int maximumArchiveDays))
                 MaximumArchiveDays = maximumArchiveDays;
 
-            if (settings.TryGetValue("EnableTimeReasonabilityCheck", out setting))
+            if (settings.TryGetValue(nameof(AutoRemoveOldestFilesBeforeFull), out setting))
+                AutoRemoveOldestFilesBeforeFull = setting.ParseBoolean();
+
+            if (settings.TryGetValue(nameof(EnableTimeReasonabilityCheck), out setting))
                 m_enableTimeReasonabilityCheck = setting.ParseBoolean();
             else
                 m_enableTimeReasonabilityCheck = DefaultEnableTimeReasonabilityCheck;
 
-            if (settings.TryGetValue("PastTimeReasonabilityLimit", out setting) && double.TryParse(setting, out double value))
+            if (settings.TryGetValue(nameof(PastTimeReasonabilityLimit), out setting) && double.TryParse(setting, out double value))
                 PastTimeReasonabilityLimit = value;
             else
                 PastTimeReasonabilityLimit = DefaultPastTimeReasonabilityLimit;
 
-            if (settings.TryGetValue("FutureTimeReasonabilityLimit", out setting) && double.TryParse(setting, out value))
+            if (settings.TryGetValue(nameof(FutureTimeReasonabilityLimit), out setting) && double.TryParse(setting, out value))
                 FutureTimeReasonabilityLimit = value;
             else
                 FutureTimeReasonabilityLimit = DefaultFutureTimeReasonabilityLimit;
 
-            if (settings.TryGetValue("SwingingDoorCompressionEnabled", out setting))
+            if (settings.TryGetValue(nameof(SwingingDoorCompressionEnabled), out setting))
                 SwingingDoorCompressionEnabled = setting.ParseBoolean();
             else
                 SwingingDoorCompressionEnabled = DefaultSwingingDoorCompressionEnabled;
 
-            if (!settings.TryGetValue("DirectoryNamingMode", out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
+            if (!settings.TryGetValue(nameof(DirectoryNamingMode), out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
 
             // Handle advanced settings - there are hidden but available from manual entry into connection string
