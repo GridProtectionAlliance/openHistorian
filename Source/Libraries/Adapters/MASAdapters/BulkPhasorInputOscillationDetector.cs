@@ -156,7 +156,7 @@ namespace MAS
             {
                 try
                 {
-                    if (CurrentAdapterIndex > -1 && CurrentAdapterIndex < Count)
+                    if (CurrentAdapterIndex > -1)
                     {
                         // Just pick first input measurement to find associated device ID
                         MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
