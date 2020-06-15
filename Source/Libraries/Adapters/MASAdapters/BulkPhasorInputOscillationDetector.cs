@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using GSF.Data;
@@ -32,6 +33,7 @@ using GSF.Data.Model;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
+using GSF.TimeSeries.Data;
 using PowerCalculations;
 using MeasurementRecord = GSF.TimeSeries.Model.Measurement;
 using PhasorRecord = GSF.TimeSeries.Model.Phasor;
@@ -131,6 +133,44 @@ namespace MAS
         { 
             get => base.SignalReferenceTemplate;
             set => base.SignalReferenceTemplate = value;
+        }
+
+        /// <summary>
+        /// Gets or sets template for the parent device acronym used to group associated output measurements.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - all outputs automatically associated with input device
+        public override string ParentDeviceAcronymTemplate
+        {
+            get => null;
+            set => base.ParentDeviceAcronymTemplate = value;
+        }
+
+        /// <summary>
+        /// Gets associated device ID for <see cref="IndependentActionAdapterManagerBase{T}.CurrentAdapterIndex" />, if any, for measurement generation.
+        /// If overridden to provide custom device ID, <see cref="IndependentActionAdapterManagerBase{T}.ParentDeviceAcronymTemplate" /> should be set to
+        /// <c>null</c> so no parent device is created.
+        /// </summary>
+        public override int CurrentDeviceID
+        {
+            get
+            {
+                try
+                {
+                    if (CurrentAdapterIndex > -1 && CurrentAdapterIndex < Count)
+                    {
+                        // Just pick first input measurement to find associated device ID
+                        MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
+                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
+                        return record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated device ID for input measurement {inputMeasurement.SignalID}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to lookup current device ID for adapter {CurrentAdapterIndex:N0}: {ex.Message}", ex));
+                }
+
+                return base.CurrentDeviceID;
+            }
         }
 
         /// <summary>
