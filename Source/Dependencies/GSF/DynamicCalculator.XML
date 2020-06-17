@@ -338,6 +338,11 @@
             Gets flag that determines if the implementation of the <see cref="T:DynamicCalculator.DynamicCalculator"/> requires an output measurement.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.Variables">
+            <summary>
+            Gets defined variable collection with current values.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.Status">
             <summary>
             Returns the detailed status of the data input source.
