@@ -91,6 +91,16 @@
             Gets output phase for each output measurement.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.SignalType">
+            <summary>
+            Gets or sets default signal type to use for all output measurements when <see cref="P:PowerCalculations.BulkSequenceCalculator.SignalTypes"/> array is not defined.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.ForceCalcSignalType">
+            <summary>
+            Gets or sets flag that determines if all output signal types should be forced to CALC.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.SignalTypes">
             <summary>
             Gets signal type for each output measurement, used when each output needs to be a different type.
