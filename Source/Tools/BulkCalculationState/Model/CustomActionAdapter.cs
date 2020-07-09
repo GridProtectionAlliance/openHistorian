@@ -22,7 +22,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Windows.Forms;
 using GSF.ComponentModel;
 using GSF.Data.Model;
 
@@ -69,5 +71,16 @@ namespace BulkCalculationState.Model
         [DefaultValueExpression("this.CreatedBy", EvaluationOrder = 1)]
         [UpdateValueExpression("UserInfo.CurrentUserID")]
         public string UpdatedBy { get; set; }
+    }
+
+    public class FilteredActionAdapter
+    {
+        public string AdapterName { get; set; }
+
+        public bool Enabled { get; set; }
+
+        public void SyncEnabledAdapterStates() => Adapters.ForEach(adapter => adapter.Enabled = Enabled);
+
+        public List<CustomActionAdapter> Adapters = new List<CustomActionAdapter>();
     }
 }
