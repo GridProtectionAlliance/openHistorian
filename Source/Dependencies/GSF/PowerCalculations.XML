@@ -56,6 +56,16 @@
             Creates new <see cref="T:PowerCalculations.BulkSequenceCalculator"/>.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.TrackRecentValues">
+            <summary>
+            Gets or sets flag that determines if the last few values should be monitored.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.SampleSize">
+            <summary>
+            Gets or sets the sample size of the data to be monitored.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.IncludePositiveSequence">
             <summary>
             Gets or sets flag that determines if positive sequence calculations should be included.
