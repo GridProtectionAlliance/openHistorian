@@ -185,6 +185,9 @@ namespace BulkCalculationState
                     {
                         int dash = name.IndexOf('-');
                         name = dash < 0 ? name : name.Substring(0, dash);
+
+                        if (name.EndsWith("CALC", StringComparison.OrdinalIgnoreCase) && name.Length > 4)
+                            name = name.Substring(0, name.Length - 4);
                     }
 
                     if (!string.IsNullOrWhiteSpace(filter) && !name.ToLowerInvariant().Contains(filter))
