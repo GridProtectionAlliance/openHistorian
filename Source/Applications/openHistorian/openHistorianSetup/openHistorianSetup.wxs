@@ -78,6 +78,9 @@
         <Feature Id="DNP3ConfigGeneratorFeature" Title="DNP3 Configuration Generator">
           <ComponentRef Id="DNP3ConfigGenerator" />
         </Feature>
+        <Feature Id="CreateOutputStreamFeature" Title="Create Output Stream Tool">
+          <ComponentRef Id="CreateOutputStream"/>
+        </Feature>
         <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility">
           <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
         </Feature>
@@ -480,7 +483,13 @@
         <File Id="DNP3ConfigGenerator.exe" Name="DNP3ConfigGenerator.exe" Source="$(var.ProjectDir)\DNP3ConfigGenerator.exe">
           <netfx:NativeImage Id="ngen_DNP3ConfigGenerator.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
-      </Component>      
+      </Component>
+
+      <Component Id="CreateOutputStream">
+        <File Id="CreateOutputStream.exe" Name="CreateOutputStream.exe" Source="$(var.ProjectDir)\CreateOutputStream.exe">
+          <netfx:NativeImage Id="ngen_CreateOutputStream.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
     </ComponentGroup>
     
     <ComponentGroup Id="ConfigCrypterComponents" Directory="INSTALLFOLDER">
