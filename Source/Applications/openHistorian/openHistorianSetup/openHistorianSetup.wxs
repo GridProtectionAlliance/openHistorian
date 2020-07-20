@@ -694,6 +694,11 @@
           <netfx:NativeImage Id="ngen_DNP3CLRInterface.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="DeviceStatAdapters">
+        <File Id="DeviceStatAdapters.dll" Name="DeviceStatAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DeviceStatAdapters.dll">
+          <netfx:NativeImage Id="ngen_DeviceStatAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
       <Component Id="DynamicCalculator">
         <File Id="DynamicCalculator.dll" Name="DynamicCalculator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DynamicCalculator.dll">
           <netfx:NativeImage Id="ngen_DynamicCalculator.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
