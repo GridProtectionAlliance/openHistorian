@@ -112,27 +112,7 @@ namespace BulkCalculationState
 
                 m_updateTotals = new ShortSynchronizedOperation(UpdateTotals);
                 SyncCheckedListBox();
-                
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    FileName = $@"{m_sourcePath}\{SourceApp}Console.exe"
-                };
-
-                // Pre-start console process for quick update responses
-                m_consoleProcess = new Process
-                {
-                    StartInfo = startInfo, 
-                    EnableRaisingEvents = true
-                };
-
-                m_consoleProcess.OutputDataReceived += m_consoleProcess_OutputDataReceived;
-                m_consoleProcess.Start();
-                m_consoleProcess.BeginOutputReadLine();
+                ConnectConsole();
 
                 m_formLoaded = true;
             }
@@ -153,6 +133,8 @@ namespace BulkCalculationState
         {
             lock (m_settings)
             {
+                Invoke(new Action(() => { buttonEnableSelected.Enabled = false; }));
+
                 if (!(m_consoleOutput is null))
                 {
                     m_consoleProcess.OutputDataReceived -= m_consoleProcess_OutputDataReceived;
