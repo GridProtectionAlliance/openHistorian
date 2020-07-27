@@ -42,6 +42,7 @@
             this.radioButtonUnselectAll = new System.Windows.Forms.RadioButton();
             this.textBoxFilter = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.buttonReconnect = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // checkedListBoxDevices
@@ -53,17 +54,18 @@
             this.checkedListBoxDevices.FormattingEnabled = true;
             this.checkedListBoxDevices.Location = new System.Drawing.Point(12, 112);
             this.checkedListBoxDevices.Name = "checkedListBoxDevices";
-            this.checkedListBoxDevices.Size = new System.Drawing.Size(334, 304);
-            this.checkedListBoxDevices.TabIndex = 4;
+            this.checkedListBoxDevices.Size = new System.Drawing.Size(359, 304);
+            this.checkedListBoxDevices.TabIndex = 11;
             this.checkedListBoxDevices.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBoxDevices_ItemCheck);
             // 
             // buttonEnableSelected
             // 
             this.buttonEnableSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonEnableSelected.Location = new System.Drawing.Point(361, 12);
+            this.buttonEnableSelected.Enabled = false;
+            this.buttonEnableSelected.Location = new System.Drawing.Point(386, 12);
             this.buttonEnableSelected.Name = "buttonEnableSelected";
             this.buttonEnableSelected.Size = new System.Drawing.Size(111, 29);
-            this.buttonEnableSelected.TabIndex = 5;
+            this.buttonEnableSelected.TabIndex = 8;
             this.buttonEnableSelected.Tag = "&Enable Selected";
             this.buttonEnableSelected.Text = "&Enable Selected";
             this.buttonEnableSelected.UseVisualStyleBackColor = true;
@@ -77,7 +79,7 @@
             this.checkBoxSelect.Location = new System.Drawing.Point(12, 35);
             this.checkBoxSelect.Name = "checkBoxSelect";
             this.checkBoxSelect.Size = new System.Drawing.Size(109, 17);
-            this.checkBoxSelect.TabIndex = 1;
+            this.checkBoxSelect.TabIndex = 2;
             this.checkBoxSelect.Text = "&Select / Unselect";
             this.checkBoxSelect.UseVisualStyleBackColor = true;
             // 
@@ -87,16 +89,16 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxSearch.Location = new System.Drawing.Point(120, 33);
             this.textBoxSearch.Name = "textBoxSearch";
-            this.textBoxSearch.Size = new System.Drawing.Size(160, 20);
-            this.textBoxSearch.TabIndex = 2;
+            this.textBoxSearch.Size = new System.Drawing.Size(185, 20);
+            this.textBoxSearch.TabIndex = 3;
             // 
             // buttonFind
             // 
             this.buttonFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonFind.Location = new System.Drawing.Point(281, 32);
+            this.buttonFind.Location = new System.Drawing.Point(306, 32);
             this.buttonFind.Name = "buttonFind";
             this.buttonFind.Size = new System.Drawing.Size(65, 22);
-            this.buttonFind.TabIndex = 3;
+            this.buttonFind.TabIndex = 4;
             this.buttonFind.Text = "&Find";
             this.buttonFind.UseVisualStyleBackColor = true;
             this.buttonFind.Click += new System.EventHandler(this.buttonFind_Click);
@@ -105,10 +107,10 @@
             // 
             this.labelSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelSelected.AutoSize = true;
-            this.labelSelected.Location = new System.Drawing.Point(352, 112);
+            this.labelSelected.Location = new System.Drawing.Point(377, 148);
             this.labelSelected.Name = "labelSelected";
             this.labelSelected.Size = new System.Drawing.Size(103, 13);
-            this.labelSelected.TabIndex = 8;
+            this.labelSelected.TabIndex = 13;
             this.labelSelected.Tag = "Active Calcs: {0:N0}";
             this.labelSelected.Text = "Active Calcs: {0:N0}";
             this.labelSelected.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -117,10 +119,10 @@
             // 
             this.labelTotal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTotal.AutoSize = true;
-            this.labelTotal.Location = new System.Drawing.Point(358, 90);
+            this.labelTotal.Location = new System.Drawing.Point(383, 126);
             this.labelTotal.Name = "labelTotal";
             this.labelTotal.Size = new System.Drawing.Size(97, 13);
-            this.labelTotal.TabIndex = 7;
+            this.labelTotal.TabIndex = 12;
             this.labelTotal.Tag = "Total Calcs: {0:N0}";
             this.labelTotal.Text = "Total Calcs: {0:N0}";
             this.labelTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -128,10 +130,10 @@
             // buttonRefresh
             // 
             this.buttonRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRefresh.Location = new System.Drawing.Point(361, 48);
+            this.buttonRefresh.Location = new System.Drawing.Point(386, 47);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(111, 29);
-            this.buttonRefresh.TabIndex = 6;
+            this.buttonRefresh.TabIndex = 9;
             this.buttonRefresh.Text = "&Refresh";
             this.buttonRefresh.UseVisualStyleBackColor = true;
             this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
@@ -144,7 +146,7 @@
             this.checkBoxGroupByPrefix.Location = new System.Drawing.Point(12, 58);
             this.checkBoxGroupByPrefix.Name = "checkBoxGroupByPrefix";
             this.checkBoxGroupByPrefix.Size = new System.Drawing.Size(217, 17);
-            this.checkBoxGroupByPrefix.TabIndex = 9;
+            this.checkBoxGroupByPrefix.TabIndex = 5;
             this.checkBoxGroupByPrefix.Text = "&Group by prefix (commonly device name)";
             this.checkBoxGroupByPrefix.UseVisualStyleBackColor = true;
             this.checkBoxGroupByPrefix.CheckedChanged += new System.EventHandler(this.checkBoxGroupByPrefix_CheckedChanged);
@@ -155,7 +157,7 @@
             this.radioButtonSelectAll.Location = new System.Drawing.Point(12, 11);
             this.radioButtonSelectAll.Name = "radioButtonSelectAll";
             this.radioButtonSelectAll.Size = new System.Drawing.Size(69, 17);
-            this.radioButtonSelectAll.TabIndex = 10;
+            this.radioButtonSelectAll.TabIndex = 0;
             this.radioButtonSelectAll.TabStop = true;
             this.radioButtonSelectAll.Text = "Select &All";
             this.radioButtonSelectAll.UseVisualStyleBackColor = true;
@@ -167,7 +169,7 @@
             this.radioButtonUnselectAll.Location = new System.Drawing.Point(87, 11);
             this.radioButtonUnselectAll.Name = "radioButtonUnselectAll";
             this.radioButtonUnselectAll.Size = new System.Drawing.Size(81, 17);
-            this.radioButtonUnselectAll.TabIndex = 11;
+            this.radioButtonUnselectAll.TabIndex = 1;
             this.radioButtonUnselectAll.TabStop = true;
             this.radioButtonUnselectAll.Text = "&Unselect All";
             this.radioButtonUnselectAll.UseVisualStyleBackColor = true;
@@ -179,8 +181,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFilter.Location = new System.Drawing.Point(42, 81);
             this.textBoxFilter.Name = "textBoxFilter";
-            this.textBoxFilter.Size = new System.Drawing.Size(304, 20);
-            this.textBoxFilter.TabIndex = 12;
+            this.textBoxFilter.Size = new System.Drawing.Size(329, 20);
+            this.textBoxFilter.TabIndex = 7;
             this.textBoxFilter.TextChanged += new System.EventHandler(this.textBoxFilter_TextChanged);
             // 
             // label1
@@ -189,15 +191,27 @@
             this.label1.Location = new System.Drawing.Point(10, 84);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 13;
+            this.label1.TabIndex = 6;
             this.label1.Text = "Fil&ter:";
+            // 
+            // buttonReconnect
+            // 
+            this.buttonReconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonReconnect.Location = new System.Drawing.Point(386, 82);
+            this.buttonReconnect.Name = "buttonReconnect";
+            this.buttonReconnect.Size = new System.Drawing.Size(111, 29);
+            this.buttonReconnect.TabIndex = 10;
+            this.buttonReconnect.Text = "Re&connect";
+            this.buttonReconnect.UseVisualStyleBackColor = true;
+            this.buttonReconnect.Click += new System.EventHandler(this.buttonReconnect_Click);
             // 
             // BulkCalculationState
             // 
             this.AcceptButton = this.buttonFind;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 426);
+            this.ClientSize = new System.Drawing.Size(509, 426);
+            this.Controls.Add(this.buttonReconnect);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxFilter);
             this.Controls.Add(this.radioButtonUnselectAll);
@@ -213,7 +227,7 @@
             this.Controls.Add(this.checkedListBoxDevices);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(200, 465);
+            this.MinimumSize = new System.Drawing.Size(525, 465);
             this.Name = "BulkCalculationState";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Bulk State Updater for Dynamic Calculations";
@@ -240,6 +254,7 @@
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.CheckBox checkBoxGroupByPrefix;
         public System.Windows.Forms.TextBox textBoxFilter;
+        private System.Windows.Forms.Button buttonReconnect;
     }
 }
 

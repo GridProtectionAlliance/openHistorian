@@ -30,6 +30,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using BulkCalculationState.Model;
+using GSF;
 using GSF.Collections;
 using GSF.ComponentModel;
 using GSF.Data;
@@ -55,6 +56,8 @@ namespace BulkCalculationState
         private List<CustomActionAdapter> m_actionAdapters;
         private List<FilteredActionAdapter> m_filteredActionAdapters;
         private ShortSynchronizedOperation m_updateTotals;
+        private Process m_consoleProcess;
+        private string m_consoleOutput;
         private bool m_updatingSelectAllStates;
 
         public BulkCalculationState()
@@ -109,6 +112,27 @@ namespace BulkCalculationState
 
                 m_updateTotals = new ShortSynchronizedOperation(UpdateTotals);
                 SyncCheckedListBox();
+                
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = $@"{m_sourcePath}\{SourceApp}Console.exe"
+                };
+
+                // Pre-start console process for quick update responses
+                m_consoleProcess = new Process
+                {
+                    StartInfo = startInfo, 
+                    EnableRaisingEvents = true
+                };
+
+                m_consoleProcess.OutputDataReceived += m_consoleProcess_OutputDataReceived;
+                m_consoleProcess.Start();
+                m_consoleProcess.BeginOutputReadLine();
 
                 m_formLoaded = true;
             }
@@ -125,6 +149,71 @@ namespace BulkCalculationState
             }
         }
 
+        private void ConnectConsole()
+        {
+            lock (m_settings)
+            {
+                if (!(m_consoleOutput is null))
+                {
+                    m_consoleProcess.OutputDataReceived -= m_consoleProcess_OutputDataReceived;
+                    m_consoleProcess.Close();
+                    m_consoleProcess.Dispose();
+                }
+            
+                m_consoleOutput = "";
+
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = $@"{m_sourcePath}\{SourceApp}Console.exe"
+                };
+
+                // Pre-start console process for quick update responses
+                m_consoleProcess = new Process
+                {
+                    StartInfo = startInfo,
+                    EnableRaisingEvents = true
+                };
+
+                m_consoleProcess.OutputDataReceived += m_consoleProcess_OutputDataReceived;
+                m_consoleProcess.Start();
+                m_consoleProcess.BeginOutputReadLine();
+            }
+        }
+
+        private void ClearConsoleOutput()
+        {
+            lock (m_settings)
+                m_consoleOutput = "";
+        }
+
+        private void m_consoleProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            const int MaxOutput = 8196;
+
+            Debug.WriteLine(e.Data);
+
+            lock (m_settings)
+            {
+                string output = m_consoleOutput + e.Data;
+
+                if (output.Length > MaxOutput)
+                    output = output.TruncateLeft(MaxOutput);
+
+                m_consoleOutput = output;
+            }
+
+            if (!buttonEnableSelected.Enabled && m_consoleOutput.Contains("Remote client connected"))
+            {
+                ClearConsoleOutput();
+                BeginInvoke(new Action(() => { buttonEnableSelected.Enabled = true; }));
+            }
+        }
+
         private void BulkCalculationState_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
@@ -136,6 +225,9 @@ namespace BulkCalculationState
 
                 // Save any updates to current screen values
                 m_settings.Save();
+
+                // Close associated console process
+                m_consoleProcess.Close();
             }
             catch (Exception ex)
             {
@@ -311,20 +403,11 @@ namespace BulkCalculationState
                             m_actionAdapterTable.UpdateRecord(actionAdapter);
                     }
 
-                    ProcessStartInfo startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        FileName = $@"{m_sourcePath}\{SourceApp}Console.exe"
-                    };
+                    ClearConsoleOutput();
+                    m_consoleProcess.StandardInput.WriteLine("ReloadConfig");
 
-                    Process process = new Process { StartInfo = startInfo };
-
-                    process.Start();
-                    process.StandardInput.WriteLine("ReloadConfig");
-                    process.StandardInput.WriteLine("Exit");
-
-                    process.WaitForExit();
+                    while (!m_consoleOutput.Contains("System configuration was successfully reloaded."))
+                        Thread.Sleep(500);
                 }
                 catch (Exception ex)
                 {
@@ -383,6 +466,11 @@ namespace BulkCalculationState
                 return;
 
             RefreshActionAdapters();
+        }
+
+        private void buttonReconnect_Click(object sender, EventArgs e)
+        {
+            ConnectConsole();
         }
 
         private void UpdateSelectAllStates()
