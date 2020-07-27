@@ -59,6 +59,7 @@ namespace BulkCalculationState
         private Process m_consoleProcess;
         private string m_consoleOutput;
         private bool m_updatingSelectAllStates;
+        private bool m_reconnecting;
 
         public BulkCalculationState()
         {
@@ -193,6 +194,7 @@ namespace BulkCalculationState
             {
                 ClearConsoleOutput();
                 BeginInvoke(new Action(() => { buttonEnableSelected.Enabled = true; }));
+                m_reconnecting = false;
             }
         }
 
@@ -388,8 +390,15 @@ namespace BulkCalculationState
                     ClearConsoleOutput();
                     m_consoleProcess.StandardInput.WriteLine("ReloadConfig");
 
-                    while (!m_consoleOutput.Contains("System configuration was successfully reloaded."))
-                        Thread.Sleep(500);
+                    const int SleepInterval = 500;
+                    const int MaxSleeps = 20; // 10 seconds
+                    int sleepCount = 0;
+
+                    while (!m_consoleOutput.Contains("System configuration was successfully reloaded.") && sleepCount++ < MaxSleeps && !m_reconnecting)
+                        Thread.Sleep(SleepInterval);
+
+                    if (sleepCount > MaxSleeps)
+                        throw new TimeoutException("Timeout while waiting on reload configuration response");
                 }
                 catch (Exception ex)
                 {
@@ -401,7 +410,9 @@ namespace BulkCalculationState
                     {
                         UseWaitCursor = false;
                         buttonEnableSelected.Text = buttonEnableSelected.Tag.ToString();
-                        buttonEnableSelected.Enabled = true;
+
+                        if (!m_reconnecting)
+                            buttonEnableSelected.Enabled = true;
                     }));
                 }
             });
@@ -452,6 +463,7 @@ namespace BulkCalculationState
 
         private void buttonReconnect_Click(object sender, EventArgs e)
         {
+            m_reconnecting = true;
             ConnectConsole();
         }
 
