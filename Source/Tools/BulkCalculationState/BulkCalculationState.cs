@@ -250,6 +250,7 @@ namespace BulkCalculationState
             lock (m_actionAdapterTable)
             {
                 m_actionAdapters = m_actionAdapterTable.QueryRecordsWhere("TypeName = 'DynamicCalculator.DynamicCalculator'").ToList();
+                m_actionAdapters.Sort();
 
                 Dictionary<string, FilteredActionAdapter> filteredAdapters = new Dictionary<string, FilteredActionAdapter>(StringComparer.OrdinalIgnoreCase);
 
@@ -274,6 +275,7 @@ namespace BulkCalculationState
                 }
 
                 m_filteredActionAdapters = filteredAdapters.Values.ToList();
+                m_filteredActionAdapters.Sort();
 
                 foreach (FilteredActionAdapter filteredActionAdapter in m_filteredActionAdapters)
                 {
