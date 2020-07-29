@@ -1038,6 +1038,11 @@
           <netfx:NativeImage Id="ngen_PhasorWebUI.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="ValidateAssemblyBindings">
+        <File Id="ValidateAssemblyBindings.exe" Name="ValidateAssemblyBindings.exe" Source="$(var.SolutionDir)\Dependencies\GSF\ValidateAssemblyBindings.exe">
+          <netfx:NativeImage Id="ngen_ValidateAssemblyBindings.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
     </ComponentGroup>
     
     <!-- Microsoft Dependencies -->
