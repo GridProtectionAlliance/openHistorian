@@ -43,6 +43,7 @@
             this.textBoxFilter = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonReconnect = new System.Windows.Forms.Button();
+            this.buttonDelete = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // checkedListBoxDevices
@@ -205,12 +206,25 @@
             this.buttonReconnect.UseVisualStyleBackColor = true;
             this.buttonReconnect.Click += new System.EventHandler(this.buttonReconnect_Click);
             // 
+            // buttonDelete
+            // 
+            this.buttonDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDelete.Location = new System.Drawing.Point(386, 385);
+            this.buttonDelete.Name = "buttonDelete";
+            this.buttonDelete.Size = new System.Drawing.Size(111, 29);
+            this.buttonDelete.TabIndex = 14;
+            this.buttonDelete.Tag = "&Delete";
+            this.buttonDelete.Text = "&Delete";
+            this.buttonDelete.UseVisualStyleBackColor = true;
+            this.buttonDelete.Click += new System.EventHandler(this.buttonDelete_Click);
+            // 
             // BulkCalculationState
             // 
             this.AcceptButton = this.buttonFind;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(509, 426);
+            this.Controls.Add(this.buttonDelete);
             this.Controls.Add(this.buttonReconnect);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxFilter);
@@ -255,6 +269,7 @@
         public System.Windows.Forms.CheckBox checkBoxGroupByPrefix;
         public System.Windows.Forms.TextBox textBoxFilter;
         private System.Windows.Forms.Button buttonReconnect;
+        private System.Windows.Forms.Button buttonDelete;
     }
 }
 

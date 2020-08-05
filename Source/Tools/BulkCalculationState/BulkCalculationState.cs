@@ -135,6 +135,7 @@ namespace BulkCalculationState
             lock (m_settings)
             {
                 Invoke(new Action(() => { buttonEnableSelected.Enabled = false; }));
+                Invoke(new Action(() => { buttonDelete.Enabled = false; }));
 
                 if (!(m_consoleOutput is null))
                 {
@@ -176,7 +177,7 @@ namespace BulkCalculationState
 
         private void m_consoleProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            const int MaxOutput = 8196;
+            const int MaxOutput = 65536;
 
             Debug.WriteLine(e.Data);
 
@@ -190,10 +191,11 @@ namespace BulkCalculationState
                 m_consoleOutput = output;
             }
 
-            if (!buttonEnableSelected.Enabled && m_consoleOutput.Contains("Remote client connected"))
+            if ((!buttonEnableSelected.Enabled || !buttonDelete.Enabled) && m_consoleOutput.Contains("Remote client connected"))
             {
                 ClearConsoleOutput();
                 BeginInvoke(new Action(() => { buttonEnableSelected.Enabled = true; }));
+                BeginInvoke(new Action(() => { buttonDelete.Enabled = true; }));
                 m_reconnecting = false;
             }
         }
@@ -368,6 +370,28 @@ namespace BulkCalculationState
             SyncCheckedListBox();
         }
 
+        private bool ReloadConfigComplete()
+        {
+            return m_consoleOutput.Contains("System configuration was successfully reloaded.") ||
+                   m_consoleOutput.Contains("Database connection closed.");
+        }
+
+        private void ReloadConfig()
+        {
+            ClearConsoleOutput();
+            m_consoleProcess.StandardInput.WriteLine("ReloadConfig");
+
+            const int SleepInterval = 500;
+            const int MaxSleeps = 20; // 10 seconds
+            int sleepCount = 0;
+
+            while (!ReloadConfigComplete() && sleepCount++ < MaxSleeps && !m_reconnecting)
+                Thread.Sleep(SleepInterval);
+
+            if (sleepCount > MaxSleeps)
+                throw new TimeoutException("Timeout while waiting on reload configuration response");
+        }
+
         private void buttonEnableSelected_Click(object sender, EventArgs e)
         {
             if (!m_formLoaded || m_formClosing)
@@ -389,18 +413,7 @@ namespace BulkCalculationState
                             m_actionAdapterTable.UpdateRecord(actionAdapter);
                     }
 
-                    ClearConsoleOutput();
-                    m_consoleProcess.StandardInput.WriteLine("ReloadConfig");
-
-                    const int SleepInterval = 500;
-                    const int MaxSleeps = 20; // 10 seconds
-                    int sleepCount = 0;
-
-                    while (!m_consoleOutput.Contains("System configuration was successfully reloaded.") && sleepCount++ < MaxSleeps && !m_reconnecting)
-                        Thread.Sleep(SleepInterval);
-
-                    if (sleepCount > MaxSleeps)
-                        throw new TimeoutException("Timeout while waiting on reload configuration response");
+                    ReloadConfig();
                 }
                 catch (Exception ex)
                 {
@@ -415,6 +428,55 @@ namespace BulkCalculationState
 
                         if (!m_reconnecting)
                             buttonEnableSelected.Enabled = true;
+                    }));
+                }
+            });
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            if (!m_formLoaded || m_formClosing)
+                return;
+
+            if (MessageBox.Show(this, $"Are you sure you want to delete {m_actionAdapters.Count(adapter => adapter.Enabled):N0} selected devices?", "Delete Devices", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            buttonDelete.Enabled = false;
+            buttonDelete.Text = "Working...";
+            UseWaitCursor = true;
+
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    SyncDataSource();
+
+                    lock (m_actionAdapterTable)
+                    {
+                        foreach (CustomActionAdapter actionAdapter in m_actionAdapters)
+                        {
+                            if (actionAdapter.Enabled)
+                                m_actionAdapterTable.DeleteRecord(actionAdapter);
+                        }
+                    }
+
+                    ReloadConfig();
+                }
+                catch (Exception ex)
+                {
+                    BeginInvoke(new Action(() => MessageBox.Show(this, $"Error deleting calculations: {ex.Message}", "Delete Error", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                }
+                finally
+                {
+                    RefreshActionAdapters();
+
+                    BeginInvoke(new Action(() =>
+                    {
+                        UseWaitCursor = false;
+                        buttonDelete.Text = buttonDelete.Tag.ToString();
+
+                        if (!m_reconnecting)
+                            buttonDelete.Enabled = true;
                     }));
                 }
             });
