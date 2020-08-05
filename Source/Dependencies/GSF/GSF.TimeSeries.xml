@@ -535,6 +535,11 @@
             Gets or sets template for output measurement point tag names.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.AlternateTagTemplate">
+            <summary>
+            Gets or sets template for output measurement alternate tag names.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalReferenceTemplate">
             <summary>
             Gets or sets template for output measurement signal reference names.
@@ -803,6 +808,11 @@
             Gets or sets template for output measurement point tag names.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AlternateTagTemplate">
+            <summary>
+            Gets or sets template for output measurement alternate tag names.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.SignalReferenceTemplate">
             <summary>
             Gets or sets template for output measurement signal reference names.
@@ -1006,6 +1016,11 @@
             Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.PointTagTemplate"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultAlternateTagTemplate">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.AlternateTagTemplate"/>.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.DefaultSignalReferenceTemplate">
             <summary>
             Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IIndependentAdapterManager.SignalReferenceTemplate"/>.
@@ -1062,13 +1077,14 @@
             <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
             <returns><c>true</c>, if <paramref name="signalID"/> is found; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.GetMeasurementRecord(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Int32,System.String,System.String,System.String,GSF.Units.EE.SignalType,System.String)">
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.GetMeasurementRecord(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Int32,System.String,System.String,System.String,System.String,GSF.Units.EE.SignalType,System.String)">
             <summary>
             Gets measurement record, creating it if needed.
             </summary>
             <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
             <param name="currentDeviceID">Device ID associated with current adapter, or zero if none.</param>
             <param name="pointTag">Point tag of measurement.</param>
+            <param name="alternateTag">Alternate tag of measurement.</param>
             <param name="signalReference">Signal reference of measurement.</param>
             <param name="description">Description of measurement.</param>
             <param name="signalType">Signal type of measurement.</param>
@@ -1213,6 +1229,11 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.PointTagTemplate">
             <summary>
             Gets or sets template for output measurement point tag names.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.AlternateTagTemplate">
+            <summary>
+            Gets or sets template for output measurement alternate tag names.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentInputAdapterManagerBase.SignalReferenceTemplate">
