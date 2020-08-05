@@ -310,6 +310,7 @@
         <File Id="Full_Checkout_Calculations.TagTemplate" Name="Full Checkout Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Full Checkout Calculations.TagTemplate" />
         <File Id="Single_Phase_Power_Calculations.TagTemplate" Name="Single Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Single Phase Power Calculations.TagTemplate" />
         <File Id="Three_Phase_Power_Calculations.TagTemplate" Name="Three Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Three Phase Power Calculations.TagTemplate" />
+        <File Id="Three_Phase_Power_Calculations_with_Time_Sync.TagTemplate" Name="Three Phase Power Calculations with Time Sync.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Three Phase Power Calculations with Time Sync.TagTemplate" />
       </Component>
 
       <!-- Registry Settings -->
