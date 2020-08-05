@@ -29,6 +29,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using GSF.Data;
+using GSF.Data.Model;
 using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
@@ -163,7 +164,15 @@ namespace MAS
                         // Just pick first input measurement to find associated device ID
                         MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
                         DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
-                        return record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated device ID for input measurement {inputMeasurement.SignalID}");
+                        int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
+
+                        // Query the actual database record ID based on the known runtime ID for this device
+                        using (AdoDataConnection connection = GetConfiguredConnection())
+                        {
+                            TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
+                            Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
+                            return runtimeRecord.SourceID;
+                        }
                     }
                 }
                 catch (Exception ex)

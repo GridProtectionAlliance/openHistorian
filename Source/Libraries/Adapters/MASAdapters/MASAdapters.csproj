@@ -59,6 +59,7 @@
     <Compile Include="BulkPhasorInputOscillationDetector.cs" />
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
     <Compile Include="OscillationDetector.cs" />
+    <Compile Include="Runtime.cs" />
     <Compile Include="SingleInputOscillationDetector.cs" />
     <Compile Include="PhasorInputOscillationDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
