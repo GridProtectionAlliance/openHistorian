@@ -47,7 +47,7 @@ IANG_DIFF_CA	ICA;IAA	ICA-IAA	DynamicCalculator	Current Angle Difference C to A
 IANG_DIFF_1A	IPOSA;IAA	IPOSA-IAA	DynamicCalculator	Current Angle Difference + to A
 #FREQ_DIFF_NOM	FREQ;FNOM	FREQ-FNOM	DynamicCalculator	Frequency Difference from Nominal
 FREQ_DIFF_AVG	FREQ;FAVG	FREQ-FAVG	DynamicCalculator	Frequency Difference from Average
-#TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synchronization
+TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synchronization
 # The following calculation specifies FLAGS as input but does not use it in the equation, this is intentional, the TIME
 # variable is a reserved constant in the dynamic calculator, but the calculator will not execute without an input:
 TIME_DIFF	FLAGS	(UtcNow.Ticks-TIME) / 10000	DynamicCalculator	Millisecond Timestamp Difference from System Clock
