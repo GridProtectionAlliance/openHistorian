@@ -3971,7 +3971,7 @@
                         </div>
                         <div class="delete-phasor" title="Mark phasor for deletion" data-bind="click: TaggedForDelete.bind($data, true)"><span class="glyphicon glyphicon-remove glyphicon-action-button delete-phasor"></span></div>
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Label, true), 'has-feedback': !fieldIsValid(Label, true), 'error-margin': !fieldIsValid(Label, true) }">
-                            <input type="text" class="form-control" style="width: 200px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
+                            <input type="text" class="form-control" style="width: 240px" data-bind="acronym: Label, textInput: Label, disable: $parent.readOnly() || !$data.Enabled()" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Label, true)"></span>
                         </div>
                         <span class="tag-name-label">Tag name:&nbsp;</span><span class="tag-name" data-bind="text: TaggedForDelete() ? '*** MARKED FOR DELETION ***' : Enabled() ? TagName() : '*** REMOVED FROM UPDATE ***'"></span>
