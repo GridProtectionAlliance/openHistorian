@@ -387,6 +387,7 @@
     private static double s_defaultCalculationLagTime;
     private static double s_defaultCalculationLeadTime;
     private static int s_nominalFrequency;
+    private static string s_systemName;
 
     // Quasi-Static Properties
     private Dictionary<string, object> AppModelGlobal
@@ -451,9 +452,24 @@
         }
     }
 
+    private string SystemName
+    {
+        get
+        {
+            if (s_systemName == default(string))
+            {
+                s_systemName = (string)AppModelGlobal["SystemName"];
+
+                if (!string.IsNullOrEmpty(s_systemName))
+                    s_systemName = s_systemName + "!";
+            }
+            return s_systemName;
+        }
+    }
+
     private string GetCurrentUserID()
     {
-        if ((object)Thread.CurrentPrincipal.Identity == null)
+        if (Thread.CurrentPrincipal.Identity == null)
             return UserInfo.CurrentUserID;
 
         return Thread.CurrentPrincipal.Identity.Name;
@@ -465,7 +481,7 @@
     {
         SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
 
-        if ((object)securityPrincipal == null)
+        if (securityPrincipal == null)
             return false;
 
         return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
@@ -489,6 +505,7 @@
         var viewModel = null;
         var deviceSignalTypes = [];
         var phasorSignalTypes = [];
+        var freqDeviceName = "@(SystemName)SYSTEM!FREQ-AVG-FQ";
 
         function showLoadingLabel() {
             $("#loadingDataLabel").css("visibility", "visible");
@@ -2623,7 +2640,7 @@
             }
 
             return $(promises).whenAll().then(function () {
-                return phasorHub.queryMeasurement("SYSTEM!FREQ-AVG-FQ");
+                return phasorHub.queryMeasurement(freqDeviceName + "-AVG-FQ");
             })
             .then(function (measurement) {
                 if (measurement && measurement.SignalID)
@@ -2633,7 +2650,7 @@
                 dynamicCalculation.initialized = true;
             })
             .fail(function (error) {
-                showErrorMessage("Failed to find average system frequency with SignalReference = 'SYSTEM!FREQ-AVG-FQ': " + error);
+                showErrorMessage("Failed to find average system frequency with SignalReference = '" + freqDeviceName + "-AVG-FQ': " + error);
             });
         }
 
@@ -2903,7 +2920,7 @@
             }
 
             return phasorHub.loadTemplate(templateType).then(function (tagTemplates) {
-                return phasorHub.validateCalculatorConfigurations(viewModel.historianID()).then(function () {
+                return phasorHub.validateCalculatorConfigurations(viewModel.historianID(), "@SystemName").then(function () {
                     return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
                         const promises = [];
 

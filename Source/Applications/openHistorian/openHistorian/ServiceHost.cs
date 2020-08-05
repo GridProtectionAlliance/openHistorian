@@ -207,6 +207,7 @@ namespace openHistorian
             systemSettings.Add("OSIPIGrafanaControllerEnabled", true, "Defines flag that determines if the OSI-PI Grafana controller is enabled.");
             systemSettings.Add("eDNAGrafanaControllerEnabled", true, "Defines flag that determines if the eDNA Grafana controller is enabled.");
             systemSettings.Add("eDNAMetaData", "*.*", "Comma separated search string for the eDNA metadata search command.");
+            systemSettings.Add("SystemName", "", "Name of system that will be prefixed to system level tags, when defined. Value should follow tag naming conventions, e.g., no spaces and all upper case.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
@@ -235,6 +236,7 @@ namespace openHistorian
             Model.Global.DefaultCalculationLagTime = systemSettings["DefaultCalculationLagTime"].ValueAsDouble(6.0);
             Model.Global.DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0);
             Model.Global.DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30);
+            Model.Global.SystemName = systemSettings["SystemName"].Value;
 
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Model.Global);

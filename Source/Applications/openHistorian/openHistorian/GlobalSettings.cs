@@ -171,5 +171,11 @@ namespace openHistorian
             get;
             set;
         }
+
+        public string SystemName
+        {
+            get;
+            set;
+        }
     }
 }
