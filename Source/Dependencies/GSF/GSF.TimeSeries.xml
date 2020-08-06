@@ -1061,12 +1061,30 @@
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.LookupPointTag(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
             <summary>
-            Lookups up point tag name from provided <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
+            Lookups up point tag name from provided <paramref name="signalID"/>.
             </summary>
             <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
             <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
             <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
             <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.LookupDevice(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
+            <summary>
+            Lookups up associated device name from provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Device name, if found; otherwise, string representation of associated point tag.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.LookupPhasorLabel(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
+            <summary>
+            Lookups up associated phasor label from provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IIndependentAdapterManager"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Phasor label name, if found; otherwise, string representation associated point tag.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions.SignalIDExists(GSF.TimeSeries.Adapters.IIndependentAdapterManager,System.Guid,System.String)">
             <summary>
