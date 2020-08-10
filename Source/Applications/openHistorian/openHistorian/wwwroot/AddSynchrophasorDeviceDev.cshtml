@@ -463,6 +463,7 @@
                 if (!string.IsNullOrEmpty(s_systemName))
                     s_systemName = s_systemName + "!";
             }
+
             return s_systemName;
         }
     }
@@ -505,7 +506,7 @@
         var viewModel = null;
         var deviceSignalTypes = [];
         var phasorSignalTypes = [];
-        var freqDeviceName = "@(SystemName)SYSTEM!FREQ-AVG-FQ";
+        var freqDeviceName = "@(SystemName)SYSTEM!FREQ";
 
         function showLoadingLabel() {
             $("#loadingDataLabel").css("visibility", "visible");
@@ -549,7 +550,7 @@
             if (!isEmpty(phase) && phase !== "+")
                 return phase;
 
-            // Handle high confidence phase matches when no phase is defined or phase is "+" - since positive sequence is often default value, it's treated with suspiscion
+            // Handle high confidence phase matches when no phase is defined or phase is "+" - since positive sequence is often default value, it's treated with suspicion
             if (isEmpty(phase) || phase === "+") {
                 if (phaseMatchHighConfidence(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
                     return "+";
