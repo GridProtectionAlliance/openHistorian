@@ -517,7 +517,21 @@
             setTimeout(function () { $("#loadingDataLabel").css("visibility", "hidden"); }, 500);
         }
 
-        function phaseMatch(phaseLabel, phaseMatches) {
+        function phaseMatchHighConfidence(phaseLabel, phaseMatches) {
+            for (let i = 0; i < phaseMatches.length; i++) {
+                const match = phaseMatches[i];
+                const variations = [ " " + match, "_" + match, "-" + match, "." + match ];
+
+                for (let j = 0; j < variations.length; j++) {
+                    if (phaseLabel.endsWith(variations[j]))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        function phaseMatchLowConfidence(phaseLabel, phaseMatches) {
             for (let i = 0; i < phaseMatches.length; i++) {
                 const match = phaseMatches[i];
                 const variations = [ " " + match, match + " ", "_" + match, match + "_", "_" + match + "_", "." + match, match + ".", "." + match + "." ];
@@ -535,30 +549,59 @@
             if (!isEmpty(phase) && phase !== "+")
                 return phase;
 
-            // Since positive sequence is the default and always treated with accuracy suspicion, verify it's value first
-            if (phaseMatch(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
-                return "+";
+            // Handle high confidence phase matches when no phase is defined or phase is "+" - since positive sequence is often default value, it's treated with suspiscion
+            if (isEmpty(phase) || phase === "+") {
+                if (phaseMatchHighConfidence(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
+                    return "+";
 
-            if (phaseMatch(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI" ]))
-                return "0";
+                if (phaseMatchHighConfidence(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI" ]))
+                    return "0";
 
-            if (phaseMatch(phasorLabel, [ "VA", " IA", "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
-                return "A";
+                if (phaseMatchHighConfidence(phasorLabel, [ "VA", "IA", "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
+                    return "A";
 
-            if (phaseMatch(phasorLabel, [ "VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
-                return "B";
+                if (phaseMatchHighConfidence(phasorLabel, [ "VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
+                    return "B";
 
-            if (phaseMatch(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
-                return "C";
+                if (phaseMatchHighConfidence(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
+                    return "C";
 
-            if (phaseMatch(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
-                return "N";
+                if (phaseMatchHighConfidence(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
+                    return "N";
 
-            // -V and -I may match too often, so check these last
-            if (phaseMatch(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI", "-V", "-I" ]))
-                return "-";
+                if (phaseMatchHighConfidence(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI", "-V", "-I" ]))
+                    return "-";
+            }
 
-            return isEmpty(phase) ? "?" : phase;
+            // Handle lower confidence phase matches when phase is not defined
+            if (isEmpty(phase)) {
+                // Since positive sequence is the default and always treated with accuracy suspicion, verify it's value first
+                if (phaseMatchLowConfidence(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
+                    return "+?";
+
+                if (phaseMatchLowConfidence(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI" ]))
+                    return "0?";
+
+                if (phaseMatchLowConfidence(phasorLabel, [ "VA", "IA", "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
+                    return "A?";
+
+                if (phaseMatchLowConfidence(phasorLabel, [ "VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
+                    return "B?";
+
+                if (phaseMatchLowConfidence(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
+                    return "C?";
+
+                if (phaseMatchLowConfidence(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
+                    return "N?";
+
+                // -V and -I may match too often, so check these last
+                if (phaseMatchLowConfidence(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI", "-V", "-I" ]))
+                    return "-?";
+
+                return "?";
+            }
+
+            return phase;
         }
 
         function guessNominalVoltage(nominalVoltage, phasorLabel, deviceLabel) {
