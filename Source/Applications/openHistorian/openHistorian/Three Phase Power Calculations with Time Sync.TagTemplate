@@ -26,7 +26,6 @@
 #     FNOM: Constant nominal frequency per defined global system configuration, defaults to 60
 #     FAVG: Current average frequency - must be pre-calculated with signal reference of "SYSTEM!FREQ-AVG-FQ"
 #    FLAGS: Status Flags, e.g., IEEE C37.118 STAT word
-MW_1	+		CalculatePower	Positive Sequence MW
 MW_A	A		CalculatePower	Single Phase MW A
 MW_B	B		CalculatePower	Single Phase MW B
 MW_C	C		CalculatePower	Single Phase MW C
