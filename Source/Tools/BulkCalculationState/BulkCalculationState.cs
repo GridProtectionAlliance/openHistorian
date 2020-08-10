@@ -143,8 +143,8 @@ namespace BulkCalculationState
                     m_consoleProcess.Close();
                     m_consoleProcess.Dispose();
                 }
-            
-                m_consoleOutput = "";
+
+                ClearConsoleOutput();
 
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
@@ -177,7 +177,7 @@ namespace BulkCalculationState
 
         private void m_consoleProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            const int MaxOutput = 65536;
+            const int MaxOutput = 524288;
 
             Debug.WriteLine(e.Data);
 
@@ -372,8 +372,11 @@ namespace BulkCalculationState
 
         private bool ReloadConfigComplete()
         {
-            return m_consoleOutput.Contains("System configuration was successfully reloaded.") ||
-                   m_consoleOutput.Contains("Database connection closed.");
+            lock (m_settings)
+            {
+                return m_consoleOutput.Contains("System configuration was successfully reloaded.") ||
+                       m_consoleOutput.Contains("Database connection closed.");
+            }
         }
 
         private void ReloadConfig()
@@ -381,8 +384,8 @@ namespace BulkCalculationState
             ClearConsoleOutput();
             m_consoleProcess.StandardInput.WriteLine("ReloadConfig");
 
-            const int SleepInterval = 500;
-            const int MaxSleeps = 20; // 10 seconds
+            const int SleepInterval = 100;
+            const int MaxSleeps = 50; // 5 seconds
             int sleepCount = 0;
 
             while (!ReloadConfigComplete() && sleepCount++ < MaxSleeps && !m_reconnecting)
