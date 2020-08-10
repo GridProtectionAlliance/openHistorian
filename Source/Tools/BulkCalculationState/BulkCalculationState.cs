@@ -189,14 +189,14 @@ namespace BulkCalculationState
                     output = output.TruncateLeft(MaxOutput);
 
                 m_consoleOutput = output;
-            }
 
-            if ((!buttonEnableSelected.Enabled || !buttonDelete.Enabled) && m_consoleOutput.Contains("Remote client connected"))
-            {
-                ClearConsoleOutput();
-                BeginInvoke(new Action(() => { buttonEnableSelected.Enabled = true; }));
-                BeginInvoke(new Action(() => { buttonDelete.Enabled = true; }));
-                m_reconnecting = false;
+                if ((!buttonEnableSelected.Enabled || !buttonDelete.Enabled) && m_consoleOutput.Contains("Remote client connected"))
+                {
+                    ClearConsoleOutput();
+                    BeginInvoke(new Action(() => { buttonEnableSelected.Enabled = true; }));
+                    BeginInvoke(new Action(() => { buttonDelete.Enabled = true; }));
+                    m_reconnecting = false;
+                }
             }
         }
 
