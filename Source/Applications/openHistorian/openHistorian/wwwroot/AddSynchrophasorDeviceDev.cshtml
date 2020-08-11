@@ -458,10 +458,18 @@
         {
             if (s_systemName == default(string))
             {
-                s_systemName = (string)AppModelGlobal["SystemName"];
+                object value;
 
-                if (!string.IsNullOrEmpty(s_systemName))
-                    s_systemName = s_systemName + "!";
+                if (AppModelGlobal.TryGetValue("SystemName", out value))
+                {
+                    s_systemName = (string)value;
+
+                    if (!string.IsNullOrWhiteSpace(s_systemName))
+                        s_systemName = s_systemName + "!";
+                }
+
+                if (s_systemName == null)
+                    s_systemName = "";
             }
 
             return s_systemName;
