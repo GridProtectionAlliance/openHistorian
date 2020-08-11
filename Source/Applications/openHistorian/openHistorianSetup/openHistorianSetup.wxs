@@ -143,7 +143,7 @@
     <Property Id="HTTPSERVICEPORTS" Value="8180,8185,6055,6056,6155,6156,6356,5020" />
     <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
     <Property Id="COMPANYACRONYM" Value="GPA" />
-    <Property Id="SYSTEMNAME" Value="" />
+    <Property Id="SYSTEMNAME" Value=" " />
     <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
     <SetProperty Id="PROCESSSTARTINFO" Value="FileName={[#ConfigurationSetupUtility.exe]};Arguments=-install;UseShellExecute=True;Verb=runas" After="ExecuteAction" Sequence="ui" />
     <SetProperty Id="WEBMANAGERURL" Value="http://localhost:8180/" Before="CreateShortcuts" Sequence="execute" />
