@@ -3,11 +3,19 @@
 # File format is tab-delimited with the following columns:
 #     Tag Name->Inputs->Equation->Type->Description
 #
-# Tag Name column defines identifier that becomes part of the point tag name of the calculation result
-# Inputs column defines the particular inputs for the specified calculation type
-# Equation column defines the equation of the calculation, if applicable to the calculation type
-# Type column defines calculation type and is one of: CalculatePower, SumPhase or DynamicCalculator
-# Description column defines a textual explanation of the calculation used to describe calculation purpose
+# For custom action adapter types, the format can be interpreted as:
+#     Tag Name = Adapter Instance Name
+#     Inputs = Connection String
+#     Equation = Assembly Name (i.e., DLL file name)
+#     Type = Fully Qualified Type Name
+#     Description = Local Comments
+#
+# Otherwise format defines dynamic signal based calculations based on input configuration:
+#     Tag Name = Identifier that becomes part of the point tag name of the calculation result
+#     Inputs = Particular inputs for the specified calculation type
+#     Equation = Calculation equation, if applicable to the calculation type
+#     Type = Calculation type, one of: CalculatePower, SumPhase or DynamicCalculator
+#     Description = Textual description of calculation purpose included in measurement description field
 #
 # CalculatePower type creates power calculations for paired voltage/current phasors where
 # Inputs column is one of: +, A, B or C

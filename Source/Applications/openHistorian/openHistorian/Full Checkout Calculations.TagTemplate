@@ -3,11 +3,19 @@
 # File format is tab-delimited with the following columns:
 #     Tag Name->Inputs->Equation->Type->Description
 #
-# Tag Name column defines identifier that becomes part of the point tag name of the calculation result
-# Inputs column defines the particular inputs for the specified calculation type
-# Equation column defines the equation of the calculation, if applicable to the calculation type
-# Type column defines calculation type and is one of: CalculatePower, SumPhase or DynamicCalculator
-# Description column defines a textual explanation of the calculation used to describe calculation purpose
+# For custom action adapter types, the format can be interpreted as:
+#     Tag Name = Adapter Instance Name
+#     Inputs = Connection String
+#     Equation = Assembly Name (i.e., DLL file name)
+#     Type = Fully Qualified Type Name
+#     Description = Local Comments
+#
+# Otherwise format defines dynamic signal based calculations based on input configuration:
+#     Tag Name = Identifier that becomes part of the point tag name of the calculation result
+#     Inputs = Particular inputs for the specified calculation type
+#     Equation = Calculation equation, if applicable to the calculation type
+#     Type = Calculation type, one of: CalculatePower, SumPhase or DynamicCalculator
+#     Description = Textual description of calculation purpose included in measurement description field
 #
 # CalculatePower type creates power calculations for paired voltage/current phasors where
 # Inputs column is one of: +, A, B or C
@@ -45,9 +53,10 @@ IMAG_DEV_XP	IAM;IBM;ICM	100*((Max(IAM,Max(IBM,ICM))-Min(IAM,Min(IBM,ICM)))/Min(I
 IANG_DIFF_BA	IBA;IAA	IBA-IAA	DynamicCalculator	Current Angle Difference B to A
 IANG_DIFF_CA	ICA;IAA	ICA-IAA	DynamicCalculator	Current Angle Difference C to A
 IANG_DIFF_1A	IPOSA;IAA	IPOSA-IAA	DynamicCalculator	Current Angle Difference + to A
-#FREQ_DIFF_NOM	FREQ;FNOM	FREQ-FNOM	DynamicCalculator	Frequency Difference from Nominal
+FREQ_DIFF_NOM	FREQ;FNOM	FREQ-FNOM	DynamicCalculator	Frequency Difference from Nominal
 FREQ_DIFF_AVG	FREQ;FAVG	FREQ-FAVG	DynamicCalculator	Frequency Difference from Average
 TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synchronization
 # The following calculation specifies FLAGS as input but does not use it in the equation, this is intentional, the TIME
 # variable is a reserved constant in the dynamic calculator, but the calculator will not execute without an input:
 TIME_DIFF	FLAGS	(UtcNow.Ticks-TIME) / 10000	DynamicCalculator	Millisecond Timestamp Difference from System Clock
+BULK_SEQ	IncludePositiveSequence=False	PowerCalculations.dll	PowerCalculations.BulkSequenceCalculator	Sets up bulk sequence calculations
