@@ -224,9 +224,9 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             try
                             {
-#if DEBUG
+                        #if DEBUG
                                 Process.Start(App.ApplicationExe);
-#else
+                        #else
                                 m_openHistorianServiceController.Refresh();
 
                                 if (m_openHistorianServiceController.Status != ServiceControllerStatus.Running)

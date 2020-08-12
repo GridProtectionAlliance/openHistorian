@@ -1368,7 +1368,7 @@
         <Control Id="CompanyNameEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="COMPANYNAME" Text="{80}" />
         <Control Id="CompanyAcronymLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="Company &amp;Acronym:" />
         <Control Id="CompanyAcronymEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="COMPANYACRONYM" Text="{80}" />
-        <Control Id="SystemNameLabel" Type="Text" X="45" Y="153" Width="100" Height="15" TabSkip="no" Text="&amp;System Name: (e.g., a location name, dev, qa, or prod)" />
+        <Control Id="SystemNameLabel" Type="Text" X="45" Y="153" Width="250" Height="15" TabSkip="no" Text="&amp;System Name: (e.g., a location name, dev or prod)" />
         <Control Id="SystemNameEdit" Type="Edit" X="45" Y="165" Width="220" Height="18" Property="SYSTEMNAME" Text="{80}" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
