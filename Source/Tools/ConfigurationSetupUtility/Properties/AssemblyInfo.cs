@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyDescription("Setup and Configuration Utility for openHistorian")]
 [assembly: AssemblyCompany("Grid Protection Alliance")]
 [assembly: AssemblyProduct("openHistorian")]
-[assembly: AssemblyCopyright("Copyright © GPA, 2016.  All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.")]
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug Build")]
@@ -56,3 +56,4 @@ using System.Windows;
 // [assembly: AssemblyVersion("2.7.235.0")]
 
 [assembly: AssemblyVersion("2.7.235.0")]
+[assembly: AssemblyFileVersion("2.7.235.0")]

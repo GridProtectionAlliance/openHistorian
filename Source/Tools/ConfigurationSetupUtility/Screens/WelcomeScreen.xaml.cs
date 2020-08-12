@@ -130,7 +130,6 @@ namespace ConfigurationSetupUtility.Screens
             else
                 m_welcomeMessageTextBlock.Text = "";
 
-
             m_welcomeMessageTextBlock.Text += "\r\nThis wizard will walk you through the needed steps so you can easily set up your system configuration.";
 
             // The historian setup screen takes time to load because of DLL scanning, so we cache it at startup
