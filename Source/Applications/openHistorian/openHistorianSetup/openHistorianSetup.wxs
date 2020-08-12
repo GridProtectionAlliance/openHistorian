@@ -369,12 +369,12 @@
         <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
       </Component>
       <Component Id="BulkCalculationState">
-        <File Id="BulkCalculationState.exe" Name="$(var.BulkCalculationState.TargetFileName)" Source="$(var.BulkCalculationState.TargetPath)">
+        <File Id="BulkCalculationState.exe" Name="BulkCalculationState.exe" Source="$(var.ProjectDir)\BulkCalculationState.exe">
           <netfx:NativeImage Id="ngen_BulkCalculationState.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="BulkCalculationStateConfig">
-        <File Id="BulkCalculationState.exe.config" Name="$(var.BulkCalculationState.TargetFileName).config" Source="$(var.BulkCalculationState.TargetPath).config" />
+        <File Id="BulkCalculationState.exe.config" Name="BulkCalculationState.exe.config" Source="$(var.ProjectDir)\BulkCalculationState.exe.config" />
       </Component>
       <Component Id="Reports">
         <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll">

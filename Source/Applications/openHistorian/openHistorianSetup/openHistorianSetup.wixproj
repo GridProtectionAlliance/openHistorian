@@ -229,6 +229,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BulkCalculationState.exe" />
+    <Content Include="BulkCalculationState.exe.config" />
     <Content Include="ConfigCrypter.exe" />
     <Content Include="ConfigCrypter.exe.config" />
     <Content Include="ConfigurationEditor.exe" />
