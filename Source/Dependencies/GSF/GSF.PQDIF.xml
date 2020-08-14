@@ -2516,6 +2516,16 @@
             Gets the date and time of file creation.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.ContainerRecord.Title">
+            <summary>
+            Gets the title applied to the file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ContainerRecord.Subject">
+            <summary>
+            Gets the subject applied to the file.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.ContainerRecord.Notes">
             <summary>
             Gets the notes stored in the file.
@@ -2550,6 +2560,16 @@
         <member name="F:GSF.PQDIF.Logical.ContainerRecord.CreationTag">
             <summary>
             Tag that identifies the date and time of creation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ContainerRecord.TitleTag">
+            <summary>
+            Tag that identifies the title applied to the PQDIF file.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ContainerRecord.SubjectTag">
+            <summary>
+            Tag that identifies the subject applied to the PQDIF file.
             </summary>
         </member>
         <member name="F:GSF.PQDIF.Logical.ContainerRecord.NotesTag">
