@@ -3127,6 +3127,11 @@
             prefix will automatically be removed during value assignment.
             </remarks>
         </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.ErrorTemplateName">
+            <summary>
+            Gets or sets template file name to use when a Razor compile or execution exception occurs.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.Readonly">
             <summary>
             Gets an immutable version of the web server options.
@@ -3174,6 +3179,11 @@
             <remarks>
             Page name for web server use will not be prefixed with slash.
             </remarks>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.ErrorTemplateName">
+            <summary>
+            Gets template file name to use when a Razor compile or execution exception occurs.
+            </summary>
         </member>
         <member name="T:GSF.Web.Hubs.DataContextHubClient">
             <summary>
