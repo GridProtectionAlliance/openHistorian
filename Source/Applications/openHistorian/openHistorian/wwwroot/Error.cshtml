@@ -21,53 +21,79 @@
 //
 //*****************************************************************************************************@
 @using System.Net.Http
+@using GSF
 @using GSF.Web
 @using GSF.Web.Model
 @using GSF.Web.Security
 @using GSF.Web.Shared
-@using openHistorian.Model
-@inherits ExtendedTemplateBase<AppModel>
+@inherits ExtendedTemplateBase
 @{
-    string rootPath = Model.Global.WebRootPath;
-}
-<!DOCTYPE html>
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    bool showDebug = ViewBag.DebugBuild;
+    string showDebugValue;
+
+    if (parameters.TryGetValue("Debug", out showDebugValue)) {
+        showDebug = showDebugValue.ParseBoolean();
+    }
+}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@Model.Global.ApplicationName - Server Error</title>
+    <titleServer Error</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
     <link href="Content/Site.css" rel="stylesheet">
     @Raw(Resources.HeaderIcons)
+    <style>
+        pre {
+            height: 600px;
+            width: 90%;
+            margin: 50px;
+            word-wrap: break-word;
+            overflow: scroll;
+        }
+    </style>
 </head>
 <body>
     <span class="glyphicon glyphicon-refresh pre-cache"></span>
-    <br /><br /><br />
-@if (ViewBag.DebugBuild)
+@if (showDebug)
 {
     <h4 class="text-center">
         <span id="response">Web server razor page exception:</span>
-        <br /><br />
-        <pre>@ViewBag.Exception.Message</pre>
     </h4>
 }
 else
 {
+    <br /><br /><br />
     <h4 class="text-center">
-        <span id="response">Web server was not able to run or compile page, redirecting to home page...</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        <span id="response">Web server was not able to run or compile page<span id="redirectMessage">, redirecting to home page <button id="cancelButton" type="button" class="btn btn-sm btn-warning">cancel</button>...</span>&nbsp;&nbsp;<span id="waitSpiner" class="glyphicon glyphicon-refresh glyphicon-spin"></span></span>
         <br /><br />
-        <small><em>Click <a href="@rootPath">here</a> if page does not redirect</em></small>
+        <small><em>Click <a href="/">here</a> if page does not redirect</em></small>
     </h4>
 }
+    <pre>@ViewBag.Exception.Message</pre>
     <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
     <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
-@if (!ViewBag.DebugBuild)
+@if (!showDebug)
 {
     <script>
+        var canceled = false;
+
+        $("#cancelButton").click(function () {
+            canceled = true;
+            $("#waitSpiner").hide();
+            $("#redirectMessage").hide();
+        });
+
         $(function () {
-            window.location = "@rootPath.JavaScriptEncode()";
+            setTimeout(function () {
+                if (!canceled)
+                    window.location = "/";
+            }, 2000);
         });
     </script>
 }
