@@ -503,20 +503,20 @@ namespace ConfigurationSetupUtility.Screens
             XmlDocument configFile = new XmlDocument();
             configFile.Load(configFileName);
 
-            XmlNode errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']");
+            XmlElement errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']") as XmlElement;
 
-            if (errorTemplateName?.Attributes != null)
+            if (errorTemplateName?.Attributes == null)
             {
-                XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings");
+                XmlElement systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings") as XmlElement;
 
                 if (systemSettings != null)
                 {
                     errorTemplateName = configFile.CreateElement("add");
 
-                    errorTemplateName.Attributes["name"].Value = "ErrorTemplateName";
-                    errorTemplateName.Attributes["value"].Value = "Error.cshtml";
-                    errorTemplateName.Attributes["description"].Value = "Defines the template file name to use when a Razor compile or execution exception occurs. Leave blank for none.";
-                    errorTemplateName.Attributes["encrypted"].Value = "false";
+                    errorTemplateName.SetAttribute("name", "ErrorTemplateName");
+                    errorTemplateName.SetAttribute("value", "Error.cshtml");
+                    errorTemplateName.SetAttribute("description", "Defines the template file name to use when a Razor compile or execution exception occurs. Leave blank for none.");
+                    errorTemplateName.SetAttribute("encrypted", "false");
 
                     systemSettings.AppendChild(errorTemplateName);
                     configFileUpdated = true;
