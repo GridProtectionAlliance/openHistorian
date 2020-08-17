@@ -1,0 +1,75 @@
+﻿@*******************************************************************************************************
+//  Error.html - Gbtc
+//
+//  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/14/2020 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Security
+@using GSF.Web.Shared
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    string rootPath = Model.Global.WebRootPath;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Model.Global.ApplicationName - Server Error</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
+    <link href="Content/Site.css" rel="stylesheet">
+    @Raw(Resources.HeaderIcons)
+</head>
+<body>
+    <span class="glyphicon glyphicon-refresh pre-cache"></span>
+    <br /><br /><br />
+@if (ViewBag.DebugBuild)
+{
+    <h4 class="text-center">
+        <span id="response">Web server razor page exception:</span>
+        <br /><br />
+        <pre>@ViewBag.Exception.Message</pre>
+    </h4>
+}
+else
+{
+    <h4 class="text-center">
+        <span id="response">Web server was not able to run or compile page, redirecting to home page...</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        <br /><br />
+        <small><em>Click <a href="@rootPath">here</a> if page does not redirect</em></small>
+    </h4>
+}
+    <script src="@Resources.Root/Shared/Scripts/jquery.js"></script>
+    <script src="@Resources.Root/Shared/Scripts/bootstrap.js"></script>
+@if (!ViewBag.DebugBuild)
+{
+    <script>
+        $(function () {
+            window.location = "@rootPath.JavaScriptEncode()";
+        });
+    </script>
+}
+</body>
+</html>
