@@ -46,6 +46,7 @@
 @using System.Collections.Generic
 @using System.ComponentModel
 @using System.Net.Http
+@using System.Text.RegularExpressions
 @using System.Threading
 @using GSF.ComponentModel
 @using GSF.ComponentModel.DataAnnotations
@@ -463,6 +464,9 @@
                 if (AppModelGlobal.TryGetValue("SystemName", out value))
                 {
                     s_systemName = (string)value;
+
+                    if (s_systemName != null)
+                        s_systemName = Regex.Replace(s_systemName.Trim().ToUpperInvariant(), @"[^A-Z0-9\-!_\.@#\$]+", "_", RegexOptions.Compiled);
 
                     if (!string.IsNullOrWhiteSpace(s_systemName))
                         s_systemName = s_systemName + "!";
