@@ -198,6 +198,9 @@ namespace ConfigurationSetupUtility.Screens
                             ValidateDefaultConfigurationSettings();
                         }
 
+                        // Make sure error template setting is defined
+                        ValidateErrorTemplateConfiguration();
+
                         // Always make sure time series startup operations are defined in the database.
                         ValidateTimeSeriesStartupOperations();
 
@@ -482,6 +485,41 @@ namespace ConfigurationSetupUtility.Screens
                         value.Value = @"^/$|^/.+\.cshtml$|^/.+\.vbhtml$|^/grafana(?!/api/).*$";
                         configFileUpdated = true;
                     }
+                }
+            }
+
+            if (configFileUpdated)
+                configFile.Save(configFileName);
+        }
+
+        private void ValidateErrorTemplateConfiguration()
+        {
+            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+
+            if (!File.Exists(configFileName))
+                return;
+
+            bool configFileUpdated = false;
+            XmlDocument configFile = new XmlDocument();
+            configFile.Load(configFileName);
+
+            XmlNode errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']");
+
+            if (errorTemplateName == null)
+            {
+                XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings");
+
+                if (systemSettings != null)
+                {
+                    errorTemplateName = configFile.CreateElement("add");
+
+                    errorTemplateName.Attributes.Append(configFile.CreateAttribute("name", "ErrorTemplateName"));
+                    errorTemplateName.Attributes.Append(configFile.CreateAttribute("value", "Error.cshtml"));
+                    errorTemplateName.Attributes.Append(configFile.CreateAttribute("description", "Defines the template file name to use when a Razor compile or execution exception occurs. Leave blank for none."));
+                    errorTemplateName.Attributes.Append(configFile.CreateAttribute("encrypted", "false"));
+
+                    systemSettings.AppendChild(errorTemplateName);
+                    configFileUpdated = true;
                 }
             }
 
