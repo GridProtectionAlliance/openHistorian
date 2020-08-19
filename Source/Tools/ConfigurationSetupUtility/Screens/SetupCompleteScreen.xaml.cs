@@ -198,8 +198,7 @@ namespace ConfigurationSetupUtility.Screens
                             ValidateDefaultConfigurationSettings();
                         }
 
-                        // Make sure error template setting is defined
-                        ValidateErrorTemplateConfiguration();
+                        //ValidateErrorTemplateConfiguration();
 
                         // Always make sure time series startup operations are defined in the database.
                         ValidateTimeSeriesStartupOperations();
@@ -492,40 +491,40 @@ namespace ConfigurationSetupUtility.Screens
                 configFile.Save(configFileName);
         }
 
-        private void ValidateErrorTemplateConfiguration()
-        {
-            string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
+        //private void ValidateErrorTemplateConfiguration()
+        //{
+        //    string configFileName = Path.Combine(Directory.GetCurrentDirectory(), App.ApplicationConfig);
 
-            if (!File.Exists(configFileName))
-                return;
+        //    if (!File.Exists(configFileName))
+        //        return;
 
-            bool configFileUpdated = false;
-            XmlDocument configFile = new XmlDocument();
-            configFile.Load(configFileName);
+        //    bool configFileUpdated = false;
+        //    XmlDocument configFile = new XmlDocument();
+        //    configFile.Load(configFileName);
 
-            XmlElement errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']") as XmlElement;
+        //    XmlElement errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']") as XmlElement;
 
-            if (errorTemplateName?.Attributes == null)
-            {
-                XmlElement systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings") as XmlElement;
+        //    if (errorTemplateName?.Attributes == null)
+        //    {
+        //        XmlElement systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings") as XmlElement;
 
-                if (systemSettings != null)
-                {
-                    errorTemplateName = configFile.CreateElement("add");
+        //        if (systemSettings != null)
+        //        {
+        //            errorTemplateName = configFile.CreateElement("add");
 
-                    errorTemplateName.SetAttribute("name", "ErrorTemplateName");
-                    errorTemplateName.SetAttribute("value", "Error.cshtml");
-                    errorTemplateName.SetAttribute("description", "Defines the template file name to use when a Razor compile or execution exception occurs. Leave blank for none.");
-                    errorTemplateName.SetAttribute("encrypted", "false");
+        //            errorTemplateName.SetAttribute("name", "ErrorTemplateName");
+        //            errorTemplateName.SetAttribute("value", "Error.cshtml");
+        //            errorTemplateName.SetAttribute("description", "Defines the template file name to use when a Razor compile or execution exception occurs. Leave blank for none.");
+        //            errorTemplateName.SetAttribute("encrypted", "false");
 
-                    systemSettings.AppendChild(errorTemplateName);
-                    configFileUpdated = true;
-                }
-            }
+        //            systemSettings.AppendChild(errorTemplateName);
+        //            configFileUpdated = true;
+        //        }
+        //    }
 
-            if (configFileUpdated)
-                configFile.Save(configFileName);
-        }
+        //    if (configFileUpdated)
+        //        configFile.Save(configFileName);
+        //}
 
         private void ValidateTimeSeriesStartupOperations()
         {
