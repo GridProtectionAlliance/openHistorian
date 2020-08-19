@@ -3068,6 +3068,11 @@
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.WebRootPath"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultErrorTemplateName">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.ErrorTemplateName"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultClientCacheEnabled">
             <summary>
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled"/>.
