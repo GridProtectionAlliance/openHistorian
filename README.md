@@ -2,6 +2,8 @@
 
 # openHistorian
 
+![CodeQL](https://github.com/GridProtectionAlliance/openHistorian/workflows/CodeQL/badge.svg)
+
 The openHistorian is a back office system designed to efficiently integrate and archive process control data, e.g., SCADA, synchrophasor, digital fault recorder or any other time-series data used to support process operations.
 
 The openHistorian is optimized to store and retrieve large volumes of time-series data quickly and efficiently, including high-resolution sub-second information that is measured very rapidly, e.g., many thousands of times per second.
