@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using GSF;
+using GSF.Collections;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Snap;
@@ -170,7 +171,6 @@ namespace openHistorian.Adapters
             }
 
             TimeSpan resolutionInterval = resolution.GetInterval();
-            SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
@@ -194,7 +194,7 @@ namespace openHistorian.Adapters
                 stopTime = stopTime.BaselinedTimestamp(interval);
             }
 
-            timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+            SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
             Dictionary<ulong, DataRow> metadata = null;
 
@@ -218,7 +218,7 @@ namespace openHistorian.Adapters
 
                 Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
                 Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
-                Dictionary<ulong, Tuple<float, float>> extremes = new Dictionary<ulong, Tuple<float, float>>();
+                Dictionary<ulong, Tuple<float, float>> extremes = new Dictionary<ulong, Tuple<float, float>>(measurementIDs.Length);
                 ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
                 long pointCount;
                 float pointValue, min = 0.0F, max = 0.0F;

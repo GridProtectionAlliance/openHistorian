@@ -23,6 +23,7 @@
 
 using GrafanaAdapters;
 using GSF;
+using GSF.Collections;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
@@ -37,6 +38,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using CancellationToken = System.Threading.CancellationToken;
@@ -79,19 +81,30 @@ namespace openHistorian.Adapters
                 using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                 {
                     if (database == null)
-                        yield break; 
+                        yield break;
 
-                    Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
-                    SeekFilterBase<HistorianKey> timeFilter;
+                    TimeSpan resolutionInterval;
 
-                    // Set data scan resolution
-                    if (!decimate || resolution == Resolution.Full)
+                    if (decimate)
                     {
-                        timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                        if (!TryParseInterval(interval, out resolutionInterval))
+                        {
+                            Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
+                            resolutionInterval = resolution.GetInterval();
+                        }
                     }
                     else
                     {
-                        TimeSpan resolutionInterval = resolution.GetInterval();
+                        resolutionInterval = TimeSpan.Zero;
+                    }
+
+                    bool subFullResolution = false;
+
+                    // Set data scan resolution
+                    if (decimate && resolutionInterval != TimeSpan.Zero)
+                    {
+                        subFullResolution = true;
+
                         BaselineTimeInterval timeInterval = BaselineTimeInterval.Second;
 
                         if (resolutionInterval.Ticks < Ticks.PerMinute)
@@ -103,12 +116,16 @@ namespace openHistorian.Adapters
 
                         startTime = startTime.BaselinedTimestamp(timeInterval);
                         stopTime = stopTime.BaselinedTimestamp(timeInterval);
-
-                        timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                     }
+
+                    SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
                     // Setup point ID selections
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(targetMap.Keys);
+                    Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(targetMap.Count);
+                    Dictionary<ulong, Tuple<float, float>> extremes = new Dictionary<ulong, Tuple<float, float>>(targetMap.Count);
+                    ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks;
+                    float pointValue, min = 0.0F, max = 0.0F;
 
                     // Start stream reader for the provided time window and selected points
                     using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
@@ -118,13 +135,51 @@ namespace openHistorian.Adapters
 
                         while (stream.Read(key, value))
                         {
-                            yield return new DataSourceValue
+                            pointID = key.PointID;
+                            timestamp = key.Timestamp;
+                            pointValue = value.AsSingle;
+
+                            if (subFullResolution)
                             {
-                                Target = targetMap[key.PointID],
-                                Time = (key.Timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                Value = value.AsSingle,
-                                Flags = (MeasurementStateFlags)value.Value3
-                            };
+                                Tuple<float, float> stats = extremes.GetOrAdd(pointID, _ => new Tuple<float, float>(float.MaxValue, float.MinValue));
+
+                                min = stats.Item1;
+                                max = stats.Item2;
+
+                                if (pointValue < min)
+                                    min = pointValue;
+
+                                if (pointValue > max)
+                                    max = pointValue;
+
+                                if (min != float.MaxValue && max != float.MinValue)
+                                    pointValue = Math.Abs(max) > Math.Abs(min) ? max : min;
+                                else if (min != float.MaxValue)
+                                    pointValue = min;
+                                else if (max != float.MinValue)
+                                    pointValue = max;
+                            }
+
+                            if (timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                            {
+                                yield return new DataSourceValue
+                                {
+                                    Target = targetMap[pointID],
+                                    Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                    Value = pointValue,
+                                    Flags = (MeasurementStateFlags)value.Value3
+                                };
+                                lastTimes[pointID] = timestamp;
+
+                                // Reset extremes at each point publication
+                                if (subFullResolution)
+                                    extremes[pointID] = new Tuple<float, float>(float.MaxValue, float.MinValue);
+                            }
+                            else if (subFullResolution)
+                            {
+                                // Track extremes over interval
+                                extremes[pointID] = new Tuple<float, float>(min, max);
+                            }
                         }
                     }
                 }
@@ -413,13 +468,77 @@ namespace openHistorian.Adapters
             return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
         }
        
+        /// <summary>
+        /// Returns tag keys for ad hoc filters.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ActionName("tag-keys")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<List<GrafanaAlarm>> TagKeys(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
+        }
 
+        /// <summary>
+        /// Returns tag values for ad hoc filters.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ActionName("tag-values")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<List<GrafanaAlarm>> TagValues(QueryRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
+        }
 
         #endregion
 
         #region [ Static ]
 
+        private static readonly Regex s_intervalExpression = new Regex(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
+
         // Static Methods
+        private static bool TryParseInterval(string interval, out TimeSpan timeSpan)
+        {
+            if (string.IsNullOrWhiteSpace(interval))
+            {
+                timeSpan = default;
+                return false;
+            }
+
+            Match match = s_intervalExpression.Match(interval);
+
+            if (match.Success && double.TryParse(match.Result("${Value}"), out double value))
+            {
+                switch (match.Result("${Unit}").Trim().ToLowerInvariant())
+                {
+                    case "ms":
+                        timeSpan = TimeSpan.FromMilliseconds(value);
+                        return true;
+                    case "s":
+                        timeSpan = TimeSpan.FromSeconds(value);
+                        return true;
+                    case "m":
+                        timeSpan = TimeSpan.FromMinutes(value);
+                        return true;
+                    case "h":
+                        timeSpan = TimeSpan.FromHours(value);
+                        return true;
+                    case "d":
+                        timeSpan = TimeSpan.FromDays(value);
+                        return true;
+                }
+            }
+
+            timeSpan = default;
+            return false;
+        }
+
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)
         {
             if (!string.IsNullOrWhiteSpace(instanceName))
