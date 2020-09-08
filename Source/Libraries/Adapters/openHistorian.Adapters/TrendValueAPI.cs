@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using GSF;
-using GSF.Collections;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Snap;
@@ -165,21 +164,23 @@ namespace openHistorian.Adapters
 
             // Setting series limit to zero requests full resolution data, which overrides provided parameter
             if (seriesLimit < 1)
+            {
                 resolution = Resolution.Full;
+                forceLimit = false;
+            }
 
             TimeSpan resolutionInterval = resolution.GetInterval();
             SeekFilterBase<HistorianKey> timeFilter;
             MatchFilterBase<HistorianKey, HistorianValue> pointFilter = null;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
+            bool subFullResolution = false;
 
             // Set data scan resolution
-            if (resolution == Resolution.Full)
+            if (resolution != Resolution.Full)
             {
-                timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
-            }
-            else
-            {
+                subFullResolution = true;
+
                 BaselineTimeInterval interval = BaselineTimeInterval.Second;
 
                 if (resolutionInterval.Ticks < Ticks.PerMinute)
@@ -191,9 +192,9 @@ namespace openHistorian.Adapters
 
                 startTime = startTime.BaselinedTimestamp(interval);
                 stopTime = stopTime.BaselinedTimestamp(interval);
-
-                timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
             }
+
+            timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
             Dictionary<ulong, DataRow> metadata = null;
 
@@ -215,32 +216,17 @@ namespace openHistorian.Adapters
                 else
                     measurementIDs = metadata.Keys.ToArray();
 
-                // Start stream reader for the provided time window and selected points
                 Dictionary<ulong, long> pointCounts = new Dictionary<ulong, long>(measurementIDs.Length);
-                Dictionary<ulong, long> intervals = new Dictionary<ulong, long>(measurementIDs.Length);
                 Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(measurementIDs.Length);
-                double range = (stopTime - startTime).TotalSeconds;
+                Dictionary<ulong, Tuple<float, float>> extremes = new Dictionary<ulong, Tuple<float, float>>();
                 ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks, baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
                 long pointCount;
+                float pointValue, min = 0.0F, max = 0.0F;
 
-                if (resolutionSpan <= 1UL)
-                    resolutionSpan = Ticks.PerSecond;
-
-                if (seriesLimit < 1)
-                    seriesLimit = 1;
-
-                // Estimate total measurement counts per point so decimation intervals for each series can be calculated
                 foreach (ulong measurementID in measurementIDs)
-                {
-                    if (resolution == Resolution.Full)
-                        pointCounts[measurementID] = metadata.TryGetValue(measurementID, out DataRow row) ? (long)(int.Parse(row["FramesPerSecond"].ToString()) * range) : 2;
-                    else
-                        pointCounts[measurementID] = (long)(range / resolutionInterval.TotalSeconds.NotZero(1.0D));
-                }
+                    pointCounts[measurementID] = 0L;
 
-                foreach (ulong measurementID in pointCounts.Keys)
-                    intervals[measurementID] = (pointCounts[measurementID] / seriesLimit).NotZero(1L);
-
+                // Start stream reader for the provided time window and selected points
                 using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
                 {
                     while (stream.Read(key, value) && !cancellationToken.IsCancelled)
@@ -248,17 +234,56 @@ namespace openHistorian.Adapters
                         pointID = key.PointID;
                         timestamp = key.Timestamp;
                         pointCount = pointCounts[pointID];
+                        pointValue = value.AsSingle;
 
-                        if (pointCount++ % intervals[pointID] == 0 || !forceLimit && timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                        if (subFullResolution)
+                        {
+                            Tuple<float, float> stats = extremes.GetOrAdd(pointID, _ => new Tuple<float, float>(float.MaxValue, float.MinValue));
+
+                            min = stats.Item1;
+                            max = stats.Item2;
+
+                            if (pointValue < min)
+                                min = pointValue;
+
+                            if (pointValue > max)
+                                max = pointValue;
+
+                            if (min != float.MaxValue && max != float.MinValue)
+                                pointValue = Math.Abs(max) > Math.Abs(min) ? max : min;
+                            else if (min != float.MaxValue)
+                                pointValue = min;
+                            else if (max != float.MinValue)
+                                pointValue = max;
+                        }
+
+                        if (timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                        {
+                            pointCount++;
+
+                            if (forceLimit && pointCount > seriesLimit)
+                                break;
+
                             yield return new TrendValue
                             {
                                 ID = (long)pointID,
                                 Timestamp = (timestamp - baseTicks) / (double)Ticks.PerMillisecond,
-                                Value = value.AsSingle
+                                Value = pointValue
                             };
 
+                            lastTimes[pointID] = timestamp;
+
+                            // Reset extremes at each point publication
+                            if (subFullResolution)
+                                extremes[pointID] = new Tuple<float, float>(float.MaxValue, float.MinValue);
+                        }
+                        else if (subFullResolution)
+                        {
+                            // Track extremes over interval
+                            extremes[pointID] = new Tuple<float, float>(min, max);
+                        }
+
                         pointCounts[pointID] = pointCount;
-                        lastTimes[pointID] = timestamp;
                     }
                 }
             }
