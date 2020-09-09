@@ -507,7 +507,7 @@ namespace openHistorian.Adapters
         {
             if (string.IsNullOrWhiteSpace(interval))
             {
-                timeSpan = default;
+                timeSpan = default(TimeSpan);
                 return false;
             }
 
@@ -535,7 +535,7 @@ namespace openHistorian.Adapters
                 }
             }
 
-            timeSpan = default;
+            timeSpan = default(TimeSpan);
             return false;
         }
 
