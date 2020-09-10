@@ -403,44 +403,48 @@ namespace openHistorian.Adapters
         /// Search openHistorian for a target.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> Search(Target request)
+        public virtual Task<string[]> Search(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.Search(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchFields(Target request)
+        public virtual Task<string[]> SearchFields(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchFields(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
         /// Search openHistorian for a table.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchFilters(Target request)
+        public virtual Task<string[]> SearchFilters(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchFilters(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchOrderBys(Target request)
+        public virtual Task<string[]> SearchOrderBys(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchOrderBys(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -455,7 +459,6 @@ namespace openHistorian.Adapters
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
 
-
         /// <summary>
         /// Queries openPDC Alarms as a Grafana alarm data source.
         /// </summary>
@@ -467,33 +470,31 @@ namespace openHistorian.Adapters
         {
             return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
         }
-       
+
         /// <summary>
         /// Returns tag keys for ad hoc filters.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="request">Tag keys request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [ActionName("tag-keys")]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<GrafanaAlarm>> TagKeys(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<TagKeysResponse[]> TagKeys(TagKeysRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
+            return DataSource?.TagKeys(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagKeysResponse>());
         }
 
         /// <summary>
         /// Returns tag values for ad hoc filters.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="request">Tag values request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [ActionName("tag-values")]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<GrafanaAlarm>> TagValues(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<TagValuesResponse[]> TagValues(TagValuesRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
+            return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
         #endregion

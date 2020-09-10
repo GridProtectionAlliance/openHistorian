@@ -143,52 +143,57 @@ namespace openHistorian.Adapters
         /// Search openHistorian for a target.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public override Task<string[]> Search(Target request)
+        public override Task<string[]> Search(Target request, CancellationToken cancellationToken)
         {
             string target = string.IsNullOrEmpty(request.target) ? string.Empty : request.target;
 
             return Task.Factory.StartNew(() =>
             {
                 return DataSource?.Metadata.Tables["ActivePhasors"].Select($"Instance LIKE '{DataSource?.InstanceName}' AND PhasorTag LIKE '%{target}%'").Take(DataSource.MaximumSearchTargetsPerRequest).Select(row => $"{row["PhasorTag"]}").ToArray();
-            });
+            },
+            cancellationToken);
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public override Task<string[]> SearchFields(Target request)
+        public override Task<string[]> SearchFields(Target request, CancellationToken cancellationToken)
         {
             request.target = "ActivePhasors";
-            return DataSource?.SearchFields(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchFields(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
         /// Search openHistorian for a table.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public override Task<string[]> SearchFilters(Target request)
+        public override Task<string[]> SearchFilters(Target request, CancellationToken cancellationToken)
         {
             request.target = "ActivePhasors";
-            return DataSource?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchFilters(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
         /// Search openHistorian for a field.
         /// </summary>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public override Task<string[]> SearchOrderBys(Target request)
+        public override Task<string[]> SearchOrderBys(Target request, CancellationToken cancellationToken)
         {
             request.target = "ActivePhasors";
-            return DataSource?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+            return DataSource?.SearchOrderBys(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>

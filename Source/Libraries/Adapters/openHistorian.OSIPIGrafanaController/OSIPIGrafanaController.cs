@@ -267,11 +267,12 @@ namespace openHistorian.OSIPIGrafanaController
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<string[]> Search(string instanceName, string serverName, Target request)
+        public Task<string[]> Search(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
         {
-            return DataSource(instanceName, serverName)?.Search(request) ?? Task.FromResult(new string[0]);
+            return DataSource(instanceName, serverName)?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -280,11 +281,12 @@ namespace openHistorian.OSIPIGrafanaController
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<string[]> SearchFields(string instanceName, string serverName, Target request)
+        public Task<string[]> SearchFields(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
         {
-            return DataSource(instanceName, serverName)?.SearchFields(request) ?? Task.FromResult(new string[0]);
+            return DataSource(instanceName, serverName)?.SearchFields(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -293,11 +295,12 @@ namespace openHistorian.OSIPIGrafanaController
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<string[]> SearchFilters(string instanceName, string serverName, Target request)
+        public Task<string[]> SearchFilters(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
         {
-            return DataSource(instanceName, serverName)?.SearchFilters(request) ?? Task.FromResult(new string[0]);
+            return DataSource(instanceName, serverName)?.SearchFilters(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -306,11 +309,12 @@ namespace openHistorian.OSIPIGrafanaController
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
         /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<string[]> SearchOrderBys(string instanceName, string serverName, Target request)
+        public Task<string[]> SearchOrderBys(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
         {
-            return DataSource(instanceName, serverName)?.SearchOrderBys(request) ?? Task.FromResult(new string[0]);
+            return DataSource(instanceName, serverName)?.SearchOrderBys(request, cancellationToken) ?? Task.FromResult(new string[0]);
         }
 
         /// <summary>
@@ -325,6 +329,36 @@ namespace openHistorian.OSIPIGrafanaController
         public Task<List<AnnotationResponse>> Annotations(string instanceName, string serverName, AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource(instanceName, serverName)?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
+        }
+
+        /// <summary>
+        /// Returns tag keys for ad hoc filters.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Tag keys request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [ActionName("tag-keys")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<TagKeysResponse[]> TagKeys(string instanceName, string serverName, TagKeysRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.TagKeys(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagKeysResponse>());
+        }
+
+        /// <summary>
+        /// Returns tag values for ad hoc filters.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Tag values request.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [ActionName("tag-values")]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        public virtual Task<TagValuesResponse[]> TagValues(string instanceName, string serverName, TagValuesRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
         /// <summary>
