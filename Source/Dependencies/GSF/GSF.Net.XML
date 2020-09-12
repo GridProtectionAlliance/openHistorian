@@ -4,6 +4,47 @@
         <name>GSF.Net</name>
     </assembly>
     <members>
+        <member name="T:GSF.Net.OID">
+            <summary>
+            Defines global object identifiers used by the Grid Solutions Framework.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.OID.EnterpriseRoot">
+            <summary>
+            Root GSF OID (1.3.6.1.4.1.56056). This is the private enterprise number defined for the Grid Protection Alliance.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.OID.SnmpRoot">
+            <summary>
+            Root GSF OID for SNMP objects (1.3.6.1.4.1.56056.1).
+            </summary>
+        </member>
+        <member name="F:GSF.Net.OID.SnmpStatsRoot">
+            <summary>
+            Root GSF OID for SNMP statistic values (1.3.6.1.4.1.56056.1.1).
+            </summary>
+        </member>
+        <member name="F:GSF.Net.OID.SnmpStats">
+            <summary>
+            GSF SNMP OIDs for known statistic sources (1.3.6.1.4.1.56056.1.1.x).
+            </summary>
+            <remarks>
+            Each source category will subdivide specific statistics by signal index.
+            </remarks>
+        </member>
+        <member name="F:GSF.Net.OID.LdapRoot">
+            <summary>
+            Root GSF OID for LDAP objects (1.3.6.1.4.1.56056.2).
+            </summary>
+        </member>
+        <member name="M:GSF.Net.OID.Append(System.UInt32[],System.UInt32)">
+            <summary>
+            Appends an new OID value to an existing OID value array.
+            </summary>
+            <param name="oid">Root OID value array.</param>
+            <param name="value">New OID value to append.</param>
+            <returns>Combined OID value array.</returns>
+        </member>
         <member name="T:GSF.Net.Snmp.ByteTool">
             <summary>
             Helper utility that performs data conversions from/to bytes.
@@ -3494,6 +3535,11 @@
             In this mode, walk within sub-tree.
             </summary>
         </member>
+        <member name="T:GSF.Net.Snmp.NamespaceDoc">
+            <summary>
+            Contains classes used for SNMP functionality.
+            </summary>
+        </member>
         <member name="T:GSF.Net.Snmp.NoSuchInstance">
             <summary>
             NoSuchInstance exception.
@@ -3993,6 +4039,646 @@
             A <see cref="T:System.String"/> that represents this instance.
             </returns>
         </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfAdminStatus">
+            <summary>
+            ifAdminStatus object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfAdminStatus.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfAdminStatus"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfAdminStatus.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfDescr">
+            <summary>
+            ifDescr object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfDescr.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfDescr"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfDescr.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfIndex">
+            <summary>
+            ifIndex object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfIndex.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfIndex"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfIndex.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInDiscards">
+            <summary>
+            ifInDiscards object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInDiscards.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInDiscards"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInDiscards.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInErrors">
+            <summary>
+            ifInError object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInErrors.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInErrors"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInErrors.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInNUcastPkts">
+            <summary>
+            ifInNUcastPkts object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInNUcastPkts.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInNUcastPkts"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInNUcastPkts.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInOctets">
+            <summary>
+            ifInOctets object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInOctets.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInOctets"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInOctets.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInUcastPkts">
+            <summary>
+            ifInUcastPkts object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInUcastPkts.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInUcastPkts"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInUcastPkts.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfInUnknownProtos">
+            <summary>
+            ifInUnknownProtos object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfInUnknownProtos.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfInUnknownProtos"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfInUnknownProtos.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfLastChange">
+            <summary>
+            ifLastChange.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfLastChange.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfLastChange"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfLastChange.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfMtu">
+            <summary>
+            ifMtu object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfMtu.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfMtu"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfMtu.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfNumber">
+            <summary>
+            ifNumber object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfNumber.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfNumber"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfNumber.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOperStatus">
+            <summary>
+            ifOperStatus.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOperStatus.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOperStatus"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOperStatus.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutDiscards">
+            <summary>
+            ifOutDiscards object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutDiscards.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutDiscards"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutDiscards.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutErrors">
+            <summary>
+            ifOutErrors object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutErrors.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutErrors"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutErrors.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutNUcastPkts">
+            <summary>
+            ifOutNUcastPkts object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutNUcastPkts.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutNUcastPkts"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutNUcastPkts.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutOctets">
+            <summary>
+            ifOutOctets.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutOctets.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutOctets"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutOctets.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutQLen">
+            <summary>
+            ifOutQLen.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutQLen.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutQLen"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutQLen.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfOutUcastPkts">
+            <summary>
+            ifOutUcastPkts.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfOutUcastPkts.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfOutUcastPkts"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfOutUcastPkts.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfPhysAddress">
+            <summary>
+            ifPhysAddress.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfPhysAddress.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfPhysAddress"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfPhysAddress.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfSpecific">
+            <summary>
+            ifSpecific.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfSpecific.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfSpecific"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfSpecific.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfSpeed">
+            <summary>
+            ifSpeed.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfSpeed.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfSpeed"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfSpeed.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfTable">
+            <summary>
+            ifTable object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfTable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfTable"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfTable.Objects">
+            <summary>
+            Gets the objects in the table.
+            </summary>
+            <value>
+            The objects.
+            </value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.IfType">
+            <summary>
+            ifType.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.IfType.#ctor(System.Int32,System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.IfType"/> class.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="networkInterface">The network interface.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.IfType.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+            <exception cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"></exception>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysContact">
+            <summary>
+            sysContact object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysContact.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysContact"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysContact.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysDescr">
+            <summary>
+            sysDescr object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysDescr.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysDescr"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysDescr.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysLocation">
+            <summary>
+            sysLocation object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysLocation.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysLocation"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysLocation.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysName">
+            <summary>
+            sysName object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysName.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysName"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysName.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysObjectId">
+            <summary>
+            sysObjectId object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysObjectId.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysObjectId"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysObjectId.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysORLastChange">
+            <summary>
+            sysORLastChange object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysORLastChange.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysORLastChange"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysORLastChange.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysORTable">
+            <summary>
+            sysORTable object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysORTable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysORTable"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysORTable.Objects">
+            <summary>
+            Gets the objects in the table.
+            </summary>
+            <value>The objects.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysServices">
+            <summary>
+            sysServices object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysServices.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysServices"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysServices.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Objects.SysUpTime">
+            <summary>
+            sysUpTime object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Objects.SysUpTime.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Objects.SysUpTime"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Objects.SysUpTime.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
         <member name="T:GSF.Net.Snmp.OctetString">
             <summary>
             OctetString type.
@@ -4280,6 +4966,1394 @@
             </summary>
             <param name="message">Message</param>
             <param name="agent">Agent address</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.AccessFailureException">
+            <summary>
+            Access failure exception. 
+            Raised when,
+            1. GET operation is performed on a write-only object.
+            2. SET operation is performed on a read-only object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.AccessFailureException.#ctor">
+            <summary>
+            Creates a <see cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.AccessFailureException.#ctor(System.String)">
+            <summary>
+            Creates a <see cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"/> instance with a specific <see cref="T:System.String"/>.
+            </summary>
+            <param name="message">Message</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.AccessFailureException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a <see cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"/> instance with a specific <see cref="T:System.String"/> and an <see cref="T:System.Exception"/>.
+            </summary>
+            <param name="message">Message</param>
+            <param name="inner">Inner exception</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.AccessFailureException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a <see cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"/> instance.
+            </summary>
+            <param name="info">Info</param>
+            <param name="context">Context</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.AccessFailureException.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this <see cref="T:GSF.Net.Snmp.Pipeline.AccessFailureException"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ComposedMembershipProvider">
+            <summary>
+            Composed membership provider, who owns internal providers. If the request is authenticated by any of the internal providers, it is considered as authenticated.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ComposedMembershipProvider.#ctor(GSF.Net.Snmp.Pipeline.IMembershipProvider[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.ComposedMembershipProvider"/> class.
+            </summary>
+            <param name="providers">The internal providers.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ComposedMembershipProvider.AuthenticateRequest(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.DefaultTypeResolver">
+            <summary>
+            Default type resolver to return default type.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.DefaultTypeResolver.Load(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.DefaultTypeResolver.GetAssemblies">
+            <inheritdoc />
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.EngineGroup">
+            <summary>
+            Engine group which contains all related objects.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.EngineGroup.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.EngineGroup"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.EngineId">
+            <summary>
+            Gets the engine id.
+            </summary>
+            <value>The engine id.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.EngineBoots">
+            <summary>
+            Gets or sets the engine boots.
+            </summary>
+            <value>The engine boots.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.EngineTime">
+            <summary>
+            Gets the engine time.
+            </summary>
+            <value>The engine time.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.EngineTimeData">
+            <summary>
+            Gets the engine time data.
+            </summary>
+            <value>
+            The engine time data. [0] is engine boots, [1] is engine time.
+            </value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.EngineGroup.IsInTime(System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Verifies if the request comes in time.
+            </summary>
+            <param name="currentTimeData">The current time data.</param>
+            <param name="pastReboots">The past reboots.</param>
+            <param name="pastTime">The past time.</param>
+            <returns>
+              <c>true</c> if the request is in time window; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.NotInTimeWindow">
+            <summary>
+            Gets not-in-time-window counter.
+            </summary>
+            <value>
+            Counter variable.
+            </value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.UnknownEngineId">
+            <summary>
+            Gets unknown engine ID counter.
+            </summary>
+            <value>
+            Counter variable.
+            </value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.UnknownSecurityName">
+            <summary>
+            Gets unknown security name counter.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.DecryptionError">
+            <summary>
+            Gets decryption error counter.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.UnsupportedSecurityLevel">
+            <summary>
+            Gets unsupported security level counter.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.EngineGroup.AuthenticationFailure">
+            <summary>
+            Gets authentication failure counter.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.GetBulkMessageHandler">
+            <summary>
+            GET BULK message handler.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.GetBulkMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.GetMessageHandler">
+            <summary>
+            GET message handler.
+            </summary>
+            <remarks>
+            Follows RFC 3416 4.2.1.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.GetMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.GetNextMessageHandler">
+            <summary>
+            GET NEXT message handler.
+            </summary>    
+            <remarks>
+            Follows RFC 3416 4.2.2.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.GetNextMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.GetNextV1MessageHandler">
+            <summary>
+            GET NEXT message handler.
+            </summary>    
+            <remarks>
+            Follows RFC 1157, 4.1.3
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.GetNextV1MessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.GetV1MessageHandler">
+            <summary>
+            GET message handler.
+            </summary>
+            <remarks>
+            Follows RFC 1157, 4.1.2
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.GetV1MessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.HandlerMapping">
+            <summary>
+            Handler mapping class, who is used to map incoming messages to their handlers.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.HandlerMapping.#ctor(System.String,System.String,GSF.Net.Snmp.Pipeline.IMessageHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.HandlerMapping"/> class.
+            </summary>
+            <param name="version">The version.</param>
+            <param name="command">The command.</param>
+            <param name="handler">The handler.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.HandlerMapping.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.HandlerMapping"/> class.
+            </summary>
+            <param name="version">The version.</param>
+            <param name="command">The command.</param>
+            <param name="type">The type.</param>
+            <param name="assembly">The assembly.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.HandlerMapping.Handler">
+            <summary>
+            Gets the handler.
+            </summary>
+            <value>The handler.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.HandlerMapping.CanHandle(GSF.Net.Snmp.Messaging.ISnmpMessage)">
+            <summary>
+            Determines whether this instance can handle the specified message.
+            </summary>
+            <param name="message">The message.</param>
+            <returns>
+                <c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ITypeResolver">
+            <summary>
+            .NET standard 1.3 only helper.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ITypeResolver.Load(System.String,System.String)">
+            <summary>
+            Loads desired type from an assembly.
+            </summary>
+            <param name="assembly">Assembly name.</param>
+            <param name="name">Type name.</param>
+            <returns>Type metadata.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ITypeResolver.GetAssemblies">
+            <summary>
+            Returns assemblies loaded.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.IListenerBinding">
+            <summary>
+            Listener binding interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.IListenerBinding.SendResponse(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.EndPoint)">
+            <summary>
+            Sends a response message.
+            </summary>
+            <param name="response">
+            A <see cref="T:GSF.Net.Snmp.Messaging.ISnmpMessage"/>.
+            </param>
+            <param name="receiver">Receiver.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.IListenerBinding.SendResponseAsync(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.EndPoint)">
+            <summary>
+            Sends a response message.
+            </summary>
+            <param name="response">
+            A <see cref="T:GSF.Net.Snmp.Messaging.ISnmpMessage"/>.
+            </param>
+            <param name="receiver">Receiver.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.IListenerBinding.Endpoint">
+            <summary>
+            Endpoint.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ILogger">
+            <summary>
+            Logger interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ILogger.Log(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Logs an entry.
+            </summary>
+            <param name="context">Message context.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.IMembershipProvider">
+            <summary>
+            Membership provider interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.IMembershipProvider.AuthenticateRequest(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.IMessageHandler">
+            <summary>
+            Message handler interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.IMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.InformRequestMessageHandler">
+            <summary>
+            Message handler for INFORM.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.InformRequestMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.InformRequestMessageHandler.MessageReceived">
+            <summary>
+            Occurs when a message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.InformRequestMessageHandler.InvokeMessageReceived(GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs)">
+            <summary>
+            Invokes the message received.
+            </summary>
+            <param name="e">The <see cref="T:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs">
+            <summary>
+            Inform request message received event args.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs.#ctor(System.Net.IPEndPoint,GSF.Net.Snmp.Messaging.InformRequestMessage,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs"/> class.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="request">The request.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs.Sender">
+            <summary>
+            Gets or sets the sender.
+            </summary>
+            <value>The sender.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs.InformRequestMessage">
+            <summary>
+            Gets or sets the request.
+            </summary>
+            <value>The request.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.InformRequestMessageReceivedEventArgs.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ISnmpContext">
+            <summary>
+            SNMP context interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpContext.GenerateResponse(System.Collections.Generic.IList{GSF.Net.Snmp.Variable})">
+            <summary>
+            Generates the response.
+            </summary>
+            <param name="variables">The variables.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpContext.CopyRequest(GSF.Net.Snmp.ErrorCode,System.Int32)">
+            <summary>
+            Copies the request variable bindings to response.
+            </summary>
+            <param name="status">The status.</param>
+            <param name="index">The index.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.CreatedTime">
+            <summary>
+            Gets the created time.
+            </summary>
+            <value>The created time.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.Request">
+            <summary>
+            Gets the request.
+            </summary>
+            <value>The request.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.Response">
+            <summary>
+            Gets the response.
+            </summary>
+            <value>The response.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.Sender">
+            <summary>
+            Gets the sender.
+            </summary>
+            <value>The sender.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ISnmpContext.TooBig">
+            <summary>
+            Gets a value indicating whether [too big].
+            </summary>
+            <value><c>true</c> if the response is too big; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpContext.SendResponse">
+            <summary>
+            Sends out response message.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpContext.HandleMembership">
+            <summary>
+            Handles the membership authentication.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpContext.GenerateTooBig">
+            <summary>
+            Generates too big message.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ISnmpObject">
+            <summary>
+            SNMP object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpObject.MatchGetNext(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET NEXT criteria.
+            </summary>
+            <param name="id">The ID in GET NEXT message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ISnmpObject.MatchGet(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET criteria.
+            </summary>
+            <param name="id">The ID in GET message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.Listener">
+            <summary>
+            Listener class.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Pipeline.Listener.ErrorIPv4NotSupported">
+            <summary>
+            Error message for non IP v4 OS.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Pipeline.Listener.ErrorIPv6NotSupported">
+            <summary>
+            Error message for non IP v6 OS.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.Finalize">
+            <summary>
+            Releases unmanaged resources and performs other cleanup operations before the
+            <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/> is reclaimed by garbage collection.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.Dispose">
+            <summary>
+            Disposes resources in use.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:System.ComponentModel.Component"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.Listener.Users">
+            <summary>
+            Gets or sets the users.
+            </summary>
+            <value>The users.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.Listener.Active">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/> is active.
+            </summary>
+            <value><c>true</c> if active; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.Stop">
+            <summary>
+            Stops this instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.Start">
+            <summary>
+            Starts this instance.
+            </summary>
+            <exception cref="T:GSF.Net.Snmp.Messaging.PortInUseException"/>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.StartAsync">
+            <summary>
+            Starts this instance.
+            </summary>
+            <exception cref="T:GSF.Net.Snmp.Messaging.PortInUseException"/>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.Listener.Bindings">
+            <summary>
+            Gets or sets the bindings.
+            </summary>
+            <value>The bindings.</value>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.Listener.ExceptionRaised">
+            <summary>
+            Occurs when an exception is raised.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.Listener.MessageReceived">
+            <summary>
+            Occurs when a message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.AddBinding(System.Net.IPEndPoint)">
+            <summary>
+            Adds the binding.
+            </summary>
+            <param name="endpoint">The endpoint.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.RemoveBinding(System.Net.IPEndPoint)">
+            <summary>
+            Removes the binding.
+            </summary>
+            <param name="endpoint">The endpoint.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Listener.ClearBindings">
+            <summary>
+            Clears the bindings.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ListenerBinding">
+            <summary>
+            Binding class for <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.#ctor(GSF.Net.Snmp.Security.UserRegistry,System.Net.IPEndPoint)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.ListenerBinding"/> class.
+            </summary>
+            <param name="users">The users.</param>
+            <param name="endpoint">The endpoint.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:System.ComponentModel.Component"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.Finalize">
+            <summary>
+            Releases unmanaged resources and performs other cleanup operations before the
+            <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/> is reclaimed by garbage collection.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.ListenerBinding.ExceptionRaised">
+            <summary>
+            Occurs when an exception is raised.
+            </summary>
+            <remarks>The exception can be both <see cref="T:System.Net.Sockets.SocketException"/> and <see cref="T:GSF.Net.Snmp.SnmpException"/>.</remarks>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.ListenerBinding.MessageReceived">
+            <summary>
+            Occurs when a message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.SendResponse(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.EndPoint)">
+            <summary>
+            Sends a response message.
+            </summary>
+            <param name="response">
+            A <see cref="T:GSF.Net.Snmp.Messaging.ISnmpMessage"/>.
+            </param>
+            <param name="receiver">Receiver.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ListenerBinding.Endpoint">
+            <summary>
+            Gets or sets the endpoint.
+            </summary>
+            <value>The endpoint.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.Start">
+            <summary>
+            Starts this instance.
+            </summary>
+            <exception cref="T:GSF.Net.Snmp.Messaging.PortInUseException"/>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.Stop">
+            <summary>
+            Stops.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException"/>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.SendResponseAsync(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.EndPoint)">
+            <summary>
+            Sends a response message.
+            </summary>
+            <param name="response">
+            A <see cref="T:GSF.Net.Snmp.Messaging.ISnmpMessage"/>.
+            </param>
+            <param name="receiver">Receiver.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.StartAsync">
+            <summary>
+            Starts this instance.
+            </summary>
+            <exception cref="T:GSF.Net.Snmp.Messaging.PortInUseException"/>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ListenerBinding.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents a <see cref="T:GSF.Net.Snmp.Pipeline.Listener"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.MessageHandlerFactory">
+            <summary>
+            Message handler factory.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.MessageHandlerFactory.#ctor(GSF.Net.Snmp.Pipeline.HandlerMapping[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.MessageHandlerFactory"/> class.
+            </summary>
+            <param name="mappings">The mappings.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.MessageHandlerFactory.GetHandler(GSF.Net.Snmp.Messaging.ISnmpMessage)">
+            <summary>
+            Gets the handler.
+            </summary>
+            <param name="message">The message.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs">
+            <summary>
+            The <see cref="T:System.EventArgs"/> for one kind of <see cref="T:GSF.Net.Snmp.Messaging.ISnmpMessage"/>, used when that kind of message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs.#ctor(System.Net.IPEndPoint,GSF.Net.Snmp.Messaging.ISnmpMessage,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Creates a <see cref="T:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs"/>.
+            </summary>
+            <param name="sender">Sender.</param>
+            <param name="message">The message received.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs.Message">
+            <summary>
+            The received message.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs.Sender">
+            <summary>
+            Sender.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.NormalSnmpContext">
+            <summary>
+            Normal SNMP context class. It is v1 and v2c specific.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NormalSnmpContext.#ctor(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.IPEndPoint,GSF.Net.Snmp.Security.UserRegistry,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.NormalSnmpContext"/> class.
+            </summary>
+            <param name="request">The request.</param>
+            <param name="sender">The sender.</param>
+            <param name="users">The users.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NormalSnmpContext.CopyRequest(GSF.Net.Snmp.ErrorCode,System.Int32)">
+            <summary>
+            Copies the request variable bindings to response.
+            </summary>
+            <param name="status">The status.</param>
+            <param name="index">The index.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NormalSnmpContext.GenerateTooBig">
+            <summary>
+            Generates too big message.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NormalSnmpContext.HandleMembership">
+            <summary>
+            Handles the membership.
+            </summary>
+            <returns>Always returns <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NormalSnmpContext.GenerateResponse(System.Collections.Generic.IList{GSF.Net.Snmp.Variable})">
+            <summary>
+            Generates the response.
+            </summary>
+            <param name="variables">The variables.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.NullMessageHandler">
+            <summary>
+            A placeholder.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.NullMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ObjectStore">
+            <summary>
+            SNMP object store, who holds all implemented SNMP objects in the agent.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Pipeline.ObjectStore.List">
+            <summary>The internal list of objects holding the data.</summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ObjectStore.GetObject(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Gets the object.
+            </summary>
+            <param name="id">The object id.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ObjectStore.GetNextObject(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Gets the next object.
+            </summary>
+            <param name="id">The object id.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ObjectStore.Add(GSF.Net.Snmp.Pipeline.ISnmpObject)">
+            <summary>
+            Adds the specified <see cref="T:GSF.Net.Snmp.Pipeline.ISnmpObject"/>.
+            </summary>
+            <param name="newObject">The object.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.ScalarObject">
+            <summary>
+            Scalar object interface.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ScalarObject.#ctor(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.ScalarObject"/> class.
+            </summary>
+            <param name="id">The ID.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ScalarObject.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.ScalarObject"/> class.
+            </summary>
+            <param name="dots">The ID string.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ScalarObject.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.ScalarObject"/> class.
+            </summary>
+            <param name="dots">The ID string.</param>
+            <param name="index">The index.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ScalarObject.Variable">
+            <summary>
+            Gets the variable.
+            </summary>
+            <value>The variable.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ScalarObject.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.ScalarObject.Id">
+            <summary>
+            Gets the ID.
+            </summary>
+            <value>The ID.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ScalarObject.MatchGetNext(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET NEXT criteria.
+            </summary>
+            <param name="id">The ID in GET NEXT message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.ScalarObject.MatchGet(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET criteria.
+            </summary>
+            <param name="id">The ID in GET message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SecureSnmpContext">
+            <summary>
+            Secure SNMP context. It is specific to v3.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SecureSnmpContext.#ctor(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.IPEndPoint,GSF.Net.Snmp.Security.UserRegistry,GSF.Net.Snmp.Pipeline.EngineGroup,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SecureSnmpContext"/> class.
+            </summary>
+            <param name="request">The request.</param>
+            <param name="sender">The sender.</param>
+            <param name="users">The users.</param>
+            <param name="group">The engine core group.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SecureSnmpContext.GenerateTooBig">
+            <summary>
+            Generates too big message.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SecureSnmpContext.HandleMembership">
+            <summary>
+            Handles the membership.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SecureSnmpContext.GenerateResponse(System.Collections.Generic.IList{GSF.Net.Snmp.Variable})">
+            <summary>
+            Generates the response.
+            </summary>
+            <param name="variables">The variables.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SetMessageHandler">
+            <summary>
+            SET message handler.
+            </summary>    
+            <remarks>
+            Follows RFC 3416 4.2.1.
+            Not supported scenarios are, 
+              wrongLength, 
+              wrongEncoding, 
+              wrongValue, 
+              noCreation,
+              inconsistentName,
+              inconsistentValue,
+              resourceUnavailable,
+              commitFailed,
+              undoFailed
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SetMessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SetV1MessageHandler">
+            <summary>
+            SET message handler.
+            </summary>    
+            <remarks>
+            Follows RFC 1157, 4.1.5
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SetV1MessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpApplication">
+            <summary>
+            SNMP application class, who is a pipeline for message processing.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplication.#ctor(GSF.Net.Snmp.Pipeline.SnmpApplicationFactory,GSF.Net.Snmp.Pipeline.ILogger,GSF.Net.Snmp.Pipeline.ObjectStore,GSF.Net.Snmp.Pipeline.IMembershipProvider,GSF.Net.Snmp.Pipeline.MessageHandlerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SnmpApplication"/> class.
+            </summary>
+            <param name="owner">The owner.</param>
+            <param name="logger">The logger.</param>
+            <param name="store">The store.</param>
+            <param name="provider">The provider.</param>
+            <param name="factory">The factory.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplication.Init(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Initializes the specified context.
+            </summary>
+            <param name="context">The context.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpApplication.Context">
+            <summary>
+            Gets the context.
+            </summary>
+            <value>The context.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpApplication.ProcessingFinished">
+            <summary>
+            Gets a value indicating whether processing is finished.
+            </summary>
+            <value><c>true</c> if processing is finished; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplication.Process">
+            <summary>
+            Processes an incoming request.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplication.CompleteProcessing">
+            <summary>
+            Completes the processing.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory">
+            <summary>
+            SNMP application factory, who holds all pipeline instances.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory.#ctor(GSF.Net.Snmp.Pipeline.ILogger,GSF.Net.Snmp.Pipeline.ObjectStore,GSF.Net.Snmp.Pipeline.IMembershipProvider,GSF.Net.Snmp.Pipeline.MessageHandlerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="store">The store.</param>
+            <param name="membershipProvider">The membership provider.</param>
+            <param name="factory">The factory.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory.#ctor(GSF.Net.Snmp.Pipeline.ObjectStore,GSF.Net.Snmp.Pipeline.IMembershipProvider,GSF.Net.Snmp.Pipeline.MessageHandlerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory"/> class.
+            </summary>
+            <param name="store">The store.</param>
+            <param name="membershipProvider">The membership provider.</param>
+            <param name="factory">The factory.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory.Create(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Creates a pipeline for the specified context.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpApplicationFactory.Reuse(GSF.Net.Snmp.Pipeline.SnmpApplication)">
+            <summary>
+            Reuses the specified pipeline.
+            </summary>
+            <param name="application">The application.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpContextBase">
+            <summary>
+            SNMP context.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.#ctor(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.IPEndPoint,GSF.Net.Snmp.Security.UserRegistry,GSF.Net.Snmp.Pipeline.EngineGroup,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SnmpContextBase"/> class.
+            </summary>
+            <param name="request">The request.</param>
+            <param name="sender">The sender.</param>
+            <param name="users">The users.</param>
+            <param name="group">The engine core group.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.CreatedTime">
+            <summary>
+            Gets the created time.
+            </summary>
+            <value>The created time.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Request">
+            <summary>
+            Gets the request.
+            </summary>
+            <value>The request.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Users">
+            <summary>
+            Gets the users.
+            </summary>
+            <value>The users.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Response">
+            <summary>
+            Gets the response.
+            </summary>
+            <value>The response.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Sender">
+            <summary>
+            Gets the sender.
+            </summary>
+            <value>The sender.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.Group">
+            <summary>
+            Gets or sets the objects.
+            </summary>
+            <value>The objects.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpContextBase.TooBig">
+            <summary>
+            Gets a value indicating whether [too big].
+            </summary>
+            <value><c>true</c> if the response is too big; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.SendResponse">
+            <summary>
+            Sends out response message.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.GenerateResponse(System.Collections.Generic.IList{GSF.Net.Snmp.Variable})">
+            <summary>
+            Generates the response.
+            </summary>
+            <param name="variables">The variables.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.CopyRequest(GSF.Net.Snmp.ErrorCode,System.Int32)">
+            <summary>
+            Copies the request variable bindings to response.
+            </summary>
+            <param name="status">The status.</param>
+            <param name="index">The index.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.HandleMembership">
+            <summary>
+            Handles the membership authentication.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextBase.GenerateTooBig">
+            <summary>
+            Generates too big message.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpContextFactory">
+            <summary>
+            SNMP context factory.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpContextFactory.Create(GSF.Net.Snmp.Messaging.ISnmpMessage,System.Net.IPEndPoint,GSF.Net.Snmp.Security.UserRegistry,GSF.Net.Snmp.Pipeline.EngineGroup,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Creates the specified request.
+            </summary>
+            <param name="request">The request.</param>
+            <param name="sender">The sender.</param>
+            <param name="users">The users.</param>
+            <param name="group">The engine group.</param>
+            <param name="binding">The binding.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpEngine">
+            <summary>
+            SNMP engine, who is the core of an SNMP entity (manager or agent).
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.#ctor(GSF.Net.Snmp.Pipeline.SnmpApplicationFactory,GSF.Net.Snmp.Pipeline.Listener,GSF.Net.Snmp.Pipeline.EngineGroup)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.SnmpEngine"/> class.
+            </summary>
+            <param name="factory">The factory.</param>
+            <param name="listener">The listener.</param>
+            <param name="group">Engine core group.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.Dispose">
+            <summary>
+            Disposes resources in use.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.Finalize">
+            <summary>
+            Releases unmanaged resources and performs other cleanup operations before the
+            <see cref="T:GSF.Net.Snmp.Pipeline.SnmpEngine"/> is reclaimed by garbage collection.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:System.ComponentModel.Component"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpEngine.Listener">
+            <summary>
+            Gets or sets the listener.
+            </summary>
+            <value>The listener.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.Start">
+            <summary>
+            Starts the engine.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpEngine.Stop">
+            <summary>
+            Stops this instance.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.SnmpEngine.Active">
+            <summary>
+            Gets a value indicating whether this <see cref="T:GSF.Net.Snmp.Pipeline.SnmpEngine"/> is active.
+            </summary>
+            <value><c>true</c> if active; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.SnmpEngine.ExceptionRaised">
+            <summary>
+            Occurs when an exception is raised.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.SnmpObjectBase">
+            <summary>
+            SNMP basic object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpObjectBase.MatchGetNext(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET NEXT criteria.
+            </summary>
+            <param name="id">The ID in GET NEXT message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.SnmpObjectBase.MatchGet(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET criteria.
+            </summary>
+            <param name="id">The ID in GET message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.TableObject">
+            <summary>
+            Object that represents a table.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TableObject.Objects">
+            <summary>
+            Gets the objects in the table.
+            </summary>
+            <value>The objects.</value>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TableObject.MatchGetNext(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET NEXT criteria.
+            </summary>
+            <param name="id">The ID in GET NEXT message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TableObject.MatchGet(GSF.Net.Snmp.ObjectIdentifier)">
+            <summary>
+            Matches the GET criteria.
+            </summary>
+            <param name="id">The ID in GET message.</param>
+            <returns><c>null</c> if it does not match.</returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.TrapV1MessageHandler">
+            <summary>
+            Message handler for TRAP v1.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV1MessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.TrapV1MessageHandler.MessageReceived">
+            <summary>
+            Occurs when a message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV1MessageHandler.InvokeMessageReceived(GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs)">
+            <summary>
+            Invokes the message received event handler.
+            </summary>
+            <param name="e">The <see cref="T:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs">
+            <summary>
+            Trap v1 message received event args.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs.#ctor(System.Net.IPEndPoint,GSF.Net.Snmp.Messaging.TrapV1Message,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs"/> class.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="request">The request.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs.Sender">
+            <summary>
+            Gets or sets the sender.
+            </summary>
+            <value>The sender.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs.TrapV1Message">
+            <summary>
+            Gets or sets the request.
+            </summary>
+            <value>The request.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV1MessageReceivedEventArgs.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.TrapV2MessageHandler">
+            <summary>
+            Message handler for TRAP v2.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV2MessageHandler.Handle(GSF.Net.Snmp.Pipeline.ISnmpContext,GSF.Net.Snmp.Pipeline.ObjectStore)">
+            <summary>
+            Handles the specified message.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="store">The object store.</param>
+            <returns></returns>
+        </member>
+        <member name="E:GSF.Net.Snmp.Pipeline.TrapV2MessageHandler.MessageReceived">
+            <summary>
+            Occurs when a message is received.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV2MessageHandler.InvokeMessageReceived(GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs)">
+            <summary>
+            Invokes the message received event handler.
+            </summary>
+            <param name="e">The <see cref="T:GSF.Net.Snmp.Pipeline.MessageReceivedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs">
+            <summary>
+            Trap v2 message received event args.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs.#ctor(System.Net.IPEndPoint,GSF.Net.Snmp.Messaging.TrapV2Message,GSF.Net.Snmp.Pipeline.IListenerBinding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs"/> class.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="request">The request.</param>
+            <param name="binding">The binding.</param>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs.Sender">
+            <summary>
+            Gets or sets the sender.
+            </summary>
+            <value>The sender.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs.TrapV2Message">
+            <summary>
+            Gets or sets the request.
+            </summary>
+            <value>The request.</value>
+        </member>
+        <member name="P:GSF.Net.Snmp.Pipeline.TrapV2MessageReceivedEventArgs.Binding">
+            <summary>
+            Gets or sets the binding.
+            </summary>
+            <value>The binding.</value>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.Version1MembershipProvider">
+            <summary>
+            SNMP version 1 membership provider, who checks community names for security.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Version1MembershipProvider.#ctor(GSF.Net.Snmp.OctetString,GSF.Net.Snmp.OctetString)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.Version1MembershipProvider"/> class.
+            </summary>
+            <param name="getCommunity">The get community.</param>
+            <param name="setCommunity">The set community.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Version1MembershipProvider.AuthenticateRequest(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.Version2MembershipProvider">
+            <summary>
+            SNMP version 2 membership provider, who checks community names for security.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Version2MembershipProvider.#ctor(GSF.Net.Snmp.OctetString,GSF.Net.Snmp.OctetString)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Snmp.Pipeline.Version2MembershipProvider"/> class.
+            </summary>
+            <param name="getCommunity">The get community.</param>
+            <param name="setCommunity">The set community.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Version2MembershipProvider.AuthenticateRequest(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
+        </member>
+        <member name="T:GSF.Net.Snmp.Pipeline.Version3MembershipProvider">
+            <summary>
+            SNMP version 3 membership provider. Not yet implemented.
+            </summary>    
+        </member>
+        <member name="M:GSF.Net.Snmp.Pipeline.Version3MembershipProvider.AuthenticateRequest(GSF.Net.Snmp.Pipeline.ISnmpContext)">
+            <summary>
+            Authenticates the request.
+            </summary>
+            <param name="context">The context.</param>
+            <returns></returns>
         </member>
         <member name="T:GSF.Net.Snmp.ReportPdu">
             <summary>
@@ -5816,6 +7890,100 @@
             Appends the bytes to <see cref="T:System.IO.Stream"/>.
             </summary>
             <param name="stream">The stream.</param>
+        </member>
+        <member name="T:GSF.Net.Snmp.Snmp">
+            <summary>
+            Exposes simple SNMP functionality for GSF.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Snmp.DefaultIPEndPoint">
+            <summary>
+            Defines default IP end point for SNMP client agent.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Snmp.EnterpriseRoot">
+            <summary>
+            Root GSF OID (1.3.6.1.4.1.56056). This is the private enterprise number defined for the Grid Protection Alliance.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Snmp.Snmp.EngineID">
+            <summary>
+            GSF SNMP engine ID (D3F30A26E61843918ED5ABD87E).
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrap(System.UInt32[],System.Int32)">
+            <summary>
+            Sends an integer based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrap(System.UInt32[],System.Double)">
+            <summary>
+            Sends a floating-point based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+            <remarks>
+            SNMP does not support floating point values via binary encoding, so value is encoded as a string.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrap(System.UInt32[],System.String)">
+            <summary>
+            Sends a string based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrap(System.UInt32[],GSF.Net.Snmp.ISnmpData)">
+            <summary>
+            Sends an SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="data">Notification data.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrap(GSF.Net.Snmp.Variable[])">
+            <summary>
+            Sends an SNMP version 3 trap.
+            </summary>
+            <param name="variables">Variables.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrapAsync(System.UInt32[],System.Int32)">
+            <summary>
+            Sends an integer based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrapAsync(System.UInt32[],System.Double)">
+            <summary>
+            Sends a floating-point based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+            <remarks>
+            SNMP does not support floating point values via binary encoding, so value is encoded as a string.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrapAsync(System.UInt32[],System.String)">
+            <summary>
+            Sends a string based SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="value">Notification value.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrapAsync(System.UInt32[],GSF.Net.Snmp.ISnmpData)">
+            <summary>
+            Sends an SNMP version 3 trap.
+            </summary>
+            <param name="oid">Target OID.</param>
+            <param name="data">Notification data.</param>
+        </member>
+        <member name="M:GSF.Net.Snmp.Snmp.SendTrapAsync(GSF.Net.Snmp.Variable[])">
+            <summary>
+            Sends an SNMP version 3 trap.
+            </summary>
+            <param name="variables">Variables.</param>
         </member>
         <member name="T:GSF.Net.Snmp.SnmpDataExtension">
             <summary>

@@ -8666,6 +8666,11 @@
             The arguments to be passed into the statistic calculation function.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Statistics.Statistic.DataType">
+            <summary>
+            Target data type of the statistic.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Statistics.StatisticsEngine">
             <summary>
             Represents the engine that computes statistics within applications of the TimeSeriesFramework.
