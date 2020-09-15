@@ -135,6 +135,7 @@
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HistorianReportOperations.cs" />
+    <Compile Include="HadoopDataLoader.cs" />
     <Compile Include="Model\DeviceGroup.cs" />
     <Compile Include="Model\Runtime.cs" />
     <Compile Include="ReportOperationsHubClient.cs" />
