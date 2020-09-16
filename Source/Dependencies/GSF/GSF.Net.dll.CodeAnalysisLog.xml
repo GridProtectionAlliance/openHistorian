@@ -12,7 +12,7 @@
          <Members>
           <Member Name="#.cctor()" Kind="Method" Static="True" Accessibility="Private" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="DoNotRaiseExceptionsInUnexpectedLocations" Category="Microsoft.Design" CheckId="CA1065" Status="Active" Created="2020-09-12 04:01:31Z" FixCategory="NonBreaking">
+            <Message TypeName="DoNotRaiseExceptionsInUnexpectedLocations" Category="Microsoft.Design" CheckId="CA1065" Status="Active" Created="2020-09-16 04:13:07Z" FixCategory="NonBreaking">
              <Issue Name="NoAllowedExceptions" Certainty="90" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Snmp" File="Snmp.cs" Line="172">'Snmp.Snmp()' creates an exception of type 'Exception'. Exceptions should not be raised in this type of method. If this exception instance might be raised, change this method's logic so it no longer raises an exception.</Issue>
              <Issue Name="NoAllowedExceptions" Certainty="90" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Snmp" File="Snmp.cs" Line="178">'Snmp.Snmp()' creates an exception of type 'Exception'. Exceptions should not be raised in this type of method. If this exception instance might be raised, change this method's logic so it no longer raises an exception.</Issue>
              <Issue Name="NoAllowedExceptions" Certainty="90" Level="Error" Path="C:\Users\buildbot\Projects\gsf\Source\Libraries\GSF.Net\Snmp" File="Snmp.cs" Line="184">'Snmp.Snmp()' creates an exception of type 'Exception'. Exceptions should not be raised in this type of method. If this exception instance might be raised, change this method's logic so it no longer raises an exception.</Issue>
@@ -24,7 +24,7 @@
         </Type>
         <Type Name="SnmpException" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2020-09-12 04:01:31Z" FixCategory="NonBreaking">
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2020-09-16 04:13:07Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add [Serializable] to 'SnmpException' as this type implements ISerializable.</Issue>
           </Message>
          </Messages>
@@ -35,7 +35,7 @@
        <Types>
         <Type Name="AccessFailureException" Kind="Class" Accessibility="Public" ExternallyVisible="True">
          <Messages>
-          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2020-09-12 04:01:31Z" FixCategory="NonBreaking">
+          <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Active" Created="2020-09-16 04:13:07Z" FixCategory="NonBreaking">
            <Issue Certainty="95" Level="Error">Add [Serializable] to 'AccessFailureException' as this type implements ISerializable.</Issue>
           </Message>
          </Messages>
