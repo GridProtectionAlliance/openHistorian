@@ -22,12 +22,12 @@
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
             <summary>
-            Gets or sets the name of the xml file from which the communication parameters will be read.
+            Gets or sets the name of the XML file from which the communication parameters will be read.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
             <summary>
-            Gets or sets the name of the xml file from which the measurement mapping is read.
+            Gets or sets the name of the XML file from which the measurement mapping is read.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.PollingInterval">
@@ -130,6 +130,11 @@
             Maximum connection retry interval in milliseconds
             </summary>
         </member>
+        <member name="F:DNP3Adapters.TcpClientConfig.reconnectDelayMs">
+            <summary>
+            Reconnect delay interval in milliseconds
+            </summary>
+        </member>
         <member name="F:DNP3Adapters.TcpClientConfig.level">
             <summary>
             DNP3 filter level for port messages
@@ -137,7 +142,7 @@
         </member>
         <member name="T:DNP3Adapters.MeasurementLookup">
             <summary>
-            Helper class that converts measurements and provides a lookup capbility
+            Helper class that converts measurements and provides a lookup capability.
             </summary>
         </member>
         <member name="T:DNP3Adapters.Mapping">
@@ -195,7 +200,7 @@
         </member>
         <member name="F:DNP3Adapters.MeasurementMap.frozenCounterMap">
             <summary>
-            Fozen Counter Map
+            Frozen Counter Map
             </summary>
         </member>
         <member name="F:DNP3Adapters.MeasurementMap.doubleBitBinaryMap">
@@ -215,7 +220,7 @@
         </member>
         <member name="T:DNP3Adapters.TimeSeriesSOEHandler">
             <summary>
-            This is the data adapter that converts data from the dnp3 world to the TSF
+            This is the data adapter that converts data from the dnp3 world to the Time Series Framework.
             </summary>
         </member>
     </members>
