@@ -734,6 +734,131 @@
             Validates that openHistorian Grafana data source is responding as expected.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
+            <summary>
+            Represents a base implementation for Grafana data sources.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.InstanceName">
+            <summary>
+            Gets or sets instance name for this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.Metadata">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based meta-data source available to this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumSearchTargetsPerRequest">
+            <summary>
+            Gets or sets maximum number of search targets to return during a search query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumAnnotationsPerRequest">
+            <summary>
+            Gets or sets maximum number of annotations to return during an annotations query.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.String,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
+            <summary>
+            Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
+            </summary>
+            <param name="startTime">Start-time for query.</param>
+            <param name="stopTime">Stop-time for query.</param>
+            <param name="interval">Interval from Grafana request.</param>
+            <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            <param name="targetMap">Set of IDs with associated targets to query.</param>
+            <returns>Queried data source data in terms of value and time.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries data source returning data as Grafana time-series data set.
+            </summary>
+            <param name="request">Query request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Search(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Search data source meta-data for a target.
+            </summary>
+            <param name="request">Search target.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFields(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Search data source meta-data for a list of columns from a specific table.
+            </summary>
+            <param name="request">Table Name.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFilters(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Search data source meta-data for a list of tables.
+            </summary>
+            <param name="request">Request - ignored.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchOrderBys(GrafanaAdapters.Target,System.Threading.CancellationToken)">
+            <summary>
+            Search data source meta-data for a list of columns from a specific table to use for ORDER BY expression.
+            </summary>
+            <param name="request">Table Name.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Annotations(GrafanaAdapters.AnnotationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries data source for annotations in a time-range (e.g., Alarms).
+            </summary>
+            <param name="request">Annotation request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Queried annotations from data source.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagKeys(GrafanaAdapters.TagKeysRequest,System.Threading.CancellationToken)">
+            <summary>
+            Requests available tag keys.
+            </summary>
+            <param name="_">Tag keys request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagValues(GrafanaAdapters.TagValuesRequest,System.Threading.CancellationToken)">
+            <summary>
+            Requests available tag values.
+            </summary>
+            <param name="request">Tag values request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarmState(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries current alarm device state.
+            </summary>
+            <param name="request">Alarm request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> Queried device alarm states.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries All Available Device Alarm states.
+            </summary>
+            <param name="request">Alarm request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> Queried device alarm states.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceGroups(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Queries All Available Device Groups.
+            </summary>
+            <param name="request">request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> List of Device Groups.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Query current alarms based on point list.
+            </summary>
+            <param name="request">Alarm request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns> Queried alarm states.</returns>
+        </member>
         <member name="T:GrafanaAdapters.SeriesFunction">
             <summary>
             Defines available functions that can operate on <see cref="T:GrafanaAdapters.TimeSeriesValues"/>.
@@ -1266,137 +1391,6 @@
             <summary>
             Performs no group operation on the series set.
             </summary>
-        </member>
-        <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
-            <summary>
-            Represents a base implementation for Grafana data sources.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.InstanceName">
-            <summary>
-            Gets or sets instance name for this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.Metadata">
-            <summary>
-            Gets or sets <see cref="T:System.Data.DataSet"/> based meta-data source available to this <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/> implementation.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumSearchTargetsPerRequest">
-            <summary>
-            Gets or sets maximum number of search targets to return during a search query.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataSourceBase.MaximumAnnotationsPerRequest">
-            <summary>
-            Gets or sets maximum number of annotations to return during an annotations query.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Search(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a target.
-            </summary>
-            <param name="request">Search target.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFields(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of columns from a specific table.
-            </summary>
-            <param name="request">Table Name.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFilters(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of tables.
-            </summary>
-            <param name="request">Request - ignored.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchOrderBys(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of columns from a specific table to use for ORDER BY expression.
-            </summary>
-            <param name="request">Table Name.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Annotations(GrafanaAdapters.AnnotationRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries data source for annotations in a time-range (e.g., Alarms).
-            </summary>
-            <param name="request">Annotation request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>Queried annotations from data source.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarmState(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries current alarm device state.
-            </summary>
-            <param name="request">Alarm request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns> Queried device alarm states.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries All Available Device Alarm states.
-            </summary>
-            <param name="request">Alarm request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns> Queried device alarm states.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetDeviceGroups(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries All Available Device Groups.
-            </summary>
-            <param name="request">request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns> List of Device Groups.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Query Current Alarms Based on list of Points.
-            </summary>
-            <param name="request">Alarm request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns> Queried alarm states.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagKeys(GrafanaAdapters.TagKeysRequest,System.Threading.CancellationToken)">
-            <summary>
-            Requests available tag keys.
-            </summary>
-            <param name="_">Tag keys request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagValues(GrafanaAdapters.TagValuesRequest,System.Threading.CancellationToken)">
-            <summary>
-            Requests available tag values.
-            </summary>
-            <param name="request">Tag values request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Query(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Queries data source returning data as Grafana time-series data set.
-            </summary>
-            <param name="request">Query request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(System.DateTime,System.DateTime,System.String,System.Boolean,System.Collections.Generic.Dictionary{System.UInt64,System.String})">
-            <summary>
-            Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
-            </summary>
-            <param name="startTime">Start-time for query.</param>
-            <param name="stopTime">Stop-time for query.</param>
-            <param name="interval">Interval from Grafana request.</param>
-            <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
-            <param name="targetMap">Set of IDs with associated targets to query.</param>
-            <returns>Queried data source data in terms of value and time.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.ReduceTarget(System.String)">
-            <summary>
-            This Reduces a Grafana query into individual Tragtes that do not contain Functions => Usefull to query any neccesarry points
-            </summary>
-            <returns> A Set of Targets that do not contain SeriesFunctions</returns>
         </member>
         <member name="T:GrafanaAdapters.IGrafanaDataService">
             <summary>
