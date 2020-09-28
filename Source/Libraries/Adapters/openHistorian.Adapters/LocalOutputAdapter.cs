@@ -958,7 +958,7 @@ namespace openHistorian.Adapters
             }
 
             m_archive = null;
-            m_server.Dispose();
+            m_server?.Dispose();
             m_server = null;
 
             OnDisconnected();
