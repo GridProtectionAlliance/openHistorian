@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MasterConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <client>
+    <address>127.0.0.1</address>
+    <port>20000</port>
+    <minRetryMs>5000</minRetryMs>
+    <maxRetryMs>60000</maxRetryMs>
+    <reconnectDelayMs>2000</reconnectDelayMs>
+    <level>15</level>
+  </client>
+  <master>
+    <master>
+      <timeSyncMode>None</timeSyncMode>
+      <disableUnsolOnStartup>true</disableUnsolOnStartup>
+      <unsolClassMask>
+        <Class0>false</Class0>
+        <Class1>true</Class1>
+        <Class2>true</Class2>
+        <Class3>true</Class3>
+      </unsolClassMask>
+      <startupIntegrityClassMask>
+        <Class0>true</Class0>
+        <Class1>true</Class1>
+        <Class2>true</Class2>
+        <Class3>true</Class3>
+      </startupIntegrityClassMask>
+      <integrityOnEventOverflowIIN>true</integrityOnEventOverflowIIN>
+      <eventScanOnEventsAvailableClassMask>
+        <Class0>false</Class0>
+        <Class1>false</Class1>
+        <Class2>false</Class2>
+        <Class3>false</Class3>
+      </eventScanOnEventsAvailableClassMask>
+      <controlQualifierMode>always_two_bytes</controlQualifierMode>
+      <TaskResponseTimeoutMilliseconds>5000</TaskResponseTimeoutMilliseconds>
+      <TaskRetryPeriodMilliseconds>5000</TaskRetryPeriodMilliseconds>
+      <TaskStartTimeoutMilliseconds>10000</TaskStartTimeoutMilliseconds>
+    </master>
+    <link>
+      <isMaster>true</isMaster>
+      <localAddr>1</localAddr>
+      <remoteAddr>1024</remoteAddr>
+      <ResponeTimeoutMilliseconds>1000</ResponeTimeoutMilliseconds>
+      <KeepAliveTimeoutMilliseconds>60000</KeepAliveTimeoutMilliseconds>
+    </link>
+  </master>
+</MasterConfiguration>
