@@ -986,6 +986,40 @@
             </summary>
             <returns>New ADO data connection based on configured settings.</returns>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2">
+            <summary>
+            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters with parallel intialization and Models to store input/ouput relations.
+            </summary>
+            <typeparam name="TAdapter"></typeparam>
+            <typeparam name="TInitalizationModel"></typeparam>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.AddInitializitonModel(System.Guid[],System.Guid[])">
+            <summary>
+            This function genereates a new Initialization model based on a list of inputs and outputs
+            </summary>
+            <param name="inputs">Input Measurments</param>
+            <param name="outputs">Output Measurments</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.GetOutputsFromInitializationModel(`1)">
+            <summary>
+            Generates a list of outputs based on a Initialization Model
+            </summary>
+            <param name="initalizationModel">The model containing the input-output mapping</param>
+            <returns>A list of output measurments</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.MapInitializationModel(System.Guid[])">
+            <summary>
+            Function that maps Inputs to a new <see cref="!:TInitalizationModel"/> for finding existing mappings.
+            </summary>
+            <param name="inputs">The input measurments for this Child Adapter</param>
+            <returns>A string with the condition to find a unique mapping model if it exists.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions">
             <summary>
             Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters.
