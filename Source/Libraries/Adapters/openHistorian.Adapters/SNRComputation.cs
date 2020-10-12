@@ -106,6 +106,7 @@ namespace openHistorian.Adapters
         private int m_numberOfFrames;
         private Dictionary<Guid, List<double>> m_dataWindow;
         private List<double> m_refWindow;
+        private Dictionary<Guid, SignalType> m_signalTypeMapping;
         private Dictionary<Guid, MeasurementKey> m_outputMapping;
         private Dictionary<Guid, StatisticsCollection> m_statisticsMapping;
         private bool m_saveStats;
@@ -245,6 +246,10 @@ namespace openHistorian.Adapters
             m_statisticsMapping = new Dictionary<Guid, StatisticsCollection>();
             m_saveStats = SaveAggregates;
 
+            m_signalTypeMapping = InputMeasurementKeys
+                .Zip(InputMeasurementKeyTypes, (key, signalType) => new { key, signalType })
+                .ToDictionary(mapping => mapping.key.SignalID, mapping => mapping.signalType);
+
             if (ReportingInterval % (double)WindowLength != 0.0D)
             {
                 ReportingInterval = WindowLength * (ReportingInterval / WindowLength);
@@ -349,21 +354,21 @@ namespace openHistorian.Adapters
         {
             m_numberOfFrames++;
 
-            MeasurementKey[] availableKeys = frame.Measurements.Values.MeasurementKeys();
-
-            foreach (Guid key in m_dataWindow.Keys)
+            foreach (Guid signalID in m_dataWindow.Keys)
             {
-                int keyIndex = availableKeys.IndexOf(item => item.SignalID == key);
-                m_dataWindow[key].Add(keyIndex > -1 ? frame.Measurements[availableKeys[keyIndex]].Value : double.NaN);
+                MeasurementKey key = MeasurementKey.LookUpBySignalID(signalID);
+                double? value = frame.Measurements.GetOrDefault(key)?.Value;
+                m_dataWindow[signalID].Add(value ?? double.NaN);
             }
 
             if (Reference != null)
             {
-                int keyIndex = availableKeys.IndexOf(item => item.SignalID == Reference.SignalID);
-                m_refWindow.Add(keyIndex > -1 ? frame.Measurements[availableKeys[keyIndex]].Value : double.NaN);
+                MeasurementKey key = MeasurementKey.LookUpBySignalID(Reference.SignalID);
+                double? value = frame.Measurements.GetOrDefault(key)?.Value;
+                m_refWindow.Add(value ?? double.NaN);
             }
 
-            int currentWindowLength = m_dataWindow.Keys.Select(key => m_dataWindow[key].Count).Max();
+            int currentWindowLength = m_dataWindow.Values.Select(values => values.Count).Max();
 
             if (currentWindowLength >= WindowLength)
             {
@@ -373,35 +378,37 @@ namespace openHistorian.Adapters
 
                 foreach (Guid key in Keys)
                 {
-                    double snr = CalculateSignalToNoise(m_dataWindow[key], key);
+                    List<double> values = m_dataWindow[key];
+                    double snr = CalculateSignalToNoise(values, key);
                     Measurement outputMeasurement = new Measurement { Metadata = m_outputMapping[key].Metadata };
 
                     if (!double.IsNaN(snr) && m_saveStats)
                     {
-                        m_statisticsMapping[key].Count++;
+                        StatisticsCollection statistics = m_statisticsMapping[key];
+                        statistics.Count++;
 
-                        if (snr > m_statisticsMapping[key].Maximum)
-                            m_statisticsMapping[key].Maximum = snr;
+                        if (snr > statistics.Maximum)
+                            statistics.Maximum = snr;
                         
-                        if (snr < m_statisticsMapping[key].Minimum)
-                            m_statisticsMapping[key].Minimum = snr;
+                        if (snr < statistics.Minimum)
+                            statistics.Minimum = snr;
                         
                         if (snr > m_threshold)
-                            m_statisticsMapping[key].AlertCount++;
-                        
-                        m_statisticsMapping[key].Summation += snr;
-                        m_statisticsMapping[key].SquaredSummation += snr * snr;
+                            statistics.AlertCount++;
+
+                        statistics.Summation += snr;
+                        statistics.SquaredSummation += snr * snr;
                     }
 
                     outputmeasurements.Add(Measurement.Clone(outputMeasurement, snr, frame.Timestamp));
 
-                    m_dataWindow[key].RemoveAt(0);
+                    values.RemoveAt(0);
 
                     if (!m_saveStats)
                         m_numberOfFrames = 0;
                 }
 
-                m_refWindow.RemoveAt(0);;
+                m_refWindow.RemoveAt(0);
 
                 // Reporting if necessary
                 if (m_numberOfFrames >= ReportingInterval && m_saveStats)
@@ -410,25 +417,26 @@ namespace openHistorian.Adapters
 
                     foreach (Guid key in Keys)
                     {
-                        Measurement stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Sum.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].Summation, frame.Timestamp));
+                        StatisticsCollection statistics = m_statisticsMapping[key];
+                        Measurement stateMeasurement = new Measurement { Metadata = statistics.Sum.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Summation, frame.Timestamp));
 
-                        stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].SqrD.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].SquaredSummation, frame.Timestamp));
+                        stateMeasurement = new Measurement { Metadata = statistics.SqrD.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.SquaredSummation, frame.Timestamp));
 
-                        stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Min.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].Minimum, frame.Timestamp));
+                        stateMeasurement = new Measurement { Metadata = statistics.Min.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Minimum, frame.Timestamp));
 
-                        stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Max.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].Maximum, frame.Timestamp));
+                        stateMeasurement = new Measurement { Metadata = statistics.Max.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Maximum, frame.Timestamp));
 
-                        stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Total.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].Count, frame.Timestamp));
+                        stateMeasurement = new Measurement { Metadata = statistics.Total.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Count, frame.Timestamp));
 
-                        stateMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Alert.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, m_statisticsMapping[key].AlertCount, frame.Timestamp));
+                        stateMeasurement = new Measurement { Metadata = statistics.Alert.Metadata };
+                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.AlertCount, frame.Timestamp));
 
-                        m_statisticsMapping[key].Reset();
+                        statistics.Reset();
                     }
                 }
 
@@ -439,8 +447,7 @@ namespace openHistorian.Adapters
         private double CalculateSignalToNoise(List<double> values, Guid key)
         {
             int sampleCount = values.Count;
-            int keyIndex = InputMeasurementKeys.IndexOf(item => item.SignalID == key);
-            SignalType keySignalType = InputMeasurementKeyTypes[keyIndex];
+            SignalType keySignalType = m_signalTypeMapping[key];
 
             // If its a Phase
             if ((keySignalType == SignalType.IPHA || keySignalType == SignalType.VPHA) && sampleCount == m_refWindow.Count && Reference != null)
