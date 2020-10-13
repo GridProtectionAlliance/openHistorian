@@ -41,6 +41,11 @@ using Measurement = GSF.TimeSeries.Measurement;
 using MeasurementRecord = openHistorian.Model.Measurement;
 using SignalType = GSF.Units.EE.SignalType;
 using SignalTypeRecord = openHistorian.Model.SignalType;
+using System.Xml.Serialization;
+using System.Data;
+using GSF.TimeSeries.Data;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace openHistorian.Adapters
 {
@@ -53,31 +58,28 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Nested Types
-        private class StatisticsCollection
+        private class SNRDataWindow
         {
-            public MeasurementKey Max;
-            public MeasurementKey Min;
-            public MeasurementKey Total;
-            public MeasurementKey Sum;
-            public MeasurementKey SqrD;
-            public MeasurementKey Alert;
-
+            public double  Sum;
+            public double SquaredSum;
             public double Count;
-            public double Maximum;
-            public double Minimum;
-            public double Summation;
-            public double SquaredSummation;
-            public int AlertCount;
 
-            public void Reset()
-            {
-                Count = 0;
-                Maximum = double.MinValue;
-                Minimum = double.MaxValue;
-                Summation = 0;
-                SquaredSummation = 0;
-                AlertCount = 0;
-            }
+            public void Reset() => Sum = SquaredSum = Count = 0;
+        }
+
+        /// <summary>
+        /// Represents Set of input and output Measurment used for SNR computation
+        /// </summary>
+        public class SNRMapping
+        {
+            /// <summary>
+            /// The Input Measurement Key
+            /// </summary>
+            public Guid InputKey { get; set; }
+            /// <summary>
+            /// The Output MeasurementKey
+            /// </summary>
+            public Guid OutputKey { get; set; }
         }
 
         // Constants
@@ -88,112 +90,150 @@ namespace openHistorian.Adapters
         public const int DefaultWindowLength = 30;
 
         /// <summary>
-        /// Default value for <see cref="ReportingInterval"/>.
+        /// Defines the default value for the <see cref="ParentDeviceAcronymTemplate"/>.
         /// </summary>
-        public const int DefaultReportingInterval = 300;
+        public const string DefaultParentDeviceAcronymTemplate = "IAM!{0}";
 
         /// <summary>
-        /// Default value for <see cref="ResultDeviceName"/>.
+        /// Defines the default value for the <see cref="SourceMeasurementTable"/>.
         /// </summary>
-        public const string DefaultResultDeviceName = "SNR!SERVICE";
+        public const string DefaultSourceMeasurementTable = "ActiveMeasurements";
 
         /// <summary>
-        /// Default value for <see cref="HistorianInstance"/>.
+        /// Defines the default value for the <see cref="InputMeasurementKeys"/>.
         /// </summary>
-        public const string DefaultHistorian = "PPA";
+        public const string DefaultInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType LIKE '%PH%' OR SignalType = 'FREQ'";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="PointTagTemplate"/>.
+        /// </summary>
+        public const string DefaultPointTagTemplate = "SNR!{0}";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="SignalReferenceTemplate"/>.
+        /// </summary>
+        public const string DefaultSignalReferenceTemplate = DefaultPointTagTemplate + "-CV";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="AlternateTagTemplate"/>.
+        /// </summary>
+        public const string DefaultAlternateTagTemplate = "";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IIndependentAdapterManager.DescriptionTemplate"/>.
+        /// </summary>
+        public const string DefaultDescriptionTemplate = "{0} [{1}] measurement created for {2} [{3}].";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="IIndependentAdapterManager.TargetHistorianAcronym"/>.
+        /// </summary>
+        public const string DefaultTargetHistorianAcronym = "PPA";
 
         // Fields
         private int m_numberOfFrames;
-        private Dictionary<Guid, List<double>> m_dataWindow;
-        private List<double> m_refWindow;
-        private Dictionary<Guid, SignalType> m_signalTypeMapping;
+        private double m_lastSNR;
+        private Dictionary<Guid, SNRDataWindow> m_dataWindow;
+        private Dictionary<Guid, bool> m_isAngleMapping;
         private Dictionary<Guid, MeasurementKey> m_outputMapping;
-        private Dictionary<Guid, StatisticsCollection> m_statisticsMapping;
-        private bool m_saveStats;
-        private Guid m_nodeID;
-        private double m_threshold;
+
 
         #endregion
 
         #region [ Properties ]
 
         /// <summary>
-        /// Gets or sets the device acronym of the outputs
+        /// Gets or sets the reference for phase computation.
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines Name of the Device used for output Measurements.")]
-        [DefaultValue(DefaultResultDeviceName)]
-        public string ResultDeviceName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the default historian instance used by the output measurements.
-        /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines the Historian Instance used by the output measurements. Specified by Acronym")]
-        [DefaultValue(DefaultHistorian)]
-        public string HistorianInstance
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the flag to determine of aggregates are saved
-        /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines If aggregates are saved sepperately.")]
-        [DefaultValue(false)]
-        public bool SaveAggregates
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the reporting Interval of the results
-        /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines the Reporting Interval of the Statistics.")]
-        [DefaultValue(DefaultReportingInterval)]
-        public int ReportingInterval
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the reference for Phase Computation
-        /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines Reference Angle for Phase SNRs.")]
+        [Description("Defines the reference angle for phase computation.")]
         [DefaultValue(null)]
-        public MeasurementKey Reference
-        {
-            get;
-            set;
-        }
+        public MeasurementKey Reference { get; set; }
 
         /// <summary>
-        /// Gets or sets the default Device Acronym used if SNR measurements have to be generated
+        /// Gets or sets the window length for the SNR computation.
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines the Windowlength in frames.")]
+        [Description("Defines the window length in frames used for SNR computation.")]
         [DefaultValue(DefaultWindowLength)]
-        public int WindowLength
+        public int WindowLength { get; set; } = DefaultWindowLength;
+
+        /// <summary>
+        /// Gets or sets template for the parent device acronym used to group associated output measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for the parent device acronym used to group associated output measurements, typically an expression like \"" + DefaultParentDeviceAcronymTemplate + "\" where \"{0}\" is substituted with this adapter name. Set to blank value to create no parent device associated output measurements. Note that \"{0}\" token is not required, you can simply use a specific device acronym.")]
+        [DefaultValue(DefaultParentDeviceAcronymTemplate)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string ParentDeviceAcronymTemplate { get; set; } = DefaultParentDeviceAcronymTemplate;
+
+        /// <summary>
+        /// Gets or sets the ReportSQL flag.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines wether the daily summary is saved to a SQL Database.")]
+        [DefaultValue(false)]
+        public bool ReportSQL { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets template for output measurement point tag names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\" where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultPointTagTemplate)]
+        public virtual string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
+
+        /// <summary>
+        /// Gets or sets template for output measurement signal reference names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\" where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultSignalReferenceTemplate)]
+        public virtual string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
+
+        /// <summary>
+        /// Gets or sets the source measurement table to use for configuration.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the source measurement table to use for configuration.")]
+        [DefaultValue(DefaultSourceMeasurementTable)]
+        public virtual string SourceMeasurementTable { get; set; } = DefaultSourceMeasurementTable;
+
+        /// <summary>
+        /// Gets or sets template for output measurement alternate tag names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement alternate tag names, typically an expression where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultAlternateTagTemplate)]
+        public virtual string AlternateTagTemplate { get; set; } = DefaultAlternateTagTemplate;
+
+        /// <summary>
+        /// Gets or sets template for output measurement descriptions.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement descriptions, typically an expression like \"" + DefaultDescriptionTemplate + "\".")]
+        [DefaultValue(DefaultDescriptionTemplate)]
+        public virtual string DescriptionTemplate { get; set; } = DefaultDescriptionTemplate;
+
+        /// <summary>
+        /// Gets or sets the target historian acronym for output measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the target historian acronym for output measurements.")]
+        [DefaultValue(DefaultTargetHistorianAcronym)]
+        public virtual string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+
+
+        /// <summary>
+        /// Gets or sets output measurements that the <see cref="SNRComputation"/> will produce, if any.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - outputs managed automatically
+        public override IMeasurement[] OutputMeasurements
         {
-            get;
-            set;
+            get => base.OutputMeasurements;
+            set => base.OutputMeasurements = value;
         }
+        
 
         /// <summary>
         /// Gets a detailed status for this <see cref="SNRComputation"/>.
@@ -204,24 +244,14 @@ namespace openHistorian.Adapters
             {
                 StringBuilder status = new StringBuilder();
 
+                status.AppendFormat(" Calculation Window Length: {0:N0}", WindowLength);
+                status.AppendLine();
+                status.AppendFormat(" Last Calculated SNR Value: {0:N3}", m_lastSNR);
+                status.AppendLine();
+                status.AppendFormat("Configured Reference Angle: {0}", Reference?.ToString() ?? "Undefined");
+                status.AppendLine();
                 status.Append(base.Status);
 
-                status.AppendFormat("Length of calculation window: {0}", WindowLength);
-                status.AppendLine();
-                status.AppendFormat("          Output Device Name: {0}", ResultDeviceName);
-                status.AppendLine();
-
-                if (m_saveStats)
-                {
-                    status.AppendFormat("          Reporting Interval: {0}", ReportingInterval);
-                    status.AppendLine();
-                }
-                else
-                {
-                    status.AppendFormat("Statistics are not saved");
-                    status.AppendLine();
-                }
-                
                 return status.ToString();
             }
         }
@@ -235,114 +265,104 @@ namespace openHistorian.Adapters
         /// </summary>
         public override void Initialize()
         {
-            new ConnectionStringParser<CalculatedMesaurementAttribute>().ParseConnectionString(ConnectionString, this);
+            ParseConnectionString();
 
             base.Initialize();
 
             // Figure Output Measurement Keys
-            m_dataWindow = new Dictionary<Guid, List<double>>();
-            m_refWindow = new List<double>();
+            m_dataWindow = new Dictionary<Guid, SNRDataWindow>();
             m_outputMapping = new Dictionary<Guid, MeasurementKey>();
-            m_statisticsMapping = new Dictionary<Guid, StatisticsCollection>();
-            m_saveStats = SaveAggregates;
+            m_isAngleMapping = new Dictionary<Guid, bool>();
 
-            m_signalTypeMapping = InputMeasurementKeys
+            m_isAngleMapping = InputMeasurementKeys
                 .Zip(InputMeasurementKeyTypes, (key, signalType) => new { key, signalType })
-                .ToDictionary(mapping => mapping.key.SignalID, mapping => mapping.signalType);
+                .ToDictionary(mapping => mapping.key.SignalID, mapping => (mapping.signalType== SignalType.IPHA || mapping.signalType == SignalType.VPHA));
 
-            if (ReportingInterval % (double)WindowLength != 0.0D)
+
+            MeasurementKey[] measurementKeys;
+            int? currentDeviceID = null;
+
+            // Create associated parent device for output measurements if 
+            if (!string.IsNullOrWhiteSpace(ParentDeviceAcronymTemplate))
             {
-                ReportingInterval = WindowLength * (ReportingInterval / WindowLength);
-                OnStatusMessage(MessageLevel.Warning, $"Adjusting Reporting Interval to every {ReportingInterval} frames.");
+
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                    string deviceAcronym = string.Format(ParentDeviceAcronymTemplate, Name);
+
+                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceAcronym) ?? deviceTable.NewRecord();
+                    int protocolID = connection.ExecuteScalar<int?>("SELECT ID FROM Protocol WHERE Acronym = 'VirtualInput'") ?? 15;
+
+                    device.Acronym = deviceAcronym;
+                    device.Name = deviceAcronym;
+                    device.ProtocolID = protocolID;
+                    device.Enabled = true;
+
+                    deviceTable.AddNewOrUpdateRecord(device);
+                    currentDeviceID = deviceTable.QueryRecordWhere("Acronym = {0}", deviceAcronym)?.ID;
+                }
             }
 
-            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
-            reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
-            m_threshold = reportSettings["DefaultSNRThreshold"].ValueAs(m_threshold);
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            // Create child adapter for provided inputs to the parent bulk collection-based adapter
+            Parallel.For(0, (InputMeasurementKeys.Length), (i) =>
             {
-                TableOperations<MeasurementRecord> measurementTable = new TableOperations<MeasurementRecord>(connection);
-                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
-                TableOperations<SignalTypeRecord> signalTable = new TableOperations<SignalTypeRecord>(connection);
 
-                Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
-                int historianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", new object[] { HistorianInstance }));
+                Guid input;
+                Guid output;
 
-                if (!InputMeasurementKeys.Any())
-                    return;
+                // Adapter inputs are presumed to be grouped together
+                input = InputMeasurementKeys[i].SignalID;
 
-                m_nodeID = deviceTable.QueryRecordWhere("Id={0}", measurementTable.QueryRecordWhere("SignalID = {0}", InputMeasurementKeys[0].SignalID).DeviceID).NodeID;
+                string inputName = LookupPointTag(input, SourceMeasurementTable);
+                string alternateTagPrefix = null;
 
-                if (device == null)
+                if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
                 {
-                    device = CreateDefaultDevice(deviceTable);
-                    OnStatusMessage(MessageLevel.Warning, $"Default Device for Output Measurments not found. Created Device {device.Acronym}");
+                    string deviceName = this.LookupDevice(input, SourceMeasurementTable);
+                    string phasorLabel = this.LookupPhasorLabel(input, SourceMeasurementTable);
+                    alternateTagPrefix = $"{deviceName}-{phasorLabel}";
                 }
 
-                foreach (MeasurementKey key in InputMeasurementKeys)
+                // Setup output measurements for new child adapter
+
+                // Check if an Output Model already exists
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
-                    m_dataWindow.Add(key.SignalID, new List<double>());
+                    SNRMapping keys = new TableOperations<SNRMapping>(connection).QueryRecordWhere("InputKey = {0}", input);
 
-                    string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR";
-
-                    if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
+                    if (keys == null)
                     {
-                        // Measurement Exists
-                        m_outputMapping.Add(key.SignalID, MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID));
+                        string perAdapterOutputName = "RESULT";
+                        string outputPrefix = $"{Name}!{inputName}-{perAdapterOutputName}";
+                        string outputPointTag = string.Format(PointTagTemplate, outputPrefix);
+                        string outputAlternateTag = string.Format(AlternateTagTemplate, alternateTagPrefix is null ? "" : $"{alternateTagPrefix}-{perAdapterOutputName}");
+                        string signalReference = string.Format(SignalReferenceTemplate, outputPrefix);
+                        string description = string.Format(DescriptionTemplate, outputPrefix, SignalType.CALC, Name, GetType().Name);
+
+                        // Get output measurement record, creating a new one if needed
+                        MeasurementRecord measurement = GetMeasurementRecord(currentDeviceID ?? CurrentDeviceID(i), outputPointTag, outputAlternateTag, signalReference, description, SignalType.CALC, TargetHistorianAcronym);
+
+                           
+                        output = measurement.SignalID;
+                        
+                        new TableOperations<SNRMapping>(connection).AddNewRecord(new SNRMapping() { InputKey = input, OutputKey = output });
+
+
                     }
                     else
                     {
-                        // Add Measurment to Database and make a statement
-                        MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", key.SignalID);
+                        output = keys.OutputKey;
 
-                        MeasurementRecord outMeasurement = new MeasurementRecord
-                        {
-                            HistorianID = historianID,
-                            DeviceID = device.ID,
-                            PointTag = inMeasurement.PointTag + "-SNR",
-                            AlternateTag = inMeasurement.AlternateTag + "-SNR",
-                            SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
-                            SignalReference = outputReference,
-                            Description = inMeasurement.Description + " SNR",
-                            Enabled = true,
-                            CreatedOn = DateTime.UtcNow,
-                            UpdatedOn = DateTime.UtcNow,
-                            CreatedBy = UserInfo.CurrentUserID,
-                            UpdatedBy = UserInfo.CurrentUserID,
-                            SignalID = Guid.NewGuid(),
-                            Adder = 0.0D,
-                            Multiplier = 1.0D
-                        };
-
-                        measurementTable.AddNewRecord(outMeasurement);
-
-                        m_outputMapping.Add(key.SignalID, MeasurementKey.LookUpBySignalID(
-                           measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID));
-
-                        OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
                     }
-
-                    if (m_saveStats)
-                        m_statisticsMapping.Add(key.SignalID, CreateStatistics(measurementTable, key, device, historianID));
                 }
+                // Add inputs and outputs to connection string settings for child adapter
+                m_dataWindow[input] = new SNRDataWindow();
+                m_dataWindow[input].Reset();
+                m_outputMapping[input] = MeasurementKey.LookUpBySignalID(output);
+            });
 
-                if (Reference == null)
-                {
-                    OnStatusMessage(MessageLevel.Warning, "No Reference Angle Specified");
-                    
-                    int refIndex = InputMeasurementKeyTypes.IndexOf(item => item == SignalType.IPHA || item == SignalType.VPHA);
-                    
-                    if (refIndex > -1)
-                        Reference = InputMeasurementKeys[refIndex];
-                }
 
-                if (Reference != null)
-                {
-                    if (!InputMeasurementKeys.Contains(Reference))
-                        InputMeasurementKeys.AddRange(new[] { Reference });
-                }
-            }
         }
 
         /// <summary>
@@ -353,332 +373,248 @@ namespace openHistorian.Adapters
         protected override void PublishFrame(IFrame frame, int index)
         {
             m_numberOfFrames++;
+            bool calcSNR = m_numberOfFrames >= WindowLength;
 
-            foreach (Guid signalID in m_dataWindow.Keys)
+            List<IMeasurement> outputmeasurements = new List<IMeasurement>();
+
+            double refAngle = 0.0D;
+            IMeasurement referceAngle;
+            if (Reference != null && frame.Measurements.TryGetValue(Reference, out referceAngle))
             {
-                MeasurementKey key = MeasurementKey.LookUpBySignalID(signalID);
-                double? value = frame.Measurements.GetOrDefault(key)?.Value;
-                m_dataWindow[signalID].Add(value ?? double.NaN);
+                refAngle = referceAngle.AdjustedValue;
             }
 
-            if (Reference != null)
+            foreach (IMeasurement measurment in frame.Measurements.Values)
             {
-                MeasurementKey key = MeasurementKey.LookUpBySignalID(Reference.SignalID);
-                double? value = frame.Measurements.GetOrDefault(key)?.Value;
-                m_refWindow.Add(value ?? double.NaN);
-            }
+                double value = measurment.AdjustedValue;
+                Guid signalID = measurment.Key.SignalID;
 
-            int currentWindowLength = m_dataWindow.Values.Select(values => values.Count).Max();
-
-            if (currentWindowLength >= WindowLength)
-            {
-                List<IMeasurement> outputmeasurements = new List<IMeasurement>();
-
-                List<Guid> Keys = m_dataWindow.Keys.ToList();
-
-                foreach (Guid key in Keys)
+                if (m_isAngleMapping[signalID])
                 {
-                    List<double> values = m_dataWindow[key];
-                    double snr = CalculateSignalToNoise(values, key);
-                    Measurement outputMeasurement = new Measurement { Metadata = m_outputMapping[key].Metadata };
-
-                    if (!double.IsNaN(snr) && m_saveStats)
-                    {
-                        StatisticsCollection statistics = m_statisticsMapping[key];
-                        statistics.Count++;
-
-                        if (snr > statistics.Maximum)
-                            statistics.Maximum = snr;
-                        
-                        if (snr < statistics.Minimum)
-                            statistics.Minimum = snr;
-                        
-                        if (snr > m_threshold)
-                            statistics.AlertCount++;
-
-                        statistics.Summation += snr;
-                        statistics.SquaredSummation += snr * snr;
-                    }
-
-                    outputmeasurements.Add(Measurement.Clone(outputMeasurement, snr, frame.Timestamp));
-
-                    values.RemoveAt(0);
-
-                    if (!m_saveStats)
-                        m_numberOfFrames = 0;
+                    Angle[] angles = Angle.Unwrap(new Angle[] { value, refAngle }).ToArray();
+                    value = angles[0] - angles[1];
                 }
 
-                m_refWindow.RemoveAt(0);
+                m_dataWindow[signalID].Count += 1.0D;
+                m_dataWindow[signalID].Sum += value;
+                m_dataWindow[signalID].SquaredSum += value * value;
 
-                // Reporting if necessary
-                if (m_numberOfFrames >= ReportingInterval && m_saveStats)
+                if (calcSNR)
                 {
-                    m_numberOfFrames = 0;
-
-                    foreach (Guid key in Keys)
-                    {
-                        StatisticsCollection statistics = m_statisticsMapping[key];
-                        Measurement stateMeasurement = new Measurement { Metadata = statistics.Sum.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Summation, frame.Timestamp));
-
-                        stateMeasurement = new Measurement { Metadata = statistics.SqrD.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.SquaredSummation, frame.Timestamp));
-
-                        stateMeasurement = new Measurement { Metadata = statistics.Min.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Minimum, frame.Timestamp));
-
-                        stateMeasurement = new Measurement { Metadata = statistics.Max.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Maximum, frame.Timestamp));
-
-                        stateMeasurement = new Measurement { Metadata = statistics.Total.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.Count, frame.Timestamp));
-
-                        stateMeasurement = new Measurement { Metadata = statistics.Alert.Metadata };
-                        outputmeasurements.Add(Measurement.Clone(stateMeasurement, statistics.AlertCount, frame.Timestamp));
-
-                        statistics.Reset();
-                    }
+                    double snr = CalculateSignalToNoise(m_dataWindow[signalID]);
+                    m_lastSNR = snr;
+                    m_dataWindow[signalID].Reset();
+                    Measurement snrMeasurement = new Measurement { Metadata = m_outputMapping[signalID].Metadata };
+                    outputmeasurements.Add(Measurement.Clone(snrMeasurement, snr, frame.Timestamp));
                 }
-
-                OnNewMeasurements(outputmeasurements);
             }
+
+            if (!calcSNR)
+                return;
+
+            m_numberOfFrames = 0;
+            OnNewMeasurements(outputmeasurements);
+            
         }
 
-        private double CalculateSignalToNoise(List<double> values, Guid key)
+        private double CalculateSignalToNoise(SNRDataWindow data)
         {
-            int sampleCount = values.Count;
-            SignalType keySignalType = m_signalTypeMapping[key];
-
-            // If its a Phase
-            if ((keySignalType == SignalType.IPHA || keySignalType == SignalType.VPHA) && sampleCount == m_refWindow.Count && Reference != null)
-                values = Angle.Unwrap(values.Select((item, index) => item - (Angle)m_refWindow[index]).ToArray()).Select(item => (double)item).ToList();
-
-            values = values.Where(item => !double.IsNaN(item)).ToList();
-            sampleCount = values.Count;
-
-            if (sampleCount < 1)
+            if (data.Count < 1)
                 return double.NaN;
 
-            double sampleAverage = values.Average();
-            double totalVariance = values.Select(item => item - sampleAverage).Select(deviation => deviation * deviation).Sum();
-            double result = 10 * Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / sampleCount)));
-            
+            double sampleAverage = data.Sum / data.Count;
+            double totalVariance = data.SquaredSum - 2.0D * sampleAverage * data.Sum + data.Count * sampleAverage * sampleAverage;
+            double result = 10 * Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / data.Count)));
+
             return double.IsInfinity(result) ? double.NaN : result;
         }
 
-        private Device CreateDefaultDevice(TableOperations<Device> table)
+        /// <summary>
+        /// Gets associated device ID if any, for measurement generation.
+        /// </summary>
+        /// <param name="measurementIndex"> The imeasurement Index for which this device is</param>
+        /// <remarks>
+        /// If overridden to provide custom device ID, <see cref="ParentDeviceAcronymTemplate" /> should be set
+        /// to <c>null</c> so no parent device is created.
+        /// </remarks>
+        private int CurrentDeviceID(int measurementIndex)
         {
-            int protocolID;
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            // Idea here is to associate each new output measurement with device associated with input.
+            // When this value is not specified and the ParentDeviceAcronymTemplate is defined, system
+            // will create a single new device for "all" output measurements to be associated with, this
+            // way the values will still have a parent and can be transported via protocols like STTP.
+            
+            try
             {
-                TableOperations<Protocol> protocolTable = new TableOperations<Protocol>(connection);
-                protocolID = protocolTable.QueryRecordWhere("Acronym = {0}", "VirtualInput").ID;
+                if (measurementIndex > -1)
+                {
+                    // Just pick first input measurement to find associated device ID
+                    MeasurementKey inputMeasurement = InputMeasurementKeys[measurementIndex];
+                    DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
+                    int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
+
+                    // Query the actual database record ID based on the known runtime ID for this device
+                    using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                    {
+                        TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
+                        Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
+                        return runtimeRecord.SourceID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to lookup current device ID for adapter {measurementIndex:N0}: {ex.Message}", ex));
             }
 
-            Device result = new Device
-            {
-                Enabled = true,
-                ProtocolID = protocolID,
-                Name = "SNR Results",
-                Acronym = ResultDeviceName,
-                CreatedOn = DateTime.UtcNow,
-                UpdatedOn = DateTime.UtcNow,
-                CreatedBy = UserInfo.CurrentUserID,
-                UpdatedBy = UserInfo.CurrentUserID,
-                UniqueID = Guid.NewGuid(),
-                NodeID = m_nodeID
-            };
-
-            table.AddNewRecord(result);
-            result = table.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
-
-            return result;
+            return 0;
         }
 
-        private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID)
+        /// <summary>
+        /// Lookups up point tag name from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// 
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+        /// <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        private string LookupPointTag(Guid signalID, string measurementTable = "ActiveMeasurements")
         {
-            MeasurementRecord inMeasurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID);
-            int signaltype;
-            
+            DataRow record = DataSource.LookupMetadata(signalID, measurementTable);
+            string pointTag = null;
+
+            if (record != null)
+                pointTag = record["PointTag"].ToString();
+
+            if (string.IsNullOrWhiteSpace(pointTag))
+                pointTag = signalID.ToString();
+
+            return pointTag.ToUpper();
+        }
+
+        /// <summary>
+        /// Lookups up associated device name from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+        /// <returns>Device name, if found; otherwise, string representation of associated point tag.</returns>
+        private string LookupDevice( Guid signalID, string measurementTable = "ActiveMeasurements")
+        {
+            DataRow record = DataSource.LookupMetadata(signalID, measurementTable);
+            string device = null;
+
+            if (record != null)
+                device = record["Device"].ToString();
+
+            if (string.IsNullOrWhiteSpace(device))
+                device = LookupPointTag(signalID, measurementTable);
+
+            return device.ToUpper();
+        }
+
+        /// <summary>
+        /// Lookups up associated phasor label from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+        /// <returns>Phasor label name, if found; otherwise, string representation associated point tag.</returns>
+        private string LookupPhasorLabel( Guid signalID, string measurementTable = "ActiveMeasurements")
+        {
+            DataRow record = DataSource.LookupMetadata(signalID, measurementTable);
+            int phasorID = 0;
+
+            if (record != null)
+                phasorID = record.ConvertNullableField<int>("PhasorID") ?? 0;
+
+            if (phasorID == 0)
+                return LookupPointTag(signalID, measurementTable);
+
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
+                TableOperations<GSF.TimeSeries.Model.Phasor> phasorTable = new TableOperations<GSF.TimeSeries.Model.Phasor>(connection);
+                GSF.TimeSeries.Model.Phasor phasorRecord = phasorTable.QueryRecordWhere("ID = {0}", phasorID);
+                return phasorRecord is null ? LookupPointTag(signalID, measurementTable) : phasorRecord.Label.Trim().ToUpper();
+            }
+        }
+
+        /// <summary>
+        /// Parses connection string.
+        /// </summary>
+        private void ParseConnectionString()
+        {
+            Dictionary<string, string> settings = Settings;
+
+            if (!settings.TryGetValue(nameof(InputMeasurementKeys), out string inputMeasurementKeys) || string.IsNullOrWhiteSpace(inputMeasurementKeys))
+                settings[nameof(InputMeasurementKeys)] = DefaultInputMeasurementKeys;
+
+            // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
+            ConnectionStringParser parser = new ConnectionStringParser();
+            parser.ParseConnectionString(ConnectionString, this);
+
+            // Parse input measurement keys like class was a typical adapter
+            if (Settings.TryGetValue(nameof(InputMeasurementKeys), out string setting))
+                InputMeasurementKeys = AdapterBase.ParseInputMeasurementKeys(DataSource, true, setting, SourceMeasurementTable);
+
+            // Parse output measurement keys like class was a typical adapter
+            if (Settings.TryGetValue(nameof(OutputMeasurements), out setting))
+                OutputMeasurements = AdapterBase.ParseOutputMeasurements(DataSource, true, setting, SourceMeasurementTable);
+
+        }
+
+        /// <summary>
+        /// Gets measurement record, creating it if needed.
+        /// </summary>
+        /// <param name="instance">Target <see cref="IIndependentAdapterManager"/> instance.</param>
+        /// <param name="currentDeviceID">Device ID associated with current adapter, or zero if none.</param>
+        /// <param name="pointTag">Point tag of measurement.</param>
+        /// <param name="alternateTag">Alternate tag of measurement.</param>
+        /// <param name="signalReference">Signal reference of measurement.</param>
+        /// <param name="description">Description of measurement.</param>
+        /// <param name="signalType">Signal type of measurement.</param>
+        /// <param name="targetHistorianAcronym">Acronym of target historian for measurement.</param>
+        /// <returns>Measurement record.</returns>
+        private MeasurementRecord GetMeasurementRecord(int currentDeviceID, string pointTag, string alternateTag, string signalReference, string description, SignalType signalType = SignalType.CALC, string targetHistorianAcronym = "PPA")
+        {
+            // Open database connection as defined in configuration file "systemSettings" category
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                TableOperations<MeasurementRecord> measurementTable = new TableOperations<MeasurementRecord>(connection);
+                TableOperations<Historian> historianTable = new TableOperations<Historian>(connection);
                 TableOperations<SignalTypeRecord> signalTypeTable = new TableOperations<SignalTypeRecord>(connection);
-                signaltype = signalTypeTable.QueryRecordWhere("Acronym = {0}", "CALC").ID;
+
+                // Lookup target device ID
+                int? deviceID = currentDeviceID > 0 ? currentDeviceID : deviceTable.QueryRecordWhere("Acronym = {0}", Name)?.ID;
+
+                // Lookup target historian ID
+                int? historianID = historianTable.QueryRecordWhere("Acronym = {0}", targetHistorianAcronym)?.ID;
+
+                // Lookup signal type ID
+                int signalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", signalType.ToString())?.ID ?? 1;
+
+                // Lookup measurement record by point tag, creating a new record if one does not exist
+                MeasurementRecord measurement = measurementTable.QueryRecordWhere("SignalReference = {0}", signalReference) ?? measurementTable.NewRecord();
+
+                // Update record fields
+                measurement.DeviceID = deviceID;
+                measurement.HistorianID = historianID;
+                measurement.PointTag = pointTag;
+                measurement.AlternateTag = alternateTag;
+                measurement.SignalReference = signalReference;
+                measurement.SignalTypeID = signalTypeID;
+                measurement.Description = description;
+
+                // Save record updates
+                measurementTable.AddNewOrUpdateRecord(measurement);
+
+                // Re-query new records to get any database assigned information, e.g., unique Guid-based signal ID
+                if (measurement.PointID == 0)
+                    measurement = measurementTable.QueryRecordWhere("SignalReference = {0}", signalReference);
+
+                // Notify host system of configuration changes
+                OnConfigurationChanged();
+
+                return measurement;
             }
-
-            string outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
-
-            // Sum
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:SUM",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:SUM",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Summ of SNR",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // sqrdSum
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
-            
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:SQR",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:SQR",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Summ of Sqared SNR",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Min
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
-            
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:MIN",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:MIN",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Minimum SNR",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Max
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
-            
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:MAX",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:MAX",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Maximum SNR",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Number of Points
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
-            
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:NUM",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:NUM",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Number of Points",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Number of Points above Alert 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
-            
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-SNR:ALT",
-                    AlternateTag = inMeasurement.AlternateTag + "-SNR:ALT",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " number of Alerts",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            StatisticsCollection result = new StatisticsCollection();
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SUM";
-            result.Sum = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:SQR";
-            result.SqrD = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MIN";
-            result.Min = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:MAX";
-            result.Max = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:NUM";
-            result.Total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID).SignalReference + "-SNR:ALT";
-            result.Alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            result.Reset();
-            return result;
         }
 
         #endregion
