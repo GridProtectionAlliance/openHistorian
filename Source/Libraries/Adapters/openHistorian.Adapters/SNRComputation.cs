@@ -46,6 +46,7 @@ using System.Data;
 using GSF.TimeSeries.Data;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using GSF;
 
 namespace openHistorian.Adapters
 {
@@ -82,7 +83,21 @@ namespace openHistorian.Adapters
             public Guid OutputKey { get; set; }
         }
 
+        /// <summary>
+        /// Defines an entry for the SQL Database storing the Daily Summary
+        /// Note that the DB takes care of aggregating through Triggers
+        /// </summary>
+        [TableName("SNR")]
+        private class DailySummary
+        {
+            public DateTime Date { get; set; }
+            public double SNR { get; set; }
+            public Guid SignalID { get; set; }
+        }
+
         // Constants
+
+        private const string ReportSettingsCategory = "snrSQLReportingDB";
 
         /// <summary>
         /// Default value for <see cref="WindowLength"/>.
@@ -357,9 +372,9 @@ namespace openHistorian.Adapters
                     }
                 }
                 // Add inputs and outputs to connection string settings for child adapter
-                m_dataWindow[input] = new SNRDataWindow();
+                m_dataWindow.Add(input,new SNRDataWindow());
                 m_dataWindow[input].Reset();
-                m_outputMapping[input] = MeasurementKey.LookUpBySignalID(output);
+                m_outputMapping.Add(input, MeasurementKey.LookUpBySignalID(output));
             });
 
 
@@ -376,6 +391,7 @@ namespace openHistorian.Adapters
             bool calcSNR = m_numberOfFrames >= WindowLength;
 
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
+            List<DailySummary> sqlSummary = new List<DailySummary>();
 
             double refAngle = 0.0D;
             IMeasurement referceAngle;
@@ -406,6 +422,9 @@ namespace openHistorian.Adapters
                     m_dataWindow[signalID].Reset();
                     Measurement snrMeasurement = new Measurement { Metadata = m_outputMapping[signalID].Metadata };
                     outputmeasurements.Add(Measurement.Clone(snrMeasurement, snr, frame.Timestamp));
+
+                    if (ReportSQL)
+                        sqlSummary.Add(new DailySummary() { SignalID = signalID, SNR = snr, Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
                 }
             }
 
@@ -414,6 +433,7 @@ namespace openHistorian.Adapters
 
             m_numberOfFrames = 0;
             OnNewMeasurements(outputmeasurements);
+            SaveToSQL(sqlSummary);
             
         }
 
@@ -427,6 +447,22 @@ namespace openHistorian.Adapters
             double result = 10 * Math.Log10(Math.Abs(sampleAverage / Math.Sqrt(totalVariance / data.Count)));
 
             return double.IsInfinity(result) ? double.NaN : result;
+        }
+
+        private void SaveToSQL(List<DailySummary> data)
+        {
+            try
+            {
+                using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                {
+                    TableOperations<DailySummary> summaryTbl = new TableOperations<DailySummary>(connection);
+                    data.ForEach(item => summaryTbl.AddNewRecord(item));
+                }
+            }
+            catch (Exception ex)
+            {
+                OnStatusMessage(MessageLevel.Error, "Unable to save Daily summary to SQL: {0}", ex.Message);
+            }
         }
 
         /// <summary>
