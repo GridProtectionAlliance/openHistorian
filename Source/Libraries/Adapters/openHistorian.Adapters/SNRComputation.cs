@@ -47,6 +47,8 @@ using GSF.TimeSeries.Data;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using GSF;
+using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace openHistorian.Adapters
 {
@@ -115,7 +117,7 @@ namespace openHistorian.Adapters
         public const string DefaultSourceMeasurementTable = "ActiveMeasurements";
 
         /// <summary>
-        /// Defines the default value for the <see cref="InputMeasurementKeys"/>.
+        /// Defines the default value for the <see cref="CalculatedMeasurementBase.InputMeasurementKeys"/>.
         /// </summary>
         public const string DefaultInputMeasurementKeys = "FILTER ActiveMeasurements WHERE SignalType LIKE '%PH%' OR SignalType = 'FREQ'";
 
@@ -147,9 +149,9 @@ namespace openHistorian.Adapters
         // Fields
         private int m_numberOfFrames;
         private double m_lastSNR;
-        private Dictionary<Guid, SNRDataWindow> m_dataWindow;
+        private ConcurrentDictionary<Guid, SNRDataWindow> m_dataWindow;
         private Dictionary<Guid, bool> m_isAngleMapping;
-        private Dictionary<Guid, MeasurementKey> m_outputMapping;
+        private ConcurrentDictionary<Guid, MeasurementKey> m_outputMapping;
 
 
         #endregion
@@ -242,6 +244,9 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets output measurements that the <see cref="SNRComputation"/> will produce, if any.
         /// </summary>
+        /// [ConnectionStringParameter]
+        [Description("Defines the list of output measurements.")]
+        [DefaultValue(null)]
         [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - outputs managed automatically
         public override IMeasurement[] OutputMeasurements
         {
@@ -285,8 +290,8 @@ namespace openHistorian.Adapters
             base.Initialize();
 
             // Figure Output Measurement Keys
-            m_dataWindow = new Dictionary<Guid, SNRDataWindow>();
-            m_outputMapping = new Dictionary<Guid, MeasurementKey>();
+            m_dataWindow = new ConcurrentDictionary<Guid, SNRDataWindow>();
+            m_outputMapping = new ConcurrentDictionary<Guid, MeasurementKey>();
             m_isAngleMapping = new Dictionary<Guid, bool>();
 
             m_isAngleMapping = InputMeasurementKeys
@@ -372,9 +377,9 @@ namespace openHistorian.Adapters
                     }
                 }
                 // Add inputs and outputs to connection string settings for child adapter
-                m_dataWindow.Add(input,new SNRDataWindow());
+                m_dataWindow.AddOrUpdate(input,new SNRDataWindow());
                 m_dataWindow[input].Reset();
-                m_outputMapping.Add(input, MeasurementKey.LookUpBySignalID(output));
+                m_outputMapping.AddOrUpdate(input, MeasurementKey.LookUpBySignalID(output));
             });
 
 
@@ -423,7 +428,7 @@ namespace openHistorian.Adapters
                     Measurement snrMeasurement = new Measurement { Metadata = m_outputMapping[signalID].Metadata };
                     outputmeasurements.Add(Measurement.Clone(snrMeasurement, snr, frame.Timestamp));
 
-                    if (ReportSQL)
+                    if (ReportSQL && !double.IsNaN(snr))
                         sqlSummary.Add(new DailySummary() { SignalID = signalID, SNR = snr, Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
                 }
             }
@@ -453,15 +458,30 @@ namespace openHistorian.Adapters
         {
             try
             {
+                int nExceptions = 0;
+                Exception lastEx = null;
                 using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
                 {
                     TableOperations<DailySummary> summaryTbl = new TableOperations<DailySummary>(connection);
-                    data.ForEach(item => summaryTbl.AddNewRecord(item));
+                    data.ForEach(item => {
+                        try
+                        {
+                            summaryTbl.AddNewRecord(item);
+                        }
+                        catch (Exception ex)
+                        {
+                            nExceptions++;
+                            lastEx = ex;
+                        }
+                        
+                    });
                 }
+                if (nExceptions > 0)
+                    OnStatusMessage(MessageLevel.Error, $"Unable to save {nExceptions} of {data.Count()} Daily summary to SQL latest Exception: {lastEx.Message}");
             }
             catch (Exception ex)
             {
-                OnStatusMessage(MessageLevel.Error, "Unable to save Daily summary to SQL: {0}", ex.Message);
+                OnStatusMessage(MessageLevel.Error, $"Unable to connect to Daily summary SQL DB: {ex.Message}");
             }
         }
 
@@ -583,7 +603,7 @@ namespace openHistorian.Adapters
                 settings[nameof(InputMeasurementKeys)] = DefaultInputMeasurementKeys;
 
             // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
-            ConnectionStringParser parser = new ConnectionStringParser();
+            ConnectionStringParser parser = new ConnectionStringParser<ConnectionStringParameterAttribute>();
             parser.ParseConnectionString(ConnectionString, this);
 
             // Parse input measurement keys like class was a typical adapter
