@@ -139,14 +139,19 @@ namespace openHistorian.Adapters
         public const string DefaultAlternateTagTemplate = "";
 
         /// <summary>
-        /// Defines the default value for the <see cref="IIndependentAdapterManager.DescriptionTemplate"/>.
+        /// Defines the default value for the <see cref="DescriptionTemplate"/>.
         /// </summary>
         public const string DefaultDescriptionTemplate = "{0} [{1}] measurement created for {2} [{3}].";
 
         /// <summary>
-        /// Defines the default value for the <see cref="IIndependentAdapterManager.TargetHistorianAcronym"/>.
+        /// Defines the default value for the <see cref="TargetHistorianAcronym"/>.
         /// </summary>
         public const string DefaultTargetHistorianAcronym = "PPA";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="TargetHistorianAcronym"/>.
+        /// </summary>
+        public const int DefaultMaxSQLRows = 999;
 
         // Fields
         private int m_numberOfFrames;
@@ -168,6 +173,14 @@ namespace openHistorian.Adapters
         [Description("Defines the reference angle for phase computation.")]
         [DefaultValue(null)]
         public MeasurementKey Reference { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of rows inserted into sql as single Transaction.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the maximum number of daily Summary Points inserted at once.")]
+        [DefaultValue(DefaultMaxSQLRows)]
+        public int MaxSQLRows { get; set; }
 
         /// <summary>
         /// Gets or sets the window length for the SNR computation.
@@ -389,7 +402,7 @@ namespace openHistorian.Adapters
 
             m_cancelationTokenSql = new GSF.Threading.CancellationToken();
 
-            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");  });
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}"); throw new Exception($"Issue Occured on SQL Write {ex.Message}"); });
             m_summaryQueue = new IsolatedQueue<DailySummary>();
 
             if (ReportSQL)
@@ -468,17 +481,17 @@ namespace openHistorian.Adapters
         {
             while (!CancellationToken.IsCancelled)
             {
-                DailySummary[] data = new DailySummary[200000];
+                DailySummary[] data = new DailySummary[MaxSQLRows];
 
-                int n = m_summaryQueue.Dequeue(data, 0, 200000);
+                int n = m_summaryQueue.Dequeue(data, 0, MaxSQLRows);
                 if ( n > 0)
                 {
                     string sqlCmd = "INSERT INTO SNR (Date, SNR, SignalID) VALUES";
 
                     for (int i = 0; i < n; i++)
-                        sqlCmd = sqlCmd + $"\n ({data[i].Date},{data[i].SNR},'{data[i].SignalID}'),";
+                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].SNR},'{data[i].SignalID}'),";
 
-                    sqlCmd = sqlCmd.Substring(0,sqlCmd.Length - 1) + "\n GO";
+                    sqlCmd = sqlCmd.Substring(0,sqlCmd.Length - 1);
                     using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
                         connection.ExecuteNonQuery(sqlCmd);
                 }
