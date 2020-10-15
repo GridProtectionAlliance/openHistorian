@@ -49,6 +49,8 @@ using System.Threading.Tasks;
 using GSF;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
+using GSF.Threading;
+using System.Threading;
 
 namespace openHistorian.Adapters
 {
@@ -152,8 +154,9 @@ namespace openHistorian.Adapters
         private ConcurrentDictionary<Guid, SNRDataWindow> m_dataWindow;
         private Dictionary<Guid, bool> m_isAngleMapping;
         private ConcurrentDictionary<Guid, MeasurementKey> m_outputMapping;
-
-
+        private LongSynchronizedOperation m_sqlWritter;
+        private IsolatedQueue<DailySummary> m_summaryQueue;
+        private GSF.Threading.CancellationToken m_cancelationTokenSql;
         #endregion
 
         #region [ Properties ]
@@ -270,6 +273,8 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Configured Reference Angle: {0}", Reference?.ToString() ?? "Undefined");
                 status.AppendLine();
+                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue.Count);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();
@@ -298,8 +303,6 @@ namespace openHistorian.Adapters
                 .Zip(InputMeasurementKeyTypes, (key, signalType) => new { key, signalType })
                 .ToDictionary(mapping => mapping.key.SignalID, mapping => (mapping.signalType== SignalType.IPHA || mapping.signalType == SignalType.VPHA));
 
-
-            MeasurementKey[] measurementKeys;
             int? currentDeviceID = null;
 
             // Create associated parent device for output measurements if 
@@ -382,7 +385,15 @@ namespace openHistorian.Adapters
                 m_outputMapping.AddOrUpdate(input, MeasurementKey.LookUpBySignalID(output));
             });
 
+            m_numberOfFrames = 0;
 
+            m_cancelationTokenSql = new GSF.Threading.CancellationToken();
+
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");  });
+            m_summaryQueue = new IsolatedQueue<DailySummary>();
+
+            if (ReportSQL)
+                m_sqlWritter.RunOnceAsync();
         }
 
         /// <summary>
@@ -396,7 +407,6 @@ namespace openHistorian.Adapters
             bool calcSNR = m_numberOfFrames >= WindowLength;
 
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
-            List<DailySummary> sqlSummary = new List<DailySummary>();
 
             double refAngle = 0.0D;
             IMeasurement referceAngle;
@@ -429,7 +439,7 @@ namespace openHistorian.Adapters
                     outputmeasurements.Add(Measurement.Clone(snrMeasurement, snr, frame.Timestamp));
 
                     if (ReportSQL && !double.IsNaN(snr))
-                        sqlSummary.Add(new DailySummary() { SignalID = signalID, SNR = snr, Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
+                        m_summaryQueue.Enqueue(new DailySummary() { SignalID = signalID, SNR = snr, Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
                 }
             }
 
@@ -438,7 +448,7 @@ namespace openHistorian.Adapters
 
             m_numberOfFrames = 0;
             OnNewMeasurements(outputmeasurements);
-            SaveToSQL(sqlSummary);
+           
             
         }
 
@@ -454,35 +464,27 @@ namespace openHistorian.Adapters
             return double.IsInfinity(result) ? double.NaN : result;
         }
 
-        private void SaveToSQL(List<DailySummary> data)
+        private void SaveToSQL(GSF.Threading.CancellationToken CancellationToken)
         {
-            try
+            while (!CancellationToken.IsCancelled)
             {
-                int nExceptions = 0;
-                Exception lastEx = null;
-                using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                DailySummary[] data = new DailySummary[200000];
+
+                int n = m_summaryQueue.Dequeue(data, 0, 200000);
+                if ( n > 0)
                 {
-                    TableOperations<DailySummary> summaryTbl = new TableOperations<DailySummary>(connection);
-                    data.ForEach(item => {
-                        try
-                        {
-                            summaryTbl.AddNewRecord(item);
-                        }
-                        catch (Exception ex)
-                        {
-                            nExceptions++;
-                            lastEx = ex;
-                        }
-                        
-                    });
+                    string sqlCmd = "INSERT INTO SNR (Date, SNR, SignalID) VALUES";
+
+                    for (int i = 0; i < n; i++)
+                        sqlCmd = sqlCmd + $"\n ({data[i].Date},{data[i].SNR},'{data[i].SignalID}'),";
+
+                    sqlCmd = sqlCmd.Substring(0,sqlCmd.Length - 1) + "\n GO";
+                    using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                        connection.ExecuteNonQuery(sqlCmd);
                 }
-                if (nExceptions > 0)
-                    OnStatusMessage(MessageLevel.Error, $"Unable to save {nExceptions} of {data.Count()} Daily summary to SQL latest Exception: {lastEx.Message}");
+                
             }
-            catch (Exception ex)
-            {
-                OnStatusMessage(MessageLevel.Error, $"Unable to connect to Daily summary SQL DB: {ex.Message}");
-            }
+            
         }
 
         /// <summary>
@@ -619,7 +621,6 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets measurement record, creating it if needed.
         /// </summary>
-        /// <param name="instance">Target <see cref="IIndependentAdapterManager"/> instance.</param>
         /// <param name="currentDeviceID">Device ID associated with current adapter, or zero if none.</param>
         /// <param name="pointTag">Point tag of measurement.</param>
         /// <param name="alternateTag">Alternate tag of measurement.</param>
@@ -672,6 +673,17 @@ namespace openHistorian.Adapters
                 return measurement;
             }
         }
+
+        /// <summary>
+        /// Stops the Synchroniced Operation to write to SQL and calls <see cref="ActionAdapterBase.Stop"/>
+        /// </summary>
+        public override void Stop()
+        {
+            m_cancelationTokenSql.Cancel();
+            base.Stop();
+            
+        }
+       
 
         #endregion
     }
