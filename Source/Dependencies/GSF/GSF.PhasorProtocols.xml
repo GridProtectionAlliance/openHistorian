@@ -14767,6 +14767,15 @@
             Start the data parser.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.FrameParser.ParseFrame(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Output type specific frame parsing algorithm.
+            </summary>
+            <param name="buffer">Buffer containing data to parse.</param>
+            <param name="offset">Offset index into buffer that represents where to start parsing.</param>
+            <param name="length">Maximum length of valid data from offset.</param>
+            <returns>The length of the data that was parsed.</returns>
+        </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.FrameParser.ParseCommonHeader(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Parses a common header instance that implements <see cref="T:GSF.Parsing.ICommonHeader`1"/> for the output type represented
