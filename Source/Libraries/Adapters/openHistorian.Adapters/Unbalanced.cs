@@ -42,117 +42,123 @@ using SignalType = GSF.Units.EE.SignalType;
 using SignalTypeRecord = openHistorian.Model.SignalType;
 using System.IO;
 using GSF.IO;
+using GSF.Threading;
+using System.Collections.Concurrent;
+using System.Data;
+using GSF.TimeSeries.Data;
+using GSF.Units.EE;
+using System.Threading.Tasks;
+using GSF;
 
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NotAccessedField.Local
 namespace openHistorian.Adapters
 {
     /// <summary>
-    /// Defines an Adapter that calculates Unbalance.
+    /// Defines an Adapter that calculates Unbalance Factors.
     /// </summary>
-    [Description("Unbalanced Computation: Computes Unbalance of the voltage and currents")]
+    [Description("Unbalanced Computation: Computes unbalance factors for voltage and currents")]
     public class UnBalancedCalculation : CalculatedMeasurementBase
     {
         #region [ Members ]
 
-        // Nested Types
-        private class StatisticsCollection
+        private class DailySummary
         {
-            public MeasurementKey Max;
-            public MeasurementKey Min;
-            public MeasurementKey Total;
-            public MeasurementKey Sum;
-            public MeasurementKey SqrD;
-            public MeasurementKey Alert;
-
-            public double Count;
-            public double Maximum;
-            public double Minimum;
-            public double Summation;
-            public double SquaredSummation;
-            public int AlertCount;
-
-            public void Reset()
-            {
-                Count = 0;
-                Maximum = double.MinValue;
-                Minimum = double.MaxValue;
-                Summation = 0;
-                SquaredSummation = 0;
-                AlertCount = 0;
-            }
+            public DateTime Date { get; set; }
+            //public double S0S1 { get; set; }
+            public double S2S1 { get; set; }
+            public Guid PositivePhaseSignalID { get; set; }
         }
 
-        private class ThreePhaseSet
+        /// <summary>
+        ///  Represents Set of input and output Measurment used for Unbalance computation
+        /// </summary>
+        public class ThreePhaseSet
         {
-            public readonly MeasurementKey Positive;
-            public readonly MeasurementKey Negative;
-            public readonly MeasurementKey Zero;
-            public readonly MeasurementKey OutMapping;
-            public readonly double Threshold;
+            public Guid PositiveSequence { get; set; }
+            public Guid NegativeSequence { get; set; }
+            public Guid ZeroSequence { get; set; }
+            public Guid S0S1 { get; set; }
+            public Guid S2S1 { get; set; }
 
-            public ThreePhaseSet(MeasurementKey pos, MeasurementKey zero, MeasurementKey neg, MeasurementKey unbalance, double threshold)
-            {
-                Positive = pos;
-                Negative = neg;
-                Zero = zero;
-                OutMapping = unbalance;
-                Threshold = threshold;
-            }
+            public double count;
+            public double sum;
+            public void Reset() => count = sum = 0;
+
         }
 
-        // Constants
+
+        // Constants      
+
+        private const string ReportSettingsCategory = "snrSQLReportingDB";
 
         /// <summary>
-        /// Default value for <see cref="ReportingInterval"/>.
-        /// </summary>
-        public const int DefaultReportingInterval = 300;
-
-        /// <summary>
-        /// Default value for <see cref="ResultDeviceName"/>.
-        /// </summary>
-        public const string DefaultResultDeviceName = "UBAl!SERVICE";
-
-        /// <summary>
-        /// Default value for <see cref="HistorianInstance"/>.
-        /// </summary>
-        public const string DefaultHistorian = "PPA";
-
-        /// <summary>
-        /// Default value for <see cref="HistorianInstance"/>.
+        /// Default value for <see cref="MappingFilePath"/>.
         /// </summary>
         public const string DefaultMappingFile = "";
 
+        /// <summary>
+        /// Defines the default value for the <see cref="ParentDeviceAcronymTemplate"/>.
+        /// </summary>
+        public const string DefaultParentDeviceAcronymTemplate = "IAM!{0}";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="PointTagTemplate"/>.
+        /// </summary>
+        public const string DefaultPointTagTemplate = "UBAL!{0}";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="SignalReferenceTemplate"/>.
+        /// </summary>
+        public const string DefaultSignalReferenceTemplate = DefaultPointTagTemplate + "-CV";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="AlternateTagTemplate"/>.
+        /// </summary>
+        public const string DefaultAlternateTagTemplate = "";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="DescriptionTemplate"/>.
+        /// </summary>
+        public const string DefaultDescriptionTemplate = "{0} [{1}] measurement created for {2} [{3}].";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="TargetHistorianAcronym"/>.
+        /// </summary>
+        public const string DefaultTargetHistorianAcronym = "PPA";
+
+        /// <summary>
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// </summary>
+        public const int DefaultMaxSQLRows = 999;
+
+        /// <summary>
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// </summary>
+        public const int DefaultWindowSize = 30;
+
+
+
         // Fields
         private int m_numberOfFrames;
-        private Guid m_nodeID;
-        private List<ThreePhaseSet> m_threePhaseComponent;
-        private Dictionary<Guid, StatisticsCollection> m_statisticsMapping;
-        private bool m_saveStats;
+        private double m_lastS0S1;
+        private double m_lastS2S1;
 
+        private LongSynchronizedOperation m_sqlWritter;
+        private IsolatedQueue<DailySummary> m_summaryQueue;
+        private GSF.Threading.CancellationToken m_cancelationTokenSql;
+
+        private ConcurrentBag<ThreePhaseSet> m_threePhaseComponent;
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets or sets the flag to determine of aggregates are saved
-        /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines if aggregates are saved sepperately.")]
-        [DefaultValue(false)]
-        public bool SaveAggregates
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Gets or sets the File used for mapping 
         /// </summary>
         [ConnectionStringParameter]
         [CalculatedMesaurement]
-        [Description("Sets the Path to the Mapping File If blank the adapter will attempt auto mapping.")]
+        [Description("Sets the Path to the Mapping File to get sets of sequence Voltages - Order of the Entries is +,-,0.")]
         [DefaultValue(DefaultMappingFile)]
         public string MappingFilePath
         {
@@ -161,43 +167,110 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets or sets the default historian instance used by the output measurements
+        /// Gets or sets the Size of the Window used for aggregating to avoid Incorrect Results 
         /// </summary>
         [ConnectionStringParameter]
         [CalculatedMesaurement]
-        [Description("Defines the Historian Instance used by the output measurements. Specified by Acronym")]
-        [DefaultValue(DefaultHistorian)]
-        public string HistorianInstance
+        [Description("Sets the Size of the window used to aggregate results to avoid spikes due to bad data.")]
+        [DefaultValue(DefaultWindowSize)]
+        public int AggregationWindow
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets the reporting Interval of the results
+        /// Gets or sets the maximum number of rows inserted into sql as single Transaction.
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines the Reporting Interval of the Statistics.")]
-        [DefaultValue(DefaultReportingInterval)]
-        public int ReportingInterval
+        [Description("Defines the maximum number of daily Summary Points inserted at once.")]
+        [DefaultValue(DefaultMaxSQLRows)]
+        public int MaxSQLRows { get; set; }
+
+        /// <summary>
+        /// Gets or sets template for the parent device acronym used to group associated output measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for the parent device acronym used to group associated output measurements, typically an expression like \"" + DefaultParentDeviceAcronymTemplate + "\" where \"{0}\" is substituted with this adapter name. Set to blank value to create no parent device associated output measurements. Note that \"{0}\" token is not required, you can simply use a specific device acronym.")]
+        [DefaultValue(DefaultParentDeviceAcronymTemplate)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string ParentDeviceAcronymTemplate { get; set; } = DefaultParentDeviceAcronymTemplate;
+
+        /// <summary>
+        /// Gets or sets the ReportSQL flag.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines wether the daily summary is saved to a SQL Database.")]
+        [DefaultValue(false)]
+        public bool ReportSQL { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets template for output measurement point tag names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement point tag names, typically an expression like \"" + DefaultPointTagTemplate + "\" where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultPointTagTemplate)]
+        public string PointTagTemplate { get; set; } = DefaultPointTagTemplate;
+
+        /// <summary>
+        /// Gets or sets template for output measurement signal reference names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement signal reference names, typically an expression like \"" + DefaultSignalReferenceTemplate + "\" where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultSignalReferenceTemplate)]
+        public string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
+
+        // <summary>
+        /// Gets or sets template for output measurement alternate tag names.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement alternate tag names, typically an expression where \"{0}\" is substituted with this adapter name, a dash and then the PerAdapterOutputNames value for the current measurement. Note that \"{0}\" token is not required, property can be overridden to provide desired value.")]
+        [DefaultValue(DefaultAlternateTagTemplate)]
+        public string AlternateTagTemplate { get; set; } = DefaultAlternateTagTemplate;
+
+        /// <summary>
+        /// Gets or sets template for output measurement descriptions.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines template for output measurement descriptions, typically an expression like \"" + DefaultDescriptionTemplate + "\".")]
+        [DefaultValue(DefaultDescriptionTemplate)]
+        public string DescriptionTemplate { get; set; } = DefaultDescriptionTemplate;
+
+        /// <summary>
+        /// Gets or sets the target historian acronym for output measurements.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the target historian acronym for output measurements.")]
+        [DefaultValue(DefaultTargetHistorianAcronym)]
+        public string TargetHistorianAcronym { get; set; } = DefaultTargetHistorianAcronym;
+
+
+        /// <summary>
+        /// Gets or sets output measurements that the <see cref="UnBalancedCalculation"/> will produce, if any.
+        /// </summary>
+        /// [ConnectionStringParameter]
+        [Description("Defines the list of output measurements.")]
+        [DefaultValue(null)]
+        [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - outputs managed automatically
+        public override IMeasurement[] OutputMeasurements
         {
-            get;
-            set;
+            get => base.OutputMeasurements;
+            set => base.OutputMeasurements = value;
         }
 
         /// <summary>
-        /// Gets or sets the default Device Acronym used if SNR measurements have to be generated
+        /// Gets or sets primary keys of input measurements the calculated measurement expects.
         /// </summary>
-        [ConnectionStringParameter]
-        [CalculatedMesaurement]
-        [Description("Defines the Device Name Acronym.")]
-        [DefaultValue(DefaultResultDeviceName)]
-        public string ResultDeviceName
+        [DefaultValue(null)]
+        [Description("Defines primary keys of input measurements the action adapter expects; can be one of a filter expression, measurement key, point tag or Guid.")]
+        [EditorBrowsable(EditorBrowsableState.Never)] // Hiding parameter from manager - inputs managed automatically based on Mapping file
+        public override MeasurementKey[] InputMeasurementKeys
         {
-            get;
-            set;
+            get => base.InputMeasurementKeys;
+            set => base.InputMeasurementKeys = value;
         }
+
 
         /// <summary>
         /// Gets a detailed status for this <see cref="UnBalancedCalculation"/>.
@@ -206,23 +279,20 @@ namespace openHistorian.Adapters
         {
             get
             {
+
                 StringBuilder status = new StringBuilder();
 
-                status.Append(base.Status);
-
-                status.AppendFormat("  Default Output Device Name: {0}", ResultDeviceName);
+                status.AppendFormat("           apping File: ", MappingFilePath);
                 status.AppendLine();
-
-                if (m_saveStats)
-                {
-                    status.AppendFormat("          Reporting Interval: {0}", ReportingInterval);
-                    status.AppendLine();
-                }
-                else
-                {
-                    status.AppendFormat("Statistics are not saved");
-                    status.AppendLine();
-                }
+                status.AppendFormat(" Number of 3Phase Sets: {0}", m_threePhaseComponent.Count);
+                status.AppendLine();
+                status.AppendFormat("       Last S0S1 Value: {0:N3}", m_lastS0S1);
+                status.AppendLine();
+                status.AppendFormat("       Last S2S1 Value: {0:N3}", m_lastS2S1);
+                status.AppendLine();
+                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue.Count);
+                status.AppendLine();
+                status.Append(base.Status);
 
                 return status.ToString();
             }
@@ -237,271 +307,147 @@ namespace openHistorian.Adapters
         /// </summary>
         public override void Initialize()
         {
-            new ConnectionStringParser<CalculatedMesaurementAttribute>().ParseConnectionString(ConnectionString, this);
+            ParseConnectionString();
 
             base.Initialize();
 
-            m_threePhaseComponent = new List<ThreePhaseSet>();
-            m_statisticsMapping = new Dictionary<Guid, StatisticsCollection>();
-            m_saveStats = SaveAggregates;
 
-            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
-            reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
-            reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
-            double i_threshold = reportSettings["IUnbalanceThreshold"].ValueAs(1.0D);
-            double v_threshold = reportSettings["VUnbalanceThreshold"].ValueAs(1.0D);
-
-            List<Guid> processed = new List<Guid>();
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            m_threePhaseComponent = new ConcurrentBag<ThreePhaseSet>();
+           
+            List<string> entries = new List<string>();
+            string line;
+            // Read Mapping File
+            using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(MappingFilePath)))
+                while ((line = reader.ReadLine()) != null)
+                {
+                    entries.Add(line);
+                }
+                
+            if (entries.Count == 0)
             {
-                TableOperations<MeasurementRecord> measurementTable = new TableOperations<MeasurementRecord>(connection);
-                TableOperations<ActiveMeasurement> activeMeasurmentTable = new TableOperations<ActiveMeasurement>(connection);
-
-                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
-                TableOperations<SignalTypeRecord> signalTable = new TableOperations<SignalTypeRecord>(connection);
-
-                Device device = deviceTable.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
-                int historianID = Convert.ToInt32(connection.ExecuteScalar("SELECT ID FROM Historian WHERE Acronym = {0}", new object[] { HistorianInstance }));
-
-                // Take Care of the Device
-                if (InputMeasurementKeys.Length < 1)
-                    return;
-
-                m_nodeID = deviceTable.QueryRecordWhere("Id={0}", measurementTable.QueryRecordWhere("SignalID = {0}", InputMeasurementKeys[0].SignalID).DeviceID).NodeID;
-
-                if (device == null)
-                {
-                    device = CreateDefaultDevice(deviceTable);
-                    OnStatusMessage(MessageLevel.Warning, $"Default Device for Output Measurments not found. Created Device {device.Acronym}");
-                }
-
-
-                if (MappingFilePath != "")
-                {
-                    // Read Mapping File
-                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(MappingFilePath)))
-                    {
-                        string line;
-                        int index = -1;
-
-
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            index++;
-                            List<string> pointTags = line.Split(',').Select(item => item.Trim()).ToList();
-
-                            List<MeasurementKey> availableInputs = new List<MeasurementKey>(3);
-
-                            if (pointTags.Count != 3)
-                            {
-                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file.");
-                                continue;
-                            }
-
-                            OnStatusMessage(MessageLevel.Info, $"PointTag of Measurment 1 is: {pointTags[0]}");
-                            OnStatusMessage(MessageLevel.Info, $"PointTag of Measurment 1 is: {pointTags[0]}");
-                            OnStatusMessage(MessageLevel.Info, $"PointTag of Measurment 1 is: {pointTags[0]}");
-                            
-                            // check if measurments are in inputmeasurments
-                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[0], activeMeasurmentTable)));
-                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[1], activeMeasurmentTable)));
-                            availableInputs.Add(InputMeasurementKeys.FirstOrDefault(item => item.SignalID == GetSignalID(pointTags[2], activeMeasurmentTable)));
-
-                            if (availableInputs[0] == null || availableInputs[1] == null || availableInputs[2] == null)
-                            {
-                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file. PointTag not found");
-                                continue;
-                            }
-
-                            SignalType type = GetSignalType(availableInputs[0], new TableOperations<ActiveMeasurement>(connection));
-
-                            MeasurementKey neg = availableInputs.FirstOrDefault(item =>
-                                SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                            MeasurementKey pos = availableInputs.FirstOrDefault(item =>
-                                SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                            MeasurementKey zero = availableInputs.FirstOrDefault(item =>
-                                SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                                GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
-                                );
-
-                            if (neg != null && zero != null && pos != null)
-                            {
-                                MeasurementKey unBalance;
-                                string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID).SignalReference + "-" + (type == SignalType.IPHM? "I" : "V") + "UBAL";
-
-                                if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
-                                {
-                                    // Measurement Exists
-                                    unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-                                }
-                                else
-                                {
-                                    // Add Measurment to Database and make a statement
-                                    MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
-
-                                    MeasurementRecord outMeasurement = new MeasurementRecord
-                                    {
-                                        HistorianID = historianID,
-                                        DeviceID = device.ID,
-                                        PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL",
-                                        AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL",
-                                        SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
-                                        SignalReference = outputReference,
-                                        Description = GetDescription(pos, new TableOperations<ActiveMeasurement>(connection)) + " UnBalanced",
-                                        Enabled = true,
-                                        CreatedOn = DateTime.UtcNow,
-                                        UpdatedOn = DateTime.UtcNow,
-                                        CreatedBy = UserInfo.CurrentUserID,
-                                        UpdatedBy = UserInfo.CurrentUserID,
-                                        SignalID = Guid.NewGuid(),
-                                        Adder = 0.0D,
-                                        Multiplier = 1.0D
-                                    };
-
-                                    measurementTable.AddNewRecord(outMeasurement);
-                                    unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-                                    OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
-                                }
-
-                                double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == availableInputs[0])] == SignalType.IPHM ? i_threshold : v_threshold;
-
-                                m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
-
-                                if (m_saveStats)
-                                    m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID, type));
-
-
-                            }
-                            else
-                            {
-                                OnStatusMessage(MessageLevel.Warning, $"Skipping Line {index} in mapping file. Did not find pos. neg. and zero seq.");
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    foreach (MeasurementKey key in InputMeasurementKeys)
-                    {
-                        if (processed.Contains(key.SignalID))
-                            continue;
-
-                        // ensure only magnitudes are being used
-                        if (!(GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.IPHM ||
-                            GetSignalType(key, new TableOperations<ActiveMeasurement>(connection)) == SignalType.VPHM))
-                            continue;
-
-
-
-
-
-                        bool isNeg = SearchNegative(key, new TableOperations<ActiveMeasurement>(connection));
-                        bool isPos = SearchPositive(key, new TableOperations<ActiveMeasurement>(connection));
-                        bool isZero = SearchZero(key, new TableOperations<ActiveMeasurement>(connection));
-
-                        if (!(isNeg || isPos || isZero))
-                            continue;
-
-                        string description = GetDescription(key, new TableOperations<ActiveMeasurement>(connection));
-
-                        // Check to make sure can actually deal with this
-                        if (description == string.Empty)
-                        {
-                            OnStatusMessage(MessageLevel.Warning, "Failed to apply automatic Line bundling to " + key.SignalID);
-                            continue;
-                        }
-
-                        //Make sure only correct Type (V vs I) makes it here....
-                        SignalType type = GetSignalType(key, new TableOperations<ActiveMeasurement>(connection));
-
-                        MeasurementKey neg = InputMeasurementKeys.FirstOrDefault(item =>
-                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
-                            SearchNegative(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                        MeasurementKey pos = InputMeasurementKeys.FirstOrDefault(item =>
-                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
-                            SearchPositive(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type);
-                        MeasurementKey zero = InputMeasurementKeys.FirstOrDefault(item =>
-                            GetDescription(item, new TableOperations<ActiveMeasurement>(connection)) == description &&
-                            SearchZero(item, new TableOperations<ActiveMeasurement>(connection)) &&
-                            GetSignalType(item, new TableOperations<ActiveMeasurement>(connection)) == type
-                            );
-
-                        if (neg != null && zero != null && pos != null)
-                        {
-                            MeasurementKey unBalance;
-                            string outputReference = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL";
-
-                            if (measurementTable.QueryRecordCountWhere("SignalReference = {0}", outputReference) > 0)
-                            {
-                                // Measurement Exists
-                                unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-                            }
-                            else
-                            {
-                                // Add Measurment to Database and make a statement
-                                MeasurementRecord inMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", pos.SignalID);
-
-                                MeasurementRecord outMeasurement = new MeasurementRecord
-                                {
-                                    HistorianID = historianID,
-                                    DeviceID = device.ID,
-                                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL",
-                                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL",
-                                    SignalTypeID = signalTable.QueryRecordWhere("Acronym = {0}", "CALC").ID,
-                                    SignalReference = outputReference,
-                                    Description = GetDescription(pos, new TableOperations<ActiveMeasurement>(connection)) + " UnBalanced",
-                                    Enabled = true,
-                                    CreatedOn = DateTime.UtcNow,
-                                    UpdatedOn = DateTime.UtcNow,
-                                    CreatedBy = UserInfo.CurrentUserID,
-                                    UpdatedBy = UserInfo.CurrentUserID,
-                                    SignalID = Guid.NewGuid(),
-                                    Adder = 0.0D,
-                                    Multiplier = 1.0D
-                                };
-
-                                measurementTable.AddNewRecord(outMeasurement);
-                                unBalance = MeasurementKey.LookUpBySignalID(measurementTable.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-                                OnStatusMessage(MessageLevel.Warning, $"Output measurment {outputReference} not found. Creating measurement");
-                            }
-
-                            double threshold = InputMeasurementKeyTypes[InputMeasurementKeys.IndexOf(item => item == key)] == SignalType.IPHM ? i_threshold : v_threshold;
-
-                            m_threePhaseComponent.Add(new ThreePhaseSet(pos, zero, neg, unBalance, threshold));
-
-                            processed.Add(pos.SignalID);
-                            processed.Add(neg.SignalID);
-                            processed.Add(zero.SignalID);
-
-                            if (m_saveStats)
-                                m_statisticsMapping.Add(pos.SignalID, CreateStatistics(measurementTable, pos, device, historianID,type));
-                        }
-
-                        else
-                        {
-                            if (pos != null)
-                                processed.Add(pos.SignalID);
-
-                            if (neg != null)
-                                processed.Add(neg.SignalID);
-
-                            if (zero != null)
-                                processed.Add(zero.SignalID);
-                        }
-                    }
-                }
-
-                if (m_threePhaseComponent.Count == 0)
-                    OnStatusMessage(MessageLevel.Error, "No case with all 3 sequences was found");
+                OnStatusMessage(MessageLevel.Warning, "No 3 Phase mappings specified.");
+                return;
             }
+
+            int? currentDeviceID = null;
+
+            // Create associated parent device for output measurements if 
+            if (!string.IsNullOrWhiteSpace(ParentDeviceAcronymTemplate))
+            {
+
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                    string deviceAcronym = string.Format(ParentDeviceAcronymTemplate, Name);
+
+                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceAcronym) ?? deviceTable.NewRecord();
+                    int protocolID = connection.ExecuteScalar<int?>("SELECT ID FROM Protocol WHERE Acronym = 'VirtualInput'") ?? 15;
+
+                    device.Acronym = deviceAcronym;
+                    device.Name = deviceAcronym;
+                    device.ProtocolID = protocolID;
+                    device.Enabled = true;
+
+                    deviceTable.AddNewOrUpdateRecord(device);
+                    currentDeviceID = deviceTable.QueryRecordWhere("Acronym = {0}", deviceAcronym)?.ID;
+                }
+            }
+
+            ConcurrentBag<MeasurementKey> inputs = new ConcurrentBag<MeasurementKey>();
+
+            Parallel.For(0, (entries.Count), (i) =>
+            {
+                List<string> pointTags = entries[i].Split(',').Select(item => item.Trim()).ToList();
+                if (pointTags.Count != 3)
+                {
+                    OnStatusMessage(MessageLevel.Warning, $"Skipping Line {i} in mapping file.");
+                    return;
+                }
+                Guid signalId1;
+                Guid signalId2;
+                Guid signalId3;
+
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    signalId1 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[0].Trim());
+                    signalId2 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[1].Trim());
+                    signalId3 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[2].Trim());
+
+                    if (signalId1 == null || signalId2 == null || signalId3 == null)
+                    {
+                        OnStatusMessage(MessageLevel.Warning, $"Skipping Line {i} in mapping file.");
+                        return;
+                    }
+                }
+                MeasurementKey input1 = MeasurementKey.LookUpBySignalID(signalId1);
+                MeasurementKey input2 = MeasurementKey.LookUpBySignalID(signalId2);
+                MeasurementKey input3 = MeasurementKey.LookUpBySignalID(signalId3);
+
+                // We Assume they are in order... +, -, 0 This is important
+                Guid output;
+
+                // Check if an Output Model already exists
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                {
+                    ThreePhaseSet keys = new TableOperations<ThreePhaseSet>(connection).QueryRecordWhere("PositiveSequence = {0} AND NegativeSequence = {1} AND ZeroSequence = {2}", input1.SignalID, input2.SignalID, input3.SignalID);
+
+                    if (keys == null)
+                    {
+                        string inputName = LookupPointTag(input1.SignalID);
+                        string alternateTagPrefix = null;
+
+                        if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
+                        {
+                            string deviceName = this.LookupDevice(input1.SignalID);
+                            string phasorLabel = this.LookupPhasorLabel(input1.SignalID);
+                            alternateTagPrefix = $"{deviceName}-{phasorLabel}";
+                        }
+                        string perAdapterOutputName = "RESULT";
+                        string outputPrefix = $"{Name}!{inputName}-{perAdapterOutputName}";
+                        string outputPointTag = string.Format(PointTagTemplate, outputPrefix);
+                        string outputAlternateTag = string.Format(AlternateTagTemplate, alternateTagPrefix is null ? "" : $"{alternateTagPrefix}-{perAdapterOutputName}");
+                        string signalReference = string.Format(SignalReferenceTemplate, outputPrefix);
+                        string description = string.Format(DescriptionTemplate, outputPrefix, SignalType.CALC, Name, GetType().Name);
+
+                        // Get output measurement record, creating a new one if needed
+                        MeasurementRecord measurement = GetMeasurementRecord(currentDeviceID ?? CurrentDeviceID(i), outputPointTag, outputAlternateTag, signalReference, description, SignalType.CALC, TargetHistorianAcronym);
+
+
+                        output = measurement.SignalID;
+
+                        keys = new ThreePhaseSet() { PositiveSequence = input1.SignalID, NegativeSequence = input2.SignalID, ZeroSequence = input3.SignalID, S0S1 = output, S2S1 = output };
+                        new TableOperations<ThreePhaseSet>(connection).AddNewRecord(keys);
+
+
+                    }
+                    else
+                    {
+                        output = keys.S0S1;
+                    }
+
+                    keys.Reset();
+                    m_threePhaseComponent.Add(keys);
+                }
+                // Need to add Measurements to inputMeasuremetnKeys
+                inputs.Add(input1);
+                inputs.Add(input2);
+                inputs.Add(input3);
+            });
+
+            InputMeasurementKeys = inputs.ToArray();
+
+            if (m_threePhaseComponent.Count == 0)
+                OnStatusMessage(MessageLevel.Error, "No case with all 3 sequences was found");
+
+            m_numberOfFrames = 0;
+
+            m_cancelationTokenSql = new GSF.Threading.CancellationToken();
+
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}"); throw new Exception($"Issue Occured on SQL Write {ex.Message}"); });
+            m_summaryQueue = new IsolatedQueue<DailySummary>();
+
+            if (ReportSQL)
+                m_sqlWritter.RunOnceAsync();
         }
 
         /// <summary>
@@ -511,355 +457,276 @@ namespace openHistorian.Adapters
         /// <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
         protected override void PublishFrame(IFrame frame, int index)
         {
-            IMeasurement[] available = frame.Measurements.Values.ToArray();
-            List<Guid> availableGuids = available.Select(item => item.Key.SignalID).ToList();
-            List<IMeasurement> outputmeasurements = new List<IMeasurement>();
-            m_numberOfFrames++;
 
+            m_numberOfFrames++;
+            List<IMeasurement> outputmeasurements = new List<IMeasurement>();
+            bool report = m_numberOfFrames > AggregationWindow;
+            
             foreach (ThreePhaseSet set in m_threePhaseComponent)
             {
-                bool hasP = availableGuids.Contains(set.Positive.SignalID);
-                bool hasN = availableGuids.Contains(set.Negative.SignalID);
-                //bool hasZ = availableGuids.Contains(set.Zero.SignalID);
+                IMeasurement positiveSeq;
+                IMeasurement negativeSeq;
+                IMeasurement zeroSeq;
+
+                bool hasP = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.PositiveSequence), out positiveSeq);
+                bool hasN = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.NegativeSequence), out negativeSeq);
+                bool hasZ = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.ZeroSequence), out zeroSeq);
+
+                double s0s1 = double.NaN;
+                double s2s1 = double.NaN;
 
                 if (hasP && hasN)
                 {
-                    double v1P = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Positive.SignalID)?.Value ?? 0.0D;
-                    double v2N = available.FirstOrDefault(item => (item.Key?.SignalID ?? Guid.Empty) == set.Negative.SignalID)?.Value ?? 0.0D;
-                    
+                    double v1P = positiveSeq.AdjustedValue;
+                    double v2N = negativeSeq.AdjustedValue;
+
                     if (v1P != 0.0D)
                     {
-                        double unbalanced = v2N / v1P;
-                        Measurement outputMeasurement = new Measurement { Metadata = set.OutMapping.Metadata };
-
-                        if (m_saveStats)
-                        {
-                            m_statisticsMapping[set.Positive.SignalID].Count++;
-
-                            if (unbalanced > m_statisticsMapping[set.Positive.SignalID].Maximum)
-                                m_statisticsMapping[set.Positive.SignalID].Maximum = unbalanced;
-
-                            if (unbalanced < m_statisticsMapping[set.Positive.SignalID].Minimum)
-                                m_statisticsMapping[set.Positive.SignalID].Minimum = unbalanced;
-
-                            if (unbalanced > set.Threshold)
-                                m_statisticsMapping[set.Positive.SignalID].AlertCount++;
-
-                            m_statisticsMapping[set.Positive.SignalID].Summation += unbalanced;
-                            m_statisticsMapping[set.Positive.SignalID].SquaredSummation += unbalanced * unbalanced;
-                        }
-
-                        outputmeasurements.Add(Measurement.Clone(outputMeasurement, unbalanced * 100.0D, frame.Timestamp));
+                        s2s1 = v2N / v1P;
+                        m_lastS2S1 = s2s1;
                     }
                 }
-
-                if (!m_saveStats)
-                    m_numberOfFrames = 0;
-            }
-
-            // Reporting if necessary
-            if ((m_numberOfFrames >= ReportingInterval && m_saveStats) && (m_threePhaseComponent.Count > 0))
-            {
-                foreach (ThreePhaseSet set in m_threePhaseComponent)
+                if (hasP && hasZ)
                 {
-                    Guid key = set.Positive.SignalID;
+                    double v1P = positiveSeq.AdjustedValue;
+                    double v0Z = zeroSeq.AdjustedValue;
 
-                    Measurement statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Sum.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].Summation, frame.Timestamp));
+                    if (v1P != 0.0D)
+                    {
+                        s0s1 = v0Z / v1P;
+                        m_lastS0S1 = s0s1;
+                    }
+                }
+              
+                Measurement s2s1Measurement = new Measurement { Metadata = MeasurementKey.LookUpBySignalID(set.S0S1).Metadata };
+                outputmeasurements.Add(Measurement.Clone(s2s1Measurement, s2s1, frame.Timestamp));
 
-                    statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].SqrD.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].SquaredSummation, frame.Timestamp));
-
-                    statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Min.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].Minimum, frame.Timestamp));
-
-                    statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Max.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].Maximum, frame.Timestamp));
-
-                    statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Total.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].Count, frame.Timestamp));
-
-                    statisticMeasurement = new Measurement { Metadata = m_statisticsMapping[key].Alert.Metadata };
-                    outputmeasurements.Add(Measurement.Clone(statisticMeasurement, m_statisticsMapping[key].AlertCount, frame.Timestamp));
-
-                    m_statisticsMapping[key].Reset();
-                    m_numberOfFrames = 0;
+                if (ReportSQL && (!double.IsNaN(s2s1)))
+                {
+                    set.sum += s0s1;
+                    set.count += 1.0;
+                    if (report)
+                    {
+                        m_summaryQueue.Enqueue(new DailySummary() { PositivePhaseSignalID = set.PositiveSequence, S2S1 = (set.sum / set.count), Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
+                        set.Reset();
+                    }
                 }
             }
 
-            OnNewMeasurements(outputmeasurements);
+            if (report)
+                m_numberOfFrames = 0;
+
+
+
         }
 
-        private Device CreateDefaultDevice(TableOperations<Device> table)
+       
+
+        private void SaveToSQL(GSF.Threading.CancellationToken CancellationToken)
         {
-            int protocolId;
+            while (!CancellationToken.IsCancelled)
+            {
+                DailySummary[] data = new DailySummary[MaxSQLRows];
+
+                int n = m_summaryQueue.Dequeue(data, 0, MaxSQLRows);
+                if (n > 0)
+                {
+                    string sqlCmd = "INSERT INTO Unbalance (Date, S2S1, PositivePhaseSignalID) VALUES";
+
+                    for (int i = 0; i < n; i++)
+                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].S2S1},'{data[i].PositivePhaseSignalID}'),";
+
+                    sqlCmd = sqlCmd.Substring(0, sqlCmd.Length - 1);
+                    using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                        connection.ExecuteNonQuery(sqlCmd);
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Gets associated device ID if any, for measurement generation.
+        /// </summary>
+        /// <param name="measurementIndex"> The imeasurement Index for which this device is</param>
+        /// <remarks>
+        /// If overridden to provide custom device ID, <see cref="ParentDeviceAcronymTemplate" /> should be set
+        /// to <c>null</c> so no parent device is created.
+        /// </remarks>
+        private int CurrentDeviceID(int measurementIndex)
+        {
+            // Idea here is to associate each new output measurement with device associated with input.
+            // When this value is not specified and the ParentDeviceAcronymTemplate is defined, system
+            // will create a single new device for "all" output measurements to be associated with, this
+            // way the values will still have a parent and can be transported via protocols like STTP.
+
+            try
+            {
+                if (measurementIndex > -1)
+                {
+                    // Just pick first input measurement to find associated device ID
+                    MeasurementKey inputMeasurement = InputMeasurementKeys[measurementIndex];
+                    DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, "ActiveMeasurements");
+                    int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
+
+                    // Query the actual database record ID based on the known runtime ID for this device
+                    using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                    {
+                        TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
+                        Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
+                        return runtimeRecord.SourceID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to lookup current device ID for adapter {measurementIndex:N0}: {ex.Message}", ex));
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Lookups up point tag name from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// 
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        private string LookupPointTag(Guid signalID)
+        {
+            DataRow record = DataSource.LookupMetadata(signalID, "ActiveMeasurements");
+            string pointTag = null;
+
+            if (record != null)
+                pointTag = record["PointTag"].ToString();
+
+            if (string.IsNullOrWhiteSpace(pointTag))
+                pointTag = signalID.ToString();
+
+            return pointTag.ToUpper();
+        }
+
+        /// <summary>
+        /// Lookups up associated device name from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <returns>Device name, if found; otherwise, string representation of associated point tag.</returns>
+        private string LookupDevice(Guid signalID)
+        {
+            DataRow record = DataSource.LookupMetadata(signalID, "ActiveMeasurements");
+            string device = null;
+
+            if (record != null)
+                device = record["Device"].ToString();
+
+            if (string.IsNullOrWhiteSpace(device))
+                device = LookupPointTag(signalID);
+
+            return device.ToUpper();
+        }
+
+        /// <summary>
+        /// Lookups up associated phasor label from provided <paramref name="signalID"/>.
+        /// </summary>
+        /// <param name="signalID"><see cref="Guid"/> signal ID to lookup.</param>
+        /// <returns>Phasor label name, if found; otherwise, string representation associated point tag.</returns>
+        private string LookupPhasorLabel(Guid signalID)
+        {
+            DataRow record = DataSource.LookupMetadata(signalID, "ActiveMeasurements");
+            int phasorID = 0;
+
+            if (record != null)
+                phasorID = record.ConvertNullableField<int>("PhasorID") ?? 0;
+
+            if (phasorID == 0)
+                return LookupPointTag(signalID);
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                TableOperations<Protocol> protocolTable = new TableOperations<Protocol>(connection);
-                protocolId = protocolTable.QueryRecordWhere("Acronym = {0}", "VirtualInput").ID;
+                TableOperations<GSF.TimeSeries.Model.Phasor> phasorTable = new TableOperations<GSF.TimeSeries.Model.Phasor>(connection);
+                GSF.TimeSeries.Model.Phasor phasorRecord = phasorTable.QueryRecordWhere("ID = {0}", phasorID);
+                return phasorRecord is null ? LookupPointTag(signalID) : phasorRecord.Label.Trim().ToUpper();
             }
-
-            Device result = new Device
-            {
-                Enabled = true,
-                ProtocolID = protocolId,
-                Name = "Unbalanced Results",
-                Acronym = ResultDeviceName,
-                CreatedOn = DateTime.UtcNow,
-                UpdatedOn = DateTime.UtcNow,
-                CreatedBy = UserInfo.CurrentUserID,
-                UpdatedBy = UserInfo.CurrentUserID,
-                UniqueID = Guid.NewGuid(),
-                NodeID = m_nodeID
-            };
-
-            table.AddNewRecord(result);
-            result = table.QueryRecordWhere("Acronym = {0}", ResultDeviceName);
-
-            return result;
         }
 
-        private string GetDescription(MeasurementKey key, TableOperations<ActiveMeasurement> table)
+        /// <summary>
+        /// Parses connection string.
+        /// </summary>
+        private void ParseConnectionString()
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-            string text = measurement.Description;
-            string stopAt = measurement.PhasorType == 'I' ? "-I" : "-V";
+            Dictionary<string, string> settings = Settings;
 
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
-
-                if (charLocation > 0)
-                    return text.Substring(0, charLocation);
-            }
-
-            return string.Empty;
+            // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
+            ConnectionStringParser parser = new ConnectionStringParser<ConnectionStringParameterAttribute>();
+            parser.ParseConnectionString(ConnectionString, this);
         }
 
-        private bool SearchNegative(MeasurementKey key, TableOperations<ActiveMeasurement> table)
+        /// <summary>
+        /// Gets measurement record, creating it if needed.
+        /// </summary>
+        /// <param name="currentDeviceID">Device ID associated with current adapter, or zero if none.</param>
+        /// <param name="pointTag">Point tag of measurement.</param>
+        /// <param name="alternateTag">Alternate tag of measurement.</param>
+        /// <param name="signalReference">Signal reference of measurement.</param>
+        /// <param name="description">Description of measurement.</param>
+        /// <param name="signalType">Signal type of measurement.</param>
+        /// <param name="targetHistorianAcronym">Acronym of target historian for measurement.</param>
+        /// <returns>Measurement record.</returns>
+        private MeasurementRecord GetMeasurementRecord(int currentDeviceID, string pointTag, string alternateTag, string signalReference, string description, SignalType signalType = SignalType.CALC, string targetHistorianAcronym = "PPA")
         {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-            return measurement.Phase == '-';
-        }
-
-        private bool SearchPositive(MeasurementKey key, TableOperations<ActiveMeasurement> table)
-        {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-            return measurement.Phase == '+';
-        }
-
-        private bool SearchZero(MeasurementKey key, TableOperations<ActiveMeasurement> table)
-        {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-            return measurement.Phase == '0';
-        }
-
-        private SignalType GetSignalType(MeasurementKey key, TableOperations<ActiveMeasurement> table)
-        {
-            ActiveMeasurement measurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-
-            if (measurement.SignalType == "IPHM")
-                return SignalType.IPHM;
-            if (measurement.SignalType == "IPHA")
-                return SignalType.IPHA;
-            if (measurement.SignalType == "VPHM")
-                return SignalType.VPHM;
-            if (measurement.SignalType == "VPHA")
-                return SignalType.VPHA;
-
-            return SignalType.NONE;
-        }
-
-        private Guid? GetSignalID(string pointTag, TableOperations<ActiveMeasurement> table)
-        {
-            ActiveMeasurement measurement = table.QueryRecordWhere("PointTag = {0}", pointTag);
-            return measurement?.SignalID;
-        }
-        private StatisticsCollection CreateStatistics(TableOperations<MeasurementRecord> table, MeasurementKey key, Device device, int HistorianID, SignalType type)
-        {
-            MeasurementRecord inMeasurement = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString());
-            int signaltype;
-
+            // Open database connection as defined in configuration file "systemSettings" category
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
+                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                TableOperations<MeasurementRecord> measurementTable = new TableOperations<MeasurementRecord>(connection);
+                TableOperations<Historian> historianTable = new TableOperations<Historian>(connection);
                 TableOperations<SignalTypeRecord> signalTypeTable = new TableOperations<SignalTypeRecord>(connection);
-                signaltype = signalTypeTable.QueryRecordWhere("Acronym = {0}", "CALC").ID;
+
+                // Lookup target device ID
+                int? deviceID = currentDeviceID > 0 ? currentDeviceID : deviceTable.QueryRecordWhere("Acronym = {0}", Name)?.ID;
+
+                // Lookup target historian ID
+                int? historianID = historianTable.QueryRecordWhere("Acronym = {0}", targetHistorianAcronym)?.ID;
+
+                // Lookup signal type ID
+                int signalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", signalType.ToString())?.ID ?? 1;
+
+                // Lookup measurement record by point tag, creating a new record if one does not exist
+                MeasurementRecord measurement = measurementTable.QueryRecordWhere("SignalReference = {0}", signalReference) ?? measurementTable.NewRecord();
+
+                // Update record fields
+                measurement.DeviceID = deviceID;
+                measurement.HistorianID = historianID;
+                measurement.PointTag = pointTag;
+                measurement.AlternateTag = alternateTag;
+                measurement.SignalReference = signalReference;
+                measurement.SignalTypeID = signalTypeID;
+                measurement.Description = description;
+
+                // Save record updates
+                measurementTable.AddNewOrUpdateRecord(measurement);
+
+                // Re-query new records to get any database assigned information, e.g., unique Guid-based signal ID
+                if (measurement.PointID == 0)
+                    measurement = measurementTable.QueryRecordWhere("SignalReference = {0}", signalReference);
+
+                // Notify host system of configuration changes
+                OnConfigurationChanged();
+
+                return measurement;
             }
-
-            string outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SUM";
-
-            // Sum
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SUM",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SUM",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Summ of UBAL",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // sqrdSum
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SQR";
-
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SQR",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SQR",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Summ of Sqared UBAL",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Min
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MIN";
-
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MIN",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MIN",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Minimum UBAL",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Max
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MAX";
-
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MAX",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MAX",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Maximum UBAL",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Number of Points
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:NUM";
-
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:NUM",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:NUM",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " Number of Points",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            // Number of Points above Alert 
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:ALT";
-
-            if (table.QueryRecordCountWhere("SignalReference = {0}", outputReference) < 1)
-            {
-                table.AddNewRecord(new MeasurementRecord
-                {
-                    HistorianID = HistorianID,
-                    DeviceID = device.ID,
-                    PointTag = inMeasurement.PointTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:ALT",
-                    AlternateTag = inMeasurement.AlternateTag + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:ALT",
-                    SignalTypeID = signaltype,
-                    SignalReference = outputReference,
-                    Description = inMeasurement.Description + " number of Alerts",
-                    Enabled = true,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    CreatedBy = UserInfo.CurrentUserID,
-                    UpdatedBy = UserInfo.CurrentUserID,
-                    SignalID = Guid.NewGuid(),
-                    Adder = 0.0D,
-                    Multiplier = 1.0D
-                });
-            }
-
-            StatisticsCollection result = new StatisticsCollection();
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SUM";
-            result.Sum = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:SQR";
-            result.SqrD = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MIN";
-            result.Min = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:MAX";
-            result.Max = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:NUM";
-            result.Total = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            outputReference = table.QueryRecordWhere("SignalID = {0}", key.SignalID.ToString()).SignalReference + "-" + (type == SignalType.IPHM ? "I" : "V") + "UBAL:ALT";
-            result.Alert = MeasurementKey.LookUpBySignalID(table.QueryRecordWhere("SignalReference = {0}", outputReference).SignalID);
-
-            result.Reset();
-            return result;
         }
+
+        /// <summary>
+        /// Stops the Synchroniced Operation to write to SQL and calls <see cref="ActionAdapterBase.Stop"/>
+        /// </summary>
+        public override void Stop()
+        {
+            m_cancelationTokenSql.Cancel();
+            base.Stop();
+
+        }
+
 
         #endregion
     }

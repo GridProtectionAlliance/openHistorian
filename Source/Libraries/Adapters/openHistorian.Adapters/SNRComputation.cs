@@ -149,7 +149,7 @@ namespace openHistorian.Adapters
         public const string DefaultTargetHistorianAcronym = "PPA";
 
         /// <summary>
-        /// Defines the default value for the <see cref="TargetHistorianAcronym"/>.
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
         /// </summary>
         public const int DefaultMaxSQLRows = 999;
 
