@@ -54,12 +54,12 @@ namespace openHistorian.Adapters
         // Constants
         private const string DefaultConnectionString = "Data Source=localhost; Initial Catalog=HadoopTest; Integrated Security=SSPI; Connect Timeout=5";
         private const string DefaultDataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
-        private const string DefaultTableName = "Measurement";
+        private const string DefaultTableName = "telemetry";
         private const string DefaultMappingFile = "";
-        private const string DefaultTimeStampField = "Timestamp";
-        private const string DefaultValueField = "Value";
-        private const string DefaultTagQuery = "Identifier = {1}";
-        private const string DefaultTicks = "ExtraTicks";
+        private const string DefaultTimeStampField = "source_tz";
+        private const string DefaultValueField = "value";
+        private const string DefaultTagQuery = "device = '{1}' AND device_type = '{2}'";
+        private const string DefaultTicks = "";
 
         private const string TimeStampUpdatefile = "./HadoopTS.bin";
 
