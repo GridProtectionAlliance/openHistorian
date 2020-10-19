@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -52,8 +53,7 @@ namespace openHistorian.Adapters
     {
         #region [ Members ]
         // Constants
-        private const string DefaultConnectionString = "Data Source=localhost; Initial Catalog=HadoopTest; Integrated Security=SSPI; Connect Timeout=5";
-        private const string DefaultDataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
+        private const string DefaultConnectionString = "DRIVER={Cloudera ODBC Driver for Apache Hive};HOST=myserver;PORT=10000;DB=default;";
         private const string DefaultTableName = "telemetry";
         private const string DefaultMappingFile = "";
         private const string DefaultTimeStampField = "source_tz";
@@ -94,18 +94,6 @@ namespace openHistorian.Adapters
         [Description("Defines the connectionstring to the HADOOP Database")]
         [DefaultValue(DefaultConnectionString)]
         public string HadoopConnectionString
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the Data Provider String to connect to Hadoop.
-        /// </summary>
-        [ConnectionStringParameter]
-        [Description("Defines the dataprovider string to the HADOOP Database")]
-        [DefaultValue(DefaultDataProviderString)]
-        public string HadoopDataProviderString
         {
             get;
             set;
@@ -230,7 +218,6 @@ namespace openHistorian.Adapters
                 status.Append(base.Status);
 
                 status.AppendFormat("         Connection String: {0}\r\n", HadoopConnectionString);
-                status.AppendFormat("      Data Provider String: {0}\r\n", HadoopDataProviderString);
                 status.AppendFormat("                Data Query: {0}\r\n", m_query);
                 status.AppendFormat("              Last connect: {0}\r\n", m_lastConnected.ToString("dd/MM/YYYY hh:mm:ss"));
                 status.AppendFormat("Processed Messages on Last connect: {0}\r\n", m_num);
@@ -374,7 +361,7 @@ namespace openHistorian.Adapters
                 {
                     bool addTicks = !string.IsNullOrEmpty(SubSecondField);
                         //Connect to DataBase
-                    using (AdoDataConnection connection = new AdoDataConnection(HadoopConnectionString, HadoopDataProviderString))
+                    using (OdbcConnection connection = new OdbcConnection(HadoopConnectionString))
                     {
                         foreach( Guid guid in m_queryParameter.Keys)
                         {
