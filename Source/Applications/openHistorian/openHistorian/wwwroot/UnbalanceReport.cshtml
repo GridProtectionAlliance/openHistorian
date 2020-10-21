@@ -245,15 +245,6 @@
 
 }
 
-@helper HistorianInstanceSelect()
-{
-    @* Make sure to use single quotes in this function: *@
-    <form class='form-inline pull-right clearfix' role='form'>
-        <small>
-            Configured&nbsp;Reporting&nbsp;Instance:&nbsp;<select disabled class='form-control' id='instanceName' data-bind='value: instanceName; valueAllowUnset: false' style='border: 0; width: 80px'></select>&nbsp;&nbsp;&nbsp;&nbsp;
-        </small>
-    </form>
-}
 
 @helper ExtendedViewModel(DataContext dataContext)
 {
@@ -261,17 +252,15 @@
     <script src="Scripts/bootstrap-datetimepicker.js"></script>
     <script src="Scripts/dateFormat.js"></script>
     <script>
-        const MomentDateTimeFormat = dateFormat.convert(DateTimeFormat, dateFormat.dotnet, dateFormat.moment);
+        const MomentDateTimeFormat = dateFormat.convert(DateFormat, dateFormat.dotnet, dateFormat.moment);
 
-        const SubsecondDigits = function () {
-            const dotIndex = DateTimeFormat.indexOf(".");
-
-            if (dotIndex < 0 || dotIndex === DateTimeFormat.length - 1)
-                return 0;
-
-            return DateTimeFormat.substr(dotIndex + 1).trim().length;
+        const getToday = function () {
+            let today = moment.utc();
+            today.minute(0);
+            today.milliseconds(0);
+            today.hour(0);
+            return today;
         }();
-
 
         function adjustSubsecondDigits(timeValue) {
             if (SubsecondDigits === 0)
@@ -308,7 +297,7 @@
 
             self.ReportTitle = ko.observable("Worst 25 SNR Report");
 
-            self._selectedIntervall = ko.observable(1);
+            self._selectedIntervall = ko.observable(30);
 
             self.selectedIntervall = ko.pureComputed({
                 read: function () {
@@ -317,31 +306,24 @@
                 write: function (value) {
                     var span = 30;
                     if (value == 1) {
-                        span = 30;
+                        span = 1;
                     }
                     else if (value == 2) {
-                        span = 60;
-                    }
-                    else if (value == 3) {
-                        span = 90;
-                    }
-                    else if (value == 4) {
                         span = 7;
                     }
-                    else if (value == 5) {
-                        span = 10;
-                    }
-                    else if (value == 6) {
+                    else if (value == 3) {
                         span = 14;
+                    }
+                    else if (value == 4) {
+                        span = 30;
+                    }
+                    else if (value == 5) {
+                        span = 60;
                     }
                     else if (value == -1) {
                         span = 5;
-                        self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
-                        self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'minutes').format(MomentDateTimeFormat));
-                        self._selectedIntervall(value);
-                        return;
                     }
-                    self.endTime(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+                    self.endTime(getToday.format(MomentDateTimeFormat));
                     self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
                     self._selectedIntervall(value);
 
@@ -349,11 +331,8 @@
                 owner: self
             });
 
-
-            self._instanceName = ko.observable("");
-
-            self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(30, "days").format(MomentDateTimeFormat)));
-            self._endTime = ko.observable(adjustSubsecondDigits(moment.utc().format(MomentDateTimeFormat)));
+            self._startTime = ko.observable(getToday.subtract(30, "days").format(MomentDateTimeFormat));
+            self._endTime = ko.observable(getToday.format(MomentDateTimeFormat));
 
             self.startTime = ko.pureComputed({
                 read: function () {
@@ -385,21 +364,6 @@
             self.endMoment = ko.pureComputed({
                 read: function () {
                     return moment.utc(self.endTime(), MomentDateTimeFormat);
-                },
-                owner: self
-            });
-
-
-            self.instanceName = ko.pureComputed({
-                read: function () {
-                    if (self.dataHubIsConnected()) {
-                        dataHub.getSelectedReportInstanceName().done(function (result) {
-                            self._instanceName(result);
-                        });
-                    }
-                    return self._instanceName();
-                },
-                write: function (value) {
                 },
                 owner: self
             });
@@ -475,7 +439,6 @@
             data.viewModel = newViewModel;
 
             // Define instance name selector before binding
-            $("#titleText").parent("h3").append("@Raw(HistorianInstanceSelect().ToString().RemoveDuplicateWhiteSpace().Replace("\r\n", ""))");
             
             ko.bindingHandlers.dateTimePicker = {
                 init: function (element, valueAccessor, allBindingsAccessor) {
@@ -532,33 +495,7 @@
         $(window).on("beforeApplyBindings", extendViewModel);
 
         $(window).on("hubConnected", function () {
-            setTimeout(keepAlive, 1000);
-
-            // Load available historian instance names, if not already loaded
-            if ($("#instanceName").children("option").length > 0)
-                return;
-
-            const instanceNameSelect = $("#instanceName");
-
-            dataHub.getInstanceNames().done(function (names) {
-                for (let i = 0; i < names.length; i++) {
-                    const value = names[i];
-                    instanceNameSelect.append($("<option>", { value: value, text: value }));
-                }
-
-                // Select last value
-                var lastInstanceName = Cookies.get("instanceName");
-
-                if (lastInstanceName === undefined)
-                    lastInstanceName = instanceNameSelect.eq(0).val();
-
-                if (!isEmpty(lastInstanceName))
-                    instanceNameSelect.val(lastInstanceName);
-
-                setTimeout(function () {
-                    viewModel.instanceName(lastInstanceName);
-                }, 200);
-            });
+            setTimeout(keepAlive, 1000);            
         });
 
         function keepAlive() {
