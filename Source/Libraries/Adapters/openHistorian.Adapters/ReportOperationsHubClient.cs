@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -87,8 +88,11 @@ namespace openHistorian.Adapters
     {
         #region [ Members ]
 
+        // Constants      
+
+        private const string ReportSettingsCategory = "snrSQLReportingDB";
+
         // Fields
-        private readonly ReportHistorianOperations m_historianOperations;
         private string m_databaseFile;
         private AdoDataConnection m_connection;
         private bool m_disposed;
@@ -109,18 +113,8 @@ namespace openHistorian.Adapters
         /// </summary>
         public ReportOperationsHubClient()
         {
-            m_historianOperations = new ReportHistorianOperations();
             m_writing = false;
             
-            // Override the Historian Instance with the value from the config File
-            // Any changes after this will take effect
-
-            // Access needed settings from specified categories in configuration file
-            CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
-            reportSettings.Add("historianInstance", "PPA" , "Default historian instance used for reporting");
-            string historian = reportSettings["historianInstance"].ValueAs("PPA");
-            SetSelectedInstanceName(historian);
-
             m_cancellation = new CancellationTokenSource();
         }
 
@@ -165,39 +159,12 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Set selected Historian instance name.
-        /// </summary>
-        /// <param name="instanceName">Historian instance name that is selected by user.</param>
-        public void SetSelectedInstanceName(string instanceName)
-        {
-            m_historianOperations.SetSelectedInstanceName(instanceName);
-        }
-
-        /// <summary>
-        /// Gets selected historian instance name.
-        /// </summary>
-        /// <returns>Selected Historian instance name.</returns>
-        public string GetSelectedInstanceName()
-        {
-            return m_historianOperations.GetSelectedInstanceName();
-        }
-
-        /// <summary>
         /// Gets Progress of current Report.
         /// </summary>
         /// <returns>Selected Historian instance name.</returns>
         public double GetReportProgress()
         {
             return m_percentComplete;
-        }
-
-        /// <summary>
-        /// Gets loaded historian adapter instance names.
-        /// </summary>
-        /// <returns>Historian adapter instance names.</returns>
-        public IEnumerable<string> GetInstanceNames()
-        {
-            return m_historianOperations.GetInstanceNames();
         }
 
         private void UpdatePercentage(ulong current)
@@ -234,109 +201,19 @@ namespace openHistorian.Adapters
 					m_databaseFile = $"{ConfigurationCachePath}{Path.DirectorySeparatorChar}{ConnectionID}.db";
 					File.Copy(sourceFile, m_databaseFile, true);
 
-					string filterString = "";
-
-					if (reportType == ReportType.SNR)
-						filterString = "%-SNR";
-					else if (reportType == ReportType.Unbalance_I)
-						filterString = "%-IUBAL";
-					else if (reportType == ReportType.Unbalance_V)
-						filterString = "%-VUBAL";
-
-					// Get AlertThreshold
-					CategorizedSettingsElementCollection reportSettings = ConfigurationFile.Current.Settings["reportSettings"];
-					double threshold = 0;
-
-					if (reportType == ReportType.SNR)
-					{
-						reportSettings.Add("DefaultSNRThreshold", "4.0", "Default SNR Alert threshold.");
-						threshold = reportSettings["DefaultSNRThreshold"].ValueAs(threshold);
-					}
-					else if (reportType == ReportType.Unbalance_V)
-					{
-						reportSettings.Add("VUnbalanceThreshold", "4.0", "Voltage Unbalance Alert threshold.");
-						threshold = reportSettings["VUnbalanceThreshold"].ValueAs(threshold);
-					}
-					else if (reportType == ReportType.Unbalance_I)
-					{
-						reportSettings.Add("IUnbalanceThreshold", "4.0", "Current Unbalance Alert threshold.");
-						threshold = reportSettings["IUnbalanceThreshold"].ValueAs(threshold);
-					}
-
 					if (token.IsCancellationRequested)
 					{
 						m_writing = false;
 						return;
 					}
 
-					List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType, token);
+					List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType, reportCriteria, numberOfRecords, token);
 
 					if (token.IsCancellationRequested)
 					{
 						m_writing = false;
 						return;
 					}
-
-					if (!reportingMeasurements.Any())
-					{
-                        TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
-						tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
-
-						List<ActiveMeasurement> activeMeasuremnts = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString).ToList();
-						reportingMeasurements = activeMeasuremnts.Select(point => new ReportMeasurements(point)).ToList();
-
-						// Pull Data From the Open Historian
-                        if (token.IsCancellationRequested)
-						{
-							m_writing = false;
-							return;
-						}
-
-						Progress<ulong> progress = new Progress<ulong>(UpdatePercentage);
-						List<CondensedDataPoint> historiandata = m_historianOperations.ReadCondensed(startDate, endDate, activeMeasuremnts, threshold, token, progress).ToList();
-
-						if (token.IsCancellationRequested)
-						{
-							m_writing = false;
-							return;
-						}
-
-						//remove any that don't have data
-						reportingMeasurements = reportingMeasurements.Where(item => historiandata.Select(point => point.PointID).Contains(item.PointID)).ToList();
-
-						// Deal with the not-aggregated signals
-						reportingMeasurements = reportingMeasurements.Select(item =>
-						{
-							CondensedDataPoint data = historiandata.Find(point => point.PointID == item.PointID);
-							item.Max = data.Max;
-							item.Min = data.Min;
-							item.Mean = data.Sum / data.TotalPoints;
-							item.NumberOfAlarms = data.Alert;
-							item.PercentAlarms = data.Alert * 100.0D / data.TotalPoints;
-							item.StandardDeviation = Math.Sqrt((data.SqrSum - 2 * data.Sum * item.Mean + data.TotalPoints * item.Mean * item.Mean) / data.TotalPoints);
-							item.TimeInAlarm = item.PercentAlarms * (endDate - startDate).TotalSeconds / 100.0D;
-
-                            //Fix Alarm Numbers for SNR
-                            if (reportType == ReportType.SNR)
-                            {
-                                item.NumberOfAlarms = data.TotalPoints - item.NumberOfAlarms;
-                                item.PercentAlarms = 100 - item.PercentAlarms;
-                                item.TimeInAlarm = item.PercentAlarms * (endDate - startDate).TotalSeconds / 100.0D;
-                            }
-
-                            return item;
-						}
-						).ToList();
-                    }
-
-                    if (reportCriteria == ReportCriteria.Mean)
-						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Mean).ToList();
-
-					if (reportCriteria == ReportCriteria.AlertTime)
-						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.TimeInAlarm).ToList();
-
-					if (reportCriteria == ReportCriteria.Maximum)
-						reportingMeasurements = reportingMeasurements.OrderByDescending(item => item.Max).ToList();
 
 					string connectionString = $"Data Source={m_databaseFile}; Version=3; Foreign Keys=True; FailIfMissing=True";
 					string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
@@ -358,16 +235,6 @@ namespace openHistorian.Adapters
 
                         if (numberOfRecords == 0)
                             numberOfRecords = reportingMeasurements.Count;
-
-                        // Create Original Point Tag and Fix Alarm Counters for SNR
-                        reportingMeasurements = reportingMeasurements.Select(item =>
-                        {
-                            if (reportType == ReportType.SNR)
-                                item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                            else
-                                item.PointTag = item.PointTag.Remove(item.PointTag.Length - 5);
-                            return item;
-                        }).ToList();
 
 
                         if (token.IsCancellationRequested)
@@ -445,114 +312,72 @@ namespace openHistorian.Adapters
         /// <param name="start">Start date of the Report.</param>
         /// <param name="end">End date of the Report.</param>
         /// <param name="type"> Type of Report <see cref="ReportType"/>.</param>
+        /// <param name="criteria"> Criteria for sorting this Report <see cref="ReportCriteria"/></param>
+        /// <param name="numberRecords"> Number of Records that are being obtained. </param>
         /// <param name="cancelationToken"> Cancleation Token for the historian read operation.</param>
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
-        private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type, CancellationToken cancelationToken)
+        private List<ReportMeasurements> GetFromStats(DataContext dataContext, DateTime start, DateTime end, ReportType type, ReportCriteria criteria, int numberRecords, CancellationToken cancelationToken)
         {
             List<ReportMeasurements> result = new List<ReportMeasurements>();
 
-            string filterString = "";
-
-            if (type == ReportType.SNR)
-                filterString = "%-SNR";
-            else if (type == ReportType.Unbalance_I)
-                filterString = "%-IUBAL";
-            else if (type == ReportType.Unbalance_V)
-                filterString = "%-VUBAL";
-
-            TableOperations<ActiveMeasurement> tableOperations = new TableOperations<ActiveMeasurement>(dataContext.Connection);
-            tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
-
-            if (tableOperations.QueryRecordCountWhere("PointTag LIKE {0}", filterString + ":SUM") > 0)
+            // For now lump I and V together since we have to change all of this logic anyway to get away from SignalID back to Point Tags eventually
+            // and get away from SQLLite files - waiting for ritchies comments before implementing that
+            // Also using SignalID for everything this will be adjusted once I figured out how to combine the 2 SQL DB
+            string idCollumn = (type == ReportType.SNR? "SignalID" : "PositivePhaseSignalID");
+            string sortCollumn = "Max";
+            
+            // Alert Time is currently not available in SQL Reporting  - needs to be removed from UI
+            switch (criteria)
             {
-                List<ActiveMeasurement> sumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":SUM").ToList();
-                List<ActiveMeasurement> squaredSumMeasurments = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":SQR").ToList();
-                List<ActiveMeasurement> minimumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":MIN").ToList();
-                List<ActiveMeasurement> maximumMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":MAX").ToList();
-                List<ActiveMeasurement> countMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":NUM").ToList();
-                List<ActiveMeasurement> alertMeasurements = tableOperations.QueryRecordsWhere("PointTag LIKE {0}", filterString + ":ALT").ToList();
+                case (ReportCriteria.AlertTime):
+                    sortCollumn = "Min";
+                    break;
+                case (ReportCriteria.Maximum):
+                    sortCollumn = "Max";
+                    break;
+                case (ReportCriteria.Mean):
+                    sortCollumn = "Mean";
+                    break;
+            }
 
-                result = sumMeasurements.Select(point => new ReportMeasurements(point)).ToList();
+            string sqlQuery = $@"SELECT TOP {numberRecords}
+                                    {idCollumn} AS ID,
+                                    {idCollumn} AS SignalID,
+                                    {idCollumn} AS PointTag,
+                                    {idCollumn} AS SignalReference,
+                                    (SUM(SUM)/SUM(Count)) AS Mean,
+                                    MAX(Maximum) AS Max,
+                                    Min(Minimum) AS Min,
+                                    SQRT((1/SUM(COUNT))*(SUM(SquaredSum)-2*SUM(Sum)*Sum(Sum)/SUM(Count)+SUM(Sum)*Sum(Sum)/SUM(Count))) AS StandardDeviation,
+                                    MAX(Maximum) AS NumberOfAlarms, 
+                                    MAX(Maximum) as PercentAlarms,
+                                    MAX(Maximum) as TimeInAlarm
+                                FROM {(type == ReportType.SNR? "SNRSummary" : "UnbalanceSummary")}
+                                WHERE Date >= '{start.ToString("yyyy-MM-dd")}' AND Date <= '{end.ToString("yyyy-MM-dd")}' 
+                                GROUP BY {idCollumn}
+                                ORDER BY {sortCollumn}";
 
-                // Pull Data From the Open Historian
-                List<ActiveMeasurement> all = sumMeasurements.Concat(squaredSumMeasurments).Concat(minimumMeasurements).Concat(maximumMeasurements).Concat(countMeasurements).Concat(alertMeasurements).ToList();
-                List<CondensedDataPoint> historiandata;
+            DataTable reportTbl;
 
-                if (cancelationToken.IsCancellationRequested)
-                    return new List<ReportMeasurements>();
+            using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                reportTbl = connection.RetrieveData(sqlQuery);
 
-                try
-                {
-                    Progress<ulong> progress = new Progress<ulong>(UpdatePercentage);
-                    historiandata = m_historianOperations.ReadCondensed(start, end, all, double.MaxValue, cancelationToken, progress).ToList();
-                }
-                catch
-                {
-                    return new List<ReportMeasurements>();
-                }
-
-                if (cancelationToken.IsCancellationRequested)
-                    return new List<ReportMeasurements>();
-
-                result = result.Where((item, index) =>
-                {
-                    ReportMeasurements sum = item;
-                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-
-                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-
-                    if (squaredSumChannel is null || minimumChannel is null || maximumChannel is null || countChannel is null || countAlertChannel is null)
-                        return false;
-
-                    return historiandata.Select(point => point.PointID).Contains(sum.PointID) &&
-                           historiandata.Select(point => point.PointID).Contains(squaredSumChannel.PointID) &&
-                           historiandata.Select(point => point.PointID).Contains(minimumChannel.PointID) &&
-                           historiandata.Select(point => point.PointID).Contains(maximumChannel.PointID) &&
-                           historiandata.Select(point => point.PointID).Contains(countAlertChannel.PointID) &&
-                           historiandata.Select(point => point.PointID).Contains(countChannel.PointID);
-                }).ToList();
-
-                result = result.Select(item =>
-                {
-                    string tag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    
-                    ActiveMeasurement squaredSumChannel = squaredSumMeasurments.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement minimumChannel = minimumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement maximumChannel = maximumMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countChannel = countMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement countAlertChannel = alertMeasurements.Find(channel => channel.PointTag.Remove(channel.PointTag.Length - 4) == tag);
-                    ActiveMeasurement sumChannel = sumMeasurements.Find(meas => meas.PointTag.Remove(meas.PointTag.Length - 4) == tag);
-
-                    double minimum = historiandata.Find(point => point.PointID == minimumChannel.PointID).Min;
-                    double maximum = historiandata.Find(point => point.PointID == maximumChannel.PointID).Max;
-                    double count = historiandata.Find(point => point.PointID == countChannel.PointID).Sum;
-                    double alarmCount = historiandata.Find(point => point.PointID == countAlertChannel.PointID).Sum;
-                    double summation = historiandata.Find(point => point.PointID == sumChannel.PointID).Sum;
-                    double squaredsum = historiandata.Find(point => point.PointID == squaredSumChannel.PointID).Sum;
-
-                    item.Max = maximum;
-                    item.Min = minimum;
-                    item.Mean = summation / count;
-                    item.NumberOfAlarms = alarmCount;
-                    item.PercentAlarms = alarmCount * 100.0D / count;
-                    item.StandardDeviation = Math.Sqrt((squaredsum - 2 * summation * item.Mean + count * item.Mean * item.Mean) / count);
-                    item.TimeInAlarm = item.PercentAlarms * (end - start).TotalSeconds / 100.0D;
-
-                    if (type == ReportType.SNR)
-                    {
-                        item.NumberOfAlarms = count - item.NumberOfAlarms;
-                        item.PercentAlarms = 100 - item.PercentAlarms;
-                        item.TimeInAlarm = item.PercentAlarms * (end - start).TotalSeconds / 100.0D;
-                    }
-
-
-                    item.PointTag = item.PointTag.Remove(item.PointTag.Length - 4);
-                    return item;
-                }).ToList();
+            foreach (DataRow row in reportTbl.Rows)
+            {
+                result.Add(new ReportMeasurements() {
+                    ID = row.Field<Guid>("ID").ToString(),
+                    SignalID = row.Field<Guid>("SignalID"),
+                    PointTag = row.Field<Guid>("PointTag").ToString(),
+                    SignalReference = row.Field<Guid>("SignalReference").ToString(),
+                    Mean = row.Field<double>("Mean"),
+                    Max = row.Field<double>("Max"),
+                    Min = row.Field<double>("Min"),
+                    StandardDeviation = row.Field<double>("StandardDeviation"),
+                    NumberOfAlarms = row.Field<double>("NumberOfAlarms"),
+                    PercentAlarms = row.Field<double>("PercentAlarms"),
+                    TimeInAlarm = row.Field<double>("TimeInAlarm"),
+                    FramesPerSecond = 30
+                });
             }
 
             return result;

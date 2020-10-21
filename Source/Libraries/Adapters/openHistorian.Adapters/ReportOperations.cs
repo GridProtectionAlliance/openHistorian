@@ -40,23 +40,7 @@ namespace openHistorian.Adapters
     /// </remarks>
     public interface IReportOperations
     {
-        /// <summary>
-        /// Set selected Historian instance name.
-        /// </summary>
-        /// <param name="instanceName">Historian Instance name that is selected by user.</param>
-        void SetSelectedInstanceName(string instanceName);
-
-        /// <summary>
-        /// Gets selected Historian instance name.
-        /// </summary>
-        /// <returns>Selected Historian instance name.</returns>
-        string GetSelectedInstanceName();
-
-        /// <summary>
-        /// Gets loaded historian adapter instance names.
-        /// </summary>
-        /// <returns>Historian adapter instance names.</returns>
-        IEnumerable<string> GetInstanceNames();
+       
 
         /// <summary>
         /// Updates the Report Data Source.
@@ -104,27 +88,6 @@ namespace openHistorian.Adapters
         #endregion
 
         #region [ Methods ]
-
-        /// <summary>
-        /// Set selected instance name.
-        /// </summary>
-        /// <param name="instanceName">Instance name that is selected by user.</param>
-        public void SetSelectedInstanceName(string instanceName)
-        {
-            HubClient.SetSelectedInstanceName(instanceName);
-        }
-
-        /// <summary>
-        /// Gets selected instance name.
-        /// </summary>
-        /// <returns>Selected instance name.</returns>
-        public string GetSelectedInstanceName() => HubClient.GetSelectedInstanceName();
-
-        /// <summary>
-        /// Gets loaded historian adapter instance names.
-        /// </summary>
-        /// <returns>Historian adapter instance names.</returns>
-        public IEnumerable<string> GetInstanceNames() => HubClient.GetInstanceNames();
 
         /// <summary>
         /// Updates the Report Data Source.

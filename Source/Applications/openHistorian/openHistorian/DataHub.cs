@@ -191,30 +191,6 @@ namespace openHistorian
             return this.m_reportOperations.GetReportProgress();
         }
 
-        /// <summary>
-        /// Set selected Report instance name.
-        /// </summary>
-        /// <param name="instanceName">Instance name that is selected by user.</param>
-        public void SetSelectedReportInstanceName(string instanceName)
-        {
-            m_reportOperations.SetSelectedInstanceName(instanceName);
-        }
-
-        /// <summary>
-        /// Gets selected Report instance name.
-        /// </summary>
-        /// <returns>Selected Reportinstance name.</returns>
-        public string GetSelectedReportInstanceName()
-        {
-            return m_reportOperations.GetSelectedInstanceName();
-        }
-
-        /// <summary>
-        /// Gets loaded historian adapter instance names to Report from.
-        /// </summary>
-        /// <returns>Report Historian adapter instance names.</returns>
-        public IEnumerable<string> GetReportInstanceNames() => m_reportOperations.GetInstanceNames();
-
         #endregion
 
         #region [ ActiveMeasurement View Operations ]
