@@ -152,10 +152,8 @@
     ViewBag.BodyRows = BodyRows().ToString();
     ViewBag.HeaderColumns = new[]
        {   //    { "Field", "Label", "Classes" }
-        new[] { "OriginalTag", "Tag&nbsp;Name", "text-left" },
-        new[] { "NumberOfAlarms", "#&nbsp;of&nbsp;Alarms", "text-center" },
-        new[] { "TimeInAlarm", "Time &nbsp;in&nbsp;Alarm", "text-center" },
-        new[] { "PercentAlarms" , "Percent &nbsp;in&nbsp;Alarm", "text-center" },
+        new[] { "PointTag", "Tag&nbsp;Name", "text-left" },
+        new[] { "DeviceName", "Device", "text-left" },
         new[] { "Mean" , "Mean", "text-center" },
         new[] { "StandardDeviation" , "Standard &nbsp;Dev.", "text-center" },
         new[] { "Max" , "Maximum", "text-center" },
@@ -168,10 +166,8 @@
 }
     @helper BodyRows()
     {
-    <td width="50%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag"></button></div></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: NumberOfAlarms.toFixed(0)"></span></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: secondstoInterval(TimeInAlarm)"></span></td>
-    <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentAlarms.toFixed(2)"></span></td>
+    <td width="45%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag"></button></div></td>
+    <td width="34%" class="text-left valign-middle"><div data-bind="attr: { title: DeviceName }"><button type="button" class="btn btn-link btn-sm" data-bind="text: DeviceName"></button></div></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Max.toFixed(2)"></span></td>
@@ -254,25 +250,14 @@
     <script>
         const MomentDateTimeFormat = dateFormat.convert(DateFormat, dateFormat.dotnet, dateFormat.moment);
 
-        const getToday = function () {
+        const getToday = () => {
             let today = moment.utc();
             today.minute(0);
             today.milliseconds(0);
             today.hour(0);
             return today;
-        }();
+        };
 
-        function adjustSubsecondDigits(timeValue) {
-            if (SubsecondDigits === 0)
-                return timeValue;
-
-            const dotIndex = timeValue.indexOf(".");
-
-            if (dotIndex < 0)
-                return timeValue + "." + Array(SubsecondDigits + 2).join("0");
-
-            return timeValue + Array(SubsecondDigits - timeValue.substr(dotIndex + 1).trim().length + 1).join("0");
-        }
 
         function secondstoInterval(seconds) {
             var day = 0;
@@ -323,7 +308,7 @@
                     else if (value == -1) {
                         span = 5;
                     }
-                    self.endTime(getToday.format(MomentDateTimeFormat));
+                    self.endTime(getToday().format(MomentDateTimeFormat));
                     self.startTime(moment.utc(self.endTime(), MomentDateTimeFormat).subtract(span, 'days').format(MomentDateTimeFormat));
                     self._selectedIntervall(value);
 
@@ -331,8 +316,8 @@
                 owner: self
             });
 
-            self._startTime = ko.observable(getToday.subtract(30, "days").format(MomentDateTimeFormat));
-            self._endTime = ko.observable(getToday.format(MomentDateTimeFormat));
+            self._startTime = ko.observable(getToday().subtract(30, "days").format(MomentDateTimeFormat));
+            self._endTime = ko.observable(getToday().format(MomentDateTimeFormat));
 
             self.startTime = ko.pureComputed({
                 read: function () {

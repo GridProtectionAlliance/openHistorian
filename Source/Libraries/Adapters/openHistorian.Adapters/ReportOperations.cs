@@ -54,10 +54,10 @@ namespace openHistorian.Adapters
         void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int number, DataContext dataContext);
 
         /// <summary>
-        /// Returns the Table Operation Object that Queries are build against.
+        /// Returns the number of rows for the report.
         /// </summary>
         /// <returns>Table Operations Object that is used to query report data.</returns>
-        TableOperations<ReportMeasurements> Table();
+        int GetCount();
 
         /// <summary>
         /// Gets Progress of current Report generation.
@@ -104,21 +104,23 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Returns the Table Operation Object that Queries are build against.
+        /// Gets the number of <see cref="ReportMeasurements"/> in the report.
         /// </summary>
-        /// <returns>Table Operations Object that is used to query report data.</returns>
-        public TableOperations<ReportMeasurements> Table()
-        {
-            return HubClient.Table();
-        }
+        public int GetCount() => HubClient.GetCount();
 
         /// <summary>
         /// Gets Progress of current Report.
         /// </summary>
-        public double GetReportProgress()
-        {
-            return HubClient.GetReportProgress();
-        }
+        public double GetReportProgress() => HubClient.GetReportProgress();
+
+        /// <summary>
+        /// Gets the <see cref="ReportMeasurements"/> for a given page (and sorted by a given Field).
+        /// </summary>
+        /// <param name="ascending"> If the data should be sorted Ascending or Descending</param>
+        /// <param name="page"> the (1 based) pageIndex</param>
+        /// <param name="pageSize"> The number of records in a single page. </param>
+        /// <param name="sortField">The Field by which the data is sorted. </param>
+        public IEnumerable<ReportMeasurements> GetData(string sortField,bool ascending,int page,int pageSize) => HubClient.GetData(sortField,ascending,page,pageSize);
 
         #endregion
     }

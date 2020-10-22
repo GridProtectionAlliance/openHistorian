@@ -75,10 +75,6 @@ namespace openHistorian.Adapters
         /// </summary>
         Maximum,
 
-        /// <summary>
-        /// Time in Alert.
-        /// </summary>
-        AlertTime,
     }
 
     /// <summary>
@@ -93,8 +89,9 @@ namespace openHistorian.Adapters
         private const string ReportSettingsCategory = "snrSQLReportingDB";
 
         // Fields
-        private string m_databaseFile;
-        private AdoDataConnection m_connection;
+        private List<ReportMeasurements> m_listing;
+        private string m_currentSort;
+        private bool m_currentAscending;
         private bool m_disposed;
         private bool m_writing;
         private readonly CancellationTokenSource m_cancellation;
@@ -114,7 +111,9 @@ namespace openHistorian.Adapters
         public ReportOperationsHubClient()
         {
             m_writing = false;
-            
+            m_listing = null;
+            m_currentSort = "";
+            m_currentAscending = false;
             m_cancellation = new CancellationTokenSource();
         }
 
@@ -133,29 +132,13 @@ namespace openHistorian.Adapters
 
             // Dispose of Historian operations and connection
             // This is called on endSession and should be triggered in all cases
-            m_connection.Dispose();
             m_cancellation.Dispose();
 
-            //also remove Database File to avoid filling up cache
-            try
-            {
-                if (disposing)
-                {
-                    try
-                    {
-                        File.Delete(m_databaseFile);
-                    }
-                    catch
-                    {
-                        throw new Exception("Unable to delete temporary SQL Lite DB for Reports");
-                    }
-                }
-            }
-            finally
-            {
+
+           
                 m_disposed = true;          // Prevent duplicate dispose.
                 base.Dispose(disposing);    // Call base class Dispose().
-            }
+            
         }
 
         /// <summary>
@@ -167,9 +150,9 @@ namespace openHistorian.Adapters
             return m_percentComplete;
         }
 
-        private void UpdatePercentage(ulong current)
+        private void UpdatePercentage(int current, int total)
         {
-            m_percentComplete = (1.0D - new Ticks(m_endTime.Ticks - (long)current).ToSeconds() / m_totalTime) * 100.0D;
+            m_percentComplete = (1.0D -((double)current/(double)total)) * 100.0D;
         }
 
         /// <summary>
@@ -197,10 +180,6 @@ namespace openHistorian.Adapters
             {
 				try
 				{
-					string sourceFile = $"{FilePath.GetAbsolutePath("")}{Path.DirectorySeparatorChar}ReportTemplate.db";
-					m_databaseFile = $"{ConfigurationCachePath}{Path.DirectorySeparatorChar}{ConnectionID}.db";
-					File.Copy(sourceFile, m_databaseFile, true);
-
 					if (token.IsCancellationRequested)
 					{
 						m_writing = false;
@@ -215,44 +194,8 @@ namespace openHistorian.Adapters
 						return;
 					}
 
-					string connectionString = $"Data Source={m_databaseFile}; Version=3; Foreign Keys=True; FailIfMissing=True";
-					string dataProviderString = "AssemblyName={System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139}; ConnectionType=System.Data.SQLite.SQLiteConnection; AdapterType=System.Data.SQLite.SQLiteDataAdapter";
-
-                    // Make this a single Transaction for speed purpose
-                    using (TransactionScope scope = new TransactionScope())
-                    {
-
-                        m_connection = new AdoDataConnection(connectionString, dataProviderString);
-                        
-
-                        // Remove Points that are all NaN
-                        reportingMeasurements = reportingMeasurements.Where(item =>
-                        {
-                            return (!(double.IsNaN(item.Mean)));
-                        }).ToList();
-
-
-
-                        if (numberOfRecords == 0)
-                            numberOfRecords = reportingMeasurements.Count;
-
-
-                        if (token.IsCancellationRequested)
-                        {
-                            m_writing = false;
-                            return;
-                        }
-
-
-
-                        TableOperations<ReportMeasurements> reportMeasurements = new TableOperations<ReportMeasurements>(m_connection);
-
-                        for (int i = 0; i < Math.Min(numberOfRecords, reportingMeasurements.Count); i++)
-                            reportMeasurements.AddNewRecord(reportingMeasurements[i]);
-                        
-
-                        scope.Complete();
-                    }
+                    m_listing = reportingMeasurements;
+                    
 					m_writing = false;
 					m_percentComplete = 100.0;
 				}
@@ -269,41 +212,7 @@ namespace openHistorian.Adapters
                 
             }.Start();
         }
-        
-        /// <summary>
-        /// Returns the Table Operation Object that Queries are build against.
-        /// </summary>
-        /// <returns> Table Operations Object that is used to query report data.</returns>
-        public TableOperations<ReportMeasurements> Table()
-        {
-            return m_connection == null ? null : new TableOperations<ReportMeasurements>(m_connection);
-        }
-
-        /// <summary>
-        /// Gets the path for storing Report Database configurations.
-        /// </summary>
-        private static string ConfigurationCachePath
-        {
-            get
-            {
-                // Define default configuration cache directory relative to path of host application
-                string configurationCachePath = string.Format("{0}{1}ConfigurationCache{1}", FilePath.GetAbsolutePath(""), Path.DirectorySeparatorChar);
-
-                // Make sure configuration cache path setting exists within system settings section of config file
-                ConfigurationFile configFile = ConfigurationFile.Current;
-                CategorizedSettingsElementCollection systemSettings = configFile.Settings["systemSettings"];
-                systemSettings.Add("ConfigurationCachePath", configurationCachePath, "Defines the path used to cache serialized phasor protocol configurations");
-
-                // Retrieve configuration cache directory as defined in the config file
-                configurationCachePath = FilePath.AddPathSuffix(systemSettings["ConfigurationCachePath"].Value);
-
-                // Make sure configuration cache directory exists
-                if (!Directory.Exists(configurationCachePath))
-                    Directory.CreateDirectory(configurationCachePath);
-
-                return configurationCachePath;
-            }
-        }
+       
 
         /// <summary>
         /// Gets the reporting Measurment List from Aggregate Channels if available.
@@ -326,12 +235,9 @@ namespace openHistorian.Adapters
             string idCollumn = (type == ReportType.SNR? "SignalID" : "PositivePhaseSignalID");
             string sortCollumn = "Max";
             
-            // Alert Time is currently not available in SQL Reporting  - needs to be removed from UI
+           
             switch (criteria)
             {
-                case (ReportCriteria.AlertTime):
-                    sortCollumn = "Min";
-                    break;
                 case (ReportCriteria.Maximum):
                     sortCollumn = "Max";
                     break;
@@ -362,27 +268,109 @@ namespace openHistorian.Adapters
             using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
                 reportTbl = connection.RetrieveData(sqlQuery);
 
-            foreach (DataRow row in reportTbl.Rows)
+            using (AdoDataConnection connection = new AdoDataConnection("Systemsettings"))
             {
-                result.Add(new ReportMeasurements() {
-                    ID = row.Field<Guid>("ID").ToString(),
-                    SignalID = row.Field<Guid>("SignalID"),
-                    PointTag = row.Field<Guid>("PointTag").ToString(),
-                    SignalReference = row.Field<Guid>("SignalReference").ToString(),
-                    Mean = row.Field<double>("Mean"),
-                    Max = row.Field<double>("Max"),
-                    Min = row.Field<double>("Min"),
-                    StandardDeviation = row.Field<double>("StandardDeviation"),
-                    NumberOfAlarms = row.Field<double>("NumberOfAlarms"),
-                    PercentAlarms = row.Field<double>("PercentAlarms"),
-                    TimeInAlarm = row.Field<double>("TimeInAlarm"),
-                    FramesPerSecond = 30
-                });
-            }
+                TableOperations<ActiveMeasurement> activeMeasurementTbl = new TableOperations<ActiveMeasurement>(connection);
+                TableOperations<Phasor> phasorTbl = new TableOperations<Phasor>(connection);
+                int i = 0;
 
+                foreach (DataRow row in reportTbl.Rows)
+                {
+                    UpdatePercentage(i, numberRecords);
+                    i++;
+
+                    Guid signalID = row.Field<Guid>("SignalID");
+                    ActiveMeasurement sourceMeasurement = activeMeasurementTbl.QueryRecordWhere("SignalID = {0}", signalID);
+                    
+                    if (sourceMeasurement == null)
+                        continue;
+
+                    Phasor phasor = phasorTbl.QueryRecordWhere("ID = {0}", sourceMeasurement.PhasorID);
+
+                    bool isI = sourceMeasurement.SignalType == "IPHM";
+                    bool isV = sourceMeasurement.SignalType == "VPHM";
+
+                    if (type == ReportType.Unbalance_I && !isI)
+                        continue;
+                    if (type == ReportType.Unbalance_V && !isV)
+                        continue;
+                    
+                    
+                    result.Add(new ReportMeasurements()
+                    {
+                        SignalID = signalID,
+                        PointTag = (((phasor != null) && (type != ReportType.SNR))? phasor.Label : sourceMeasurement.PointTag),
+                        SignalReference = sourceMeasurement.SignalReference,
+                        SignalType = sourceMeasurement.SignalType,
+                        DeviceName = sourceMeasurement.Device,
+                        Mean = row.Field<double>("Mean"),
+                        Max = row.Field<double>("Max"),
+                        Min = row.Field<double>("Min"),
+                        StandardDeviation = row.Field<double>("StandardDeviation"),
+                    });
+                }
+            }
             return result;
         }
-        
+
+        /// <summary>
+        /// Gets the number of <see cref="ReportMeasurements"/> in the report.
+        /// </summary>
+        public int GetCount() => (m_listing == null ? 0 : m_listing.Count());
+
+        /// <summary>
+        /// Gets the <see cref="ReportMeasurements"/> for a given page (and sorted by a given Field).
+        /// </summary>
+        /// <param name="ascending"> If the data should be sorted Ascending or Descending</param>
+        /// <param name="page"> the (1 based) pageIndex</param>
+        /// <param name="pageSize"> The number of records in a single page. </param>
+        /// <param name="sortField">The Field by which the data is sorted. </param>
+        public IEnumerable<ReportMeasurements> GetData(string sortField, bool ascending, int page, int pageSize)
+        {
+            if (m_listing == null)
+                return new List<ReportMeasurements>();
+
+            if (string.Compare(m_currentSort,sortField,true) != 0)
+            {
+                switch(sortField)
+                {
+                    case ("PointTag"):
+                        Sort(ascending, item => item.PointTag);
+                        break;
+                    case ("DeviceName"):
+                        Sort(ascending, item => item.DeviceName);
+                        break;
+                    case ("Mean"):
+                        Sort(ascending, item => item.Mean);
+                        break;
+                    case ("Max"):
+                        Sort(ascending, item => item.Max);
+                        break;
+                    case ("Min"):
+                        Sort(ascending, item => item.Min);
+                        break;
+                }
+                m_currentAscending = ascending;
+                m_currentSort = sortField;
+
+            }
+            if (m_currentAscending != ascending)
+            {
+                m_listing.Reverse();
+                m_currentAscending = ascending;
+            }
+
+            int start = (page-1)*pageSize;
+            return m_listing.Skip(start).Take(pageSize);
+        }
+
+        private void Sort<T>(bool ascending, Func<ReportMeasurements,T> keySelector)
+        {
+            if (ascending)
+                m_listing = m_listing.OrderBy(keySelector).ToList();
+            else
+                m_listing = m_listing.OrderByDescending(keySelector).ToList();
+        }
         #endregion
     }
 }

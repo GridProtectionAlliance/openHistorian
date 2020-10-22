@@ -37,31 +37,23 @@ namespace openHistorian.Model
         {
         }
 
-        public ReportMeasurements(ActiveMeasurement activemeasurement)
-        {
-            ID = activemeasurement.ID;
-            Source = activemeasurement.Source;
-            PointID = activemeasurement.PointID;
-            SignalID = activemeasurement.SignalID.GetValueOrDefault();
-            PointTag = activemeasurement.PointTag;
-            SignalReference = activemeasurement.SignalReference;
-            FramesPerSecond = activemeasurement.FramesPerSecond;
-            
-            Mean = 0;
-            Min = 0;
-            StandardDeviation = 0;
-            NumberOfAlarms = 0;
-            PercentAlarms = 0;
-            TimeInAlarm = 0;
-        }
 
-        [Searchable]
-        [CSVExcludeField]
-        public string ID
+        [Label("Device")]
+        public string DeviceName
         {
             get;
             set;
         }
+
+        [Label("Tag Name")]
+        [Required]
+        [StringLength(200)]
+        public string PointTag
+        {
+            get;
+            set;
+        }
+
 
         [PrimaryKey(false)]
         [Label("Unique Signal ID")]
@@ -72,21 +64,10 @@ namespace openHistorian.Model
             set;
         }
 
-        [Label("Tag Name")]
-        [Required]
-        [StringLength(200)]
-        [Searchable]
-        public string PointTag
-        {
-            get;
-            set;
-        }
 
-       
         [Label("Signal Reference")]
         [Required]
         [StringLength(200)]
-        [Searchable]
         [CSVExcludeField]
         public string SignalReference
         {
@@ -94,27 +75,16 @@ namespace openHistorian.Model
             set;
         }
 
-        [Label("Frames per Second")]
-        [CSVExcludeField]
-        public int? FramesPerSecond
+        [Label("Signal Type")]
+        public string SignalType
         {
             get;
             set;
         }
 
-        [NonRecordField]
-        public string Source
-        {
-            get; 
-            set;
-        }
+       
 
-        [NonRecordField]
-        public ulong PointID
-        {
-            get;
-            set;
-        }
+        
 
         // Fields populated by historian data
         public double Mean
@@ -141,22 +111,5 @@ namespace openHistorian.Model
             set;
         }
 
-        public double NumberOfAlarms
-        {
-            get;
-            set;
-        }
-
-        public double PercentAlarms
-        {
-            get;
-            set;
-        }
-
-        public double TimeInAlarm
-        {
-            get;
-            set;
-        }
     }
 }

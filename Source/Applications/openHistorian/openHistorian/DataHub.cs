@@ -145,20 +145,13 @@ namespace openHistorian
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecordCount)]
         public int QuerySNRMeasurmentCount(string filterText)
         {
-            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
-            if (tableOperations == null)
-                return 0;
-            return tableOperations.QueryRecordCount(filterText);
+            return m_reportOperations.GetCount();
         }
 
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecords)]
         public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<ReportMeasurements> tableOperations = m_reportOperations.Table();
-
-            if (tableOperations == null)
-                return new List<ReportMeasurements>();
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return m_reportOperations.GetData(sortField, ascending, page, pageSize);
         }
 
 
@@ -166,7 +159,7 @@ namespace openHistorian
         public ReportMeasurements NewReportMeasurement()
         {
             //This is not really allowed need to check if we can disable that
-            return m_reportOperations.Table()?.NewRecord();
+            return new ReportMeasurements();
         }
 
         /// <summary>
