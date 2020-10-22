@@ -326,7 +326,6 @@
     <Content Include="wwwroot\AddDevice.cshtml" />
     <Content Include="Single Phase Power Calculations.TagTemplate" />
     <Content Include="Three Phase Power Calculations.TagTemplate" />
-    <Content Include="ReportTemplate.db" />
     <Content Include="wwwroot\AddSynchrophasorDeviceDev.cshtml" />
     <Content Include="Three Phase Power Calculations with Time Sync.TagTemplate" />
     <None Include="wwwroot\Companies.cshtml" />
