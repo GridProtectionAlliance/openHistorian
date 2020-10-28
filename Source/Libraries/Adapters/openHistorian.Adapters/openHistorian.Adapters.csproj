@@ -179,6 +179,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteOutputAdapter.cs" />
     <Compile Include="Model\TimeSeriesPhasorValues.cs" />
+    <Compile Include="ScheduledEmail.cs" />
     <Compile Include="Unbalanced.cs" />
     <Compile Include="SNRComputation.cs" />
     <Compile Include="TrendValueAPI.cs" />
