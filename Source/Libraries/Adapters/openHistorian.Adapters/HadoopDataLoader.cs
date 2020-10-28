@@ -189,7 +189,7 @@ namespace openHistorian.Adapters
         /// Gets or sets the Intervall in which the Database is updated.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the intervall at which HADOPP is queried")]
+        [Description("Defines the intervall at which HADOPP is queried in milliseconds.")]
         [DefaultValue(30000)]
         public int UpdateIntervall
         {
