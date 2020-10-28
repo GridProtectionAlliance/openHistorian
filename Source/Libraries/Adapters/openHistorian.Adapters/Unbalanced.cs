@@ -143,23 +143,23 @@ namespace openHistorian.Adapters
         public const int DefaultMaxSQLRows = 999;
 
         /// <summary>
-        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// Defines the default value for the <see cref="AggregationWindow"/>.
         /// </summary>
         public const int DefaultWindowSize = 30;
 
 
         /// <summary>
-        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// Defines the default value for the <see cref="AlarmSetPoint"/>.
         /// </summary>
         public const double DefaultAlarmThreshhold = 0.03;
 
         /// <summary>
-        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// Defines the default value for the <see cref="AlarmDelay"/>.
         /// </summary>
         public const int DefaultAlarmDelay = 5;
 
         /// <summary>
-        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// Defines the default value for the <see cref="AlarmHysterisis"/>.
         /// </summary>
         public const double DefaultAlarmHysterisis = 0;
 
@@ -185,9 +185,9 @@ namespace openHistorian.Adapters
         /// Gets or sets the File used for mapping 
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
         [Description("Sets the Path to the Mapping File to get sets of sequence Voltages - Order of the Entries is +,-,0.")]
         [DefaultValue(DefaultMappingFile)]
+        [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.FileDialogEditor", "type=open; checkFileExists=true; defaultExt=.csv; filter=CSV files|*.csv|AllFiles|*.*")]
         public string MappingFilePath
         {
             get;
@@ -198,7 +198,6 @@ namespace openHistorian.Adapters
         /// Gets or sets the Size of the Window used for aggregating to avoid Incorrect Results 
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
         [Description("Sets the Size of the window used to aggregate results to avoid spikes due to bad data.")]
         [DefaultValue(DefaultWindowSize)]
         public int AggregationWindow
@@ -578,7 +577,7 @@ namespace openHistorian.Adapters
                         set.countExceeding = 0;
                 }
 
-                if (ReportSQL && (!double.IsNaN(s2s1)))
+                if (ReportSQL && (!double.IsNaN(s0s1)))
                 {
                     set.sum += s0s1;
                     set.count += 1.0;
