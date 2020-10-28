@@ -49,6 +49,7 @@ using GSF.TimeSeries.Data;
 using GSF.Units.EE;
 using System.Threading.Tasks;
 using GSF;
+using System.Xml.Serialization;
 
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NotAccessedField.Local
@@ -66,8 +67,11 @@ namespace openHistorian.Adapters
         {
             public DateTime Date { get; set; }
             //public double S0S1 { get; set; }
-            public double S2S1 { get; set; }
+            public double S0S1 { get; set; }
             public Guid PositivePhaseSignalID { get; set; }
+            public int Alarm { get; set; }
+            public string SignalType { get; set; }
+
         }
 
         /// <summary>
@@ -81,9 +85,15 @@ namespace openHistorian.Adapters
             public Guid S0S1 { get; set; }
             public Guid S2S1 { get; set; }
 
+            public string SignalType { get; set; }
+
             public double count;
             public double sum;
             public void Reset() => count = sum = 0;
+
+            public bool activeAlarm;
+            public int countExceeding;
+
 
         }
 
@@ -138,11 +148,29 @@ namespace openHistorian.Adapters
         public const int DefaultWindowSize = 30;
 
 
+        /// <summary>
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// </summary>
+        public const double DefaultAlarmThreshhold = 0.03;
+
+        /// <summary>
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// </summary>
+        public const int DefaultAlarmDelay = 5;
+
+        /// <summary>
+        /// Defines the default value for the <see cref="MaxSQLRows"/>.
+        /// </summary>
+        public const double DefaultAlarmHysterisis = 0;
+
+
+
 
         // Fields
         private int m_numberOfFrames;
         private double m_lastS0S1;
         private double m_lastS2S1;
+        private bool m_countAlarms;
 
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
@@ -186,6 +214,30 @@ namespace openHistorian.Adapters
         [Description("Defines the maximum number of daily Summary Points inserted at once.")]
         [DefaultValue(DefaultMaxSQLRows)]
         public int MaxSQLRows { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Setpoint for Alarming.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines Threshold for alarming on unbalance. If it is 0 there are no Alarms")]
+        [DefaultValue(DefaultAlarmThreshhold)]
+        public double AlarmSetPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Delay for Alarming.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the delay for alarming on unbalance in sec.")]
+        [DefaultValue(DefaultAlarmDelay)]
+        public int AlarmDelay { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Hysterisis for Alarming.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the hysterisis for alarming on unbalance")]
+        [DefaultValue(DefaultAlarmHysterisis)]
+        public double AlarmHysterisis { get; set; }
 
         /// <summary>
         /// Gets or sets template for the parent device acronym used to group associated output measurements.
@@ -412,10 +464,20 @@ namespace openHistorian.Adapters
                         // Get output measurement record, creating a new one if needed
                         MeasurementRecord measurement = GetMeasurementRecord(currentDeviceID ?? CurrentDeviceID(i), outputPointTag, outputAlternateTag, signalReference, description, SignalType.CALC, TargetHistorianAcronym);
 
+                        MeasurementRecord posSeq = new TableOperations<MeasurementRecord>(connection).QueryRecordWhere("SignalId = {0}",input1.SignalID);
+                        string unbalancetype = "X";
+
+                        if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.IPHM)
+                            unbalancetype = "I";
+                        else if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.VPHM)
+                            unbalancetype = "V";
 
                         output = measurement.SignalID;
 
                         keys = new ThreePhaseSet() { PositiveSequence = input1.SignalID, NegativeSequence = input2.SignalID, ZeroSequence = input3.SignalID, S0S1 = output, S2S1 = output };
+                        keys.activeAlarm = false;
+                        keys.countExceeding = 0;
+                        keys.SignalType = unbalancetype;
                         new TableOperations<ThreePhaseSet>(connection).AddNewRecord(keys);
 
 
@@ -438,6 +500,8 @@ namespace openHistorian.Adapters
 
             if (m_threePhaseComponent.Count == 0)
                 OnStatusMessage(MessageLevel.Error, "No case with all 3 sequences was found");
+
+            m_countAlarms = !(AlarmSetPoint == 0);
 
             m_numberOfFrames = 0;
 
@@ -501,13 +565,38 @@ namespace openHistorian.Adapters
                 Measurement s2s1Measurement = new Measurement { Metadata = MeasurementKey.LookUpBySignalID(set.S0S1).Metadata };
                 outputmeasurements.Add(Measurement.Clone(s2s1Measurement, s2s1, frame.Timestamp));
 
+                // Logic to count Alarms
+                if (m_countAlarms)
+                {
+                    if (set.countExceeding > (AlarmDelay * FramesPerSecond))
+                        set.activeAlarm = true;
+
+                    if (s0s1 > AlarmSetPoint)
+                        set.countExceeding++;
+
+                    if (s0s1 < (AlarmSetPoint - AlarmHysterisis))
+                        set.countExceeding = 0;
+                }
+
                 if (ReportSQL && (!double.IsNaN(s2s1)))
                 {
                     set.sum += s0s1;
                     set.count += 1.0;
                     if (report)
                     {
-                        m_summaryQueue.Enqueue(new DailySummary() { PositivePhaseSignalID = set.PositiveSequence, S2S1 = (set.sum / set.count), Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay() });
+                        DailySummary summary = new DailySummary()
+                        {
+                            PositivePhaseSignalID = set.PositiveSequence,
+                            S0S1 = (set.sum / set.count),
+                            Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay(),
+                            Alarm = 0,
+                            SignalType = set.SignalType
+                        };
+
+                        if (m_countAlarms && !set.activeAlarm && set.countExceeding > (AlarmDelay * FramesPerSecond))
+                            summary.Alarm = 1;
+
+                        m_summaryQueue.Enqueue(summary);
                         set.Reset();
                     }
                 }
@@ -531,10 +620,10 @@ namespace openHistorian.Adapters
                 int n = m_summaryQueue.Dequeue(data, 0, MaxSQLRows);
                 if (n > 0)
                 {
-                    string sqlCmd = "INSERT INTO Unbalance (Date, S2S1, PositivePhaseSignalID) VALUES";
+                    string sqlCmd = "INSERT INTO Unbalance (Date, S0S1, PositivePhaseSignalID, SignalType, Alarm) VALUES";
 
                     for (int i = 0; i < n; i++)
-                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].S2S1},'{data[i].PositivePhaseSignalID}'),";
+                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].S0S1},'{data[i].PositivePhaseSignalID}','{data[i].SignalType}',{data[i].Alarm}),";
 
                     sqlCmd = sqlCmd.Substring(0, sqlCmd.Length - 1);
                     using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
