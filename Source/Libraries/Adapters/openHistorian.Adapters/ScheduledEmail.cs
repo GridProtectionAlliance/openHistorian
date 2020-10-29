@@ -60,6 +60,22 @@ using GSF.Xml;
 namespace openHistorian.Adapters
 {
     /// <summary>
+    /// The data Source used to get the XML File for creating the email Content
+    /// </summary>
+    public enum EmailDataSource
+    {
+        /// <summary>
+        /// Pull Data from the Database using a SQL statement
+        /// </summary>
+        DataBase,
+        /// <summary>
+        /// Pull Data from an existing XML File
+        /// </summary>
+        File
+
+    }
+
+    /// <summary>
     /// Defines an Adapter that calculates Unbalance Factors.
     /// </summary>
     [Description("Scheduled Email: Sends an HTML/XML email based on a schedule.")]
@@ -67,21 +83,7 @@ namespace openHistorian.Adapters
     {
         #region [ Members ]
 
-        /// <summary>
-        /// The data Source used to get the XML File for creating the email Content
-        /// </summary>
-        public enum EmailDataSource
-        {
-            /// <summary>
-            /// Pull Data from the Database using a SQL statement
-            /// </summary>
-            DataBase = 0,
-            /// <summary>
-            /// Pull Data from an existing XML File
-            /// </summary>
-            File = 1
-
-        }
+        
         // Constants      
 
         private const string ReportSettingsCategory = "snrSQLReportingDB";
@@ -257,23 +259,10 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <exception cref="ArgumentNullException">Value being assigned is a null or empty string.</exception>
         [ConnectionStringParameter,
-        Description("The xml datafile used to generate the email if a File is selected as DataSource."),
+        Description("The xml datafile used to generate the email if a File is selected as DataSource or the .txt file with the SQL Query."),
         DefaultValue("")]
         [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.FileDialogEditor", "type=open; checkFileExists=true; defaultExt=.html; filter=HTML files|*.html|AllFiles|*.*")]
         public string DataFile
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the sql command used generate the email if <see cref="EmailDatasource"/> is set to <see cref="EmailDataSource.DataBase"/>.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Value being assigned is a null or empty string.</exception>
-        [ConnectionStringParameter,
-        Description("The SQL command used to get the data when generating the email if DataBase is selected as Datasource."),
-        DefaultValue("")]
-       public string SQLQuery
         {
             get;
             set;
@@ -358,6 +347,7 @@ namespace openHistorian.Adapters
                 m_timer.Interval = ComputeSeconds()*1000;
                 m_timer.AutoReset = true;
                 m_timer.Elapsed += m_sendEmail;
+                m_timer.AutoReset = true;
             }
 
             m_timer.Start();
@@ -463,33 +453,44 @@ namespace openHistorian.Adapters
         private void m_sendEmail(object sender, ElapsedEventArgs e)
         {
             // Prepare Email to be sent.
-
-            //Read XLS Template File
-            string template = "";
-            using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
-                template = reader.ReadToEnd();
-
-            //Read Data
-            string data = "";
-            if (EmailDatasource == EmailDataSource.File)
+            try
             {
-                using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
-                    data = reader.ReadToEnd();
+                //Read XLS Template File
+                string template = "";
+                using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
+                    template = reader.ReadToEnd();
+
+                //Read Data
+                string data = "";
+                if (EmailDatasource == EmailDataSource.File)
+                {
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                        data = reader.ReadToEnd();
+                }
+                if (EmailDatasource == EmailDataSource.DataBase)
+                {
+                    string sqlquery = "";
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                        sqlquery = reader.ReadToEnd();
+
+                    using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                        data = connection.ExecuteScalar<string>(sqlquery, DateTime.Today);
+                }
+
+
+                XDocument email = ApplyTemplate(template, data);
+
+                OnStatusMessage(MessageLevel.Info, "Sending Email");
+
+                m_mailClient.Body = GetBody(email);
+                m_mailClient.Send();
             }
-            if (EmailDatasource == EmailDataSource.DataBase)
+            catch (Exception ex)
             {
-                using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
-                    data = connection.ExecuteScalar<string>(SQLQuery, DateTime.Today);
+                OnStatusMessage(MessageLevel.Error, $"Failed to Send Email {ex.Message}");
             }
 
-
-            XDocument email = ApplyTemplate(template, data);
-
-            OnStatusMessage(MessageLevel.Info, "Sending Email");
-
-            m_mailClient.Body = GetBody(email);
-            m_mailClient.Send();
-
+            m_timer.Interval = ComputeSeconds() * 1000;
         }
 
         private string GetBody(XDocument htmlDocument)
