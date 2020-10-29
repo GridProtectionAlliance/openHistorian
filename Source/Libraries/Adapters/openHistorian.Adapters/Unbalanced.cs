@@ -171,6 +171,7 @@ namespace openHistorian.Adapters
         private double m_lastS0S1;
         private double m_lastS2S1;
         private bool m_countAlarms;
+        private int m_sqlFailures;
 
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
@@ -343,6 +344,8 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue.Count);
                 status.AppendLine();
+                status.AppendFormat("Sequential SQL exceptions: {0}", m_sqlFailures);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();
@@ -503,10 +506,20 @@ namespace openHistorian.Adapters
             m_countAlarms = !(AlarmSetPoint == 0);
 
             m_numberOfFrames = 0;
+            m_sqlFailures = 0;
 
             m_cancelationTokenSql = new GSF.Threading.CancellationToken();
 
-            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}"); throw new Exception($"Issue Occured on SQL Write {ex.Message}"); });
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => {
+                m_sqlFailures++;
+                OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");
+
+                if (m_sqlFailures < 10)
+                    m_sqlWritter.RunOnceAsync();
+                else
+                    ReportSQL = false;
+            });
+
             m_summaryQueue = new IsolatedQueue<DailySummary>();
 
             if (ReportSQL)
@@ -629,6 +642,7 @@ namespace openHistorian.Adapters
                         connection.ExecuteNonQuery(sqlCmd);
                 }
 
+                m_sqlFailures = 0;
             }
 
         }
