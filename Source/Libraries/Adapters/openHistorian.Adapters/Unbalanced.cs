@@ -70,6 +70,7 @@ namespace openHistorian.Adapters
             public double S0S1 { get; set; }
             public Guid PositivePhaseSignalID { get; set; }
             public int Alarm { get; set; }
+            public int PercentAlarm { get; set; }
             public string SignalType { get; set; }
 
         }
@@ -92,6 +93,7 @@ namespace openHistorian.Adapters
             public void Reset() => count = sum = 0;
 
             public bool activeAlarm;
+            public bool acknowlegedAlarm;
             public int countExceeding;
 
 
@@ -365,6 +367,10 @@ namespace openHistorian.Adapters
 
             base.Initialize();
 
+            //Ensure AggregationWindow and Alarming Delay do not Conflict
+            if (AggregationWindow > (AlarmDelay * FramesPerSecond))
+                throw new ArgumentException("Aggregation Window (in frames) needs to be smaller than AlarmDelay (in seconds)");
+
 
             m_threePhaseComponent = new ConcurrentBag<ThreePhaseSet>();
            
@@ -477,8 +483,6 @@ namespace openHistorian.Adapters
                         output = measurement.SignalID;
 
                         keys = new ThreePhaseSet() { PositiveSequence = input1.SignalID, NegativeSequence = input2.SignalID, ZeroSequence = input3.SignalID, S0S1 = output, S2S1 = output };
-                        keys.activeAlarm = false;
-                        keys.countExceeding = 0;
                         keys.SignalType = unbalancetype;
                         new TableOperations<ThreePhaseSet>(connection).AddNewRecord(keys);
 
@@ -490,6 +494,9 @@ namespace openHistorian.Adapters
                     }
 
                     keys.Reset();
+                    keys.activeAlarm = false;
+                    keys.countExceeding = 0;
+                    keys.acknowlegedAlarm = false;
                     m_threePhaseComponent.Add(keys);
                 }
                 // Need to add Measurements to inputMeasuremetnKeys
@@ -580,20 +587,27 @@ namespace openHistorian.Adapters
                 // Logic to count Alarms
                 if (m_countAlarms)
                 {
-                    if (set.countExceeding > (AlarmDelay * FramesPerSecond))
-                        set.activeAlarm = true;
 
                     if (s0s1 > AlarmSetPoint)
                         set.countExceeding++;
 
+                    if (set.countExceeding > (AlarmDelay * FramesPerSecond))
+                        set.activeAlarm = true;
+
+
                     if (s0s1 < (AlarmSetPoint - AlarmHysterisis))
+                    {
                         set.countExceeding = 0;
+                        set.acknowlegedAlarm = false;
+                        set.activeAlarm = false;
+                     }
                 }
 
                 if (ReportSQL && (!double.IsNaN(s0s1)))
                 {
                     set.sum += s0s1;
                     set.count += 1.0;
+
                     if (report)
                     {
                         DailySummary summary = new DailySummary()
@@ -602,11 +616,18 @@ namespace openHistorian.Adapters
                             S0S1 = (set.sum / set.count),
                             Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay(),
                             Alarm = 0,
+                            PercentAlarm = 0,
                             SignalType = set.SignalType
                         };
 
-                        if (m_countAlarms && !set.activeAlarm && set.countExceeding > (AlarmDelay * FramesPerSecond))
+                        if (m_countAlarms && set.activeAlarm && !set.acknowlegedAlarm)
+                        {
                             summary.Alarm = 1;
+                            set.acknowlegedAlarm = true;
+                        }
+
+                        if (set.activeAlarm)
+                            summary.PercentAlarm = 1;
 
                         m_summaryQueue.Enqueue(summary);
                         set.Reset();
@@ -632,10 +653,10 @@ namespace openHistorian.Adapters
                 int n = m_summaryQueue.Dequeue(data, 0, MaxSQLRows);
                 if (n > 0)
                 {
-                    string sqlCmd = "INSERT INTO Unbalance (Date, S0S1, PositivePhaseSignalID, SignalType, Alarm) VALUES";
+                    string sqlCmd = "INSERT INTO Unbalance (Date, S0S1, PositivePhaseSignalID, SignalType, Alarm, ActiveAlarm) VALUES";
 
                     for (int i = 0; i < n; i++)
-                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].S0S1},'{data[i].PositivePhaseSignalID}','{data[i].SignalType}',{data[i].Alarm}),";
+                        sqlCmd = sqlCmd + $"\n ('{data[i].Date}',{data[i].S0S1},'{data[i].PositivePhaseSignalID}','{data[i].SignalType}',{data[i].Alarm},{data[i].PercentAlarm}),";
 
                     sqlCmd = sqlCmd.Substring(0, sqlCmd.Length - 1);
                     using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
