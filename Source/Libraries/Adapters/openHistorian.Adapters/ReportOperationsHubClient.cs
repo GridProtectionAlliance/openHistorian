@@ -26,15 +26,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Transactions;
-using GSF;
-using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
-using GSF.IO;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using openHistorian.Model;
@@ -97,8 +92,6 @@ namespace openHistorian.Adapters
         private readonly CancellationTokenSource m_cancellation;
         
         // These are for the Progressbar
-        private DateTime m_endTime;
-        private double m_totalTime;
         private double m_percentComplete;
 
         #endregion
@@ -166,9 +159,7 @@ namespace openHistorian.Adapters
         /// <param name="dataContext">DataContext from which the available reportingParameters are pulled <see cref="DataContext"/>.</param>
         public void UpdateReportSource(DateTime startDate, DateTime endDate, ReportCriteria reportCriteria, ReportType reportType, int numberOfRecords, DataContext dataContext)
         {
-            m_endTime = endDate;
             m_percentComplete = 0;
-            m_totalTime = (endDate - startDate).TotalSeconds;
 
             if (m_writing)
                 m_cancellation.Cancel();
