@@ -63,22 +63,22 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Mean.
         /// </summary>
-        Mean,
+        Mean=0,
 
         /// <summary>
         /// Maximum.
         /// </summary>
-        Maximum,
+        Maximum=1,
 
         /// <summary>
         /// Time in Alarm.
         /// </summary>
-        TimeInAlarm,
+        TimeInAlarm=2,
 
         /// <summary>
         /// Standard Deviation.
         /// </summary>
-        StandardDev,
+        StandardDev=3,
 
     }
 
@@ -262,9 +262,9 @@ namespace openHistorian.Adapters
                                     (SUM(SUM)/SUM(Count)) AS Mean,
                                     MAX(Maximum) AS Max,
                                     Min(Minimum) AS Min,
-                                    SQRT((1/SUM(COUNT))*(SUM(SquaredSum)-2*SUM(Sum)*Sum(Sum)/SUM(Count)+SUM(Sum)*Sum(Sum)/SUM(Count))) AS StandardDeviation,
+                                    SQRT((1/CAST(SUM(COUNT) AS Float))*(SUM(SquaredSum)-2*SUM(Sum)*Sum(Sum)/CAST(SUM(Count) AS Float)+SUM(Sum)*Sum(Sum)/SUM(Count))) AS StandardDeviation,
                                     SUM(AlarmCount) AS NumberOfAlarms, 
-                                    (SUM(AlarmActiveCount)/SUM(Count)) as PercentAlarms
+                                    (CAST(SUM(AlarmActiveCount)AS float)/CAST(SUM(Count) AS Float)) as PercentAlarms
                                 FROM {(type == ReportType.SNR? "SNRSummary" : "UnbalanceSummary")}
                                 WHERE Date >= '{start.ToString("yyyy-MM-dd")}' AND Date <= '{end.ToString("yyyy-MM-dd")}'{(type == ReportType.SNR? "" : typerestriction)} 
                                 GROUP BY {idCollumn}

@@ -26,12 +26,14 @@
 @using System.Globalization
 @using System.Threading
 @using System.Text
+@using System.Net.Http
 @using GSF
 @using GSF.Data
 @using GSF.Identity
 @using GSF.IO
 @using GSF.Security
 @using GSF.Security.Cryptography
+@using GSF.Web
 @using GSF.Web.Model
 @using GSF.Web.Shared
 @using openHistorian.Model
@@ -147,6 +149,10 @@
         PageControlScripts = ViewBag.PageControlScripts;
     }
 
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    ViewBag.reportType = int.Parse(parameters["reportType"] ?? "0");
     ViewBag.HideAddNewButton = true;
 
     ViewBag.BodyRows = BodyRows().ToString();
@@ -158,20 +164,25 @@
         new[] { "StandardDeviation" , "Standard &nbsp;Dev.", "text-center" },
         new[] { "Max" , "Maximum", "text-center" },
         new[] { "Min" , "Minimum", "text-center" },
+        new[] { "AlarmCount", "Alarms Raised", "text-center" },
+        new[] { "PercentInAlarm", "Percent in Alarm", "text-center" },
+
         };
 
     // Prepend view model extension scripts to occur before model initialization
     PageControlScripts.Insert(0, ExtendedViewModel(dataContext).ToString().TrimStart()); ;
 
 }
-    @helper BodyRows()
-    {
-    <td width="45%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag"></button></div></td>
-    <td width="34%" class="text-left valign-middle"><div data-bind="attr: { title: DeviceName }"><button type="button" class="btn btn-link btn-sm" data-bind="text: DeviceName"></button></div></td>
+@helper BodyRows()
+{
+    <td width="35%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag"></button></div></td>
+    <td width="25%" class="text-left valign-middle"><div data-bind="attr: { title: DeviceName }"><button type="button" class="btn btn-link btn-sm" data-bind="text: DeviceName"></button></div></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Mean.toFixed(2)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: StandardDeviation.toFixed(3)"></span></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="text: Max.toFixed(2)"></span></td>
-    <td width="5%" class="text-left valign-middle"><span data-bind="text: Min.toFixed(2)"></span></td>  
+    <td width="5%" class="text-left valign-middle"><span data-bind="text: Min.toFixed(2)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: AlarmCount.toFixed(0)"></span></td>
+    <td width="10%" class="text-left valign-middle"><span data-bind="text: PercentInAlarm.toFixed(2)"> %</span></td>
 }
 
 @section Scripts {
@@ -194,7 +205,7 @@
         viewModel.getProgress(function () {
             return dataHub.SetReportingSourceProgress();
         });
-        
+
         function updateData() {
             var reportType = "";
 
@@ -227,8 +238,8 @@
                     });
                 }, 100);
             });
-            
-            
+
+
 
         }
 
@@ -272,7 +283,7 @@
             hour = hour % 24.0;
             minute = minute % 60;
 
-            return (day.toFixed(0) + "d " + hour.toFixed(0) + "h " + minute.toFixed(0) + "m " + second.toFixed(0) + "s"); 
+            return (day.toFixed(0) + "d " + hour.toFixed(0) + "h " + minute.toFixed(0) + "m " + second.toFixed(0) + "s");
         }
 
         function ExtendedViewModel() {
@@ -366,7 +377,7 @@
 
             self.worstBy = ko.observable(1);
             self.ReportDepth = ko.observable(25);
-            self.selectedUnbalance = ko.observable(0);
+            self.selectedUnbalance = ko.observable(@Raw(ViewBag.reportType.ToString()));
 
             self.updateReport = function (result) {
                 return result
@@ -381,50 +392,50 @@
                 if (isNumber(progress)) {
                     progressBar.text(progress.toFixed(0) + "%");
                     progressBar.css("width", progress.toString() + "%");
-                } 
+                }
 
-                    if (progress == 100.0) {
-                        setTimeout(function () {
-                            if (viewModel.worstBy() == 0) {
-                                viewModel.updateSortOrder("Mean", false);
-                            }
-                            else if (viewModel.worstBy() == 1) {
-                                viewModel.updateSortOrder("Max", false);
-                            }
-                            if (viewModel.worstBy() == 2) {
-                                viewModel.updateSortOrder("TimeinAlarm", false);
-                            }
+                if (progress == 100.0) {
+                    setTimeout(function () {
+                        if (viewModel.worstBy() == 0) {
+                            viewModel.updateSortOrder("Mean", false);
+                        }
+                        else if (viewModel.worstBy() == 1) {
+                            viewModel.updateSortOrder("Max", false);
+                        }
+                        if (viewModel.worstBy() == 2) {
+                            viewModel.updateSortOrder("TimeinAlarm", false);
+                        }
 
-                            progressBar.hide();
-                            progressLabel.hide();
-                            reportTbl.show();
-                            progressIcon.hide();
-                        }, 500);
-                    }
-                    else {
-                        setTimeout(function () {
-                            dataHub.setReportingSourceProgress().done(function (result) {
-                                viewModel.updateProgress(result);
-                            });
-                        }, 250);
+                        progressBar.hide();
+                        progressLabel.hide();
+                        reportTbl.show();
+                        progressIcon.hide();
+                    }, 500);
+                }
+                else {
+                    setTimeout(function () {
+                        dataHub.setReportingSourceProgress().done(function (result) {
+                            viewModel.updateProgress(result);
+                        });
+                    }, 250);
 
-                    }
+                }
 
-               
+
 
             }
 
             self.getProgress = function (result) { return result; }
 
-             
-            }
+
+        }
         function extendViewModel(event, data) {
             const newViewModel = new ExtendedViewModel();
             data.viewModel.cloneConfiguration(newViewModel);
             data.viewModel = newViewModel;
 
             // Define instance name selector before binding
-            
+
             ko.bindingHandlers.dateTimePicker = {
                 init: function (element, valueAccessor, allBindingsAccessor) {
                     // Initialize datepicker with some basic options
@@ -461,26 +472,26 @@
             }
 
 
-        ko.validation.init({
-            registerExtenders: true,
-            messagesOnModified: true,
-            insertMessages: true,
-            parseInputAttributes: true,
-            allowHtmlMessages: true,
-            messageTemplate: null,
-            decorateElement: true,
-            errorElementClass: "has-error",
-            errorMessageClass: "help-block",
-            grouping: { deep: true, observable: true, live: true }
+            ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                allowHtmlMessages: true,
+                messageTemplate: null,
+                decorateElement: true,
+                errorElementClass: "has-error",
+                errorMessageClass: "help-block",
+                grouping: { deep: true, observable: true, live: true }
             }, true);
 
-            
+
         }
 
         $(window).on("beforeApplyBindings", extendViewModel);
 
         $(window).on("hubConnected", function () {
-            setTimeout(keepAlive, 1000);            
+            setTimeout(keepAlive, 1000);
         });
 
         function keepAlive() {
@@ -497,10 +508,10 @@
 }
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-           
-            <div class="well ui-tabs-panel ui-corner-bottom" ui-widget-content="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
-                @Raw(string.Format(Include("SelectReportRange.cshtml").ToString(), "report").Trim())
-            </div>
+
+        <div class="well ui-tabs-panel ui-corner-bottom" ui-widget-content="padding: 10px 20px 10px 20px" id="trendTimeRangeSelection">
+            @Raw(string.Format(Include("SelectReportRange.cshtml").ToString(), "report").Trim())
+        </div>
     </div>
 </div>
 <div class="row">
@@ -524,18 +535,18 @@
         </div>
     </div>
 </div>
-    <script>
-        // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
-        //     Visit JavaScript Kit (http://javascriptkit.com)
-        //     for free JavaScript tutorials and scripts
-        //     This notice must stay intact for use
-        function detectExistence(obj) {
-            return (typeof obj != "undefined");
-        }
+<script>
+    // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
+    //     Visit JavaScript Kit (http://javascriptkit.com)
+    //     for free JavaScript tutorials and scripts
+    //     This notice must stay intact for use
+    function detectExistence(obj) {
+        return (typeof obj != "undefined");
+    }
 
 
 
 
 
 
-    </script>
+</script>

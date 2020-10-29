@@ -41,18 +41,14 @@
                                     <option value="0">All</option>
                                 </select>
                             </div><em class="validationMessage small" style="display: none;"></em>
-                            <div class="input-group">
-                                <select class="form-control" id="trendResolution" data-bind="value: selectedUnbalance" style="width: 225px">
-                                    <option value="0">Signal to Noise Ratio</option>
-                                    <option value="1">Voltage Unbalance</option>
-                                    <option value="2">Currrent Unbalance</option>
-                                </select>
-                            </div>
+                            
                             <label for="Criteria"> by </label>
                             <div class="input-group">
                                 <select class="form-control" id="Criteria" data-bind="value: worstBy" style="width: 225px">
                                     <option value="1">Maximum</option>
                                     <option value="0">Mean</option>
+                                    <option value="2">Standard Deviation</option>
+                                    <option value="3">Percent in Alarm</option>
                                 </select>
                             </div>
                             <span>&nbsp;&nbsp;</span>
