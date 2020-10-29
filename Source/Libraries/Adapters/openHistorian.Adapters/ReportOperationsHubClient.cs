@@ -70,6 +70,16 @@ namespace openHistorian.Adapters
         /// </summary>
         Maximum,
 
+        /// <summary>
+        /// Time in Alarm.
+        /// </summary>
+        TimeInAlarm,
+
+        /// <summary>
+        /// Standard Deviation.
+        /// </summary>
+        StandardDev,
+
     }
 
     /// <summary>
@@ -225,8 +235,9 @@ namespace openHistorian.Adapters
             // Also using SignalID for everything this will be adjusted once I figured out how to combine the 2 SQL DB
             string idCollumn = (type == ReportType.SNR? "SignalID" : "PositivePhaseSignalID");
             string sortCollumn = "Max";
-            
-           
+            string typerestriction = $" AND SignalType = '{(type == ReportType.Unbalance_I? "I" : "V")}'";
+
+
             switch (criteria)
             {
                 case (ReportCriteria.Maximum):
@@ -234,6 +245,12 @@ namespace openHistorian.Adapters
                     break;
                 case (ReportCriteria.Mean):
                     sortCollumn = "Mean";
+                    break;
+                case (ReportCriteria.StandardDev):
+                    sortCollumn = "StandardDeviation";
+                    break;
+                case (ReportCriteria.TimeInAlarm):
+                    sortCollumn = "PercentAlarms";
                     break;
             }
 
@@ -246,11 +263,10 @@ namespace openHistorian.Adapters
                                     MAX(Maximum) AS Max,
                                     Min(Minimum) AS Min,
                                     SQRT((1/SUM(COUNT))*(SUM(SquaredSum)-2*SUM(Sum)*Sum(Sum)/SUM(Count)+SUM(Sum)*Sum(Sum)/SUM(Count))) AS StandardDeviation,
-                                    MAX(Maximum) AS NumberOfAlarms, 
-                                    MAX(Maximum) as PercentAlarms,
-                                    MAX(Maximum) as TimeInAlarm
+                                    SUM(AlarmCount) AS NumberOfAlarms, 
+                                    (SUM(AlarmActiveCount)/SUM(Count)) as PercentAlarms
                                 FROM {(type == ReportType.SNR? "SNRSummary" : "UnbalanceSummary")}
-                                WHERE Date >= '{start.ToString("yyyy-MM-dd")}' AND Date <= '{end.ToString("yyyy-MM-dd")}' 
+                                WHERE Date >= '{start.ToString("yyyy-MM-dd")}' AND Date <= '{end.ToString("yyyy-MM-dd")}'{(type == ReportType.SNR? "" : typerestriction)} 
                                 GROUP BY {idCollumn}
                                 ORDER BY {sortCollumn}";
 
@@ -278,15 +294,6 @@ namespace openHistorian.Adapters
 
                     Phasor phasor = phasorTbl.QueryRecordWhere("ID = {0}", sourceMeasurement.PhasorID);
 
-                    bool isI = sourceMeasurement.SignalType == "IPHM";
-                    bool isV = sourceMeasurement.SignalType == "VPHM";
-
-                    if (type == ReportType.Unbalance_I && !isI)
-                        continue;
-                    if (type == ReportType.Unbalance_V && !isV)
-                        continue;
-                    
-                    
                     result.Add(new ReportMeasurements()
                     {
                         SignalID = signalID,
@@ -298,6 +305,8 @@ namespace openHistorian.Adapters
                         Max = row.Field<double>("Max"),
                         Min = row.Field<double>("Min"),
                         StandardDeviation = row.Field<double>("StandardDeviation"),
+                        AlarmCount = row.Field<int>("NumberOfAlarms"),
+                        PercentInAlarm = row.Field<double>("PercentAlarms")*100.0D,
                     });
                 }
             }

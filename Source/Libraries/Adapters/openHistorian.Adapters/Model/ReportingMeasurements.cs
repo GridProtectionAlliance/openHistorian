@@ -111,5 +111,17 @@ namespace openHistorian.Model
             set;
         }
 
+        public int AlarmCount
+        {
+            get;
+            set;
+        }
+
+        public double PercentInAlarm
+        {
+            get;
+            set;
+        }
+
     }
 }
