@@ -533,7 +533,10 @@ namespace openHistorian.Adapters
 
         private XDocument ApplyTemplate(string xlsTemplate, string xmlData)
         {
-            string htmlText = xmlData.ApplyXSLTransform(xlsTemplate);
+            string data = xmlData.Replace("&gt;", ">");
+            data = data.Replace("&lt;", "<");
+
+            string htmlText = data.ApplyXSLTransform(xlsTemplate);
             XDocument htmlDocument = XDocument.Parse(htmlText, LoadOptions.PreserveWhitespace);
             htmlDocument.TransformAll("format", element => element.Format());
             return htmlDocument;
