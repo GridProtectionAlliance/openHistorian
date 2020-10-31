@@ -54,6 +54,7 @@ using GSF.Net.Smtp;
 using System.Timers;
 using System.Xml.Linq;
 using GSF.Xml;
+using System.Threading;
 
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NotAccessedField.Local
@@ -99,7 +100,7 @@ namespace openHistorian.Adapters
 
         // Fields
         private readonly Mail m_mailClient;
-        private Timer m_timer;
+        private System.Timers.Timer m_timer;
         private bool m_disposed;
 
         #endregion
@@ -341,13 +342,12 @@ namespace openHistorian.Adapters
             ParseConnectionString();
             // Start Timer for now we just fix it at 30 for testing
             // We do not reset the timer to avoid email flooding at this stage
-            m_timer = new Timer();
+            m_timer = new System.Timers.Timer();
             if ((object)m_timer != null)
             {
                 m_timer.Interval = ComputeSeconds()*1000;
                 m_timer.AutoReset = true;
-                m_timer.Elapsed += m_sendEmail;
-                m_timer.AutoReset = true;
+                m_timer.Elapsed += m_timerElapsed;
             }
 
             m_timer.Start();
@@ -395,7 +395,7 @@ namespace openHistorian.Adapters
                     {
                         if (m_timer != null)
                         {
-                            m_timer.Elapsed -= m_sendEmail;
+                            m_timer.Elapsed -= m_timerElapsed;
                             m_timer.Dispose();
                             m_timer = null;
                         }
@@ -450,48 +450,77 @@ namespace openHistorian.Adapters
             return $"Email is scheduled for {Hour}:{Minute}".CenterText(maxLength);
         }
 
-        private void m_sendEmail(object sender, ElapsedEventArgs e)
+        /// <summary>
+        /// Sends the  <see cref="ScheduledEmail"/>.
+        /// </summary>
+        [AdapterCommand("Sends the Email imidiately.", "Administrator", "Editor")]
+        public void Send()
         {
-            // Prepare Email to be sent.
-            try
-            {
-                //Read XLS Template File
-                string template = "";
-                using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
-                    template = reader.ReadToEnd();
-
-                //Read Data
-                string data = "";
-                if (EmailDatasource == EmailDataSource.File)
-                {
-                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
-                        data = reader.ReadToEnd();
-                }
-                if (EmailDatasource == EmailDataSource.DataBase)
-                {
-                    string sqlquery = "";
-                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
-                        sqlquery = reader.ReadToEnd();
-
-                    using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
-                        data = connection.ExecuteScalar<string>(sqlquery, DateTime.Today);
-                }
-
-
-                XDocument email = ApplyTemplate(template, data);
-
-                OnStatusMessage(MessageLevel.Info, "Sending Email");
-
-                m_mailClient.Body = GetBody(email);
-                m_mailClient.Send();
-            }
-            catch (Exception ex)
-            {
-                OnStatusMessage(MessageLevel.Error, $"Failed to Send Email {ex.Message}");
-            }
-
-            m_timer.Interval = ComputeSeconds() * 1000;
+            m_sendEmail();
         }
+
+
+        private void m_timerElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (Monitor.TryEnter(m_timer))
+            {
+                try
+                {
+                    m_sendEmail();
+                }
+                finally
+                {
+                    m_timer.Interval = ComputeSeconds() * 1000;
+                    Monitor.Exit(m_timer);
+                }
+            
+            }
+        }
+
+        private void m_sendEmail()
+        {
+          
+                // Prepare Email to be sent.
+                try
+                {
+                    //Read XLS Template File
+                    string template = "";
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
+                        template = reader.ReadToEnd();
+
+                    //Read Data
+                    string data = "";
+                    if (EmailDatasource == EmailDataSource.File)
+                    {
+                        using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                            data = reader.ReadToEnd();
+                    }
+                    if (EmailDatasource == EmailDataSource.DataBase)
+                    {
+                        string sqlquery = "";
+                        using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                            sqlquery = reader.ReadToEnd();
+
+                        sqlquery = string.Format(sqlquery, DateTime.Today.RoundDownToNearestDay());
+                        using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                            data = connection.ExecuteScalar<string>(sqlquery);
+                    }
+
+
+                    XDocument email = ApplyTemplate(template, data);
+
+                    OnStatusMessage(MessageLevel.Info, "Sending Email");
+
+                    m_mailClient.Body = GetBody(email);
+                    m_mailClient.Send();
+                }
+                catch (Exception ex)
+                {
+                    OnStatusMessage(MessageLevel.Error, $"Failed to Send Email {ex.Message}");
+                }
+            
+        }
+
 
         private string GetBody(XDocument htmlDocument)
         {
