@@ -235,9 +235,9 @@ namespace openHistorian.Adapters
         private LocationData m_locationData;
         private string m_defaultApiPath;
 
-#endregion
+        #endregion
 
-#region [ Properties ]
+        #region [ Properties ]
 
         /// <summary>
         /// Gets the default API path string for this controller.
@@ -308,9 +308,9 @@ namespace openHistorian.Adapters
 
         private LocationData LocationData => m_locationData ?? (m_locationData = new LocationData { DataSource = DataSource });
 
-#endregion
+        #endregion
 
-#region [ Methods ]
+        #region [ Methods ]
 
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
@@ -541,9 +541,9 @@ namespace openHistorian.Adapters
             return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
-#endregion
+        #endregion
 
-#region [ Static ]
+        #region [ Static ]
 
         private static readonly Regex s_intervalExpression = new Regex(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
 
@@ -595,6 +595,6 @@ namespace openHistorian.Adapters
             return null;
         }
 
-#endregion
+        #endregion
     }
 }
