@@ -43,6 +43,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using CancellationToken = System.Threading.CancellationToken;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 namespace openHistorian.Adapters
 {
     /// <summary>
@@ -53,6 +54,38 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Nested Types
+        private class Peak
+        {
+            public float Min;
+            public float Max;
+
+            public ulong MinTimestamp;
+            public ulong MaxTimestamp;
+
+            public void Set(float value, ulong timestamp)
+            {
+                if (value < Min)
+                {
+                    Min = value;
+                    MinTimestamp = timestamp;
+                }
+
+                if (value > Max)
+                {
+                    Max = value;
+                    MaxTimestamp = timestamp;
+                }
+            }
+
+            public void Reset()
+            {
+                Min = float.MaxValue;
+                Max = float.MinValue;
+                MinTimestamp = MaxTimestamp = 0UL;
+            }
+
+            public static readonly Peak Default = new Peak();
+        }
 
         /// <summary>
         /// Represents a historian data source for the Grafana adapter.
@@ -67,10 +100,10 @@ namespace openHistorian.Adapters
             /// <param name="startTime">Start-time for query.</param>
             /// <param name="stopTime">Stop-time for query.</param>
             /// <param name="interval">Interval from Grafana request.</param>
-            /// <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            /// <param name="includePeaks">Flag that determines if decimated data should include min/max interval peaks over provided time range.</param>
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool decimate, Dictionary<ulong, string> targetMap)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool includePeaks, Dictionary<ulong, string> targetMap)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -83,103 +116,114 @@ namespace openHistorian.Adapters
                     if (database == null)
                         yield break;
 
-                    TimeSpan resolutionInterval;
-
-                    if (decimate)
+                    if (!TryParseInterval(interval, out TimeSpan resolutionInterval))
                     {
-                        if (!TryParseInterval(interval, out resolutionInterval))
-                        {
-                            Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
-                            resolutionInterval = resolution.GetInterval();
-                        }
+                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
+                        resolutionInterval = resolution.GetInterval();
+                    }
+
+                    BaselineTimeInterval timeInterval = BaselineTimeInterval.Second;
+
+                    if (resolutionInterval.Ticks < Ticks.PerMinute)
+                        timeInterval = BaselineTimeInterval.Second;
+                    else if (resolutionInterval.Ticks < Ticks.PerHour)
+                        timeInterval = BaselineTimeInterval.Minute;
+                    else if (resolutionInterval.Ticks == Ticks.PerHour)
+                        timeInterval = BaselineTimeInterval.Hour;
+
+                    startTime = startTime.BaselinedTimestamp(timeInterval);
+                    stopTime = stopTime.BaselinedTimestamp(timeInterval);
+
+                    if (startTime == stopTime)
+                        stopTime = stopTime.AddSeconds(1.0D);
+
+                    SeekFilterBase<HistorianKey> timeFilter;
+
+                    // Set timestamp filter resolution
+                    if (includePeaks || resolutionInterval == TimeSpan.Zero)
+                    {
+                        // Full resolution query
+                        timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
                     }
                     else
                     {
-                        resolutionInterval = TimeSpan.Zero;
+                        // Interval query
+                        timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                     }
-
-                    bool subFullResolution = false;
-
-                    // Set data scan resolution
-                    if (decimate && resolutionInterval != TimeSpan.Zero)
-                    {
-                        subFullResolution = true;
-
-                        BaselineTimeInterval timeInterval = BaselineTimeInterval.Second;
-
-                        if (resolutionInterval.Ticks < Ticks.PerMinute)
-                            timeInterval = BaselineTimeInterval.Second;
-                        else if (resolutionInterval.Ticks < Ticks.PerHour)
-                            timeInterval = BaselineTimeInterval.Minute;
-                        else if (resolutionInterval.Ticks == Ticks.PerHour)
-                            timeInterval = BaselineTimeInterval.Hour;
-
-                        startTime = startTime.BaselinedTimestamp(timeInterval);
-                        stopTime = stopTime.BaselinedTimestamp(timeInterval);
-                    }
-
-                    SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
                     // Setup point ID selections
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(targetMap.Keys);
                     Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(targetMap.Count);
-                    Dictionary<ulong, Tuple<float, float>> extremes = new Dictionary<ulong, Tuple<float, float>>(targetMap.Count);
-                    ulong pointID, timestamp, resolutionSpan = (ulong)resolutionInterval.Ticks;
-                    float pointValue, min = 0.0F, max = 0.0F;
+                    Dictionary<ulong, Peak> peaks = new Dictionary<ulong, Peak>(targetMap.Count);
+                    ulong resolutionSpan = (ulong)resolutionInterval.Ticks;
+
+                    if (includePeaks)
+                        resolutionSpan *= 2UL;
 
                     // Start stream reader for the provided time window and selected points
                     using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
                     {
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
+                        Peak peak = Peak.Default;
 
                         while (stream.Read(key, value))
                         {
-                            pointID = key.PointID;
-                            timestamp = key.Timestamp;
-                            pointValue = value.AsSingle;
+                            ulong pointID = key.PointID;
+                            ulong timestamp = key.Timestamp;
+                            float pointValue = value.AsSingle;
 
-                            if (subFullResolution)
+                            if (includePeaks)
                             {
-                                Tuple<float, float> stats = extremes.GetOrAdd(pointID, _ => new Tuple<float, float>(float.MaxValue, float.MinValue));
-
-                                min = stats.Item1;
-                                max = stats.Item2;
-
-                                if (pointValue < min)
-                                    min = pointValue;
-
-                                if (pointValue > max)
-                                    max = pointValue;
-
-                                if (min != float.MaxValue && max != float.MinValue)
-                                    pointValue = Math.Abs(max) > Math.Abs(min) ? max : min;
-                                else if (min != float.MaxValue)
-                                    pointValue = min;
-                                else if (max != float.MinValue)
-                                    pointValue = max;
+                                peak = peaks.GetOrAdd(pointID, _ => new Peak());
+                                peak.Set(pointValue, timestamp);
                             }
 
-                            if (timestamp - lastTimes.GetOrAdd(pointID, 0UL) > resolutionSpan)
+                            if (resolutionSpan > 0UL && timestamp - lastTimes.GetOrAdd(pointID, 0UL) < resolutionSpan)
+                                continue;
+
+                            // New value is ready for publication
+                            string target = targetMap[pointID];
+                            MeasurementStateFlags flags = (MeasurementStateFlags)value.Value3;
+
+                            if (includePeaks)
+                            {
+                                if (peak.MinTimestamp > 0UL)
+                                {
+                                    yield return new DataSourceValue
+                                    {
+                                        Target = target,
+                                        Value = peak.Min,
+                                        Time = (peak.MinTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                        Flags = flags
+                                    };
+                                }
+
+                                if (peak.MaxTimestamp != peak.MinTimestamp)
+                                {
+                                    yield return new DataSourceValue
+                                    {
+                                        Target = target,
+                                        Value = peak.Max,
+                                        Time = (peak.MaxTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                        Flags = flags
+                                    };
+                                }
+
+                                peak.Reset();
+                            }
+                            else
                             {
                                 yield return new DataSourceValue
                                 {
-                                    Target = targetMap[pointID],
-                                    Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                    Target = target,
                                     Value = pointValue,
-                                    Flags = (MeasurementStateFlags)value.Value3
+                                    Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                    Flags = flags
                                 };
-                                lastTimes[pointID] = timestamp;
+                            }
 
-                                // Reset extremes at each point publication
-                                if (subFullResolution)
-                                    extremes[pointID] = new Tuple<float, float>(float.MaxValue, float.MinValue);
-                            }
-                            else if (subFullResolution)
-                            {
-                                // Track extremes over interval
-                                extremes[pointID] = new Tuple<float, float>(min, max);
-                            }
+                            lastTimes[pointID] = timestamp;
                         }
                     }
                 }
@@ -191,9 +235,9 @@ namespace openHistorian.Adapters
         private LocationData m_locationData;
         private string m_defaultApiPath;
 
-        #endregion
+#endregion
 
-        #region [ Properties ]
+#region [ Properties ]
 
         /// <summary>
         /// Gets the default API path string for this controller.
@@ -264,9 +308,9 @@ namespace openHistorian.Adapters
 
         private LocationData LocationData => m_locationData ?? (m_locationData = new LocationData { DataSource = DataSource });
 
-        #endregion
+#endregion
 
-        #region [ Methods ]
+#region [ Methods ]
 
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
@@ -497,9 +541,9 @@ namespace openHistorian.Adapters
             return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
-        #endregion
+#endregion
 
-        #region [ Static ]
+#region [ Static ]
 
         private static readonly Regex s_intervalExpression = new Regex(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
 
@@ -551,6 +595,6 @@ namespace openHistorian.Adapters
             return null;
         }
 
-        #endregion
+#endregion
     }
 }
