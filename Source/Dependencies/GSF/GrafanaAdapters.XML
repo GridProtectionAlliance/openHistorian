@@ -766,7 +766,7 @@
             <param name="startTime">Start-time for query.</param>
             <param name="stopTime">Stop-time for query.</param>
             <param name="interval">Interval from Grafana request.</param>
-            <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            <param name="includePeaks">Flag that determines if decimated data should include min/max interval peaks over provided time range.</param>
             <param name="targetMap">Set of IDs with associated targets to query.</param>
             <returns>Queried data source data in terms of value and time.</returns>
         </member>
