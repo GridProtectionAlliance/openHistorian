@@ -58,7 +58,8 @@ namespace openHistorian.Adapters
         private const string DefaultMappingFile = "";
         private const string DefaultTimeStampField = "source_tz";
         private const string DefaultValueField = "value";
-        private const string DefaultTagQuery = "device = '{1}' AND device_type = '{2}'";
+        //private const string DefaultTagQuery = "device = '{1}' AND device_type = '{2}'";
+        private const string DefaultTagQuery = "device = 'a' AND device_type = 'b'";
         private const string DefaultTicks = "";
 
         private const string TimeStampUpdatefile = "./HadoopTS.bin";
@@ -382,7 +383,7 @@ namespace openHistorian.Adapters
                             
                             param = param.Concat(m_queryParameter[guid]).ToArray();
 
-                            DataTable table = connection.RetrieveData(m_query, param);
+                            DataTable table = connection.RetrieveData(string.Format(m_query, param));
                             
 
                             foreach (DataRow row in table.Rows)
