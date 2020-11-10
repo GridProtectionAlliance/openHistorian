@@ -313,7 +313,7 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <Content Include="Full Checkout Calculations.TagTemplate" />
+    <Content Include="Full Calculations.TagTemplate" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
