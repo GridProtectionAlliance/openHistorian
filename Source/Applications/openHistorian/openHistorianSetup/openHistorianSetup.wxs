@@ -299,8 +299,6 @@
       <Component Id="Sample1344">
         <File Id="Sample1344.PmuCapture" Name="Sample1344.PmuCapture" Source="$(var.openHistorian.ProjectDir)\Sample1344.PmuCapture" />
       </Component>
-      
-      
 
       <!-- Included Tag Templates -->
       <Component Id="TagTemplates" Guid="{EB8CD69A-E9F5-4183-805F-455D2E3AF654}">
@@ -363,6 +361,14 @@
       </Component>
       <Component Id="StatHistorianReportGeneratorConfig">
         <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
+      </Component>
+      <Component Id="AdapterExplorer">
+        <File Id="AdapterExplorer.exe" Name="AdapterExplorer.exe" Source="$(var.ProjectDir)\AdapterExplorer.exe">
+          <netfx:NativeImage Id="ngen_AdapterExplorer.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="AdapterExplorerConfig">
+        <File Id="AdapterExplorer.exe.config" Name="AdapterExplorer.exe.config" Source="$(var.ProjectDir)\AdapterExplorer.exe.config" />
       </Component>
       <Component Id="BulkCalculationState">
         <File Id="BulkCalculationState.exe" Name="BulkCalculationState.exe" Source="$(var.ProjectDir)\BulkCalculationState.exe">
