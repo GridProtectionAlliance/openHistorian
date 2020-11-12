@@ -65,7 +65,7 @@ For detailed instructions on deploying the openHistorian, see the [installation 
 
 ## Downloads
 * Download a stable release [here](https://github.com/GridProtectionAlliance/openHistorian/releases).
-* Download the nightly build [here](http://www.gridprotectionalliance.org/nightlybuilds/openHistorian/Beta/openHistorian.Installs.zip).
+* Download the nightly build [here](https://www.gridprotectionalliance.org/nightlybuilds/openHistorian/Beta/openHistorian.Installs.zip).
 
 # Contributing
 If you would like to contribute please:
