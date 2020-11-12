@@ -37,8 +37,6 @@ using GSF.Configuration;
 using GSF.Data;
 using GSF.Diagnostics;
 using GSF.IO;
-using GSF.Scheduling;
-using GSF.Threading;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using Timer = System.Timers.Timer;
@@ -68,21 +66,10 @@ namespace openHistorian.Adapters
         private Timer m_timer;
         private string m_query;
         private Dictionary<Guid, List<string>> m_queryParameter;
-        private DateTime oldestTimestamp = new DateTime(1990, 1, 1, 0, 0, 0);
-        private int m_num = 0;
+        private readonly DateTime m_oldestTimestamp = new DateTime(1990, 1, 1, 0, 0, 0);
+        private int m_num;
         private DateTime m_lastConnected;
         private bool m_disposed;
-        #endregion
-
-        #region [ Constructors ]
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="HadoopDataLoader"/>.
-        /// </summary>
-        public HadoopDataLoader()
-        {
-           
-        }
 
         #endregion
 
@@ -92,13 +79,9 @@ namespace openHistorian.Adapters
         /// Gets or sets the ConnectionString to connect to Hadoop.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the connectionstring to the HADOOP Database")]
+        [Description("Defines the connection string to the HADOOP Database")]
         [DefaultValue(DefaultConnectionString)]
-        public string HadoopConnectionString
-        {
-            get;
-            set;
-        }
+        public string HadoopConnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets the Hadoop Table to query data.
@@ -106,11 +89,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter]
         [Description("Defines the Table used to query measurements")]
         [DefaultValue(DefaultTableName)]
-        public string TableName
-        {
-            get;
-            set;
-        }
+        public string TableName { get; set; }
 
         /// <summary>
         /// Gets or sets the Field used to generate the Timestamp.
@@ -118,11 +97,7 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter]
         [Description("Defines the Field used to create the Timestamp")]
         [DefaultValue(DefaultTimeStampField)]
-        public string TimeStampField
-        {
-            get;
-            set;
-        }
+        public string TimeStampField { get; set; }
 
         /// <summary>
         /// Gets or sets the field used to pull data.
@@ -130,36 +105,24 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter]
         [Description("Defines the Field to pull Data")]
         [DefaultValue(DefaultValueField)]
-        public string ValueField
-        {
-            get;
-            set;
-        }
+        public string ValueField { get; set; }
 
         /// <summary>
         /// Gets or sets the Mapping File.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the Mapping File use to idetify Measurments")]
+        [Description("Defines the mapping File use to identify measurements")]
         [DefaultValue(DefaultMappingFile)]
         [CustomConfigurationEditor("GSF.TimeSeries.UI.WPF.dll", "GSF.TimeSeries.UI.Editors.FileDialogEditor", "type=open; checkFileExists=true; defaultExt=.csv; filter=CSV files|*.csv|AllFiles|*.*")]
-        public string MappingFile
-        {
-            get;
-            set;
-        }
+        public string MappingFile { get; set; }
 
         /// <summary>
         /// Gets or sets the Tag Query.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the requiremnts used to match measurments to historian Tags")]
+        [Description("Defines the requirements used to match measurements to historian Tags")]
         [DefaultValue(DefaultTagQuery)]
-        public string TagQuery
-        {
-            get;
-            set;
-        }
+        public string TagQuery { get; set; }
 
         /// <summary>
         /// Gets or sets the Field that is used to Order Signals.
@@ -167,36 +130,24 @@ namespace openHistorian.Adapters
         [ConnectionStringParameter]
         [Description("Defines the Order of Points if multiple Points have the same Timestamp")]
         [DefaultValue("")]
-        public string OrderField
-        {
-            get;
-            set;
-        }
+        public string OrderField { get; set; }
         
         /// <summary>
          /// Gets or sets the Field that is used to Order Signals.
          /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the Field that contains subsecond TS (in Ticks)")]
+        [Description("Defines the Field that contains sub-second TS (in Ticks)")]
         [DefaultValue(DefaultTicks)]
-        public string SubSecondField
-        {
-            get;
-            set;
-        }
+        public string SubSecondField { get; set; }
 
 
-        // <summary>
-        /// Gets or sets the Intervall in which the Database is updated.
+        /// <summary>
+        /// Gets or sets the interval in which the Database is updated.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the intervall at which HADOPP is queried in milliseconds.")]
+        [Description("Defines the interval at which HADOOP is queried in milliseconds.")]
         [DefaultValue(30000)]
-        public int UpdateIntervall
-        {
-            get;
-            set;
-        }
+        public int UpdateInterval { get; set; }
 
         /// <summary>
         /// Gets the flag indicating if this adapter supports temporal processing.
@@ -218,10 +169,10 @@ namespace openHistorian.Adapters
                 StringBuilder status = new StringBuilder();
                 status.Append(base.Status);
 
-                status.AppendFormat("         Connection String: {0}\r\n", HadoopConnectionString);
-                status.AppendFormat("                Data Query: {0}\r\n", m_query);
-                status.AppendFormat("              Last connect: {0}\r\n", m_lastConnected.ToString("dd/MM/YYYY hh:mm:ss"));
-                status.AppendFormat("Processed Messages on Last connect: {0}\r\n", m_num);
+                status.AppendLine($"         Connection String: {HadoopConnectionString}");
+                status.AppendLine($"                Data Query: {m_query}");
+                status.AppendLine($"              Last connect: {m_lastConnected:dd/MM/YYYY hh:mm:ss}");
+                status.AppendLine($"Processed Messages on Last connect: {m_num}");
 
                 return status.ToString();
             }
@@ -264,6 +215,12 @@ namespace openHistorian.Adapters
         /// </summary>
         public override void Initialize()
         {
+            Dictionary<string, string> settings = Settings;
+
+            // Handle misspelled property so previously configured adapters will still apply proper value
+            if (settings.TryGetValue("UpdateIntervall", out string setting) && int.TryParse(setting, out _))
+                settings["UpdateInterval"] = setting;
+
             new ConnectionStringParser<ConnectionStringParameterAttribute>().ParseConnectionString(ConnectionString, this);
 
             base.Initialize();
@@ -302,12 +259,9 @@ namespace openHistorian.Adapters
 
             //start Timer
             m_timer = new Timer();
-            if ((object)m_timer != null)
-            {
-                m_timer.Interval = UpdateIntervall;
-                m_timer.AutoReset = true;
-                m_timer.Elapsed += m_timer_Elapsed;
-            }
+            m_timer.Interval = UpdateInterval;
+            m_timer.AutoReset = true;
+            m_timer.Elapsed += m_timer_Elapsed;
         }
 
         /// <summary>
@@ -366,20 +320,19 @@ namespace openHistorian.Adapters
                     {
                         foreach( Guid guid in m_queryParameter.Keys)
                         {
-                            GSF.Ticks newerThan;
-                            Measurement measurement = new Measurement();
-                            measurement.Metadata = MeasurementKey.LookUpOrCreate(guid,"").Metadata;
+                            Ticks newerThan;
+                            Measurement measurement = new Measurement { Metadata = MeasurementKey.LookUpOrCreate(guid, "").Metadata };
 
                             lock (s_TimeStampUpdateLock)
                             {
-                                using (FileBackedDictionary<Guid, GSF.Ticks> dictionary = new FileBackedDictionary<Guid, GSF.Ticks>(TimeStampUpdatefile))
+                                using (FileBackedDictionary<Guid, Ticks> dictionary = new FileBackedDictionary<Guid, Ticks>(TimeStampUpdatefile))
                                 {
                                     if (!dictionary.TryGetValue(guid, out newerThan))
-                                        newerThan = oldestTimestamp;
+                                        newerThan = m_oldestTimestamp;
                                 }
                             }
 
-                            object[] param = new object[] { newerThan.ToString("yyyy-MM-dd hh:mm:ss") };
+                            object[] param = { newerThan.ToString("yyyy-MM-dd hh:mm:ss") };
                             
                             param = param.Concat(m_queryParameter[guid]).ToArray();
 
@@ -409,7 +362,7 @@ namespace openHistorian.Adapters
 
                             lock (s_TimeStampUpdateLock)
                             {
-                                using (FileBackedDictionary<Guid, GSF.Ticks> dictionary = new FileBackedDictionary<Guid, GSF.Ticks>(TimeStampUpdatefile))
+                                using (FileBackedDictionary<Guid, Ticks> dictionary = new FileBackedDictionary<Guid, Ticks>(TimeStampUpdatefile))
                                 {
                                     if (dictionary.Keys.Contains(guid))
                                         dictionary[guid] = newerThan;
@@ -439,7 +392,7 @@ namespace openHistorian.Adapters
             }
 
             // Publish all measurements for this time interval
-            m_num = measurements.Count();
+            m_num = measurements.Count;
 
             if (measurements.Count > 0)
                 OnNewMeasurements(measurements);

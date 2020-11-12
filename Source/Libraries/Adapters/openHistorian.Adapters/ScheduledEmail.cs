@@ -124,7 +124,6 @@ namespace openHistorian.Adapters
         /// Gets or sets the Data Source used to create the Email Content 
         /// </summary>
         [ConnectionStringParameter]
-        [CalculatedMesaurement]
         [Description("Sets the DataSource used for creating the email.")]
         [DefaultValue(DefaultEmailDataSource)]
         public EmailDataSource EmailDatasource

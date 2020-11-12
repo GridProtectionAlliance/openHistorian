@@ -76,10 +76,11 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        ///  Represents Set of input and output Measurment used for Unbalance computation
+        ///  Represents Set of input and output measurement used for Unbalance computation
         /// </summary>
         public class ThreePhaseSet
         {
+        #pragma warning disable 1591
             public Guid PositiveSequence { get; set; }
             public Guid NegativeSequence { get; set; }
             public Guid ZeroSequence { get; set; }
@@ -95,8 +96,7 @@ namespace openHistorian.Adapters
             public bool activeAlarm;
             public bool acknowlegedAlarm;
             public int countExceeding;
-
-
+        #pragma warning restore 1591
         }
 
 

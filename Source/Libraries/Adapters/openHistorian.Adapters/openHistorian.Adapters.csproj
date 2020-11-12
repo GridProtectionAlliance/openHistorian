@@ -129,7 +129,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalculatedMesaurementAttribute.cs" />
     <Compile Include="GrafanaAuthProxyController.cs" />
     <Compile Include="GrafanaAlarmManagement.cs" />
     <Compile Include="GrafanaPhasorController.cs" />
