@@ -13239,6 +13239,18 @@
             </summary>
             <param name="requestInfo"></param>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.GetInputMeasurementsRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
+            <summary>
+            Gets adapter input measurements.
+            </summary>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.GetOutputMeasurementsRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
+            <summary>
+            Gets adapter output measurements.
+            </summary>
+            <param name="requestInfo"></param>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.TemporalSupportRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
             <summary>
             Determines support for temporal processing from existing adapters.
