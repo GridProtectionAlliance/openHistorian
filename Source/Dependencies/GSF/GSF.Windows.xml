@@ -569,6 +569,11 @@
             Gets current security principal for secure form.
             </summary>
         </member>
+        <member name="P:GSF.Windows.Forms.SecureForm.ExceptionHandler">
+            <summary>
+            Gets or sets exception handler for secure form.
+            </summary>
+        </member>
         <member name="M:GSF.Windows.Forms.SecureForm.GetResourceName">
             <summary>
             Gets the name of resource being accessed.
