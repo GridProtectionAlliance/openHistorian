@@ -1103,8 +1103,14 @@
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.AccessID">
             <summary>
-            Gets or sets access ID (or ID code) for this device connection which is often necessary in order to make a connection to some phasor protocols.
+            Gets the access ID (a.k.a, ID code) for this device connection. Value is often necessary in order to make a connection to some phasor protocols.
             </summary>
+            <remarks>
+            This value can mutate when configured with multiple values, i.e., where an alternate access ID code is specified for a target device connection, e.g.:
+            <c>accessID=95; server=192.168.1.10:4712,192.168.1.12:4712/96,192.168.2.10:4712,192.168.2.12:4712/96</c>
+            In this example both <c>192.168.1.10:4712</c> and <c>192.168.1.10:4712</c> use the configured access ID of 95, but
+            <c>192.168.1.12:4712/96</c> and <c>192.168.2.12:4712/96</c> specify an access ID of 96.
+            </remarks>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.DefinedDevices">
             <summary>
