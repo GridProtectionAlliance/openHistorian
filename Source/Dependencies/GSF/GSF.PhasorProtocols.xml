@@ -5976,6 +5976,11 @@
             Gets the server URI.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.ServerIndex">
+            <summary>
+            Gets the current server index, when multiple server end points are defined.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.TextEncoding">
             <summary>
             Gets or sets the <see cref="T:System.Text.Encoding"/> to be used for the text sent to the server.
@@ -6503,6 +6508,11 @@
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.IsConnected">
             <summary>
             Gets a flag that determines if the currently selected <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.TransportProtocol"/> is connected.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ServerIndex">
+            <summary>
+            Gets the current server index, when multiple server end points are defined.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConnectionInfo">

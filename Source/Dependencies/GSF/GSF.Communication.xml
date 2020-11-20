@@ -129,6 +129,11 @@
             Gets the server URI.
             </summary>
         </member>
+        <member name="P:GSF.Communication.ClientBase.ServerIndex">
+            <summary>
+            Gets the current server index, when multiple server end points are defined.
+            </summary>
+        </member>
         <member name="P:GSF.Communication.ClientBase.ConnectionString">
             <summary>
             Gets or sets the data required by the client to connect to the server.
@@ -1503,6 +1508,11 @@
         <member name="P:GSF.Communication.IClient.ServerUri">
             <summary>
             Gets the server URI.
+            </summary>
+        </member>
+        <member name="P:GSF.Communication.IClient.ServerIndex">
+            <summary>
+            Gets the current server index, when multiple server end points are defined.
             </summary>
         </member>
         <member name="P:GSF.Communication.IClient.CurrentState">
