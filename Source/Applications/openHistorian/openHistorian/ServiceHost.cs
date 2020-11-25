@@ -75,6 +75,11 @@ namespace openHistorian
         /// </summary>
         public event EventHandler<EventArgs<Exception>> LoggedException;
 
+        /// <summary>
+        /// Raise when a response is being sent to one or more clients.
+        /// </summary>
+        public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
+
         // Fields
         private IDisposable m_webAppHost;
         private bool m_serviceStopping;
@@ -127,6 +132,11 @@ namespace openHistorian
         /// Gets current performance statistics.
         /// </summary>
         public string PerformanceStatistics => ServiceHelper?.PerformanceMonitor?.Status;
+
+        /// <summary>
+        /// Gets current metadata;
+        /// </summary>
+        public DataSet Metadata => DataSource;
 
         #endregion
 
@@ -271,6 +281,7 @@ namespace openHistorian
 
             ServiceHelper.UpdatedStatus += UpdatedStatusHandler;
             ServiceHelper.LoggedException += LoggedExceptionHandler;
+            ServiceHelper.SendingClientResponse += SendingClientResponseHandler;
             GrafanaAuthProxyController.StatusMessage += GrafanaAuthProxyController_StatusMessage;
 
             if (systemSettings["WebHostingEnabled"].ValueAs(true))
@@ -460,6 +471,7 @@ namespace openHistorian
 
             if (helper != null)
             {
+                helper.SendingClientResponse -= SendingClientResponseHandler;
                 helper.UpdatedStatus -= UpdatedStatusHandler;
                 helper.LoggedException -= LoggedExceptionHandler;
             }
@@ -631,14 +643,17 @@ namespace openHistorian
 
         private void UpdatedStatusHandler(object sender, EventArgs<Guid, string, UpdateType> e)
         {
-            if ((object)UpdatedStatus != null)
-                UpdatedStatus(sender, new EventArgs<Guid, string, UpdateType>(e.Argument1, e.Argument2, e.Argument3));
+            UpdatedStatus?.Invoke(sender, new EventArgs<Guid, string, UpdateType>(e.Argument1, e.Argument2, e.Argument3));
         }
 
         private void LoggedExceptionHandler(object sender, EventArgs<Exception> e)
         {
-            if ((object)LoggedException != null)
-                LoggedException(sender, new EventArgs<Exception>(e.Argument));
+            LoggedException?.Invoke(sender, new EventArgs<Exception>(e.Argument));
+        }
+
+        private void SendingClientResponseHandler(object sender, EventArgs<Guid, ServiceResponse, bool> e)
+        {
+            SendingClientResponse?.Invoke(sender, e);
         }
 
         private void m_logSubscriber_Log(LogMessage logMessage)

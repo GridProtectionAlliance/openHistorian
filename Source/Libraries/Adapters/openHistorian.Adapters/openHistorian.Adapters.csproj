@@ -135,6 +135,9 @@
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HadoopDataLoader.cs" />
     <Compile Include="Model\DeviceGroup.cs" />
+    <Compile Include="Model\IaonActionAdapter.cs" />
+    <Compile Include="Model\IaonInputAdapter.cs" />
+    <Compile Include="Model\IIaonAdapter.cs" />
     <Compile Include="Model\Runtime.cs" />
     <Compile Include="ReportOperationsHubClient.cs" />
     <Compile Include="ReportOperations.cs" />

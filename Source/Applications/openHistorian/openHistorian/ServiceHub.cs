@@ -47,8 +47,8 @@ namespace openHistorian
         /// </summary>
         public ServiceHub()
         {
-            Action<string, UpdateType> logStatusMessage = (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType);
-            Action<Exception> logException = ex => Program.Host.LogException(ex);
+            static void logStatusMessage(string message, UpdateType updateType) => Program.Host.LogWebHostStatusMessage(message, updateType);
+            static void logException(Exception ex) => Program.Host.LogException(ex);
 
             m_serviceConnectionOperations = new ServiceConnectionOperations(this, logStatusMessage, logException);
         }
@@ -87,22 +87,22 @@ namespace openHistorian
         /// Gets the current server time.
         /// </summary>
         /// <returns>Current server time.</returns>
-        public DateTime GetServerTime() => DateTime.UtcNow;
+        public DateTime GetServerTime() =>
+            DateTime.UtcNow;
 
         /// <summary>
         /// Gets current performance statistics for service.
         /// </summary>
         /// <returns>Current performance statistics for service.</returns>
-        public string GetPerformanceStatistics() => Program.Host.PerformanceStatistics;
+        public string GetPerformanceStatistics() =>
+            Program.Host.PerformanceStatistics;
 
         /// <summary>
         /// Sends a service command.
         /// </summary>
         /// <param name="command">Command string.</param>
-        public void SendCommand(string command)
-        {
+        public void SendCommand(string command) =>
             m_serviceConnectionOperations.SendCommand(command);
-        }
 
         #region [ Static ]
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IaonOutputAdapter.cs - Gbtc
+//  IaonActionAdapter.cs - Gbtc
 //
 //  Copyright © 2017, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/06/2020 - J. Ritchie Carroll
+//  10/06/2020 - J. Ritchie Carroll
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -29,7 +29,7 @@ using GSF.Data.Model;
 
 namespace openHistorian.Model
 {
-    public class IaonOutputAdapter : IIaonAdapter
+    public class IaonActionAdapter : IIaonAdapter
     {
         public Guid NodeID { get; set; }
 

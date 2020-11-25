@@ -22,7 +22,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using GSF;
+using GSF.Console;
+using GSF.ServiceProcess;
+using GSF.TimeSeries.Data;
 using GSF.Web.Hubs;
 
 namespace openHistorian
@@ -47,6 +53,7 @@ namespace openHistorian
         public ServiceConnectionHubClient()
         {
             Program.Host.UpdatedStatus += m_serviceHost_UpdatedStatus;
+            Program.Host.SendingClientResponse += m_service_SendingClientResponse;
         }
 
         #endregion
@@ -59,25 +66,24 @@ namespace openHistorian
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+
+            try
             {
-                try
-                {
-                    if (disposing)
-                    {
-                        Program.Host.UpdatedStatus -= m_serviceHost_UpdatedStatus;
+                if (!disposing)
+                    return;
 
-                        Guid clientID;
+                Program.Host.SendingClientResponse -= m_service_SendingClientResponse;
+                Program.Host.UpdatedStatus -= m_serviceHost_UpdatedStatus;
 
-                        if (Guid.TryParse(ConnectionID, out clientID))
-                            Program.Host.DisconnectClient(clientID);
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
-                }
+                if (Guid.TryParse(ConnectionID, out Guid clientID))
+                    Program.Host.DisconnectClient(clientID);
+            }
+            finally
+            {
+                m_disposed = true;          // Prevent duplicate dispose.
+                base.Dispose(disposing);    // Call base class Dispose().
             }
         }
 
@@ -88,48 +94,103 @@ namespace openHistorian
         public void SendCommand(string command)
         {
             // Note that rights of current thread principle will be used to determine service command rights...
-            Guid clientID;
-
-            if (Guid.TryParse(ConnectionID, out clientID))
+            if (Guid.TryParse(ConnectionID, out Guid clientID))
                 Program.Host.SendRequest(clientID, HubInstance.Context.User, command);
         }
 
         private void m_serviceHost_UpdatedStatus(object sender, EventArgs<Guid, string, UpdateType> e)
         {
-            Guid clientID;
-
-            if (!Guid.TryParse(ConnectionID, out clientID))
-                return;
-
             // Only show broadcast messages or those destined to this client
-            if (e.Argument1 != Guid.Empty && e.Argument1 != clientID)
+            if (!Guid.TryParse(ConnectionID, out Guid clientID) || e.Argument1 != Guid.Empty && e.Argument1 != clientID)
                 return;
 
-            string color;
-
-            switch (e.Argument3)
+            string color = e.Argument3 switch
             {
-                case UpdateType.Alarm:
-                    color = "red";
-                    break;
-                case UpdateType.Warning:
-                    color = "yellow";
-                    break;
-                default:
-                    color = "white";
-                    break;
-            }
+                UpdateType.Alarm => "red",
+                UpdateType.Warning => "yellow",
+                _ => "white"
+            };
 
             BroadcastMessage(e.Argument2, color);
         }
 
         private void BroadcastMessage(string message, string color)
         {
-            
             if (string.IsNullOrEmpty(color))
                 color = "white";
             
             ClientScript.broadcastMessage(message, color);
+        }
+
+        private void m_service_SendingClientResponse(object sender, EventArgs<Guid, ServiceResponse, bool> e)
+        {
+            Guid responseClientID = e.Argument1;
+            ServiceResponse response = e.Argument2;
+
+            if (!Guid.TryParse(ConnectionID, out Guid clientID) || !clientID.Equals(responseClientID) ||
+                !ClientHelper.TryParseActionableResponse(response, out string sourceCommand, out _))
+                return;
+
+            // If actionable client response is successful and targeted for this hub client,
+            // inform service helper that it does not need to broadcast a response
+            e.Argument3 = false;
+
+            Guid[] parseSignalIDs(out string sourceAdapter)
+            {
+                sourceAdapter = null;
+
+                try
+                {
+                    List<object> attachments = response.Attachments;
+
+                    if (attachments is null || attachments.Count < 2 ||
+                        !(attachments[0] is byte[][] signalIDs) ||
+                        !(attachments[1] is Arguments arguments) || 
+                        !arguments.Exists("OrderedArg1"))
+                        return Array.Empty<Guid>();
+                    
+                    sourceAdapter = arguments["OrderedArg1"];
+                    return signalIDs.Select(bytes => new Guid(bytes)).Where(id => id != Guid.Empty).ToArray();
+                }
+                catch (Exception ex)
+                {
+                    Program.Host.LogException(new InvalidOperationException($"Failed to parse actionable service response with Guid buffers: {ex.Message}", ex));
+                    return Array.Empty<Guid>();
+                }
+            }
+
+            string command = sourceCommand.ToLower().Trim();
+
+            if (command.Equals("getinputmeasurements"))
+            {
+                Guid[] signalIDs = parseSignalIDs(out string sourceAdapter);
+
+                if (!string.IsNullOrWhiteSpace(sourceAdapter))
+                    ClientScript?.parsedInputMeasurements(sourceAdapter, signalIDs.Select(LookupPointTag).Where(tag => !string.IsNullOrWhiteSpace(tag)));
+            }
+            else if (command.Equals("getoutputmeasurements"))
+            {
+                Guid[] signalIDs = parseSignalIDs(out string sourceAdapter);
+
+                if (!string.IsNullOrWhiteSpace(sourceAdapter))
+                    ClientScript?.parsedOutputMeasurements(sourceAdapter, signalIDs.Select(LookupPointTag).Where(tag => !string.IsNullOrWhiteSpace(tag)));
+            }
+        }
+
+        private static string LookupPointTag(Guid signalID)
+        {
+            DataSet metadata = Program.Host.Metadata;
+
+            if (metadata is null)
+                return null;
+
+            DataRow record = metadata.LookupMetadata(signalID, "ActiveMeasurements");
+
+            if (record is null || record["SignalType"].ToString().Equals("STAT", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            string pointTag = record["PointTag"].ToString();
+            return string.IsNullOrWhiteSpace(pointTag) ? null : pointTag;
         }
 
         #endregion

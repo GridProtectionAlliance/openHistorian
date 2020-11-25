@@ -1,0 +1,474 @@
+﻿@*******************************************************************************************************
+//  IaonGraph.cshtml - Gbtc
+//
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  11/23/2020 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using GSF.Data.Model
+@using GSF.Web.Model
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.HidePageTitle = true;
+    ViewBag.Title = "Iaon Graph";
+    ViewBag.SetFullWidth = true;
+
+    DataContext dataContext = ViewBag.DataContext;
+}
+@functions {
+    public enum AdapterType
+    {
+        Input,
+        Action,
+        Output
+    }
+
+    public class node
+    {
+        public string id { get; set; }
+        public string name { get; set; }
+        public int val { get; set; }
+        public int group { get; set; }
+    }
+
+    public void AddAdapterNodes(JArray nodes, IEnumerable<IIaonAdapter> adapters, AdapterType type)
+    {
+        const int DefaultSize = 5;
+
+        foreach (IIaonAdapter adapter in adapters) {
+
+            if (adapter == null)
+                continue;
+
+            string name = adapter.AdapterName.ToUpperInvariant();
+
+            nodes.Add(JObject.FromObject(new node { id = string.Format("{0}: {1}", type, name), name = name, val = DefaultSize, group = (int)type }));
+        }
+    }
+
+    public string GetNodes(DataContext dataContext)
+    {
+        JArray nodes = new JArray();
+        TableOperations<IaonInputAdapter> inputAdapterTable = dataContext.Table<IaonInputAdapter>();
+        TableOperations<IaonActionAdapter> actionAdapterTable = dataContext.Table<IaonActionAdapter>();
+        TableOperations<IaonOutputAdapter> outputAdapterTable = dataContext.Table<IaonOutputAdapter>();
+
+        AddAdapterNodes(nodes, inputAdapterTable.QueryRecords(), AdapterType.Input);
+        AddAdapterNodes(nodes, actionAdapterTable.QueryRecords(), AdapterType.Action);
+        AddAdapterNodes(nodes, outputAdapterTable.QueryRecords(), AdapterType.Output);
+
+        return nodes.ToString(Formatting.None);
+    }
+}
+@section StyleSheets {
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+            height: 100%;
+        }
+
+        #header {
+            height: 20px;
+        }
+
+        #nodeLegend {
+            position: absolute;
+            top: 55px;
+            right: 0px;
+            z-index: 10;
+        }
+
+        dl {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        dl dt {
+            display: inline-block;
+            border-radius: 100%;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            background: #808080
+        }
+        
+        dl dd{
+            display: inline-block;
+            margin: 0px 5px 0px 0px;
+            padding: 0px;
+            vertical-align: middle;
+            font-size: smaller;
+        }
+
+        .glyphicon-spin {
+            -webkit-animation: spin 1.25s infinite linear;
+            -moz-animation: spin 1.25s infinite linear;
+            -o-animation: spin 1.25s infinite linear;
+            animation: spin 1.25s infinite linear;
+        }
+
+        @@-moz-keyframes spin {
+            0% {
+                -moz-transform: rotate(0deg);
+            }
+
+            100% {
+                -moz-transform: rotate(359deg);
+            }
+        }
+
+        @@-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(359deg);
+            }
+        }
+
+        @@-o-keyframes spin {
+            0% {
+                -o-transform: rotate(0deg);
+            }
+
+            100% {
+                -o-transform: rotate(359deg);
+            }
+        }
+
+        @@keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+    </style>
+}
+@section Scripts {
+    <script src="Scripts/d3-dsv.js"></script>
+    <script src="Scripts/d3-force.js"></script>
+    <script src="Scripts/d3-quadtree.js"></script>
+    <script src="Scripts/force-graph.js"></script>
+    <script>
+        const adapterNodes = @Raw(GetNodes(dataContext));
+        const graphData = { "nodes": adapterNodes, "links": [] };
+        const graphElem = $("#graph");
+        const graphDOM = graphElem[0];
+        var cooldownComplete = false;
+
+        const Graph = ForceGraph()(graphDOM)
+            .nodeId("id")
+            .nodeVal("val")
+            .nodeLabel(groupNodeLabel)
+            .nodeAutoColorBy("group")
+            .linkSource("source")
+            .linkTarget("target")
+            .linkLabel("label")
+            .linkDirectionalParticles("value")
+            .linkDirectionalParticleWidth(1.2)
+            .linkDirectionalParticleSpeed(d => d.value * 0.001)
+            .linkDirectionalParticleColor("color")
+            .linkCurvature(0.08)
+            .onNodeHover(node => graphDOM.style.cursor = node ? "pointer" : null)
+            .onNodeClick(node => {
+                Graph.centerAt(node.x, node.y, 1000);
+                Graph.zoom(node.group === 3 ? 16 : 8, 2000);
+            })
+            .onNodeDragEnd(node => {
+                node.fx = node.x;
+                node.fy = node.y;
+            })
+            .onBackgroundClick(zoomGraph)
+            .d3Force("collide", d3.forceCollide().strength(1).radius(groupCollideRadius))
+            .d3Force("forceX", d3.forceX().strength(groupForceXStrength).x(groupForceXVal))
+            .d3Force("forceY", d3.forceY().strength(groupForceYStrength).y(groupForceYVal))
+            .d3Force("charge", d3.forceManyBody().strength(groupChargeManyBodyStrength))
+            .d3VelocityDecay(0.5)
+            .onEngineTick(() => {
+                if (!cooldownComplete)
+                    zoomGraph();
+            });
+
+        function zoomGraph() {
+            Graph.d3Force("center", d3.forceCenter(0, 0)).zoomToFit(500, 10);
+        }
+
+        function groupNodeLabel(node) {
+            const links = Graph.graphData().links;
+            const inputs = links.filter(link => link.source.id === node.id);
+            const outputs = links.filter(link => link.target.id === node.id);
+            const id = `<span class="nowrap">${node.id}</span>`;
+
+            switch (node.group) {
+                case 0:  // Input
+                    return `${id}<br/>${outputs.length} Outputs`;
+                case 1:  // Action
+                    return `${id}<br/>${inputs.length} Inputs<br/>${outputs.length} Outputs`;
+                case 2:  // Output
+                    return `${id}<br/>${inputs.length} Inputs`;
+                default: // Measurement
+                    return `Measurement: ${id}$<br/>${inputs.length} Sources<br/>${outputs.length} Destinations`;
+            }
+        }
+
+        function groupCollideRadius(node) {
+            return node.group === 3 ? 3 : 14;
+        }
+
+        function groupForceXStrength(node) {
+            return hasLinks(node) ? 1 : 4;
+        }
+
+        function groupForceXVal(node) {
+            const width = graphElem.width() / 10;
+
+            if (hasLinks(node)) {
+                switch (node.group) {
+                    case 0:  // Input
+                        return width;
+                    case 1:  // Action
+                        return width * 2;
+                    case 2:  // Output
+                        return width * 3;
+                    default: // Measurement
+                        return width * 3;
+                }
+            }
+
+            return width * 1.5;
+        }
+
+        function groupForceYStrength(node) {
+            return hasLinks(node) ? 0.1 : 0.4;
+        }
+
+        function groupForceYVal(node) {
+            const height = graphElem.height() / 10;
+            return hasLinks(node) ? height : height / 4;
+        }
+
+        function groupChargeManyBodyStrength(node) {
+            return node.group === 3 ? -20 : -40;
+        }
+
+        function hasLinks(node) {
+            const nodeLinks = graphData.links.filter(link => link.source === node.id || link.target === node.id);
+            return nodeLinks.length > 0;
+        }
+
+        function addLinks(adapter, measurements, isInputs) {
+            // graphData is in simple form when this function is being called
+            const { nodes, links } = graphData;
+
+            // Lookup assocaited adapter node by name
+            const matchingNodes = adapterNodes.filter(node => node.name === adapter);
+
+            if (matchingNodes.length === 0) {
+                console.error(`Failed to find existing adapter node for ${adapter}. ${measurements.length} measurements will not be mapped.`);
+                return;
+            }
+
+            const adapterID = matchingNodes[0].id;
+
+            measurements.forEach(measurement => {
+                measurement = measurement.toUpperCase();
+
+                // Add new measurement node if it does not already exist
+                if (nodes.filter(node => node.id === measurement).length === 0)
+                    nodes.push({ "id": measurement, "name": "M: " + measurement, "val": 0.5, "group": 3 });
+
+                if (isInputs)
+                    links.push({ "source": adapterID, "target": measurement, "value": 30, "label": measurement, "color": "LimeGreen" });
+                else
+                    links.push({ "source": measurement, "target": adapterID, "value": 30, "label": measurement, "color": "CadetBlue" });
+            });
+        }
+
+        function loadAdapterMeasurements() {
+            const promises = [];
+
+            adapterNodes.forEach(node => {
+                promises.push(serviceHub.sendCommand(`GetInputMeasurements ${node.name} -actionable`).fail(error => {
+                    showErrorMessage(`Failed to query input measurements for ${node.name}: ${error}`);
+                }));
+
+                promises.push(serviceHub.sendCommand(`GetOutputMeasurements ${node.name} -actionable`).fail(error => {
+                    showErrorMessage(`Failed to query output measurements for ${node.name}: ${error}`);
+                }));
+            });
+
+            $(promises).whenAll().then(() => setTimeout(loadGraphData, 500));
+        }
+
+        function loadGraphData() {
+            // Sort nodes and links before graphing
+            graphData.nodes.sort(compareNodes);
+            graphData.links.sort(compareNodes);
+
+            // TODO: Make this an option, i.e., to include adapters with no configured measurements
+            //removeEmptyNodes();
+
+            //console.log(JSON.stringify(Graph.graphData(), null, 4));
+
+            // Calling the Graph.graphData() function coverts the simple graphData objects into rich complex classes,
+            // take this into account for pre and post calls that use the graphData reference
+            Graph.graphData(graphData);
+
+            $("#response").text("Organizing graph, grouping by adapter type and measurements nodes...");
+
+            setTimeout(() => {
+                cooldownComplete = true;
+
+                // Inform user about graph being ready and show instructions
+                $("#workingIcon").hide();
+                $("#response").text(`Graph ready. Loaded ${graphData.nodes.length} nodes and ${graphData.links.length} links.`);
+                $("#instructions").show();
+
+                // Setup node legend
+                const inputAdapters = graphData.nodes.filter(node => node.group === 0);
+                const actionAdapters = graphData.nodes.filter(node => node.group === 1);
+                const outputAdapters = graphData.nodes.filter(node => node.group === 2);
+                const measurements = graphData.nodes.filter(node => node.group === 3);
+
+                if (inputAdapters.length > 0) {
+                    $("#legendInputIcon").css("background-color", inputAdapters[0].color);
+                    $("#legendInputText").text(`Inputs (${inputAdapters.length})`);
+                }
+
+                if (actionAdapters.length > 0) {
+                    $("#legendActionIcon").css("background-color", actionAdapters[0].color);
+                    $("#legendActionText").text(`Actions (${actionAdapters.length})`);
+                }
+
+                if (outputAdapters.length > 0) {
+                    $("#legendOutputIcon").css("background-color", outputAdapters[0].color);
+                    $("#legendOutputText").text(`Outputs (${outputAdapters.length})`);
+                }
+
+                if (measurements.length > 0) {
+                    $("#legendMeasurementIcon").css("background-color", measurements[0].color);
+                    $("#legendMeasurementText").text(`Measurements (${measurements.length})`);
+                }
+
+                // Show node legend
+                $("#nodeLegend").show();
+
+                setTimeout(() => $("#workingMessage").hide(), 10000);
+            }, Graph.cooldownTime());
+        }
+
+        function compareNodes(leftNode, rightNode) {
+            if (leftNode.id < rightNode.id)
+                return -1;
+
+            if (leftNode.id > rightNode.id)
+                return 1;
+
+            return 0;
+        }
+
+        function removeEmptyNodes() {
+            const emptyNodes = [];
+
+            graphData.nodes.forEach(node => {
+                if (!hasLinks(node))
+                    emptyNodes.push(node);
+            });
+
+            emptyNodes.forEach(node => {
+                removeNode(node);
+            });
+        }
+
+        function removeNode(node) {
+            const { nodes, links } = graphData;
+            graphData.links = links.filter(link => link.source !== node.id && link.target !== node.id);
+
+            const index = nodes.indexOf(node);
+            if (index !== -1)
+                nodes.splice(index, 1);
+        }
+
+        function resizePageElements(zoom) {
+            graphElem.height(calculateRemainingBodyHeight() - $("#header").outerHeight());
+            Graph.width(graphElem.width());
+            Graph.height(graphElem.height());
+
+            if (zoom)
+                setTimeout(zoomGraph, 100);
+        }
+
+        var firstConnect = true;
+
+        $(() => {
+            serviceHubClient.parsedInputMeasurements = (adapter, measurements) => {
+                if (measurements.length > 0)
+                    addLinks(adapter, measurements, true);
+            };
+
+            serviceHubClient.parsedOutputMeasurements = (adapter, measurements) => {
+                if (measurements.length > 0)
+                    addLinks(adapter, measurements, false);
+            };
+
+            $(window).on("hubConnected", () => {
+                if (!firstConnect)
+                    return;
+
+                firstConnect = false;
+                loadAdapterMeasurements();
+            });
+
+            $(window).resize(() => resizePageElements(true));
+            resizePageElements();
+        });
+    </script>
+}
+<span class="glyphicon glyphicon-refresh pre-cache"></span>
+<div id="header" class="text-center">
+    <div id="workingMessage">
+        <span id="response">Loading Iaon adapter configuration...</span>&nbsp;&nbsp;<span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+    </div>
+</div>
+<div id="nodeLegend" style="display: none">
+    <dl>
+        <dt id="legendInputIcon"></dt> <dd id="legendInputText">Inputs (0)</dd>
+        <dt id="legendActionIcon"></dt> <dd id="legendActionText">Actions (0)</dd>
+        <dt id="legendOutputIcon"></dt> <dd id="legendOutputText">Outputs (0)</dd>
+        <dt id="legendMeasurementIcon"></dt> <dd id="legendMeasurementText">Outputs (0)</dd>
+    </dl>
+</div>
+<div id="graph"></div>
+<div id="footer" class="text-center">
+    <span id="instructions" style="display: none">Click and hold on background to pan &mdash; Use mouse wheel to zoom &mdash; Click and hold node to rearrange &mdash; Click on node to zoom in &mdash; Click on background to zoom out</span>
+</div>
