@@ -96,10 +96,14 @@
         }
 
         #nodeLegend {
+            margin: -20px -10px 0px 0px;
+            float: right;
+            white-space: nowrap;
+        }
+
+        #messageBlock {
+            width: 100%;
             position: absolute;
-            top: 55px;
-            right: 0px;
-            z-index: 10;
         }
 
         dl {
@@ -193,7 +197,7 @@
             .nodeAutoColorBy("group")
             .linkSource("source")
             .linkTarget("target")
-            .linkLabel("label")
+            .linkLabel(groupLinkLabel)
             .linkDirectionalParticles("value")
             .linkDirectionalParticleWidth(1.2)
             .linkDirectionalParticleSpeed(d => d.value * 0.001)
@@ -237,8 +241,15 @@
                 case 2:  // Output
                     return `${id}<br/>${inputs.length} Inputs`;
                 default: // Measurement
-                    return `Measurement: ${id}$<br/>${inputs.length} Sources<br/>${outputs.length} Destinations`;
+                    return `<span class="nowrap">Measurement: ${node.id}<span>$<br/>${inputs.length} Sources<br/>${outputs.length} Destinations`;
             }
+        }
+
+        function groupLinkLabel(link) {
+            if (link.label === link.source.id)
+                return `<span class="nowrap">Source => ${link.target.id}<span><br/><span class="nowrap">Target => Measurement: ${link.source.id}</span>`;
+            else
+                return `<span class="nowrap">Source => Measurement: ${link.target.id}<span><br/><span class="nowrap">Target => ${link.source.id}</span>`;
         }
 
         function groupCollideRadius(node) {
@@ -304,7 +315,7 @@
                 measurement = measurement.toUpperCase();
 
                 // Add new measurement node if it does not already exist
-                if (nodes.filter(node => node.id === measurement).length === 0)
+                if (!nodes.any(node => node.id === measurement))
                     nodes.push({ "id": measurement, "name": "M: " + measurement, "val": 0.5, "group": 3 });
 
                 if (isInputs)
@@ -344,46 +355,47 @@
             // take this into account for pre and post calls that use the graphData reference
             Graph.graphData(graphData);
 
-            $("#response").text("Organizing graph, grouping by adapter type and measurements nodes...");
+            $("#message").text("Organizing graph, grouping by adapter type and measurements nodes...");
 
             setTimeout(() => {
                 cooldownComplete = true;
 
                 // Inform user about graph being ready and show instructions
                 $("#workingIcon").hide();
-                $("#response").text(`Graph ready. Loaded ${graphData.nodes.length} nodes and ${graphData.links.length} links.`);
+                $("#message").text(`Graph ready. Loaded ${graphData.nodes.length} nodes and ${graphData.links.length} links.`);
                 $("#instructions").show();
 
                 // Setup node legend
-                const inputAdapters = graphData.nodes.filter(node => node.group === 0);
-                const actionAdapters = graphData.nodes.filter(node => node.group === 1);
-                const outputAdapters = graphData.nodes.filter(node => node.group === 2);
-                const measurements = graphData.nodes.filter(node => node.group === 3);
+                const nodes = graphData.nodes;
+                const [ inputAdapterCount, firstInputAdapter ] = countNodeTypes(nodes, node => node.group === 0);
+                const [ actionAdapterCount, firstActionAdapter ] = countNodeTypes(nodes, node => node.group === 1);
+                const [ outputAdapterCount, firstOutputAdapter ] = countNodeTypes(nodes, node => node.group === 2);
+                const [ measurementCount, firstMeasurement ] = countNodeTypes(nodes, node => node.group === 3);
 
-                if (inputAdapters.length > 0) {
-                    $("#legendInputIcon").css("background-color", inputAdapters[0].color);
-                    $("#legendInputText").text(`Inputs (${inputAdapters.length})`);
+                if (inputAdapterCount > 0) {
+                    $("#legendInputIcon").css("background-color", firstInputAdapter.color);
+                    $("#legendInputText").text(`Inputs (${inputAdapterCount})`);
                 }
 
-                if (actionAdapters.length > 0) {
-                    $("#legendActionIcon").css("background-color", actionAdapters[0].color);
-                    $("#legendActionText").text(`Actions (${actionAdapters.length})`);
+                if (actionAdapterCount > 0) {
+                    $("#legendActionIcon").css("background-color", firstActionAdapter.color);
+                    $("#legendActionText").text(`Actions (${actionAdapterCount})`);
                 }
 
-                if (outputAdapters.length > 0) {
-                    $("#legendOutputIcon").css("background-color", outputAdapters[0].color);
-                    $("#legendOutputText").text(`Outputs (${outputAdapters.length})`);
+                if (outputAdapterCount > 0) {
+                    $("#legendOutputIcon").css("background-color", firstOutputAdapter.color);
+                    $("#legendOutputText").text(`Outputs (${outputAdapterCount})`);
                 }
 
-                if (measurements.length > 0) {
-                    $("#legendMeasurementIcon").css("background-color", measurements[0].color);
-                    $("#legendMeasurementText").text(`Measurements (${measurements.length})`);
+                if (measurementCount > 0) {
+                    $("#legendMeasurementIcon").css("background-color", firstMeasurement.color);
+                    $("#legendMeasurementText").text(`Measurements (${measurementCount})`);
                 }
 
                 // Show node legend
                 $("#nodeLegend").show();
 
-                setTimeout(() => $("#workingMessage").hide(), 10000);
+                setTimeout(() => $("#messageBlock").hide(), 10000);
             }, Graph.cooldownTime());
         }
 
@@ -419,8 +431,23 @@
                 nodes.splice(index, 1);
         }
 
+        function countNodeTypes(nodes, predicate) {
+            var count = 0;
+            var first = null;
+
+            nodes.forEach(node => {
+                if (predicate.call(undefined, node)) {
+                    if (first === null)
+                        first = node;
+                    count++;
+                }
+            });
+
+            return [ count, first ];
+        }
+
         function resizePageElements(zoom) {
-            graphElem.height(calculateRemainingBodyHeight() - $("#header").outerHeight());
+            graphElem.height(calculateRemainingBodyHeight() - $("#header").outerHeight() - $("#footer").outerHeight());
             Graph.width(graphElem.width());
             Graph.height(graphElem.height());
 
@@ -455,20 +482,22 @@
     </script>
 }
 <span class="glyphicon glyphicon-refresh pre-cache"></span>
-<div id="header" class="text-center">
-    <div id="workingMessage">
-        <span id="response">Loading Iaon adapter configuration...</span>&nbsp;&nbsp;<span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+<div content-fill-height>
+    <div id="header" class="text-center">
+        <div id="nodeLegend" style="display: none">
+            <dl>
+                <dt id="legendInputIcon"></dt> <dd id="legendInputText">Inputs (0)</dd>
+                <dt id="legendActionIcon"></dt> <dd id="legendActionText">Actions (0)</dd>
+                <dt id="legendOutputIcon"></dt> <dd id="legendOutputText">Outputs (0)</dd>
+                <dt id="legendMeasurementIcon"></dt> <dd id="legendMeasurementText">Outputs (0)</dd>
+            </dl>
+        </div>
+        <div id="messageBlock">
+            <span id="message">Loading Iaon adapter configuration...</span>&nbsp;&nbsp;<span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        </div>
     </div>
-</div>
-<div id="nodeLegend" style="display: none">
-    <dl>
-        <dt id="legendInputIcon"></dt> <dd id="legendInputText">Inputs (0)</dd>
-        <dt id="legendActionIcon"></dt> <dd id="legendActionText">Actions (0)</dd>
-        <dt id="legendOutputIcon"></dt> <dd id="legendOutputText">Outputs (0)</dd>
-        <dt id="legendMeasurementIcon"></dt> <dd id="legendMeasurementText">Outputs (0)</dd>
-    </dl>
-</div>
-<div id="graph"></div>
-<div id="footer" class="text-center">
-    <span id="instructions" style="display: none">Click and hold on background to pan &mdash; Use mouse wheel to zoom &mdash; Click and hold node to rearrange &mdash; Click on node to zoom in &mdash; Click on background to zoom out</span>
+    <div id="graph"></div>
+    <div id="footer" class="text-center">
+        <span id="instructions" style="display: none">Click and hold on background to pan &mdash; Use mouse wheel to zoom &mdash; Click and hold node to rearrange &mdash; Click on node to zoom in &mdash; Click on background to zoom to fit</span>
+    </div>
 </div>
