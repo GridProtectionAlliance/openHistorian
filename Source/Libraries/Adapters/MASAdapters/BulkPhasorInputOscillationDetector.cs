@@ -34,6 +34,7 @@ using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.TimeSeries.Data;
+using GSF.TimeSeries.Model;
 using PowerCalculations;
 using MeasurementRecord = GSF.TimeSeries.Model.Measurement;
 using PhasorRecord = GSF.TimeSeries.Model.Phasor;
@@ -161,14 +162,21 @@ namespace MAS
                         // Just pick first input measurement to find associated device ID
                         MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
                         DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
-                        int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
 
-                        // Query the actual database record ID based on the known runtime ID for this device
-                        using (AdoDataConnection connection = GetConfiguredConnection())
+                        if (!(record is null))
                         {
-                            TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
-                            Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
-                            return runtimeRecord.SourceID;
+                            string deviceName = record["Device"].ToString();
+
+                            if (!string.IsNullOrWhiteSpace(deviceName))
+                            {
+                                // Query the actual database record ID based on the known runtime ID for this device
+                                using (AdoDataConnection connection = GetConfiguredConnection())
+                                {
+                                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceName);
+                                    return device.ID;
+                                }
+                            }
                         }
                     }
                 }
