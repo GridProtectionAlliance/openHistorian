@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#pragma warning disable 1591
+
+using System.ComponentModel.DataAnnotations;
 using GSF.Data.Model;
 
 namespace MAS
