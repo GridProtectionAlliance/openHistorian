@@ -7,7 +7,7 @@ import { AsyncSelect } from '@grafana/ui';
 
 // Utils & Services
 import { debounce } from 'lodash';
-import { getBackendSrv } from 'app/core/services/backend_srv';
+import { getBackendSrv } from '@grafana/runtime';
 
 // Types
 import { User } from 'app/types';
@@ -36,15 +36,14 @@ export class UserPicker extends Component<Props, State> {
   }
 
   search(query?: string) {
-    const backendSrv = getBackendSrv();
     this.setState({ isLoading: true });
 
     if (_.isNil(query)) {
       query = '';
     }
 
-    return backendSrv
-      .get(`/api/org/users/lookup?query=${query}&limit=10`)
+    return getBackendSrv()
+      .get(`/api/org/users/lookup?query=${query}&limit=100`)
       .then((result: any) => {
         return result.map((user: any) => ({
           id: user.userId,
@@ -64,15 +63,16 @@ export class UserPicker extends Component<Props, State> {
     const { isLoading } = this.state;
 
     return (
-      <div className="user-picker">
+      <div className="user-picker" data-testid="userPicker">
         <AsyncSelect
+          isClearable
           className={className}
           isLoading={isLoading}
           defaultOptions={true}
           loadOptions={this.debouncedSearch}
           onChange={onSelected}
-          placeholder="Select user"
-          noOptionsMessage={() => 'No users found'}
+          placeholder="Start typing to search for user"
+          noOptionsMessage="No users found"
         />
       </div>
     );

@@ -1,6 +1,5 @@
 import { createRootReducer, recursiveCleanState } from './root';
 import { describe, expect } from '../../../test/lib/common';
-import { NavModelItem } from '@grafana/data';
 import { reducerTester } from '../../../test/core/redux/reducerTester';
 import { StoreState } from '../../types/store';
 import { Team } from '../../types';
@@ -8,13 +7,13 @@ import { cleanUpAction } from '../actions/cleanUp';
 import { initialTeamsState, teamsLoaded } from '../../features/teams/state/reducers';
 
 jest.mock('@grafana/runtime', () => ({
+  ...((jest.requireActual('@grafana/runtime') as unknown) as object),
   config: {
     bootData: {
-      navTree: [] as NavModelItem[],
+      navTree: [],
       user: {},
     },
   },
-  DataSourceWithBackend: jest.fn(),
 }));
 
 describe('recursiveCleanState', () => {
@@ -87,7 +86,7 @@ describe('rootReducer', () => {
       } as StoreState;
 
       reducerTester<StoreState>()
-        .givenReducer(rootReducer, state, true)
+        .givenReducer(rootReducer, state, false, true)
         .whenActionIsDispatched(cleanUpAction({ stateSelector: (storeState: StoreState) => storeState.teams }))
         .thenStatePredicateShouldEqual(resultingState => {
           expect(resultingState.teams).toEqual({ ...initialTeamsState });

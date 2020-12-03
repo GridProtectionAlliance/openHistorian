@@ -1,0 +1,20 @@
+/*!
+ * jquery.flot.gauge v1.1.0 *
+ *
+ * Flot plugin for rendering gauge charts.
+ *
+ * Copyright (c) 2015 @toyoty99.
+ * Licensed under the MIT license.
+ */
+
+/**
+ * @preserve jquery-param (c) 2015 KNOWLEDGECODE | MIT
+ */
+
+/**
+ * AngularStrap - Twitter Bootstrap directives for AngularJS
+ * @version v0.7.5 - 2013-07-21
+ * @link http://mgcrea.github.com/angular-strap
+ * @author Olivier Louvignes <olivier@mg-crea.com>
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */

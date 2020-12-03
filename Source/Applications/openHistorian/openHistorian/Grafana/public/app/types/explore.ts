@@ -1,27 +1,23 @@
 import { Unsubscribable } from 'rxjs';
 import {
-  HistoryItem,
-  DataQuery,
-  DataSourceApi,
-  QueryHint,
-  PanelData,
-  DataQueryRequest,
-  RawTimeRange,
-  LogLevel,
-  TimeRange,
-  LogsModel,
-  LogsDedupStrategy,
   AbsoluteTimeRange,
-  GraphSeriesXY,
   DataFrame,
+  DataQuery,
+  DataQueryRequest,
+  DataSourceApi,
+  ExploreUrlState,
+  GraphSeriesXY,
+  HistoryItem,
+  LogLevel,
+  LogsDedupStrategy,
+  LogsModel,
+  PanelData,
+  QueryHint,
+  RawTimeRange,
+  TimeRange,
 } from '@grafana/data';
 
 import { Emitter } from 'app/core/core';
-
-export enum ExploreMode {
-  Metrics = 'Metrics',
-  Logs = 'Logs',
-}
 
 export enum ExploreId {
   left = 'left',
@@ -48,6 +44,10 @@ export interface ExploreState {
    * Explore state of the right area in split view.
    */
   right: ExploreItemState;
+  /**
+   * History of all queries
+   */
+  richHistory: RichHistoryQuery[];
 }
 
 export interface ExploreItemState {
@@ -58,7 +58,7 @@ export interface ExploreItemState {
   /**
    * Datasource instance that has been selected. Datasource-specific logic can be run on this object.
    */
-  datasourceInstance?: DataSourceApi;
+  datasourceInstance?: DataSourceApi | null;
   /**
    * Current data source name or null if default
    */
@@ -66,7 +66,7 @@ export interface ExploreItemState {
   /**
    * True if the datasource is loading. `null` if the loading has not started yet.
    */
-  datasourceLoading?: boolean;
+  datasourceLoading: boolean | null;
   /**
    * True if there is no datasource to be selected.
    */
@@ -74,11 +74,11 @@ export interface ExploreItemState {
   /**
    * Emitter to send events to the rest of Grafana.
    */
-  eventBridge?: Emitter;
+  eventBridge: Emitter;
   /**
    * List of timeseries to be shown in the Explore graph result viewer.
    */
-  graphResult?: GraphSeriesXY[];
+  graphResult: GraphSeriesXY[] | null;
   /**
    * History of recent queries. Datasource-specific and initialized via localStorage.
    */
@@ -101,7 +101,7 @@ export interface ExploreItemState {
   /**
    * Log query result to be displayed in the logs result viewer.
    */
-  logsResult?: LogsModel;
+  logsResult: LogsModel | null;
 
   /**
    * Time range for this Explore. Managed by the time picker and used by all query runs.
@@ -112,25 +112,17 @@ export interface ExploreItemState {
   /**
    * True if scanning for more results is active.
    */
-  scanning?: boolean;
+  scanning: boolean;
   /**
    * Current scanning range to be shown to the user while scanning is active.
    */
   scanRange?: RawTimeRange;
-  /**
-   * True if graph result viewer is expanded. Query runs will contain graph queries.
-   */
-  showingGraph: boolean;
-  /**
-   * True if table result viewer is expanded. Query runs will contain table queries.
-   */
-  showingTable: boolean;
 
   loading: boolean;
   /**
    * Table model that combines all query table results into a single table.
    */
-  tableResult?: DataFrame;
+  tableResult: DataFrame | null;
 
   /**
    * React keys for rendering of QueryRows
@@ -140,7 +132,7 @@ export interface ExploreItemState {
   /**
    * Current logs deduplication strategy
    */
-  dedupStrategy?: LogsDedupStrategy;
+  dedupStrategy: LogsDedupStrategy;
 
   /**
    * Currently hidden log series
@@ -156,7 +148,7 @@ export interface ExploreItemState {
    * Copy of the state of the URL which is in store.location.query. This is duplicated here so we can diff the two
    * after a change to see if we need to sync url state back to redux store (like on clicking Back in browser).
    */
-  urlState: ExploreUrlState;
+  urlState: ExploreUrlState | null;
 
   /**
    * Map of what changed between real url and local urlState so we can partially update just the things that are needed.
@@ -164,8 +156,6 @@ export interface ExploreItemState {
   update: ExploreUpdateState;
 
   latency: number;
-  supportedModes: ExploreMode[];
-  mode: ExploreMode;
 
   /**
    * If true, the view is in live tailing mode.
@@ -186,7 +176,12 @@ export interface ExploreItemState {
    * Panel Id that is set if we come to explore from a penel. Used so we can get back to it and optionally modify the
    * query of that panel.
    */
-  originPanelId?: number;
+  originPanelId?: number | null;
+
+  showLogs?: boolean;
+  showMetrics?: boolean;
+  showTable?: boolean;
+  showTrace?: boolean;
 }
 
 export interface ExploreUpdateState {
@@ -194,33 +189,12 @@ export interface ExploreUpdateState {
   queries: boolean;
   range: boolean;
   mode: boolean;
-  ui: boolean;
-}
-
-export interface ExploreUIState {
-  showingTable: boolean;
-  showingGraph: boolean;
-  showingLogs: boolean;
-  dedupStrategy?: LogsDedupStrategy;
-}
-
-export interface ExploreUrlState {
-  datasource: string;
-  queries: any[]; // Should be a DataQuery, but we're going to strip refIds, so typing makes less sense
-  mode: ExploreMode;
-  range: RawTimeRange;
-  ui: ExploreUIState;
-  originPanelId?: number;
-  context?: string;
 }
 
 export interface QueryOptions {
-  minInterval: string;
+  minInterval?: string;
   maxDataPoints?: number;
   liveStreaming?: boolean;
-  showingGraph?: boolean;
-  showingTable?: boolean;
-  mode?: ExploreMode;
 }
 
 export interface QueryTransaction {
@@ -233,4 +207,25 @@ export interface QueryTransaction {
   queries: DataQuery[];
   result?: any; // Table model / Timeseries[] / Logs
   scanning?: boolean;
+}
+
+export type RichHistoryQuery = {
+  ts: number;
+  datasourceName: string;
+  datasourceId: string;
+  starred: boolean;
+  comment: string;
+  queries: DataQuery[];
+  sessionName: string;
+  timeRange?: string;
+};
+
+export interface ExplorePanelData extends PanelData {
+  graphFrames: DataFrame[];
+  tableFrames: DataFrame[];
+  logsFrames: DataFrame[];
+  traceFrames: DataFrame[];
+  graphResult: GraphSeriesXY[] | null;
+  tableResult: DataFrame | null;
+  logsResult: LogsModel | null;
 }

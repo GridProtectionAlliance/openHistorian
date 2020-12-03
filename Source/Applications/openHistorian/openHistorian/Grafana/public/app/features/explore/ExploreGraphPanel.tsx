@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { css, cx } from 'emotion';
-import { GrafanaTheme, TimeZone, AbsoluteTimeRange, GraphSeriesXY, dateTimeForTimeZone } from '@grafana/data';
+import { GrafanaTheme, TimeZone, AbsoluteTimeRange, GraphSeriesXY, dateTime } from '@grafana/data';
 
 import {
   selectThemeVariant,
@@ -12,6 +12,7 @@ import {
   GraphSeriesToggler,
   GraphSeriesTogglerAPI,
   Chart,
+  Icon,
 } from '@grafana/ui';
 
 const MAX_NUMBER_OF_TIME_SERIES = 20;
@@ -24,11 +25,11 @@ const getStyles = (theme: GrafanaTheme) => ({
     padding: 10px 0;
     border-radius: ${theme.border.radius.md};
     text-align: center;
-    background-color: ${selectThemeVariant({ light: theme.colors.white, dark: theme.colors.dark4 }, theme.type)};
+    background-color: ${selectThemeVariant({ light: theme.palette.white, dark: theme.palette.dark4 }, theme.type)};
   `,
   disclaimerIcon: css`
     label: disclaimer-icon;
-    color: ${theme.colors.yellow};
+    color: ${theme.palette.yellow};
     margin-right: ${theme.spacing.xs};
   `,
   showAllTimeSeries: css`
@@ -39,7 +40,8 @@ const getStyles = (theme: GrafanaTheme) => ({
 });
 
 interface Props extends Themeable {
-  series?: GraphSeriesXY[];
+  ariaLabel?: string;
+  series?: GraphSeriesXY[] | null;
   width: number;
   absoluteRange: AbsoluteTimeRange;
   loading?: boolean;
@@ -47,11 +49,8 @@ interface Props extends Themeable {
   showBars: boolean;
   showLines: boolean;
   isStacked: boolean;
-  showingGraph?: boolean;
-  showingTable?: boolean;
   timeZone?: TimeZone;
   onUpdateTimeRange: (absoluteRange: AbsoluteTimeRange) => void;
-  onToggleGraph?: (showingGraph: boolean) => void;
   onHiddenSeriesChanged?: (hiddenSeries: string[]) => void;
 }
 
@@ -72,13 +71,6 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
     });
   };
 
-  onClickGraphButton = () => {
-    const { onToggleGraph, showingGraph } = this.props;
-    if (onToggleGraph) {
-      onToggleGraph(showingGraph ?? false);
-    }
-  };
-
   onChangeTime = (from: number, to: number) => {
     const { onUpdateTimeRange } = this.props;
     onUpdateTimeRange({ from, to });
@@ -86,14 +78,13 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
 
   renderGraph = () => {
     const {
+      ariaLabel,
       width,
       series,
       onHiddenSeriesChanged,
       timeZone,
       absoluteRange,
       showPanel,
-      showingGraph,
-      showingTable,
       showBars,
       showLines,
       isStacked,
@@ -105,22 +96,23 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
     }
 
     const timeRange = {
-      from: dateTimeForTimeZone(timeZone, absoluteRange.from),
-      to: dateTimeForTimeZone(timeZone, absoluteRange.to),
+      from: dateTime(absoluteRange.from),
+      to: dateTime(absoluteRange.to),
       raw: {
-        from: dateTimeForTimeZone(timeZone, absoluteRange.from),
-        to: dateTimeForTimeZone(timeZone, absoluteRange.to),
+        from: dateTime(absoluteRange.from),
+        to: dateTime(absoluteRange.to),
       },
     };
-    const height = showPanel === false ? 100 : showingGraph && showingTable ? 200 : 400;
+
+    const height = showPanel ? 200 : 100;
     const lineWidth = showLines ? 1 : 5;
     const seriesToShow = showAllTimeSeries ? series : series.slice(0, MAX_NUMBER_OF_TIME_SERIES);
-
     return (
       <GraphSeriesToggler series={seriesToShow} onHiddenSeriesChanged={onHiddenSeriesChanged}>
         {({ onSeriesToggle, toggledSeries }: GraphSeriesTogglerAPI) => {
           return (
             <GraphWithLegend
+              ariaLabel={ariaLabel}
               displayMode={LegendDisplayMode.List}
               height={height}
               isLegendVisible={true}
@@ -148,7 +140,7 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
   };
 
   render() {
-    const { series, showPanel, showingGraph, loading, theme } = this.props;
+    const { series, showPanel, loading, theme } = this.props;
     const { showAllTimeSeries } = this.state;
     const style = getStyles(theme);
 
@@ -156,7 +148,7 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
       <>
         {series && series.length > MAX_NUMBER_OF_TIME_SERIES && !showAllTimeSeries && (
           <div className={cx([style.timeSeriesDisclaimer])}>
-            <i className={cx(['fa fa-fw fa-warning', style.disclaimerIcon])} />
+            <Icon className={style.disclaimerIcon} name="exclamation-triangle" />
             {`Showing only ${MAX_NUMBER_OF_TIME_SERIES} time series. `}
             <span
               className={cx([style.showAllTimeSeries])}
@@ -166,13 +158,7 @@ class UnThemedExploreGraphPanel extends PureComponent<Props, State> {
         )}
 
         {showPanel && (
-          <Collapse
-            label="Graph"
-            collapsible
-            isOpen={showingGraph}
-            loading={loading}
-            onToggle={this.onClickGraphButton}
-          >
+          <Collapse label="Graph" loading={loading} isOpen>
             {this.renderGraph()}
           </Collapse>
         )}

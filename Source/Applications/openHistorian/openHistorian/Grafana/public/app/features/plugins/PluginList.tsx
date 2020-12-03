@@ -1,26 +1,18 @@
 import React, { FC } from 'react';
-import classNames from 'classnames';
 import PluginListItem from './PluginListItem';
 import { PluginMeta } from '@grafana/data';
-import { LayoutMode, LayoutModes } from '../../core/components/LayoutSelector/LayoutSelector';
+import { selectors } from '@grafana/e2e-selectors';
 
 interface Props {
   plugins: PluginMeta[];
-  layoutMode: LayoutMode;
 }
 
 const PluginList: FC<Props> = props => {
-  const { plugins, layoutMode } = props;
-
-  const listStyle = classNames({
-    'card-section': true,
-    'card-list-layout-grid': layoutMode === LayoutModes.Grid,
-    'card-list-layout-list': layoutMode === LayoutModes.List,
-  });
+  const { plugins } = props;
 
   return (
-    <section className={listStyle}>
-      <ol className="card-list">
+    <section className="card-section card-list-layout-list">
+      <ol className="card-list" aria-label={selectors.pages.PluginsList.list}>
         {plugins.map((plugin, index) => {
           return <PluginListItem plugin={plugin} key={`${plugin.name}-${index}`} />;
         })}

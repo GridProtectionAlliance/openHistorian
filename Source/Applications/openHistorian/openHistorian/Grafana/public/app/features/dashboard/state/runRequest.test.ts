@@ -1,13 +1,14 @@
 import {
   DataFrame,
-  LoadingState,
-  dateTime,
-  PanelData,
-  DataSourceApi,
   DataQueryRequest,
   DataQueryResponse,
+  DataSourceApi,
+  dateTime,
+  LoadingState,
+  PanelData,
+  DataTopic,
 } from '@grafana/data';
-import { Subscriber, Observable, Subscription } from 'rxjs';
+import { Observable, Subscriber, Subscription } from 'rxjs';
 import { runRequest } from './runRequest';
 import { deepFreeze } from '../../../../test/core/redux/reducerTester';
 import { DashboardModel } from './DashboardModel';
@@ -37,7 +38,7 @@ class ScenarioCtx {
   results: PanelData[];
   subscription: Subscription;
   wasStarted = false;
-  error: Error = null;
+  error: Error | null = null;
   toStartTime = dateTime();
   fromStartTime = dateTime();
 
@@ -152,7 +153,7 @@ describe('runRequest', () => {
       });
     });
 
-    it('should emit 3 seperate results', () => {
+    it('should emit 3 separate results', () => {
       expect(ctx.results.length).toBe(3);
     });
 
@@ -203,7 +204,7 @@ describe('runRequest', () => {
     });
 
     it('should emit 1 error result', () => {
-      expect(ctx.results[0].error.message).toBe('Ohh no');
+      expect(ctx.results[0].error?.message).toBe('Ohh no');
       expect(ctx.results[0].state).toBe(LoadingState.Error);
     });
   });
@@ -223,7 +224,7 @@ describe('runRequest', () => {
     it('should add the correct timeRange property and the request range should not be mutated', () => {
       expect(ctx.results[0].timeRange.to.valueOf()).toBeDefined();
       expect(ctx.results[0].timeRange.to.valueOf()).not.toBe(ctx.toStartTime.valueOf());
-      expect(ctx.results[0].timeRange.to.valueOf()).not.toBe(ctx.results[0].request.range.to.valueOf());
+      expect(ctx.results[0].timeRange.to.valueOf()).not.toBe(ctx.results[0].request?.range?.to.valueOf());
 
       expectThatRangeHasNotMutated(ctx);
     });
@@ -231,8 +232,8 @@ describe('runRequest', () => {
 
   runRequestScenario('If time range is not relative', ctx => {
     ctx.setup(async () => {
-      ctx.request.range.raw.from = ctx.fromStartTime;
-      ctx.request.range.raw.to = ctx.toStartTime;
+      ctx.request.range!.raw.from = ctx.fromStartTime;
+      ctx.request.range!.raw.to = ctx.toStartTime;
       // any changes to ctx.request.range will throw and state would become LoadingState.Error
       deepFreeze(ctx.request.range);
       ctx.start();
@@ -246,16 +247,35 @@ describe('runRequest', () => {
     it('should add the correct timeRange property and the request range should not be mutated', () => {
       expect(ctx.results[0].timeRange).toBeDefined();
       expect(ctx.results[0].timeRange.to.valueOf()).toBe(ctx.toStartTime.valueOf());
-      expect(ctx.results[0].timeRange.to.valueOf()).toBe(ctx.results[0].request.range.to.valueOf());
+      expect(ctx.results[0].timeRange.to.valueOf()).toBe(ctx.results[0].request?.range?.to.valueOf());
 
       expectThatRangeHasNotMutated(ctx);
+    });
+  });
+
+  runRequestScenario('With annotations dataTopic', ctx => {
+    ctx.setup(() => {
+      ctx.start();
+      ctx.emitPacket({
+        data: [{ name: 'DataA-1' } as DataFrame],
+        key: 'A',
+      });
+      ctx.emitPacket({
+        data: [{ name: 'DataA-2', meta: { dataTopic: DataTopic.Annotations } } as DataFrame],
+        key: 'B',
+      });
+    });
+
+    it('should separate annotations results', () => {
+      expect(ctx.results[1].annotations?.length).toBe(1);
+      expect(ctx.results[1].series.length).toBe(1);
     });
   });
 });
 
 const expectThatRangeHasNotMutated = (ctx: ScenarioCtx) => {
   // Make sure that the range for request is not changed and that deepfreeze hasn't thrown
-  expect(ctx.results[0].request.range.to.valueOf()).toBe(ctx.toStartTime.valueOf());
+  expect(ctx.results[0].request?.range?.to.valueOf()).toBe(ctx.toStartTime.valueOf());
   expect(ctx.results[0].error).not.toBeDefined();
   expect(ctx.results[0].state).toBe(LoadingState.Done);
 };

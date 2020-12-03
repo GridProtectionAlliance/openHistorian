@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import ResponseParser from './response_parser';
-import { BackendSrv } from 'app/core/services/backend_srv';
+import { getBackendSrv } from '@grafana/runtime';
 import { ScopedVars } from '@grafana/data';
-import { TemplateSrv } from 'app/features/templating/template_srv';
-import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
+import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
+import { getTimeSrv, TimeSrv } from 'app/features/dashboard/services/TimeSrv';
 //Types
 import { MssqlQueryForInterpolation } from './types';
 
@@ -13,12 +13,10 @@ export class MssqlDatasource {
   responseParser: ResponseParser;
   interval: string;
 
-  /** @ngInject */
   constructor(
     instanceSettings: any,
-    private backendSrv: BackendSrv,
-    private templateSrv: TemplateSrv,
-    private timeSrv: TimeSrv
+    private readonly templateSrv: TemplateSrv = getTemplateSrv(),
+    private readonly timeSrv: TimeSrv = getTimeSrv()
   ) {
     this.name = instanceSettings.name;
     this.id = instanceSettings.id;
@@ -60,6 +58,7 @@ export class MssqlDatasource {
           ...query,
           datasource: this.name,
           rawSql: this.templateSrv.replace(query.rawSql, scopedVars, this.interpolateVariable),
+          rawQuery: true,
         };
         return expandedQuery;
       });
@@ -85,7 +84,7 @@ export class MssqlDatasource {
       return Promise.resolve({ data: [] });
     }
 
-    return this.backendSrv
+    return getBackendSrv()
       .datasourceRequest({
         url: '/api/tsdb/query',
         method: 'POST',
@@ -110,7 +109,7 @@ export class MssqlDatasource {
       format: 'table',
     };
 
-    return this.backendSrv
+    return getBackendSrv()
       .datasourceRequest({
         url: '/api/tsdb/query',
         method: 'POST',
@@ -143,7 +142,7 @@ export class MssqlDatasource {
       to: range.to.valueOf().toString(),
     };
 
-    return this.backendSrv
+    return getBackendSrv()
       .datasourceRequest({
         url: '/api/tsdb/query',
         method: 'POST',
@@ -153,7 +152,7 @@ export class MssqlDatasource {
   }
 
   testDatasource() {
-    return this.backendSrv
+    return getBackendSrv()
       .datasourceRequest({
         url: '/api/tsdb/query',
         method: 'POST',
@@ -176,7 +175,7 @@ export class MssqlDatasource {
         return { status: 'success', message: 'Database Connection OK' };
       })
       .catch((err: any) => {
-        console.log(err);
+        console.error(err);
         if (err.data && err.data.message) {
           return { status: 'error', message: err.data.message };
         } else {

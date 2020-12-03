@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#000" />
 
-    <title>Grafana</title>
+    <title>[[.AppTitle]]</title>
 
     <base href="[[.AppSubUrl]]/" />
 
@@ -199,7 +199,7 @@
         </p>
         <p>
           1. This could be caused by your reverse proxy settings.<br /><br />
-          2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath<br />
+          2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath. If not using a reverse proxy make sure to set serve_from_sub_path to true.<br />
           <br />
           3. If you have a local dev build make sure you build frontend using: yarn start, yarn start:hot, or yarn
           build<br />
@@ -212,7 +212,7 @@
     <grafana-app class="grafana-app" ng-cloak>
       <sidemenu class="sidemenu"></sidemenu>
       <app-notifications-list class="page-alert-list"></app-notifications-list>
-      <dashboard-search></dashboard-search>
+      <search-wrapper></search-wrapper>
 
       <div class="main-view">
 				<div ng-view class="scroll-canvas"></div>

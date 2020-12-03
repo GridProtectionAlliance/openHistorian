@@ -4,24 +4,24 @@ import { ButtonCascader, CascaderOption } from '@grafana/ui';
 
 import InfluxQueryModel from '../influx_query_model';
 import { AdHocFilterField, KeyValuePair } from 'app/features/explore/AdHocFilterField';
-import { TemplateSrv } from 'app/features/templating/template_srv';
+import { getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import InfluxDatasource from '../datasource';
 import { InfluxQueryBuilder } from '../query_builder';
-import { InfluxQuery, InfluxOptions } from '../types';
+import { InfluxOptions, InfluxQuery } from '../types';
 
 export interface Props extends ExploreQueryFieldProps<InfluxDatasource, InfluxQuery, InfluxOptions> {}
 
 export interface State {
   measurements: CascaderOption[];
-  measurement: string;
-  field: string;
-  error: string;
+  measurement: string | null;
+  field: string | null;
+  error: string | null;
 }
 
 interface ChooserOptions {
-  measurement: string;
-  field: string;
-  error: string;
+  measurement: string | null;
+  field: string | null;
+  error: string | null;
 }
 
 // Helper function for determining if a collection of pairs are valid
@@ -48,8 +48,13 @@ function getChooserText({ measurement, field, error }: ChooserOptions): string {
 }
 
 export class InfluxLogsQueryField extends React.PureComponent<Props, State> {
-  templateSrv: TemplateSrv = new TemplateSrv();
-  state: State = { measurements: [], measurement: null, field: null, error: null };
+  templateSrv: TemplateSrv = getTemplateSrv();
+  state: State = {
+    measurements: [],
+    measurement: null,
+    field: null,
+    error: null,
+  };
 
   async componentDidMount() {
     const { datasource } = this.props;
@@ -81,6 +86,7 @@ export class InfluxLogsQueryField extends React.PureComponent<Props, State> {
       this.setState({ measurements });
     } catch (error) {
       const message = error && error.message ? error.message : error;
+      console.error(error);
       this.setState({ error: message });
     }
   }
@@ -109,10 +115,10 @@ export class InfluxLogsQueryField extends React.PureComponent<Props, State> {
         ...query,
         resultFormat: 'table',
         groupBy: [],
-        select: [[{ type: 'field', params: [field] }]],
+        select: [[{ type: 'field', params: [field ?? ''] }]],
         tags: pairs,
         limit: '1000',
-        measurement,
+        measurement: measurement ?? '',
       },
       this.templateSrv
     );
@@ -137,7 +143,7 @@ export class InfluxLogsQueryField extends React.PureComponent<Props, State> {
           <ButtonCascader
             options={measurements}
             disabled={!hasMeasurement}
-            value={[measurement, field]}
+            value={[measurement ?? '', field ?? '']}
             onChange={this.onMeasurementsChange}
           >
             {cascadeText}
