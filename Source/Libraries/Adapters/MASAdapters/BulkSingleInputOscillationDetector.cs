@@ -69,6 +69,9 @@ namespace MAS
         /// </summary>
         public const int DefaultInputMeasurementIndexUsedForName = 0;
 
+        // Fields
+        private MeasurementKey[] m_operatingMeasurementKeys;
+
         #endregion
 
         #region [ Constructors ]
@@ -162,8 +165,10 @@ namespace MAS
                 {
                     if (CurrentAdapterIndex > -1)
                     {
+                        MeasurementKey[] operatingMeasurementKeys = m_operatingMeasurementKeys ?? InputMeasurementKeys;
+
                         // Just pick first input measurement to find associated device ID
-                        MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
+                        MeasurementKey inputMeasurement = operatingMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
                         DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
 
                         if (!(record is null))
@@ -248,7 +253,8 @@ namespace MAS
 
             base.ParseConnectionString();
 
-            InitializeChildAdapterManagement();
+            m_operatingMeasurementKeys = InputMeasurementKeys;
+            InitializeChildAdapterManagement(m_operatingMeasurementKeys);
         }
 
         #endregion
