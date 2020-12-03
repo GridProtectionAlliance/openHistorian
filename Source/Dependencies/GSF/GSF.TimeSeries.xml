@@ -878,10 +878,14 @@
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString">
             <summary>
             Gets or sets flag that determines if the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/> adapter
-            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time
-            the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DataSource"/> is updated without requiring adapter to be reinitialized. Defaults
-            to <c>true</c> to allow child adapters to come and go based on updates to system configuration.
+            <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ConnectionString"/> should be automatically parsed every time the
+            <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DataSource"/> is updated without requiring adapter to be reinitialized. Defaults to <c>true</c>
+            to allow child adapters to come and go based on updates to system configuration.
             </summary>
+            <remarks>
+            When this value is <c>true</c> (the default), implementors must call the <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement(GSF.TimeSeries.MeasurementKey[])"/>
+            method an overridden <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParseConnectionString"/> method.
+            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementKeyTypes">
             <summary>
@@ -930,10 +934,17 @@
             Initializes the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1" />.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement">
+        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement(GSF.TimeSeries.MeasurementKey[])">
             <summary>
-            Initializes management operations for child adapters based on inputs.
+            Initializes management operations for child adapters based on inputs. Derived classes should override
+            <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParseConnectionString"/> and call this method when <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString"/> is
+            <c>true</c> (the default).
             </summary>
+            <param name="inputMeasurementKeys">Input measurement keys to use for initialization.</param>
+            <remarks>
+            When <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString"/> is <c>true</c> (the default), implementors must override
+            the <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParseConnectionString"/> method and at least call this method.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ValidateEvenInputCount">
             <summary>
@@ -942,8 +953,14 @@
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ParseConnectionString">
             <summary>
-            Parses connection string. Derived classes should override for custom connection string parsing.
+            Parses connection string. Derived classes should override for custom connection string parsing and call the
+            <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement(GSF.TimeSeries.MeasurementKey[])"/> method when <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString"/> is
+            <c>true</c> (the default).
             </summary>
+            <remarks>
+            When <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.AutoReparseConnectionString"/> is <c>true</c> (the default), implementors must override
+            this method and at least call the <see cref="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InitializeChildAdapterManagement(GSF.TimeSeries.MeasurementKey[])"/> method.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ConfigurationReloaded">
             <summary>
@@ -985,40 +1002,6 @@
             Gets configured database connection.
             </summary>
             <returns>New ADO data connection based on configured settings.</returns>
-        </member>
-        <member name="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2">
-            <summary>
-            Represents an adapter base class that provides functionality to manage and distribute measurements to a collection of action adapters with parallel intialization and Models to store input/ouput relations.
-            </summary>
-            <typeparam name="TAdapter"></typeparam>
-            <typeparam name="TInitalizationModel"></typeparam>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.Status">
-            <summary>
-            Returns the detailed status of the <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.AddInitializitonModel(System.Guid[],System.Guid[])">
-            <summary>
-            This function genereates a new Initialization model based on a list of inputs and outputs
-            </summary>
-            <param name="inputs">Input Measurments</param>
-            <param name="outputs">Output Measurments</param>
-            <returns></returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.GetOutputsFromInitializationModel(`1)">
-            <summary>
-            Generates a list of outputs based on a Initialization Model
-            </summary>
-            <param name="initalizationModel">The model containing the input-output mapping</param>
-            <returns>A list of output measurments</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`2.MapInitializationModel(System.Guid[])">
-            <summary>
-            Function that maps Inputs to a new <see cref="!:TInitalizationModel"/> for finding existing mappings.
-            </summary>
-            <param name="inputs">The input measurments for this Child Adapter</param>
-            <returns>A string with the condition to find a unique mapping model if it exists.</returns>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.IndependentAdapterManagerExtensions">
             <summary>
