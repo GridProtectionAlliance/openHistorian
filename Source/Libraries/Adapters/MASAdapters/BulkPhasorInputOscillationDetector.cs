@@ -247,9 +247,6 @@ namespace MAS
             if (!settings.TryGetValue(nameof(InputMeasurementKeys), out string setting) || string.IsNullOrWhiteSpace(setting))
                 settings[nameof(InputMeasurementKeys)] = DefaultInputMeasurementKeys;
 
-            if (settings.TryGetValue(nameof(IncludePercentInvalidDataAsOutput), out setting))
-                IncludePercentInvalidDataAsOutput = setting.ParseBoolean();
-
             base.ParseConnectionString();
 
             // Get a local copy of the input keys as these will change often during initialization
