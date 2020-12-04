@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/25/2013 - Ritchie
+//  07/25/2013 - J. Ritchie Carroll
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -73,7 +73,7 @@ namespace openHistorian.Adapters
         public const int DefaultPort = 38402;
 
         /// <summary>
-        /// Defines default vlaue for <see cref="WatchAttachedPaths"/>.
+        /// Defines default value for <see cref="WatchAttachedPaths"/>.
         /// </summary>
         public const bool DefaultWatchAttachedPaths = false;
 
@@ -139,19 +139,13 @@ namespace openHistorian.Adapters
         private string m_workingDirectory;
         private string[] m_archiveDirectories;
         private string[] m_attachedPaths;
-        private bool m_watchAttachedPaths;
-        private string m_dataChannel;
         private double m_targetFileSize;
         private double m_desiredRemainingSpace;
-        private bool m_enableTimeReasonabilityCheck;
         private long m_pastTimeReasonabilityLimit;
         private long m_futureTimeReasonabilityLimit;
-        private bool m_swingingDoorCompressionEnabled;
-        private ArchiveDirectoryMethod m_directoryNamingMode;
         private DataServices m_dataServices;
         private ReplicationProviders m_replicationProviders;
         private long m_archivedMeasurements;
-        private HistorianServer m_server;
         private readonly HistorianKey m_key;
         private readonly HistorianValue m_value;
         private Dictionary<ulong, DataRow> m_measurements;
@@ -182,39 +176,29 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets instance name defined for this <see cref="LocalOutputAdapter"/>.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the instance name for the historian. Leave this value blank to default to the adapter name."),
-        DefaultValue("")]
+        [ConnectionStringParameter]
+        [Description("Define the instance name for the historian. Leave this value blank to default to the adapter name.")]
+        [DefaultValue("")]
         public string InstanceName
         {
-            get
-            {
-                if (string.IsNullOrEmpty(m_instanceName))
-                    return Name.ToLower();
-
-                return m_instanceName;
-            }
+            get => string.IsNullOrEmpty(m_instanceName) ? Name.ToLower() : m_instanceName;
             set => m_instanceName = value;
         }
 
         /// <summary>
         /// Gets or sets TCP server based connection string to use for the historian data channel.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Defines TCP server based connection string to use for the historian data channel."),
-        DefaultValue(DefaultDataChannel)]
-        public string DataChannel
-        {
-            get => m_dataChannel;
-            set => m_dataChannel = value;
-        }
+        [ConnectionStringParameter]
+        [Description("Defines TCP server based connection string to use for the historian data channel.")]
+        [DefaultValue(DefaultDataChannel)]
+        public string DataChannel { get; set; }
 
         /// <summary>
         /// Gets or sets the working directory which is used to write working data before it is moved into its permanent file.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the working directory used for working data and intermediate files and before moving data to its permanent location (see ArchiveDirectories). Leave blank to default to \".\\Archive\\\"."),
-        DefaultValue("")]
+        [ConnectionStringParameter]
+        [Description("Define the working directory used for working data and intermediate files and before moving data to its permanent location (see ArchiveDirectories). Leave blank to default to \".\\Archive\\\".")]
+        [DefaultValue("")]
         public string WorkingDirectory
         {
             get => m_workingDirectory;
@@ -241,21 +225,19 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the write directories for the historian.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the write directories for this historian instance. Leave empty to default to WorkingDirectory. Separate multiple directories with a semi-colon."),
-        DefaultValue("")]
+        [ConnectionStringParameter]
+        [Description("Define the write directories for this historian instance. Leave empty to default to WorkingDirectory. Separate multiple directories with a semi-colon.")]
+        [DefaultValue("")]
         public string ArchiveDirectories
         {
-            get
-            {
-                if (m_archiveDirectories != null)
-                    return string.Join(";", m_archiveDirectories);
-
-                return "";
-            }
+            get => m_archiveDirectories is null ? "" : string.Join(";", m_archiveDirectories);
             set
             {
-                if ((object)value != null)
+                if (value is null)
+                {
+                    m_archiveDirectories = null;
+                }
+                else
                 {
                     List<string> archivePaths = new List<string>();
 
@@ -280,55 +262,41 @@ namespace openHistorian.Adapters
 
                     m_archiveDirectories = archivePaths.ToArray();
                 }
-                else
-                {
-                    m_archiveDirectories = null;
-                }
             }
         }
 
         /// <summary>
         /// Gets or sets directory naming mode for archive directory files.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the directory naming mode for archive directory files."),
-        DefaultValue(DefaultDirectoryNamingMode)]
-        public ArchiveDirectoryMethod DirectoryNamingMode
-        {
-            get => m_directoryNamingMode;
-            set => m_directoryNamingMode = value;
-        }
+        [ConnectionStringParameter]
+        [Description("Define the directory naming mode for archive directory files.")]
+        [DefaultValue(DefaultDirectoryNamingMode)]
+        public ArchiveDirectoryMethod DirectoryNamingMode { get; set; }
 
         /// <summary>
         /// Gets or sets the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable."),
-        DefaultValue(DefaultArchiveCurtailmentInterval)]
-        public int ArchiveCurtailmentInterval
-        {
-            get;
-            set;
-        }
+        [ConnectionStringParameter]
+        [Description("Define the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable.")]
+        [DefaultValue(DefaultArchiveCurtailmentInterval)]
+        public int ArchiveCurtailmentInterval { get; set; }
 
         /// <summary>
         /// Gets or sets the directories and/or individual files to attach to the historian.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the directories and/or individual files to attach to this historian instance. Separate multiple paths with a semi-colon."),
-        DefaultValue("")]
+        [ConnectionStringParameter]
+        [Description("Define the directories and/or individual files to attach to this historian instance. Separate multiple paths with a semi-colon.")]
+        [DefaultValue("")]
         public string AttachedPaths
         {
-            get
-            {
-                if (m_attachedPaths != null)
-                    return string.Join(";", m_attachedPaths);
-
-                return "";
-            }
+            get => m_attachedPaths is null ? "" : string.Join(";", m_attachedPaths);
             set
             {
-                if ((object)value != null)
+                if (value is null)
+                {
+                    m_attachedPaths = null;
+                }
+                else
                 {
                     List<string> attachedPaths = new List<string>();
 
@@ -344,31 +312,23 @@ namespace openHistorian.Adapters
 
                     m_attachedPaths = attachedPaths.ToArray();
                 }
-                else
-                {
-                    m_attachedPaths = null;
-                }
             }
         }
 
         /// <summary>
         /// Gets or sets the flag which determines whether to set up file watchers to monitor the attached paths.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Determines whether to set up file watchers to monitor the attached paths."),
-        DefaultValue(DefaultWatchAttachedPaths)]
-        public bool WatchAttachedPaths
-        {
-            get => m_watchAttachedPaths;
-            set => m_watchAttachedPaths = value;
-        }
+        [ConnectionStringParameter]
+        [Description("Determines whether to set up file watchers to monitor the attached paths.")]
+        [DefaultValue(DefaultWatchAttachedPaths)]
+        public bool WatchAttachedPaths { get; set; }
 
         /// <summary>
         /// Gets or sets target file size, in GigaBytes.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define desired target file size in GigaBytes."),
-        DefaultValue(DefaultTargetFileSize)]
+        [ConnectionStringParameter]
+        [Description("Define desired target file size in GigaBytes.")]
+        [DefaultValue(DefaultTargetFileSize)]
         public double TargetFileSize
         {
             get => m_targetFileSize;
@@ -384,9 +344,9 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets desired remaining space, in GigaBytes.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define desired remaining disk space in GigaBytes."),
-        DefaultValue(DefaultDesiredRemainingSpace)]
+        [ConnectionStringParameter]
+        [Description("Define desired remaining disk space in GigaBytes.")]
+        [DefaultValue(DefaultDesiredRemainingSpace)]
         public double DesiredRemainingSpace
         {
             get => m_desiredRemainingSpace;
@@ -402,37 +362,33 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the maximum number of days of data to maintain in the archive.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum."),
-        DefaultValue(DefaultMaximumArchiveDays)]
+        [ConnectionStringParameter]
+        [Description("Define the maximum number of days of data to maintain, i.e., any archives files with data older than current date minus value will be deleted daily. Defaults to zero meaning no maximum.")]
+        [DefaultValue(DefaultMaximumArchiveDays)]
         public int MaximumArchiveDays { get; set; } = DefaultMaximumArchiveDays;
 
         /// <summary>
         /// Gets or sets the flag that determines if oldest archive files should be removed before running out of archive space.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the flag that determines if oldest archive files should be removed before running out of archive space."),
-        DefaultValue(DefaultAutoRemoveOldestFilesBeforeFull)]
+        [ConnectionStringParameter]
+        [Description("Define the flag that determines if oldest archive files should be removed before running out of archive space.")]
+        [DefaultValue(DefaultAutoRemoveOldestFilesBeforeFull)]
         public bool AutoRemoveOldestFilesBeforeFull { get; set; } = DefaultAutoRemoveOldestFilesBeforeFull;
 
         /// <summary>
         /// Gets or sets flag that indicates if incoming timestamps to the historian should be validated for reasonability.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the flag that indicates if incoming timestamps to the historian should be validated for reasonability."),
-        DefaultValue(DefaultEnableTimeReasonabilityCheck)]
-        public bool EnableTimeReasonabilityCheck
-        {
-            get => m_enableTimeReasonabilityCheck;
-            set => m_enableTimeReasonabilityCheck = value;
-        }
+        [ConnectionStringParameter]
+        [Description("Define the flag that indicates if incoming timestamps to the historian should be validated for reasonability.")]
+        [DefaultValue(DefaultEnableTimeReasonabilityCheck)]
+        public bool EnableTimeReasonabilityCheck { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid."),
-        DefaultValue(DefaultPastTimeReasonabilityLimit)]
+        [ConnectionStringParameter]
+        [Description("Define the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid.")]
+        [DefaultValue(DefaultPastTimeReasonabilityLimit)]
         public double PastTimeReasonabilityLimit
         {
             get => new Ticks(m_pastTimeReasonabilityLimit).ToSeconds();
@@ -442,9 +398,9 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid."),
-        DefaultValue(DefaultFutureTimeReasonabilityLimit)]
+        [ConnectionStringParameter]
+        [Description("Define the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid.")]
+        [DefaultValue(DefaultFutureTimeReasonabilityLimit)]
         public double FutureTimeReasonabilityLimit
         {
             get => new Ticks(m_futureTimeReasonabilityLimit).ToSeconds();
@@ -454,14 +410,10 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets or sets the flag that determines if swinging door compression is enabled for this historian instance.
         /// </summary>
-        [ConnectionStringParameter,
-        Description("Define the flag that determines if swinging door compression is enabled for this historian instance."),
-        DefaultValue(DefaultSwingingDoorCompressionEnabled)]
-        public bool SwingingDoorCompressionEnabled
-        {
-            get => m_swingingDoorCompressionEnabled;
-            set => m_swingingDoorCompressionEnabled = value;
-        }
+        [ConnectionStringParameter]
+        [Description("Define the flag that determines if swinging door compression is enabled for this historian instance.")]
+        [DefaultValue(DefaultSwingingDoorCompressionEnabled)]
+        public bool SwingingDoorCompressionEnabled { get; set; }
 
         /// <summary>
         /// Returns a flag that determines if measurements sent to this <see cref="LocalOutputAdapter"/> are destined for archival.
@@ -479,12 +431,11 @@ namespace openHistorian.Adapters
         public override DataSet DataSource
         {
             get => base.DataSource;
-
             set
             {
                 base.DataSource = value;
 
-                if (value == null)
+                if (value is null)
                     return;
 
                 Dictionary<ulong, DataRow> measurements = new Dictionary<ulong, DataRow>();
@@ -506,15 +457,15 @@ namespace openHistorian.Adapters
                     {
                         uint pointID = row.ConvertField<uint>("PointID");
 
-                        if (InputMeasurementKeys.Any(key => key.ID == pointID))
-                        {
-                            // Get compression settings
-                            int compressionMinTime = row.ConvertField<int>("CompressionMinTime");
-                            int compressionMaxTime = row.ConvertField<int>("CompressionMaxTime");
-                            double compressionLimit = row.ConvertField<double>("CompressionLimit");
+                        if (InputMeasurementKeys.All(key => key.ID != pointID))
+                            continue;
 
-                            compressionSettings[pointID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
-                        }
+                        // Get compression settings
+                        int compressionMinTime = row.ConvertField<int>("CompressionMinTime");
+                        int compressionMaxTime = row.ConvertField<int>("CompressionMaxTime");
+                        double compressionLimit = row.ConvertField<double>("CompressionLimit");
+
+                        compressionSettings[pointID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
                     }
                 }
 
@@ -538,34 +489,34 @@ namespace openHistorian.Adapters
                 status.Append(base.Status);
                 status.AppendLine();
 
-                status.AppendFormat("   Historian instance name: {0}\r\n", InstanceName);
-                status.AppendFormat("         Working directory: {0}\r\n", FilePath.TrimFileName(WorkingDirectory, 51));
-                status.AppendFormat("      Network data channel: {0}\r\n", DataChannel.ToNonNullString(DefaultDataChannel));
-                status.AppendFormat("          Target file size: {0:N4}GB\r\n", TargetFileSize);
-                status.AppendFormat("   Desired remaining space: {0:N4}GB\r\n", DesiredRemainingSpace);
-                status.AppendFormat("     Directory naming mode: {0}\r\n", DirectoryNamingMode);
-                status.AppendFormat("       Disk flush interval: {0:N0}ms\r\n", m_archiveInfo.DiskFlushInterval);
-                status.AppendFormat("      Cache flush interval: {0:N0}ms\r\n", m_archiveInfo.CacheFlushInterval);
-                status.AppendFormat("             Staging count: {0:N0}\r\n", m_archiveInfo.StagingCount);
-                status.AppendFormat("          Memory pool size: {0:N4}GB\r\n", Globals.MemoryPool.MaximumPoolSize / SI2.Giga);
-                status.AppendFormat("      Maximum archive days: {0}\r\n", MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"));
-                status.AppendFormat("  Auto-remove old archives: {0}\r\n", AutoRemoveOldestFilesBeforeFull);
-                status.AppendFormat("  Time reasonability check: {0}\r\n", EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled");
-                status.AppendFormat(" Archive curtailment timer: {0}\r\n", Time.ToElapsedTimeString(ArchiveCurtailmentInterval, 0));
+                status.AppendLine($"   Historian instance name: {InstanceName}");
+                status.AppendLine($"         Working directory: {FilePath.TrimFileName(WorkingDirectory, 51)}");
+                status.AppendLine($"      Network data channel: {DataChannel.ToNonNullString(DefaultDataChannel)}");
+                status.AppendLine($"          Target file size: {TargetFileSize:N4}GB");
+                status.AppendLine($"   Desired remaining space: {DesiredRemainingSpace:N4}GB");
+                status.AppendLine($"     Directory naming mode: {DirectoryNamingMode}");
+                status.AppendLine($"       Disk flush interval: {m_archiveInfo.DiskFlushInterval:N0}ms");
+                status.AppendLine($"      Cache flush interval: {m_archiveInfo.CacheFlushInterval:N0}ms");
+                status.AppendLine($"             Staging count: {m_archiveInfo.StagingCount:N0}");
+                status.AppendLine($"          Memory pool size: {Globals.MemoryPool.MaximumPoolSize / SI2.Giga:N4}GB");
+                status.AppendLine($"      Maximum archive days: {(MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"))}");
+                status.AppendLine($"  Auto-remove old archives: {AutoRemoveOldestFilesBeforeFull}");
+                status.AppendLine($"  Time reasonability check: {(EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled")}");
+                status.AppendLine($" Archive curtailment timer: {Time.ToElapsedTimeString(ArchiveCurtailmentInterval, 0)}");
 
                 if (EnableTimeReasonabilityCheck)
                 {
-                    status.AppendFormat("   Maximum past time limit: {0:N4}s, i.e., {1}\r\n", PastTimeReasonabilityLimit, new Ticks(m_pastTimeReasonabilityLimit).ToElapsedTimeString(4));
-                    status.AppendFormat(" Maximum future time limit: {0:N4}s, i.e., {1}\r\n", FutureTimeReasonabilityLimit, new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4));
+                    status.AppendLine($"   Maximum past time limit: {PastTimeReasonabilityLimit:N4}s, i.e., {new Ticks(m_pastTimeReasonabilityLimit).ToElapsedTimeString(4)}");
+                    status.AppendLine($" Maximum future time limit: {FutureTimeReasonabilityLimit:N4}s, i.e., {new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4)}");
                 }
 
-                if (m_dataServices != null)
+                if (!(m_dataServices is null))
                     status.Append(m_dataServices.Status);
 
-                if (m_replicationProviders != null)
+                if (!(m_replicationProviders is null))
                     status.Append(m_replicationProviders.Status);
 
-                m_server?.Host?.GetFullStatus(status);
+                Server?.Host?.GetFullStatus(status);
 
                 return status.ToString();
             }
@@ -574,7 +525,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Historian server instance.
         /// </summary>
-        public HistorianServer Server => m_server;
+        public HistorianServer Server { get; private set; }
 
         /// <summary>
         /// Active measurement metadata dictionary.
@@ -585,7 +536,7 @@ namespace openHistorian.Adapters
         {
             set
             {
-                if (m_attachedPathWatchers != null)
+                if (!(m_attachedPathWatchers is null))
                 {
                     foreach (SafeFileWatcher watcher in m_attachedPathWatchers)
                     {
@@ -608,47 +559,45 @@ namespace openHistorian.Adapters
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+
+            try
             {
-                try
+                if (!disposing)
+                    return;
+
+                AttachedPathWatchers = null;
+
+                if (!(m_dataServices is null))
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                        AttachedPathWatchers = null;
-
-                        if (m_dataServices != null)
-                        {
-                            m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
-                            m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
-                            m_dataServices.AdapterUnloaded -= DataServices_AdapterUnloaded;
-                            m_dataServices.AdapterLoadException -= AdapterLoader_AdapterLoadException;
-                            m_dataServices.Dispose();
-                        }
-
-                        if (m_replicationProviders != null)
-                        {
-                            m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
-                            m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
-                            m_replicationProviders.AdapterUnloaded -= ReplicationProviders_AdapterUnloaded;
-                            m_replicationProviders.AdapterLoadException -= AdapterLoader_AdapterLoadException;
-                            m_replicationProviders.Dispose();
-                        }
-
-                        if (m_archiveCurtailmentTimer != null)
-                        {
-                            m_archiveCurtailmentTimer.Stop();
-                            m_archiveCurtailmentTimer.Elapsed -= m_archiveCurtailmentTimerElapsed;
-                            m_archiveCurtailmentTimer.Dispose();
-                        }
-                    }
+                    m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
+                    m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
+                    m_dataServices.AdapterUnloaded -= DataServices_AdapterUnloaded;
+                    m_dataServices.AdapterLoadException -= AdapterLoader_AdapterLoadException;
+                    m_dataServices.Dispose();
                 }
-                finally
+
+                if (!(m_replicationProviders is null))
                 {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
+                    m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
+                    m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
+                    m_replicationProviders.AdapterUnloaded -= ReplicationProviders_AdapterUnloaded;
+                    m_replicationProviders.AdapterLoadException -= AdapterLoader_AdapterLoadException;
+                    m_replicationProviders.Dispose();
                 }
+
+                if (!(m_archiveCurtailmentTimer is null))
+                {
+                    m_archiveCurtailmentTimer.Stop();
+                    m_archiveCurtailmentTimer.Elapsed -= ArchiveCurtailmentTimerElapsed;
+                    m_archiveCurtailmentTimer.Dispose();
+                }
+            }
+            finally
+            {
+                m_disposed = true;          // Prevent duplicate dispose.
+                base.Dispose(disposing);    // Call base class Dispose().
             }
         }
 
@@ -677,21 +626,14 @@ namespace openHistorian.Adapters
             if (settings.TryGetValue(nameof(ArchiveDirectories), out setting))
                 ArchiveDirectories = setting;
 
-            if (settings.TryGetValue(nameof(ArchiveCurtailmentInterval), out setting))
-                ArchiveCurtailmentInterval = int.Parse(setting);
-            else
-                ArchiveCurtailmentInterval = DefaultArchiveCurtailmentInterval;
+            ArchiveCurtailmentInterval = settings.TryGetValue(nameof(ArchiveCurtailmentInterval), out setting) ? int.Parse(setting) : DefaultArchiveCurtailmentInterval;
 
             if (settings.TryGetValue(nameof(AttachedPaths), out setting))
                 AttachedPaths = setting;
 
-            if (settings.TryGetValue(nameof(WatchAttachedPaths), out setting))
-                m_watchAttachedPaths = setting.ParseBoolean();
-            else
-                m_watchAttachedPaths = DefaultWatchAttachedPaths;
+            WatchAttachedPaths = settings.TryGetValue(nameof(WatchAttachedPaths), out setting) && setting.ParseBoolean();
 
-            if (!settings.TryGetValue(nameof(DataChannel), out m_dataChannel))
-                m_dataChannel = DefaultDataChannel;
+            DataChannel = settings.TryGetValue(nameof(DataChannel), out setting) && !string.IsNullOrWhiteSpace(setting) ? setting : DefaultDataChannel;
 
             if (!settings.TryGetValue(nameof(TargetFileSize), out setting) || !double.TryParse(setting, out double targetFileSize))
                 targetFileSize = DefaultTargetFileSize;
@@ -711,10 +653,7 @@ namespace openHistorian.Adapters
             if (settings.TryGetValue(nameof(AutoRemoveOldestFilesBeforeFull), out setting))
                 AutoRemoveOldestFilesBeforeFull = setting.ParseBoolean();
 
-            if (settings.TryGetValue(nameof(EnableTimeReasonabilityCheck), out setting))
-                m_enableTimeReasonabilityCheck = setting.ParseBoolean();
-            else
-                m_enableTimeReasonabilityCheck = DefaultEnableTimeReasonabilityCheck;
+            EnableTimeReasonabilityCheck = settings.TryGetValue(nameof(EnableTimeReasonabilityCheck), out setting) && setting.ParseBoolean();
 
             if (settings.TryGetValue(nameof(PastTimeReasonabilityLimit), out setting) && double.TryParse(setting, out double value))
                 PastTimeReasonabilityLimit = value;
@@ -726,12 +665,11 @@ namespace openHistorian.Adapters
             else
                 FutureTimeReasonabilityLimit = DefaultFutureTimeReasonabilityLimit;
 
-            if (settings.TryGetValue(nameof(SwingingDoorCompressionEnabled), out setting))
-                SwingingDoorCompressionEnabled = setting.ParseBoolean();
-            else
-                SwingingDoorCompressionEnabled = DefaultSwingingDoorCompressionEnabled;
+            SwingingDoorCompressionEnabled = settings.TryGetValue(nameof(SwingingDoorCompressionEnabled), out setting) && setting.ParseBoolean();
 
-            if (!settings.TryGetValue(nameof(DirectoryNamingMode), out setting) || !Enum.TryParse(setting, true, out m_directoryNamingMode))
+            if (settings.TryGetValue(nameof(DirectoryNamingMode), out setting) && Enum.TryParse(setting, true, out ArchiveDirectoryMethod directoryNamingMode))
+                DirectoryNamingMode = directoryNamingMode;
+            else
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
 
             // Handle advanced settings - there are hidden but available from manual entry into connection string
@@ -747,10 +685,10 @@ namespace openHistorian.Adapters
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
 
-            if (m_archiveDirectories != null)
+            if (!(m_archiveDirectories is null))
                 m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
 
-            if (m_attachedPaths != null)
+            if (!(m_attachedPaths is null))
                 m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
 
             m_archiveInfo.ImportAttachedPathsAtStartup = false;
@@ -779,15 +717,12 @@ namespace openHistorian.Adapters
             {
                 m_archiveCurtailmentTimer = new Timer(ArchiveCurtailmentInterval * 1000.0D);
                 m_archiveCurtailmentTimer.AutoReset = true;
-                m_archiveCurtailmentTimer.Elapsed += m_archiveCurtailmentTimerElapsed;
+                m_archiveCurtailmentTimer.Elapsed += ArchiveCurtailmentTimerElapsed;
                 m_archiveCurtailmentTimer.Enabled = true;
             }
 
             // Initialize the file watchers for attached paths
-            if (m_watchAttachedPaths)
-                AttachedPathWatchers = m_attachedPaths?.Select(WatchPath).ToArray();
-            else
-                AttachedPathWatchers = null;
+            AttachedPathWatchers = WatchAttachedPaths ? m_attachedPaths?.Select(WatchPath).ToArray() : null;
         }
 
         /// <summary>
@@ -795,10 +730,8 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="maxLength">Maximum length of the status message.</param>
         /// <returns>Text of the status message.</returns>
-        public override string GetShortStatus(int maxLength)
-        {
-            return $"Archived {m_archivedMeasurements} measurements.".CenterText(maxLength);
-        }
+        public override string GetShortStatus(int maxLength) =>
+            $"Archived {m_archivedMeasurements} measurements.".CenterText(maxLength);
 
         /// <summary>
         /// Detaches an archive file from the historian.
@@ -903,16 +836,13 @@ namespace openHistorian.Adapters
 
         private ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase()
         {
-            if (m_archive?.ClientDatabase != null)
+            if (!(m_archive?.ClientDatabase is null))
                 return m_archive.ClientDatabase;
 
             throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
         }
 
-        private void m_archiveCurtailmentTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            CurtailArchiveFiles();
-        }
+        private void ArchiveCurtailmentTimerElapsed(object sender, ElapsedEventArgs e) => CurtailArchiveFiles();
 
         /// <summary>
         /// Attempts to connect to this <see cref="LocalOutputAdapter"/>.
@@ -920,7 +850,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Dictionary<string, string> settings = (m_dataChannel ?? DefaultDataChannel).ParseKeyValuePairs();
+            Dictionary<string, string> settings = (DataChannel ?? DefaultDataChannel).ParseKeyValuePairs();
 
             if (!settings.TryGetValue("port", out string setting) || !int.TryParse(setting, out int port))
                 port = DefaultPort;
@@ -928,8 +858,8 @@ namespace openHistorian.Adapters
             if (!settings.TryGetValue("interface", out string networkInterfaceIP))
                 networkInterfaceIP = "::0";
 
-            m_server = new HistorianServer(m_archiveInfo, port, networkInterfaceIP);
-            m_archive = m_server[InstanceName];
+            Server = new HistorianServer(m_archiveInfo, port, networkInterfaceIP);
+            m_archive = Server[InstanceName];
 
             // Initialization of services needs to occur after files are open
             m_dataServices.Initialize();
@@ -937,7 +867,7 @@ namespace openHistorian.Adapters
 
             OnConnected();
 
-            if (m_attachedPathWatchers != null)
+            if (!(m_attachedPathWatchers is null))
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = true;
@@ -951,15 +881,15 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            if (m_attachedPathWatchers != null)
+            if (!(m_attachedPathWatchers is null))
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = false;
             }
 
             m_archive = null;
-            m_server?.Dispose();
-            m_server = null;
+            Server?.Dispose();
+            Server = null;
 
             OnDisconnected();
             m_archivedMeasurements = 0;
@@ -975,7 +905,7 @@ namespace openHistorian.Adapters
             foreach (IMeasurement measurement in measurements)
             {
                 // Validate timestamp reasonability as compared to local clock, when enabled
-                if (m_enableTimeReasonabilityCheck)
+                if (EnableTimeReasonabilityCheck)
                 {
                     long deviation = DateTime.UtcNow.Ticks - measurement.Timestamp.Value;
 
@@ -992,12 +922,12 @@ namespace openHistorian.Adapters
                 m_value.Value3 = (ulong)measurement.StateFlags;
 
                 // Check to see if swinging door compression is enabled
-                if (m_swingingDoorCompressionEnabled)
+                if (SwingingDoorCompressionEnabled)
                 {
                     Tuple<int, int, double> settings = null;
 
                     // Attempt to lookup compression settings for this measurement
-                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && settings != null)
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && !(settings is null))
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
@@ -1114,22 +1044,22 @@ namespace openHistorian.Adapters
                 ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
                 string[] filePtr = { (string)state };
                 clientDatabase.AttachFilesOrPaths(filePtr);
-            }, args.FullPath);
+            },
+            args.FullPath);
 
             fileWatcher.InternalBufferSize = 65536;
 
             return fileWatcher;
         }
 
-        private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e)
-        {
-            e.Argument.SettingsCategory = InstanceName.ToLowerInvariant() + e.Argument.SettingsCategory;
-        }
+        private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e) =>
+            e.Argument.SettingsCategory = $"{InstanceName.ToLowerInvariant()}{e.Argument.SettingsCategory}";
 
         private void DataServices_AdapterLoaded(object sender, EventArgs<IDataService> e)
         {
             e.Argument.Archive = m_archive;
             e.Argument.ServiceProcessException += DataServices_ServiceProcessException;
+            
             OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been loaded.");
         }
 
@@ -1137,13 +1067,12 @@ namespace openHistorian.Adapters
         {
             e.Argument.Archive = null;
             e.Argument.ServiceProcessException -= DataServices_ServiceProcessException;
+            
             OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been unloaded.");
         }
 
-        private void ReplicationProviders_AdapterCreated(object sender, EventArgs<IReplicationProvider> e)
-        {
+        private void ReplicationProviders_AdapterCreated(object sender, EventArgs<IReplicationProvider> e) =>
             e.Argument.SettingsCategory = InstanceName.ToLowerInvariant() + e.Argument.SettingsCategory;
-        }
 
         private void ReplicationProviders_AdapterLoaded(object sender, EventArgs<IReplicationProvider> e)
         {
@@ -1151,6 +1080,7 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete += ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress += ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException += ReplicationProvider_ReplicationException;
+            
             OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been loaded.");
         }
 
@@ -1160,38 +1090,27 @@ namespace openHistorian.Adapters
             e.Argument.ReplicationComplete -= ReplicationProvider_ReplicationComplete;
             e.Argument.ReplicationProgress -= ReplicationProvider_ReplicationProgress;
             e.Argument.ReplicationException -= ReplicationProvider_ReplicationException;
+            
             OnStatusMessage(MessageLevel.Info, $"{e.Argument.GetType().Name} has been unloaded.");
         }
 
-        private void AdapterLoader_AdapterLoadException(object sender, EventArgs<Exception> e)
-        {
+        private void AdapterLoader_AdapterLoadException(object sender, EventArgs<Exception> e) => 
             OnProcessException(MessageLevel.Warning, e.Argument);
-        }
 
-        private void DataServices_ServiceProcessException(object sender, EventArgs<Exception> e)
-        {
+        private void DataServices_ServiceProcessException(object sender, EventArgs<Exception> e) => 
             OnProcessException(MessageLevel.Warning, e.Argument);
-        }
 
-        private void ReplicationProvider_ReplicationStart(object sender, EventArgs e)
-        {
+        private void ReplicationProvider_ReplicationStart(object sender, EventArgs e) => 
             OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has started archive replication...");
-        }
 
-        private void ReplicationProvider_ReplicationComplete(object sender, EventArgs e)
-        {
+        private void ReplicationProvider_ReplicationComplete(object sender, EventArgs e) => 
             OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has finished archive replication.");
-        }
 
-        private void ReplicationProvider_ReplicationProgress(object sender, EventArgs<ProcessProgress<int>> e)
-        {
+        private void ReplicationProvider_ReplicationProgress(object sender, EventArgs<ProcessProgress<int>> e) => 
             OnStatusMessage(MessageLevel.Info, $"{sender.GetType().Name} has replicated archive file {e.Argument.ProgressMessage}.");
-        }
 
-        private void ReplicationProvider_ReplicationException(object sender, EventArgs<Exception> e)
-        {
+        private void ReplicationProvider_ReplicationException(object sender, EventArgs<Exception> e) => 
             OnProcessException(MessageLevel.Warning, e.Argument);
-        }
 
         #endregion
 
@@ -1252,12 +1171,11 @@ namespace openHistorian.Adapters
                 IEnumerable<DataRow> historians = connection.RetrieveData($"SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {nodeIDQueryString} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'").AsEnumerable();
 
                 List<string> validHistorians = new List<string>();
-                string name, acronym;
 
                 // Apply settings optimizations to local historians
                 foreach (DataRow row in historians)
                 {
-                    acronym = row.Field<string>("AdapterName").ToLower();
+                    string acronym = row.Field<string>("AdapterName").ToLower();
                     validHistorians.Add(acronym);
                 }
 
@@ -1274,7 +1192,7 @@ namespace openHistorian.Adapters
                 // Search for unused settings categories
                 foreach (PropertyInformation info in configFile.Settings.ElementInformation.Properties)
                 {
-                    name = info.Name;
+                    string name = info.Name;
 
                     if (name.EndsWith("AdoMetadataProvider") && validHistorians.BinarySearch(name.Substring(0, name.IndexOf("AdoMetadataProvider", StringComparison.Ordinal))) < 0)
                         categoriesToRemove.Add(name);
@@ -1301,9 +1219,7 @@ namespace openHistorian.Adapters
 
                     // Remove any unused settings categories
                     foreach (string category in categoriesToRemove)
-                    {
                         configFile.Settings.Remove(category);
-                    }
                 }
 
                 // Save any applied changes
@@ -1317,11 +1233,11 @@ namespace openHistorian.Adapters
                     Historian historianAdapter = historianTable.QueryRecordWhere("Acronym = {0}", historianAcronym);
                     CustomOutputAdapter outputAdapter = null;
 
-                    if (historianAdapter == null)
+                    if (historianAdapter is null)
                     {
                         outputAdapter = outputAdapterTable.QueryRecordWhere("AdapterName = {0}", historianAcronym);
 
-                        if (outputAdapter == null)
+                        if (outputAdapter is null)
                         {
                             statusMessage($"WARNING: Could not check for associated historian input reader after failing to find historian adapter \"{historianAcronym}\" in either \"Historian\" or \"CustomOutputAdapter\" table. Record was just found in the \"RuntimeHistorian\" view, verify schema integrity.");
                             continue;
@@ -1339,32 +1255,32 @@ namespace openHistorian.Adapters
                     string readerName = $"{instanceName}READER";
                     CustomInputAdapter inputAdapter = inputAdapterTable.QueryRecordWhere("AdapterName = {0}", readerName);
 
-                    if (inputAdapter == null)
+                    if (!(inputAdapter is null))
+                        continue;
+
+                    ushort? port = null;
+
+                    // Check if historian has defined a custom data channel, if so attempt to parse port number
+                    if (adapterSettings.ContainsKey(nameof(DataChannel)))
                     {
-                        ushort? port = null;
+                        Dictionary<string, string> configSettings = adapterSettings[nameof(DataChannel)].ParseKeyValuePairs();
 
-                        // Check if historian has defined a custom data channel, if so attempt to parse port number
-                        if (adapterSettings.ContainsKey(nameof(DataChannel)))
-                        {
-                            Dictionary<string, string> configSettings = adapterSettings[nameof(DataChannel)].ParseKeyValuePairs();
-
-                            if (configSettings.ContainsKey("port") && ushort.TryParse(configSettings["port"], out ushort value))
-                                port = value;
-                        }
-
-                        string serverConnection = port == null ? "127.0.0.1" : $"127.0.0.1:{port.Value}";
-
-                        // Add new associated historian input adapter reader to handle temporal queries
-                        inputAdapter = inputAdapterTable.NewRecord();
-                        inputAdapter.NodeID = new Guid(nodeIDQueryString.RemoveCharacter('\''));
-                        inputAdapter.AdapterName = $"{historianAcronym}READER";
-                        inputAdapter.AssemblyName = "openHistorian.Adapters.dll";
-                        inputAdapter.TypeName = "openHistorian.Adapters.LocalInputAdapter";
-                        inputAdapter.ConnectionString = $"{nameof(LocalInputAdapter.InstanceName)}={instanceName}; {nameof(LocalInputAdapter.HistorianServer)}={serverConnection}; ConnectOnDemand=true";
-                        inputAdapter.LoadOrder = 0;
-                        inputAdapter.Enabled = true;
-                        inputAdapterTable.AddNewRecord(inputAdapter);
+                        if (configSettings.ContainsKey("port") && ushort.TryParse(configSettings["port"], out ushort value))
+                            port = value;
                     }
+
+                    string serverConnection = port is null ? "127.0.0.1" : $"127.0.0.1:{port.Value}";
+
+                    // Add new associated historian input adapter reader to handle temporal queries
+                    inputAdapter = inputAdapterTable.NewRecord();
+                    inputAdapter.NodeID = new Guid(nodeIDQueryString.RemoveCharacter('\''));
+                    inputAdapter.AdapterName = $"{historianAcronym}READER";
+                    inputAdapter.AssemblyName = "openHistorian.Adapters.dll";
+                    inputAdapter.TypeName = "openHistorian.Adapters.LocalInputAdapter";
+                    inputAdapter.ConnectionString = $"{nameof(LocalInputAdapter.InstanceName)}={instanceName}; {nameof(LocalInputAdapter.HistorianServer)}={serverConnection}; ConnectOnDemand=true";
+                    inputAdapter.LoadOrder = 0;
+                    inputAdapter.Enabled = true;
+                    inputAdapterTable.AddNewRecord(inputAdapter);
                 }
             }
 
@@ -1381,7 +1297,7 @@ namespace openHistorian.Adapters
 
             foreach (CustomActionAdapter actionAdapter in dataPublisherAdapters)
             {
-                if (actionAdapter == null)
+                if (actionAdapter is null)
                     continue;
 
                 Dictionary<string, string> connectionString = actionAdapter.ConnectionString?.ParseKeyValuePairs() ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
