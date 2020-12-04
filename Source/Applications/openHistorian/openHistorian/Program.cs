@@ -50,15 +50,15 @@ namespace openHistorian
         /// </summary>
         static void Main()
         {
+            Arguments args = new Arguments(Environment.CommandLine, true);
+
         #if !DEBUG
-            if (!s_singleInstanceMutex.WaitOne(0, true))
+            if (!args.Exists("NoMutex") && !s_singleInstanceMutex.WaitOne(0, true))
                 Environment.Exit(1);
         #endif
 
             bool runAsService;
             bool runAsApplication;
-
-            Arguments args = new Arguments(Environment.CommandLine, true);
 
             if (args.Count == 0)
             {
