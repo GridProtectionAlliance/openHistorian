@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,7 +60,6 @@
     <Compile Include="BulkPhasorInputOscillationDetector.cs" />
     <Compile Include="BulkSingleInputOscillationDetector.cs" />
     <Compile Include="OscillationDetector.cs" />
-    <Compile Include="Runtime.cs" />
     <Compile Include="SingleInputOscillationDetector.cs" />
     <Compile Include="PhasorInputOscillationDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

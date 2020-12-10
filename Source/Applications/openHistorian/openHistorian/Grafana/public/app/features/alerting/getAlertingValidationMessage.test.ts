@@ -1,5 +1,5 @@
 import { DataSourceSrv } from '@grafana/runtime';
-import { DataSourceApi, PluginMeta, DataTransformerConfig } from '@grafana/data';
+import { DataSourceApi, PluginMeta, DataTransformerConfig, DataSourceInstanceSettings } from '@grafana/data';
 
 import { ElasticsearchQuery } from '../../plugins/datasource/elasticsearch/types';
 import { getAlertingValidationMessage } from './getAlertingValidationMessage';
@@ -22,6 +22,13 @@ describe('getAlertingValidationMessage', () => {
       const getMock = jest.fn().mockResolvedValue(datasource);
       const datasourceSrv: DataSourceSrv = {
         get: getMock,
+        getDataSourceSettingsByUid(): any {},
+        getExternal(): DataSourceInstanceSettings[] {
+          return [];
+        },
+        getAll(): DataSourceInstanceSettings[] {
+          return [];
+        },
       };
       const targets: ElasticsearchQuery[] = [
         { refId: 'A', query: '@hostname:$hostname', isLogsQuery: false },
@@ -58,6 +65,13 @@ describe('getAlertingValidationMessage', () => {
 
           return Promise.resolve(alertingDatasource);
         },
+        getDataSourceSettingsByUid(): any {},
+        getExternal(): DataSourceInstanceSettings[] {
+          return [];
+        },
+        getAll(): DataSourceInstanceSettings[] {
+          return [];
+        },
       };
       const targets: any[] = [
         { refId: 'A', query: 'some query', datasource: 'alertingDatasource' },
@@ -81,6 +95,13 @@ describe('getAlertingValidationMessage', () => {
       const getMock = jest.fn().mockResolvedValue(datasource);
       const datasourceSrv: DataSourceSrv = {
         get: getMock,
+        getDataSourceSettingsByUid(): any {},
+        getExternal(): DataSourceInstanceSettings[] {
+          return [];
+        },
+        getAll(): DataSourceInstanceSettings[] {
+          return [];
+        },
       };
       const targets: ElasticsearchQuery[] = [
         { refId: 'A', query: '@hostname:$hostname', isLogsQuery: false },
@@ -106,6 +127,13 @@ describe('getAlertingValidationMessage', () => {
       const getMock = jest.fn().mockResolvedValue(datasource);
       const datasourceSrv: DataSourceSrv = {
         get: getMock,
+        getDataSourceSettingsByUid(): any {},
+        getExternal(): DataSourceInstanceSettings[] {
+          return [];
+        },
+        getAll(): DataSourceInstanceSettings[] {
+          return [];
+        },
       };
       const targets: ElasticsearchQuery[] = [
         { refId: 'A', query: '@hostname:hostname', isLogsQuery: false },
@@ -131,6 +159,13 @@ describe('getAlertingValidationMessage', () => {
       const getMock = jest.fn().mockResolvedValue(datasource);
       const datasourceSrv: DataSourceSrv = {
         get: getMock,
+        getDataSourceSettingsByUid(): any {},
+        getExternal(): DataSourceInstanceSettings[] {
+          return [];
+        },
+        getAll(): DataSourceInstanceSettings[] {
+          return [];
+        },
       };
       const targets: ElasticsearchQuery[] = [
         { refId: 'A', query: '@hostname:hostname', isLogsQuery: false },

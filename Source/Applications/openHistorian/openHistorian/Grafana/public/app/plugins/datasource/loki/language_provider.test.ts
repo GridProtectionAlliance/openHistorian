@@ -1,5 +1,4 @@
 import Plain from 'slate-plain-serializer';
-import { Editor as SlateEditor } from 'slate';
 
 import LanguageProvider, { LABEL_REFRESH_INTERVAL, LokiHistoryItem, rangeToParams } from './language_provider';
 import { AbsoluteTimeRange } from '@grafana/data';
@@ -83,36 +82,81 @@ describe('Language completion provider', () => {
       expect(result.suggestions[0].label).toEqual('History');
       expect(result.suggestions[1].label).toEqual('Functions');
     });
+
+    it('returns pipe operations on pipe context', async () => {
+      const instance = new LanguageProvider(datasource);
+      const input = createTypeaheadInput('{app="test"} | ', ' ', '', 15, ['context-pipe']);
+      const result = await instance.provideCompletionItems(input, { absoluteRange: rangeMock });
+      expect(result.context).toBeUndefined();
+      expect(result.suggestions.length).toEqual(2);
+      expect(result.suggestions[0].label).toEqual('Operators');
+      expect(result.suggestions[1].label).toEqual('Parsers');
+    });
+  });
+
+  describe('label key suggestions', () => {
+    it('returns all label suggestions on empty selector', async () => {
+      const datasource = makeMockLokiDatasource({ label1: [], label2: [] });
+      const provider = await getLanguageProvider(datasource);
+      const input = createTypeaheadInput('{}', '', '', 1);
+      const result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
+      expect(result.context).toBe('context-labels');
+      expect(result.suggestions).toEqual([
+        {
+          items: [
+            { label: 'label1', filterText: '"label1"' },
+            { label: 'label2', filterText: '"label2"' },
+          ],
+          label: 'Labels',
+        },
+      ]);
+    });
+
+    it('returns all label suggestions on selector when starting to type', async () => {
+      const datasource = makeMockLokiDatasource({ label1: [], label2: [] });
+      const provider = await getLanguageProvider(datasource);
+      const input = createTypeaheadInput('{l}', '', '', 2);
+      const result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
+      expect(result.context).toBe('context-labels');
+      expect(result.suggestions).toEqual([
+        {
+          items: [
+            { label: 'label1', filterText: '"label1"' },
+            { label: 'label2', filterText: '"label2"' },
+          ],
+          label: 'Labels',
+        },
+      ]);
+    });
+  });
+
+  describe('label suggestions facetted', () => {
+    it('returns facetted label suggestions based on selector', async () => {
+      const datasource = makeMockLokiDatasource(
+        { label1: [], label2: [] },
+        { '{foo="bar"}': [{ label1: 'label_val1' }] }
+      );
+      const provider = await getLanguageProvider(datasource);
+      const input = createTypeaheadInput('{foo="bar",}', '', '', 11);
+      const result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
+      expect(result.context).toBe('context-labels');
+      expect(result.suggestions).toEqual([{ items: [{ label: 'label1' }], label: 'Labels' }]);
+    });
+
+    it('returns facetted label suggestions for multipule selectors', async () => {
+      const datasource = makeMockLokiDatasource(
+        { label1: [], label2: [] },
+        { '{baz="42",foo="bar"}': [{ label2: 'label_val2' }] }
+      );
+      const provider = await getLanguageProvider(datasource);
+      const input = createTypeaheadInput('{baz="42",foo="bar",}', '', '', 20);
+      const result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
+      expect(result.context).toBe('context-labels');
+      expect(result.suggestions).toEqual([{ items: [{ label: 'label2' }], label: 'Labels' }]);
+    });
   });
 
   describe('label suggestions', () => {
-    it('returns default label suggestions on label context', async () => {
-      const instance = new LanguageProvider(datasource);
-      const value = Plain.deserialize('{}');
-      const ed = new SlateEditor({ value });
-      const valueWithSelection = ed.moveForward(1).value;
-      const result = await instance.provideCompletionItems(
-        {
-          text: '',
-          prefix: '',
-          wrapperClasses: ['context-labels'],
-          value: valueWithSelection,
-        },
-        { absoluteRange: rangeMock }
-      );
-      expect(result.context).toBe('context-labels');
-      expect(result.suggestions).toEqual([{ items: [{ label: 'job' }, { label: 'namespace' }], label: 'Labels' }]);
-    });
-
-    it('returns label suggestions from Loki', async () => {
-      const datasource = makeMockLokiDatasource({ label1: [], label2: [] });
-      const provider = await getLanguageProvider(datasource);
-      const input = createTypeaheadInput('{}', '');
-      const result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
-      expect(result.context).toBe('context-labels');
-      expect(result.suggestions).toEqual([{ items: [{ label: 'label1' }, { label: 'label2' }], label: 'Labels' }]);
-    });
-
     it('returns label values suggestions from Loki', async () => {
       const datasource = makeMockLokiDatasource({ label1: ['label1_val1', 'label1_val2'], label2: [] });
       const provider = await getLanguageProvider(datasource);
@@ -122,8 +166,48 @@ describe('Language completion provider', () => {
       result = await provider.provideCompletionItems(input, { absoluteRange: rangeMock });
       expect(result.context).toBe('context-label-values');
       expect(result.suggestions).toEqual([
-        { items: [{ label: 'label1_val1' }, { label: 'label1_val2' }], label: 'Label values for "label1"' },
+        {
+          items: [
+            { label: 'label1_val1', filterText: '"label1_val1"' },
+            { label: 'label1_val2', filterText: '"label1_val2"' },
+          ],
+          label: 'Label values for "label1"',
+        },
       ]);
+    });
+  });
+
+  describe('label values', () => {
+    it('should fetch label values if not cached', async () => {
+      const absoluteRange: AbsoluteTimeRange = {
+        from: 0,
+        to: 5000,
+      };
+
+      const datasource = makeMockLokiDatasource({ testkey: ['label1_val1', 'label1_val2'], label2: [] });
+      const provider = await getLanguageProvider(datasource);
+      const requestSpy = jest.spyOn(provider, 'request');
+      const labelValues = await provider.fetchLabelValues('testkey', absoluteRange);
+      expect(requestSpy).toHaveBeenCalled();
+      expect(labelValues).toEqual(['label1_val1', 'label1_val2']);
+    });
+
+    it('should return cached values', async () => {
+      const absoluteRange: AbsoluteTimeRange = {
+        from: 0,
+        to: 5000,
+      };
+
+      const datasource = makeMockLokiDatasource({ testkey: ['label1_val1', 'label1_val2'], label2: [] });
+      const provider = await getLanguageProvider(datasource);
+      const requestSpy = jest.spyOn(provider, 'request');
+      const labelValues = await provider.fetchLabelValues('testkey', absoluteRange);
+      expect(requestSpy).toHaveBeenCalledTimes(1);
+      expect(labelValues).toEqual(['label1_val1', 'label1_val2']);
+
+      const nextLabelValues = await provider.fetchLabelValues('testkey', absoluteRange);
+      expect(requestSpy).toHaveBeenCalledTimes(1);
+      expect(nextLabelValues).toEqual(['label1_val1', 'label1_val2']);
     });
   });
 });
@@ -140,7 +224,7 @@ describe('Request URL', () => {
 
     const instance = new LanguageProvider(datasourceWithLabels, { initialRange: rangeMock });
     await instance.refreshLogLabels(rangeMock, true);
-    const expectedUrl = '/api/prom/label';
+    const expectedUrl = '/loki/api/v1/label';
     expect(datasourceSpy).toHaveBeenCalledWith(expectedUrl, rangeToParams(rangeMock));
   });
 });

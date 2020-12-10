@@ -1,20 +1,11 @@
-import { getLinksFromLogsField, getFieldLinksSupplier } from './linkSuppliers';
-import {
-  ArrayVector,
-  dateTime,
-  Field,
-  FieldType,
-  toDataFrame,
-  applyFieldOverrides,
-  GrafanaTheme,
-  FieldDisplay,
-  DataFrameView,
-} from '@grafana/data';
+import { getFieldLinksSupplier } from './linkSuppliers';
+import { applyFieldOverrides, DataFrameView, dateTime, FieldDisplay, toDataFrame } from '@grafana/data';
 import { getLinkSrv, LinkService, LinkSrv, setLinkSrv } from './link_srv';
 import { TemplateSrv } from '../../templating/template_srv';
 import { TimeSrv } from '../../dashboard/services/TimeSrv';
+import { getTheme } from '@grafana/ui';
 
-describe('getLinksFromLogsField', () => {
+describe('getFieldLinksSupplier', () => {
   let originalLinkSrv: LinkService;
   beforeAll(() => {
     // We do not need more here and TimeSrv is hard to setup fully.
@@ -34,41 +25,6 @@ describe('getLinksFromLogsField', () => {
     setLinkSrv(originalLinkSrv);
   });
 
-  it('interpolates link from field', () => {
-    const field: Field = {
-      name: 'test field',
-      type: FieldType.number,
-      config: {
-        links: [
-          {
-            title: 'title1',
-            url: 'http://domain.com/${__value.raw}',
-          },
-          {
-            title: 'title2',
-            url: 'http://anotherdomain.sk/${__value.raw}',
-          },
-        ],
-      },
-      values: new ArrayVector([1, 2, 3]),
-    };
-    const links = getLinksFromLogsField(field, 2);
-    expect(links.length).toBe(2);
-    expect(links[0].href).toBe('http://domain.com/3');
-    expect(links[1].href).toBe('http://anotherdomain.sk/3');
-  });
-
-  it('handles zero links', () => {
-    const field: Field = {
-      name: 'test field',
-      type: FieldType.number,
-      config: {},
-      values: new ArrayVector([1, 2, 3]),
-    };
-    const links = getLinksFromLogsField(field, 2);
-    expect(links.length).toBe(0);
-  });
-
   it('links to items on the row', () => {
     const data = applyFieldOverrides({
       data: [
@@ -83,7 +39,7 @@ describe('getLinksFromLogsField', () => {
               config: {
                 unit: 'kW',
                 decimals: 3,
-                title: 'TheTitle',
+                displayName: 'TheTitle',
               },
             },
             {
@@ -129,13 +85,14 @@ describe('getLinksFromLogsField', () => {
           ],
         }),
       ],
-      fieldOptions: {
+      fieldConfig: {
         defaults: {},
         overrides: [],
       },
       replaceVariables: (val: string) => val,
+      getDataSourceSettingsByUid: (val: string) => ({} as any),
       timeZone: 'utc',
-      theme: {} as GrafanaTheme,
+      theme: getTheme(),
       autoMinMax: true,
     })[0];
 
@@ -149,10 +106,11 @@ describe('getLinksFromLogsField', () => {
       rowIndex,
       colIndex,
       display: field.display!(field.values.get(rowIndex)),
+      hasLinks: true,
     };
 
     const supplier = getFieldLinksSupplier(fieldDisp);
-    const links = supplier.getLinks({}).map(m => {
+    const links = supplier?.getLinks({}).map(m => {
       return {
         title: m.title,
         href: m.href,

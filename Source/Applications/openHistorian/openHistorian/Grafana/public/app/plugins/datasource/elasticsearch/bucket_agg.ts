@@ -32,7 +32,7 @@ export class ElasticBucketAggCtrl {
     );
 
     $scope.init = () => {
-      $scope.agg = bucketAggs[$scope.index];
+      $scope.agg = bucketAggs[$scope.index] || {};
       $scope.validateModel();
     };
 
@@ -79,7 +79,7 @@ export class ElasticBucketAggCtrl {
         case 'terms': {
           settings.order = settings.order || 'desc';
           settings.size = settings.size || '10';
-          settings.min_doc_count = settings.min_doc_count || 1;
+          settings.min_doc_count = settings.min_doc_count || 0;
           settings.orderBy = settings.orderBy || '_term';
 
           if (settings.size !== '0') {
@@ -144,8 +144,8 @@ export class ElasticBucketAggCtrl {
           break;
         }
         case 'geohash_grid': {
-          // limit precision to 7
-          settings.precision = Math.max(Math.min(settings.precision, 7), 1);
+          // limit precision to 12
+          settings.precision = Math.max(Math.min(settings.precision, 12), 1);
           settingsLinkText = 'Precision: ' + settings.precision;
           break;
         }

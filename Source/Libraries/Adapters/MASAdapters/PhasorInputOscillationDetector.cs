@@ -147,11 +147,14 @@ namespace MAS
 
             MeasurementKey getMeasurementKey(SignalType signalType) => InputMeasurementKeys.Where((_, index) => InputMeasurementKeyTypes[index] == signalType).FirstOrDefault();
 
+            const string ErrorPrefix = "Angle and magnitude measurements for both a voltage and current phasor are required inputs. ";
+            const string ErrorSuffix = " input measurement is missing, cannot initialize adapter.";
+
             // Validate input contains voltage and current phase angle / magnitude measurement keys
-            m_voltageMagnitude = getMeasurementKey(SignalType.VPHM) ?? throw new InvalidOperationException("One voltage magnitude input measurement is required. Cannot initialize adapter.");
-            m_voltageAngle = getMeasurementKey(SignalType.VPHA) ?? throw new InvalidOperationException("One voltage angle input measurement is required. Cannot initialize adapter.");
-            m_currentMagnitude = getMeasurementKey(SignalType.IPHM) ?? throw new InvalidOperationException("One current magnitude input measurement is required. Cannot initialize adapter.");
-            m_currentAngle = getMeasurementKey(SignalType.IPHA) ?? throw new InvalidOperationException("One current angle input measurement is required. Cannot initialize adapter.");
+            m_voltageMagnitude = getMeasurementKey(SignalType.VPHM) ?? throw new InvalidOperationException(ErrorPrefix + "Voltage magnitude" + ErrorSuffix);
+            m_voltageAngle = getMeasurementKey(SignalType.VPHA) ?? throw new InvalidOperationException(ErrorPrefix + "Voltage angle" + ErrorSuffix);
+            m_currentMagnitude = getMeasurementKey(SignalType.IPHM) ?? throw new InvalidOperationException(ErrorPrefix + "Current magnitude" + ErrorSuffix);
+            m_currentAngle = getMeasurementKey(SignalType.IPHA) ?? throw new InvalidOperationException(ErrorPrefix + "Current angle" + ErrorSuffix);
 
             // Make sure input measurement keys are in desired order
             InputMeasurementKeys = new[] { m_voltageMagnitude, m_voltageAngle, m_currentMagnitude, m_currentAngle };

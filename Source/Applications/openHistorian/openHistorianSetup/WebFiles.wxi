@@ -30,6 +30,9 @@
   <Component Id="Help_cshtml">
     <File Id="Help.cshtml" Name="Help.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Help.cshtml" />
   </Component>
+  <Component Id="IaonGraph_cshtml">
+    <File Id="IaonGraph.cshtml" Name="IaonGraph.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\IaonGraph.cshtml" />
+  </Component>
   <Component Id="ImportCOMTRADE_cshtml">
     <File Id="ImportCOMTRADE.cshtml" Name="ImportCOMTRADE.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ImportCOMTRADE.cshtml" />
   </Component>
@@ -181,8 +184,20 @@
   <Component Id="Scripts_bootstrap_datetimepicker_js">
     <File Id="Scripts_bootstrap_datetimepicker.js" Name="bootstrap-datetimepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.js" />
   </Component>
+  <Component Id="Scripts_d3_dsv_js">
+    <File Id="Scripts_d3_dsv.js" Name="d3-dsv.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-dsv.js" />
+  </Component>
+  <Component Id="Scripts_d3_force_js">
+    <File Id="Scripts_d3_force.js" Name="d3-force.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-force.js" />
+  </Component>
+  <Component Id="Scripts_d3_quadtree_js">
+    <File Id="Scripts_d3_quadtree.js" Name="d3-quadtree.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-quadtree.js" />
+  </Component>
   <Component Id="Scripts_dateFormat_js">
     <File Id="Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\dateFormat.js" />
+  </Component>
+  <Component Id="Scripts_force_graph_js">
+    <File Id="Scripts_force_graph.js" Name="force-graph.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\force-graph.js" />
   </Component>
   <Component Id="Scripts_Site_js">
     <File Id="Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\Site.js" />

@@ -34,6 +34,7 @@ using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.TimeSeries.Data;
+using GSF.TimeSeries.Model;
 using PowerCalculations;
 using MeasurementRecord = GSF.TimeSeries.Model.Measurement;
 using PhasorRecord = GSF.TimeSeries.Model.Phasor;
@@ -64,6 +65,9 @@ namespace MAS
         /// Defines the default value for the <see cref="InputMeasurementIndexUsedForName"/>.
         /// </summary>
         public const int DefaultInputMeasurementIndexUsedForName = 2;
+
+        // Fields
+        private MeasurementKey[] m_operatingMeasurementKeys;
 
         #endregion
 
@@ -158,17 +162,26 @@ namespace MAS
                 {
                     if (CurrentAdapterIndex > -1)
                     {
-                        // Just pick first input measurement to find associated device ID
-                        MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
-                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
-                        int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
+                        MeasurementKey[] operatingMeasurementKeys = m_operatingMeasurementKeys ?? InputMeasurementKeys;
 
-                        // Query the actual database record ID based on the known runtime ID for this device
-                        using (AdoDataConnection connection = GetConfiguredConnection())
+                        // Just pick first input measurement to find associated device ID
+                        MeasurementKey inputMeasurement = operatingMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
+                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
+
+                        if (!(record is null))
                         {
-                            TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
-                            Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
-                            return runtimeRecord.SourceID;
+                            string deviceName = record["Device"].ToString();
+
+                            if (!string.IsNullOrWhiteSpace(deviceName))
+                            {
+                                // Query the actual database record ID based on the known runtime ID for this device
+                                using (AdoDataConnection connection = GetConfiguredConnection())
+                                {
+                                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceName);
+                                    return device.ID;
+                                }
+                            }
                         }
                     }
                 }
@@ -231,34 +244,50 @@ namespace MAS
         {
             Dictionary<string, string> settings = Settings;
 
-            if (!settings.TryGetValue(nameof(InputMeasurementKeys), out string inputMeasurementKeys) || string.IsNullOrWhiteSpace(inputMeasurementKeys))
+            if (!settings.TryGetValue(nameof(InputMeasurementKeys), out string setting) || string.IsNullOrWhiteSpace(setting))
                 settings[nameof(InputMeasurementKeys)] = DefaultInputMeasurementKeys;
 
             base.ParseConnectionString();
 
-            List<MeasurementKey> voltageMagnitudes = new List<MeasurementKey>();
-            List<MeasurementKey> voltageAngles = new List<MeasurementKey>();
-            List<MeasurementKey> currentMagnitudes = new List<MeasurementKey>();
-            List<MeasurementKey> currentAngles = new List<MeasurementKey>();
+            // Get a local copy of the input keys as these will change often during initialization
+            MeasurementKey[] inputMeasurementKeys = InputMeasurementKeys;
+            SignalType[] inputMeasurementKeyTypes = InputMeasurementKeyTypes;
 
-            for (int i = 0; i < InputMeasurementKeys.Length; i++)
+            if (inputMeasurementKeys.Length == 0)
             {
-                MeasurementKey key = InputMeasurementKeys[i];
-                SignalType signalType = InputMeasurementKeyTypes[i];
+                OnStatusMessage(MessageLevel.Error, "No inputs were configured. Cannot initialize adapter.");
+                return;
+            }
+
+            if (inputMeasurementKeys.Length != inputMeasurementKeyTypes.Length)
+            {
+                OnStatusMessage(MessageLevel.Error, "Parallel input measurement keys and type array lengths do not match. Cannot initialize adapter.");
+                return;
+            }
+
+            List<MeasurementKey> voltageMagnitudeKeys = new List<MeasurementKey>();
+            List<MeasurementKey> voltageAngleKeys = new List<MeasurementKey>();
+            List<MeasurementKey> currentMagnitudeKeys = new List<MeasurementKey>();
+            List<MeasurementKey> currentAngleKeys = new List<MeasurementKey>();
+
+            for (int i = 0; i < inputMeasurementKeys.Length; i++)
+            {
+                MeasurementKey key = inputMeasurementKeys[i];
+                SignalType signalType = inputMeasurementKeyTypes[i];
 
                 switch (signalType)
                 {
                     case SignalType.VPHM:
-                        voltageMagnitudes.Add(key);
+                        voltageMagnitudeKeys.Add(key);
                         break;
                     case SignalType.VPHA:
-                        voltageAngles.Add(key);
+                        voltageAngleKeys.Add(key);
                         break;
                     case SignalType.IPHM:
-                        currentMagnitudes.Add(key);
+                        currentMagnitudeKeys.Add(key);
                         break;
                     case SignalType.IPHA:
-                        currentAngles.Add(key);
+                        currentAngleKeys.Add(key);
                         break;
                     default:
                         OnStatusMessage(MessageLevel.Warning, $"Unexpected input type \"{signalType}\" encountered in input for {nameof(BulkPhasorInputOscillationDetector)}. Expected one of \"{SignalType.VPHM}\", \"{SignalType.VPHA}\", \"{SignalType.IPHM}\", or \"{SignalType.IPHA}\".");
@@ -266,8 +295,11 @@ namespace MAS
                 }
             }
 
-            if (currentMagnitudes.Count != currentAngles.Count)
-                throw new InvalidOperationException("Uneven number of current magnitude and angle inputs provided. Cannot initialize adapter.");
+            if (voltageMagnitudeKeys.Count != voltageAngleKeys.Count)
+                OnStatusMessage(MessageLevel.Warning, $"Uneven number of voltage magnitude ({voltageMagnitudeKeys.Count:N0}) and voltage angle ({voltageAngleKeys.Count:N0}) inputs provided, verify input configuration.");
+
+            if (currentMagnitudeKeys.Count != currentAngleKeys.Count)
+                OnStatusMessage(MessageLevel.Warning, $"Uneven number of current magnitude ({currentMagnitudeKeys.Count:N0}) and current angle ({currentAngleKeys.Count:N0}) inputs provided, verify input configuration.");
 
             // Build proper set of inputs where voltages and associated currents are grouped together
             List<MeasurementKey> inputs = new List<MeasurementKey>();
@@ -279,70 +311,104 @@ namespace MAS
                 TableOperations<PhasorRecord> phasorTable = new TableOperations<PhasorRecord>(connection);
                 TableOperations<SignalTypeRecord> signalTypeTable = new TableOperations<SignalTypeRecord>(connection);
 
-                // Lookup signal type ID for voltage magnitude
+                // Lookup needed signal type IDs
+                int currentAngleSignalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", $"{SignalType.IPHA}")?.ID ?? 2;
                 int voltageMagnitudeSignalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", $"{SignalType.VPHM}")?.ID ?? 3;
+                int voltageAngleSignalTypeID = signalTypeTable.QueryRecordWhere("Acronym = {0}", $"{SignalType.VPHA}")?.ID ?? 4;
 
-                for (int i = 0; i < currentMagnitudes.Count; i++)
+                foreach (MeasurementKey currentMagnitude in currentMagnitudeKeys)
                 {
-                    MeasurementKey currentMagnitude = currentMagnitudes[i];
-                    MeasurementKey currentAngle = currentAngles[i];
-
-                    if (currentMagnitude == null || currentAngle == null)
+                    if (currentMagnitude == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
-                    MeasurementRecord currentMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", currentMagnitude.SignalID);
+                    // Lookup current magnitude measurement
+                    MeasurementRecord currentMagnitudeMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", currentMagnitude.SignalID);
 
-                    // If current measurement is not found, skip configuration
-                    if (currentMeasurement == null)
+                    // If current magnitude measurement is not found, skip configuration
+                    if (currentMagnitudeMeasurement == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
-                    PhasorRecord currentPhasor = phasorTable.QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", currentMeasurement.DeviceID, currentMeasurement.PhasorSourceIndex);
+                    // Lookup current phasor (as associated with current magnitude)
+                    PhasorRecord currentPhasor = phasorTable.QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", currentMagnitudeMeasurement.DeviceID, currentMagnitudeMeasurement.PhasorSourceIndex);
 
-                    // If no associated voltage is assigned, skip configuration
+                    // If no associated voltage phasor is assigned, skip configuration
                     if (currentPhasor?.DestinationPhasorID == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
+                    // Lookup associated current angle measurement
+                    MeasurementRecord currentAngleMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", currentPhasor.DeviceID, currentPhasor.SourceIndex, currentAngleSignalTypeID);
+
+                    // If current angle measurement is not found, skip configuration
+                    if (currentAngleMeasurement == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
+                    // Lookup associated current angle in the inputs to this adapter
+                    MeasurementKey currentAngle = currentAngleKeys.FirstOrDefault(angleKey => angleKey.SignalID == currentAngleMeasurement.SignalID);
+
+                    // If current angle is not found as an input, skip configuration
+                    if (currentAngle == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
+                    // Lookup destination voltage phasor (as mapped to the current phasor)
                     PhasorRecord voltagePhasor = phasorTable.QueryRecordWhere("ID = {0}", currentPhasor.DestinationPhasorID);
-                    
-                    // If associated voltage is not found, skip configuration
+
+                    // If associated voltage phasor is not found, skip configuration
                     if (voltagePhasor == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
-                    MeasurementRecord voltageMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageMagnitudeSignalTypeID);
+                    // Lookup associated voltage magnitude measurement
+                    MeasurementRecord voltageMagnitudeMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageMagnitudeSignalTypeID);
 
-                    // If voltage measurement is not found, skip configuration
-                    if (voltageMeasurement == null)
+                    // If voltage magnitude measurement is not found, skip configuration
+                    if (voltageMagnitudeMeasurement == null)
                     {
                         unassociatedCount++;
                         continue;
                     }
 
-                    MeasurementKey voltageMagnitude = null;
-                    MeasurementKey voltageAngle = null;
+                    // Lookup associated voltage magnitude in the inputs to this adapter
+                    MeasurementKey voltageMagnitude = voltageMagnitudeKeys.FirstOrDefault(magnitudeKey => magnitudeKey.SignalID == voltageMagnitudeMeasurement.SignalID);
 
-                    for (int j = 0; j < voltageMagnitudes.Count; j++)
+                    // If voltage magnitude is not found as an input, skip configuration
+                    if (voltageMagnitude == null)
                     {
-                        if (voltageMagnitudes[j].SignalID == voltageMeasurement.SignalID)
-                        {
-                            voltageMagnitude = voltageMagnitudes[j];
-                            voltageAngle = voltageAngles[j];
-                            break;
-                        }
+                        unassociatedCount++;
+                        continue;
                     }
 
-                    if (voltageMagnitude == null || voltageAngle == null)
+                    // Lookup associated voltage angle measurement
+                    MeasurementRecord voltageAngleMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageAngleSignalTypeID);
+
+                    // If voltage angle measurement is not found, skip configuration
+                    if (voltageAngleMeasurement == null)
+                    {
+                        unassociatedCount++;
+                        continue;
+                    }
+
+                    // Lookup associated voltage angle in the inputs to this adapter
+                    MeasurementKey voltageAngle = voltageAngleKeys.FirstOrDefault(angleKey => angleKey.SignalID == voltageAngleMeasurement.SignalID);
+
+                    // If voltage angle is not found as an input, skip configuration
+                    if (voltageAngle == null)
                     {
                         unassociatedCount++;
                         continue;
@@ -357,15 +423,25 @@ namespace MAS
             }
 
             if (unassociatedCount > 0)
-                OnStatusMessage(MessageLevel.Warning, $"{unassociatedCount:N0} of the specified input currents had no associated voltages and were excluded as inputs.");
+                OnStatusMessage(MessageLevel.Warning, $"{unassociatedCount:N0} of the specified input current phasors had no associated voltage phasors and were excluded as inputs.");
 
             if (inputs.Count % PerAdapterInputCount != 0)
-                OnStatusMessage(MessageLevel.Warning, $"Unexpected number of input {inputs.Count:N0} for {PerAdapterInputCount:N0} inputs per adapter.");
+                OnStatusMessage(MessageLevel.Warning, $"Unexpected number of inputs ({inputs.Count:N0}) for {PerAdapterInputCount:N0} inputs per adapter.");
+
+            if (inputs.Count == 0)
+            {
+                OnStatusMessage(MessageLevel.Warning, "No valid inputs were defined. Cannot initialize adapter.");
+                return;
+            }
 
             // Define properly ordered and associated set of inputs
-            InputMeasurementKeys = inputs.ToArray();
-            
-            InitializeChildAdapterManagement();
+            m_operatingMeasurementKeys = inputs.ToArray();
+
+            // Setup child adapters
+            InitializeChildAdapterManagement(m_operatingMeasurementKeys);
+
+            // Update external routing tables to only needed inputs
+            InputMeasurementKeys = m_operatingMeasurementKeys;
         }
 
         #endregion

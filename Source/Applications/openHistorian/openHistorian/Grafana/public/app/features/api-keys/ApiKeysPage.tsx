@@ -13,11 +13,11 @@ import ApiKeysAddedModal from './ApiKeysAddedModal';
 import config from 'app/core/config';
 import appEvents from 'app/core/app_events';
 import EmptyListCTA from 'app/core/components/EmptyListCTA/EmptyListCTA';
-import { DeleteButton, EventsWithValidation, FormLabel, Input, Switch, ValidationEvents } from '@grafana/ui';
-import { dateTime, isDateTime, NavModel } from '@grafana/data';
+import { DeleteButton, EventsWithValidation, InlineFormLabel, LegacyForms, ValidationEvents, Icon } from '@grafana/ui';
+const { Input, Switch } = LegacyForms;
+import { NavModel, dateTimeFormat, rangeUtil } from '@grafana/data';
 import { FilterInput } from 'app/core/components/FilterInput/FilterInput';
 import { store } from 'app/store/store';
-import kbn from 'app/core/utils/kbn';
 import { getTimeZone } from 'app/features/profile/state/selectors';
 import { setSearchQuery } from './state/reducers';
 
@@ -29,7 +29,7 @@ const timeRangeValidationEvents: ValidationEvents = {
           return true;
         }
         try {
-          kbn.interval_to_seconds(value);
+          rangeUtil.intervalToSeconds(value);
           return true;
         } catch {
           return false;
@@ -117,7 +117,7 @@ export class ApiKeysPage extends PureComponent<Props, any> {
 
     // make sure that secondsToLive is number or null
     const secondsToLive = this.state.newApiKey['secondsToLive'];
-    this.state.newApiKey['secondsToLive'] = secondsToLive ? kbn.interval_to_seconds(secondsToLive) : null;
+    this.state.newApiKey['secondsToLive'] = secondsToLive ? rangeUtil.intervalToSeconds(secondsToLive) : null;
     this.props.addApiKey(this.state.newApiKey, openModal, this.props.includeExpired);
     this.setState((prevState: State) => {
       return {
@@ -150,7 +150,7 @@ export class ApiKeysPage extends PureComponent<Props, any> {
         {!isAdding && (
           <EmptyListCTA
             title="You haven't added any API Keys yet."
-            buttonIcon="gicon gicon-apikeys"
+            buttonIcon="key-skeleton-alt"
             buttonLink="#"
             onClick={this.onToggleAdding}
             buttonTitle=" New API Key"
@@ -166,11 +166,8 @@ export class ApiKeysPage extends PureComponent<Props, any> {
     if (!date) {
       return 'No expiration date';
     }
-    date = isDateTime(date) ? date : dateTime(date);
-    format = format || 'YYYY-MM-DD HH:mm:ss';
-    const timezone = getTimeZone(store.getState().user);
-
-    return timezone === 'utc' ? date.utc().format(format) : date.format(format);
+    const timeZone = getTimeZone(store.getState().user);
+    return dateTimeFormat(date, { format, timeZone });
   }
 
   renderAddApiKeyForm() {
@@ -178,12 +175,12 @@ export class ApiKeysPage extends PureComponent<Props, any> {
 
     return (
       <SlideDown in={isAdding}>
-        <div className="cta-form">
+        <div className="gf-form-inline cta-form">
           <button className="cta-form__close btn btn-transparent" onClick={this.onToggleAdding}>
-            <i className="fa fa-close" />
+            <Icon name="times" />
           </button>
-          <h5>Add API Key</h5>
           <form className="gf-form-group" onSubmit={this.onAddApiKey}>
+            <h5>Add API Key</h5>
             <div className="gf-form-inline">
               <div className="gf-form max-width-21">
                 <span className="gf-form-label">Key name</span>
@@ -214,7 +211,7 @@ export class ApiKeysPage extends PureComponent<Props, any> {
                 </span>
               </div>
               <div className="gf-form max-width-21">
-                <FormLabel tooltip={tooltipText}>Time to live</FormLabel>
+                <InlineFormLabel tooltip={tooltipText}>Time to live</InlineFormLabel>
                 <Input
                   type="text"
                   className="gf-form-input"

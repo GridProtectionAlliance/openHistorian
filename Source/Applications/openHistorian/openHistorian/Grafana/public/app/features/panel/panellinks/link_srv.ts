@@ -1,21 +1,27 @@
 import _ from 'lodash';
 import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import templateSrv, { TemplateSrv } from 'app/features/templating/template_srv';
+import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
 import coreModule from 'app/core/core_module';
-import { appendQueryToUrl, toUrlParams } from 'app/core/utils/url';
-import { sanitizeUrl } from 'app/core/utils/text';
 import { getConfig } from 'app/core/config';
-import locationUtil from 'app/core/utils/location_util';
-import { VariableSuggestion, VariableOrigin, DataLinkBuiltInVars } from '@grafana/ui';
 import {
-  DataLink,
-  KeyValue,
-  deprecationWarning,
-  LinkModel,
   DataFrame,
-  ScopedVars,
-  FieldType,
+  DataLink,
+  DataLinkBuiltInVars,
+  DataLinkClickEvent,
+  deprecationWarning,
   Field,
+  FieldType,
+  getFieldDisplayName,
+  KeyValue,
+  LinkModel,
+  locationUtil,
+  PanelPlugin,
+  ScopedVars,
+  textUtil,
+  urlUtil,
+  VariableOrigin,
+  VariableSuggestion,
+  VariableSuggestionsScope,
 } from '@grafana/data';
 
 const timeRangeVars = [
@@ -70,15 +76,17 @@ const valueVars = [
 ];
 
 const buildLabelPath = (label: string) => {
-  return label.indexOf('.') > -1 ? `["${label}"]` : `.${label}`;
+  return label.includes('.') || label.trim().includes(' ') ? `["${label}"]` : `.${label}`;
 };
 
 export const getPanelLinksVariableSuggestions = (): VariableSuggestion[] => [
-  ...templateSrv.variables.map(variable => ({
-    value: variable.name as string,
-    label: variable.name,
-    origin: VariableOrigin.Template,
-  })),
+  ...getTemplateSrv()
+    .getVariables()
+    .map(variable => ({
+      value: variable.name as string,
+      label: variable.name,
+      origin: VariableOrigin.Template,
+    })),
   {
     value: `${DataLinkBuiltInVars.includeVars}`,
     label: 'All variables',
@@ -121,28 +129,35 @@ const getFieldVars = (dataFrames: DataFrame[]) => {
   ];
 };
 
-const getDataFrameVars = (dataFrames: DataFrame[]) => {
-  let numeric: Field = undefined;
-  let title: Field = undefined;
+export const getDataFrameVars = (dataFrames: DataFrame[]) => {
+  let numeric: Field | undefined = undefined;
+  let title: Field | undefined = undefined;
   const suggestions: VariableSuggestion[] = [];
   const keys: KeyValue<true> = {};
-  for (const df of dataFrames) {
-    for (const f of df.fields) {
-      if (keys[f.name]) {
+
+  for (const frame of dataFrames) {
+    for (const field of frame.fields) {
+      const displayName = getFieldDisplayName(field, frame, dataFrames);
+
+      if (keys[displayName]) {
         continue;
       }
+
       suggestions.push({
-        value: `__data.fields[${f.name}]`,
-        label: `${f.name}`,
-        documentation: `Formatted value for ${f.name} on the same row`,
+        value: `__data.fields${buildLabelPath(displayName)}`,
+        label: `${displayName}`,
+        documentation: `Formatted value for ${displayName} on the same row`,
         origin: VariableOrigin.Fields,
       });
-      keys[f.name] = true;
-      if (!numeric && f.type === FieldType.number) {
-        numeric = f;
+
+      keys[displayName] = true;
+
+      if (!numeric && field.type === FieldType.number) {
+        numeric = { ...field, name: displayName };
       }
-      if (!title && f.config.title && f.config.title !== f.name) {
-        title = f;
+
+      if (!title && field.config.displayName && field.config.displayName !== field.name) {
+        title = { ...field, name: displayName };
       }
     }
   }
@@ -155,46 +170,61 @@ const getDataFrameVars = (dataFrames: DataFrame[]) => {
       origin: VariableOrigin.Fields,
     });
   }
+
   if (numeric) {
     suggestions.push({
-      value: `__data.fields[${numeric.name}].numeric`,
+      value: `__data.fields${buildLabelPath(numeric.name)}.numeric`,
       label: `Show numeric value`,
       documentation: `the numeric field value`,
       origin: VariableOrigin.Fields,
     });
     suggestions.push({
-      value: `__data.fields[${numeric.name}].text`,
+      value: `__data.fields${buildLabelPath(numeric.name)}.text`,
       label: `Show text value`,
       documentation: `the text value`,
       origin: VariableOrigin.Fields,
     });
   }
+
   if (title) {
     suggestions.push({
-      value: `__data.fields[${title.config.title}]`,
+      value: `__data.fields${buildLabelPath(title.name)}`,
       label: `Select by title`,
       documentation: `Use the title to pick the field`,
       origin: VariableOrigin.Fields,
     });
   }
+
   return suggestions;
 };
 
-export const getDataLinksVariableSuggestions = (dataFrames: DataFrame[]): VariableSuggestion[] => {
+export const getDataLinksVariableSuggestions = (
+  dataFrames: DataFrame[],
+  scope?: VariableSuggestionsScope
+): VariableSuggestion[] => {
   const valueTimeVar = {
     value: `${DataLinkBuiltInVars.valueTime}`,
     label: 'Time',
     documentation: 'Time value of the clicked datapoint (in ms epoch)',
     origin: VariableOrigin.Value,
   };
-  return [
-    ...seriesVars,
-    ...getFieldVars(dataFrames),
-    ...valueVars,
-    valueTimeVar,
-    ...getDataFrameVars(dataFrames),
-    ...getPanelLinksVariableSuggestions(),
-  ];
+  const includeValueVars = scope === VariableSuggestionsScope.Values;
+
+  return includeValueVars
+    ? [
+        ...seriesVars,
+        ...getFieldVars(dataFrames),
+        ...valueVars,
+        valueTimeVar,
+        ...getDataFrameVars(dataFrames),
+        ...getPanelLinksVariableSuggestions(),
+      ]
+    : [
+        ...seriesVars,
+        ...getFieldVars(dataFrames),
+        ...getDataFrameVars(dataFrames),
+        ...getPanelLinksVariableSuggestions(),
+      ];
 };
 
 export const getCalculationValueDataLinksVariableSuggestions = (dataFrames: DataFrame[]): VariableSuggestion[] => {
@@ -208,8 +238,24 @@ export const getCalculationValueDataLinksVariableSuggestions = (dataFrames: Data
   return [...seriesVars, ...fieldVars, ...valueVars, valueCalcVar, ...getPanelLinksVariableSuggestions()];
 };
 
+export const getPanelOptionsVariableSuggestions = (plugin: PanelPlugin, data?: DataFrame[]): VariableSuggestion[] => {
+  const dataVariables = plugin.meta.skipDataQuery ? [] : getDataFrameVars(data || []);
+  return [
+    ...dataVariables, // field values
+    ...getTemplateSrv()
+      .getVariables()
+      .map(variable => ({
+        value: variable.name as string,
+        label: variable.name,
+        origin: VariableOrigin.Template,
+      })),
+  ];
+};
+
 export interface LinkService {
-  getDataLinkUIModel: <T>(link: DataLink, scopedVars: ScopedVars, origin: T) => LinkModel<T>;
+  getDataLinkUIModel: <T>(link: DataLink, scopedVars: ScopedVars | undefined, origin: T) => LinkModel<T>;
+  getAnchorInfo: (link: any) => any;
+  getLinkUrl: (link: any) => string;
 }
 
 export class LinkSrv implements LinkService {
@@ -230,8 +276,8 @@ export class LinkSrv implements LinkService {
       this.templateSrv.fillVariableValuesForUrl(params);
     }
 
-    url = appendQueryToUrl(url, toUrlParams(params));
-    return getConfig().disableSanitizeHtml ? url : sanitizeUrl(url);
+    url = urlUtil.appendQueryToUrl(url, urlUtil.toUrlParams(params));
+    return getConfig().disableSanitizeHtml ? url : textUtil.sanitizeUrl(url);
   }
 
   getAnchorInfo(link: any) {
@@ -244,11 +290,12 @@ export class LinkSrv implements LinkService {
   /**
    * Returns LinkModel which is basically a DataLink with all values interpolated through the templateSrv.
    */
-  getDataLinkUIModel = <T>(link: DataLink, scopedVars: ScopedVars, origin: T): LinkModel<T> => {
+  getDataLinkUIModel = <T>(link: DataLink, scopedVars: ScopedVars | undefined, origin: T): LinkModel<T> => {
     const params: KeyValue = {};
-    const timeRangeUrl = toUrlParams(this.timeSrv.timeRangeForUrl());
+    const timeRangeUrl = urlUtil.toUrlParams(this.timeSrv.timeRangeForUrl());
 
     let href = link.url;
+
     if (link.onBuildUrl) {
       href = link.onBuildUrl({
         origin,
@@ -256,27 +303,32 @@ export class LinkSrv implements LinkService {
       });
     }
 
-    let onClick: (e: any) => void = undefined;
+    let onClick: ((event: DataLinkClickEvent) => void) | undefined = undefined;
+
     if (link.onClick) {
-      onClick = (e: any) => {
-        link.onClick({
-          origin,
-          scopedVars,
-          e,
-        });
+      onClick = (e: DataLinkClickEvent) => {
+        if (link.onClick) {
+          link.onClick({
+            origin,
+            scopedVars,
+            e,
+          });
+        }
       };
     }
 
     const info: LinkModel<T> = {
-      href: locationUtil.assureBaseUrl(href.replace(/\s|\n/g, '')),
+      href: locationUtil.assureBaseUrl(href.replace(/\n/g, '')),
       title: this.templateSrv.replace(link.title || '', scopedVars),
       target: link.targetBlank ? '_blank' : '_self',
       origin,
       onClick,
     };
+
     this.templateSrv.fillVariableValuesForUrl(params, scopedVars);
 
-    const variablesQuery = toUrlParams(params);
+    const variablesQuery = urlUtil.toUrlParams(params);
+
     info.href = this.templateSrv.replace(info.href, {
       ...scopedVars,
       [DataLinkBuiltInVars.keepTime]: {
@@ -288,7 +340,9 @@ export class LinkSrv implements LinkService {
         value: variablesQuery,
       },
     });
-    info.href = getConfig().disableSanitizeHtml ? info.href : sanitizeUrl(info.href);
+
+    info.href = getConfig().disableSanitizeHtml ? info.href : textUtil.sanitizeUrl(info.href);
+
     return info;
   };
 

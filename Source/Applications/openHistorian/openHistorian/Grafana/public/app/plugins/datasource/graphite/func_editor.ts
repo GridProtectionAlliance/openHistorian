@@ -10,8 +10,9 @@ export function graphiteFuncEditor($compile: any, templateSrv: TemplateSrv) {
       func="func"
       onRemove="ctrl.handleRemoveFunction"
       onMoveLeft="ctrl.handleMoveLeft"
-      onMoveRight="ctrl.handleMoveRight"
-    /><span>(</span>
+      onMoveRight="ctrl.handleMoveRight">
+    </function-editor>
+    <span>(</span>
   `;
   const paramTemplate =
     '<input type="text" style="display:none"' + ' class="input-small tight-form-func-param"></input>';
@@ -39,8 +40,6 @@ export function graphiteFuncEditor($compile: any, templateSrv: TemplateSrv) {
       };
 
       function clickFuncParam(this: any, paramIndex: any) {
-        /*jshint validthis:true */
-
         const $link = $(this);
         const $comma = $link.prev('.comma');
         const $input = $link.next();
@@ -85,7 +84,6 @@ export function graphiteFuncEditor($compile: any, templateSrv: TemplateSrv) {
       }
 
       function switchToLink(inputElem: HTMLElement, paramIndex: any) {
-        /*jshint validthis:true */
         const $input = $(inputElem);
 
         clearTimeout(cancelBlur);
@@ -119,7 +117,6 @@ export function graphiteFuncEditor($compile: any, templateSrv: TemplateSrv) {
 
       // this = input element
       function inputBlur(this: any, paramIndex: any) {
-        /*jshint validthis:true */
         const inputElem = this;
         // happens long before the click event on the typeahead options
         // need to have long delay because the blur
@@ -129,14 +126,12 @@ export function graphiteFuncEditor($compile: any, templateSrv: TemplateSrv) {
       }
 
       function inputKeyPress(this: any, paramIndex: any, e: any) {
-        /*jshint validthis:true */
         if (e.which === 13) {
           $(this).blur();
         }
       }
 
       function inputKeyDown(this: any) {
-        /*jshint validthis:true */
         this.style.width = (3 + this.value.length) * 8 + 'px';
       }
 

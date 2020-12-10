@@ -9,19 +9,21 @@ import { getColorScale, getOpacityScale } from './color_scale';
 import {
   toUtc,
   PanelEvents,
-  GrafanaThemeType,
-  getColorFromHexRgbOrName,
   getValueFormat,
   formattedValueToString,
+  dateTimeFormat,
+  getColorForTheme,
 } from '@grafana/data';
+import { graphTimeFormat } from '@grafana/ui';
 import { CoreEvents } from 'app/types';
+import { config } from 'app/core/config';
 
 const MIN_CARD_SIZE = 1,
   CARD_PADDING = 1,
   CARD_ROUND = 0,
   DATA_RANGE_WIDING_FACTOR = 1.2,
   DEFAULT_X_TICK_SIZE_PX = 100,
-  DEFAULT_Y_TICK_SIZE_PX = 50,
+  DEFAULT_Y_TICK_SIZE_PX = 22.5,
   X_AXIS_TICK_PADDING = 10,
   Y_AXIS_TICK_PADDING = 5,
   MIN_SELECTION_WIDTH = 2;
@@ -154,19 +156,18 @@ export class HeatmapRenderer {
       .range([0, this.chartWidth]);
 
     const ticks = this.chartWidth / DEFAULT_X_TICK_SIZE_PX;
-    const grafanaTimeFormatter = ticksUtils.grafanaTimeFormat(ticks, this.timeRange.from, this.timeRange.to);
-    let timeFormat;
-    const dashboardTimeZone = this.ctrl.dashboard.getTimezone();
-    if (dashboardTimeZone === 'utc') {
-      timeFormat = d3.utcFormat(grafanaTimeFormatter);
-    } else {
-      timeFormat = d3.timeFormat(grafanaTimeFormatter);
-    }
+    const format = graphTimeFormat(ticks, this.timeRange.from.valueOf(), this.timeRange.to.valueOf());
+    const timeZone = this.ctrl.dashboard.getTimezone();
+    const formatter = (date: Date) =>
+      dateTimeFormat(date.valueOf(), {
+        format: format,
+        timeZone: timeZone,
+      });
 
     const xAxis = d3
       .axisBottom(this.xScale)
       .ticks(ticks)
-      .tickFormat(timeFormat)
+      .tickFormat(formatter)
       .tickPadding(X_AXIS_TICK_PADDING)
       .tickSize(this.chartHeight);
 
@@ -344,6 +345,7 @@ export class HeatmapRenderer {
 
   addYAxisFromBuckets() {
     const tsBuckets = this.data.tsBuckets;
+    let ticks = Math.ceil(this.chartHeight / DEFAULT_Y_TICK_SIZE_PX);
 
     this.scope.yScale = this.yScale = d3
       .scaleLinear()
@@ -370,11 +372,15 @@ export class HeatmapRenderer {
 
     const yAxis = d3
       .axisLeft(this.yScale)
-      .tickValues(tickValues)
       .tickFormat(tickFormatter)
       .tickSizeInner(0 - this.width)
       .tickSizeOuter(0)
       .tickPadding(Y_AXIS_TICK_PADDING);
+    if (tickValues && tickValues.length <= ticks) {
+      yAxis.tickValues(tickValues);
+    } else {
+      yAxis.ticks(ticks);
+    }
 
     this.heatmap
       .append('g')
@@ -577,8 +583,8 @@ export class HeatmapRenderer {
 
   highlightCard(event: any) {
     const color = d3.select(event.target).style('fill');
-    const highlightColor = d3.color(color).darker(2);
-    const strokeColor = d3.color(color).brighter(4);
+    const highlightColor = d3.color(color)!.darker(2);
+    const strokeColor = d3.color(color)!.brighter(4);
     const currentCard = d3.select(event.target);
     this.tooltip.originalFillColor = color;
     currentCard
@@ -676,10 +682,7 @@ export class HeatmapRenderer {
 
   getCardColor(d: { count: any }) {
     if (this.panel.color.mode === 'opacity') {
-      return getColorFromHexRgbOrName(
-        this.panel.color.cardColor,
-        contextSrv.user.lightTheme ? GrafanaThemeType.Light : GrafanaThemeType.Dark
-      );
+      return getColorForTheme(this.panel.color.cardColor, config.theme);
     } else {
       return this.colorScale(d.count);
     }

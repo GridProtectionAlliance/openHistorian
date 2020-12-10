@@ -34,6 +34,7 @@ using GSF.Diagnostics;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.TimeSeries.Data;
+using GSF.TimeSeries.Model;
 using PowerCalculations;
 using static MAS.SingleInputOscillationDetector;
 using static MAS.OscillationDetector;
@@ -67,6 +68,9 @@ namespace MAS
         /// Defines the default value for the <see cref="InputMeasurementIndexUsedForName"/>.
         /// </summary>
         public const int DefaultInputMeasurementIndexUsedForName = 0;
+
+        // Fields
+        private MeasurementKey[] m_operatingMeasurementKeys;
 
         #endregion
 
@@ -161,17 +165,26 @@ namespace MAS
                 {
                     if (CurrentAdapterIndex > -1)
                     {
-                        // Just pick first input measurement to find associated device ID
-                        MeasurementKey inputMeasurement = InputMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
-                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
-                        int runtimeID = record?.ConvertNullableField<int>("DeviceID") ?? throw new Exception($"Failed to find associated runtime device ID for input measurement {inputMeasurement.SignalID}");
+                        MeasurementKey[] operatingMeasurementKeys = m_operatingMeasurementKeys ?? InputMeasurementKeys;
 
-                        // Query the actual database record ID based on the known runtime ID for this device
-                        using (AdoDataConnection connection = GetConfiguredConnection())
+                        // Just pick first input measurement to find associated device ID
+                        MeasurementKey inputMeasurement = operatingMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
+                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
+
+                        if (!(record is null))
                         {
-                            TableOperations<Runtime> runtimeTable = new TableOperations<Runtime>(connection);
-                            Runtime runtimeRecord = runtimeTable.QueryRecordWhere("ID = {0} AND SourceTable='Device'", runtimeID);
-                            return runtimeRecord.SourceID;
+                            string deviceName = record["Device"].ToString();
+
+                            if (!string.IsNullOrWhiteSpace(deviceName))
+                            {
+                                // Query the actual database record ID based on the known runtime ID for this device
+                                using (AdoDataConnection connection = GetConfiguredConnection())
+                                {
+                                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceName);
+                                    return device.ID;
+                                }
+                            }
                         }
                     }
                 }
@@ -240,7 +253,8 @@ namespace MAS
 
             base.ParseConnectionString();
 
-            InitializeChildAdapterManagement();
+            m_operatingMeasurementKeys = InputMeasurementKeys;
+            InitializeChildAdapterManagement(m_operatingMeasurementKeys);
         }
 
         #endregion

@@ -1,42 +1,27 @@
 import {
-  DEFAULT_RANGE,
-  serializeStateToUrlParam,
-  parseUrlState,
-  updateHistory,
+  buildQueryTransaction,
   clearHistory,
-  hasNonEmptyQuery,
-  getValueWithRefId,
+  DEFAULT_RANGE,
   getFirstQueryErrorWithoutRefId,
   getRefIds,
+  getValueWithRefId,
+  hasNonEmptyQuery,
+  parseUrlState,
   refreshIntervalToSortOrder,
-  SortOrder,
-  sortLogsResult,
-  buildQueryTransaction,
+  updateHistory,
+  getExploreUrl,
+  GetExploreUrlArguments,
+  getTimeRangeFromUrl,
 } from './explore';
-import { ExploreUrlState, ExploreMode } from 'app/types/explore';
 import store from 'app/core/store';
-import {
-  DataQueryError,
-  LogsDedupStrategy,
-  LogsModel,
-  LogLevel,
-  dateTime,
-  MutableDataFrame,
-  LogRowModel,
-} from '@grafana/data';
+import { DataQueryError, dateTime, ExploreUrlState, LogsSortOrder } from '@grafana/data';
 import { RefreshPicker } from '@grafana/ui';
+import { serializeStateToUrlParam } from '@grafana/data/src/utils/url';
 
 const DEFAULT_EXPLORE_STATE: ExploreUrlState = {
-  datasource: null,
+  datasource: '',
   queries: [],
   range: DEFAULT_RANGE,
-  mode: ExploreMode.Metrics,
-  ui: {
-    showingGraph: true,
-    showingTable: true,
-    showingLogs: true,
-    dedupStrategy: LogsDedupStrategy.none,
-  },
   originPanelId: undefined,
 };
 
@@ -51,8 +36,7 @@ describe('state functions', () => {
     });
 
     it('returns a valid Explore state from URL parameter', () => {
-      const paramValue =
-        '%7B"datasource":"Local","queries":%5B%7B"expr":"metric"%7D%5D,"range":%7B"from":"now-1h","to":"now"%7D%7D';
+      const paramValue = '{"datasource":"Local","queries":[{"expr":"metric"}],"range":{"from":"now-1h","to":"now"}}';
       expect(parseUrlState(paramValue)).toMatchObject({
         datasource: 'Local',
         queries: [{ expr: 'metric' }],
@@ -64,10 +48,23 @@ describe('state functions', () => {
     });
 
     it('returns a valid Explore state from a compact URL parameter', () => {
-      const paramValue = '%5B"now-1h","now","Local","5m",%7B"expr":"metric"%7D,"ui"%5D';
+      const paramValue = '["now-1h","now","Local",{"expr":"metric"},{"ui":[true,true,true,"none"]}]';
       expect(parseUrlState(paramValue)).toMatchObject({
         datasource: 'Local',
         queries: [{ expr: 'metric' }],
+        range: {
+          from: 'now-1h',
+          to: 'now',
+        },
+      });
+    });
+
+    it('should return queries if queryType is present in the url', () => {
+      const paramValue =
+        '["now-1h","now","x-ray-datasource",{"queryType":"getTraceSummaries"},{"ui":[true,true,true,"none"]}]';
+      expect(parseUrlState(paramValue)).toMatchObject({
+        datasource: 'x-ray-datasource',
+        queries: [{ queryType: 'getTraceSummaries' }],
         range: {
           from: 'now-1h',
           to: 'now',
@@ -97,9 +94,7 @@ describe('state functions', () => {
 
       expect(serializeStateToUrlParam(state)).toBe(
         '{"datasource":"foo","queries":[{"expr":"metric{test=\\"a/b\\"}"},' +
-          '{"expr":"super{foo=\\"x/z\\"}"}],"range":{"from":"now-5h","to":"now"},' +
-          '"mode":"Metrics",' +
-          '"ui":{"showingGraph":true,"showingTable":true,"showingLogs":true,"dedupStrategy":"none"}}'
+          '{"expr":"super{foo=\\"x/z\\"}"}],"range":{"from":"now-5h","to":"now"}}'
       );
     });
 
@@ -121,7 +116,7 @@ describe('state functions', () => {
         },
       };
       expect(serializeStateToUrlParam(state, true)).toBe(
-        '["now-5h","now","foo",{"expr":"metric{test=\\"a/b\\"}"},{"expr":"super{foo=\\"x/z\\"}"},{"mode":"Metrics"},{"ui":[true,true,true,"none"]}]'
+        '["now-5h","now","foo",{"expr":"metric{test=\\"a/b\\"}"},{"expr":"super{foo=\\"x/z\\"}"}]'
       );
     });
   });
@@ -170,6 +165,32 @@ describe('state functions', () => {
       const parsed = parseUrlState(serialized);
       expect(state).toMatchObject(parsed);
     });
+  });
+});
+
+describe('getExploreUrl', () => {
+  const args = ({
+    panel: {
+      getSavedId: () => 1,
+    },
+    panelTargets: [{ refId: 'A', expr: 'query1', legendFormat: 'legendFormat1' }],
+    panelDatasource: {
+      name: 'testDataSource',
+      meta: {
+        id: '1',
+      },
+    },
+    datasourceSrv: {
+      get: jest.fn(),
+      getDataSourceById: jest.fn(),
+    },
+    timeSrv: {
+      timeRangeForUrl: () => '1',
+    },
+  } as unknown) as GetExploreUrlArguments;
+
+  it('should omit legendFormat in explore url', () => {
+    expect(getExploreUrl(args).then(data => expect(data).not.toMatch(/legendFormat1/g)));
   });
 });
 
@@ -255,10 +276,47 @@ describe('hasRefId', () => {
   });
 });
 
+describe('getTimeRangeFromUrl', () => {
+  it('should parse moment date', () => {
+    // convert date strings to moment object
+    const range = { from: dateTime('2020-10-22T10:44:33.615Z'), to: dateTime('2020-10-22T10:49:33.615Z') };
+    const result = getTimeRangeFromUrl(range, 'browser');
+    expect(result.raw).toEqual(range);
+  });
+
+  it('should parse epoch strings', () => {
+    const range = {
+      from: dateTime('2020-10-22T10:00:00Z')
+        .valueOf()
+        .toString(),
+      to: dateTime('2020-10-22T11:00:00Z')
+        .valueOf()
+        .toString(),
+    };
+    const result = getTimeRangeFromUrl(range, 'browser');
+    expect(result.from.valueOf()).toEqual(dateTime('2020-10-22T10:00:00Z').valueOf());
+    expect(result.to.valueOf()).toEqual(dateTime('2020-10-22T11:00:00Z').valueOf());
+    expect(result.raw.from.valueOf()).toEqual(dateTime('2020-10-22T10:00:00Z').valueOf());
+    expect(result.raw.to.valueOf()).toEqual(dateTime('2020-10-22T11:00:00Z').valueOf());
+  });
+
+  it('should parse ISO strings', () => {
+    const range = {
+      from: dateTime('2020-10-22T10:00:00Z').toISOString(),
+      to: dateTime('2020-10-22T11:00:00Z').toISOString(),
+    };
+    const result = getTimeRangeFromUrl(range, 'browser');
+    expect(result.from.valueOf()).toEqual(dateTime('2020-10-22T10:00:00Z').valueOf());
+    expect(result.to.valueOf()).toEqual(dateTime('2020-10-22T11:00:00Z').valueOf());
+    expect(result.raw.from.valueOf()).toEqual(dateTime('2020-10-22T10:00:00Z').valueOf());
+    expect(result.raw.to.valueOf()).toEqual(dateTime('2020-10-22T11:00:00Z').valueOf());
+  });
+});
+
 describe('getFirstQueryErrorWithoutRefId', () => {
   describe('when called with a null value', () => {
     it('then it should return undefined', () => {
-      const errors: DataQueryError[] = null;
+      const errors: DataQueryError[] | undefined = undefined;
       const result = getFirstQueryErrorWithoutRefId(errors);
 
       expect(result).toBeUndefined();
@@ -350,7 +408,7 @@ describe('refreshIntervalToSortOrder', () => {
     it('then it should return ascending', () => {
       const result = refreshIntervalToSortOrder(RefreshPicker.liveOption.value);
 
-      expect(result).toBe(SortOrder.Ascending);
+      expect(result).toBe(LogsSortOrder.Ascending);
     });
   });
 
@@ -358,7 +416,7 @@ describe('refreshIntervalToSortOrder', () => {
     it('then it should return descending', () => {
       const result = refreshIntervalToSortOrder(RefreshPicker.offOption.value);
 
-      expect(result).toBe(SortOrder.Descending);
+      expect(result).toBe(LogsSortOrder.Descending);
     });
   });
 
@@ -366,7 +424,7 @@ describe('refreshIntervalToSortOrder', () => {
     it('then it should return descending', () => {
       const result = refreshIntervalToSortOrder('5s');
 
-      expect(result).toBe(SortOrder.Descending);
+      expect(result).toBe(LogsSortOrder.Descending);
     });
   });
 
@@ -374,100 +432,31 @@ describe('refreshIntervalToSortOrder', () => {
     it('then it should return descending', () => {
       const result = refreshIntervalToSortOrder(undefined);
 
-      expect(result).toBe(SortOrder.Descending);
+      expect(result).toBe(LogsSortOrder.Descending);
     });
   });
 });
 
-describe('sortLogsResult', () => {
-  const firstRow: LogRowModel = {
-    rowIndex: 0,
-    entryFieldIndex: 0,
-    dataFrame: new MutableDataFrame(),
-    entry: '',
-    hasAnsi: false,
-    labels: {},
-    logLevel: LogLevel.info,
-    raw: '',
-    timeEpochMs: 0,
-    timeFromNow: '',
-    timeLocal: '',
-    timeUtc: '',
-    uid: '1',
-  };
-  const sameAsFirstRow = firstRow;
-  const secondRow: LogRowModel = {
-    rowIndex: 1,
-    entryFieldIndex: 0,
-    dataFrame: new MutableDataFrame(),
-    entry: '',
-    hasAnsi: false,
-    labels: {},
-    logLevel: LogLevel.info,
-    raw: '',
-    timeEpochMs: 10,
-    timeFromNow: '',
-    timeLocal: '',
-    timeUtc: '',
-    uid: '2',
-  };
-
-  describe('when called with SortOrder.Descending', () => {
-    it('then it should sort descending', () => {
-      const logsResult: LogsModel = {
-        rows: [firstRow, sameAsFirstRow, secondRow],
-        hasUniqueLabels: false,
-      };
-      const result = sortLogsResult(logsResult, SortOrder.Descending);
-
-      expect(result).toEqual({
-        rows: [secondRow, firstRow, sameAsFirstRow],
-        hasUniqueLabels: false,
-      });
-    });
+describe('when buildQueryTransaction', () => {
+  it('it should calculate interval based on time range', () => {
+    const queries = [{ refId: 'A' }];
+    const queryOptions = { maxDataPoints: 1000, minInterval: '15s' };
+    const range = { from: dateTime().subtract(1, 'd'), to: dateTime(), raw: { from: '1h', to: '1h' } };
+    const transaction = buildQueryTransaction(queries, queryOptions, range, false);
+    expect(transaction.request.intervalMs).toEqual(60000);
   });
-
-  describe('when called with SortOrder.Ascending', () => {
-    it('then it should sort ascending', () => {
-      const logsResult: LogsModel = {
-        rows: [secondRow, firstRow, sameAsFirstRow],
-        hasUniqueLabels: false,
-      };
-      const result = sortLogsResult(logsResult, SortOrder.Ascending);
-
-      expect(result).toEqual({
-        rows: [firstRow, sameAsFirstRow, secondRow],
-        hasUniqueLabels: false,
-      });
-    });
+  it('it should calculate interval taking minInterval into account', () => {
+    const queries = [{ refId: 'A' }];
+    const queryOptions = { maxDataPoints: 1000, minInterval: '15s' };
+    const range = { from: dateTime().subtract(1, 'm'), to: dateTime(), raw: { from: '1h', to: '1h' } };
+    const transaction = buildQueryTransaction(queries, queryOptions, range, false);
+    expect(transaction.request.intervalMs).toEqual(15000);
   });
-
-  describe('when buildQueryTransaction', () => {
-    it('it should calculate interval based on time range', () => {
-      const queries = [{ refId: 'A' }];
-      const queryOptions = { maxDataPoints: 1000, minInterval: '15s' };
-      const range = { from: dateTime().subtract(1, 'd'), to: dateTime(), raw: { from: '1h', to: '1h' } };
-      const transaction = buildQueryTransaction(queries, queryOptions, range, false);
-
-      expect(transaction.request.intervalMs).toEqual(60000);
-    });
-
-    it('it should calculate interval taking minInterval into account', () => {
-      const queries = [{ refId: 'A' }];
-      const queryOptions = { maxDataPoints: 1000, minInterval: '15s' };
-      const range = { from: dateTime().subtract(1, 'm'), to: dateTime(), raw: { from: '1h', to: '1h' } };
-      const transaction = buildQueryTransaction(queries, queryOptions, range, false);
-
-      expect(transaction.request.intervalMs).toEqual(15000);
-    });
-
-    it('it should calculate interval taking maxDataPoints into account', () => {
-      const queries = [{ refId: 'A' }];
-      const queryOptions = { maxDataPoints: 10, minInterval: '15s' };
-      const range = { from: dateTime().subtract(1, 'd'), to: dateTime(), raw: { from: '1h', to: '1h' } };
-      const transaction = buildQueryTransaction(queries, queryOptions, range, false);
-
-      expect(transaction.request.interval).toEqual('2h');
-    });
+  it('it should calculate interval taking maxDataPoints into account', () => {
+    const queries = [{ refId: 'A' }];
+    const queryOptions = { maxDataPoints: 10, minInterval: '15s' };
+    const range = { from: dateTime().subtract(1, 'd'), to: dateTime(), raw: { from: '1h', to: '1h' } };
+    const transaction = buildQueryTransaction(queries, queryOptions, range, false);
+    expect(transaction.request.interval).toEqual('2h');
   });
 });

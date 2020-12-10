@@ -1,15 +1,18 @@
 import { DataSourcePluginMeta, PluginType } from '@grafana/data';
 import { DataSourcePluginCategory } from 'app/types';
+import { config } from '../../../core/config';
 
 export function buildCategories(plugins: DataSourcePluginMeta[]): DataSourcePluginCategory[] {
   const categories: DataSourcePluginCategory[] = [
     { id: 'tsdb', title: 'Time series databases', plugins: [] },
     { id: 'logging', title: 'Logging & document databases', plugins: [] },
+    { id: 'tracing', title: 'Distributed tracing', plugins: [] },
     { id: 'sql', title: 'SQL', plugins: [] },
     { id: 'cloud', title: 'Cloud', plugins: [] },
     { id: 'enterprise', title: 'Enterprise plugins', plugins: [] },
+    { id: 'iot', title: 'Industrial & IoT', plugins: [] },
     { id: 'other', title: 'Others', plugins: [] },
-  ];
+  ].filter(item => item);
 
   const categoryIndex: Record<string, DataSourcePluginCategory> = {};
   const pluginIndex: Record<string, DataSourcePluginMeta> = {};
@@ -20,10 +23,15 @@ export function buildCategories(plugins: DataSourcePluginMeta[]): DataSourcePlug
     categoryIndex[category.id] = category;
   }
 
+  const { edition, hasValidLicense } = config.licenseInfo;
+
   for (const plugin of plugins) {
+    const enterprisePlugin = enterprisePlugins.find(item => item.id === plugin.id);
     // Force category for enterprise plugins
-    if (enterprisePlugins.find(item => item.id === plugin.id)) {
+    if (plugin.enterprise || enterprisePlugin) {
       plugin.category = 'enterprise';
+      plugin.unlicensed = edition !== 'Open Source' && !hasValidLicense;
+      plugin.info.links = enterprisePlugin?.info?.links || plugin.info.links;
     }
 
     // Fix link name
@@ -57,7 +65,8 @@ export function buildCategories(plugins: DataSourcePluginMeta[]): DataSourcePlug
     sortPlugins(category.plugins);
   }
 
-  return categories;
+  // Only show categories with plugins
+  return categories.filter(c => c.plugins.length > 0);
 }
 
 function sortPlugins(plugins: DataSourcePluginMeta[]) {
@@ -66,6 +75,7 @@ function sortPlugins(plugins: DataSourcePluginMeta[]) {
     graphite: 95,
     loki: 90,
     mysql: 80,
+    jaeger: 100,
     postgres: 79,
     gcloud: -1,
   };
@@ -122,6 +132,30 @@ function getEnterprisePhantomPlugins(): DataSourcePluginMeta[] {
       name: 'New Relic',
       imgUrl: 'public/img/plugins/newrelic.svg',
     }),
+    getPhantomPlugin({
+      id: 'grafana-mongodb-datasource',
+      description: 'MongoDB integration & data source',
+      name: 'MongoDB',
+      imgUrl: 'public/img/plugins/mongodb.svg',
+    }),
+    getPhantomPlugin({
+      id: 'grafana-snowflake-datasource',
+      description: 'Snowflake integration & data source',
+      name: 'Snowflake',
+      imgUrl: 'public/img/plugins/snowflake.svg',
+    }),
+    getPhantomPlugin({
+      id: 'grafana-wavefront-datasource',
+      description: 'Wavefront integration & data source',
+      name: 'Wavefront',
+      imgUrl: 'public/img/plugins/wavefront.svg',
+    }),
+    getPhantomPlugin({
+      id: 'dlopes7-appdynamics-datasource',
+      description: 'AppDynamics integration & data source',
+      name: 'AppDynamics',
+      imgUrl: 'public/img/plugins/appdynamics.svg',
+    }),
   ];
 }
 
@@ -169,7 +203,7 @@ function getPhantomPlugin(options: GetPhantomPluginOptions): DataSourcePluginMet
       author: { name: 'Grafana Labs' },
       links: [
         {
-          url: 'https://grafana.com/grafana/plugins/' + options.id,
+          url: config.marketplaceUrl + options.id,
           name: 'Install now',
         },
       ],

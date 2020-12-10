@@ -706,6 +706,16 @@
             <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:GSF.ServiceProcess.ClientRequest"/> sent by the remote client.
             </remarks>
         </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.SendingClientResponse">
+            <summary>
+            Occurs when a response is being sent to one or more <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> ID of the client to whom the response is to be sent.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> to be sent to the client.<br/>
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is the assignable cancellation state, set to <c>true</c> to cancel send; otherwise, <c>false</c>
+            </remarks>
+        </member>
         <member name="E:GSF.ServiceProcess.ServiceHelper.ProcessStateChanged">
             <summary>
             Occurs when the state of a defined <see cref="T:GSF.ServiceProcess.ServiceProcess"/> changes.
@@ -1228,6 +1238,14 @@
             </summary>
             <param name="request">The <see cref="T:GSF.ServiceProcess.ClientRequest"/> that was received.</param>
             <param name="requestSender">The <see cref="T:GSF.ServiceProcess.ClientInfo"/> object of the <paramref name="request"/> sender.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnSendingClientResponse(System.Guid,GSF.ServiceProcess.ServiceResponse)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.SendingClientResponse"/> event.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="response"/> is to be sent.</param>
+            <param name="response">The <see cref="T:GSF.ServiceProcess.ServiceResponse"/> to be sent to the <paramref name="client"/>.</param>
+            <returns><c>true</c> if send was successful; otherwise, <c>false</c>, i.e., send was cancelled.</returns>
         </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.OnProcessStateChanged(System.String,GSF.ServiceProcess.ServiceProcessState)">
             <summary>

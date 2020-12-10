@@ -48,6 +48,7 @@
     <Use64BitIISExpress />
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <MSBuildWarningsAsMessages>MSB3276</MSBuildWarningsAsMessages>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +61,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>default</LangVersion>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -289,6 +289,9 @@
     <Content Include="wwwroot\Panels\powergen.svg" />
     <Content Include="wwwroot\Panels\speedometer.svg" />
     <Content Include="wwwroot\Scripts\bootstrap-datetimepicker.js" />
+    <Content Include="wwwroot\Scripts\d3-dsv.js" />
+    <Content Include="wwwroot\Scripts\d3-force.js" />
+    <Content Include="wwwroot\Scripts\d3-quadtree.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
     <Content Include="wwwroot\Content\bootstrap-sidebar.css" />
     <Content Include="wwwroot\Content\bootstrap-theme-cerulean.css" />
@@ -304,6 +307,7 @@
     <Content Include="wwwroot\Content\Site.css" />
     <Content Include="wwwroot\Images\openHistorian.png" />
     <Content Include="wwwroot\Images\openHistorianBanner.png" />
+    <Content Include="wwwroot\Scripts\force-graph.js" />
     <Content Include="wwwroot\Scripts\Site.js" />
     <None Include="App.config">
       <SubType>Designer</SubType>
@@ -333,6 +337,7 @@
     <Content Include="wwwroot\DeviceGroups.cshtml" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
+    <Content Include="wwwroot\IaonGraph.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
     <Content Include="wwwroot\UnbalanceReport.cshtml" />
     <None Include="wwwroot\Index.cshtml" />

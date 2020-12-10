@@ -1,8 +1,8 @@
 import angular from 'angular';
 import _ from 'lodash';
-import { dateMath, DataQueryRequest, DataSourceApi } from '@grafana/data';
-import { BackendSrv } from 'app/core/services/backend_srv';
-import { TemplateSrv } from 'app/features/templating/template_srv';
+import { dateMath, DataQueryRequest, DataSourceApi, ScopedVars } from '@grafana/data';
+import { getBackendSrv } from '@grafana/runtime';
+import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
 import { OpenTsdbOptions, OpenTsdbQuery } from './types';
 
 export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenTsdbOptions> {
@@ -19,10 +19,8 @@ export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenT
   aggregatorsPromise: any;
   filterTypesPromise: any;
 
-  /** @ngInject */
-  constructor(instanceSettings: any, private backendSrv: BackendSrv, private templateSrv: TemplateSrv) {
+  constructor(instanceSettings: any, private readonly templateSrv: TemplateSrv = getTemplateSrv()) {
     super(instanceSettings);
-
     this.type = 'opentsdb';
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
@@ -39,9 +37,9 @@ export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenT
   }
 
   // Called once per panel (graph)
-  query(options: DataQueryRequest) {
-    const start = this.convertToTSDBTime(options.rangeRaw.from, false, options.timezone);
-    const end = this.convertToTSDBTime(options.rangeRaw.to, true, options.timezone);
+  query(options: DataQueryRequest<OpenTsdbQuery>) {
+    const start = this.convertToTSDBTime(options.range.raw.from, false, options.timezone);
+    const end = this.convertToTSDBTime(options.range.raw.to, true, options.timezone);
     const qs: any[] = [];
 
     _.each(options.targets, target => {
@@ -169,7 +167,7 @@ export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenT
     };
 
     this._addCredentialOptions(options);
-    return this.backendSrv.datasourceRequest(options);
+    return getBackendSrv().datasourceRequest(options);
   }
 
   suggestTagKeys(metric: string | number) {
@@ -248,7 +246,7 @@ export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenT
 
     this._addCredentialOptions(options);
 
-    return this.backendSrv.datasourceRequest(options);
+    return getBackendSrv().datasourceRequest(options);
   }
 
   _addCredentialOptions(options: any) {
@@ -492,6 +490,17 @@ export default class OpenTsDatasource extends DataSourceApi<OpenTsdbQuery, OpenT
         });
       }
     });
+  }
+
+  interpolateVariablesInQueries(queries: OpenTsdbQuery[], scopedVars: ScopedVars): OpenTsdbQuery[] {
+    if (!queries.length) {
+      return queries;
+    }
+
+    return queries.map(query => ({
+      ...query,
+      metric: this.templateSrv.replace(query.metric, scopedVars),
+    }));
   }
 
   convertToTSDBTime(date: any, roundUp: any, timezone: any) {

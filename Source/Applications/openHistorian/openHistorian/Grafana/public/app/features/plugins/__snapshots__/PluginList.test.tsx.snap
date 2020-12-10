@@ -2,9 +2,10 @@
 
 exports[`Render should render component 1`] = `
 <section
-  className="card-section card-list-layout-grid"
+  className="card-section card-list-layout-list"
 >
   <ol
+    aria-label="Plugins list"
     className="card-list"
   >
     <PluginListItem

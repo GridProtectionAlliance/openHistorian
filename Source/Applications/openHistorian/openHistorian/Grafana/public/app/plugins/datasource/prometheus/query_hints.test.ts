@@ -3,11 +3,11 @@ import { PrometheusDatasource } from './datasource';
 
 describe('getQueryHints()', () => {
   it('returns no hints for no series', () => {
-    expect(getQueryHints('', [])).toEqual(null);
+    expect(getQueryHints('', [])).toEqual([]);
   });
 
   it('returns no hints for empty series', () => {
-    expect(getQueryHints('', [{ datapoints: [] }])).toEqual(null);
+    expect(getQueryHints('', [{ datapoints: [] }])).toEqual([]);
   });
 
   it('returns a rate hint for a counter metric', () => {
@@ -59,7 +59,7 @@ describe('getQueryHints()', () => {
 
     // Test substring match not triggering hint
     hints = getQueryHints('foo_foo', series, datasource);
-    expect(hints).toBe(null);
+    expect(hints).toEqual([]);
   });
 
   it('returns no rate hint for a counter metric that already has a rate', () => {
@@ -72,7 +72,20 @@ describe('getQueryHints()', () => {
       },
     ];
     const hints = getQueryHints('rate(metric_total[1m])', series);
-    expect(hints).toEqual(null);
+    expect(hints).toEqual([]);
+  });
+
+  it('returns no rate hint for a counter metric that already has an increase', () => {
+    const series = [
+      {
+        datapoints: [
+          [23, 1000],
+          [24, 1001],
+        ],
+      },
+    ];
+    const hints = getQueryHints('increase(metric_total[1m])', series);
+    expect(hints).toEqual([]);
   });
 
   it('returns a rate hint w/o action for a complex counter metric', () => {

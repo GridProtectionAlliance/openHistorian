@@ -17,6 +17,7 @@
     <WarningLevel>4</WarningLevel>
     <AppConfig Condition="'$(Configuration)' == 'Debug'">AppDebug.config</AppConfig>
     <AppConfig Condition="'$(Configuration)' != 'Debug'">App.config</AppConfig>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>

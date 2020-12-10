@@ -292,8 +292,9 @@ namespace openHistorian.Adapters
             set;
         }
 
-       
-
+        /// <summary>
+        /// Gets flag that determines if temporal processing is supported.
+        /// </summary>
         public override bool SupportsTemporalProcessing => false;
 
         /// <summary>

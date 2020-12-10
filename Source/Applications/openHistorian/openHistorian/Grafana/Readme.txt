@@ -4,27 +4,30 @@ Do not point your debug system to this folder - instead copy the contents of thi
 
 When Grafana exists in the debug output folder, you can properly debug the openHistorian while also running a self-hosted copy of Grafana
 
-When updating to a new Grafana version, include the following files for deployment (this may change for newwer versions):
+When updating to a new Grafana version, include the following files for deployment (this may change for newer versions):
 
 bin/
 	* (all files)
-conf/ 
-	custom.ini
-	defaults.ini
-data/
+conf/
+	custom.ini (from openHistorian)
+	* (all files)
+data/ (from openHistorian)
 	plugins/
 		* (all files)
 	grafana.db
 	Home.json
+plugins-bundled/
+	* (all files)
 public/
 	* (all files)
 scripts/
 	* (all files)
-vendor/
+tools/
 	* (all files)
 LICENSE.md
 NOTICE.md
 README.md
+Readme.txt (from openHistorian)
 VERSION
 
 Make sure data/log and data/sessions folders are not included in the deployed installation files.
