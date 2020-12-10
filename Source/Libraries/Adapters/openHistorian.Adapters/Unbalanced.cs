@@ -275,7 +275,7 @@ namespace openHistorian.Adapters
         [DefaultValue(DefaultSignalReferenceTemplate)]
         public string SignalReferenceTemplate { get; set; } = DefaultSignalReferenceTemplate;
 
-        // <summary>
+        /// <summary>
         /// Gets or sets template for output measurement alternate tag names.
         /// </summary>
         [ConnectionStringParameter]
