@@ -173,7 +173,7 @@ namespace openHistorian.Adapters
         private double m_lastS0S1;
         private double m_lastS2S1;
         private bool m_countAlarms;
-        private int m_sqlFailures;
+        private int m_sqlFailures = 0;
 
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
@@ -336,15 +336,15 @@ namespace openHistorian.Adapters
 
                 StringBuilder status = new StringBuilder();
 
-                status.AppendFormat("           apping File: ", MappingFilePath);
+                status.AppendFormat("          Mapping File: ", MappingFilePath);
                 status.AppendLine();
-                status.AppendFormat(" Number of 3Phase Sets: {0}", m_threePhaseComponent.Count);
+                status.AppendFormat(" Number of 3Phase Sets: {0}", m_threePhaseComponent?.Count ?? 0) ;
                 status.AppendLine();
                 status.AppendFormat("       Last S0S1 Value: {0:N3}", m_lastS0S1);
                 status.AppendLine();
                 status.AppendFormat("       Last S2S1 Value: {0:N3}", m_lastS2S1);
                 status.AppendLine();
-                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue.Count);
+                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue?.Count ?? 0);
                 status.AppendLine();
                 status.AppendFormat("Sequential SQL exceptions: {0}", m_sqlFailures);
                 status.AppendLine();

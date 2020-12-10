@@ -286,7 +286,7 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Configured Reference Angle: {0}", Reference?.ToString() ?? "Undefined");
                 status.AppendLine();
-                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue.Count);
+                status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue?.Count ?? 0);
                 status.AppendLine();
                 status.Append(base.Status);
 
