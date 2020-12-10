@@ -226,7 +226,7 @@ namespace openHistorian.Adapters
             base.Initialize();
 
             //Generate Query
-            m_query = $"SELECT {ValueField} AS Value, {TimeStampField} AS Timestamp";
+            m_query = $"SELECT {ValueField} AS V, {TimeStampField} AS T";
 
             if (!string.IsNullOrEmpty(SubSecondField))
                 m_query = m_query + $", {SubSecondField} AS Ticks";
