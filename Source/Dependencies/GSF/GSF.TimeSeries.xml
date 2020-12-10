@@ -10855,6 +10855,30 @@
             FILTER MeasurementDetail WHERE SignalType &lt;&gt; 'STAT'; FILTER PhasorDetail WHERE Phase = '+'
             </example>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MutualSubscription">
+            <summary>
+            Gets or sets flag that determines if a subscription is mutual, i.e., bi-directional pub/sub. In this mode one node will
+            be the owner and set <c>Internal = True</c> and the other node will be the renter and set <c>Internal = False</c>.
+            </summary>
+            <remarks>
+            <para>
+            This flag is intended to be used in scenarios where a remote subscriber can add new measurements associated with a
+            source device, e.g., creating new calculated result measurements on a remote machine for load distribution that should
+            get associated with a device on the local machine, thus becoming part of the local measurement set.
+            </para>
+            <para>
+            For best results, both the owner and renter subscriptions should be reduced to needed measurements, i.e., renter should
+            only receive measurements needed for remote calculations and owner should only receive new calculated results. Note that
+            when used with a TLS-style subscription this can be accomplished by using the subscription UI screens that control the
+            measurement <c>subscribed</c> flag. For internal subscriptions, reduction of metadata and subscribed measurements will
+            need to be controlled via connection string with <c>metadataFilters</c> and <c>outputMeasurements</c>, respectively.
+            </para>
+            <para>
+            Setting <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.MutualSubscription"/> to <c>true</c> will force <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.ReceiveInternalMetadata"/> to <c>true</c>
+            and <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.ReceiveExternalMetadata"/> to <c>false</c>.
+            </para>
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseMillisecondResolution">
             <summary>
             Gets or sets flag that informs publisher if base time-offsets can use millisecond resolution to conserve bandwidth.
