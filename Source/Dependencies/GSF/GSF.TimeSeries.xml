@@ -9868,6 +9868,11 @@
             Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.MetadataTables"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.DataPublisher.DefaultMutualSubscription">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.MutualSubscription"/>.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Transport.DataPublisher.MaxPacketSize">
             <summary>
             Maximum packet size before software fragmentation of payload.
@@ -10000,6 +10005,26 @@
             <summary>
             Gets or sets semi-colon separated list of SQL select statements used to create data for meta-data exchange.
             </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataPublisher.MutualSubscription">
+            <summary>
+            Gets or sets flag that determines if a subscription is mutual, i.e., bi-directional pub/sub. In this mode one node will
+            be the owner and set <c>Internal = True</c> and the other node will be the renter and set <c>Internal = False</c>.
+            </summary>
+            <remarks>
+            <para>
+            This flag is intended to be used in scenarios where a remote subscriber can add new measurements associated with a
+            source device, e.g., creating new calculated result measurements on a remote machine for load distribution that should
+            get associated with a device on the local machine, thus becoming part of the local measurement set.
+            </para>
+            <para>
+            For best results, both the owner and renter subscriptions should be reduced to needed measurements, i.e., renter should
+            only receive measurements needed for remote calculations and owner should only receive new calculated results. Note that
+            when used with a TLS-style subscription this can be accomplished by using the subscription UI screens that control the
+            measurement <c>subscribed</c> flag. For internal subscriptions, reduction of metadata and subscribed measurements will
+            need to be controlled via connection string with <c>metadataFilters</c> and <c>outputMeasurements</c>, respectively.
+            </para>
+            </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.AutoInitialize">
             <summary>
