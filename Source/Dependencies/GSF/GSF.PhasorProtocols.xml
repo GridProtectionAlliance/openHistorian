@@ -6068,6 +6068,12 @@
             <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
             </exception>
         </member>
+        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedUdpClientReference.Send(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Sends data to the server synchronously.
@@ -6302,6 +6308,11 @@
         <member name="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ServerStopped">
             <summary>
             Occurs when the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/> is setup as a listening connection and server connection has been stopped.
+            </summary>
+        </member>
+        <member name="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ServerIndexUpdated">
+            <summary>
+            Occurs when the <see cref="P:GSF.Communication.IClient.ServerIndex"/> of the associated connection is updated.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.#ctor">
@@ -6683,6 +6694,15 @@
             <summary>
             Stops the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ServerIndex"/> changed.
+            </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SendRawDeviceCommand(System.UInt16)">
             <summary>

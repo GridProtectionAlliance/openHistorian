@@ -240,6 +240,15 @@
             will have unexpected results.
             </remarks>
         </member>
+        <member name="M:GSF.Communication.ClientBase.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.Communication.ClientBase.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.Communication.ClientBase.ServerIndex"/> changed.
+            </remarks>
+        </member>
         <member name="M:GSF.Communication.ClientBase.ValidateConnectionString(System.String)">
             <summary>
             When overridden in a derived class, validates the specified <paramref name="connectionString"/>.
@@ -624,6 +633,15 @@
             <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
             </exception>
         </member>
+        <member name="M:GSF.Communication.TcpSimpleClient.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.Communication.ClientBase.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.Communication.ClientBase.ServerIndex"/> changed.
+            </remarks>
+        </member>
         <member name="M:GSF.Communication.TcpSimpleClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Sends data to the server asynchronously.
@@ -647,12 +665,6 @@
             <exception cref="T:System.ArgumentException">Server property is missing.</exception>
             <exception cref="T:System.FormatException">Server property is invalid.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Server port value is not between <see cref="F:GSF.Communication.Transport.PortRangeLow"/> and <see cref="F:GSF.Communication.Transport.PortRangeHigh"/>.</exception>
-        </member>
-        <member name="M:GSF.Communication.TcpSimpleClient.OnConnectionException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
-            </summary>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
         </member>
         <member name="M:GSF.Communication.TcpSimpleClient.OnSendDataException(System.Exception)">
             <summary>
@@ -1579,6 +1591,15 @@
             <remarks>
             This function should only be called from within the <see cref="E:GSF.Communication.IClient.ReceiveData"/> event handler. Calling this method outside this event
             will have unexpected results.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.IClient.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.Communication.IClient.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.Communication.IClient.ServerIndex"/> changed.
             </remarks>
         </member>
         <member name="T:GSF.Communication.ServerState">
@@ -3596,12 +3617,6 @@
             Initiates an asynchronous connection attempt.
             </summary>
         </member>
-        <member name="M:GSF.Communication.TlsClient.OnConnectionException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
-            </summary>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
-        </member>
         <member name="M:GSF.Communication.TlsClient.ProcessTlsAuthentication(System.IAsyncResult)">
             <summary>
             Callback method for asynchronous authenticate operation.
@@ -3638,6 +3653,15 @@
             <remarks>
             This function should only be called from within the <see cref="E:GSF.Communication.ClientBase.ReceiveData"/> event handler. Calling this method outside this event
             will have unexpected results.
+            </remarks>
+        </member>
+        <member name="M:GSF.Communication.TlsClient.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.Communication.ClientBase.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.Communication.ClientBase.ServerIndex"/> changed.
             </remarks>
         </member>
         <member name="M:GSF.Communication.TlsClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
@@ -4306,12 +4330,6 @@
             Initiates an asynchronous connection attempt.
             </summary>
         </member>
-        <member name="M:GSF.Communication.TcpClient.OnConnectionException(System.Exception)">
-            <summary>
-            Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
-            </summary>
-            <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
-        </member>
         <member name="M:GSF.Communication.TcpClient.ProcessConnect(GSF.Communication.TcpClient.ConnectState)">
             <summary>
             Callback method for asynchronous connect operation.
@@ -4355,6 +4373,15 @@
             <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
             <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
             </exception>
+        </member>
+        <member name="M:GSF.Communication.TcpClient.RequestNextServerIndex">
+            <summary>
+            Requests that the client attempt to move to the next <see cref="P:GSF.Communication.ClientBase.ServerIndex"/>.
+            </summary>
+            <returns><c>true</c> if request succeeded; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Return value will only be <c>true</c> if <see cref="P:GSF.Communication.ClientBase.ServerIndex"/> changed.
+            </remarks>
         </member>
         <member name="M:GSF.Communication.TcpClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
