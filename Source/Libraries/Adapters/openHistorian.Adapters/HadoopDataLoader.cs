@@ -231,7 +231,7 @@ namespace openHistorian.Adapters
             if (!string.IsNullOrEmpty(SubSecondField))
                 m_query = m_query + $", {SubSecondField} AS Ticks";
 
-            m_query = m_query + $" FROM {TableName} WHERE {TimeStampField} > {{0}} AND {TagQuery}";
+            m_query = m_query + $" FROM {TableName} WHERE {TimeStampField} > '{{0}}' AND {TagQuery}";
 
             if (!string.IsNullOrEmpty(OrderField))
                 m_query = $" ORDER BY {OrderField}";
