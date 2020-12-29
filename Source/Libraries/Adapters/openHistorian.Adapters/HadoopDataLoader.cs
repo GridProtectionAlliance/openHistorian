@@ -321,7 +321,7 @@ namespace openHistorian.Adapters
                         foreach( Guid guid in m_queryParameter.Keys)
                         {
                             Ticks newerThan;
-                            Measurement measurement = new Measurement { Metadata = MeasurementKey.LookUpOrCreate(guid, "").Metadata };
+                            
 
                             lock (s_TimeStampUpdateLock)
                             {
@@ -341,7 +341,7 @@ namespace openHistorian.Adapters
 
                             foreach (DataRow row in table.Rows)
                             {
-
+                                Measurement measurement = new Measurement { Metadata = MeasurementKey.LookUpOrCreate(guid, "").Metadata };
                                 measurement.Value = row.AsDouble(0)?? double.NaN;
                                 measurement.Timestamp = DateTime.Parse(row.AsString(1));
 
