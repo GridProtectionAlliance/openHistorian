@@ -14808,6 +14808,11 @@
             Gets the <see cref="T:System.Diagnostics.PerformanceCounter"/> object that this <see cref="T:GSF.Diagnostics.PerformanceCounter"/> objects wraps.
             </summary>
         </member>
+        <member name="P:GSF.Diagnostics.PerformanceCounter.SampleAdjuster">
+            <summary>
+            Gets or sets an optional custom sample adjustment function.
+            </summary>
+        </member>
         <member name="M:GSF.Diagnostics.PerformanceCounter.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Diagnostics.PerformanceCounter" /> object.
@@ -15028,7 +15033,7 @@
             <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
             <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
         </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean)">
+        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single})">
             <summary>
             Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
             </summary>
@@ -15039,6 +15044,7 @@
             <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
             <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
             <param name="readOnly">Flag that determines if this counter is read-only.</param>
+            <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(GSF.Diagnostics.PerformanceCounter)">
             <summary>
