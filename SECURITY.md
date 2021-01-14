@@ -2,7 +2,7 @@
 
 The Grid Protection Alliance (GPA) takes the security of our software products and services seriously. This includes all source code repositories managed through our GitHub organizational sites, specifically: [Grid Protection Alliance](https://github.com/GridProtectionAlliance), [Gemstone Libraries](https://github.com/gemstone), and [Streaming Telemetry Transport Protocol](https://github.com/sttp).
 
-GPA has adopted the following "[definition of security vulnerability](https://docs.microsoft.com/en-us/previous-versions/tn-archive/cc751383(v=technet.10))" when considering what constitutes a security vulnerability. If you believe you have found a security vulnerability meeting this definition in any GPA-owned repository, please report it to us as described below.
+GPA has adopted the following "[definition of security vulnerability](https://gridprotectionalliance.org/VulnerabilityDefinition.asp)" when considering what constitutes a security vulnerability. If you believe you have found a security vulnerability meeting this definition in any GPA-owned repository, please report it to us as described below.
 
 ## Reporting Security Issues
 
@@ -29,5 +29,3 @@ We prefer all communications to be in English.
 ## Policy
 
 The Grid Protection Alliance follows the principle of [Coordinated Vulnerability Disclosure](https://gridprotectionalliance.org/cvd.asp).
-
-<!-- END MICROSOFT SECURITY.MD BLOCK -->
