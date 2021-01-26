@@ -462,6 +462,9 @@ namespace openHistorian.Adapters
 
         private void m_timerElapsed(object sender, ElapsedEventArgs e)
         {
+
+            OnStatusMessage(MessageLevel.Info, "Timer Expired");
+
             if (Monitor.TryEnter(m_timer))
             {
                 try
@@ -471,6 +474,7 @@ namespace openHistorian.Adapters
                 finally
                 {
                     m_timer.Interval = ComputeSeconds() * 1000;
+                    OnStatusMessage(MessageLevel.Info, string.Format("Reset Timer to {0} seconds",m_timer.Interval));
                     Monitor.Exit(m_timer);
                 }
             
@@ -479,9 +483,10 @@ namespace openHistorian.Adapters
 
         private void m_sendEmail()
         {
-          
-                // Prepare Email to be sent.
-                try
+            OnStatusMessage(MessageLevel.Info, "Preparing Email");
+
+            // Prepare Email to be sent.
+            try
                 {
                     //Read XLS Template File
                     string template = "";
@@ -509,11 +514,12 @@ namespace openHistorian.Adapters
 
                     XDocument email = ApplyTemplate(template, data);
 
-                    OnStatusMessage(MessageLevel.Info, "Sending Email");
+                    OnStatusMessage(MessageLevel.Info, "sending Email.....");
 
                     m_mailClient.Body = GetBody(email);
                     m_mailClient.Send();
-                }
+                OnStatusMessage(MessageLevel.Info, "Email Sent Succesfully");
+            }
                 catch (Exception ex)
                 {
                     OnStatusMessage(MessageLevel.Error, $"Failed to Send Email {ex.Message}");
