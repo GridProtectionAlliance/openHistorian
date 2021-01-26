@@ -96,6 +96,8 @@ namespace openHistorian.Adapters
             public bool activeAlarm;
             public bool acknowlegedAlarm;
             public int countExceeding;
+            public double BaseVoltage;
+
         #pragma warning restore 1591
         }
 
@@ -174,12 +176,14 @@ namespace openHistorian.Adapters
         private double m_lastS2S1;
         private bool m_countAlarms;
         private int m_sqlFailures = 0;
+        private int m_skipped = 0;
 
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
         private GSF.Threading.CancellationToken m_cancelationTokenSql;
 
         private ConcurrentBag<ThreePhaseSet> m_threePhaseComponent;
+
         #endregion
 
         #region [ Properties ]
@@ -258,6 +262,21 @@ namespace openHistorian.Adapters
         [DefaultValue(false)]
         public bool ReportSQL { get; set; }
 
+        /// <summary>
+        /// Gets or sets the UseNominalThreshhold flag.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines wether the Voltage Threshhold is in p.u. or Volts.")]
+        [DefaultValue(true)]
+        public bool UseNominalThreshhold { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Voltage Threshhold.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines The minimum Voltage (in p.u. or V) for computing Unbalanced.")]
+        [DefaultValue(0.5D)]
+        public double NoiseThreshhold { get; set; }
 
         /// <summary>
         /// Gets or sets template for output measurement point tag names.
@@ -348,6 +367,12 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Sequential SQL exceptions: {0}", m_sqlFailures);
                 status.AppendLine();
+                status.AppendFormat("Use Nominal V for Threshhold: {0}", UseNominalThreshhold);
+                status.AppendLine();
+                status.AppendFormat("Noise threshhold: {0}", NoiseThreshhold);
+                status.AppendLine();
+                status.AppendFormat("Skipped Measurements: {0}", m_skipped);
+                status.AppendLine();
                 status.Append(base.Status);
 
                 return status.ToString();
@@ -371,7 +396,7 @@ namespace openHistorian.Adapters
             if (AggregationWindow > (AlarmDelay * FramesPerSecond))
                 throw new ArgumentException("Aggregation Window (in frames) needs to be smaller than AlarmDelay (in seconds)");
 
-
+            m_skipped = 0;
             m_threePhaseComponent = new ConcurrentBag<ThreePhaseSet>();
            
             List<string> entries = new List<string>();
@@ -497,7 +522,9 @@ namespace openHistorian.Adapters
                     keys.activeAlarm = false;
                     keys.countExceeding = 0;
                     keys.acknowlegedAlarm = false;
+                    keys.BaseVoltage = connection.ExecuteScalar<int>("SELECT COALESCE((SELECT BaseKV FROM Phasor WHERE ID = (SELECT PhasorID FROM ActiveMeasurement WHERE SignalID = '{0}')), 0)", keys.PositiveSequence.ToString());
                     m_threePhaseComponent.Add(keys);
+                    
                 }
                 // Need to add Measurements to inputMeasuremetnKeys
                 inputs.Add(input1);
@@ -542,6 +569,7 @@ namespace openHistorian.Adapters
         {
 
             m_numberOfFrames++;
+            m_skipped = 0;
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
             bool report = m_numberOfFrames > AggregationWindow;
             
@@ -558,9 +586,11 @@ namespace openHistorian.Adapters
                 double s0s1 = double.NaN;
                 double s2s1 = double.NaN;
 
+                double v1P = double.NaN;
+
                 if (hasP && hasN)
                 {
-                    double v1P = positiveSeq.AdjustedValue;
+                    v1P = positiveSeq.AdjustedValue;
                     double v2N = negativeSeq.AdjustedValue;
 
                     if (v1P != 0.0D)
@@ -571,7 +601,7 @@ namespace openHistorian.Adapters
                 }
                 if (hasP && hasZ)
                 {
-                    double v1P = positiveSeq.AdjustedValue;
+                    v1P = positiveSeq.AdjustedValue;
                     double v0Z = zeroSeq.AdjustedValue;
 
                     if (v1P != 0.0D)
@@ -580,7 +610,19 @@ namespace openHistorian.Adapters
                         m_lastS0S1 = s0s1;
                     }
                 }
-              
+
+                // Noise Threshold
+                if (!hasP)
+                    continue;
+
+                double threshold = NoiseThreshhold * (UseNominalThreshhold ? set.BaseVoltage: 1.0D);
+                if (v1P < threshold)
+                {
+                    m_skipped++;
+                    continue;
+                }
+                    
+
                 Measurement s2s1Measurement = new Measurement { Metadata = MeasurementKey.LookUpBySignalID(set.S0S1).Metadata };
                 outputmeasurements.Add(Measurement.Clone(s2s1Measurement, s2s1, frame.Timestamp));
 
