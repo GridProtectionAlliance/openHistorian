@@ -680,7 +680,7 @@ namespace openHistorian.Adapters
             if (report)
                 m_numberOfFrames = 0;
 
-
+            OnNewMeasurements(outputmeasurements);
 
         }
 
