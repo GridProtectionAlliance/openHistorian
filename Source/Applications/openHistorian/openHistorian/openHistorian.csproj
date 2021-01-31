@@ -135,8 +135,7 @@
     <Reference Include="GSF.Core">
       <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
-    <Reference Include="GSF.PhasorProtocols, Version=2.3.135.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="GSF.PhasorProtocols">
       <HintPath>..\..\..\Dependencies\GSF\GSF.PhasorProtocols.dll</HintPath>
     </Reference>
     <Reference Include="GSF.Security">

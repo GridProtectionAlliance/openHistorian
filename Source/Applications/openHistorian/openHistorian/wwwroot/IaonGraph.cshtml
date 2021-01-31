@@ -241,7 +241,7 @@
                 case 2:  // Output
                     return `${id}<br/>${inputs.length} Inputs`;
                 default: // Measurement
-                    return `<span class="nowrap">Measurement: ${node.id}<span>$<br/>${inputs.length} Sources<br/>${outputs.length} Destinations`;
+                    return `<span class="nowrap">Measurement: ${node.id}<span><br/>${inputs.length} Sources<br/>${outputs.length} Destinations`;
             }
         }
 
@@ -493,11 +493,18 @@
             </dl>
         </div>
         <div id="messageBlock">
-            <span id="message">Loading Iaon adapter configuration...</span>&nbsp;&nbsp;<span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+            <span id="message">Loading Iaon adapter configuration...</span>&nbsp;&nbsp;
+            <span id="workingIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
         </div>
     </div>
     <div id="graph"></div>
     <div id="footer" class="text-center">
-        <span id="instructions" style="display: none">Click and hold on background to pan &mdash; Use mouse wheel to zoom &mdash; Click and hold node to rearrange &mdash; Click on node to zoom in &mdash; Click on background to zoom to fit</span>
+        <span id="instructions" style="display: none">
+            Click and hold on background to pan &mdash; 
+            Use mouse wheel to zoom &mdash; 
+            Click and hold node to rearrange &mdash; 
+            Click on node to zoom in &mdash; 
+            Click on background to zoom to fit
+        </span>
     </div>
 </div>
