@@ -247,12 +247,14 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoring <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="TrendMeasurements.cshtml">Trend / Export Data</a></li>
-                            <li><a href="grafana" class="@(grafanaInstalled)"@grafanaInstalled>Grafana Visualizations</a></li>
+                            <li><a href="grafana" class="@(grafanaInstalled)" @grafanaInstalled>Grafana Visualizations</a></li>
                             <li><a href="GraphMeasurements.cshtml">Real-time Measurements</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="Status.cshtml">Current Device Status</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="RemoteConsole.cshtml">Remote Service Console</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="IaonGraph.cshtml">Iaon Connections</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
