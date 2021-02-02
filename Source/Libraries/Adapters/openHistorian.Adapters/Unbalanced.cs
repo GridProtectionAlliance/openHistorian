@@ -222,7 +222,7 @@ namespace openHistorian.Adapters
         public int MaxSQLRows { get; set; }
 
         /// <summary>
-        /// Gets or sets the Setpoint for Alarming.
+        /// Gets or sets the Set point for Alarming.
         /// </summary>
         [ConnectionStringParameter]
         [Description("Defines Threshold for alarming on unbalance. If it is 0 there are no Alarms")]
@@ -238,10 +238,10 @@ namespace openHistorian.Adapters
         public int AlarmDelay { get; set; }
 
         /// <summary>
-        /// Gets or sets the Hysterisis for Alarming.
+        /// Gets or sets the Hysteresis for Alarming.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines the hysterisis for alarming on unbalance")]
+        [Description("Defines the hysteresis for alarming on unbalance")]
         [DefaultValue(DefaultAlarmHysterisis)]
         public double AlarmHysterisis { get; set; }
 
@@ -258,7 +258,7 @@ namespace openHistorian.Adapters
         /// Gets or sets the ReportSQL flag.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines wether the daily summary is saved to a SQL Database.")]
+        [Description("Defines whether the daily summary is saved to a SQL Database.")]
         [DefaultValue(false)]
         public bool ReportSQL { get; set; }
 
@@ -266,7 +266,7 @@ namespace openHistorian.Adapters
         /// Gets or sets the UseNominalThreshhold flag.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines wether the Voltage Threshhold is in p.u. or Volts.")]
+        [Description("Defines whether the Voltage Threshold is in p.u. or Volts.")]
         [DefaultValue(true)]
         public bool UseNominalThreshhold { get; set; }
 
@@ -367,9 +367,9 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Sequential SQL exceptions: {0}", m_sqlFailures);
                 status.AppendLine();
-                status.AppendFormat("Use Nominal V for Threshhold: {0}", UseNominalThreshhold);
+                status.AppendFormat("Use Nominal V for Threshold: {0}", UseNominalThreshhold);
                 status.AppendLine();
-                status.AppendFormat("Noise threshhold: {0}", NoiseThreshhold);
+                status.AppendFormat("Noise threshold: {0}", NoiseThreshhold);
                 status.AppendLine();
                 status.AppendFormat("Skipped Measurements: {0}", m_skipped);
                 status.AppendLine();
