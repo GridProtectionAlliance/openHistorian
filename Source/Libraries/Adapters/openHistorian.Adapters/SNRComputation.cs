@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TrendValueAPI.cs - Gbtc
+//  SNRComputation.cs - Gbtc
 //
 //  Copyright © 2019, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -73,7 +73,7 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Represents Set of input and output Measurment used for SNR computation
+        /// Represents Set of input and output Measurement used for SNR computation
         /// </summary>
         public class SNRMapping
         {
@@ -156,6 +156,11 @@ namespace openHistorian.Adapters
         // Fields
         private int m_numberOfFrames;
         private double m_lastSNR;
+
+        private bool m_countAlarms;
+        private int m_sqlFailures = 0;
+        private int m_skipped = 0;
+
         private ConcurrentDictionary<Guid, SNRDataWindow> m_dataWindow;
         private Dictionary<Guid, bool> m_isAngleMapping;
         private ConcurrentDictionary<Guid, MeasurementKey> m_outputMapping;
@@ -203,7 +208,7 @@ namespace openHistorian.Adapters
         /// Gets or sets the ReportSQL flag.
         /// </summary>
         [ConnectionStringParameter]
-        [Description("Defines wether the daily summary is saved to a SQL Database.")]
+        [Description("Defines whether the daily summary is saved to a SQL Database.")]
         [DefaultValue(false)]
         public bool ReportSQL { get; set; }
 
@@ -269,7 +274,14 @@ namespace openHistorian.Adapters
             get => base.OutputMeasurements;
             set => base.OutputMeasurements = value;
         }
-        
+
+        /// <summary>
+        /// Gets or sets the Voltage Threshold.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines The minimum Value (in V, A...) for computing SNR.")]
+        [DefaultValue(0.1D)]
+        public double NoiseThreshhold { get; set; }
 
         /// <summary>
         /// Gets a detailed status for this <see cref="SNRComputation"/>.
@@ -287,6 +299,12 @@ namespace openHistorian.Adapters
                 status.AppendFormat("Configured Reference Angle: {0}", Reference?.ToString() ?? "Undefined");
                 status.AppendLine();
                 status.AppendFormat("Waiting to write Summaries to SQL: {0}", m_summaryQueue?.Count ?? 0);
+                status.AppendLine();
+                status.AppendFormat("Sequential SQL exceptions: {0}", m_sqlFailures);
+                status.AppendLine();
+                status.AppendFormat("Noise threshold: {0}", NoiseThreshhold);
+                status.AppendLine();
+                status.AppendFormat("Skipped Measurements: {0}", m_skipped);
                 status.AppendLine();
                 status.Append(base.Status);
 
@@ -402,7 +420,15 @@ namespace openHistorian.Adapters
 
             m_cancelationTokenSql = new GSF.Threading.CancellationToken();
 
-            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => { OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}"); throw new Exception($"Issue Occured on SQL Write {ex.Message}"); });
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => {
+                m_sqlFailures++;
+                OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");
+
+                if (m_sqlFailures < 10)
+                    m_sqlWritter.RunOnceAsync();
+                else
+                    ReportSQL = false;
+            });
             m_summaryQueue = new IsolatedQueue<DailySummary>();
 
             if (ReportSQL)
@@ -417,6 +443,7 @@ namespace openHistorian.Adapters
         protected override void PublishFrame(IFrame frame, int index)
         {
             m_numberOfFrames++;
+            m_skipped = 0;
             bool calcSNR = m_numberOfFrames >= WindowLength;
 
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
@@ -446,6 +473,14 @@ namespace openHistorian.Adapters
                 if (calcSNR)
                 {
                     double snr = CalculateSignalToNoise(m_dataWindow[signalID]);
+                    if (m_dataWindow[signalID].Sum/ m_dataWindow[signalID].Count < NoiseThreshhold)
+                    {
+                        m_skipped++;
+                        m_dataWindow[signalID].Reset();
+                        continue;
+                    }
+
+
                     m_lastSNR = snr;
                     m_dataWindow[signalID].Reset();
                     Measurement snrMeasurement = new Measurement { Metadata = m_outputMapping[signalID].Metadata };
@@ -503,7 +538,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets associated device ID if any, for measurement generation.
         /// </summary>
-        /// <param name="measurementIndex"> The imeasurement Index for which this device is</param>
+        /// <param name="measurementIndex"> The measurement Index for which this device is</param>
         /// <remarks>
         /// If overridden to provide custom device ID, <see cref="ParentDeviceAcronymTemplate" /> should be set
         /// to <c>null</c> so no parent device is created.
