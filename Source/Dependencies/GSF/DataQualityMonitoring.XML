@@ -40,6 +40,11 @@
             Gets or sets the amount of time, in seconds, to wait for alarm log state changes between bulk inserts.
             </summary>
         </member>
+        <member name="P:DataQualityMonitoring.AlarmAdapter.AlarmRetention">
+            <summary>
+            Gets or sets the amount of time, in hours, an Alarm change will be kept n the database.
+            </summary>
+        </member>
         <member name="P:DataQualityMonitoring.AlarmAdapter.Status">
             <summary>
             Returns the detailed status of the data input source.
