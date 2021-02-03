@@ -17,6 +17,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72439A38-195C-4AAE-BED9-4B6D47C43FF6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
 		buildmono.sh = buildmono.sh
 		..\LICENSE = ..\LICENSE
 		LICENSE.txt = LICENSE.txt
@@ -275,7 +277,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.SqlClr"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core.SqlClr", "Libraries\openHistorian.Core\openHistorian.Core.SqlClr.csproj", "{4787AF40-F8CA-436B-9304-325651465745}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFunctions", "Tools\SampleFunctions\SampleFunctions.csproj", "{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleFunctions", "Tools\SampleFunctions\SampleFunctions.csproj", "{29F4753A-1132-47C9-8BA1-B6CE68E8E3E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonUtility", "Tools\ComparisonUtility\ComparisonUtility.csproj", "{197DFD6F-98C2-4E30-9BA5-57C419AD44AE}"
 EndProject
@@ -303,6 +305,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASAdapters", "Libraries\Adapters\MASAdapters\MASAdapters.csproj", "{E0E5382E-6BAF-4F16-A1DB-72D3523FC949}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveIntegrityChecker", "Tools\ArchiveIntegrityChecker\ArchiveIntegrityChecker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "openHistorianModule", "Libraries\openHistorianModule\openHistorianModule.pyproj", "{38C6517A-B9CB-48B2-8C86-0DFA184381FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -926,6 +930,15 @@ Global
 		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x64.Build.0 = Release|Any CPU
 		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.ActiveCfg = Release|Any CPU
 		{74DB9FAA-D991-4142-9628-2402054DF5E6}.Release|x86.Build.0 = Release|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Mono|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Mono|x64.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Mono|x86.ActiveCfg = Debug|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Release|x64.ActiveCfg = Release|Any CPU
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -983,6 +996,7 @@ Global
 		{1CEC702B-2EAD-4E65-9EAD-EDFDD23FC806} = {550621C3-C903-4405-971A-DC4BAA286BA0}
 		{E0E5382E-6BAF-4F16-A1DB-72D3523FC949} = {550621C3-C903-4405-971A-DC4BAA286BA0}
 		{74DB9FAA-D991-4142-9628-2402054DF5E6} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{38C6517A-B9CB-48B2-8C86-0DFA184381FB} = {71B86842-3055-4797-AA46-AB35B706354C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA73B94E-45F7-4272-BCA2-4B4386CC92B2}
