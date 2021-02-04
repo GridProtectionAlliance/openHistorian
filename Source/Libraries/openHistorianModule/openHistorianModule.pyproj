@@ -35,7 +35,9 @@
     <Compile Include="encodingDefinition.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="historianValue.py" />
+    <Compile Include="historianValue.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="historianKey.py">
       <SubType>Code</SubType>
     </Compile>
@@ -45,7 +47,9 @@
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="openHistorian.py" />
+    <Compile Include="openHistorian.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="enumerations.py">
       <SubType>Code</SubType>
     </Compile>
