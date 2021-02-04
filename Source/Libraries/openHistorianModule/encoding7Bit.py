@@ -21,9 +21,8 @@
 #
 #******************************************************************************************************
 
-from enum import Enum
-from typing import Callable
 from common import ByteSize
+from typing import Callable
 import numpy as np
 
 class encoding7Bit:

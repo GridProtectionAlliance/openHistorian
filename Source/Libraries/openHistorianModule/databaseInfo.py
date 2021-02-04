@@ -26,7 +26,6 @@ from encodingDefinition import encodingDefinition
 from library import library
 from typing import List
 from uuid import UUID
-import numpy as np
 
 class databaseInfo:
     """

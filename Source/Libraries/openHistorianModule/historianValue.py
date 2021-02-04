@@ -62,17 +62,17 @@ class historianValue(snapTypeBase):
         """
         Sets the provided SNAPdb type to its minimum value.
         """        
-        self.Value1 = 0
-        self.Value2 = 0
-        self.Value3 = 0
+        self.Value1 = np.uint64(0)
+        self.Value2 = np.uint64(0)
+        self.Value3 = np.uint64(0)
 
     def SetMax(self):
         """
         Sets the provided SNAPdb type to its maximum value.
         """        
-        self.Value1 = Limits.MaxUInt64
-        self.Value2 = Limits.MaxUInt64
-        self.Value3 = Limits.MaxUInt64
+        self.Value1 = np.uint64(Limits.MaxUInt64)
+        self.Value2 = np.uint64(Limits.MaxUInt64)
+        self.Value3 = np.uint64(Limits.MaxUInt64)
 
     def Clear(self):
         """
@@ -82,11 +82,19 @@ class historianValue(snapTypeBase):
 
     def Read(self, stream: remoteBinaryStream):
         """
-        Reads the provided SNAPdb type from the stream.
+        Reads this SNAPdb type from the stream.
         """        
         self.Value1 = stream.ReadUInt64()
         self.Value2 = stream.ReadUInt64()
         self.Value3 = stream.ReadUInt64()
+    
+    def Write(self, stream: remoteBinaryStream):
+        """
+        Writes this SNAPdb type to the stream.
+        """
+        stream.WriteUInt64(self.Value1)
+        stream.WriteUInt64(self.Value2)
+        stream.WriteUInt64(self.Value3)
 
     def CopyTo(self, destination: "historianValue"):
         """
@@ -98,26 +106,20 @@ class historianValue(snapTypeBase):
     
     def CompareTo(self, other: "historianValue"):
         """
-        Copies this SNAPdb type to the `other`
+        Compares this SNAPdb type to the `other`
         """
         if self.Value1 < other.Value1:
             return -1
-        
         if self.Value1 > other.Value1:
             return 1
-        
         if self.Value2 < other.Value2:
             return -1
-        
         if self.Value2 > other.Value2:
             return 1
-        
         if self.Value3 < other.Value3:
             return -1
-        
         if self.Value3 > other.Value3:
             return 1
-        
         return 0
     
     @property

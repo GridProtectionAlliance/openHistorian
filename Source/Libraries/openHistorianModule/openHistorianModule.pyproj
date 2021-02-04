@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>openHistorianModule</Name>
     <RootNamespace>openHistorianModule</RootNamespace>
-    <InterpreterId>Global|VisualStudio|openHistorian API Environment</InterpreterId>
+    <InterpreterId>MSBuild|openHistorian API|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,7 +63,15 @@
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|VisualStudio|openHistorian API Environment" />
+    <Interpreter Include="openHistorian API\">
+      <Id>openHistorian API</Id>
+      <Version>3.9</Version>
+      <Description>openHistorian API (Python 3.9 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

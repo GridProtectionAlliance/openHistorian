@@ -361,5 +361,5 @@ dmypy.json
 cython_debug/
 
 # Virtualenv
-/Source/Libraries/openHistorianModule/openHistorianAPI/Scripts
+/Source/Libraries/openHistorianModule/**/Scripts
 pyvenv.cfg

@@ -72,13 +72,11 @@ class openHistorian:
 
     @property
     def HostIPAddress(self) -> str:
-        (ip, port) = self.hostEndPoint
-        return ip
+        return self.hostEndPoint[0]
 
     @property
-    def HostPort(self) -> str:
-        (ip, port) = self.hostEndPoint
-        return int(port)
+    def HostPort(self) -> int:
+        return int(self.hostEndPoint[1])
 
     @property
     def IsConnected(self) -> bool:

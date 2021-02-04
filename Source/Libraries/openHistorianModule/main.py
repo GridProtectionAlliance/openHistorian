@@ -38,20 +38,29 @@ def main():
             for instanceName in api.GetInstanceNames():
                 print("   " + instanceName)
 
-                instanceInfo = api.GetInstanceInfo(instanceName)
+                instanceInfo = api.GetInstanceInfo(instanceName)                
+                keyType = "Unregistered key type" if instanceInfo.KeyType is None else instanceInfo.KeyType
+                valueType = "Unregistered value type" if instanceInfo.ValueType is None else instanceInfo.ValueType
+
+                print("          Key Type: " + keyType + " {" + str(instanceInfo.KeyTypeID) + "}")
+                print("        Value Type: " + valueType + " {" + str(instanceInfo.ValueTypeID) + "}")
+                print("   Streaming Modes: " + str(len(instanceInfo.SupportedStreamingModes)))
+                print("")
 
                 i = 0
                 for mode in instanceInfo.SupportedStreamingModes:
                     i += 1                    
-                    print("        Streaming Mode " + str(i))
+                    print("        Streaming Mode " + str(i), end="")
                     if mode.IsKeyValueEncoded:
-                        print("            {" + str(mode.KeyValueEncodingMethod) + "}")
+                        print(" {" + str(mode.KeyValueEncodingMethod) + "}")
                     else:
-                        print("            {" + str(mode.KeyEncodingMethod) + "} / {" + str(mode.ValueEncodingMethod) + "}")
+                        print(" {" + str(mode.KeyEncodingMethod) + "} / {" + str(mode.ValueEncodingMethod) + "}")
+                    
                     print("            Key-Value Encoded: " + str(mode.IsKeyValueEncoded))
                     print("            Fixed Size Encoded: " + str(mode.IsFixedSizeEncoding))                    
+                    print("")
         else:
-            print("Not connected?")
+            print("Not connected? Unexpected.")
     except Exception as ex:
         print("Failed to connect: " + str(ex))
     finally:

@@ -58,17 +58,17 @@ class historianKey(snapTypeBase):
         """
         Sets the provided SNAPdb type to its minimum value.
         """        
-        self.Timestamp = 0
-        self.PointID = 0
-        self.EntryNumber = 0
+        self.Timestamp = np.uint64(0)
+        self.PointID = np.uint64(0)
+        self.EntryNumber = np.uint64(0)
 
     def SetMax(self):
         """
         Sets the provided SNAPdb type to its maximum value.
         """        
-        self.Timestamp = Limits.MaxUInt64
-        self.PointID = Limits.MaxUInt64
-        self.EntryNumber = Limits.MaxUInt64
+        self.Timestamp = np.uint64(Limits.MaxUInt64)
+        self.PointID = np.uint64(Limits.MaxUInt64)
+        self.EntryNumber = np.uint64(Limits.MaxUInt64)
 
     def Clear(self):
         """
@@ -78,42 +78,44 @@ class historianKey(snapTypeBase):
 
     def Read(self, stream: remoteBinaryStream):
         """
-        Reads the provided SNAPdb type from the stream.
+        Reads this SNAPdb type from the stream.
         """        
         self.Timestamp = stream.ReadUInt64()
         self.PointID = stream.ReadUInt64()
         self.EntryNumber = stream.ReadUInt64()
+    
+    def Write(self, stream: remoteBinaryStream):
+        """
+        Writes this SNAPdb type to the stream.
+        """
+        stream.WriteUInt64(self.Timestamp)
+        stream.WriteUInt64(self.PointID)
+        stream.WriteUInt64(self.EntryNumber)
 
     def CopyTo(self, destination: "historianKey"):
         """
         Copies this SNAPdb type to the `destination`
         """        
-        destination.Timestamp = self.Timestamp;
-        destination.PointID = self.PointID;
-        destination.EntryNumber = self.EntryNumber;
+        destination.Timestamp = self.Timestamp
+        destination.PointID = self.PointID
+        destination.EntryNumber = self.EntryNumber
     
     def CompareTo(self, other: "historianKey"):
         """
-        Copies this SNAPdb type to the `other`
+        Compares this SNAPdb type to the `other`
         """
         if self.Timestamp < other.Timestamp:
             return -1
-        
         if self.Timestamp > other.Timestamp:
             return 1
-        
         if self.PointID < other.PointID:
             return -1
-        
         if self.PointID > other.PointID:
             return 1
-        
         if self.EntryNumber < other.EntryNumber:
             return -1
-        
         if self.EntryNumber > other.EntryNumber:
             return 1
-        
         return 0
 
     def TryGetDateTime(self) -> (datetime, bool):
@@ -124,3 +126,17 @@ class historianKey(snapTypeBase):
             return (datetime(1, 1, 1), False)
 
         return (Ticks.ToDateTime(self.Timestamp), True)
+
+    @property
+    def AsDateTime(self) -> datetime:
+        """
+        Gets `Timestamp` type cast as a `datetime`
+        """
+        return self.TryGetDateTime()[0]
+
+    @AsDateTime.setter
+    def AsDateTime(self, value: datetime):
+        """
+        Sets `Timestamp` type cast from a `datetime`
+        """
+        self.Timestamp = Ticks.FromDateTime(value)

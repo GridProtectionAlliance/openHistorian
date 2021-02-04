@@ -24,7 +24,7 @@
 from typing import Sequence
 from datetime import datetime, timedelta
 from uuid import UUID
-from enum import Enum, IntEnum
+from enum import IntEnum
 from struct import pack
 import numpy as np
 
@@ -37,7 +37,7 @@ def static_init(cls):
         cls.static_init()
     return cls
 
-class Empty(Enum):
+class Empty:
     GUID = UUID("00000000-0000-0000-0000-000000000000")
 
 class Limits(IntEnum):

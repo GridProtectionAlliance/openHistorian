@@ -24,7 +24,6 @@
 from encoding7Bit import encoding7Bit
 from common import ByteSize
 from typing import Callable
-import socket
 import numpy as np
 
 class streamEncoding:

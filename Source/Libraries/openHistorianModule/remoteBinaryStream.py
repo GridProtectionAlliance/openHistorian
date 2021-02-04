@@ -25,7 +25,6 @@ from encoding7Bit import encoding7Bit
 from streamEncoding import streamEncoding
 from common import ByteSize, Validate
 from uuid import UUID
-from typing import Callable
 import numpy as np
 
 class remoteBinaryStream:

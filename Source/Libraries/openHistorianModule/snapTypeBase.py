@@ -65,7 +65,13 @@ class snapTypeBase(ABC):
     @abstractmethod
     def Read(self, stream: remoteBinaryStream):
         """
-        Reads the provided SNAPdb type from the stream.
+        Reads this SNAPdb type from the stream.
+        """
+
+    @abstractmethod
+    def Write(self, stream: remoteBinaryStream):
+        """
+        Writes this SNAPdb type to the stream.
         """
 
     @abstractmethod
@@ -77,5 +83,5 @@ class snapTypeBase(ABC):
     @abstractmethod
     def CompareTo(self, other: "snapTypeBase"):
         """
-        Copies this SNAPdb type to the `other`
+        Compares this SNAPdb type to the `other`
         """
