@@ -35,21 +35,17 @@ using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using PhasorProtocolAdapters;
 using openHistorian.Model;
-using GSF.Identity;
-using Measurement = GSF.TimeSeries.Measurement;
-using MeasurementRecord = openHistorian.Model.Measurement;
-using SignalType = GSF.Units.EE.SignalType;
-using SignalTypeRecord = openHistorian.Model.SignalType;
 using System.IO;
 using GSF.IO;
 using GSF.Threading;
 using System.Collections.Concurrent;
 using System.Data;
-using GSF.TimeSeries.Data;
-using GSF.Units.EE;
 using System.Threading.Tasks;
 using GSF;
-using System.Xml.Serialization;
+using Measurement = GSF.TimeSeries.Measurement;
+using MeasurementRecord = openHistorian.Model.Measurement;
+using SignalType = GSF.Units.EE.SignalType;
+using SignalTypeRecord = openHistorian.Model.SignalType;
 
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NotAccessedField.Local
@@ -175,12 +171,12 @@ namespace openHistorian.Adapters
         private double m_lastS0S1;
         private double m_lastS2S1;
         private bool m_countAlarms;
-        private int m_sqlFailures = 0;
-        private int m_skipped = 0;
+        private int m_sqlFailures;
+        private int m_skipped;
 
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
-        private GSF.Threading.CancellationToken m_cancelationTokenSql;
+        private CancellationToken m_cancelationTokenSql;
 
         private ConcurrentBag<ThreePhaseSet> m_threePhaseComponent;
 
@@ -355,7 +351,7 @@ namespace openHistorian.Adapters
 
                 StringBuilder status = new StringBuilder();
 
-                status.AppendFormat("          Mapping File: ", MappingFilePath);
+                status.AppendFormat("          Mapping File: {0}", MappingFilePath);
                 status.AppendLine();
                 status.AppendFormat(" Number of 3Phase Sets: {0}", m_threePhaseComponent?.Count ?? 0) ;
                 status.AppendLine();
@@ -458,7 +454,7 @@ namespace openHistorian.Adapters
                     signalId2 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[1].Trim());
                     signalId3 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[2].Trim());
 
-                    if (signalId1 == null || signalId2 == null || signalId3 == null)
+                    if (signalId1 == Guid.Empty || signalId2 == Guid.Empty || signalId3 == Guid.Empty)
                     {
                         OnStatusMessage(MessageLevel.Warning, $"Skipping Line {i} in mapping file.");
                         return;
@@ -483,8 +479,8 @@ namespace openHistorian.Adapters
 
                         if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
                         {
-                            string deviceName = this.LookupDevice(input1.SignalID);
-                            string phasorLabel = this.LookupPhasorLabel(input1.SignalID);
+                            string deviceName = LookupDevice(input1.SignalID);
+                            string phasorLabel = LookupPhasorLabel(input1.SignalID);
                             alternateTagPrefix = $"{deviceName}-{phasorLabel}";
                         }
                         string perAdapterOutputName = "RESULT";
@@ -513,10 +509,10 @@ namespace openHistorian.Adapters
 
 
                     }
-                    else
-                    {
-                        output = keys.S0S1;
-                    }
+                    //else
+                    //{
+                    //    output = keys.S0S1; // Variable assignment not used on any execution path
+                    //}
 
                     keys.Reset();
                     keys.activeAlarm = false;
@@ -537,14 +533,14 @@ namespace openHistorian.Adapters
             if (m_threePhaseComponent.Count == 0)
                 OnStatusMessage(MessageLevel.Error, "No case with all 3 sequences was found");
 
-            m_countAlarms = !(AlarmSetPoint == 0);
+            m_countAlarms = AlarmSetPoint != 0;
 
             m_numberOfFrames = 0;
             m_sqlFailures = 0;
 
-            m_cancelationTokenSql = new GSF.Threading.CancellationToken();
+            m_cancelationTokenSql = new CancellationToken();
 
-            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => {
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, ex => {
                 m_sqlFailures++;
                 OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");
 
@@ -575,13 +571,9 @@ namespace openHistorian.Adapters
             
             foreach (ThreePhaseSet set in m_threePhaseComponent)
             {
-                IMeasurement positiveSeq;
-                IMeasurement negativeSeq;
-                IMeasurement zeroSeq;
-
-                bool hasP = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.PositiveSequence), out positiveSeq);
-                bool hasN = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.NegativeSequence), out negativeSeq);
-                bool hasZ = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.ZeroSequence), out zeroSeq);
+                bool hasP = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.PositiveSequence), out IMeasurement positiveSeq);
+                bool hasN = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.NegativeSequence), out IMeasurement negativeSeq);
+                bool hasZ = frame.Measurements.TryGetValue(MeasurementKey.LookUpBySignalID(set.ZeroSequence), out IMeasurement zeroSeq);
 
                 double s0s1 = double.NaN;
                 double s2s1 = double.NaN;
@@ -642,7 +634,7 @@ namespace openHistorian.Adapters
                         set.countExceeding = 0;
                         set.acknowlegedAlarm = false;
                         set.activeAlarm = false;
-                     }
+                    }
                 }
 
                 if (ReportSQL && (!double.IsNaN(s0s1)))
@@ -686,7 +678,7 @@ namespace openHistorian.Adapters
 
        
 
-        private void SaveToSQL(GSF.Threading.CancellationToken CancellationToken)
+        private void SaveToSQL(CancellationToken CancellationToken)
         {
             while (!CancellationToken.IsCancelled)
             {
@@ -819,7 +811,7 @@ namespace openHistorian.Adapters
         /// </summary>
         private void ParseConnectionString()
         {
-            Dictionary<string, string> settings = Settings;
+            //Dictionary<string, string> settings = Settings;
 
             // Parse all properties marked with ConnectionStringParameterAttribute from provided ConnectionString value
             ConnectionStringParser parser = new ConnectionStringParser<ConnectionStringParameterAttribute>();

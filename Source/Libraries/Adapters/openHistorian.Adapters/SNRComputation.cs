@@ -31,26 +31,20 @@ using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
 using GSF.Diagnostics;
-using GSF.Identity;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units;
 using PhasorProtocolAdapters;
 using openHistorian.Model;
+using System.Data;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using GSF;
+using GSF.Threading;
 using Measurement = GSF.TimeSeries.Measurement;
 using MeasurementRecord = openHistorian.Model.Measurement;
 using SignalType = GSF.Units.EE.SignalType;
 using SignalTypeRecord = openHistorian.Model.SignalType;
-using System.Xml.Serialization;
-using System.Data;
-using GSF.TimeSeries.Data;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using GSF;
-using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
-using GSF.Threading;
-using System.Threading;
 
 namespace openHistorian.Adapters
 {
@@ -157,16 +151,16 @@ namespace openHistorian.Adapters
         private int m_numberOfFrames;
         private double m_lastSNR;
 
-        private bool m_countAlarms;
-        private int m_sqlFailures = 0;
-        private int m_skipped = 0;
+        //private bool m_countAlarms;
+        private int m_sqlFailures;
+        private int m_skipped;
 
         private ConcurrentDictionary<Guid, SNRDataWindow> m_dataWindow;
         private Dictionary<Guid, bool> m_isAngleMapping;
         private ConcurrentDictionary<Guid, MeasurementKey> m_outputMapping;
         private LongSynchronizedOperation m_sqlWritter;
         private IsolatedQueue<DailySummary> m_summaryQueue;
-        private GSF.Threading.CancellationToken m_cancelationTokenSql;
+        private CancellationToken m_cancelationTokenSql;
         #endregion
 
         #region [ Properties ]
@@ -359,9 +353,8 @@ namespace openHistorian.Adapters
             }
 
             // Create child adapter for provided inputs to the parent bulk collection-based adapter
-            Parallel.For(0, (InputMeasurementKeys.Length), (i) =>
+            Parallel.For(0, InputMeasurementKeys.Length, i =>
             {
-
                 Guid input;
                 Guid output;
 
@@ -373,8 +366,8 @@ namespace openHistorian.Adapters
 
                 if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
                 {
-                    string deviceName = this.LookupDevice(input, SourceMeasurementTable);
-                    string phasorLabel = this.LookupPhasorLabel(input, SourceMeasurementTable);
+                    string deviceName = LookupDevice(input, SourceMeasurementTable);
+                    string phasorLabel = LookupPhasorLabel(input, SourceMeasurementTable);
                     alternateTagPrefix = $"{deviceName}-{phasorLabel}";
                 }
 
@@ -411,16 +404,16 @@ namespace openHistorian.Adapters
                     }
                 }
                 // Add inputs and outputs to connection string settings for child adapter
-                m_dataWindow.AddOrUpdate(input,new SNRDataWindow());
+                m_dataWindow.AddOrUpdate(input, new SNRDataWindow());
                 m_dataWindow[input].Reset();
                 m_outputMapping.AddOrUpdate(input, MeasurementKey.LookUpBySignalID(output));
             });
 
             m_numberOfFrames = 0;
 
-            m_cancelationTokenSql = new GSF.Threading.CancellationToken();
+            m_cancelationTokenSql = new CancellationToken();
 
-            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, (Exception ex) => {
+            m_sqlWritter = new LongSynchronizedOperation(() => { SaveToSQL(m_cancelationTokenSql); }, ex => {
                 m_sqlFailures++;
                 OnStatusMessage(MessageLevel.Error, $"Unable to save summary data to SQL: {ex.Message}");
 
@@ -449,10 +442,10 @@ namespace openHistorian.Adapters
             List<IMeasurement> outputmeasurements = new List<IMeasurement>();
 
             double refAngle = 0.0D;
-            IMeasurement referceAngle;
-            if (Reference != null && frame.Measurements.TryGetValue(Reference, out referceAngle))
+
+            if (Reference != null && frame.Measurements.TryGetValue(Reference, out IMeasurement referenceAngle))
             {
-                refAngle = referceAngle.AdjustedValue;
+                refAngle = referenceAngle.AdjustedValue;
             }
 
             foreach (IMeasurement measurment in frame.Measurements.Values)
@@ -512,7 +505,7 @@ namespace openHistorian.Adapters
             return double.IsInfinity(result) ? double.NaN : result;
         }
 
-        private void SaveToSQL(GSF.Threading.CancellationToken CancellationToken)
+        private void SaveToSQL(CancellationToken CancellationToken)
         {
             while (!CancellationToken.IsCancelled)
             {
