@@ -31,24 +31,31 @@ import numpy as np
 def static_init(cls):
     """
     Marks a class as having a static initialization function and
-    executes the function when class is statically constructed
+    executes the function when class is statically constructed.
     """
     if getattr(cls, "static_init", None):
         cls.static_init()
+
     return cls
+
+def override(self):
+    """
+    Marks a method as an override (for documentation purposes).
+    """
+    return self
 
 class Empty:
     GUID = UUID("00000000-0000-0000-0000-000000000000")
 
 class Limits(IntEnum):
-    MaxTicks = 3155378975999999999
-    MaxByte = 255
-    MaxInt16 = 32767
-    MaxUInt16 = 65535
-    MaxInt32 = 2147483647
-    MaxUInt32 = 4294967295
-    MaxInt64 = 9223372036854775807
-    MaxUInt64 = 18446744073709551615
+    MAXTICKS = 3155378975999999999
+    MAXBYTE = 255
+    MAXINT16 = 32767
+    MAXUINT16 = 65535
+    MAXINT32 = 2147483647
+    MAXUINT32 = 4294967295
+    MAXINT64 = 9223372036854775807
+    MAXUINT64 = 18446744073709551615
 
 class ByteSize(IntEnum):
     INT8 = 1
@@ -63,11 +70,15 @@ class ByteSize(IntEnum):
 
 class Ticks:
     @staticmethod
-    def FromDateTime(dt: datetime) -> int:
-        return (dt - datetime(1, 1, 1)).total_seconds() * 10000000
+    def FromDateTime(dt: datetime) -> np.uint64:
+        return np.uint64((dt - datetime(1, 1, 1)).total_seconds() * 10000000)
+
+    @staticmethod
+    def FromTimeDelta(td: timedelta) -> np.uint64:
+        return np.uint64(td.total_seconds() * 10000000)
     
     @staticmethod
-    def ToDateTime(ticks: int) -> datetime:
+    def ToDateTime(ticks: np.uint64) -> datetime:
         return datetime(1, 1, 1) + timedelta(microseconds = ticks // 10)
 
 class BitConvert:
@@ -93,4 +104,3 @@ class Validate:
 
         if startIndex + length > len(array):
             raise ValueError("startIndex of " + str(startIndex) + " and length of " + str(length) + " will exceed array size of " + str(len(array)))
-   

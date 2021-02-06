@@ -44,13 +44,13 @@ class streamEncoding:
             Actual length of returned `bytes` object may be less than desired number of bytes.
         write: func(buffer: bytes) -> int
             Write function that accepts a `bytes` object and returns count of bytes written. It is expected that
-            call to write will succesfully write all bytes, i.e., returned length should match `buffer` length.
+            call to write will successfully write all bytes, i.e., returned length should match `buffer` length.
         """
         self.read = read
         self.write = write
 
-    def Write(self, sourceBuffer: bytearray, offset: int, count: int) -> int:
-        if self.write(bytes(sourceBuffer[offset:offset + count])) != count:
+    def Write(self, sourceBuffer: bytes, offset: int, count: int) -> int:
+        if self.write(sourceBuffer[offset:offset + count]) != count:
             raise RuntimeError("Failed to write " + str(count) + " bytes to stream")
 
         return count
@@ -209,6 +209,13 @@ class streamEncoding:
             raise RuntimeError("Failed to read 8-bytes from stream")
 
         return np.frombuffer(buffer, np.uint64)[0]
+    
+    def Write7BitUInt32(self, value: np.uint32) -> int:
+        return encoding7Bit.WriteUInt32(self.WriteByte, value)
+
+    def Read7BitUInt32(self) -> np.uint32:
+        # call expects one to five bytes to be available in base stream
+        return encoding7Bit.ReadUInt32(self.ReadByte)
     
     def Write7BitUInt64(self, value: np.uint64) -> int:
         return encoding7Bit.WriteUInt64(self.WriteByte, value)

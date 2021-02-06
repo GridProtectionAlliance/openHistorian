@@ -23,6 +23,7 @@
 
 from remoteBinaryStream import remoteBinaryStream
 from common import Empty
+from typing import Optional
 from uuid import UUID
 import numpy as np
 
@@ -34,7 +35,7 @@ class encodingDefinition:
     
     FixedSizeIndividualGuid = UUID("1dea326d-a63a-4f73-b51c-7b3125c6da55")
 
-    def __init__(self, stream: remoteBinaryStream = None, keyValueEncoding: UUID = None, keyEncoding: UUID = None, valueEncoding: UUID = None):
+    def __init__(self, stream: Optional[remoteBinaryStream] = None, keyValueEncoding: Optional[UUID] = None, keyEncoding: Optional[UUID] = None, valueEncoding: Optional[UUID] = None):
         """
         Creates an `encodingDefinition`.
         """
@@ -124,3 +125,17 @@ class encodingDefinition:
 
         return self.keyValueEncodingMethod
 
+    def ToString(self) -> str:
+        if self.isKeyValueEncoded:
+            return "{" + str(self.keyValueEncodingMethod) + "}";
+        
+        return "{" + str(self.keyEncodingMethod) + "} / {" + str(self.valueEncodingMethod) + "}";
+
+    def Save(self, stream: remoteBinaryStream):
+        if self.isKeyValueEncoded:
+            stream.WriteByte(1)
+            stream.WriteGuid(self.keyValueEncodingMethod)
+        else:
+            stream.WriteByte(2)
+            stream.WriteGuid(self.keyEncodingMethod)
+            stream.WriteGuid(self.valueEncodingMethod)

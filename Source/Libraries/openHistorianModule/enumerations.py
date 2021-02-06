@@ -23,7 +23,7 @@
 
 from enum import IntEnum
 
-# Defines needed enumerations for openHistorian API calls
+# Defines needed enumerations for SNAPdb server commands and responses
 
 class ServerCommand(IntEnum):
     CONNECTTODATABASE = 0

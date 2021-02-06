@@ -23,6 +23,30 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="fixedSizeKeyValueEncoder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="historianInstance.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="historianKeyValueEncoder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="keyValueEncoderBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pointReader.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="readerOptions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapConnection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapClientDatabase.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="common.py">
       <SubType>Code</SubType>
     </Compile>
@@ -60,6 +84,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="streamEncoding.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="treeStream.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

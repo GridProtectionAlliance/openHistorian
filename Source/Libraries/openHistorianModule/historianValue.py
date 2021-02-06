@@ -23,7 +23,7 @@
 
 from snapTypeBase import snapTypeBase
 from remoteBinaryStream import remoteBinaryStream
-from common import Limits, BitConvert
+from common import Limits, BitConvert, override
 from uuid import UUID
 import numpy as np
 
@@ -32,7 +32,7 @@ class historianValue(snapTypeBase):
     The standard SNAPdb value used for the openHistorian.
     """
 
-    TypeGuid = UUID("24dde7dc-67f9-42b6-a11b-e27c3e62d9ef")
+    SnapTypeID = UUID("24dde7dc-67f9-42b6-a11b-e27c3e62d9ef")
 
     def __init__(self):
         # Value 1 should be where the first 64 bits of the field is stored. For 32 bit values, use this field only.
@@ -45,19 +45,22 @@ class historianValue(snapTypeBase):
         self.Value3 = np.uint64(0)
 
     @property
-    def GenericTypeGuid(self) -> UUID:
+    @override
+    def TypeID(self) -> UUID:
         """
         The Guid uniquely defining this SNAPdb type. 
         """        
-        return historianValue.TypeGuid
+        return historianValue.SnapTypeID
 
     @property
+    @override
     def Size(self) -> int:
         """
         Gets the size of this SNAPdb type when serialized.
         """      
         return 24
 
+    @override
     def SetMin(self):
         """
         Sets the provided SNAPdb type to its minimum value.
@@ -66,20 +69,23 @@ class historianValue(snapTypeBase):
         self.Value2 = np.uint64(0)
         self.Value3 = np.uint64(0)
 
+    @override
     def SetMax(self):
         """
         Sets the provided SNAPdb type to its maximum value.
         """        
-        self.Value1 = np.uint64(Limits.MaxUInt64)
-        self.Value2 = np.uint64(Limits.MaxUInt64)
-        self.Value3 = np.uint64(Limits.MaxUInt64)
+        self.Value1 = np.uint64(Limits.MAXUINT64)
+        self.Value2 = np.uint64(Limits.MAXUINT64)
+        self.Value3 = np.uint64(Limits.MAXUINT64)
 
+    @override
     def Clear(self):
         """
         Clears the SNAPdb type.
         """        
         self.SetMin()
 
+    @override
     def Read(self, stream: remoteBinaryStream):
         """
         Reads this SNAPdb type from the stream.
@@ -88,6 +94,7 @@ class historianValue(snapTypeBase):
         self.Value2 = stream.ReadUInt64()
         self.Value3 = stream.ReadUInt64()
     
+    @override
     def Write(self, stream: remoteBinaryStream):
         """
         Writes this SNAPdb type to the stream.
@@ -96,6 +103,7 @@ class historianValue(snapTypeBase):
         stream.WriteUInt64(self.Value2)
         stream.WriteUInt64(self.Value3)
 
+    @override
     def CopyTo(self, destination: "historianValue"):
         """
         Copies this SNAPdb type to the `destination`
@@ -104,6 +112,7 @@ class historianValue(snapTypeBase):
         destination.Value2 = self.Value2;
         destination.Value3 = self.Value3;
     
+    @override
     def CompareTo(self, other: "historianValue"):
         """
         Compares this SNAPdb type to the `other`

@@ -23,7 +23,7 @@
 
 from snapTypeBase import snapTypeBase
 from remoteBinaryStream import remoteBinaryStream
-from common import Limits, Ticks
+from common import Limits, Ticks, override
 from datetime import datetime
 from uuid import UUID
 import numpy as np
@@ -33,7 +33,7 @@ class historianKey(snapTypeBase):
     The standard SNAPdb key used for the openHistorian.
     """
 
-    TypeGuid = UUID("6527d41b-9d04-4bfa-8133-05273d521d46")
+    SnapTypeID = UUID("6527d41b-9d04-4bfa-8133-05273d521d46")
 
     def __init__(self):
         self.Timestamp = np.uint64(0)
@@ -41,19 +41,22 @@ class historianKey(snapTypeBase):
         self.EntryNumber = np.uint64(0)
 
     @property
-    def GenericTypeGuid(self) -> UUID:
+    @override
+    def TypeID(self) -> UUID:
         """
         The Guid uniquely defining this SNAPdb type. 
         """        
-        return historianKey.TypeGuid
+        return historianKey.SnapTypeID
 
     @property
+    @override
     def Size(self) -> int:
         """
         Gets the size of this SNAPdb type when serialized.
         """      
         return 24
 
+    @override
     def SetMin(self):
         """
         Sets the provided SNAPdb type to its minimum value.
@@ -62,20 +65,23 @@ class historianKey(snapTypeBase):
         self.PointID = np.uint64(0)
         self.EntryNumber = np.uint64(0)
 
+    @override
     def SetMax(self):
         """
         Sets the provided SNAPdb type to its maximum value.
         """        
-        self.Timestamp = np.uint64(Limits.MaxUInt64)
-        self.PointID = np.uint64(Limits.MaxUInt64)
-        self.EntryNumber = np.uint64(Limits.MaxUInt64)
+        self.Timestamp = np.uint64(Limits.MAXUINT64)
+        self.PointID = np.uint64(Limits.MAXUINT64)
+        self.EntryNumber = np.uint64(Limits.MAXUINT64)
 
+    @override
     def Clear(self):
         """
         Clears the SNAPdb type.
         """        
         self.SetMin()
 
+    @override
     def Read(self, stream: remoteBinaryStream):
         """
         Reads this SNAPdb type from the stream.
@@ -84,6 +90,7 @@ class historianKey(snapTypeBase):
         self.PointID = stream.ReadUInt64()
         self.EntryNumber = stream.ReadUInt64()
     
+    @override
     def Write(self, stream: remoteBinaryStream):
         """
         Writes this SNAPdb type to the stream.
@@ -92,6 +99,7 @@ class historianKey(snapTypeBase):
         stream.WriteUInt64(self.PointID)
         stream.WriteUInt64(self.EntryNumber)
 
+    @override
     def CopyTo(self, destination: "historianKey"):
         """
         Copies this SNAPdb type to the `destination`
@@ -100,6 +108,7 @@ class historianKey(snapTypeBase):
         destination.PointID = self.PointID
         destination.EntryNumber = self.EntryNumber
     
+    @override
     def CompareTo(self, other: "historianKey"):
         """
         Compares this SNAPdb type to the `other`

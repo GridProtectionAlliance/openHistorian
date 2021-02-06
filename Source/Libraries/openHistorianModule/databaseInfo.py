@@ -29,14 +29,15 @@ from uuid import UUID
 
 class databaseInfo:
     """
-    Defines details for an openHistorian client database instance.
+    Defines details for an SNAPdb client database, for the python
+    openHistorian API client databases are known as "instances". 
     """
 
     def __init__(self, stream: remoteBinaryStream):
         version = stream.ReadByte()
 
         if version != 1:
-            raise RuntimeError("Unknown openHistorian version: " + str(version))
+            raise RuntimeError("Unknown SNAPdb version: " + str(version))
 
         self.databaseName = stream.ReadString().strip().upper()
         self.keyTypeID = stream.ReadGuid()
@@ -48,9 +49,9 @@ class databaseInfo:
         for i in range(count):
             definitions.append(encodingDefinition(stream = stream))
 
-        self.streamingModes = definitions
-        self.keyType = library.LookupType(self.keyTypeID)
-        self.valueType = library.LookupType(self.valueTypeID)
+        self.encodingDefinitions = definitions
+        self.keyTypeName = library.LookupTypeName(self.keyTypeID)
+        self.valueTypeName = library.LookupTypeName(self.valueTypeID)
 
     @property
     def Version(self) -> int:
@@ -69,13 +70,13 @@ class databaseInfo:
         return self.valueTypeID
 
     @property
-    def KeyType(self) -> str:
-        return self.keyType
+    def KeyTypeName(self) -> str:
+        return self.keyTypeName
 
     @property
-    def ValueType(self) -> str:
-        return self.valueType
+    def ValueTypeName(self) -> str:
+        return self.valueTypeName
 
     @property
-    def SupportedStreamingModes(self) -> List[encodingDefinition]:
-        return self.streamingModes
+    def SupportedEncodings(self) -> List[encodingDefinition]:
+        return self.encodingDefinitions

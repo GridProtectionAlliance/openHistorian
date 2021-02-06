@@ -21,9 +21,10 @@
 #
 #******************************************************************************************************
 
-from encoding7Bit import encoding7Bit
 from streamEncoding import streamEncoding
+from encoding7Bit import encoding7Bit
 from common import ByteSize, Validate
+from enumerations import *
 from uuid import UUID
 import numpy as np
 
@@ -54,7 +55,7 @@ class remoteBinaryStream:
         if self.sendLength <= 0:
             return
 
-        self.stream.Write(self.sendBuffer, 0, self.sendLength)
+        self.stream.Write(bytes(self.sendBuffer), 0, self.sendLength)
         self.sendLength = 0
 
     def Read(self, buffer: bytearray, offset: int, count: int) -> int:
@@ -117,7 +118,7 @@ class remoteBinaryStream:
 
         return originalCount
 
-    def Write(self, buffer: bytearray, offset: int, count: int) -> int:
+    def Write(self, buffer: bytes, offset: int, count: int) -> int:
         if self.SendBufferFreeSpace < count:
             self.Flush()
 
@@ -154,11 +155,11 @@ class remoteBinaryStream:
         self.ReadAll(buffer, 0, count)
         return bytes(buffer)
 
-    def ReadNextBuffer(self) -> bytes:
+    def ReadBuffer(self) -> bytes:
         return self.ReadBytes(self.Read7BitUInt32())
 
     def ReadString(self) -> str:
-        return self.ReadNextBuffer().decode("utf8")
+        return self.ReadBuffer().decode("utf-8")
     
     def ReadGuid(self) -> UUID:
         return UUID(bytes_le=self.ReadBytes(16))
@@ -184,6 +185,28 @@ class remoteBinaryStream:
             return np.uint8(value)
 
         return self.stream.ReadByte()
+
+    def WriteBuffer(self, value: bytes) -> int:
+        count = len(value)
+        return self.Write7BitUInt32(count) + self.Write(value, 0, count)
+
+    def WriteString(self, value: str) -> int:
+        return self.WriteBuffer(value.encode("utf-8"))
+    
+    def WriteGuid(self, value: UUID) -> int:        
+        return self.Write(value.bytes_le, 0, 16)
+
+    def Write7BitInt32(self, value: np.int32) -> int:
+        return encoding7Bit.WriteInt32(self.WriteByte, value)
+
+    def Write7BitUInt32(self, value: np.uint32) -> int:
+        return encoding7Bit.WriteUInt32(self.WriteByte, value)
+
+    def Write7BitInt64(self, value: np.int64) -> int:
+        return encoding7Bit.WriteInt64(self.WriteByte, value)
+    
+    def Write7BitUInt64(self, value: np.uint64) -> int:
+        return encoding7Bit.WriteUInt64(self.WriteByte, value)
 
     def WriteByte(self, value: np.uint8) -> int:
         size = ByteSize.UINT8
@@ -368,6 +391,7 @@ class remoteBinaryStream:
         self.sendLength += length
         return length
 
+
     def Write7BitUInt64(self, value: np.uint64) -> int:
         if self.sendLength <= remoteBinaryStream.BufferSize - ByteSize.ENC7BIT:
             stream = streamEncoding(self.__sendBufferRead, self.__sendBufferWrite)
@@ -381,3 +405,34 @@ class remoteBinaryStream:
             return stream.Read7BitUInt64()
 
         return self.stream.Read7BitUInt64()
+
+class Server:
+    """
+    Defines helper functions for common server-based `remoteBinaryStream` calls
+    """
+
+    @staticmethod
+    def ReadResponse(stream: remoteBinaryStream) -> int:
+        response = stream.ReadByte()
+
+        if response == ServerResponse.UNHANDLEDEXCEPTION:
+            raise RuntimeError("Server unhandled exception:" + stream.ReadString())
+
+        return response
+
+    @staticmethod
+    def ValidateExpectedResponse(response: int, *expectedResponses: ServerCommand):
+        foundValidResponse = False
+        
+        for expectedResponse in expectedResponses:
+            if response == expectedResponse:
+                foundValidResponse = True
+                break
+
+        if not foundValidResponse:
+            raise RuntimeError("Unexpected server response: " + str(response))
+
+    @staticmethod
+    def ValidateExpectedReadResponse(stream: remoteBinaryStream, *expectedResponses: ServerCommand):
+        Server.ValidateExpectedResponse(Server.ReadResponse(stream), expectedResponses)
+

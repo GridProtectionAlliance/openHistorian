@@ -32,7 +32,7 @@ class snapTypeBase(ABC):
 
     @property
     @abstractmethod
-    def GenericTypeGuid(self) -> UUID:
+    def TypeID(self) -> UUID:
         """
         The Guid uniquely defining this SNAPdb type. 
         """

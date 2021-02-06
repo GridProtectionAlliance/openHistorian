@@ -1,5 +1,5 @@
 #******************************************************************************************************
-#  openHistorian.py - Gbtc
+#  historianInstance.py - Gbtc
 #
 #  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 #
@@ -16,31 +16,20 @@
 #
 #  Code Modification History:
 #  ----------------------------------------------------------------------------------------------------
-#  01/31/2021 - J. Ritchie Carroll
+#  02/06/2021 - J. Ritchie Carroll
 #       Generated original version of source code.
 #
 #******************************************************************************************************
 
-from historianInstance import historianInstance
+from snapClientDatabase import snapClientDatabase
 from historianKey import historianKey
 from historianValue import historianValue
-from snapConnection import snapConnection
-from encodingDefinition import encodingDefinition
-from common import override
-from typing import Optional
+from remoteBinaryStream import Server, remoteBinaryStream
+from databaseInfo import databaseInfo
 
-class openHistorian(snapConnection[historianKey, historianValue]):
+class historianInstance(snapClientDatabase[historianKey, historianValue]):
     """
-    Defines API functionality for connecting to an openHistorian instance then
-    reading and writing measurement data from the instance.
-
-    This class is an instance of the `snapConnection` implemented for the
-    openHistorian `historianKey` and `historianValue` SNAPdb types.
+    Represents a `snapClientDatabase` instance for a `historianKey` and `historianValue`.
     """
-
-    def __init__(self, hostAddress: str):
-        super().__init__(hostAddress, historianKey(), historianValue())
-
-    @override
-    def OpenInstance(self, instanceName: str, definition: Optional[encodingDefinition] = None) -> historianInstance:
-        return super().OpenInstance(instanceName, definition)
+    def __init__(self, stream: remoteBinaryStream, info: databaseInfo):
+        super().__init__(stream, info, historianKey(), historianValue())
