@@ -81,7 +81,7 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
         if response == ServerResponse.ERRORWHILEREADING:
             raise RuntimeError("SNAPdb server exception encountered while reading: " + self.stream.ReadString())
 
-        Server.ValidateExpectedResponse(response, ServerResponse.READCOMPLETE, ServerResponse.CANCELEDREAD)
+        Server.ValidateExpectedResponses(response, ServerResponse.READCOMPLETE, ServerResponse.CANCELEDREAD)
 
     def Disposing(self):
         Cancel()

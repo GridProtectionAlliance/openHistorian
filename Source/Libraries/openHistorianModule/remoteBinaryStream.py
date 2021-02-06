@@ -421,7 +421,12 @@ class Server:
         return response
 
     @staticmethod
-    def ValidateExpectedResponse(response: int, *expectedResponses: ServerCommand):
+    def ValidateExpectedResponse(response: int, expectedResponse: ServerCommand):
+        if not response == expectedResponse:
+            raise RuntimeError("Unexpected server response: " + str(response))
+
+    @staticmethod
+    def ValidateExpectedResponses(response: int, *expectedResponses: ServerCommand):
         foundValidResponse = False
         
         for expectedResponse in expectedResponses:
@@ -433,6 +438,9 @@ class Server:
             raise RuntimeError("Unexpected server response: " + str(response))
 
     @staticmethod
-    def ValidateExpectedReadResponse(stream: remoteBinaryStream, *expectedResponses: ServerCommand):
-        Server.ValidateExpectedResponse(Server.ReadResponse(stream), expectedResponses)
+    def ValidateExpectedReadResponse(stream: remoteBinaryStream, expectedResponse: ServerCommand):
+        Server.ValidateExpectedResponse(Server.ReadResponse(stream), expectedResponse)
 
+    @staticmethod
+    def ValidateExpectedReadResponses(stream: remoteBinaryStream, *expectedResponses: ServerCommand):
+        Server.ValidateExpectedResponses(Server.ReadResponse(stream), expectedResponses)
