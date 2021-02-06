@@ -21,12 +21,12 @@
 #
 #******************************************************************************************************
 
-from encoding7Bit import encoding7Bit
-from common import ByteSize
+from gsf.encoding7Bit import encoding7Bit
+from gsf import ByteSize
 from typing import Callable
 import numpy as np
 
-class streamEncoding:
+class streamEncoder:
     """
     Defines functions for encoding and decoding native types to and from a stream.
     For this class, a stream is simply an abstract notion based on provided functions
@@ -34,6 +34,8 @@ class streamEncoding:
     in the base stream. The read/write functions simply wrap a base object that can
     handle input and output as bytes, e.g., a `bytearray` or a `socket`.
     """
+    
+    # Source C# reference: GSF.IO.StreamExtensions
 
     def __init__(self, read: Callable[[int], bytes], write: Callable[[bytes], int]):
         """

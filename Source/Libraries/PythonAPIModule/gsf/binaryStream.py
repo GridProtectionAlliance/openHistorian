@@ -21,31 +21,32 @@
 #
 #******************************************************************************************************
 
-from streamEncoding import streamEncoding
-from encoding7Bit import encoding7Bit
-from common import ByteSize, Validate
-from enumerations import *
+from gsf.streamEncoder import streamEncoder
+from gsf.encoding7Bit import encoding7Bit
+from gsf import ByteSize, Validate
 from uuid import UUID
 import numpy as np
 
-class remoteBinaryStream:
+class binaryStream:
     """
     Establishes buffered I/O around a base stream, e.g., a socket
     """
+    
+    # Source C# reference: RemoteBinaryStream
 
     BufferSize = 1420
 
-    def __init__(self, stream: streamEncoding):
+    def __init__(self, stream: streamEncoder):
         self.stream = stream
-        self.receiveBuffer = bytearray(remoteBinaryStream.BufferSize)
-        self.sendBuffer = bytearray(remoteBinaryStream.BufferSize)
+        self.receiveBuffer = bytearray(binaryStream.BufferSize)
+        self.sendBuffer = bytearray(binaryStream.BufferSize)
         self.sendLength = 0
         self.receiveLength = 0
         self.receivePosition = 0
 
     @property
     def SendBufferFreeSpace(self) -> int:
-        return remoteBinaryStream.BufferSize - self.sendLength
+        return binaryStream.BufferSize - self.sendLength
 
     @property
     def ReceiveBufferAvailable(self) -> int:
@@ -99,7 +100,7 @@ class remoteBinaryStream:
         else:
             # With fewer than 100 bytes requested, fill receive buffer 
             # then copy to destination
-            prebufferLength = remoteBinaryStream.BufferSize
+            prebufferLength = binaryStream.BufferSize
             self.receiveLength = 0
 
             while self.receiveLength < count:
@@ -211,7 +212,7 @@ class remoteBinaryStream:
     def WriteByte(self, value: np.uint8) -> int:
         size = ByteSize.UINT8
 
-        if self.sendLength < remoteBinaryStream.BufferSize:
+        if self.sendLength < binaryStream.BufferSize:
             self.sendBuffer[self.sendLength] = value
             self.sendLength += size
             return size
@@ -242,7 +243,7 @@ class remoteBinaryStream:
     def WriteInt16(self, value: np.int16) -> int:
         size = ByteSize.INT16
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little", signed=True)
 
             for i in range(size):
@@ -266,7 +267,7 @@ class remoteBinaryStream:
     def WriteUInt16(self, value: np.uint16) -> int:
         size = ByteSize.UINT16
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little")
 
             for i in range(size):
@@ -290,7 +291,7 @@ class remoteBinaryStream:
     def WriteInt32(self, value: np.int32) -> int:
         size = ByteSize.INT32
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little", signed=True)
 
             for i in range(size):
@@ -314,7 +315,7 @@ class remoteBinaryStream:
     def WriteUInt32(self, value: np.uint32) -> int:
         size = ByteSize.UINT32
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little")
 
             for i in range(size):
@@ -338,7 +339,7 @@ class remoteBinaryStream:
     def WriteInt64(self, value: np.int64) -> int:
         size = ByteSize.INT64
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little", signed=True)
 
             for i in range(size):
@@ -362,7 +363,7 @@ class remoteBinaryStream:
     def WriteUInt64(self, value: np.uint64) -> int:
         size = ByteSize.UINT64
 
-        if self.sendLength <= remoteBinaryStream.BufferSize - size:
+        if self.sendLength <= binaryStream.BufferSize - size:
             buffer = value.to_bytes(size, "little")
 
             for i in range(size):
@@ -393,54 +394,15 @@ class remoteBinaryStream:
 
 
     def Write7BitUInt64(self, value: np.uint64) -> int:
-        if self.sendLength <= remoteBinaryStream.BufferSize - ByteSize.ENC7BIT:
-            stream = streamEncoding(self.__sendBufferRead, self.__sendBufferWrite)
+        if self.sendLength <= binaryStream.BufferSize - ByteSize.ENC7BIT:
+            stream = streamEncoder(self.__sendBufferRead, self.__sendBufferWrite)
             return stream.Write7BitUInt64(value)
 
         return self.stream.Write7BitUInt64(value)
 
     def Read7BitUInt64(self) -> np.uint64:
         if self.receivePosition <= self.receiveLength - ByteSize.ENC7BIT:
-            stream = streamEncoding(self.__sendBufferRead, self.__sendBufferWrite)
+            stream = streamEncoder(self.__sendBufferRead, self.__sendBufferWrite)
             return stream.Read7BitUInt64()
 
         return self.stream.Read7BitUInt64()
-
-class Server:
-    """
-    Defines helper functions for common server-based `remoteBinaryStream` calls
-    """
-
-    @staticmethod
-    def ReadResponse(stream: remoteBinaryStream) -> int:
-        response = stream.ReadByte()
-
-        if response == ServerResponse.UNHANDLEDEXCEPTION:
-            raise RuntimeError("Server unhandled exception:" + stream.ReadString())
-
-        return response
-
-    @staticmethod
-    def ValidateExpectedResponse(response: int, expectedResponse: ServerCommand):
-        if not response == expectedResponse:
-            raise RuntimeError("Unexpected server response: " + str(response))
-
-    @staticmethod
-    def ValidateExpectedResponses(response: int, *expectedResponses: ServerCommand):
-        foundValidResponse = False
-        
-        for expectedResponse in expectedResponses:
-            if response == expectedResponse:
-                foundValidResponse = True
-                break
-
-        if not foundValidResponse:
-            raise RuntimeError("Unexpected server response: " + str(response))
-
-    @staticmethod
-    def ValidateExpectedReadResponse(stream: remoteBinaryStream, expectedResponse: ServerCommand):
-        Server.ValidateExpectedResponse(Server.ReadResponse(stream), expectedResponse)
-
-    @staticmethod
-    def ValidateExpectedReadResponses(stream: remoteBinaryStream, *expectedResponses: ServerCommand):
-        Server.ValidateExpectedResponses(Server.ReadResponse(stream), expectedResponses)

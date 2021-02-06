@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from encodingDefinition import encodingDefinition
-from snapTypeBase import snapTypeBase
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.snapTypeBase import snapTypeBase
+from gsf.binaryStream import binaryStream
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 import numpy as np
@@ -104,7 +104,7 @@ class keyValueEncoderBase(ABC, Generic[TKey, TValue]):
         """
 
     @abstractmethod
-    def Encode(self, stream: remoteBinaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
+    def Encode(self, stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
         """
         Encodes `key` and `value` to the provided `stream`.
 
@@ -118,7 +118,7 @@ class keyValueEncoderBase(ABC, Generic[TKey, TValue]):
         """
 
     @abstractmethod
-    def Decode(self, stream: remoteBinaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
+    def Decode(self, stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
         """
         Decodes `key` and `value` from the provided `stream`.
 
@@ -136,7 +136,7 @@ class keyValueEncoderBase(ABC, Generic[TKey, TValue]):
         otherwise, if `ContainsEndOfStreamSymbol` is `False`, result is always `False`
         """
   
-    def WriteEndOfStream(self, stream: remoteBinaryStream) -> int:
+    def WriteEndOfStream(self, stream: binaryStream) -> int:
         """
         Writes the end of the stream symbol to the `stream`.
 
@@ -149,7 +149,7 @@ class keyValueEncoderBase(ABC, Generic[TKey, TValue]):
 
         return stream.WriteByte(0)
 
-    def StreamEncode(self, stream: remoteBinaryStream, key: TKey, value: TValue):
+    def StreamEncode(self, stream: binaryStream, key: TKey, value: TValue):
         """
         Encodes the current `key` and `value` to the `stream`.
 
@@ -167,7 +167,7 @@ class keyValueEncoderBase(ABC, Generic[TKey, TValue]):
         key.CopyTo(self.prevKey)
         value.CopyTo(self.prevValue)
 
-    def TryStreamDecode(self, stream: remoteBinaryStream, key: TKey, value: TValue) -> bool:
+    def TryStreamDecode(self, stream: binaryStream, key: TKey, value: TValue) -> bool:
         """
         Attempts to decode the next `key` and `value` from the `stream`.
 

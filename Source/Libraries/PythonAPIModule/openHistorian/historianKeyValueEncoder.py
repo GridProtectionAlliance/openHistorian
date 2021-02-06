@@ -21,12 +21,12 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from encodingDefinition import encodingDefinition
-from keyValueEncoderBase import keyValueEncoderBase
-from historianKey import historianKey
-from historianValue import historianValue
-from common import Limits, override
+from openHistorian.historianKey import historianKey
+from openHistorian.historianValue import historianValue
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.keyValueEncoderBase import keyValueEncoderBase
+from gsf.binaryStream import binaryStream
+from gsf import Limits, override
 from uuid import UUID
 import numpy as np
 
@@ -117,7 +117,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         return historianKeyValueEncoder.EndOfStream
 
     @override
-    def Encode(stream: remoteBinaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue):
+    def Encode(stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue):
         """
         Encodes `key` and `value` to the provided `stream`.
 
@@ -189,7 +189,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
             stream.WriteUInt32(np.uint32(value.Value3))
 
     @override
-    def Decode(stream: remoteBinaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue) -> bool:
+    def Decode(stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue) -> bool:
         """
         Decodes `key` and `value` from the provided `stream`.
 

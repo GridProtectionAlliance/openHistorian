@@ -21,13 +21,14 @@
 #
 #******************************************************************************************************
 
-from streamEncoding import streamEncoding
-from remoteBinaryStream import Server, remoteBinaryStream
-from databaseInfo import databaseInfo
-from encodingDefinition import encodingDefinition
-from snapClientDatabase import snapClientDatabase
-from snapTypeBase import snapTypeBase
-from enumerations import *
+from snapDB.databaseInfo import databaseInfo
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.snapClientDatabase import snapClientDatabase
+from snapDB.snapTypeBase import snapTypeBase
+from snapDB.enumerations import *
+from snapDB import Server
+from gsf.streamEncoder import streamEncoder
+from gsf.binaryStream import binaryStream
 from typing import TypeVar, Generic, List, Optional
 import socket
 import numpy as np
@@ -59,7 +60,7 @@ class snapConnection(Generic[TKey, TValue]):
         
         self.instances = dict()
         self.socket : Optional[socket.socket] = None
-        self.stream : Optional[remoteBinaryStream] = None
+        self.stream : Optional[binaryStream] = None
         self.instance : Optional[snapClientDatabase[TKey, TValue]] = None
         self.key = key
         self.value = value
@@ -95,7 +96,7 @@ class snapConnection(Generic[TKey, TValue]):
         return list(self.instances.keys())
 
     @property
-    def Stream(self) -> remoteBinaryStream:
+    def Stream(self) -> binaryStream:
         return self.stream
 
     def Connect(self):
@@ -103,7 +104,7 @@ class snapConnection(Generic[TKey, TValue]):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
             self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-            stream = streamEncoding(self.__socketRead, self.__socketWrite)
+            stream = streamEncoder(self.__socketRead, self.__socketWrite)
             self.socket.connect(self.hostEndPoint)
 
             useSsl = False
@@ -125,7 +126,7 @@ class snapConnection(Generic[TKey, TValue]):
                 raise RuntimeError("SNAPdb authentication failed")
 
             # Establish buffered I/O for socket connected to remote binary stream
-            self.stream = remoteBinaryStream(stream)
+            self.stream = binaryStream(stream)
 
             response = Server.ReadResponse(self.stream)
 
@@ -212,7 +213,7 @@ class snapConnection(Generic[TKey, TValue]):
             self.instance.Dispose()
             self.instance = None
 
-    def __tryAuthenticate(self, stream: streamEncoding, useSsl: bool) -> bool:
+    def __tryAuthenticate(self, stream: streamEncoder, useSsl: bool) -> bool:
         if useSsl:
             raise RuntimeError("SNAPdb instance is configured to require SSL. This version of the SNAPdb Python API does not support SSL.")
 

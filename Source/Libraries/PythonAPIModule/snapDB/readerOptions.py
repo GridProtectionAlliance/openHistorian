@@ -21,8 +21,8 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from common import Ticks
+from gsf.binaryStream import binaryStream
+from gsf import Ticks
 from datetime import timedelta
 
 class readerOptions:
@@ -67,7 +67,7 @@ class readerOptions:
         """
         return self.maxSeekCount
 
-    def Save(self, stream: remoteBinaryStream):
+    def Save(self, stream: binaryStream):
         stream.WriteByte(0)
         stream.WriteUInt64(Ticks.FromTimeDelta(self.timeout))
         stream.WriteUInt64(self.maxReturnedCount)

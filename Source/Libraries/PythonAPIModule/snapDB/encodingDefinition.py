@@ -21,8 +21,8 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from common import Empty
+from gsf.binaryStream import binaryStream
+from gsf import Empty
 from typing import Optional
 from uuid import UUID
 import numpy as np
@@ -32,10 +32,10 @@ class encodingDefinition:
     Represents an immutable class that represents the compression method
     used by the SNAPdb SortedTreeStore.
     """
-    
+
     FixedSizeIndividualGuid = UUID("1dea326d-a63a-4f73-b51c-7b3125c6da55")
 
-    def __init__(self, stream: Optional[remoteBinaryStream] = None, keyValueEncoding: Optional[UUID] = None, keyEncoding: Optional[UUID] = None, valueEncoding: Optional[UUID] = None):
+    def __init__(self, stream: Optional[binaryStream] = None, keyValueEncoding: Optional[UUID] = None, keyEncoding: Optional[UUID] = None, valueEncoding: Optional[UUID] = None):
         """
         Creates an `encodingDefinition`.
         """
@@ -46,7 +46,7 @@ class encodingDefinition:
         else:
             self.__initFromSeparateKeyValue(keyEncoding, valueEncoding)
 
-    def __initFromStream(self, stream: remoteBinaryStream):
+    def __initFromStream(self, stream: binaryStream):
         """
         Initializes an `encodingDefinition` from a stream.
         """
@@ -131,7 +131,7 @@ class encodingDefinition:
         
         return "{" + str(self.keyEncodingMethod) + "} / {" + str(self.valueEncodingMethod) + "}";
 
-    def Save(self, stream: remoteBinaryStream):
+    def Save(self, stream: binaryStream):
         if self.isKeyValueEncoded:
             stream.WriteByte(1)
             stream.WriteGuid(self.keyValueEncodingMethod)

@@ -21,19 +21,19 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from encodingDefinition import encodingDefinition
-from library import library
+from snapDB.library import library
+from snapDB.encodingDefinition import encodingDefinition
+from gsf.binaryStream import binaryStream
 from typing import List
 from uuid import UUID
 
 class databaseInfo:
     """
-    Defines details for an SNAPdb client database, for the python
-    openHistorian API client databases are known as "instances". 
+    Defines details for a SNAPdb client database. From the perspective of the
+    Python openHistorian API, client databases are known as "instances". 
     """
 
-    def __init__(self, stream: remoteBinaryStream):
+    def __init__(self, stream: binaryStream):
         version = stream.ReadByte()
 
         if version != 1:

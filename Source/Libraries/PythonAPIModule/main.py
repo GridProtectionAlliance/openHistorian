@@ -21,14 +21,14 @@
 #
 #******************************************************************************************************
 
-from openHistorian import openHistorian
-from historianInstance import historianInstance
+from openHistorian.historianConnection import historianConnection
+from openHistorian.historianInstance import historianInstance
 from typing import Optional
 
 def main():
     print("Creating openHistorian API")
     
-    api = openHistorian("localhost")
+    api = historianConnection("localhost")
     instance: Optional[historianInstance] = None
 
     print("Connecting to openHistorian...")

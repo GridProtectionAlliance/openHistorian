@@ -10,7 +10,7 @@
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>openHistorianModule</Name>
+    <Name>openHistorian</Name>
     <RootNamespace>openHistorianModule</RootNamespace>
     <InterpreterId>MSBuild|openHistorian API|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
@@ -23,70 +23,79 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="fixedSizeKeyValueEncoder.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="historianInstance.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="historianKeyValueEncoder.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="keyValueEncoderBase.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="pointReader.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="readerOptions.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="snapConnection.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="snapClientDatabase.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="common.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="databaseInfo.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="encoding7Bit.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="encodingDefinition.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="historianValue.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="historianKey.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="library.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="openHistorian.py">
+    <Compile Include="gsf\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="enumerations.py">
+    <Compile Include="gsf\encoding7Bit.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="remoteBinaryStream.py">
+    <Compile Include="gsf\binaryStream.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="snapTypeBase.py">
+    <Compile Include="gsf\streamEncoder.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="streamEncoding.py">
+    <Compile Include="snapDB\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="treeStream.py">
+    <Compile Include="snapDB\fixedSizeKeyValueEncoder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\keyValueEncoderBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\pointReader.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\readerOptions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\seekFilterBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\snapConnection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\snapClientDatabase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\databaseInfo.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\encodingDefinition.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\library.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\enumerations.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\snapTypeBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\treeStream.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\historianKey.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\historianValue.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\historianInstance.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\historianKeyValueEncoder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\historianConnection.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -103,6 +112,11 @@
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
       <Architecture>X64</Architecture>
     </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="gsf\" />
+    <Folder Include="snapDB\" />
+    <Folder Include="openHistorian\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

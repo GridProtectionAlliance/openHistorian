@@ -21,14 +21,18 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import Server, remoteBinaryStream
-from databaseInfo import databaseInfo
-from encodingDefinition import encodingDefinition
-from snapTypeBase import snapTypeBase
-from keyValueEncoderBase import keyValueEncoderBase
-from pointReader import pointReader
-from library import library
-from enumerations import *
+from snapDB.databaseInfo import databaseInfo
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.snapTypeBase import snapTypeBase
+from snapDB.keyValueEncoderBase import keyValueEncoderBase
+from snapDB.pointReader import pointReader
+from snapDB.treeStream import treeStream
+from snapDB.seekFilterBase import seekFilterBase
+from snapDB.readerOptions import readerOptions
+from snapDB.library import library
+from snapDB.enumerations import *
+from snapDB import Server
+from gsf.binaryStream import binaryStream
 from typing import TypeVar, Generic, Optional
 
 TKey = TypeVar('TKey', bound=snapTypeBase)
@@ -42,7 +46,7 @@ class snapClientDatabase(Generic[TKey, TValue]):
     
     # Source C# reference: StreamingClientDatabase<TKey, TValue>
 
-    def __init__(self, stream: remoteBinaryStream, info: databaseInfo, key: TKey, value: TValue):
+    def __init__(self, stream: binaryStream, info: databaseInfo, key: TKey, value: TValue):
         self.stream = stream
         self.info = info
         self.tempKey = key
@@ -96,7 +100,27 @@ class snapClientDatabase(Generic[TKey, TValue]):
 
         Server.ValidateExpectedResponse(response, ServerResponse.ENCODINGMETHODACCEPTED)
 
-    #def Read() -> TreeStream[TKey, TValue]:
+    # keyMatchFilter: Optional[matchFilterBase[TKey, TValue]]
+    def Read(keySeekFilter: Optional[seekFilterBase[TKey]], keyMatchFilter, options: Optional[readerOptions] = readerOptions()) -> treeStream[TKey, TValue]:
+        """
+        Reads data from the SNAPdb client database instance with the provided server side filters and read options.
+        
+        Parameters
+        ----------
+        keySeekFilter: A seek based filter to follow. Can be `None`.
+        keyMatchFilter: A match based filer to follow. Can be `None`.
+        readerOptions: Read options supplied to the reader. Can be `None`.
+        
+        Returns
+        -------
+        A stream that will read the specified data.
+        """
+
+        if self.reader is not None and not self.reader.IsDiposed:
+            raise RuntimeError("Concurrent readers are not supported. Dispose old reader.")
+
+        if options is None:
+            options = readerOptions()
 
     def Dispose(self):
         if self.disposed:

@@ -1,5 +1,5 @@
 #******************************************************************************************************
-#  common.py - Gbtc
+#  __init__.py - Gbtc
 #
 #  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 #
@@ -25,7 +25,6 @@ from typing import Sequence
 from datetime import datetime, timedelta
 from uuid import UUID
 from enum import IntEnum
-from struct import pack
 import numpy as np
 
 def static_init(cls):
@@ -90,6 +89,7 @@ class BitConvert:
     def ToSingle(value: np.uint64) -> np.float32:
         return np.frombuffer(np.uint32(value).to_bytes(ByteSize.UINT32, "little"), np.float32)[0]
 
+
 class Validate:
     @staticmethod
     def Parameters(array: Sequence, startIndex: int, length: int):
@@ -104,3 +104,4 @@ class Validate:
 
         if startIndex + length > len(array):
             raise ValueError("startIndex of " + str(startIndex) + " and length of " + str(length) + " will exceed array size of " + str(len(array)))
+

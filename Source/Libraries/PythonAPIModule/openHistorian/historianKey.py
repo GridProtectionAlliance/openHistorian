@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from snapTypeBase import snapTypeBase
-from remoteBinaryStream import remoteBinaryStream
-from common import Limits, Ticks, override
+from snapDB.snapTypeBase import snapTypeBase
+from gsf.binaryStream import binaryStream
+from gsf import Limits, Ticks, override
 from datetime import datetime
 from uuid import UUID
 import numpy as np
@@ -44,7 +44,7 @@ class historianKey(snapTypeBase):
     @override
     def TypeID(self) -> UUID:
         """
-        The Guid uniquely defining this SNAPdb type. 
+        Gets the Guid uniquely defining this SNAPdb type. 
         """        
         return historianKey.SnapTypeID
 
@@ -82,7 +82,7 @@ class historianKey(snapTypeBase):
         self.SetMin()
 
     @override
-    def Read(self, stream: remoteBinaryStream):
+    def Read(self, stream: binaryStream):
         """
         Reads this SNAPdb type from the stream.
         """        
@@ -91,7 +91,7 @@ class historianKey(snapTypeBase):
         self.EntryNumber = stream.ReadUInt64()
     
     @override
-    def Write(self, stream: remoteBinaryStream):
+    def Write(self, stream: binaryStream):
         """
         Writes this SNAPdb type to the stream.
         """

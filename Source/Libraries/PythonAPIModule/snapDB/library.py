@@ -21,18 +21,12 @@
 #
 #******************************************************************************************************
 
-from snapTypeBase import snapTypeBase
-from encodingDefinition import encodingDefinition
-from keyValueEncoderBase import keyValueEncoderBase
-from common import static_init
+from snapDB.snapTypeBase import snapTypeBase
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.keyValueEncoderBase import keyValueEncoderBase
+from gsf import static_init
 from typing import Optional
 from uuid import UUID
-
-# Import SNAPdb types for manual registration
-from historianKey import historianKey
-from historianValue import historianValue
-from historianKeyValueEncoder import historianKeyValueEncoder
-from fixedSizeKeyValueEncoder import fixedSizeKeyValueEncoder
 
 @static_init
 class library:
@@ -45,21 +39,6 @@ class library:
         cls.typeNameIDMap = dict()
         cls.typeIDNameMap = dict()
         cls.guidEncoderMap = dict()
-
-        # Register known SNAPdb key/value types. Future versions could dynamically scan
-        # for modules inheriting `snapTypeBase` and automatically register them. For now
-        # this class just manually registers `historianKey` and `historianValue` for use
-        # by the `openHistorian` API
-        cls.RegisterType(historianKey())
-        cls.RegisterType(historianValue())
-
-        # Register known SNAPdb key/value encoders. Future versions could dynamically scan
-        # for modules inheriting `keyValueEncoderBase` and automatically register them. For
-        # now this class just manually registers `historianKeyValueEncoder` and the generic
-        # `fixedSizeKeyValueEncoder` for `historianKey` and `historianValue` for use by the
-        # `openHistorian` API
-        cls.RegisterEncoder(historianKeyValueEncoder())
-        cls.RegisterEncoder(fixedSizeKeyValueEncoder(historianKey(), historianValue()))
 
     @classmethod
     def RegisterType(cls, snapType: snapTypeBase):

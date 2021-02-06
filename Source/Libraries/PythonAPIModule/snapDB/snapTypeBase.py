@@ -21,20 +21,20 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
+from gsf.binaryStream import binaryStream
 from abc import ABC, abstractmethod
 from uuid import UUID
 
 class snapTypeBase(ABC):
     """
-    Abstract base class used as a key or value type in in a SNAPdb sorted tree. 
+    Abstract base class used as a key or value type in a SNAPdb sorted tree. 
     """
 
     @property
     @abstractmethod
     def TypeID(self) -> UUID:
         """
-        The Guid uniquely defining this SNAPdb type. 
+        Gets the Guid uniquely defining this SNAPdb type. 
         """
 
     @property
@@ -63,13 +63,13 @@ class snapTypeBase(ABC):
         """
 
     @abstractmethod
-    def Read(self, stream: remoteBinaryStream):
+    def Read(self, stream: binaryStream):
         """
         Reads this SNAPdb type from the stream.
         """
 
     @abstractmethod
-    def Write(self, stream: remoteBinaryStream):
+    def Write(self, stream: binaryStream):
         """
         Writes this SNAPdb type to the stream.
         """

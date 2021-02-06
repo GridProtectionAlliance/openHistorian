@@ -21,11 +21,11 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import remoteBinaryStream
-from encodingDefinition import encodingDefinition
-from keyValueEncoderBase import keyValueEncoderBase
-from snapTypeBase import snapTypeBase
-from common import override
+from snapDB.encodingDefinition import encodingDefinition
+from snapDB.keyValueEncoderBase import keyValueEncoderBase
+from snapDB.snapTypeBase import snapTypeBase
+from gsf.binaryStream import binaryStream
+from gsf import override
 from typing import TypeVar, Generic
 import numpy as np
 
@@ -115,7 +115,7 @@ class fixedSizeKeyValueEncoder(Generic[TKey, TValue], keyValueEncoderBase[TKey, 
         raise NotImplementedError()
 
     @override
-    def Encode(stream: remoteBinaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
+    def Encode(stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
         """
         Encodes `key` and `value` to the provided `stream`.
 
@@ -131,7 +131,7 @@ class fixedSizeKeyValueEncoder(Generic[TKey, TValue], keyValueEncoderBase[TKey, 
         value.Write(stream)
 
     @override
-    def Decode(stream: remoteBinaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
+    def Decode(stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
         """
         Decodes `key` and `value` from the provided `stream`.
 

@@ -21,12 +21,13 @@
 #
 #******************************************************************************************************
 
-from remoteBinaryStream import Server, remoteBinaryStream
-from snapTypeBase import snapTypeBase
-from keyValueEncoderBase import keyValueEncoderBase
-from treeStream import treeStream
-from enumerations import *
-from common import override
+from snapDB.snapTypeBase import snapTypeBase
+from snapDB.keyValueEncoderBase import keyValueEncoderBase
+from snapDB.treeStream import treeStream
+from snapDB.enumerations import *
+from snapDB import Server
+from gsf.binaryStream import binaryStream
+from gsf import override
 from typing import TypeVar, Generic, Callable
 
 TKey = TypeVar('TKey', bound=snapTypeBase)
@@ -37,7 +38,7 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
     Reads SNAPdb key/value pairs from a `stream`
     """
     
-    def __init__(self, encoder: keyValueEncoderBase[TKey, TValue], stream: remoteBinaryStream, onComplete: Callable[[], None], key: TKey, value: TValue):
+    def __init__(self, encoder: keyValueEncoderBase[TKey, TValue], stream: binaryStream, onComplete: Callable[[], None], key: TKey, value: TValue):
         self.encoder = encoder
         self.stream = stream
         self.onComplete = onComplete

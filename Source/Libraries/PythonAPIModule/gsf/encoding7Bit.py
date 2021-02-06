@@ -21,7 +21,7 @@
 #
 #******************************************************************************************************
 
-from common import ByteSize
+from gsf import ByteSize
 from typing import Callable
 import numpy as np
 
