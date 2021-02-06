@@ -203,7 +203,7 @@ class snapConnection(Generic[TKey, TValue]):
         Server.ValidateExpectedResponse(response, ServerResponse.SUCCESSFULLYCONNECTEDTODATABASE)
 
         self.instance = snapClientDatabase[TKey, TValue](self.stream, info, self.key, self.value)
-        self.instance.EncodingDefinition = definition
+        self.instance.SetEncodingDefinition(definition)
 
         return self.instance
 

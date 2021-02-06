@@ -75,24 +75,24 @@ class snapClientDatabase(Generic[TKey, TValue]):
 
         return self.encoder.Definition
 
-    @EncodingDefinition.setter
-    def EncodingDefinition(self, value: encodingDefinition):
+    def SetEncodingDefinition(self, definition: encodingDefinition):
         """
         Assigns an encoder based on encoding definition for this client database instance.
+        This should only be called once after database is opened.
         """
-        self.encoder = library.LookupEncoder(value)
+        self.encoder = library.LookupEncoder(definition)
 
         if self.encoder is None:
-            raise RuntimeError("Provided encoding method " + value.ToString() + " is not registered")
+            raise RuntimeError("Provided encoding method " + definition.ToString() + " is not registered")
 
         self.stream.WriteByte(ServerCommand.SETENCODINGMETHOD)
-        value.Save(self.stream)
+        definition.Save(self.stream)
         self.stream.Flush()
 
         response = Server.ReadResponse(self.stream)
 
         if response == ServerResponse.UNKNOWNENCODINGMETHOD:
-            raise RuntimeError("SNAPdb server reports encoding method " + value.ToString() + " is unrecognized, hence it is unsupported")
+            raise RuntimeError("SNAPdb server reports encoding method " + definition.ToString() + " is unrecognized, hence it is unsupported")
 
         Server.ValidateExpectedResponse(response, ServerResponse.ENCODINGMETHODACCEPTED)
 
