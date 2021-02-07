@@ -73,33 +73,50 @@ class snapConnection(Generic[TKey, TValue]):
     
     @property
     def HostAddress(self) -> str:
+        """
+        Gets SNABdb server address and port, e.g., "localhost:38402".
+        """
         return self.hostAddress + ":" + str(self.port)
 
     @property
     def HostEndPoint(self) -> (str, str):
+        """
+        Gets SNABdb server end point, e.g., ("localhost:, "38402").
+        """
         return self.hostEndPoint
 
     @property
     def HostIPAddress(self) -> str:
+        """
+        Gets SNABdb server address, e.g., "localhost:, "38402".
+        """
         return self.hostEndPoint[0]
 
     @property
     def HostPort(self) -> int:
+        """
+        Gets SNABdb server port, e.g., 38402.
+        """
         return int(self.hostEndPoint[1])
 
     @property
     def IsConnected(self) -> bool:
+        """
+        Gets flag indicating if connected to SNABdb server.
+        """
         return self.stream is not None
     
     @property
     def InstanceNames(self) -> List[str]:
+        """
+        Gets list of client database instances available in SNABdb server connection.
+        """
         return list(self.instances.keys())
 
-    @property
-    def Stream(self) -> binaryStream:
-        return self.stream
-
     def Connect(self):
+        """
+        Attempts connection to SNAPdb server.
+        """
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
             self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -152,6 +169,9 @@ class snapConnection(Generic[TKey, TValue]):
             raise
 
     def Disconnect(self):
+        """
+        Disconnects from SNAPdb server.
+        """
         self.CloseInstance()
 
         if self.stream is not None:
@@ -164,12 +184,24 @@ class snapConnection(Generic[TKey, TValue]):
             self.socket = None
 
     def InstanceExists(self, instanceName: str) -> bool:
+        """
+        Gets flag indicating if `instanceName` exists for list of client database
+        instances available in SNABdb server connection.
+        """
         return self.instances[instanceName] is not None
 
     def GetInstanceInfo(self, instanceName: str) -> Optional[databaseInfo]:
+        """
+        Gets details about SNAPdb client database instance.
+        """
         return self.instances[instanceName]
 
     def OpenInstance(self, instanceName: str, definition: Optional[encodingDefinition] = None) -> snapClientDatabase[TKey, TValue]:
+        """
+        Attempts to open a connection to SNAPdb client database instance.
+        If successful, connection instance will be returned and can be used to
+        read and write key / value data for SNAPdb client database instance.
+        """
         if self.instance is not None and not self.instance.IsDisposed:
             raise RuntimeError("SNAPdb instance \"" + self.instance.Info.DatabaseName + "\" is currently open. Only one SNAPdb instance can be open at once, call CloseInstance() API method first.")
         
@@ -209,6 +241,9 @@ class snapConnection(Generic[TKey, TValue]):
         return self.instance
 
     def CloseInstance(self):
+        """
+        Closes last connection to SNAPdb client database instance.
+        """
         if self.instance is not None:
             self.instance.Dispose()
             self.instance = None
