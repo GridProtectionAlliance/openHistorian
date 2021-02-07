@@ -81,14 +81,14 @@ class snapConnection(Generic[TKey, TValue]):
     @property
     def HostEndPoint(self) -> (str, str):
         """
-        Gets SNABdb server end point, e.g., ("localhost:, "38402").
+        Gets SNABdb server end point, e.g., ("127.0.0.1:, "38402").
         """
         return self.hostEndPoint
 
     @property
     def HostIPAddress(self) -> str:
         """
-        Gets SNABdb server address, e.g., "localhost:, "38402".
+        Gets SNABdb server address, e.g., "127.0.0.1"
         """
         return self.hostEndPoint[0]
 
