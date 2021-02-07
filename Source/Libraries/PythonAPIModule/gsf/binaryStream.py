@@ -230,21 +230,22 @@ class binaryStream:
 
         return 1
 
-    def ReadInt16(self) -> np.int16:
+    def ReadInt16(self, byteorder = "little") -> np.int16:
         size = ByteSize.INT16
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.int16)[0]
+            dtype = np.dtype(np.int16) if byteorder == "little" else np.dtype(np.int16).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadInt16()
+        return self.stream.ReadInt16(byteorder)
 
-    def WriteInt16(self, value: np.int16) -> int:
+    def WriteInt16(self, value: np.int16, byteorder = "little") -> int:
         size = ByteSize.INT16
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, byteorder, signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -252,23 +253,24 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteInt16(value)
+        return self.stream.WriteInt16(value, byteorder)
 
-    def ReadUInt16(self) -> np.uint16:
+    def ReadUInt16(self, byteorder = "little") -> np.uint16:
         size = ByteSize.UINT16
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.uint16)[0]
+            dtype = np.dtype(np.uint16) if byteorder == "little" else np.dtype(np.uint16).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadUInt16()
+        return self.stream.ReadUInt16(byteorder)
 
-    def WriteUInt16(self, value: np.uint16) -> int:
+    def WriteUInt16(self, value: np.uint16, byteorder = "little") -> int:
         size = ByteSize.UINT16
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, byteorder)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -276,23 +278,24 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteUInt16(value)
+        return self.stream.WriteUInt16(value, byteorder)
 
-    def ReadInt32(self) -> np.int32:
+    def ReadInt32(self, byteorder = "little") -> np.int32:
         size = ByteSize.INT32
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.int32)[0]
+            dtype = np.dtype(np.int32) if byteorder == "little" else np.dtype(np.int32).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadInt32()
+        return self.stream.ReadInt32(byteorder)
 
-    def WriteInt32(self, value: np.int32) -> int:
+    def WriteInt32(self, value: np.int32, byteorder = "little") -> int:
         size = ByteSize.INT32
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, byteorder, signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -300,23 +303,24 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteInt32(value)
+        return self.stream.WriteInt32(value, byteorder)
 
-    def ReadUInt32(self) -> np.uint32:
+    def ReadUInt32(self, byteorder = "little") -> np.uint32:
         size = ByteSize.UINT32
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.uint32)[0]
+            dtype = np.dtype(np.uint32) if byteorder == "little" else np.dtype(np.uint32).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadUInt32()
+        return self.stream.ReadUInt32(byteorder)
 
-    def WriteUInt32(self, value: np.uint32) -> int:
+    def WriteUInt32(self, value: np.uint32, byteorder = "little") -> int:
         size = ByteSize.UINT32
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, byteorder)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -324,23 +328,24 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteUInt32(value)
+        return self.stream.WriteUInt32(value, byteorder)
 
-    def ReadInt64(self) -> np.int64:
+    def ReadInt64(self, byteorder = "little") -> np.int64:
         size = ByteSize.INT64
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.int64)[0]
+            dtype = np.dtype(np.int64) if byteorder == "little" else np.dtype(np.int64).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadInt64()
+        return self.stream.ReadInt64(byteorder)
 
-    def WriteInt64(self, value: np.int64) -> int:
+    def WriteInt64(self, value: np.int64, byteorder = "little") -> int:
         size = ByteSize.INT64
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, byteorder, signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -348,23 +353,24 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteInt64(value)
+        return self.stream.WriteInt64(value, byteorder)
 
-    def ReadUInt64(self) -> np.uint64:
+    def ReadUInt64(self, byteorder = "little") -> np.uint64:
         size = ByteSize.UINT64
 
         if self.receivePosition <= self.receiveLength - size:
-            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], np.uint64)[0]
+            dtype = np.dtype(np.uint64) if byteorder == "little" else np.dtype(np.uint64).newbyteorder(">")
+            value = np.frombuffer(self.receiveBuffer[self.receivePosition:self.receivePosition + size], dtype)[0]
             self.receivePosition += size
             return value
 
-        return self.stream.ReadUInt64()
+        return self.stream.ReadUInt64(byteorder)
 
-    def WriteUInt64(self, value: np.uint64) -> int:
+    def WriteUInt64(self, value: np.uint64, byteorder = "little") -> int:
         size = ByteSize.UINT64
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = int(value).to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, byteorder)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -372,7 +378,7 @@ class binaryStream:
             self.sendLength += size
             return size
 
-        return self.stream.WriteUInt64(value)
+        return self.stream.WriteUInt64(value, byteorder)
 
     def __sendBufferRead(self, length: int) -> bytes:
         buffer = bytearray(length)
