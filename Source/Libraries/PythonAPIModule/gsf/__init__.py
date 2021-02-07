@@ -45,6 +45,7 @@ def override(self):
 
 class Empty:
     GUID = UUID("00000000-0000-0000-0000-000000000000")
+    DATETIME = datetime(1, 1, 1)
 
 class Limits(IntEnum):
     MAXTICKS = 3155378975999999999
@@ -70,7 +71,7 @@ class ByteSize(IntEnum):
 class Ticks:
     @staticmethod
     def FromDateTime(dt: datetime) -> np.uint64:
-        return np.uint64((dt - datetime(1, 1, 1)).total_seconds() * 10000000)
+        return np.uint64((dt - Empty.DATETIME).total_seconds() * 10000000)
 
     @staticmethod
     def FromTimeDelta(td: timedelta) -> np.uint64:
@@ -78,7 +79,7 @@ class Ticks:
     
     @staticmethod
     def ToDateTime(ticks: np.uint64) -> datetime:
-        return datetime(1, 1, 1) + timedelta(microseconds = ticks // 10)
+        return Empty.DATETIME + timedelta(microseconds = ticks // 10)
 
 class Validate:
     @staticmethod
