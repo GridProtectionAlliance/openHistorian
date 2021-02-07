@@ -21,7 +21,9 @@
 #
 #******************************************************************************************************
 
+from gsf import Empty
 from enum import IntEnum
+from datetime import datetime
 from uuid import UUID
 import numpy as np
 
@@ -51,12 +53,27 @@ class metadataRecord:
     Represents a record of measurement metadata the openHistorian.
     """
 
-    def __init__(self, pointID: np.uint64, signalID: UUID, signalTypeName: str = "UNKN", deviceName: str = "", description: str = ""):
+    def __init__(self, 
+            pointID: np.uint64,
+            signalID: UUID,
+            pointTag: str,
+            signalReference: str = "",
+            signalTypeName: str = "UNKN",
+            deviceName: str = "",
+            description: str = "",
+            updatedOn: datetime = Empty.DATETIME
+        ):
+        """
+        Constructs a new `metadataRecord`.
+        """
         self.pointID = pointID
         self.signalID = signalID
+        self.pointTag = pointTag
+        self.signalReference = signalReference
         self.signalTypeName = signalTypeName
         self.deviceName = deviceName
         self.description = description
+        self.updatedOn = updatedOn
 
     @property
     def PointID(self) -> np.uint64:
@@ -65,6 +82,14 @@ class metadataRecord:
     @property
     def SignalID(self) -> UUID:
         return self.signalID
+
+    @property
+    def PointTag(self) -> str:
+        return self.pointTag
+
+    @property
+    def signalReference(self) -> str:
+        return self.signalReference
 
     @property
     def SignalTypeName(self) -> str:
@@ -85,6 +110,6 @@ class metadataRecord:
     def Description(self) -> str:
         return self.description
 
-
-
-
+    @property
+    def UpdatedOn(self) -> datetime:
+        return self.updatedOn
