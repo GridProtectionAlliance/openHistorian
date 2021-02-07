@@ -70,7 +70,7 @@ class streamEncoder:
     def WriteByte(self, value: np.uint8) -> int:
         size = ByteSize.UINT8
 
-        if self.write(value.to_bytes(size, "little")) != size:
+        if self.write(int(value).to_bytes(size, "little")) != size:
             raise RuntimeError("Failed to write 1-byte to stream")
 
         return size
@@ -101,7 +101,7 @@ class streamEncoder:
     def WriteInt16(self, value: np.int16) -> int:
         size = ByteSize.INT16
 
-        if self.write(value.to_bytes(size, "little", signed=True)) != size:
+        if self.write(int(value).to_bytes(size, "little", signed=True)) != size:
             raise RuntimeError("Failed to write 2-bytes to stream")
 
         return size
@@ -120,7 +120,7 @@ class streamEncoder:
     def WriteUInt16(self, value: np.uint16) -> int:
         size = ByteSize.UINT16
 
-        if self.write(value.to_bytes(size, "little")) != size:
+        if self.write(int(value).to_bytes(size, "little")) != size:
             raise RuntimeError("Failed to write 2-bytes to stream")
 
         return size
@@ -139,7 +139,7 @@ class streamEncoder:
     def WriteInt32(self, value: np.int32) -> int:
         size = ByteSize.INT32
 
-        if self.write(value.to_bytes(size, "little", signed=True)) != size:
+        if self.write(int(value).to_bytes(size, "little", signed=True)) != size:
             raise RuntimeError("Failed to write 4-bytes to stream")
 
         return size
@@ -158,7 +158,7 @@ class streamEncoder:
     def WriteUInt32(self, value: np.uint32) -> int:
         size = ByteSize.UINT32
 
-        if self.write(value.to_bytes(size, "little")) != size:
+        if self.write(int(value).to_bytes(size, "little")) != size:
             raise RuntimeError("Failed to write 4-bytes to stream")
 
         return size
@@ -177,7 +177,7 @@ class streamEncoder:
     def WriteInt64(self, value: np.int64) -> int:
         size = ByteSize.INT64
 
-        if self.write(value.to_bytes(size, "little", signed=True)) != size:
+        if self.write(int(value).to_bytes(size, "little", signed=True)) != size:
             raise RuntimeError("Failed to write 8-bytes to stream")
 
         return size
@@ -196,7 +196,7 @@ class streamEncoder:
     def WriteUInt64(self, value: np.uint64) -> int:
         size = ByteSize.UINT64
 
-        if self.write(value.to_bytes(size, "little")) != size:
+        if self.write(int(value).to_bytes(size, "little")) != size:
             raise RuntimeError("Failed to write 8-bytes to stream")
 
         return size

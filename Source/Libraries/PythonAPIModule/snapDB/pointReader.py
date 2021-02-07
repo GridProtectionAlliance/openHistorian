@@ -39,12 +39,15 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
     """
     
     def __init__(self, encoder: keyValueEncoderBase[TKey, TValue], stream: binaryStream, onComplete: Callable[[], None], key: TKey, value: TValue):
+        super().__init__()
+        
         self.encoder = encoder
         self.stream = stream
         self.onComplete = onComplete
         self.completed = False
         self.tempKey = key
         self.tempValue = value
+        
         self.encoder.ResetEncoder()
 
     @override
@@ -75,15 +78,16 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
             return
 
         self.completed = True
-        self.onComplete()
 
-        response = Server.ReadResponse()
+        response = Server.ReadResponse(self.stream)
 
         if response == ServerResponse.ERRORWHILEREADING:
             raise RuntimeError("SNAPdb server exception encountered while reading: " + self.stream.ReadString())
 
         Server.ValidateExpectedResponses(response, ServerResponse.READCOMPLETE, ServerResponse.CANCELEDREAD)
 
+        self.onComplete()
+
     def Disposing(self):
-        Cancel()
+        self.Cancel()
         super().Disposing()

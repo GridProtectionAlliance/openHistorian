@@ -23,12 +23,9 @@
 
 from gsf.binaryStream import binaryStream
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
 from uuid import UUID
 
-TKey = TypeVar('TKey')
-
-class seekFilterBase(ABC, Generic[TKey]):
+class seekFilterBase(ABC):
     """
     Represents a filter that is based on a series of ranges of the key value.
     """
@@ -40,83 +37,90 @@ class seekFilterBase(ABC, Generic[TKey]):
         Gets the Guid uniquely defining this SNAPdb seek filter type.
         """
 
-    @property
-    @abstractmethod
-    def StartOfFrame(self) -> TKey:
-        """
-        Gets the start of the frame to search, inclusive.
-        """
-    
-    @StartOfFrame.setter
-    @abstractmethod
-    def StartOfFrame(self, value: TKey):
-        """
-        Sets the start of the frame to search, inclusive.
-        """
-
-    @property
-    @abstractmethod
-    def EndOfFrame(self) -> TKey:
-        """
-        Gets the end of the frame to search, inclusive.
-        """
-    
-    @EndOfFrame.setter
-    @abstractmethod
-    def EndOfFrame(self, value: TKey):
-        """
-        Sets the end of the frame to search, inclusive.
-        """
-
-    @property
-    @abstractmethod
-    def StartOfRange(self) -> TKey:
-        """
-        Gets the start of the range to search, inclusive.
-        """
-    
-    @StartOfRange.setter
-    @abstractmethod
-    def StartOfRange(self, value: TKey):
-        """
-        Sets the start of the range to search, inclusive.
-        """
-
-    @property
-    @abstractmethod
-    def EndOfRange(self) -> TKey:
-        """
-        Gets the end of the range to search, inclusive.
-        """
-    
-    @EndOfFrame.setter
-    @abstractmethod
-    def EndOfRange(self, value: TKey):
-        """
-        Sets the end of the range to search, inclusive.
-        """
-
     @abstractmethod
     def Save(self, stream: binaryStream):
         """
         Serializes the filter to a stream.
         """
 
-    @abstractmethod
-    def Reset(self):
-        """
-        Resets the iterative nature of the filter. 
+    # The following code is only for server side operations, so client API does not need to implement
 
-        Since a time filter is a set of date ranges, this will reset the frame so a
-        call to `NextWindow` will return the first window of the sequence.
-        """
+    # Base type generics
+    #from typing import TypeVar, Generic
+    #TKey = TypeVar('TKey', bound=snapTypeBase)
+    #, Generic[TKey]
 
-    @abstractmethod
-    def NextWindow(self) -> bool:
-        """
-        Gets the next search window.
+    #@property
+    #@abstractmethod
+    #def StartOfFrame(self) -> TKey:
+    #    """
+    #    Gets the start of the frame to search, inclusive.
+    #    """
+    
+    #@StartOfFrame.setter
+    #@abstractmethod
+    #def StartOfFrame(self, value: TKey):
+    #    """
+    #    Sets the start of the frame to search, inclusive.
+    #    """
 
-        Returns
-        -------
-        `True` if window exists; otherwise, `False` if finished.
-        """
+    #@property
+    #@abstractmethod
+    #def EndOfFrame(self) -> TKey:
+    #    """
+    #    Gets the end of the frame to search, inclusive.
+    #    """
+    
+    #@EndOfFrame.setter
+    #@abstractmethod
+    #def EndOfFrame(self, value: TKey):
+    #    """
+    #    Sets the end of the frame to search, inclusive.
+    #    """
+
+    #@property
+    #@abstractmethod
+    #def StartOfRange(self) -> TKey:
+    #    """
+    #    Gets the start of the range to search, inclusive.
+    #    """
+    
+    #@StartOfRange.setter
+    #@abstractmethod
+    #def StartOfRange(self, value: TKey):
+    #    """
+    #    Sets the start of the range to search, inclusive.
+    #    """
+
+    #@property
+    #@abstractmethod
+    #def EndOfRange(self) -> TKey:
+    #    """
+    #    Gets the end of the range to search, inclusive.
+    #    """
+    
+    #@EndOfFrame.setter
+    #@abstractmethod
+    #def EndOfRange(self, value: TKey):
+    #    """
+    #    Sets the end of the range to search, inclusive.
+    #    """
+
+    #@abstractmethod
+    #def Reset(self):
+    #    """
+    #    Resets the iterative nature of the filter. 
+
+    #    Since a time filter is a set of date ranges, this will reset the frame so a
+    #    call to `NextWindow` will return the first window of the sequence.
+    #    """
+
+    #@abstractmethod
+    #def NextWindow(self) -> bool:
+    #    """
+    #    Gets the next search window.
+
+    #    Returns
+    #    -------
+    #    `True` if window exists; otherwise, `False` if finished.
+    #    """

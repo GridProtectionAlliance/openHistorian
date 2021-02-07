@@ -117,7 +117,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         return historianKeyValueEncoder.EndOfStream
 
     @override
-    def Encode(stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue):
+    def Encode(self, stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue):
         """
         Encodes `key` and `value` to the provided `stream`.
 
@@ -130,16 +130,16 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         value: the SNAPdb value type to encode
         """
         if (key.Timestamp == prevKey.Timestamp and
-                (key.PointID ^ prevKey.PointID) < 64 and
+                (np.uint64(key.PointID) ^ np.uint64(prevKey.PointID)) < np.uint64(64) and
                 key.EntryNumber == 0 and
                 value.Value1 <= Limits.MAXUINT32 and
                 value.Value2 == 0 and
                 value.Value3 == 0):
 
             if value.Value1 == 0:
-                stream.WriteByte(np.uint8(key.PointID ^ prevKey.PointID));
+                stream.WriteByte(np.uint8(np.uint64(key.PointID) ^ np.uint64(prevKey.PointID)));
             else:
-                stream.WriteByte(np.uint8((key.PointID ^ prevKey.PointID) | 64));
+                stream.WriteByte(np.uint8((np.uint64(key.PointID) ^ np.uint64(prevKey.PointID)) | np.uint64(64)));
                 stream.WriteUInt32(np.uint32(value.Value1));
 
             return
@@ -152,7 +152,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         if key.EntryNumber != 0:
             code |= np.uint8(32)
 
-        if value.Value1 > uint.MaxValue:
+        if value.Value1 > Limits.MAXUINT32:
             code |= np.uint8(16)
         elif value.Value1 > 0:
             code |= np.uint8(8)
@@ -160,7 +160,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         if value.Value2 != 0:
             code |= np.uint8(4)
 
-        if value.Value3 > uint.MaxValue:
+        if value.Value3 > Limits.MAXUINT32:
             code |= np.uint8(2)
         elif value.Value3 > 0:
             code |= np.uint8(1)
@@ -168,9 +168,9 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         stream.WriteByte(np.uint8(code))
 
         if key.Timestamp != prevKey.Timestamp:
-            stream.Write7BitUInt64(np.uint64(key.Timestamp ^ prevKey.Timestamp))
+            stream.Write7BitUInt64(np.uint64(key.Timestamp) ^ np.uint64(prevKey.Timestamp))
 
-        stream.Write7BitUInt64(np.uint64(key.PointID ^ prevKey.PointID))
+        stream.Write7BitUInt64(np.uint64(key.PointID) ^ np.uint64(prevKey.PointID))
 
         if key.EntryNumber != 0:
             stream.Write7BitUInt64(key.EntryNumber)
@@ -189,7 +189,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
             stream.WriteUInt32(np.uint32(value.Value3))
 
     @override
-    def Decode(stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue) -> bool:
+    def Decode(self, stream: binaryStream, prevKey: historianKey, prevValue: historianValue, key: historianKey, value: historianValue) -> bool:
         """
         Decodes `key` and `value` from the provided `stream`.
 
@@ -206,7 +206,7 @@ class historianKeyValueEncoder(keyValueEncoderBase[historianKey, historianValue]
         When `ContainsEndOfStreamSymbol` is `True`, value determines if the end of the stream symbol is detected;
         otherwise, if `ContainsEndOfStreamSymbol` is `False`, result is always `False`
         """
-        code = stream.ReadUInt8()
+        code = stream.ReadByte()
 
         if code == historianKeyValueEncoder.EndOfStream:
             return True

@@ -70,7 +70,7 @@ class treeStream(ABC, Generic[TKey, TValue]):
         """
         Advances the stream to the next value.
         """
-        if self.eos or not ReadNext(key, value):
+        if self.eos or not self.ReadNext(key, value):
             self.EndOfStreamReached()
             return False
 

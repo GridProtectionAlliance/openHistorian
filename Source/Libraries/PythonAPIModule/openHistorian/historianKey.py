@@ -131,7 +131,7 @@ class historianKey(snapTypeBase):
         """
         Attempts to get the timestamp field of this key instance.
         """
-        if self.Timestamp > Limits.MaxTicks:
+        if self.Timestamp > Limits.MAXTICKS:
             return (datetime(1, 1, 1), False)
 
         return (Ticks.ToDateTime(self.Timestamp), True)
@@ -149,3 +149,6 @@ class historianKey(snapTypeBase):
         Sets `Timestamp` type cast from a `datetime`
         """
         self.Timestamp = Ticks.FromDateTime(value)
+
+    def ToString(self) -> str:
+        return str(self.PointID) + " @ " + self.AsDateTime.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]

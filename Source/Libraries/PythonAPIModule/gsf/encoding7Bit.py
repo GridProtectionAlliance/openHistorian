@@ -41,7 +41,7 @@ class encoding7Bit:
         value: 16-bit value to write
         """
 
-        return WriteUInt16(streamWriter, np.frombuffer(value.to_bytes(ByteSize.INT16, "little", signed=True), np.uint16)[0])
+        return WriteUInt16(streamWriter, np.frombuffer(int(value).to_bytes(ByteSize.INT16, "little", signed=True), np.uint16)[0])
 
     @staticmethod
     def WriteUInt16(streamWriter: Callable[[np.uint8], int], value: np.uint16) -> int:
@@ -56,13 +56,14 @@ class encoding7Bit:
 
         np128 = np.uint16(128)
         np7 = np.uint16(7)
+        npStreamWriter = lambda uint16: streamWriter(np.uint8(uint16))
 
         if value < np128:
-            streamWriter(value) #1
+            npStreamWriter(value) #1
             return 1
 
-        streamWriter(value | np128) #1
-        streamWriter(value >> np7) #2
+        npStreamWriter(value | np128) #1
+        npStreamWriter(value >> np7) #2
         return 2
         
     @staticmethod
@@ -76,7 +77,7 @@ class encoding7Bit:
         value: 32-bit value to write
         """
         
-        return WriteUInt32(streamWriter, np.frombuffer(value.to_bytes(ByteSize.INT32, "little", signed=True), np.uint32)[0])
+        return WriteUInt32(streamWriter, np.frombuffer(int(value).to_bytes(ByteSize.INT32, "little", signed=True), np.uint32)[0])
 
     @staticmethod
     def WriteUInt32(streamWriter: Callable[[np.uint8], int], value: np.uint32) -> int:
@@ -91,28 +92,29 @@ class encoding7Bit:
 
         np128 = np.uint32(128)
         np7 = np.uint32(7)
+        npStreamWriter = lambda uint32: streamWriter(np.uint8(uint32))
 
         if value < np128:
-            streamWriter(value) #1
+            npStreamWriter(value) #1
             return 1
 
-        streamWriter(value | np128) #1
+        npStreamWriter(value | np128) #1
         if value < np128 * np128:
-            streamWriter(value >> np7) #2
+            npStreamWriter(value >> np7) #2
             return 2
 
-        streamWriter((value >> np7) | np128) #2
+        npStreamWriter((value >> np7) | np128) #2
         if value < np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7)) #3
+            npStreamWriter(value >> (np7 + np7)) #3
             return 3
             
-        streamWriter((value >> (np7 + np7)) | np128) #3
+        npStreamWriter((value >> (np7 + np7)) | np128) #3
         if value < np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7)) #4
+            npStreamWriter(value >> (np7 + np7 + np7)) #4
             return 4
             
-        streamWriter((value >> (np7 + np7 + np7)) | np128) #4        
-        streamWriter(value >> (np7 + np7 + np7 + np7)) #5
+        npStreamWriter((value >> (np7 + np7 + np7)) | np128) #4        
+        npStreamWriter(value >> (np7 + np7 + np7 + np7)) #5
         return 5
 
     @staticmethod
@@ -126,7 +128,7 @@ class encoding7Bit:
         value: 64-bit value to write
         """
 
-        return WriteUInt64(streamWriter, np.frombuffer(value.to_bytes(ByteSize.INT64, "little", signed=True), np.uint64)[0])
+        return WriteUInt64(streamWriter, np.frombuffer(int(value).to_bytes(ByteSize.INT64, "little", signed=True), np.uint64)[0])
 
     @staticmethod
     def WriteUInt64(streamWriter: Callable[[np.uint8], int], value: np.uint64) -> int:
@@ -141,48 +143,49 @@ class encoding7Bit:
 
         np128 = np.uint64(128)
         np7 = np.uint64(7)
+        npStreamWriter = lambda uint64: streamWriter(np.uint8(uint64))
 
         if value < np128:
-            streamWriter(value) #1
+            npStreamWriter(value) #1
             return 1
 
-        streamWriter(value | np128) #1
+        npStreamWriter(value | np128) #1
         if value < np128 * np128:
-            streamWriter(value >> np7) #2
+            npStreamWriter(value >> np7) #2
             return 2
 
-        streamWriter((value >> np7) | np128) #2
+        npStreamWriter((value >> np7) | np128) #2
         if value < np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7)) #3
+            npStreamWriter(value >> (np7 + np7)) #3
             return 3
             
-        streamWriter((value >> (np7 + np7)) | np128) #3
+        npStreamWriter((value >> (np7 + np7)) | np128) #3
         if value < np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7)) #4
+            npStreamWriter(value >> (np7 + np7 + np7)) #4
             return 4
             
-        streamWriter((value >> (np7 + np7 + np7)) | np128) #4
+        npStreamWriter((value >> (np7 + np7 + np7)) | np128) #4
         if value < np128 * np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7 + np7)) #5
+            npStreamWriter(value >> (np7 + np7 + np7 + np7)) #5
             return 5
             
-        streamWriter((value >> (np7 + np7 + np7 + np7)) | np128) #5
+        npStreamWriter((value >> (np7 + np7 + np7 + np7)) | np128) #5
         if value < np128 * np128 * np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7 + np7 + np7)) #6
+            npStreamWriter(value >> (np7 + np7 + np7 + np7 + np7)) #6
             return 6
             
-        streamWriter((value >> (np7 + np7 + np7 + np7 + np7)) | np128) #6
+        npStreamWriter((value >> (np7 + np7 + np7 + np7 + np7)) | np128) #6
         if value < np128 * np128 * np128 * np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7)) #7
+            npStreamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7)) #7
             return 7
             
-        streamWriter((value >> (np7 + np7 + np7 + np7 + np7 + np7)) | np128) #7
+        npStreamWriter((value >> (np7 + np7 + np7 + np7 + np7 + np7)) | np128) #7
         if value < np128 * np128 * np128 * np128 * np128 * np128 * np128 * np128:
-            streamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7)) #8
+            npStreamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7)) #8
             return 8
             
-        streamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7) | np128) #8
-        streamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7 + np7)) #9
+        npStreamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7) | np128) #8
+        npStreamWriter(value >> (np7 + np7 + np7 + np7 + np7 + np7 + np7 + np7)) #9
         return 9
 
     @staticmethod
@@ -199,7 +202,7 @@ class encoding7Bit:
         Call expects one to two bytes to be available in base stream.
         """
 
-        return np.frombuffer(ReadUInt16(streamReader).to_bytes(ByteSize.UINT16, "little"), np.int16)[0]
+        return np.frombuffer(int(ReadUInt16(streamReader)).to_bytes(ByteSize.UINT16, "little"), np.int16)[0]
 
     @staticmethod
     def ReadUInt16(streamReader: Callable[[], np.uint8]) -> np.uint16:
@@ -241,7 +244,7 @@ class encoding7Bit:
         Call expects one to five bytes to be available in base stream.
         """
 
-        return np.frombuffer(ReadUInt32(streamReader).to_bytes(ByteSize.UINT32, "little"), np.int32)[0]
+        return np.frombuffer(int(ReadUInt32(streamReader)).to_bytes(ByteSize.UINT32, "little"), np.int32)[0]
 
     @staticmethod
     def ReadUInt32(streamReader: Callable[[], np.uint8]) -> np.uint32:
@@ -296,7 +299,7 @@ class encoding7Bit:
         Call expects one to nine bytes to be available in base stream.
         """
 
-        return np.frombuffer(ReadUInt64(streamReader).to_bytes(ByteSize.UINT64, "little"), np.int64)[0]
+        return np.frombuffer(int(ReadUInt64(streamReader)).to_bytes(ByteSize.UINT64, "little"), np.int64)[0]
 
     @staticmethod
     def ReadUInt64(streamReader: Callable[[], np.uint8]) -> np.uint64:

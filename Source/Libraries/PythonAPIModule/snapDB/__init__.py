@@ -23,17 +23,6 @@
 
 from snapDB.enumerations import *
 from gsf.binaryStream import binaryStream
-from struct import pack
-import numpy as np
-
-class BitConvert:
-    @staticmethod
-    def ToUInt64(value: np.float32) -> np.uint64:
-        return np.frombuffer(struct.pack("f", np.float64(value)), np.uint64)[0]
-
-    @staticmethod
-    def ToSingle(value: np.uint64) -> np.float32:
-        return np.frombuffer(np.uint32(value).to_bytes(ByteSize.UINT32, "little"), np.float32)[0]
 
 class Server:
     """

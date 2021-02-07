@@ -23,6 +23,13 @@
 
 from openHistorian.historianConnection import historianConnection
 from openHistorian.historianInstance import historianInstance
+from openHistorian.historianKey import historianKey
+from openHistorian.historianValue import historianValue
+from snapDB.timestampSeekFilter import timestampSeekFilter
+from snapDB.pointIDMatchFilter import pointIDMatchFilter
+from snapDB.enumerations import QualityFlags
+from datetime import datetime, timedelta
+import time
 from typing import Optional
 
 def main():
@@ -70,19 +77,75 @@ def main():
                 print("Opening \"" + initialInstance + "\" database instance...")
 
                 instance = api.OpenInstance(initialInstance)
+                
+                key = historianKey()
+                value = historianValue()
+
+                pointIDList = [84, 98, 99, 124, 125]
+
+                #startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
+                #endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
+                endTime = datetime.utcnow() - timedelta(seconds = 10)
+                startTime = endTime - timedelta(milliseconds = 60)
+
+                print("Starting read for points " + str(pointIDList) + " from " + str(startTime) + " to " + str(endTime) + "...\r\n")
+
+                timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
+                pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
+
+                readStart = time.time()
+                reader = instance.Read(timeFilter, pointFilter)
+                count = 0
+
+                while reader.Read(key, value):
+                    count += 1
+                    print("    Point " + key.ToString() + " = " + value.ToString())
+
+                print("\r\nRead complete for " + str(count) + " points in %s seconds." % (time.time() - readStart))
         else:
             print("Not connected? Unexpected.")
     except Exception as ex:
         print("Failed to connect: " + str(ex))
     finally:
         if instance is not None and not instance.IsDisposed:
-            print("Closing \"" + initialInstance + "\" database instance...")
             instance.Dispose()
 
         if api.IsConnected:
             print("Disconnecting from openHistorian")
         
-        api.Disconnect()
+        #api.Disconnect()
 
 if __name__ == "__main__":
     main()
+
+#print("Writing a test point...")
+                
+#pointID = 1
+#pointTime = datetime.utcnow()
+#pointValue = 1000.98
+#pointQuality = QualityFlags.WARNINGHIGH
+
+#key.PointID = pointID
+#key.AsDateTime = pointTime
+#value.AsSingle = pointValue
+#value.AsQuality = pointQuality
+
+#instance.Write(key, value)
+
+#print("Reading test point...")
+
+#timeFilter = timestampSeekFilter.CreateFromRange(pointTime - timedelta(milliseconds=10), pointTime + timedelta(milliseconds=10))
+#pointFilter = pointIDMatchFilter.CreateFromList([pointID])
+                
+#reader = instance.Read(timeFilter, pointFilter)
+#count = 0
+
+#while reader.Read(key, value):
+#    count += 1
+#    print("    Point ID Match      = " + str(pointID == key.PointID))
+#    print("    Point Time Match    = " + str(pointTime == key.AsDateTime))
+#    print("    Point Value Match   = " + str(pointValue == value.AsSingle))
+#    print("    Point Quality Match = " + str(pointQuality == value.AsQuality))
+                
+#print("    Point Count Match   = " + str(count == 1))
+#reader.Dispose()

@@ -22,8 +22,9 @@
 #******************************************************************************************************
 
 from snapDB.snapTypeBase import snapTypeBase
+from snapDB.enumerations import QualityFlags
 from gsf.binaryStream import binaryStream
-from gsf import Limits, Ticks, override
+from gsf import Limits, BitConvert, override
 from uuid import UUID
 import numpy as np
 
@@ -144,3 +145,20 @@ class historianValue(snapTypeBase):
         Sets `Value1` type cast from a single.
         """
         self.Value1 = BitConvert.ToUInt64(value)
+
+    @property
+    def AsQuality(self) -> QualityFlags:
+        """
+        Gets `Value3` type cast as `QualityFlags`.
+        """
+        return QualityFlags(self.Value3)
+
+    @AsQuality.setter
+    def AsQuality(self, value: QualityFlags):
+        """
+        Sets `Value3` type cast from `QualityFlags`.
+        """
+        self.Value3 = np.uint64(value.value)
+
+    def ToString(self) -> str:
+        return str(self.AsSingle) + " [" + str(self.AsQuality) + "]"

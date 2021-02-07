@@ -115,7 +115,7 @@ class fixedSizeKeyValueEncoder(Generic[TKey, TValue], keyValueEncoderBase[TKey, 
         raise NotImplementedError()
 
     @override
-    def Encode(stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
+    def Encode(self, stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue):
         """
         Encodes `key` and `value` to the provided `stream`.
 
@@ -131,7 +131,7 @@ class fixedSizeKeyValueEncoder(Generic[TKey, TValue], keyValueEncoderBase[TKey, 
         value.Write(stream)
 
     @override
-    def Decode(stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
+    def Decode(self, stream: binaryStream, prevKey: TKey, prevValue: TValue, key: TKey, value: TValue) -> bool:
         """
         Decodes `key` and `value` from the provided `stream`.
 

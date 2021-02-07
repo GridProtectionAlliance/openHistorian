@@ -21,7 +21,7 @@
 #
 #******************************************************************************************************
 
-from enum import IntEnum
+from enum import IntEnum, Flag
 
 # Defines needed enumerations for SNAPdb server commands and responses
 
@@ -71,3 +71,70 @@ class AuthenticationMode(IntEnum):
     CERTIFICATE = 5
     RESUMESESSION = 255
 
+class QualityFlags(Flag):
+    # Defines normal state.
+    NORMAL = 0
+    # Defines bad data state.
+    BADDATA = 1
+    # Defines suspect data state.
+    SUSPECTDATA = 2
+    # Defines over range error, i.e., unreasonable high value.
+    OVERRANGEERROR = 4
+    # Defines under range error, i.e., unreasonable low value.
+    UNDERRANGEERROR = 8
+    # Defines alarm for high value.
+    ALARMHIGH = 16
+    # Defines alarm for low value.
+    ALARMLOW = 32
+    # Defines warning for high value.
+    WARNINGHIGH = 64
+    # Defines warning for low value.
+    WARNINGLOW = 128
+    # Defines alarm for flat-lined value, i.e., latched value test alarm.
+    FLATLINEALARM = 256
+    # Defines comparison alarm, i.e., outside threshold of comparison with a real-time value.
+    COMPARISONALARM = 512
+    # Defines rate-of-change alarm.
+    ROCALARM = 1024
+    # Defines bad value received.
+    RECEIVEDASBAD = 2048
+    # Defines calculated value state.
+    CALCULATEDVALUE = 4096
+    # Defines calculation error with the value.
+    CALCULATIONERROR = 8192
+    # Defines calculation warning with the value.
+    CALCULATIONWARNING = 16384
+    # Defines reserved quality flag.
+    RESERVEDQUALITYFLAG = 32768
+    # Defines bad time state.
+    BADTIME = 65536
+    # Defines suspect time state.
+    SUSPECTTIME = 131072
+    # Defines late time alarm.
+    LATETIMEALARM = 262144
+    # Defines future time alarm.
+    FUTURETIMEALARM = 524288
+    # Defines up-sampled state.
+    UPSAMPLED = 1048576
+    # Defines down-sampled state.
+    DOWNSAMPLED = 2097152
+    # Defines discarded value state.
+    DISCARDEDVALUE = 4194304
+    # Defines reserved time flag.
+    RESERVEDTIMEFLAG = 8388608
+    # Defines user defined flag 1.
+    USERDEFINEDFLAG1 = 16777216
+    # Defines user defined flag 2.
+    USERDEFINEDFLAG2 = 33554432
+    # Defines user defined flag 3.
+    USERDEFINEDFLAG3 = 67108864
+    # Defines user defined flag 4.
+    USERDEFINEDFLAG4 = 134217728
+    # Defines user defined flag 5.
+    USERDEFINEDFLAG5 = 268435456
+    # Defines system error state.
+    SYSTEMERROR = 536870912
+    # Defines system warning state.
+    SYSTEMWARNING = 1073741824
+    # Defines measurement error flag.
+    MEASUREMENTERROR = 2147483648

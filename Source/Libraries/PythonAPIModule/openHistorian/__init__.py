@@ -29,7 +29,7 @@ from snapDB.fixedSizeKeyValueEncoder import fixedSizeKeyValueEncoder
 from gsf import static_init
 
 @static_init
-class typeRegistristration:
+class snapDBTypeRegistration:
     """
     openHistorian SNAPdb type registration.
     """

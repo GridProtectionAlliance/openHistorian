@@ -244,7 +244,7 @@ class binaryStream:
         size = ByteSize.INT16
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, "little", signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -268,7 +268,7 @@ class binaryStream:
         size = ByteSize.UINT16
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, "little")
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -292,7 +292,7 @@ class binaryStream:
         size = ByteSize.INT32
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, "little", signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -316,7 +316,7 @@ class binaryStream:
         size = ByteSize.UINT32
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, "little")
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -340,7 +340,7 @@ class binaryStream:
         size = ByteSize.INT64
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little", signed=True)
+            buffer = int(value).to_bytes(size, "little", signed=True)
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]
@@ -364,7 +364,7 @@ class binaryStream:
         size = ByteSize.UINT64
 
         if self.sendLength <= binaryStream.BufferSize - size:
-            buffer = value.to_bytes(size, "little")
+            buffer = int(value).to_bytes(size, "little")
 
             for i in range(size):
                 self.sendBuffer[self.sendLength + i] = buffer[i]

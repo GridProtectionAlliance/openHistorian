@@ -38,6 +38,15 @@
     <Compile Include="gsf\streamEncoder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="snapDB\matchFilterBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\pointIDMatchFilter.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snapDB\timestampSeekFilter.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="snapDB\__init__.py">
       <SubType>Code</SubType>
     </Compile>

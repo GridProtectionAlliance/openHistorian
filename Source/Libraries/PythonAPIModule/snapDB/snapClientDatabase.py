@@ -28,6 +28,7 @@ from snapDB.keyValueEncoderBase import keyValueEncoderBase
 from snapDB.pointReader import pointReader
 from snapDB.treeStream import treeStream
 from snapDB.seekFilterBase import seekFilterBase
+from snapDB.matchFilterBase import matchFilterBase
 from snapDB.readerOptions import readerOptions
 from snapDB.library import library
 from snapDB.enumerations import *
@@ -51,8 +52,8 @@ class snapClientDatabase(Generic[TKey, TValue]):
         self.info = info
         self.tempKey = key
         self.tempValue = value
-        self.encoder : Optional[keyValueEncoderBase] = None
-        self.reader : Optional[pointReader] = None
+        self.encoder : Optional[keyValueEncoderBase[TKey, TValue]] = None
+        self.reader : Optional[pointReader[TKey, TValue]] = None
         self.disposed = False
 
     @property
@@ -100,8 +101,7 @@ class snapClientDatabase(Generic[TKey, TValue]):
 
         Server.ValidateExpectedResponse(response, ServerResponse.ENCODINGMETHODACCEPTED)
 
-    # keyMatchFilter: Optional[matchFilterBase[TKey, TValue]]
-    def Read(keySeekFilter: Optional[seekFilterBase[TKey]], keyMatchFilter, options: Optional[readerOptions] = readerOptions()) -> treeStream[TKey, TValue]:
+    def Read(self, keySeekFilter: Optional[seekFilterBase], keyMatchFilter: Optional[matchFilterBase], options: Optional[readerOptions] = None) -> treeStream[TKey, TValue]:
         """
         Reads data from the SNAPdb client database instance with the provided server side filters and read options.
         
@@ -119,17 +119,92 @@ class snapClientDatabase(Generic[TKey, TValue]):
         if self.reader is not None and not self.reader.IsDiposed:
             raise RuntimeError("Concurrent readers are not supported. Dispose old reader.")
 
+        self.stream.WriteByte(ServerCommand.READ)
+
+        if keySeekFilter is None:
+            self.stream.WriteBoolean(False)
+        else:
+            self.stream.WriteBoolean(True)
+            self.stream.WriteGuid(keySeekFilter.TypeID)
+            keySeekFilter.Save(self.stream)
+
+        if keyMatchFilter is None:
+            self.stream.WriteBoolean(False)
+        else:
+            self.stream.WriteBoolean(True)
+            self.stream.WriteGuid(keyMatchFilter.TypeID)
+            keyMatchFilter.Save(self.stream)
+
         if options is None:
-            options = readerOptions()
+            self.stream.WriteBoolean(False)
+        else:
+            self.stream.WriteBoolean(True)
+            options.Save(self.stream)
+
+        self.stream.Flush()
+
+        response = Server.ReadResponse(self.stream)
+
+        if response == ServerResponse.UNKNOWNORCORRUPTSEEKFILTER:
+            raise RuntimeError("SNAPdb server reports key seek filter is unrecognized or corrupted")
+
+        if response == ServerResponse.UNKNOWNORCORRUPTMATCHFILTER:
+            raise RuntimeError("SNAPdb server reports key match filter is unrecognized or corrupted")
+
+        if response == ServerResponse.UNKNOWNORCORRUPTREADEROPTIONS:
+            raise RuntimeError("SNAPdb server reports reader options are unrecognized or corrupted")
+
+        if response == ServerResponse.ERRORWHILEREADING:
+            raise RuntimeError("SNAPdb server reported an exception while reading: " + self.stream.ReadString())
+
+        Server.ValidateExpectedResponse(response, ServerResponse.SERIALIZINGPOINTS)
+
+        self.reader = pointReader(self.encoder, self.stream, self.__closeReader, self.tempKey, self.tempValue)
+        return self.reader
+
+    def __closeReader(self):
+        if self.reader is not None and not self.reader.IsDisposed:
+            self.Dispose()
+
+        self.reader = None
+
+    def WriteTreeStream(self, stream: treeStream[TKey, TValue]):
+        """
+        Writes all key/value pairs of the tree `stream` to the SNAPdb client database instance.
+        """
+
+        if self.reader is not None and not self.reader.IsDiposed:
+            raise RuntimeError("Concurrent writing while reading is not supported. Dispose of active reader before writing.")
+        
+        self.stream.WriteByte(ServerCommand.WRITE)
+        self.encoder.ResetEncoder()
+
+        while stream.Read(self.tempKey, self.tempValue):
+            self.encoder.StreamEncode(self.stream, self.tempKey, self.tempValue)
+
+        self.encoder.WriteEndOfStream(self.stream)
+        self.stream.Flush()
+
+    def Write(self, key: TKey, value: TValue):
+        """
+        Writes an individual key/value pair to the SNAPdb client database instance.
+        """
+
+        if self.reader is not None and not self.reader.IsDiposed:
+            raise RuntimeError("Concurrent writing while reading is not supported. Dispose of active reader before writing.")
+        
+        self.stream.WriteByte(ServerCommand.WRITE)
+        self.encoder.ResetEncoder()
+        self.encoder.StreamEncode(self.stream, key, value)
+        self.encoder.WriteEndOfStream(self.stream)
+        self.stream.Flush()
 
     def Dispose(self):
         if self.disposed:
             return
 
         self.disposed = True
-
-        if self.reader is not None:
-            self.reader.Dispose()
+        self.__closeReader()
 
         self.stream.WriteByte(ServerCommand.DISCONNECTDATABASE)
         self.stream.Flush()
