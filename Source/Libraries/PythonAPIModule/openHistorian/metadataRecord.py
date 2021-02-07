@@ -77,26 +77,45 @@ class metadataRecord:
 
     @property
     def PointID(self) -> np.uint64:
+        """
+        Gets the openHistorian point ID for this `metadataRecord`.
+        """
         return self.pointID
 
     @property
     def SignalID(self) -> UUID:
+        """
+        Gets the unique guid-based signal identifier for this `metadataRecord`.
+        """
         return self.signalID
 
     @property
     def PointTag(self) -> str:
+        """
+        Gets the unique point tag for this `metadataRecord`.
+        """
         return self.pointTag
 
     @property
-    def signalReference(self) -> str:
+    def SignalReference(self) -> str:
+        """
+        Gets the unique signal reference for this `metadataRecord`.
+        """
         return self.signalReference
 
     @property
     def SignalTypeName(self) -> str:
+        """
+        Gets the signal type name for this `metadataRecord`.
+        """
         return self.signalTypeName
 
     @property
     def AsSignalType(self)-> SignalType:
+        """
+        Gets the `SignalType` enumeration for this `metadataRecord`, if it can be mapped
+        to `SignalTypeName`; otherwise, returns `SignalType.UNKN`.
+        """
         try:
             return SignalType(self.signalTypeName)
         except:
@@ -104,12 +123,21 @@ class metadataRecord:
 
     @property
     def DeviceName(self) -> str:
+        """
+        Gets the name of the associated device for this `metadataRecord`.
+        """
         return self.deviceName
 
     @property
     def Description(self) -> str:
+        """
+        Gets the description for this `metadataRecord`.
+        """
         return self.description
 
     @property
     def UpdatedOn(self) -> datetime:
+        """
+        Gets the `datetime` of when this `metadataRecord` was last updated.
+        """
         return self.updatedOn
