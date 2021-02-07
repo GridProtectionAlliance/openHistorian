@@ -25,7 +25,6 @@ from typing import Sequence
 from datetime import datetime, timedelta
 from uuid import UUID
 from enum import IntEnum
-import struct
 import numpy as np
 
 def static_init(cls):
@@ -80,15 +79,6 @@ class Ticks:
     @staticmethod
     def ToDateTime(ticks: np.uint64) -> datetime:
         return datetime(1, 1, 1) + timedelta(microseconds = ticks // 10)
-
-class BitConvert:
-    @staticmethod
-    def ToUInt64(value: np.float32) -> np.uint64:
-        return np.frombuffer(struct.pack("<d", float(value)), np.uint64)[0]
-
-    @staticmethod
-    def ToSingle(value: np.uint64) -> np.float32:
-        return np.frombuffer(int(np.uint32(value)).to_bytes(ByteSize.UINT32, "little"), np.float32)[0]
 
 class Validate:
     @staticmethod

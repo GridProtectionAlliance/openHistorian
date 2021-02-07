@@ -77,9 +77,6 @@ def main():
                 print("Opening \"" + initialInstance + "\" database instance...")
 
                 instance = api.OpenInstance(initialInstance)
-                
-                key = historianKey()
-                value = historianValue()
 
                 pointIDList = [84, 98, 99, 124, 125]
 
@@ -96,6 +93,9 @@ def main():
                 readStart = time.time()
                 reader = instance.Read(timeFilter, pointFilter)
                 count = 0
+                
+                key = historianKey()
+                value = historianValue()
 
                 while reader.Read(key, value):
                     count += 1
