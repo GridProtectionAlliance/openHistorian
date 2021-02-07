@@ -35,7 +35,7 @@ from typing import Optional
 def main():
     print("Creating openHistorian API")
     
-    api = historianConnection("localhost")
+    historian = historianConnection("localhost")
     instance: Optional[historianInstance] = None
 
     print("Connecting to openHistorian...")
@@ -43,18 +43,18 @@ def main():
     try:
         initialInstance: Optional[str] = None
 
-        api.Connect()
+        historian.Connect()
         
-        if api.IsConnected:
+        if historian.IsConnected:
             print("Connected! Available openHistorian instances:")
 
-            for instanceName in api.InstanceNames:
+            for instanceName in historian.InstanceNames:
                 print("   " + instanceName)
 
                 if initialInstance is None:
                     initialInstance = instanceName
 
-                instanceInfo = api.GetInstanceInfo(instanceName)
+                instanceInfo = historian.GetInstanceInfo(instanceName)
                 keyTypeName = "Unregistered key type" if instanceInfo.KeyTypeName is None else instanceInfo.KeyTypeName
                 valueTypeName = "Unregistered value type" if instanceInfo.ValueTypeName is None else instanceInfo.ValueTypeName
 
@@ -76,7 +76,7 @@ def main():
             else:
                 print("Opening \"" + initialInstance + "\" database instance...")
 
-                instance = api.OpenInstance(initialInstance)
+                instance = historian.OpenInstance(initialInstance)
 
                 pointIDList = [84, 98, 99, 124, 125]
 
@@ -110,10 +110,10 @@ def main():
         if instance is not None and not instance.IsDisposed:
             instance.Dispose()
 
-        if api.IsConnected:
+        if historian.IsConnected:
             print("Disconnecting from openHistorian")
         
-        #api.Disconnect()
+        historian.Disconnect()
 
 if __name__ == "__main__":
     main()
