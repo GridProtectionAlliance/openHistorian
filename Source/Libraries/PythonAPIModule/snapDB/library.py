@@ -25,7 +25,7 @@ from snapDB.snapTypeBase import snapTypeBase
 from snapDB.encodingDefinition import encodingDefinition
 from snapDB.keyValueEncoderBase import keyValueEncoderBase
 from gsf import static_init
-from typing import Optional
+from typing import Optional, Dict
 from uuid import UUID
 
 @static_init
@@ -36,9 +36,9 @@ class library:
 
     @classmethod
     def static_init(cls):
-        cls.typeNameIDMap = dict()
-        cls.typeIDNameMap = dict()
-        cls.guidEncoderMap = dict()
+        cls.typeNameIDMap: Dict[str, UUID] = dict()
+        cls.typeIDNameMap: Dict[UUID, str] = dict()
+        cls.guidEncoderMap: Dict[UUID, keyValueEncoderBase] = dict()
 
     @classmethod
     def RegisterType(cls, snapType: snapTypeBase):
@@ -57,15 +57,26 @@ class library:
 
     @classmethod
     def LookupTypeName(cls, typeID: UUID) -> Optional[str]:
-        return cls.typeIDNameMap[typeID]
+        if typeID in cls.typeIDNameMap:
+            return cls.typeIDNameMap[typeID]
+
+        return None
 
     @classmethod
     def LookupTypeID(cls, typeName: str) -> Optional[UUID]:
-        return cls.typeNameIDMap[typeName]
+        if typeName in cls.typeNameIDMap:
+            return cls.typeNameIDMap[typeName]
+
+        return None
 
     @classmethod
     def LookupEncoder(cls, definition: encodingDefinition) -> Optional[keyValueEncoderBase]:
         if definition.IsKeyValueEncoded:
-            return cls.guidEncoderMap[definition.KeyValueEncodingMethod]
+            encoderID = definition.KeyValueEncodingMethod
+
+            if encoderID in cls.guidEncoderMap:
+                return cls.guidEncoderMap[encoderID]
+
+            return None
         else:
             raise RuntimeError("Separate key/value type encoding is not currently supported by Python API")
