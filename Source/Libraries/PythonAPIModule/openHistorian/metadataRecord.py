@@ -53,7 +53,8 @@ class metadataRecord:
     Represents a record of measurement metadata the openHistorian.
     """
 
-    def __init__(self, 
+    def __init__(self,
+            instanceName: str,
             pointID: np.uint64,
             signalID: UUID,
             pointTag: str,
@@ -66,6 +67,7 @@ class metadataRecord:
         """
         Constructs a new `metadataRecord`.
         """
+        self.instanceName = instanceName
         self.pointID = pointID
         self.signalID = signalID
         self.pointTag = pointTag
@@ -74,6 +76,13 @@ class metadataRecord:
         self.deviceName = deviceName
         self.description = description
         self.updatedOn = updatedOn
+
+    @property
+    def InstanceName(self) -> str:
+        """
+        Gets the openHistorian client database instance for this `metadataRecord`.
+        """
+        return self.instanceName
 
     @property
     def PointID(self) -> np.uint64:

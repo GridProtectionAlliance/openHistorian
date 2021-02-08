@@ -25,6 +25,8 @@ from openHistorian.historianConnection import historianConnection
 from openHistorian.historianInstance import historianInstance
 from openHistorian.historianKey import historianKey
 from openHistorian.historianValue import historianValue
+from openHistorian.metadataCache import metadataCache
+from openHistorian.metadataRecord import metadataRecord, SignalType
 from snapDB.timestampSeekFilter import timestampSeekFilter
 from snapDB.pointIDMatchFilter import pointIDMatchFilter
 from snapDB.enumerations import QualityFlags
@@ -46,8 +48,13 @@ def main():
         historian.Connect()
         
         if historian.IsConnected:
-            print("Connected! Available openHistorian instances:")
+            print("Connected to \"" + historian.HostAddress + "\"!")
 
+            print("Refreshing metadata...")                
+            recordCount = historian.RefreshMetadata()
+            print("Parsed " + str(recordCount) + " metadata records.")
+
+            print("Available openHistorian instances:")
             for instanceName in historian.InstanceNames:
                 print("   " + instanceName)
 
@@ -75,33 +82,46 @@ def main():
                 print("No openHistorian instances detected!")
             else:
                 print("Opening \"" + initialInstance + "\" database instance...")
-
                 instance = historian.OpenInstance(initialInstance)
 
-                pointIDList = [84, 98, 99, 124, 125]
-
-                #startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
-                #endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
-                endTime = datetime.utcnow() - timedelta(seconds = 10)
-                startTime = endTime - timedelta(milliseconds = 60)
-
-                print("Starting read for points " + str(pointIDList) + " from " + str(startTime) + " to " + str(endTime) + "...\r\n")
-
-                timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
-                pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
-
-                readStart = time.time()
-                reader = instance.Read(timeFilter, pointFilter)
-                count = 0
+                # Get metadata cache
+                metadata = historian.Metadata                
                 
-                key = historianKey()
-                value = historianValue()
+                # Lookup point IDs for frequency signals
+                records = metadata.MatchSignalType(SignalType.FREQ, initialInstance)
 
-                while reader.Read(key, value):
-                    count += 1
-                    print("    Point " + key.ToString() + " = " + value.ToString())
+                # Lookup points IDs for voltage phase magnitudes
+                records.extend(metadata.MatchSignalType(SignalType.VPHM, initialInstance))
 
-                print("\r\nRead complete for " + str(count) + " points in %s seconds." % (time.time() - readStart))
+                recordCount = len(records)
+
+                print("Queried " + str(recordCount) + " metadata records associated with \"" + initialInstance + "\" database instance.")
+
+                if recordCount > 0:
+                    pointIDList = metadataCache.ToPointIDList(records)
+
+                    #startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
+                    #endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
+                    endTime = datetime.utcnow() - timedelta(seconds = 10)
+                    startTime = endTime - timedelta(milliseconds = 60)
+
+                    print("Starting read for " + str(len(pointIDList)) + " points from " + str(startTime) + " to " + str(endTime) + "...\r\n")
+
+                    timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
+                    pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
+
+                    readStart = time.time()
+                    reader = instance.Read(timeFilter, pointFilter)
+                    count = 0
+                
+                    key = historianKey()
+                    value = historianValue()
+
+                    while reader.Read(key, value):
+                        count += 1
+                        print("    Point " + key.ToString() + " = " + value.ToString())
+
+                    print("\r\nRead complete for " + str(count) + " points in %s seconds." % (time.time() - readStart))
         else:
             print("Not connected? Unexpected.")
     except Exception as ex:
@@ -134,7 +154,7 @@ if __name__ == "__main__":
 
 #print("Reading test point...")
 
-#timeFilter = timestampSeekFilter.CreateFromRange(pointTime - timedelta(milliseconds=10), pointTime + timedelta(milliseconds=10))
+#timeFilter = timestampSeekFilter.CreateFromRange(pointTime - timedelta(milliseconds=1), pointTime)
 #pointFilter = pointIDMatchFilter.CreateFromList([pointID])
                 
 #reader = instance.Read(timeFilter, pointFilter)

@@ -23,7 +23,7 @@
 
 from snapDB.snapTypeBase import snapTypeBase
 from gsf.binaryStream import binaryStream
-from gsf import Limits, Ticks, override
+from gsf import Limits, Ticks, Empty, override
 from datetime import datetime
 from uuid import UUID
 import numpy as np
@@ -132,7 +132,7 @@ class historianKey(snapTypeBase):
         Attempts to get the timestamp field of this key instance.
         """
         if self.Timestamp > Limits.MAXTICKS:
-            return (datetime(1, 1, 1), False)
+            return (Empty.DATETIME, False)
 
         return (Ticks.ToDateTime(self.Timestamp), True)
 

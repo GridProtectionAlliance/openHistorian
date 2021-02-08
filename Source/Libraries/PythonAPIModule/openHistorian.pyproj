@@ -38,7 +38,7 @@
     <Compile Include="gsf\streamEncoder.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="openHistorian\metadata.py">
+    <Compile Include="openHistorian\metadataCache.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="openHistorian\metadataRecord.py">
