@@ -122,7 +122,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                     # Return number of metadata records
                     return len(self.metadata.Records)
                 else:
-                    raise RuntimeError("Failure code received in response to STTP metadata refresh request: " + historianConnection.ReadString(stream, length))
+                    raise RuntimeError("Failure code received in response to STTP metadata refresh request: " + buffer.decode("utf-8"))
         finally:
             sttpSocket.close()
 
@@ -141,8 +141,4 @@ class historianConnection(snapConnection[historianKey, historianValue]):
             position += bytesRead
 
         return bytes(buffer)
-
-    @staticmethod
-    def ReadString(stream: streamEncoder, length: int) -> str:
-        return historianConnection.ReadBytes(stream, length).decode("utf-8")
 
