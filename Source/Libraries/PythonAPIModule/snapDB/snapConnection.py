@@ -54,10 +54,10 @@ class snapConnection(Generic[TKey, TValue]):
             self.port = snapConnection.DefaultPort
         
         try:
-            self.hostEndPoint = socket.getaddrinfo(self.hostAddress, str(self.port), family=socket.AF_INET, proto=socket.IPPROTO_TCP)[0][4]
+            self.hostEndPoint = socket.getaddrinfo(self.hostAddress, self.port, family=socket.AF_INET, proto=socket.IPPROTO_TCP)[0][4]
         except:
-            self.hostEndPoint = (self.hostAddress, str(self.port))
-        
+            self.hostEndPoint = (self.hostAddress, self.port)
+
         self.instances = dict()
         self.socket : Optional[socket.socket] = None
         self.stream : Optional[binaryStream] = None
@@ -79,7 +79,7 @@ class snapConnection(Generic[TKey, TValue]):
         return self.hostAddress + ":" + str(self.port)
 
     @property
-    def HostEndPoint(self) -> (str, str):
+    def HostEndPoint(self) -> (str, int):
         """
         Gets SNABdb server end point, e.g., ("127.0.0.1:, "38402").
         """
@@ -97,7 +97,7 @@ class snapConnection(Generic[TKey, TValue]):
         """
         Gets SNABdb server port, e.g., 38402.
         """
-        return int(self.hostEndPoint[1])
+        return self.hostEndPoint[1]
 
     @property
     def IsConnected(self) -> bool:
