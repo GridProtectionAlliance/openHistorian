@@ -201,7 +201,7 @@ class metadataCache:
 
         signalTypeName = str(signalType)
 
-        #                             12345678901
+        #                             012345678901
         if signalTypeName.startswith("SignalType."):
             signalTypeName = signalTypeName[11:]
 
@@ -216,10 +216,16 @@ class metadataCache:
         records = set()
 
         if searchVal in self.pointTagMetaMap:
-            records.add(self.pointTagMetaMap[searchVal])
+            record = self.pointTagMetaMap[searchVal]
+            
+            if instanceName is None or record.InstanceName == instanceName:
+                records.add(record)
 
         if searchVal in self.signalRefMetaMap:
-            records.add(self.signalRefMetaMap[searchVal])
+            record = self.signalRefMetaMap[searchVal]
+            
+            if instanceName is None or record.InstanceName == instanceName:
+                records.add(record)
 
         for record in self.records:
             if searchVal in record.Description or searchVal in record.DeviceName:

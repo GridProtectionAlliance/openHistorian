@@ -113,7 +113,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                     continue
             
                 if responseCode == ServerResponse.SUCCEEDED:
-                    # Read and decompress full metadata response XML
+                    # Decompress full metadata response XML
                     buffer = gzip.decompress(buffer)
 
                     # Create metadata cache from metadata XML

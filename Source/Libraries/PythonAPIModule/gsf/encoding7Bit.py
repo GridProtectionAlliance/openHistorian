@@ -82,7 +82,7 @@ class encoding7Bit:
     @staticmethod
     def WriteUInt32(streamWriter: Callable[[np.uint8], int], value: np.uint32) -> int:
         """
-        Writes 32-bit unisgned integer value using 7-bit encoding to the provided stream writer.
+        Writes 32-bit unsigned integer value using 7-bit encoding to the provided stream writer.
         
         Parameters
         ----------

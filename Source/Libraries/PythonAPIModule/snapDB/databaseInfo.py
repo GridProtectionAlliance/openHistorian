@@ -44,7 +44,7 @@ class databaseInfo:
         self.valueTypeID = stream.ReadGuid()
         
         count = stream.ReadInt32()
-        definitions = []
+        definitions = list()
 
         for i in range(count):
             definitions.append(encodingDefinition(stream = stream))
