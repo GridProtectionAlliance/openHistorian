@@ -66,7 +66,6 @@ class ByteSize(IntEnum):
     UINT32 = 4
     INT64 = 8
     UINT64 = 8
-    ENC7BIT = 9
 
 class Ticks:
     @staticmethod
