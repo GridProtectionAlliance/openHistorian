@@ -64,12 +64,6 @@ class snapConnection(Generic[TKey, TValue]):
         self.instance : Optional[snapClientDatabase[TKey, TValue]] = None
         self.key = key
         self.value = value
-
-    def __socketRead(self, length: int) -> bytes:
-        return self.socket.recv(length)
-
-    def __socketWrite(self, buffer: bytes) -> int:
-        return self.socket.send(buffer)
     
     @property
     def HostAddress(self) -> str:
@@ -121,7 +115,7 @@ class snapConnection(Generic[TKey, TValue]):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
             self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-            stream = streamEncoder(self.__socketRead, self.__socketWrite)
+            stream = streamEncoder((lambda length: self.socket.recv(length)), (lambda buffer: self.socket.send(buffer)))
             self.socket.connect(self.hostEndPoint)
 
             useSsl = False
@@ -235,10 +229,13 @@ class snapConnection(Generic[TKey, TValue]):
 
         Server.ValidateExpectedResponse(response, ServerResponse.SUCCESSFULLYCONNECTEDTODATABASE)
 
-        self.instance = snapClientDatabase[TKey, TValue](self.stream, info, self.key, self.value)
+        self.instance = snapClientDatabase[TKey, TValue](self.stream, info, self.__clearInstanceRef, self.key, self.value)
         self.instance.SetEncodingDefinition(definition)
 
         return self.instance
+
+    def __clearInstanceRef(self):
+        self.instance = None
 
     def CloseInstance(self):
         """

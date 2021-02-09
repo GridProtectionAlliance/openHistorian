@@ -82,57 +82,64 @@ def main():
             else:
                 print(f"Opening \"{initialInstance}\" database instance...")
                 instance = historian.OpenInstance(initialInstance)
-
-                # Get metadata cache
-                metadata = historian.Metadata                
                 
-                # Lookup point IDs for frequency signals
-                records = metadata.MatchSignalType(SignalType.FREQ, initialInstance)
+                # Execute a test read for old data
+                startTime = datetime.strptime("2020-11-10 00:00:00.000", "%Y-%m-%d %H:%M:%S.%f")
+                endTime = startTime + timedelta(milliseconds = 33 + 1) # Add one ms to ensure end time is inclusive
+                TestRead(instance, historian.Metadata, startTime, endTime)
 
-                # Lookup points IDs for voltage phase magnitudes
-                records.extend(metadata.MatchSignalType(SignalType.VPHM, initialInstance))
+                # Execute a test read for new data
+                endTime = datetime.utcnow() - timedelta(seconds = 10)
+                startTime = endTime - timedelta(milliseconds = 33 + 1) # Add one ms to ensure end time is inclusive
+                TestRead(instance, historian.Metadata, startTime, endTime)
 
-                recordCount = len(records)
-
-                print(f"Queried {recordCount:,} metadata records associated with \"{initialInstance}\" database instance.")
-
-                if recordCount > 0:
-                    pointIDList = metadataCache.ToPointIDList(records)[:10] # <- Just getting 10 points
-
-                    startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
-                    endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
-                    #endTime = datetime.utcnow() - timedelta(seconds = 10)
-                    #startTime = endTime - timedelta(milliseconds = 60)
-
-                    print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
-
-                    timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
-                    pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
-
-                    opStart = time()
-                    reader = instance.Read(timeFilter, pointFilter)
-                    count = 0
-                
-                    key = historianKey()
-                    value = historianValue()
-
-                    while reader.Read(key, value):
-                        count += 1
-                        print(f"    Point {key.ToString()} = {value.ToString()}")
-
-                    print(f"\r\nRead complete for {count:,} points in {(time() - opStart):.2f} seconds.")
         else:
             print("Not connected? Unexpected.")
-    #except Exception as ex:
-    #    print(f"Failed to connect: {ex}")
+    except Exception as ex:
+        print(f"Failed to connect: {ex}")
     finally:
-        if instance is not None and not instance.IsDisposed:
+        if instance is not None:
             instance.Dispose()
 
         if historian.IsConnected:
             print("Disconnecting from openHistorian")
         
         historian.Disconnect()
+
+def TestRead(instance: historianInstance, metadata: metadataCache, startTime: datetime, endTime: datetime):
+    # Get instance name
+    instanceName = instance.Name
+
+    # Lookup point IDs for frequency signals
+    records = metadata.MatchSignalType(SignalType.FREQ, instanceName)
+
+    # Lookup points IDs for voltage phase magnitudes
+    records.extend(metadata.MatchSignalType(SignalType.VPHM, instanceName))
+
+    recordCount = len(records)
+
+    print(f"Queried {recordCount:,} metadata records associated with \"{instanceName}\" database instance.")
+
+    if recordCount > 0:
+        pointIDList = metadataCache.ToPointIDList(records)
+
+        print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
+
+        timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
+        pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
+
+        opStart = time()
+        reader = instance.Read(timeFilter, pointFilter)
+        count = 0
+                
+        key = historianKey()
+        value = historianValue()
+
+        while reader.Read(key, value):
+            count += 1
+            print(f"    Point {key.ToString()} = {value.ToString()}")
+
+        print(f"\r\nRead complete for {count:,} points in {(time() - opStart):.2f} seconds.")
 
 if __name__ == "__main__":
     main()

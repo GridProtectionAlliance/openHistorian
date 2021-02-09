@@ -26,10 +26,11 @@ from openHistorian.historianValue import historianValue
 from snapDB.snapClientDatabase import snapClientDatabase
 from snapDB.databaseInfo import databaseInfo
 from gsf.binaryStream import binaryStream
+from typing import Callable
 
 class historianInstance(snapClientDatabase[historianKey, historianValue]):
     """
     Represents a `snapClientDatabase` instance for a `historianKey` and `historianValue`.
     """
-    def __init__(self, stream: binaryStream, info: databaseInfo):
-        super().__init__(stream, info, historianKey(), historianValue())
+    def __init__(self, stream: binaryStream, info: databaseInfo, onDispose: Callable[[], None]):
+        super().__init__(stream, info, onDispose, historianKey(), historianValue())

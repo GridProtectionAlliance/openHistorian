@@ -78,6 +78,7 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
             return
 
         self.completed = True
+        self.onComplete()
 
         response = Server.ReadResponse(self.stream)
 
@@ -85,8 +86,6 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
             raise RuntimeError(f"SNAPdb server exception encountered while reading: {self.stream.ReadString()}")
 
         Server.ValidateExpectedResponses(response, ServerResponse.READCOMPLETE, ServerResponse.CANCELEDREAD)
-
-        self.onComplete()
 
     def Disposing(self):
         self.Cancel()

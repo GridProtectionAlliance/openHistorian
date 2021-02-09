@@ -34,7 +34,7 @@ from snapDB.library import library
 from snapDB.enumerations import *
 from snapDB import Server
 from gsf.binaryStream import binaryStream
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic, Optional, Callable
 
 TKey = TypeVar('TKey', bound=snapTypeBase)
 TValue = TypeVar('TValue', bound=snapTypeBase)
@@ -47,9 +47,10 @@ class snapClientDatabase(Generic[TKey, TValue]):
     
     # Source C# reference: StreamingClientDatabase<TKey, TValue>
 
-    def __init__(self, stream: binaryStream, info: databaseInfo, key: TKey, value: TValue):
+    def __init__(self, stream: binaryStream, info: databaseInfo, onDispose: Callable[[], None], key: TKey, value: TValue):
         self.stream = stream
         self.info = info
+        self.onDispose = onDispose
         self.tempKey = key
         self.tempValue = value
         self.encoder : Optional[keyValueEncoderBase[TKey, TValue]] = None
@@ -62,6 +63,13 @@ class snapClientDatabase(Generic[TKey, TValue]):
         Gets basic information about the current database instance.
         """
         return self.info
+
+    @property
+    def Name(self) -> str:
+        """
+        Gets the name of the current database instance.
+        """
+        return self.info.DatabaseName
 
     @property
     def IsDisposed(self) -> bool:
@@ -159,13 +167,10 @@ class snapClientDatabase(Generic[TKey, TValue]):
 
         Server.ValidateExpectedResponse(response, ServerResponse.SERIALIZINGPOINTS)
 
-        self.reader = pointReader(self.encoder, self.stream, self.__closeReader, self.tempKey, self.tempValue)
+        self.reader = pointReader(self.encoder, self.stream, self.__clearReaderRef, self.tempKey, self.tempValue)
         return self.reader
 
-    def __closeReader(self):
-        if self.reader is not None and not self.reader.IsDisposed:
-            self.Dispose()
-
+    def __clearReaderRef(self):
         self.reader = None
 
     def WriteTreeStream(self, stream: treeStream[TKey, TValue]):
@@ -204,10 +209,13 @@ class snapClientDatabase(Generic[TKey, TValue]):
             return
 
         self.disposed = True
-        self.__closeReader()
+        
+        if self.reader is not None:
+            self.Dispose()
 
         self.stream.WriteByte(ServerCommand.DISCONNECTDATABASE)
         self.stream.Flush()
+        self.onDispose()
 
         Server.ValidateExpectedReadResponse(self.stream, ServerResponse.DATABASEDISCONNECTED)
 
