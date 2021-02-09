@@ -82,7 +82,7 @@ class pointReader(Generic[TKey, TValue], treeStream[TKey, TValue]):
         response = Server.ReadResponse(self.stream)
 
         if response == ServerResponse.ERRORWHILEREADING:
-            raise RuntimeError("SNAPdb server exception encountered while reading: " + self.stream.ReadString())
+            raise RuntimeError(f"SNAPdb server exception encountered while reading: {self.stream.ReadString()}")
 
         Server.ValidateExpectedResponses(response, ServerResponse.READCOMPLETE, ServerResponse.CANCELEDREAD)
 

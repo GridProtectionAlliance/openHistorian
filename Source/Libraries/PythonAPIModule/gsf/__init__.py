@@ -94,5 +94,5 @@ class Validate:
             raise ValueError("value cannot be negative")
 
         if startIndex + length > len(array):
-            raise ValueError("startIndex of " + str(startIndex) + " and length of " + str(length) + " will exceed array size of " + str(len(array)))
+            raise ValueError(f"startIndex of {startIndex:,} and length of {length:,} will exceed array size of {len(array):,}")
 

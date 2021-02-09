@@ -127,9 +127,9 @@ class encodingDefinition:
 
     def ToString(self) -> str:
         if self.isKeyValueEncoded:
-            return "{" + str(self.keyValueEncodingMethod) + "}";
+            return f"{{{self.keyValueEncodingMethod}}}";
         
-        return "{" + str(self.keyEncodingMethod) + "} / {" + str(self.valueEncodingMethod) + "}";
+        return f"{{{self.keyEncodingMethod}}} / {{{self.valueEncodingMethod}}}";
 
     def Save(self, stream: binaryStream):
         if self.isKeyValueEncoded:

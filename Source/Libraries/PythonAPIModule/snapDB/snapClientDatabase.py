@@ -88,7 +88,7 @@ class snapClientDatabase(Generic[TKey, TValue]):
         self.encoder = library.LookupEncoder(definition)
 
         if self.encoder is None:
-            raise RuntimeError("Provided encoding method " + definition.ToString() + " is not registered")
+            raise RuntimeError(f"Provided encoding method {definition.ToString()} is not registered")
 
         self.stream.WriteByte(ServerCommand.SETENCODINGMETHOD)
         definition.Save(self.stream)
@@ -97,7 +97,7 @@ class snapClientDatabase(Generic[TKey, TValue]):
         response = Server.ReadResponse(self.stream)
 
         if response == ServerResponse.UNKNOWNENCODINGMETHOD:
-            raise RuntimeError("SNAPdb server reports encoding method " + definition.ToString() + " is unrecognized, hence it is unsupported")
+            raise RuntimeError(f"SNAPdb server reports encoding method {definition.ToString()} is unrecognized, hence it is unsupported")
 
         Server.ValidateExpectedResponse(response, ServerResponse.ENCODINGMETHODACCEPTED)
 
@@ -155,7 +155,7 @@ class snapClientDatabase(Generic[TKey, TValue]):
             raise RuntimeError("SNAPdb server reports reader options are unrecognized or corrupted")
 
         if response == ServerResponse.ERRORWHILEREADING:
-            raise RuntimeError("SNAPdb server reported an exception while reading: " + self.stream.ReadString())
+            raise RuntimeError(f"SNAPdb server reported an exception while reading: {self.stream.ReadString()}")
 
         Server.ValidateExpectedResponse(response, ServerResponse.SERIALIZINGPOINTS)
 

@@ -31,13 +31,13 @@ from snapDB.timestampSeekFilter import timestampSeekFilter
 from snapDB.pointIDMatchFilter import pointIDMatchFilter
 from snapDB.enumerations import QualityFlags
 from datetime import datetime, timedelta
-import time
+from time import time
 from typing import Optional
 
 def main():
     print("Creating openHistorian API")
     
-    historian = historianConnection("localhost")
+    historian = historianConnection("vmtvaarchive")
     instance: Optional[historianInstance] = None
 
     print("Connecting to openHistorian...")
@@ -48,15 +48,14 @@ def main():
         historian.Connect()
         
         if historian.IsConnected:
-            print("Connected to \"" + historian.HostAddress + "\"!")
+            print(f"Connected to \"{historian.HostAddress}\"!")
 
-            print("Refreshing metadata...")                
+            # Suppress default output with: historian.RefreshMetadata(logOutput = lambda value: None)
             recordCount = historian.RefreshMetadata()
-            print("Parsed " + str(recordCount) + " metadata records.")
 
             print("Available openHistorian instances:")
             for instanceName in historian.InstanceNames:
-                print("   " + instanceName)
+                print(f"   {instanceName}")
 
                 if initialInstance is None:
                     initialInstance = instanceName
@@ -65,23 +64,23 @@ def main():
                 keyTypeName = "Unregistered key type" if instanceInfo.KeyTypeName is None else instanceInfo.KeyTypeName
                 valueTypeName = "Unregistered value type" if instanceInfo.ValueTypeName is None else instanceInfo.ValueTypeName
 
-                print("          Key Type: " + keyTypeName + " {" + str(instanceInfo.KeyTypeID) + "}")
-                print("        Value Type: " + valueTypeName + " {" + str(instanceInfo.ValueTypeID) + "}")
-                print("    Encoding Modes: " + str(len(instanceInfo.SupportedEncodings)))
+                print(f"          Key Type: {keyTypeName} {{{instanceInfo.KeyTypeID}}}")
+                print(f"        Value Type: {valueTypeName} {{{instanceInfo.ValueTypeID}}}")
+                print(f"    Encoding Modes: {len(instanceInfo.SupportedEncodings):,}")
                 print("")
 
                 i = 0
                 for mode in instanceInfo.SupportedEncodings:
                     i += 1                    
-                    print("        Encoding Mode " + str(i) + " " + mode.ToString())                   
-                    print("             Key-Value Encoded: " + str(mode.IsKeyValueEncoded))
-                    print("            Fixed Size Encoded: " + str(mode.IsFixedSizeEncoding))                    
+                    print(f"        Encoding Mode {i} {mode.ToString()}")
+                    print(f"             Key-Value Encoded: {mode.IsKeyValueEncoded}")
+                    print(f"            Fixed Size Encoded: {mode.IsFixedSizeEncoding}")
                     print("")
 
             if initialInstance is None:
                 print("No openHistorian instances detected!")
             else:
-                print("Opening \"" + initialInstance + "\" database instance...")
+                print(f"Opening \"{initialInstance}\" database instance...")
                 instance = historian.OpenInstance(initialInstance)
 
                 # Get metadata cache
@@ -95,22 +94,22 @@ def main():
 
                 recordCount = len(records)
 
-                print("Queried " + str(recordCount) + " metadata records associated with \"" + initialInstance + "\" database instance.")
+                print(f"Queried {recordCount:,} metadata records associated with \"{initialInstance}\" database instance.")
 
                 if recordCount > 0:
-                    pointIDList = metadataCache.ToPointIDList(records)
+                    pointIDList = metadataCache.ToPointIDList(records)[:10] # <- Just getting 10 points
 
-                    #startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
-                    #endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
-                    endTime = datetime.utcnow() - timedelta(seconds = 10)
-                    startTime = endTime - timedelta(milliseconds = 60)
+                    startTime = datetime.strptime("2020-11-10 00:00:00", "%Y-%m-%d %H:%M:%S")
+                    endTime = datetime.strptime("2020-11-10 00:00:01", "%Y-%m-%d %H:%M:%S")
+                    #endTime = datetime.utcnow() - timedelta(seconds = 10)
+                    #startTime = endTime - timedelta(milliseconds = 60)
 
-                    print("Starting read for " + str(len(pointIDList)) + " points from " + str(startTime) + " to " + str(endTime) + "...\r\n")
+                    print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
 
                     timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
                     pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
 
-                    readStart = time.time()
+                    opStart = time()
                     reader = instance.Read(timeFilter, pointFilter)
                     count = 0
                 
@@ -119,13 +118,13 @@ def main():
 
                     while reader.Read(key, value):
                         count += 1
-                        print("    Point " + key.ToString() + " = " + value.ToString())
+                        print(f"    Point {key.ToString()} = {value.ToString()}")
 
-                    print("\r\nRead complete for " + str(count) + " points in %s seconds." % (time.time() - readStart))
+                    print(f"\r\nRead complete for {count:,} points in {(time() - opStart):.2f} seconds.")
         else:
             print("Not connected? Unexpected.")
-    except Exception as ex:
-        print("Failed to connect: " + str(ex))
+    #except Exception as ex:
+    #    print(f"Failed to connect: {ex}")
     finally:
         if instance is not None and not instance.IsDisposed:
             instance.Dispose()
@@ -162,10 +161,10 @@ if __name__ == "__main__":
 
 #while reader.Read(key, value):
 #    count += 1
-#    print("    Point ID Match      = " + str(pointID == key.PointID))
-#    print("    Point Time Match    = " + str(pointTime == key.AsDateTime))
-#    print("    Point Value Match   = " + str(pointValue == value.AsSingle))
-#    print("    Point Quality Match = " + str(pointQuality == value.AsQuality))
+#    print(f"    Point ID Match      = {pointID == key.PointID}")
+#    print(f"    Point Time Match    = {pointTime == key.AsDateTime}")
+#    print(f"    Point Value Match   = {pointValue == value.AsSingle}")
+#    print(f"    Point Quality Match = {pointQuality == value.AsQuality}")
                 
-#print("    Point Count Match   = " + str(count == 1))
+#print(f"    Point Count Match   = {count == 1}")
 #reader.Dispose()

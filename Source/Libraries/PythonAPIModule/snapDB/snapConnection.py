@@ -76,7 +76,7 @@ class snapConnection(Generic[TKey, TValue]):
         """
         Gets SNABdb server address and port, e.g., "localhost:38402".
         """
-        return self.hostAddress + ":" + str(self.port)
+        return f"{self.hostAddress}:{self.port}"
 
     @property
     def HostEndPoint(self) -> (str, int):
@@ -203,16 +203,16 @@ class snapConnection(Generic[TKey, TValue]):
         read and write key / value data for SNAPdb client database instance.
         """
         if self.instance is not None and not self.instance.IsDisposed:
-            raise RuntimeError("SNAPdb instance \"" + self.instance.Info.DatabaseName + "\" is currently open. Only one SNAPdb instance can be open at once, call CloseInstance() API method first.")
+            raise RuntimeError(f"SNAPdb instance \"{self.instance.Info.DatabaseName}\" is currently open. Only one SNAPdb instance can be open at once, call CloseInstance() API method first.")
         
         info = self.GetInstanceInfo(instanceName)
 
         if info is None:
-            raise RuntimeError("Failed to find SNAPdb instance \"" + instanceName  + "\"")
+            raise RuntimeError(f"Failed to find SNAPdb instance \"{instanceName}\"")
 
         if definition is None:
             if len(info.SupportedEncodings) == 0:
-                raise RuntimeError("Failed to find any encoding definitions for SNAPdb instance \"" + instanceName  + "\"")
+                raise RuntimeError(f"Failed to find any encoding definitions for SNAPdb instance \"{instanceName}\"")
 
             definition = info.SupportedEncodings[0]
 
@@ -225,13 +225,13 @@ class snapConnection(Generic[TKey, TValue]):
         response = Server.ReadResponse(self.stream)
 
         if response == ServerResponse.DATABASEDOESNOTEXIST:
-            raise RuntimeError("SNAPdb server reports instance \"" + instanceName  + "\" does not exist")
+            raise RuntimeError(f"SNAPdb server reports instance \"{instanceName}\" does not exist")
 
         if response == ServerResponse.DATABASEKEYUNKNOWN:
-            raise RuntimeError("SNAPdb server reports SNABdb key type {" + self.key.TypeID  + "} does not match type defined for instance")
+            raise RuntimeError(f"SNAPdb server reports SNABdb key type {{{self.key.TypeID}}} does not match type defined for instance")
 
         if response == ServerResponse.DATABASEVALUEUNKNOWN:
-            raise RuntimeError("SNAPdb server reports SNABdb value type {" + self.value.TypeID + "} does not match type defined for instance")
+            raise RuntimeError(f"SNAPdb server reports SNABdb value type {{{self.value.TypeID}}} does not match type defined for instance")
 
         Server.ValidateExpectedResponse(response, ServerResponse.SUCCESSFULLYCONNECTEDTODATABASE)
 

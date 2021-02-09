@@ -168,4 +168,4 @@ class historianValue(snapTypeBase):
         self.Value3 = np.uint64(value.value)
 
     def ToString(self) -> str:
-        return str(self.AsSingle) + " [" + str(self.AsQuality) + "]"
+        return f"{self.AsSingle:.3f} [{self.AsQuality}]"

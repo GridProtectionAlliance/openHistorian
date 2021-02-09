@@ -29,9 +29,9 @@ from snapDB.snapConnection import snapConnection
 from snapDB.encodingDefinition import encodingDefinition
 from gsf.streamEncoder import streamEncoder
 from gsf import override
-from typing import Optional
+from typing import Optional, Callable
 from enum import IntEnum
-from time import sleep
+from time import time, sleep
 import errno
 import socket
 import gzip
@@ -70,7 +70,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
     def Metadata(self) -> Optional[metadataCache]:
         return self.metadata
 
-    def RefreshMetadata(self, sttpPort: int = 7175) -> int:
+    def RefreshMetadata(self, sttpPort: int = 7175, logOutput: Optional[Callable[[str], None]] = None) -> int:
         """
         Requests updated metadata from openHistorian connection.
         """
@@ -78,6 +78,10 @@ class historianConnection(snapConnection[historianKey, historianValue]):
         socketRead = lambda length: sttpSocket.recv(length)
         socketWrite = lambda buffer: sttpSocket.send(buffer)        
         stream = streamEncoder(socketRead, socketWrite)
+        
+        logOutput = (lambda value: print(value)) if logOutput is None else logOutput
+        logOutput("Requesting metadata from openHistorian...")
+        opStart = time()
 
         # Using STTP connection to get metadata only (no subscription), hence the following operational modes:
         # OperationalModes.CompressMetadata | CompressionModes.GZip | OperationalEncoding.UTF8 | (OperationalModes.VersionMask & 1U) 
@@ -106,6 +110,9 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                 
                 # Read response payload
                 buffer = historianConnection.ReadBytes(stream, length)
+                
+                logOutput(f"Received {length:,} bytes of metadata in {(time() - opStart):.2f} seconds. Decompressing...")
+                opStart = time()
 
                 # Other commands can come spontaneously, like NoOp,
                 # only interested in MetadataRefresh response
@@ -113,16 +120,28 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                     continue
             
                 if responseCode == ServerResponse.SUCCEEDED:
-                    # Decompress full metadata response XML
-                    buffer = gzip.decompress(buffer)
+                    try:
+                        # Decompress full metadata response XML
+                        buffer = gzip.decompress(buffer)
+                    except Exception as ex:
+                        raise RuntimeError(f"Failed to decompress metadata: {ex}")
 
-                    # Create metadata cache from metadata XML
-                    self.metadata = metadataCache(buffer.decode("utf-8"))
+                    logOutput(f"Decompressed {len(buffer):,} bytes of metadata in {(time() - opStart):.2f} seconds. Parsing...")
+                    opStart = time()
+
+                    try:
+                        # Parse and cache received metadata XML
+                        self.metadata = metadataCache(buffer.decode("utf-8"))
+                    except Exception as ex:
+                        raise RuntimeError(f"Failed to parse metadata: {ex}")
+
+                    recordCount = len(self.metadata.Records)
+                    logOutput(f"Parsed metadata {recordCount:,} records in {(time() - opStart):.2f} seconds.")
 
                     # Return number of metadata records
-                    return len(self.metadata.Records)
+                    return recordCount
                 else:
-                    raise RuntimeError("Failure code received in response to STTP metadata refresh request: " + buffer.decode("utf-8"))
+                    raise RuntimeError(f"Failure code received in response to STTP metadata refresh request: {buffer.decode('utf-8')}")
         finally:
             sttpSocket.close()
 

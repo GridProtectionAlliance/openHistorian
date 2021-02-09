@@ -87,7 +87,7 @@ class treeStream(ABC, Generic[TKey, TValue]):
         Resets the EOS flag.
         """
         if self.disposed and not value:
-            raise ValueError("Stream " + type(self).__name__ + " has already been disposed")
+            raise ValueError(f"Stream {type(self).__name__} has already been disposed")
 
         self.eos = value
 

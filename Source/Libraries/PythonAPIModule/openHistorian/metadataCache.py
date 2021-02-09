@@ -159,10 +159,10 @@ class metadataCache:
             if len(fracSecPart) == 3 or len(fracSecPart) == 6:
                 return datetime.fromisoformat(elementText)
 
-            elementText = dateTimePart + "." + fracSecPart.ljust(3, "0")
+            elementText = f"{dateTimePart}.{fracSecPart.ljust(3, '0')}"
 
             if timeZone is not None:
-                elementText = elementText + "-" + timeZone
+                elementText = f"{elementText}-{timeZone}"
 
             return datetime.fromisoformat(elementText)
         except:

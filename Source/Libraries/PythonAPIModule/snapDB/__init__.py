@@ -34,14 +34,14 @@ class Server:
         response = stream.ReadByte()
 
         if response == ServerResponse.UNHANDLEDEXCEPTION:
-            raise RuntimeError("Server unhandled exception:" + stream.ReadString())
+            raise RuntimeError(f"Server unhandled exception: {stream.ReadString()}")
 
         return response
 
     @staticmethod
     def ValidateExpectedResponse(response: int, expectedResponse: ServerCommand):
         if not response == expectedResponse:
-            raise RuntimeError("Unexpected server response: " + str(response))
+            raise RuntimeError(f"Unexpected server response: {response}")
 
     @staticmethod
     def ValidateExpectedResponses(response: int, *expectedResponses: ServerCommand):
@@ -53,7 +53,7 @@ class Server:
                 break
 
         if not foundValidResponse:
-            raise RuntimeError("Unexpected server response: " + str(response))
+            raise RuntimeError(f"Unexpected server response: {response}")
 
     @staticmethod
     def ValidateExpectedReadResponse(stream: binaryStream, expectedResponse: ServerCommand):

@@ -151,4 +151,4 @@ class historianKey(snapTypeBase):
         self.Timestamp = Ticks.FromDateTime(value)
 
     def ToString(self) -> str:
-        return str(self.PointID) + " @ " + self.AsDateTime.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        return f"{self.PointID} @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"

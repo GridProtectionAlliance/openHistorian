@@ -37,7 +37,7 @@ class databaseInfo:
         version = stream.ReadByte()
 
         if version != 1:
-            raise RuntimeError("Unknown SNAPdb version: " + str(version))
+            raise RuntimeError(f"Unknown SNAPdb version: {version}")
 
         self.databaseName = stream.ReadString().strip().upper()
         self.keyTypeID = stream.ReadGuid()
