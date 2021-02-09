@@ -21,9 +21,11 @@
 #
 #******************************************************************************************************
 
+from .metadataCache import metadataCache
 from snapDB.snapTypeBase import snapTypeBase
 from gsf.binaryStream import binaryStream
 from gsf import Limits, Ticks, Empty, override
+from typing import Optional
 from datetime import datetime
 from uuid import UUID
 import numpy as np
@@ -150,5 +152,13 @@ class historianKey(snapTypeBase):
         """
         self.Timestamp = Ticks.FromDateTime(value)
 
-    def ToString(self) -> str:
-        return f"{self.PointID} @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
+    def ToString(self, metadata: Optional[metadataCache] = None) -> str:
+        if metadata is None:
+            return f"{self.PointID} @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
+
+        measurement = metadata.LookupMeasurementByPointID(self.PointID)
+
+        if measurement is None:
+            return self.ToString()
+
+        return f"{measurement.SignalTypeName}: {measurement.PointTag} [{self.PointID}] @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
