@@ -24,6 +24,7 @@
 from typing import Sequence
 from datetime import datetime, timedelta
 from uuid import UUID
+from decimal import Decimal
 from enum import IntEnum
 import numpy as np
 
@@ -46,6 +47,7 @@ def override(self):
 class Empty:
     GUID = UUID("00000000-0000-0000-0000-000000000000")
     DATETIME = datetime(1, 1, 1)
+    DECIMAL = Decimal(0)
 
 class Limits(IntEnum):
     MAXTICKS = 3155378975999999999

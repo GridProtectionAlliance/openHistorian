@@ -76,6 +76,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
         Requests updated metadata from openHistorian connection.
         """
         sttpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)        
+        self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         stream = binaryStream(streamEncoder((lambda length: sttpSocket.recv(length)), (lambda buffer: sttpSocket.send(buffer)), "big"))
         
         logOutput = (lambda value: print(value)) if logOutput is None else logOutput
@@ -135,10 +136,18 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                     except Exception as ex:
                         raise RuntimeError(f"Failed to parse metadata: {ex}")
 
-                    recordCount = len(self.metadata.Records)
+                    measurementRecordCount = len(self.metadata.MeasurementRecords)
+                    deviceRecordCount = len(self.metadata.DeviceRecords)
+                    phasorRecordCount = len(self.metadata.PhasorRecords)
+                    recordCount = measurementRecordCount + deviceRecordCount + phasorRecordCount
+                    
                     logOutput(f"Parsed metadata {recordCount:,} records in {(time() - opStart):.2f} seconds.")
+                    logOutput(f"    Discovered:")
+                    logOutput(f"        {measurementRecordCount:,} measurement records")
+                    logOutput(f"        {deviceRecordCount:,} device records, and")
+                    logOutput(f"        {phasorRecordCount:,} phasor records")
 
-                    # Return number of metadata records
+                    # Return total number of metadata records
                     return recordCount
                 else:
                     raise RuntimeError(f"Failure code received in response to STTP metadata refresh request: {buffer.decode('utf-8')}")

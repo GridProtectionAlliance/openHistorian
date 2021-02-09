@@ -1,5 +1,5 @@
 #******************************************************************************************************
-#  metadataRecord.py - Gbtc
+#  measurementRecord.py - Gbtc
 #
 #  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 #******************************************************************************************************
 
 from gsf import Empty
+from typing import Optional
 from enum import IntEnum
 from datetime import datetime
 from uuid import UUID
@@ -31,7 +32,7 @@ class SignalType(IntEnum):
     """
     Represents common signal types for openHistorian metadata. This list may
     not be exhaustive for some openHistorian deployments. If value is set to
-    `UNKN`, check the string based `SignalTypeName` in the `metadataRecord`.
+    `UNKN`, check the string based `SignalTypeName` in the `measurementRecord`.
     """
     IPHM = 1    # Current phase magnitude
     IPHA = 2    # Current phase angle
@@ -48,9 +49,9 @@ class SignalType(IntEnum):
     QUAL = 13   # Quality flags (16-bit)
     UNKN = -1   # Unknown type, see `SignalTypeName`
 
-class metadataRecord:
+class measurementRecord:
     """
-    Represents a record of measurement metadata the openHistorian.
+    Represents a record of measurement metadata in the openHistorian.
     """
 
     def __init__(self,
@@ -60,12 +61,12 @@ class metadataRecord:
             pointTag: str,
             signalReference: str = "",
             signalTypeName: str = "UNKN",
-            deviceName: str = "",
+            deviceAcronym: str = "",
             description: str = "",
             updatedOn: datetime = Empty.DATETIME
         ):
         """
-        Constructs a new `metadataRecord`.
+        Constructs a new `measurementRecord`.
         """
         self.instanceName = instanceName
         self.pointID = pointID
@@ -73,56 +74,57 @@ class metadataRecord:
         self.pointTag = pointTag
         self.signalReference = signalReference
         self.signalTypeName = signalTypeName
-        self.deviceName = deviceName
+        self.deviceAcronym = deviceAcronym
         self.description = description
         self.updatedOn = updatedOn
+        self.device: Optional["deviceRecord"] = None
 
     @property
-    def InstanceName(self) -> str:
+    def InstanceName(self) -> str: # <MeasurementDetail>/<ID> (left part of measurement key)
         """
-        Gets the openHistorian client database instance for this `metadataRecord`.
+        Gets the openHistorian client database instance for this `measurementRecord`.
         """
         return self.instanceName
 
     @property
-    def PointID(self) -> np.uint64:
+    def PointID(self) -> np.uint64: # <MeasurementDetail>/<ID> (right part of measurement key)
         """
-        Gets the openHistorian point ID for this `metadataRecord`.
+        Gets the openHistorian point ID for this `measurementRecord`.
         """
         return self.pointID
 
     @property
-    def SignalID(self) -> UUID:
+    def SignalID(self) -> UUID: # <MeasurementDetail>/<SignalID>
         """
-        Gets the unique guid-based signal identifier for this `metadataRecord`.
+        Gets the unique guid-based signal identifier for this `measurementRecord`.
         """
         return self.signalID
 
     @property
-    def PointTag(self) -> str:
+    def PointTag(self) -> str: # <MeasurementDetail>/<PointTag>
         """
-        Gets the unique point tag for this `metadataRecord`.
+        Gets the unique point tag for this `measurementRecord`.
         """
         return self.pointTag
 
     @property
-    def SignalReference(self) -> str:
+    def SignalReference(self) -> str: # <MeasurementDetail>/<SignalReference>
         """
-        Gets the unique signal reference for this `metadataRecord`.
+        Gets the unique signal reference for this `measurementRecord`.
         """
         return self.signalReference
 
     @property
-    def SignalTypeName(self) -> str:
+    def SignalTypeName(self) -> str: # <MeasurementDetail>/<SignalAcronym>
         """
-        Gets the signal type name for this `metadataRecord`.
+        Gets the signal type name for this `measurementRecord`.
         """
         return self.signalTypeName
 
     @property
     def AsSignalType(self)-> SignalType:
         """
-        Gets the `SignalType` enumeration for this `metadataRecord`, if it can be mapped
+        Gets the `SignalType` enumeration for this `measurementRecord`, if it can be mapped
         to `SignalTypeName`; otherwise, returns `SignalType.UNKN`.
         """
         try:
@@ -131,22 +133,36 @@ class metadataRecord:
             return SignalType.UNKN
 
     @property
-    def DeviceName(self) -> str:
+    def DeviceAcronym(self) -> str: # <MeasurementDetail>/<DeviceAcronym>
         """
-        Gets the name of the associated device for this `metadataRecord`.
+        Gets the alpha-numeric identifier of the associated device for this `measurementRecord`.
         """
-        return self.deviceName
+        return self.deviceAcronym
 
     @property
-    def Description(self) -> str:
+    def Description(self) -> str: # <MeasurementDetail>/<Description>
         """
-        Gets the description for this `metadataRecord`.
+        Gets the description for this `measurementRecord`.
         """
         return self.description
 
     @property
-    def UpdatedOn(self) -> datetime:
+    def UpdatedOn(self) -> datetime: # <MeasurementDetail>/<UpdatedOn>
         """
-        Gets the `datetime` of when this `metadataRecord` was last updated.
+        Gets the `datetime` of when this `measurementRecord` was last updated.
         """
         return self.updatedOn
+
+    @property
+    def Device(self) -> "deviceRecord":
+        """
+        Gets the associated `deviceRecord` for this `measurementRecord`.
+        """
+        return self.device
+
+    @Device.setter
+    def Device(self, value: "deviceRecord"):
+        """
+        Sets the associated `deviceRecord` for this `measurementRecord`.
+        """
+        self.device = value

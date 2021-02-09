@@ -38,10 +38,16 @@
     <Compile Include="gsf\streamEncoder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="openHistorian\deviceRecord.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="openHistorian\metadataCache.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="openHistorian\metadataRecord.py">
+    <Compile Include="openHistorian\measurementRecord.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="openHistorian\phasorRecord.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="snapDB\matchFilterBase.py">
