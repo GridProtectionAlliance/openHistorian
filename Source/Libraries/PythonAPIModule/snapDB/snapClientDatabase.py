@@ -21,18 +21,18 @@
 #
 #******************************************************************************************************
 
-from snapDB.databaseInfo import databaseInfo
-from snapDB.encodingDefinition import encodingDefinition
-from snapDB.snapTypeBase import snapTypeBase
-from snapDB.keyValueEncoderBase import keyValueEncoderBase
-from snapDB.pointReader import pointReader
-from snapDB.treeStream import treeStream
-from snapDB.seekFilterBase import seekFilterBase
-from snapDB.matchFilterBase import matchFilterBase
-from snapDB.readerOptions import readerOptions
-from snapDB.library import library
-from snapDB.enumerations import *
-from snapDB import Server
+from .databaseInfo import databaseInfo
+from .encodingDefinition import encodingDefinition
+from .snapTypeBase import snapTypeBase
+from .keyValueEncoderBase import keyValueEncoderBase
+from .pointReader import pointReader
+from .treeStream import treeStream
+from .seekFilterBase import seekFilterBase
+from .matchFilterBase import matchFilterBase
+from .readerOptions import readerOptions
+from .library import library
+from .enumerations import *
+from . import Server
 from gsf.binaryStream import binaryStream
 from typing import TypeVar, Generic, Optional, Callable
 

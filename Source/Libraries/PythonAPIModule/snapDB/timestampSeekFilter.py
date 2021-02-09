@@ -21,7 +21,7 @@
 #
 #******************************************************************************************************
 
-from snapDB.seekFilterBase import seekFilterBase
+from .seekFilterBase import seekFilterBase
 from gsf.binaryStream import binaryStream
 from gsf import Ticks
 from typing import Optional

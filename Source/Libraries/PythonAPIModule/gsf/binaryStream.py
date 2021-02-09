@@ -1,5 +1,5 @@
 #******************************************************************************************************
-#  remoteBinaryStream.py - Gbtc
+#  binaryStream.py - Gbtc
 #
 #  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 #
@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from gsf.streamEncoder import streamEncoder
-from gsf.encoding7Bit import encoding7Bit
-from gsf import ByteSize, Validate
+from .streamEncoder import streamEncoder
+from .encoding7Bit import encoding7Bit
+from . import ByteSize, Validate
 from typing import Optional
 from uuid import UUID
 import sys

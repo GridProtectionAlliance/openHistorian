@@ -21,8 +21,8 @@
 #
 #******************************************************************************************************
 
-from snapDB.library import library
-from snapDB.encodingDefinition import encodingDefinition
+from .library import library
+from .encodingDefinition import encodingDefinition
 from gsf.binaryStream import binaryStream
 from typing import List
 from uuid import UUID

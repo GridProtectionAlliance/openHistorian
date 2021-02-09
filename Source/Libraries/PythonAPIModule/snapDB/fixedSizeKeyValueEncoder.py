@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from snapDB.encodingDefinition import encodingDefinition
-from snapDB.keyValueEncoderBase import keyValueEncoderBase
-from snapDB.snapTypeBase import snapTypeBase
+from .encodingDefinition import encodingDefinition
+from .keyValueEncoderBase import keyValueEncoderBase
+from .snapTypeBase import snapTypeBase
 from gsf.binaryStream import binaryStream
 from gsf import override
 from typing import TypeVar, Generic

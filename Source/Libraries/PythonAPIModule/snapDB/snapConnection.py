@@ -21,12 +21,12 @@
 #
 #******************************************************************************************************
 
-from snapDB.databaseInfo import databaseInfo
-from snapDB.encodingDefinition import encodingDefinition
-from snapDB.snapClientDatabase import snapClientDatabase
-from snapDB.snapTypeBase import snapTypeBase
-from snapDB.enumerations import *
-from snapDB import Server
+from .databaseInfo import databaseInfo
+from .encodingDefinition import encodingDefinition
+from .snapClientDatabase import snapClientDatabase
+from .snapTypeBase import snapTypeBase
+from .enumerations import *
+from . import Server
 from gsf.streamEncoder import streamEncoder
 from gsf.binaryStream import binaryStream
 from typing import TypeVar, Generic, List, Optional

@@ -21,7 +21,7 @@
 #
 #******************************************************************************************************
 
-from snapDB.matchFilterBase import matchFilterBase
+from .matchFilterBase import matchFilterBase
 from gsf.binaryStream import binaryStream
 from gsf import Limits
 from typing import Set, List, Optional

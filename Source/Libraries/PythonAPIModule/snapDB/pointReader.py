@@ -21,11 +21,11 @@
 #
 #******************************************************************************************************
 
-from snapDB.snapTypeBase import snapTypeBase
-from snapDB.keyValueEncoderBase import keyValueEncoderBase
-from snapDB.treeStream import treeStream
-from snapDB.enumerations import *
-from snapDB import Server
+from .snapTypeBase import snapTypeBase
+from .keyValueEncoderBase import keyValueEncoderBase
+from .treeStream import treeStream
+from .enumerations import *
+from . import Server
 from gsf.binaryStream import binaryStream
 from gsf import override
 from typing import TypeVar, Generic, Callable

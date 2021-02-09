@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from openHistorian.historianKey import historianKey
-from openHistorian.historianValue import historianValue
-from openHistorian.historianKeyValueEncoder import historianKeyValueEncoder
+from .historianKey import historianKey
+from .historianValue import historianValue
+from .historianKeyValueEncoder import historianKeyValueEncoder
 from snapDB.library import library
 from snapDB.fixedSizeKeyValueEncoder import fixedSizeKeyValueEncoder
 from gsf import static_init

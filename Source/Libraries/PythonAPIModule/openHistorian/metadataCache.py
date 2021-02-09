@@ -21,9 +21,9 @@
 #
 #******************************************************************************************************
 
-from openHistorian.measurementRecord import measurementRecord, SignalType
-from openHistorian.deviceRecord import deviceRecord
-from openHistorian.phasorRecord import phasorRecord
+from .measurementRecord import measurementRecord, SignalType
+from .deviceRecord import deviceRecord
+from .phasorRecord import phasorRecord
 from gsf import Empty
 import xml.etree.ElementTree as xmlParser
 from typing import Optional, List, Dict, Set

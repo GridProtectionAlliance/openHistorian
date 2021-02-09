@@ -21,8 +21,8 @@
 #
 #******************************************************************************************************
 
-from gsf.encoding7Bit import encoding7Bit
-from gsf import ByteSize
+from .encoding7Bit import encoding7Bit
+from . import ByteSize
 from typing import Callable, Optional
 import sys
 import numpy as np

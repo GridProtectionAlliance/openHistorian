@@ -21,12 +21,12 @@
 #
 #******************************************************************************************************
 
-from snapDB.enumerations import *
+from .enumerations import *
 from gsf.binaryStream import binaryStream
 
 class Server:
     """
-    Defines helper functions for common server-based `remoteBinaryStream` calls
+    Defines helper functions for common server-based `binaryStream` calls
     """
 
     @staticmethod

@@ -21,10 +21,10 @@
 #
 #******************************************************************************************************
 
-from openHistorian.historianInstance import historianInstance
-from openHistorian.historianKey import historianKey
-from openHistorian.historianValue import historianValue
-from openHistorian.metadataCache import metadataCache
+from .historianInstance import historianInstance
+from .historianKey import historianKey
+from .historianValue import historianValue
+from .metadataCache import metadataCache
 from snapDB.snapConnection import snapConnection
 from snapDB.encodingDefinition import encodingDefinition
 from gsf.streamEncoder import streamEncoder

@@ -21,8 +21,8 @@
 #
 #******************************************************************************************************
 
-from openHistorian.historianKey import historianKey
-from openHistorian.historianValue import historianValue
+from .historianKey import historianKey
+from .historianValue import historianValue
 from snapDB.snapClientDatabase import snapClientDatabase
 from snapDB.databaseInfo import databaseInfo
 from gsf.binaryStream import binaryStream
