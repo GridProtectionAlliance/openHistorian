@@ -74,6 +74,12 @@ class measurementRecord:
         self.pointTag = pointTag
         self.signalReference = signalReference
         self.signalTypeName = signalTypeName
+
+        try:
+            self.signalType = SignalType(self.signalTypeName)
+        except:
+            self.signalType = SignalType.UNKN
+
         self.deviceAcronym = deviceAcronym
         self.description = description
         self.updatedOn = updatedOn
@@ -127,10 +133,7 @@ class measurementRecord:
         Gets the `SignalType` enumeration for this `measurementRecord`, if it can be mapped
         to `SignalTypeName`; otherwise, returns `SignalType.UNKN`.
         """
-        try:
-            return SignalType(self.signalTypeName)
-        except:
-            return SignalType.UNKN
+        return self.signalType
 
     @property
     def DeviceAcronym(self) -> str: # <MeasurementDetail>/<DeviceAcronym>
