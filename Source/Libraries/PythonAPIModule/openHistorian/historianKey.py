@@ -152,7 +152,7 @@ class historianKey(snapTypeBase):
         """
         self.Timestamp = Ticks.FromDateTime(value)
 
-    def ToString(self, metadata: Optional[metadataCache] = None) -> str:
+    def ToString(self, metadata: Optional[metadataCache] = None, nameField: str = "SignalReference") -> str:
         if metadata is None:
             return f"{self.PointID} @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
 
@@ -161,4 +161,4 @@ class historianKey(snapTypeBase):
         if measurement is None:
             return self.ToString()
 
-        return f"{measurement.SignalTypeName}: {measurement.PointTag} [{self.PointID}] @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
+        return f"{self.PointID}: {getattr(measurement, nameField)} [{measurement.SignalTypeName}] @ {self.AsDateTime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}"
