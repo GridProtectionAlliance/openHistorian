@@ -28,6 +28,7 @@ from openHistorian.metadataCache import metadataCache
 from snapDB.snapConnection import snapConnection
 from snapDB.encodingDefinition import encodingDefinition
 from gsf.streamEncoder import streamEncoder
+from gsf.binaryStream import binaryStream
 from gsf import override
 from typing import Optional, Callable
 from enum import IntEnum
@@ -75,9 +76,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
         Requests updated metadata from openHistorian connection.
         """
         sttpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)        
-        socketRead = lambda length: sttpSocket.recv(length)
-        socketWrite = lambda buffer: sttpSocket.send(buffer)        
-        stream = streamEncoder(socketRead, socketWrite)
+        stream = binaryStream(streamEncoder((lambda length: sttpSocket.recv(length)), (lambda buffer: sttpSocket.send(buffer)), "big"))
         
         logOutput = (lambda value: print(value)) if logOutput is None else logOutput
         logOutput("Requesting metadata from openHistorian...")
@@ -91,22 +90,23 @@ class historianConnection(snapConnection[historianKey, historianValue]):
             sttpSocket.connect((self.HostIPAddress, sttpPort))
 
             # Establish operational modes for STTP connection
-            stream.WriteInt32(5, "big") # Payload aware buffer length
+            stream.WriteInt32(5) # Payload aware buffer length
             stream.WriteByte(ServerCommand.DEFINEOPERATIONALMODES)
-            stream.WriteUInt32(operationalModes, "big")
+            stream.WriteUInt32(operationalModes)
 
             # Request metadata refresh
-            stream.WriteInt32(1, "big") # Payload aware buffer length
+            stream.WriteInt32(1) # Payload aware buffer length
             stream.WriteByte(ServerCommand.METADATAREFRESH)
+            stream.Flush()
 
             while True:
                 # Get payload aware buffer length
-                bufferLength = stream.ReadInt32("big")
+                bufferLength = stream.ReadInt32()
                 
                 # Get server response
                 responseCode = ServerResponse(stream.ReadByte())
                 commandCode = ServerCommand(stream.ReadByte())
-                length = 0 if bufferLength < 3 else stream.ReadInt32("big") 
+                length = 0 if bufferLength < 3 else stream.ReadInt32()
                 
                 # Read response payload
                 buffer = historianConnection.ReadBytes(stream, length)
