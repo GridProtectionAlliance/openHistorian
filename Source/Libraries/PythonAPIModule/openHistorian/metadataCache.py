@@ -186,6 +186,7 @@ class metadataCache:
 
             if device is not None:
                 phasor.Device = device
+                device.Phasors.add(phasor)
                 
                 angle = self.LookupMeasurementBySignalReference(f"{device.Acronym}-PA{phasor.SourceIndex}")
                 magnitude = self.LookupMeasurementBySignalReference(f"{device.Acronym}-PM{phasor.SourceIndex}")
