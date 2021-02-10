@@ -23,7 +23,12 @@
 
 from gsf import Empty
 from typing import Optional, List
+from enum import IntEnum
 from datetime import datetime
+
+class CompositePhasorMeasurement(IntEnum):
+    ANGLE = 0
+    MAGNITUDE = 1
 
 class phasorRecord:
     """
@@ -111,14 +116,14 @@ class phasorRecord:
         return self.updatedOn
 
     @property
-    def Device(self) -> "deviceRecord":
+    def Device(self) -> Optional["deviceRecord"]:
         """
         Gets the associated `deviceRecord` for this `phasorRecord`.
         """
         return self.device
 
     @Device.setter
-    def Device(self, value: "deviceRecord"):
+    def Device(self, value: Optional["deviceRecord"]):
         """
         Sets the associated `deviceRecord` for this `phasorRecord`.
         """
@@ -130,3 +135,19 @@ class phasorRecord:
         Gets the two `measurementRecord` values, i.e., the angle and magnitude, associated with this `phasorRecord`.
         """
         return self.measurements
+
+    @property
+    def AngleMeasurement(self) -> Optional["measurementRecord"]:
+        """
+        Gets the associated angle `measurementRecord`, or `None` if not available.
+        """
+        return None if len(self.measurements) <= CompositePhasorMeasurement.ANGLE else \
+           self.measurements[CompositePhasorMeasurement.ANGLE]
+
+    @property
+    def MagnitudeMeasurement(self) -> Optional["measurementRecord"]:
+        """
+        Gets the associated magnitude `measurementRecord`, or `None` if not available.
+        """
+        return None if len(self.measurements) <= CompositePhasorMeasurement.MAGNITUDE else \
+            self.measurements[CompositePhasorMeasurement.MAGNITUDE]

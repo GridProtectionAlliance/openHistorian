@@ -191,8 +191,13 @@ class metadataCache:
                 magnitude = self.LookupMeasurementBySignalReference(f"{device.Acronym}-PM{phasor.SourceIndex}")
 
                 if angle is not None and magnitude is not None:
-                    phasor.Measurements.append(angle)
-                    phasor.Measurements.append(magnitude)
+                    phasor.Measurements.clear()
+
+                    angle.Phasor = phasor
+                    phasor.Measurements.append(angle) # Must be index 0
+
+                    magnitude.Phasor = phasor
+                    phasor.Measurements.append(magnitude) # Must be index 1
 
         self.phasorRecords: List[phasorRecord] = phasorRecords
 

@@ -66,6 +66,7 @@ class deviceRecord:
         self.latitude = latitude
         self.updatedOn = updatedOn
         self.measurements: Set["measurementRecord"] = set()
+        self.phasors: Set["phasorRecord"] = set()
 
     @property
     def NodeID(self) -> UUID: # <DeviceDetail>/<NodeID>
@@ -171,3 +172,10 @@ class deviceRecord:
         Gets `measurementRecord` values associated with this `deviceRecord`.
         """
         return self.measurements
+
+    @property
+    def Phasors(self) -> Set["phasorRecord"]:
+        """
+        Gets `phasorRecord` values associated with this `deviceRecord`.
+        """
+        return self.phasors

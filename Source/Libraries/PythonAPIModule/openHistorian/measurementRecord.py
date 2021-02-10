@@ -21,6 +21,8 @@
 #
 #******************************************************************************************************
 
+from .deviceRecord import deviceRecord
+from .phasorRecord import phasorRecord
 from gsf import Empty
 from typing import Optional
 from enum import IntEnum
@@ -83,7 +85,8 @@ class measurementRecord:
         self.deviceAcronym = deviceAcronym
         self.description = description
         self.updatedOn = updatedOn
-        self.device: Optional["deviceRecord"] = None
+        self.device: Optional[deviceRecord] = None
+        self.phasor: Optional[phasorRecord] = None
 
     @property
     def InstanceName(self) -> str: # <MeasurementDetail>/<ID> (left part of measurement key)
@@ -157,15 +160,30 @@ class measurementRecord:
         return self.updatedOn
 
     @property
-    def Device(self) -> "deviceRecord":
+    def Device(self) -> Optional[deviceRecord]:
         """
         Gets the associated `deviceRecord` for this `measurementRecord`.
         """
         return self.device
 
     @Device.setter
-    def Device(self, value: "deviceRecord"):
+    def Device(self, value: Optional[deviceRecord]):
         """
         Sets the associated `deviceRecord` for this `measurementRecord`.
         """
         self.device = value
+
+    @property
+    def Phasor(self) -> Optional[phasorRecord]:
+        """
+        Gets the associated `phasorRecord` for this `measurementRecord`,
+        or `None` if not applicable.
+        """
+        return self.phasor
+
+    @Phasor.setter
+    def Phasor(self, value: Optional[phasorRecord]):
+        """
+        Sets the associated `phasorRecord` for this `measurementRecord`.
+        """
+        self.phasor = value
