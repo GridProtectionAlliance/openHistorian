@@ -31,7 +31,7 @@ from snapDB.timestampSeekFilter import timestampSeekFilter
 from snapDB.pointIDMatchFilter import pointIDMatchFilter
 from snapDB.enumerations import QualityFlags
 from gsf import Ticks
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timedelta
 from time import time, sleep
 import numpy as np
@@ -39,7 +39,7 @@ import numpy as np
 def main():
     print("Creating openHistorian API")
     
-    historian = historianConnection("vmtvaarchive")
+    historian = historianConnection("localhost")
     instance: Optional[historianInstance] = None
 
     print("Connecting to openHistorian...")
@@ -88,15 +88,44 @@ def main():
                 # Execute a test write and verify read
                 TestWriteAndVerify(instance)
                 
+                # Get a reference to the openHistorian metadata cache
+                metadata = historian.Metadata
+
                 # Execute a test read for old data
-                startTime = datetime.strptime("2020-11-10 00:00:00.000", "%Y-%m-%d %H:%M:%S.%f")
+                startTime = datetime.strptime("2020-12-04 00:00:00.000", "%Y-%m-%d %H:%M:%S.%f")
                 endTime = startTime + timedelta(milliseconds = 33 + 1) # Add one ms to ensure end time is inclusive
-                TestRead(instance, historian.Metadata, startTime, endTime)
+
+                # Create a list of various point IDs to query
+                pointIDList = np.arange(1, 25000, 100) 
+                    
+                print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
+                    
+                TestRead(instance, historian.Metadata, startTime, endTime, pointIDList)
 
                 # Execute a test read for new data
                 endTime = datetime.utcnow() - timedelta(seconds = 10)
                 startTime = endTime - timedelta(milliseconds = 33 + 1) # Add one ms to ensure end time is inclusive
-                TestRead(instance, historian.Metadata, startTime, endTime)
+
+                # Lookup measurements for frequency signals
+                records = metadata.GetMeasurementsBySignalType(SignalType.FREQ, instance.Name)
+
+                # Lookup measurements for voltage phase magnitudes
+                records.extend(metadata.GetMeasurementsBySignalType(SignalType.VPHM, instance.Name))
+
+                # Lookup devices by matching text fields
+                for device in metadata.GetDevicesByTextSearch("WESTPNT"):
+                    records.extend(device.Measurements)
+    
+                recordCount = len(records)
+
+                print(f"Queried {recordCount:,} metadata records associated with \"{instanceName}\" database instance.")
+
+                if recordCount > 0:
+                    pointIDList = metadataCache.ToPointIDList(records)
+                    
+                    print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
+                    
+                    TestRead(instance, historian.Metadata, startTime, endTime, pointIDList)
 
         else:
             print("Not connected? Unexpected.")
@@ -111,44 +140,22 @@ def main():
         
         historian.Disconnect()
 
-def TestRead(instance: historianInstance, metadata: metadataCache, startTime: datetime, endTime: datetime):
-    # Get instance name
-    instanceName = instance.Name
+def TestRead(instance: historianInstance, metadata: metadataCache, startTime: datetime, endTime: datetime, pointIDList: List[np.uint64]):
+    timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
+    pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
 
-    # Lookup measurements for frequency signals
-    records = metadata.GetMeasurementsBySignalType(SignalType.FREQ, instanceName)
-
-    # Lookup measurements for voltage phase magnitudes
-    records.extend(metadata.GetMeasurementsBySignalType(SignalType.VPHM, instanceName))
-
-    # Lookup devices by matching text fields
-    for device in metadata.GetDevicesByTextSearch("WESTPNT"):
-        records.extend(device.Measurements)
-    
-    recordCount = len(records)
-
-    print(f"Queried {recordCount:,} metadata records associated with \"{instanceName}\" database instance.")
-
-    if recordCount > 0:
-        pointIDList = metadataCache.ToPointIDList(records)
-
-        print(f"Starting read for {len(pointIDList):,} points from {startTime} to {endTime}...\r\n")
-
-        timeFilter = timestampSeekFilter.CreateFromRange(startTime, endTime)
-        pointFilter = pointIDMatchFilter.CreateFromList(pointIDList)
-
-        opStart = time()
-        reader = instance.Read(timeFilter, pointFilter)
-        count = 0
+    opStart = time()
+    reader = instance.Read(timeFilter, pointFilter)
+    count = 0
                 
-        key = historianKey()
-        value = historianValue()
+    key = historianKey()
+    value = historianValue()
 
-        while reader.Read(key, value):
-            count += 1
-            print(f"    Point {key.ToString()} = {value.ToString()}")
+    while reader.Read(key, value):
+        count += 1
+        print(f"    Point {key.ToString(metadata)} = {value.ToString()}")
 
-        print(f"\r\nRead complete for {count:,} points in {(time() - opStart):.2f} seconds.")
+    print(f"\r\nRead complete for {count:,} points in {(time() - opStart):.2f} seconds.\r\n")
 
 def TestWriteAndVerify(instance: historianInstance):
     print("\r\nExecuting test write and read verification...\r\n")
