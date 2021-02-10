@@ -50,6 +50,10 @@ class SignalType(IntEnum):
     ALRM = 12   # Alarm state
     QUAL = 13   # Quality flags (16-bit)
     UNKN = -1   # Unknown type, see `SignalTypeName`
+  
+    @classmethod
+    def Parse(cls, name):
+        return getattr(cls, name.upper(), None)
 
 class measurementRecord:
     """
@@ -78,7 +82,7 @@ class measurementRecord:
         self.signalTypeName = signalTypeName
 
         try:
-            self.signalType = SignalType(self.signalTypeName)
+            self.signalType = SignalType.Parse(self.signalTypeName)
         except:
             self.signalType = SignalType.UNKN
 
