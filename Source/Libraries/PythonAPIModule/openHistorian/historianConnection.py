@@ -156,7 +156,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
             sttpSocket.close()
 
     @staticmethod
-    def ReadBytes(stream: streamEncoder, length: int) -> bytes:
+    def ReadBytes(stream: binaryStream, length: int) -> bytes:
         buffer = bytearray(length)
         position = 0
 
