@@ -1,0 +1,3 @@
+[submodule "Source/Libraries/PythonAPIModule"]
+	path = Source/Libraries/PythonAPIModule
+	url = git://github.com/GridProtectionAlliance/openhistorian-python.git
