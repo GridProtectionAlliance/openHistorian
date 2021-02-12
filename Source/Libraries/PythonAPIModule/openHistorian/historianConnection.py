@@ -111,16 +111,17 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                 
                 # Read response payload
                 buffer = historianConnection.ReadBytes(stream, length)
-                
-                logOutput(f"Received {length:,} bytes of metadata in {(time() - opStart):.2f} seconds. Decompressing...")
-                opStart = time()
 
                 # Other commands can come spontaneously, like NoOp,
                 # only interested in MetadataRefresh response
                 if commandCode != ServerCommand.METADATAREFRESH:
+                    logOutput(f"Ignoring response 0x{responseCode.value:x} received for command 0x{commandCode.value:x}...")
                     continue
             
-                if responseCode == ServerResponse.SUCCEEDED:
+                if responseCode == ServerResponse.SUCCEEDED:                
+                    logOutput(f"Received {length:,} bytes of metadata in {(time() - opStart):.2f} seconds. Decompressing...")
+                    opStart = time()
+
                     try:
                         # Decompress full metadata response XML
                         buffer = gzip.decompress(buffer)
@@ -141,7 +142,7 @@ class historianConnection(snapConnection[historianKey, historianValue]):
                     phasorRecordCount = len(self.metadata.PhasorRecords)
                     recordCount = measurementRecordCount + deviceRecordCount + phasorRecordCount
                     
-                    logOutput(f"Parsed metadata {recordCount:,} records in {(time() - opStart):.2f} seconds.")
+                    logOutput(f"Parsed {recordCount:,} metadata records in {(time() - opStart):.2f} seconds.")
                     logOutput(f"    Discovered:")
                     logOutput(f"        {measurementRecordCount:,} measurement records")
                     logOutput(f"        {deviceRecordCount:,} device records, and")
