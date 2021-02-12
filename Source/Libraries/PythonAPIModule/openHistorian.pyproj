@@ -121,7 +121,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="gsf\README.md" />
+    <Content Include="openHistorian\README.md" />
+    <Content Include="README.md" />
     <Content Include="requirements.txt" />
+    <Content Include="snapDB\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="openHistorian API\">
