@@ -307,6 +307,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveIntegrityChecker", "Tools\ArchiveIntegrityChecker\ArchiveIntegrityChecker.csproj", "{74DB9FAA-D991-4142-9628-2402054DF5E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{880E5A69-EE1E-46EC-838F-783F188D8B49}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.txt = Readme.txt
+	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "openhistorian-python", "Libraries\PythonAPIModule\openhistorian-python.pyproj", "{D61BBB31-74A7-498D-8C36-FB18C72609F8}"
 EndProject

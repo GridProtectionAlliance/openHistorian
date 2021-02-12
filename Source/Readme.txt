@@ -1,0 +1,1 @@
+Run the InitSubModules.cmd (in repo root) to initialize openhistorian-python submodule in order to load and run Python API from within openHistorian solution.
