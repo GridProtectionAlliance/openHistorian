@@ -37,8 +37,8 @@
                                    "url":  "http://openHistorian.com"
                                }
                            ],
-                 "version":  "1.0.9",
-                 "updated":  "2021-01-14"
+                 "version":  "1.0.10",
+                 "updated":  "2021-02-13"
              },
     "dependencies":  {
                          "grafanaVersion":  "4.5.x",
