@@ -235,8 +235,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataHub.cs" />
-    <Compile Include="DataSubscriptionHubClient.cs" />
-    <Compile Include="DataSubscriptionOperations.cs" />
     <Compile Include="DebugHost.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -56,7 +56,7 @@ namespace openHistorian.Adapters
     }
 
     /// <summary>
-    /// Defines enumeration of supported Report Crtieria.
+    /// Defines enumeration of supported Report Criteria.
     /// </summary>
     public enum ReportCriteria
     {
@@ -179,35 +179,35 @@ namespace openHistorian.Adapters
             
             new Thread(() =>
             {
-				try
-				{
-					if (token.IsCancellationRequested)
-					{
-						m_writing = false;
-						return;
-					}
+                try
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        m_writing = false;
+                        return;
+                    }
 
-					List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType, reportCriteria, numberOfRecords, token);
+                    List<ReportMeasurements> reportingMeasurements = GetFromStats(dataContext, startDate, endDate, reportType, reportCriteria, numberOfRecords, token);
 
-					if (token.IsCancellationRequested)
-					{
-						m_writing = false;
-						return;
-					}
+                    if (token.IsCancellationRequested)
+                    {
+                        m_writing = false;
+                        return;
+                    }
 
                     m_listing = reportingMeasurements;
                     
-					m_writing = false;
-					m_percentComplete = 100.0;
-				}
-				catch (Exception e)
-				{
-					LogException(e);
-				}
+                    m_writing = false;
+                    m_percentComplete = 100.0;
+                }
+                catch (Exception e)
+                {
+                    LogException(e);
+                }
 
-				m_writing = false;
-				m_percentComplete = 100.0;
-			})
+                m_writing = false;
+                m_percentComplete = 100.0;
+            })
             {
                 IsBackground = true,
                 

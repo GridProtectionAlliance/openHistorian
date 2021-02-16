@@ -45,13 +45,12 @@ using Measurement = openHistorian.Model.Measurement;
 namespace openHistorian
 {
     [AuthorizeHubRole]
-    public class DataHub : RecordOperationsHub<DataHub>, IHistorianOperations, IDataSubscriptionOperations, IDirectoryBrowserOperations, IModbusOperations
+    public class DataHub : RecordOperationsHub<DataHub>, IHistorianOperations, IDirectoryBrowserOperations, IModbusOperations
     {
         #region [ Members ]
 
         // Fields
         private readonly HistorianOperations m_historianOperations;
-        private readonly DataSubscriptionOperations m_dataSubscriptionOperations;
         private readonly ReportOperations m_reportOperations;
         private readonly ModbusOperations m_modbusOperations;
 
@@ -65,7 +64,6 @@ namespace openHistorian
             Action<Exception> logException = ex => LogException(ex);
 
             m_historianOperations = new HistorianOperations(this, logStatusMessage, logException);
-            m_dataSubscriptionOperations = new DataSubscriptionOperations(this, logStatusMessage, logException);
             m_modbusOperations = new ModbusOperations(this, logStatusMessage, logException);
             m_reportOperations = new ReportOperations(this, logStatusMessage, logException);
 
@@ -87,7 +85,6 @@ namespace openHistorian
             {
                 // Dispose any associated hub operations associated with current SignalR client
                 m_historianOperations?.EndSession();
-                m_dataSubscriptionOperations?.EndSession();
                 m_modbusOperations?.EndSession();
                 m_reportOperations?.EndSession();
 
@@ -142,6 +139,7 @@ namespace openHistorian
 
         // Client-side script functionality
         #region [ Report View Operations ]
+
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecordCount)]
         public int QuerySNRMeasurmentCount(string filterText)
         {
@@ -154,7 +152,6 @@ namespace openHistorian
             return m_reportOperations.GetData(sortField, ascending, page, pageSize);
         }
 
-
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.CreateNewRecord)]
         public ReportMeasurements NewReportMeasurement()
         {
@@ -165,14 +162,15 @@ namespace openHistorian
         /// <summary>
         /// Set selected Report Sources.
         /// </summary>
-        /// <param name="ReportType">Type of the report requested <see cref="ReportType"/>.</param>
+        /// <param name="reportType">Type of the report <see cref="ReportType"/>.</param>
+        /// <param name="reportCriteria">Criteria of the report <see cref="ReportCriteria"/>.</param>
         /// <param name="number">Depth of the report (0 is all).</param>
         /// <param name="start">Start time of the report.</param>
         /// <param name="end">End time of the report.</param>
         /// <returns> Flag to ensure this is completed before creating a report.</returns>
-        public bool SetReportingSource(int ReportType, int ReportCriteria, int number, DateTime start, DateTime end)
+        public bool SetReportingSource(int reportType, int reportCriteria, int number, DateTime start, DateTime end)
         {
-            this.m_reportOperations.UpdateReportSource(start, end, (ReportCriteria)ReportCriteria, (ReportType)ReportType, number, DataContext);
+            m_reportOperations.UpdateReportSource(start, end, (ReportCriteria)reportCriteria, (ReportType)reportType, number, DataContext);
             return true;
         }
 
@@ -470,65 +468,30 @@ namespace openHistorian
 
         #endregion
 
-        #region [ Phasor Table Operations ]
+        #region [ PhasorDetail Table Operations ]
 
-        [RecordOperation(typeof(Phasor), RecordOperation.QueryRecordCount)]
-        public int QueryPhasorCount(string filterText)
+        [RecordOperation(typeof(PhasorDetail), RecordOperation.QueryRecordCount)]
+        public int QueryPhasorCount(int deviceID, string filterText)
         {
-            return DataContext.Table<Phasor>().QueryRecordCount(filterText);
+            TableOperations<PhasorDetail> phasorDetailTable = DataContext.Table<PhasorDetail>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("DeviceID = {0}", deviceID) +
+                phasorDetailTable.GetSearchRestriction(filterText);
+
+            return phasorDetailTable.QueryRecordCount(restriction);
         }
 
-        [RecordOperation(typeof(Phasor), RecordOperation.QueryRecords)]
-        public IEnumerable<Phasor> QueryPhasors(string sortField, bool ascending, int page, int pageSize, string filterText)
+        [RecordOperation(typeof(PhasorDetail), RecordOperation.QueryRecords)]
+        public IEnumerable<PhasorDetail> QueryPhasors(int deviceID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<Phasor>().QueryRecords(sortField, ascending, page, pageSize, filterText);
-        }
+            TableOperations<PhasorDetail> phasorDetailTable = DataContext.Table<PhasorDetail>();
 
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Phasor), RecordOperation.DeleteRecord)]
-        public void DeletePhasor(int id)
-        {
-            DataContext.Table<Phasor>().DeleteRecord(id);
-        }
+            RecordRestriction restriction =
+                new RecordRestriction("DeviceID = {0}", deviceID) +
+                phasorDetailTable.GetSearchRestriction(filterText);
 
-        [RecordOperation(typeof(Phasor), RecordOperation.CreateNewRecord)]
-        public Phasor NewPhasor()
-        {
-            return DataContext.Table<Phasor>().NewRecord();
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Phasor), RecordOperation.AddNewRecord)]
-        public void AddNewPhasor(Phasor phasor)
-        {
-            DataContext.Table<Phasor>().AddNewRecord(phasor);
-        }
-
-        [AuthorizeHubRole("Administrator, Editor")]
-        [RecordOperation(typeof(Phasor), RecordOperation.UpdateRecord)]
-        public void UpdatePhasor(Phasor phasor)
-        {
-            DataContext.Table<Phasor>().UpdateRecord(phasor);
-        }
-
-        public Phasor QueryPhasorForDevice(int deviceID, int sourceIndex)
-        {
-            return DataContext.Table<Phasor>().QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", deviceID, sourceIndex) ?? NewPhasor();
-        }
-
-        public IEnumerable<Phasor> QueryPhasorsForDevice(int deviceID)
-        {
-            return DataContext.Table<Phasor>().QueryRecordsWhere("DeviceID = {0}", deviceID).OrderBy(phasor => phasor.SourceIndex);
-        }
-
-        public int QueryPhasorCountForDevice(int deviceID)
-        {
-            return DataContext.Connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Phasor WHERE DeviceID = {0}", deviceID);
-        }
-
-        public int DeletePhasorsForDevice(int deviceID)
-        {
-            return DataContext.Connection.ExecuteScalar<int>("DELETE FROM Phasor WHERE DeviceID = {0}", deviceID);
+            return DataContext.Table<PhasorDetail>().QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
 
         #endregion
@@ -738,68 +701,6 @@ namespace openHistorian
         public IEnumerable<TrendValue> GetHistorianData(string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, TimestampType timestampType)
         {
             return m_historianOperations.GetHistorianData(instanceName, startTime, stopTime, measurementIDs, resolution, seriesLimit, forceLimit, timestampType);
-        }
-
-        #endregion
-
-        #region [ Data Subscription Operations ]
-
-        // These functions are dependent on subscriptions to data where each client connection can customize the subscriptions, so an instance
-        // of the DataHubSubscriptionClient is created per SignalR DataHub client connection to manage the subscription life-cycles.
-
-        public IEnumerable<MeasurementValue> GetMeasurements()
-        {
-            return m_dataSubscriptionOperations.GetMeasurements();
-        }
-
-        public IEnumerable<DeviceDetail> GetDeviceDetails()
-        {
-            return m_dataSubscriptionOperations.GetDeviceDetails();
-        }
-
-        public IEnumerable<MeasurementDetail> GetMeasurementDetails()
-        {
-            return m_dataSubscriptionOperations.GetMeasurementDetails();
-        }
-
-        public IEnumerable<PhasorDetail> GetPhasorDetails()
-        {
-            return m_dataSubscriptionOperations.GetPhasorDetails();
-        }
-
-        public IEnumerable<SchemaVersion> GetSchemaVersion()
-        {
-            return m_dataSubscriptionOperations.GetSchemaVersion();
-        }
-
-        public IEnumerable<MeasurementValue> GetStats()
-        {
-            return m_dataSubscriptionOperations.GetStats();
-        }
-
-        public IEnumerable<StatusLight> GetLights()
-        {
-            return m_dataSubscriptionOperations.GetLights();
-        }
-
-        public void InitializeSubscriptions()
-        {
-            m_dataSubscriptionOperations.InitializeSubscriptions();
-        }
-
-        public void TerminateSubscriptions()
-        {
-            m_dataSubscriptionOperations.TerminateSubscriptions();
-        }
-
-        public void UpdateFilters(string filterExpression)
-        {
-            m_dataSubscriptionOperations.UpdateFilters(filterExpression);
-        }
-
-        public void StatSubscribe(string filterExpression)
-        {
-            m_dataSubscriptionOperations.StatSubscribe(filterExpression);
         }
 
         #endregion
