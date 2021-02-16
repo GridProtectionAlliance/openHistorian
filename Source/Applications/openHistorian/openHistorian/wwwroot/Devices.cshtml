@@ -108,6 +108,13 @@
             @Raw(dataContext.AddCheckBoxField<Device>("IsConcentrator"))&nbsp;
             @Raw(dataContext.AddCheckBoxField<Device>("Enabled"))
         </div>
+        <div class="form-inline pull-right" style="width: 100%">
+            <br/>
+            <a role="button" class="btn btn-sm btn-default pull-right" id="exportPhasorCSVButton" data-bind="visible: $root.recordMode()!==RecordMode.AddNew, enable: $parent.dataHubIsConnected" hub-dependent>
+                <span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Export&nbsp;Phasor&nbsp;CSV
+            </a>
+            <a id="exportPhasorCSVLink" download hidden></a> 
+        </div>
     </div>
 }
 @helper ExtendModelValidation()
@@ -210,7 +217,7 @@
         });
 
         function navigateToDeviceScreen(record) {
-            @if (UserIsAdminOrEditor()) 
+            @if (UserIsAdminOrEditor())
             {
             <text>
                 if (record.ProtocolID === modbusProtocolID) {
@@ -232,7 +239,7 @@
                     }
                     else {
                         viewModel.viewPageRecord(record);
-                    } 
+                    }
                 }
             </text>
             }
@@ -243,7 +250,7 @@
             </text>
             }
         }
-        
+
         $(function() {
             modeledValidationParametersFunction = viewModel.applyValidationParameters;
 
@@ -253,6 +260,31 @@
                 viewModel.currentRecord().Acronym.extend({
                     required: true,
                     deviceUniqueInDatabase: viewModel.currentRecord().Acronym()
+                });
+            });
+        });
+
+        $("#addNewEditDialog").on("shown.bs.modal", function () {
+            $("#exportPhasorCSVButton").click(function() {
+                if (!hubIsConnected)
+                    return;
+
+                dataHub.getConnectionID().done(function (connectionID) {
+                    const currentRecord = viewModel.currentRecord();
+
+                    $("#exportPhasorCSVLink").attr("href", "/@@GSF/Web/Model/Handlers/CsvDownloadHandler.ashx" +
+                        "?ModelName=" + encodeURIComponent("@typeof(PhasorDetail).FullName") +
+                        "&HubName=" + encodeURIComponent("@typeof(DataHub).FullName") +
+                        "&ConnectionID=" + encodeURIComponent(connectionID) +
+                        "&FilterText=&SortField=" + encodeURIComponent("SourceIndex") +
+                        "&SortAscending=true&ShowDeleted=false" +
+                        "&ExportName=" + encodeURIComponent(currentRecord.Acronym() + "-PhasorExport.csv") +
+                        "&ParentKeys=" + encodeURIComponent(currentRecord.ID()));
+
+                    $("#exportPhasorCSVLink")[0].click();
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
                 });
             });
         });
