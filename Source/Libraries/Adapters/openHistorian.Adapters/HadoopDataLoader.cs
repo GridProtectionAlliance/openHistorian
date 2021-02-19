@@ -68,6 +68,8 @@ namespace openHistorian.Adapters
         private Dictionary<Guid, List<string>> m_queryParameter;
         private readonly DateTime m_oldestTimestamp = new DateTime(1990, 1, 1, 0, 0, 0);
         private int m_num;
+        private int m_nTags;
+        private int m_currNum;
         private DateTime m_lastConnected;
         private bool m_disposed;
 
@@ -171,8 +173,10 @@ namespace openHistorian.Adapters
 
                 status.AppendLine($"         Connection String: {HadoopConnectionString}");
                 status.AppendLine($"                Data Query: {m_query}");
-                status.AppendLine($"              Last connect: {m_lastConnected:dd/MM/YYYY hh:mm:ss}");
+                status.AppendLine($"              Last connect: {m_lastConnected:dd/MM/yyyy hh:mm:ss}");
                 status.AppendLine($"Processed Messages on Last connect: {m_num}");
+                status.AppendLine($"OpenHistorian Tags Found  : {m_nTags}");
+                status.AppendLine($"Currently Processing      : {m_currNum}");
 
                 return status.ToString();
             }
@@ -216,6 +220,9 @@ namespace openHistorian.Adapters
         public override void Initialize()
         {
             Dictionary<string, string> settings = Settings;
+            m_nTags = 0;
+            m_num = 0;
+            m_currNum = 0;
 
             // Handle misspelled property so previously configured adapters will still apply proper value
             if (settings.TryGetValue("UpdateIntervall", out string setting) && int.TryParse(setting, out _))
@@ -257,6 +264,8 @@ namespace openHistorian.Adapters
                 }
             }
 
+            m_nTags = m_queryParameter.Count;
+
             //start Timer
             m_timer = new Timer();
             m_timer.Interval = UpdateInterval;
@@ -272,7 +281,9 @@ namespace openHistorian.Adapters
         public override string GetShortStatus(int maxLength)
         {
             //if (Enabled && m_publicationTime > 0)
-                //return $"Publishing data for {(Ticks)m_publicationTime:yyyy-MM-dd HH:mm:ss.fff}...".CenterText(maxLength);
+            //return $"Publishing data for {(Ticks)m_publicationTime:yyyy-MM-dd HH:mm:ss.fff}...".CenterText(maxLength);
+            if (m_lastConnected != null)
+                return $"Last Successful Connection at {m_lastConnected:dd/MM/yyyy hh:mm:ss} returned {m_num} Points".CenterText(maxLength);
 
             return "Not currently publishing data".CenterText(maxLength);
         }
@@ -318,10 +329,13 @@ namespace openHistorian.Adapters
                         //Connect to DataBase
                     using (OdbcConnection connection = new OdbcConnection(HadoopConnectionString))
                     {
+                        m_currNum = 0;
+                        int nPoints = 0;
                         foreach( Guid guid in m_queryParameter.Keys)
                         {
                             Ticks newerThan;
-                            
+                            m_currNum++;
+                            nPoints = 0;
 
                             lock (s_TimeStampUpdateLock)
                             {
@@ -333,7 +347,9 @@ namespace openHistorian.Adapters
                             }
 
                             object[] param = { newerThan.ToString("yyyy-MM-dd hh:mm:ss") };
+
                             
+
                             param = param.Concat(m_queryParameter[guid]).ToArray();
 
                             DataTable table = connection.RetrieveData(string.Format(m_query, param));
@@ -355,7 +371,7 @@ namespace openHistorian.Adapters
                                     continue;
 
                                 measurements.Add(measurement);
-
+                                nPoints++;
                                 if (measurement.Timestamp > newerThan)
                                     newerThan = measurement.Timestamp;
                             }
@@ -372,18 +388,23 @@ namespace openHistorian.Adapters
                             }
 
                             m_lastConnected = DateTime.UtcNow;
+                            if (m_currNum%20 == 0)
+                            {
+                                OnStatusMessage(MessageLevel.Info, $"Got Measurements for {m_currNum} out of {m_nTags} Tags");
+                                OnStatusMessage(MessageLevel.Info, $"Obtained {nPoints} Points For Tag {guid} up to {newerThan:dd/MM/yyyy hh:mm:ss}");
+                            }
                         }
                     }
-                      
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException ex)
                 {
                     // Pooled timer thread executed after last read, verify timer has stopped
                     m_timer.Enabled = false;
+                    OnProcessException(MessageLevel.Warning, ex);
                 }
                 catch (Exception ex)
                 {
-                    OnProcessException(MessageLevel.Warning, ex);
+                    OnProcessException(MessageLevel.Error, ex);
                 }
                 finally
                 {
@@ -393,9 +414,10 @@ namespace openHistorian.Adapters
 
             // Publish all measurements for this time interval
             m_num = measurements.Count;
-
+            OnStatusMessage(MessageLevel.Info, $"Disconnected from Hadoop with a total of {m_num} Points");
             if (measurements.Count > 0)
                 OnNewMeasurements(measurements);
+
         }
 
         #endregion
