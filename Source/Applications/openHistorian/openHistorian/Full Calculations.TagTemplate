@@ -59,4 +59,4 @@ TIME_SYNC	FLAGS	(cast(FLAGS, int) AND 48) = 0	DynamicCalculator	Valid Time Synch
 # The following calculation specifies FLAGS as input but does not use it in the equation, this is intentional, the TIME
 # variable is a reserved constant in the dynamic calculator, but the calculator will not execute without an input:
 TIME_DIFF	FLAGS	(UtcNow.Ticks-TIME) / 10000	DynamicCalculator	Millisecond Timestamp Difference from System Clock
-BULK_SEQ	IncludePositiveSequence=False	PowerCalculations.dll	PowerCalculations.BulkSequenceCalculator	Sets up bulk sequence calculations
+#BULK_SEQ	IncludePositiveSequence=False	PowerCalculations.dll	PowerCalculations.BulkSequenceCalculator	Sets up bulk sequence calculations
