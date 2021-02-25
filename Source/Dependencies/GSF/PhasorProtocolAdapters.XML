@@ -44,6 +44,14 @@
             their own <see cref="T:GSF.TimeSeries.IFrame"/> implementations, in our case this will be a BPA PDCstream data frame.
             </remarks>
         </member>
+        <member name="M:PhasorProtocolAdapters.BpaPdcStream.Concentrator.CreateDataFrame(GSF.Ticks,GSF.PhasorProtocols.BPAPDCstream.ConfigurationFrame)">
+            <summary>
+            Creates a new BPA PDCstream specific <see cref="T:GSF.PhasorProtocols.BPAPDCstream.DataFrame"/> for the given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp for new <see cref="T:GSF.TimeSeries.IFrame"/> in <see cref="T:GSF.Ticks"/>.</param>
+            <param name="configurationFrame">Associated <see cref="T:GSF.PhasorProtocols.BPAPDCstream.ConfigurationFrame"/> for the new <see cref="T:GSF.PhasorProtocols.BPAPDCstream.DataFrame"/>.</param>
+            <returns>New IEEE C37.118 <see cref="T:GSF.PhasorProtocols.BPAPDCstream.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
+        </member>
         <member name="T:PhasorProtocolAdapters.CalculatedMeasurementBase">
             <summary>
             Represents the base class for calculated measurements that use phasor data.
@@ -560,7 +568,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.TimeBase">
             <summary>
-            Gets or sets IEEE C37.118 time base for this concentrator instance.
+            Gets or sets IEC 61850-90-5 time base for this concentrator instance.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.ValidateIDCode">
@@ -580,22 +588,26 @@
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateNewConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame)">
             <summary>
-            Creates a new IEEE C37.118 specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            Creates a new IEC 61850-90-5 specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
-            <returns>A new IEEE C37.118 specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.</returns>
+            <returns>A new IEC 61850-90-5 specific <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.</returns>
+            <remarks>
+            This operation provides a common IEEE C37.118 style frame for IEC 61850-90-5 implementations
+            that may not otherwise support native IEC 61850 configuration queries.
+            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateNewFrame(GSF.Ticks)">
             <summary>
-            Creates a new IEEE C37.118 specific <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/> for the given <paramref name="timestamp"/>.
+            Creates a new IEC 61850-90-5 specific <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/> for the given <paramref name="timestamp"/>.
             </summary>
             <param name="timestamp">Timestamp for new <see cref="T:GSF.TimeSeries.IFrame"/> in <see cref="T:GSF.Ticks"/>.</param>
-            <returns>New IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
+            <returns>New IEC 61850-90-5 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/> at given <paramref name="timestamp"/>.</returns>
             <remarks>
             Note that the <see cref="T:GSF.TimeSeries.ConcentratorBase"/> class (which the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/> is derived from)
             is designed to sort <see cref="T:GSF.TimeSeries.IMeasurement"/> implementations into an <see cref="T:GSF.TimeSeries.IFrame"/> which represents
             a collection of measurements at a given timestamp. The <c>CreateNewFrame</c> method allows consumers to create
-            their own <see cref="T:GSF.TimeSeries.IFrame"/> implementations, in our case this will be an IEEE C37.118 data frame.
+            their own <see cref="T:GSF.TimeSeries.IFrame"/> implementations, in our case this will be an IEC 61850-90-5 data frame.
             </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
@@ -609,12 +621,12 @@
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
             <summary>
-            Creates a new IEC 61850-90-5 (i.e., IEEE C37.118) <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            Creates a new IEC 61850-90-5 (IEEE C37.118 style) <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
             <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/></param>.
-            <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/>.</returns>
+            <returns>A new IEC 61850-90-5 <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame"/>.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.Iec61850_90_5.Concentrator.CreateDataFrame(GSF.Ticks,GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame,System.String,System.Int32,System.Byte[][],System.UInt32)">
             <summary>
@@ -641,6 +653,37 @@
         <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ValidateIDCode">
             <summary>
             Gets or sets flag that determines if concentrator will validate ID code before processing commands.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Elevation">
+            <summary>
+            Gets or sets default PMU_ELEV value to assign to PMUs in configuration 3 frames.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ServiceClass">
+            <summary>
+            Gets or sets default SVC_CLASS value, 'M' or 'P', to assign to PMUs in configuration 3 frames.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Window">
+            <summary>
+            Gets or sets default WINDOW value to assign to PMUs in configuration 3 frames.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.GroupDelay">
+            <summary>
+            Gets or sets default GRP_DLY value to assign to PMUs in configuration 3 frames.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.TargetConfigurationType">
+            <summary>
+            Gets or sets target output type for configuration frames. For example, setting property to
+            <see cref="F:GSF.PhasorProtocols.IEEEC37_118.DraftRevision.Std2011"/> will target <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> outputs.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.MaximumLabelLength">
+            <summary>
+            Gets the maximum label length for string fields in configuration frames.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Status">
@@ -673,6 +716,16 @@
             their own <see cref="T:GSF.TimeSeries.IFrame"/> implementations, in our case this will be an IEEE C37.118 data frame.
             </remarks>
         </member>
+        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.PublishConfigFrame(GSF.Ticks)">
+            <summary>
+            Execute the publish operation for a configuration frame.
+            </summary>
+            <param name="timestamp">Timestamp to use for published configuration frame.</param>
+            <returns>Total length of published bytes.</returns>
+            <remarks>
+            Overriding to publish desired target configuration frame, that is, type 2 or 3.
+            </remarks>
+        </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
             <summary>
             Handles incoming commands from devices connected over the command channel.
@@ -682,7 +735,14 @@
             <param name="commandBuffer">Data buffer received from connected client device.</param>
             <param name="length">Valid length of data within the buffer.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
+        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CacheConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame,System.String)">
+            <summary>
+            Serialize configuration frames, types 2 and 3, to cache folder for later use (if needed).
+            </summary>
+            <param name="_"></param>
+            <param name="name">Name to use when caching the configuration.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame2(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
             <summary>
             Creates a new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
@@ -690,6 +750,20 @@
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
             <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/></param>.
             <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame3(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency,PhasorProtocolAdapters.IeeeC37_118.Concentrator)">
+            <summary>
+            Creates a new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            </summary>
+            <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
+            <param name="timeBase">Timebase to use for fraction second resolution.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/></param>.
+            <param name="parent">Gets reference to parent <see cref="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator"/> instance, if available.</param>
+            <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/>.</returns>
+            <remarks>
+            When <paramref name="parent"/> reference is not available, ancillary configuration frame 3 data will be attempted to be loaded from last cached
+            instance of the configuration matching the defined <see cref="P:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.Name"/> of the <paramref name="baseConfigurationFrame"/>.
+            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateDataFrame(GSF.Ticks,GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1)">
             <summary>
@@ -707,16 +781,6 @@
             <returns>New <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/> frame based on source configuration.</returns>
             <remarks>
             This function allow an explicit downcast of a typical IEEE C37.118 configuration type 2 frame to a type 1 frame.
-            </remarks>
-        </member>
-        <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CastToConfigurationFrame3(GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2)">
-            <summary>
-            Converts given IEEE C37.118 type 2 <paramref name="sourceFrame"/> into a type 3 configuration frame.
-            </summary>
-            <param name="sourceFrame">Source configuration frame.</param>
-            <returns>New <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> frame based on source configuration.</returns>
-            <remarks>
-            This function allow an explicit downcast of a typical IEEE C37.118 configuration type 2 frame to a type 3 frame.
             </remarks>
         </member>
         <member name="T:PhasorProtocolAdapters.PhasorDataConcentratorBase">
@@ -830,6 +894,11 @@
             set to 0. If digital status words are used for something other than boolean status indications, the use is left to the user.
             </remarks>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MaximumLabelLength">
+            <summary>
+            Gets the maximum label length for string fields in configuration frames.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.MinimumLatency">
             <summary>
             Gets the minimum latency in milliseconds over the last test interval.
@@ -860,6 +929,16 @@
             Gets the protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/> defined for this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.PublishChannel">
+            <summary>
+            Gets reference to current <see cref="T:GSF.Communication.IServer"/> publication channel.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataChannel">
             <summary>
             Gets or sets reference to <see cref="T:GSF.Communication.UdpServer"/> data channel, attaching and/or detaching to events as needed.
@@ -870,9 +949,10 @@
             Gets or sets reference to <see cref="T:GSF.Communication.TcpServer"/> command channel, attaching and/or detaching to events as needed.
             </summary>
         </member>
-        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.DataSource">
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.SignalReferences">
             <summary>
-            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:PhasorProtocolAdapters.PhasorDataConcentratorBase"/>.
+            Gets a reference to the signal reference dictionary for the output stream targets, i.e.,
+            a source <see cref="T:GSF.TimeSeries.MeasurementKey"/> to target <see cref="T:GSF.Units.EE.SignalReference"/> array map.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.SupportsTemporalProcessing">
@@ -1006,6 +1086,17 @@
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.PublishConfigFrame(GSF.Ticks)">
+            <summary>
+            Execute the publish operation for a configuration frame.
+            </summary>
+            <param name="timestamp">Timestamp to use for published configuration frame.</param>
+            <returns>Total length of published bytes.</returns>
+            <remarks>
+            This method allows for custom configuration frame publication, e.g., a config
+            frame that may need to span multiple frames.
+            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.ResetLatencyCounters">
             <summary>
@@ -1543,7 +1634,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.MeasurementValueFilter">
             <summary>
-            Gets function used to apply a downsampling filter over a sequence of <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> values.
+            Gets function used to apply a down-sampling filter over a sequence of <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/> values.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.SignalReferenceMeasurement.Metadata">

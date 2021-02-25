@@ -8312,7 +8312,7 @@
         </member>
         <member name="T:GSF.Data.Model.CSVExcludeFieldAttribute">
             <summary>
-            Defines an attribute that will exclude this Field in any CSV exports.
+            Defines an attribute that will exclude a field from a CSV export.
             </summary>
         </member>
         <member name="T:GSF.Data.Model.NonRecordFieldAttribute">
@@ -21346,23 +21346,17 @@
             Arguments to events triggered by the <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
         </member>
-        <member name="M:GSF.IO.FileProcessorEventArgs.#ctor(System.String,System.Boolean,System.Boolean,System.Func{System.Int32})">
+        <member name="M:GSF.IO.FileProcessorEventArgs.#ctor(System.String,System.Boolean,System.Func{System.Int32})">
             <summary>
             Creates a new instance of the <see cref="T:GSF.IO.FileProcessorEventArgs"/> class.
             </summary>
             <param name="fullPath">The full path to the file to be processed.</param>
-            <param name="alreadyProcessed">Flag indicating whether this file has been processed before.</param>
             <param name="raisedByFileWatcher">Flag indicating whether this event was raised by the file watcher.</param>
             <param name="retryCounter">The function that provides the value for <see cref="P:GSF.IO.FileProcessorEventArgs.RetryCount"/>.</param>
         </member>
         <member name="P:GSF.IO.FileProcessorEventArgs.FullPath">
             <summary>
             Gets the full path to the file to be processed.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessorEventArgs.AlreadyProcessed">
-            <summary>
-            Gets the flag that indicates whether this file has been processed before.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessorEventArgs.RaisedByFileWatcher">
@@ -21451,11 +21445,6 @@
             Default value for the <see cref="P:GSF.IO.FileProcessor.InternalBufferSize"/> property.
             </summary>
         </member>
-        <member name="F:GSF.IO.FileProcessor.DefaultMaxFragmentation">
-            <summary>
-            Default value for the <see cref="P:GSF.IO.FileProcessor.MaxFragmentation"/> property.
-            </summary>
-        </member>
         <member name="F:GSF.IO.FileProcessor.DefaultEnumerationStrategy">
             <summary>
             Default value for the <see cref="P:GSF.IO.FileProcessor.EnumerationStrategy"/> property.
@@ -21472,11 +21461,10 @@
             normal operation of the <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
         </member>
-        <member name="M:GSF.IO.FileProcessor.#ctor(System.Guid)">
+        <member name="M:GSF.IO.FileProcessor.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.IO.FileProcessor"/> class.
             </summary>
-            <param name="processorID">Identifies the file processor so that it can locate its processed file cache.</param>
         </member>
         <member name="P:GSF.IO.FileProcessor.Filter">
             <summary>
@@ -21486,12 +21474,6 @@
         <member name="P:GSF.IO.FileProcessor.FolderExclusion">
             <summary>
             Gets or sets the pattern used to determine whether a folder should be excluded from enumeration.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.FilterMethod">
-            <summary>
-            Gets or sets the user-defined method by which to filter
-            files before raising the <see cref="E:GSF.IO.FileProcessor.Processing"/> event.
             </summary>
         </member>
         <member name="P:GSF.IO.FileProcessor.TrackChanges">
@@ -21515,18 +21497,6 @@
             Gets or sets the maximum number of threads
             used for file processing and enumeration.
             </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.MaxFragmentation">
-            <summary>
-            Gets or sets the maximum amount of fragmentation allowed
-            before compacting the lookup table for processed files.
-            </summary>
-            <remarks>
-            If files are frequently removed from the watch directories,
-            increasing this value may improve performance. Setting the
-            value too high may result in the file perpetually growing
-            or long pauses on the processing thread.
-            </remarks>
         </member>
         <member name="P:GSF.IO.FileProcessor.EnumerationStrategy">
             <summary>
@@ -21555,12 +21525,6 @@
             Gets the flag indicating if the file processor is actively enumerating.
             </summary>
         </member>
-        <member name="P:GSF.IO.FileProcessor.IsCleaning">
-            <summary>
-            Gets the flag indicating if the file processor is actively
-            purging processed files from the internal lookup table.
-            </summary>
-        </member>
         <member name="P:GSF.IO.FileProcessor.ProcessedFileCount">
             <summary>
             Gets the number of files
@@ -21575,18 +21539,6 @@
         <member name="P:GSF.IO.FileProcessor.RequeuedFileCount">
             <summary>
             Gets the number of times files that are being requeued by the file processor.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.LastCompactTime">
-            <summary>
-            Gets the time at which the last operation to
-            compact the set of processed files occurred.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.LastCompactDuration">
-            <summary>
-            Gets the amount of time spent during the last
-            operation to compact the set of processed files.
             </summary>
         </member>
         <member name="M:GSF.IO.FileProcessor.AddTrackedDirectory(System.String)">
@@ -21613,13 +21565,6 @@
             <param name="filePath">The path to the file to be tested against the filter string.</param>
             <returns>True if the file matches the filter string; false otherwise.</returns>
         </member>
-        <member name="M:GSF.IO.FileProcessor.MatchesFilterMethod(System.String)">
-            <summary>
-            Determines if the given file matches the filter method provided through the <see cref="P:GSF.IO.FileProcessor.FilterMethod"/> property.
-            </summary>
-            <param name="filePath">The path to the file to be tested against the filter method.</param>
-            <returns>True if the file matches the filter method; false otherwise.</returns>
-        </member>
         <member name="M:GSF.IO.FileProcessor.MatchesFolderExclusion(System.String)">
             <summary>
             Determines if the given folder matches the exclusion string provided through the <see cref="P:GSF.IO.FileProcessor.FolderExclusion"/> property.
@@ -21636,6 +21581,19 @@
             <summary>
             Empties the list of directories tracked by this <see cref="T:GSF.IO.FileProcessor"/>.
             </summary>
+        </member>
+        <member name="M:GSF.IO.FileProcessor.ResetIndexAndStatistics">
+            <summary>
+            Resets the internal file index so all files can be reprocessed.
+            </summary>
+            <remarks>
+            As an optimization, the internal file index allows the file processor to enumerate
+            the folder without raising events for files that were already processed, enabling
+            the file processor to process files that were missed by the file watcher. However,
+            because of this optimization, it can instead be difficult to force the file processor
+            to reprocess files it has already processed once before. This method clears the
+            internal file index, allowing for reprocessing of files that have already been processed.
+            </remarks>
         </member>
         <member name="M:GSF.IO.FileProcessor.Dispose">
             <summary>
@@ -49778,6 +49736,89 @@
             <param name="value">Source value.</param>
             <param name="sourceUnit">Source value units.</param>
             <returns>New <see cref="T:GSF.Units.Current"/> from the specified <paramref name="value"/> in <paramref name="sourceUnit"/>.</returns>
+        </member>
+        <member name="T:GSF.Units.EE.VoltageLevel">
+            <summary>
+            Common transmission voltage levels enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV44">
+            <summary>
+            44 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV69">
+            <summary>
+            69 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV115">
+            <summary>
+            115 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV138">
+            <summary>
+            138 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV161">
+            <summary>
+            161 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV169">
+            <summary>
+            169 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV230">
+            <summary>
+            230 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV345">
+            <summary>
+            345 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV500">
+            <summary>
+            500 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV765">
+            <summary>
+            765 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV1100">
+            <summary>
+            1100 kV.
+            </summary>
+        </member>
+        <member name="T:GSF.Units.EE.VoltageLevelExtensions">
+            <summary>
+            Defines extension functions related to <see cref="T:GSF.Units.EE.VoltageLevel"/> enumeration.
+            </summary>
+        </member>
+        <member name="M:GSF.Units.EE.VoltageLevelExtensions.Value(GSF.Units.EE.VoltageLevel)">
+            <summary>
+            Gets the voltage level for the specified <see cref="T:GSF.Units.EE.VoltageLevel"/> enum value.
+            </summary>
+            <param name="level">Target <see cref="T:GSF.Units.EE.VoltageLevel"/> enum value.</param>
+            <returns>Voltage level for the specified <paramref name="level"/>.</returns>
+        </member>
+        <member name="M:GSF.Units.EE.VoltageLevelExtensions.TryGetVoltageLevel(System.Int32,GSF.Units.EE.VoltageLevel@)">
+            <summary>
+            Attempts to get the <see cref="T:GSF.Units.EE.VoltageLevel"/> enum value for the source kV <paramref name="value"/>.
+            </summary>
+            <param name="value">kV value to attempt to find.</param>
+            <param name="level">Mapped <see cref="T:GSF.Units.EE.VoltageLevel"/> enum value, if found.</param>
+            <returns>
+            <c>true</c> if matching <see cref="T:GSF.Units.EE.VoltageLevel"/> enum value is found for specified kV
+            <paramref name="value"/>; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:GSF.Units.EE.LineFrequency">
             <summary>

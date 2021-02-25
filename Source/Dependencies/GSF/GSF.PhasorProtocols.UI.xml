@@ -751,6 +751,31 @@
             Gets or sets boolean flag indicating if <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor"/> needs to be saved into database.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputProtocol">
+            <summary>
+            Supported Synchrophasor Output Protocols.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.DataModels.OutputProtocol.IEEE_C37_118_2011">
+            <summary>
+            IEEE C37.118-2011 Output.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.DataModels.OutputProtocol.IEEE_C37_118_2005">
+            <summary>
+            IEEE C37.118-2005 Output.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.DataModels.OutputProtocol.BPA_PDCSTREAM">
+            <summary>
+            BPA PDCstream Output.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.DataModels.OutputProtocol.IEC_61850_90_5">
+            <summary>
+            IEC 61850-90-5 Output.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStream">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> as defined in the database.
@@ -783,7 +808,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.Type">
             <summary>
-            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s Type.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s output protocol type.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.TypeAsInt">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s output protocol type as an integer.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.ConnectionString">
@@ -911,7 +941,7 @@
             Gets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s Node name.
             </summary>        
         </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.TypeName">
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.OutputProtocolName">
             <summary>
             Gets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s TypeName.
             </summary>
@@ -950,6 +980,11 @@
             <summary>
             Gets or sets id of the device used for mirroring output stream.
             </summary>  
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.OutputProtocolNames">
+            <summary>
+            Gets an output stream type lookup list, maps <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> enum value to its display name.
+            </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.LoadKeys(GSF.Data.AdoDataConnection,System.Boolean,System.String,System.String)">
             <summary>
@@ -1118,7 +1153,7 @@
             Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measurement to be loaded from the datbase</param>
+            <param name="keys">Keys of the measurement to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
@@ -1147,7 +1182,7 @@
             <param name="outputStreamDeviceAcronym">ID of the record to be deleted.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.AddDevices(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.PhasorProtocols.UI.DataModels.Device},System.Boolean,System.Boolean)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.AddDevices(GSF.Data.AdoDataConnection,System.Int32,System.Collections.ObjectModel.ObservableCollection{GSF.PhasorProtocols.UI.DataModels.Device},System.Boolean,System.Boolean,System.String)">
             <summary>
             Adds multiple devices to output steam.
             </summary>
@@ -1155,7 +1190,8 @@
             <param name="outputStreamID">ID of the output stream to which devices needs to be added.</param>
             <param name="devices">Collection of devices to be added.</param>
             <param name="addDigitals">Boolean flag indicating if analogs should be added.</param>
-            <param name="addAnalogs">Boolean flag indicating if digirals should be added.</param>
+            <param name="addAnalogs">Boolean flag indicating if digitals should be added.</param>
+            <param name="phaseFilter">Defines the phase list filter, if any.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice.GetOutputStreamDevice(GSF.Data.AdoDataConnection,System.String)">
@@ -1475,7 +1511,7 @@
             Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <param name="keys">Keys of the measurements to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevicePhasor.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
