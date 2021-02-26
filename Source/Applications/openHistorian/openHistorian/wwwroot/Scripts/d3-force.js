@@ -1,2 +1,693 @@
 ﻿// https://d3js.org/d3-force/ v2.1.1 Copyright 2020 Mike Bostock
-!function (n, t) { "object" == typeof exports && "undefined" != typeof module ? t(exports, require("d3-quadtree"), require("d3-dispatch"), require("d3-timer")) : "function" == typeof define && define.amd ? define(["exports", "d3-quadtree", "d3-dispatch", "d3-timer"], t) : t((n = n || self).d3 = n.d3 || {}, n.d3, n.d3, n.d3) }(this, function (n, t, r, e) { "use strict"; function i(n) { return function () { return n } } function u(n) { return 1e-6 * (n() - .5) } function o(n) { return n.x + n.vx } function f(n) { return n.y + n.vy } function a(n) { return n.index } function c(n, t) { var r = n.get(t); if (!r) throw new Error("node not found: " + t); return r } const l = 1664525, h = 1013904223, v = 4294967296; function y(n) { return n.x } function d(n) { return n.y } var x = 10, g = Math.PI * (3 - Math.sqrt(5)); n.forceCenter = function (n, t) { var r, e = 1; function i() { var i, u, o = r.length, f = 0, a = 0; for (i = 0; i < o; ++i)f += (u = r[i]).x, a += u.y; for (f = (f / o - n) * e, a = (a / o - t) * e, i = 0; i < o; ++i)(u = r[i]).x -= f, u.y -= a } return null == n && (n = 0), null == t && (t = 0), i.initialize = function (n) { r = n }, i.x = function (t) { return arguments.length ? (n = +t, i) : n }, i.y = function (n) { return arguments.length ? (t = +n, i) : t }, i.strength = function (n) { return arguments.length ? (e = +n, i) : e }, i }, n.forceCollide = function (n) { var r, e, a, c = 1, l = 1; function h() { for (var n, i, h, y, d, x, g, s = r.length, p = 0; p < l; ++p)for (i = t.quadtree(r, o, f).visitAfter(v), n = 0; n < s; ++n)h = r[n], x = e[h.index], g = x * x, y = h.x + h.vx, d = h.y + h.vy, i.visit(M); function M(n, t, r, e, i) { var o = n.data, f = n.r, l = x + f; if (!o) return t > y + l || e < y - l || r > d + l || i < d - l; if (o.index > h.index) { var v = y - o.x - o.vx, s = d - o.y - o.vy, p = v * v + s * s; p < l * l && (0 === v && (p += (v = u(a)) * v), 0 === s && (p += (s = u(a)) * s), p = (l - (p = Math.sqrt(p))) / p * c, h.vx += (v *= p) * (l = (f *= f) / (g + f)), h.vy += (s *= p) * l, o.vx -= v * (l = 1 - l), o.vy -= s * l) } } } function v(n) { if (n.data) return n.r = e[n.data.index]; for (var t = n.r = 0; t < 4; ++t)n[t] && n[t].r > n.r && (n.r = n[t].r) } function y() { if (r) { var t, i, u = r.length; for (e = new Array(u), t = 0; t < u; ++t)i = r[t], e[i.index] = +n(i, t, r) } } return "function" != typeof n && (n = i(null == n ? 1 : +n)), h.initialize = function (n, t) { r = n, a = t, y() }, h.iterations = function (n) { return arguments.length ? (l = +n, h) : l }, h.strength = function (n) { return arguments.length ? (c = +n, h) : c }, h.radius = function (t) { return arguments.length ? (n = "function" == typeof t ? t : i(+t), y(), h) : n }, h }, n.forceLink = function (n) { var t, r, e, o, f, l, h = a, v = function (n) { return 1 / Math.min(o[n.source.index], o[n.target.index]) }, y = i(30), d = 1; function x(e) { for (var i = 0, o = n.length; i < d; ++i)for (var a, c, h, v, y, x, g, s = 0; s < o; ++s)c = (a = n[s]).source, v = (h = a.target).x + h.vx - c.x - c.vx || u(l), y = h.y + h.vy - c.y - c.vy || u(l), v *= x = ((x = Math.sqrt(v * v + y * y)) - r[s]) / x * e * t[s], y *= x, h.vx -= v * (g = f[s]), h.vy -= y * g, c.vx += v * (g = 1 - g), c.vy += y * g } function g() { if (e) { var i, u, a = e.length, l = n.length, v = new Map(e.map((n, t) => [h(n, t, e), n])); for (i = 0, o = new Array(a); i < l; ++i)(u = n[i]).index = i, "object" != typeof u.source && (u.source = c(v, u.source)), "object" != typeof u.target && (u.target = c(v, u.target)), o[u.source.index] = (o[u.source.index] || 0) + 1, o[u.target.index] = (o[u.target.index] || 0) + 1; for (i = 0, f = new Array(l); i < l; ++i)u = n[i], f[i] = o[u.source.index] / (o[u.source.index] + o[u.target.index]); t = new Array(l), s(), r = new Array(l), p() } } function s() { if (e) for (var r = 0, i = n.length; r < i; ++r)t[r] = +v(n[r], r, n) } function p() { if (e) for (var t = 0, i = n.length; t < i; ++t)r[t] = +y(n[t], t, n) } return null == n && (n = []), x.initialize = function (n, t) { e = n, l = t, g() }, x.links = function (t) { return arguments.length ? (n = t, g(), x) : n }, x.id = function (n) { return arguments.length ? (h = n, x) : h }, x.iterations = function (n) { return arguments.length ? (d = +n, x) : d }, x.strength = function (n) { return arguments.length ? (v = "function" == typeof n ? n : i(+n), s(), x) : v }, x.distance = function (n) { return arguments.length ? (y = "function" == typeof n ? n : i(+n), p(), x) : y }, x }, n.forceManyBody = function () { var n, r, e, o, f, a = i(-30), c = 1, l = 1 / 0, h = .81; function v(e) { var i, u = n.length, f = t.quadtree(n, y, d).visitAfter(g); for (o = e, i = 0; i < u; ++i)r = n[i], f.visit(s) } function x() { if (n) { var t, r, e = n.length; for (f = new Array(e), t = 0; t < e; ++t)r = n[t], f[r.index] = +a(r, t, n) } } function g(n) { var t, r, e, i, u, o = 0, a = 0; if (n.length) { for (e = i = u = 0; u < 4; ++u)(t = n[u]) && (r = Math.abs(t.value)) && (o += t.value, a += r, e += r * t.x, i += r * t.y); n.x = e / a, n.y = i / a } else { (t = n).x = t.data.x, t.y = t.data.y; do { o += f[t.data.index] } while (t = t.next) } n.value = o } function s(n, t, i, a) { if (!n.value) return !0; var v = n.x - r.x, y = n.y - r.y, d = a - t, x = v * v + y * y; if (d * d / h < x) return x < l && (0 === v && (x += (v = u(e)) * v), 0 === y && (x += (y = u(e)) * y), x < c && (x = Math.sqrt(c * x)), r.vx += v * n.value * o / x, r.vy += y * n.value * o / x), !0; if (!(n.length || x >= l)) { (n.data !== r || n.next) && (0 === v && (x += (v = u(e)) * v), 0 === y && (x += (y = u(e)) * y), x < c && (x = Math.sqrt(c * x))); do { n.data !== r && (d = f[n.data.index] * o / x, r.vx += v * d, r.vy += y * d) } while (n = n.next) } } return v.initialize = function (t, r) { n = t, e = r, x() }, v.strength = function (n) { return arguments.length ? (a = "function" == typeof n ? n : i(+n), x(), v) : a }, v.distanceMin = function (n) { return arguments.length ? (c = n * n, v) : Math.sqrt(c) }, v.distanceMax = function (n) { return arguments.length ? (l = n * n, v) : Math.sqrt(l) }, v.theta = function (n) { return arguments.length ? (h = n * n, v) : Math.sqrt(h) }, v }, n.forceRadial = function (n, t, r) { var e, u, o, f = i(.1); function a(n) { for (var i = 0, f = e.length; i < f; ++i) { var a = e[i], c = a.x - t || 1e-6, l = a.y - r || 1e-6, h = Math.sqrt(c * c + l * l), v = (o[i] - h) * u[i] * n / h; a.vx += c * v, a.vy += l * v } } function c() { if (e) { var t, r = e.length; for (u = new Array(r), o = new Array(r), t = 0; t < r; ++t)o[t] = +n(e[t], t, e), u[t] = isNaN(o[t]) ? 0 : +f(e[t], t, e) } } return "function" != typeof n && (n = i(+n)), null == t && (t = 0), null == r && (r = 0), a.initialize = function (n) { e = n, c() }, a.strength = function (n) { return arguments.length ? (f = "function" == typeof n ? n : i(+n), c(), a) : f }, a.radius = function (t) { return arguments.length ? (n = "function" == typeof t ? t : i(+t), c(), a) : n }, a.x = function (n) { return arguments.length ? (t = +n, a) : t }, a.y = function (n) { return arguments.length ? (r = +n, a) : r }, a }, n.forceSimulation = function (n) { var t, i = 1, u = .001, o = 1 - Math.pow(u, 1 / 300), f = 0, a = .6, c = new Map, y = e.timer(p), d = r.dispatch("tick", "end"), s = function () { let n = 1; return () => (n = (l * n + h) % v) / v }(); function p() { M(), d.call("tick", t), i < u && (y.stop(), d.call("end", t)) } function M(r) { var e, u, l = n.length; void 0 === r && (r = 1); for (var h = 0; h < r; ++h)for (i += (f - i) * o, c.forEach(function (n) { n(i) }), e = 0; e < l; ++e)null == (u = n[e]).fx ? u.x += u.vx *= a : (u.x = u.fx, u.vx = 0), null == u.fy ? u.y += u.vy *= a : (u.y = u.fy, u.vy = 0); return t } function w() { for (var t, r = 0, e = n.length; r < e; ++r) { if ((t = n[r]).index = r, null != t.fx && (t.x = t.fx), null != t.fy && (t.y = t.fy), isNaN(t.x) || isNaN(t.y)) { var i = x * Math.sqrt(.5 + r), u = r * g; t.x = i * Math.cos(u), t.y = i * Math.sin(u) } (isNaN(t.vx) || isNaN(t.vy)) && (t.vx = t.vy = 0) } } function q(t) { return t.initialize && t.initialize(n, s), t } return null == n && (n = []), w(), t = { tick: M, restart: function () { return y.restart(p), t }, stop: function () { return y.stop(), t }, nodes: function (r) { return arguments.length ? (n = r, w(), c.forEach(q), t) : n }, alpha: function (n) { return arguments.length ? (i = +n, t) : i }, alphaMin: function (n) { return arguments.length ? (u = +n, t) : u }, alphaDecay: function (n) { return arguments.length ? (o = +n, t) : +o }, alphaTarget: function (n) { return arguments.length ? (f = +n, t) : f }, velocityDecay: function (n) { return arguments.length ? (a = 1 - n, t) : 1 - a }, randomSource: function (n) { return arguments.length ? (s = n, c.forEach(q), t) : s }, force: function (n, r) { return arguments.length > 1 ? (null == r ? c.delete(n) : c.set(n, q(r)), t) : c.get(n) }, find: function (t, r, e) { var i, u, o, f, a, c = 0, l = n.length; for (null == e ? e = 1 / 0 : e *= e, c = 0; c < l; ++c)(o = (i = t - (f = n[c]).x) * i + (u = r - f.y) * u) < e && (a = f, e = o); return a }, on: function (n, r) { return arguments.length > 1 ? (d.on(n, r), t) : d.on(n) } } }, n.forceX = function (n) { var t, r, e, u = i(.1); function o(n) { for (var i, u = 0, o = t.length; u < o; ++u)(i = t[u]).vx += (e[u] - i.x) * r[u] * n } function f() { if (t) { var i, o = t.length; for (r = new Array(o), e = new Array(o), i = 0; i < o; ++i)r[i] = isNaN(e[i] = +n(t[i], i, t)) ? 0 : +u(t[i], i, t) } } return "function" != typeof n && (n = i(null == n ? 0 : +n)), o.initialize = function (n) { t = n, f() }, o.strength = function (n) { return arguments.length ? (u = "function" == typeof n ? n : i(+n), f(), o) : u }, o.x = function (t) { return arguments.length ? (n = "function" == typeof t ? t : i(+t), f(), o) : n }, o }, n.forceY = function (n) { var t, r, e, u = i(.1); function o(n) { for (var i, u = 0, o = t.length; u < o; ++u)(i = t[u]).vy += (e[u] - i.y) * r[u] * n } function f() { if (t) { var i, o = t.length; for (r = new Array(o), e = new Array(o), i = 0; i < o; ++i)r[i] = isNaN(e[i] = +n(t[i], i, t)) ? 0 : +u(t[i], i, t) } } return "function" != typeof n && (n = i(null == n ? 0 : +n)), o.initialize = function (n) { t = n, f() }, o.strength = function (n) { return arguments.length ? (u = "function" == typeof n ? n : i(+n), f(), o) : u }, o.y = function (t) { return arguments.length ? (n = "function" == typeof t ? t : i(+t), f(), o) : n }, o }, Object.defineProperty(n, "__esModule", { value: !0 }) });
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-quadtree'), require('d3-dispatch'), require('d3-timer')) :
+typeof define === 'function' && define.amd ? define(['exports', 'd3-quadtree', 'd3-dispatch', 'd3-timer'], factory) :
+(global = global || self, factory(global.d3 = global.d3 || {}, global.d3, global.d3, global.d3));
+}(this, function (exports, d3Quadtree, d3Dispatch, d3Timer) { 'use strict';
+
+function center(x, y) {
+  var nodes, strength = 1;
+
+  if (x == null) x = 0;
+  if (y == null) y = 0;
+
+  function force() {
+    var i,
+        n = nodes.length,
+        node,
+        sx = 0,
+        sy = 0;
+
+    for (i = 0; i < n; ++i) {
+      node = nodes[i], sx += node.x, sy += node.y;
+    }
+
+    for (sx = (sx / n - x) * strength, sy = (sy / n - y) * strength, i = 0; i < n; ++i) {
+      node = nodes[i], node.x -= sx, node.y -= sy;
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+  };
+
+  force.x = function(_) {
+    return arguments.length ? (x = +_, force) : x;
+  };
+
+  force.y = function(_) {
+    return arguments.length ? (y = +_, force) : y;
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = +_, force) : strength;
+  };
+
+  return force;
+}
+
+function constant(x) {
+  return function() {
+    return x;
+  };
+}
+
+function jiggle(random) {
+  return (random() - 0.5) * 1e-6;
+}
+
+function x(d) {
+  return d.x + d.vx;
+}
+
+function y(d) {
+  return d.y + d.vy;
+}
+
+function collide(radius) {
+  var nodes,
+      radii,
+      random,
+      strength = 1,
+      iterations = 1;
+
+  if (typeof radius !== "function") radius = constant(radius == null ? 1 : +radius);
+
+  function force() {
+    var i, n = nodes.length,
+        tree,
+        node,
+        xi,
+        yi,
+        ri,
+        ri2;
+
+    for (var k = 0; k < iterations; ++k) {
+      tree = d3Quadtree.quadtree(nodes, x, y).visitAfter(prepare);
+      for (i = 0; i < n; ++i) {
+        node = nodes[i];
+        ri = radii[node.index], ri2 = ri * ri;
+        xi = node.x + node.vx;
+        yi = node.y + node.vy;
+        tree.visit(apply);
+      }
+    }
+
+    function apply(quad, x0, y0, x1, y1) {
+      var data = quad.data, rj = quad.r, r = ri + rj;
+      if (data) {
+        if (data.index > node.index) {
+          var x = xi - data.x - data.vx,
+              y = yi - data.y - data.vy,
+              l = x * x + y * y;
+          if (l < r * r) {
+            if (x === 0) x = jiggle(random), l += x * x;
+            if (y === 0) y = jiggle(random), l += y * y;
+            l = (r - (l = Math.sqrt(l))) / l * strength;
+            node.vx += (x *= l) * (r = (rj *= rj) / (ri2 + rj));
+            node.vy += (y *= l) * r;
+            data.vx -= x * (r = 1 - r);
+            data.vy -= y * r;
+          }
+        }
+        return;
+      }
+      return x0 > xi + r || x1 < xi - r || y0 > yi + r || y1 < yi - r;
+    }
+  }
+
+  function prepare(quad) {
+    if (quad.data) return quad.r = radii[quad.data.index];
+    for (var i = quad.r = 0; i < 4; ++i) {
+      if (quad[i] && quad[i].r > quad.r) {
+        quad.r = quad[i].r;
+      }
+    }
+  }
+
+  function initialize() {
+    if (!nodes) return;
+    var i, n = nodes.length, node;
+    radii = new Array(n);
+    for (i = 0; i < n; ++i) node = nodes[i], radii[node.index] = +radius(node, i, nodes);
+  }
+
+  force.initialize = function(_nodes, _random) {
+    nodes = _nodes;
+    random = _random;
+    initialize();
+  };
+
+  force.iterations = function(_) {
+    return arguments.length ? (iterations = +_, force) : iterations;
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = +_, force) : strength;
+  };
+
+  force.radius = function(_) {
+    return arguments.length ? (radius = typeof _ === "function" ? _ : constant(+_), initialize(), force) : radius;
+  };
+
+  return force;
+}
+
+function index(d) {
+  return d.index;
+}
+
+function find(nodeById, nodeId) {
+  var node = nodeById.get(nodeId);
+  if (!node) throw new Error("node not found: " + nodeId);
+  return node;
+}
+
+function link(links) {
+  var id = index,
+      strength = defaultStrength,
+      strengths,
+      distance = constant(30),
+      distances,
+      nodes,
+      count,
+      bias,
+      random,
+      iterations = 1;
+
+  if (links == null) links = [];
+
+  function defaultStrength(link) {
+    return 1 / Math.min(count[link.source.index], count[link.target.index]);
+  }
+
+  function force(alpha) {
+    for (var k = 0, n = links.length; k < iterations; ++k) {
+      for (var i = 0, link, source, target, x, y, l, b; i < n; ++i) {
+        link = links[i], source = link.source, target = link.target;
+        x = target.x + target.vx - source.x - source.vx || jiggle(random);
+        y = target.y + target.vy - source.y - source.vy || jiggle(random);
+        l = Math.sqrt(x * x + y * y);
+        l = (l - distances[i]) / l * alpha * strengths[i];
+        x *= l, y *= l;
+        target.vx -= x * (b = bias[i]);
+        target.vy -= y * b;
+        source.vx += x * (b = 1 - b);
+        source.vy += y * b;
+      }
+    }
+  }
+
+  function initialize() {
+    if (!nodes) return;
+
+    var i,
+        n = nodes.length,
+        m = links.length,
+        nodeById = new Map(nodes.map((d, i) => [id(d, i, nodes), d])),
+        link;
+
+    for (i = 0, count = new Array(n); i < m; ++i) {
+      link = links[i], link.index = i;
+      if (typeof link.source !== "object") link.source = find(nodeById, link.source);
+      if (typeof link.target !== "object") link.target = find(nodeById, link.target);
+      count[link.source.index] = (count[link.source.index] || 0) + 1;
+      count[link.target.index] = (count[link.target.index] || 0) + 1;
+    }
+
+    for (i = 0, bias = new Array(m); i < m; ++i) {
+      link = links[i], bias[i] = count[link.source.index] / (count[link.source.index] + count[link.target.index]);
+    }
+
+    strengths = new Array(m), initializeStrength();
+    distances = new Array(m), initializeDistance();
+  }
+
+  function initializeStrength() {
+    if (!nodes) return;
+
+    for (var i = 0, n = links.length; i < n; ++i) {
+      strengths[i] = +strength(links[i], i, links);
+    }
+  }
+
+  function initializeDistance() {
+    if (!nodes) return;
+
+    for (var i = 0, n = links.length; i < n; ++i) {
+      distances[i] = +distance(links[i], i, links);
+    }
+  }
+
+  force.initialize = function(_nodes, _random) {
+    nodes = _nodes;
+    random = _random;
+    initialize();
+  };
+
+  force.links = function(_) {
+    return arguments.length ? (links = _, initialize(), force) : links;
+  };
+
+  force.id = function(_) {
+    return arguments.length ? (id = _, force) : id;
+  };
+
+  force.iterations = function(_) {
+    return arguments.length ? (iterations = +_, force) : iterations;
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = typeof _ === "function" ? _ : constant(+_), initializeStrength(), force) : strength;
+  };
+
+  force.distance = function(_) {
+    return arguments.length ? (distance = typeof _ === "function" ? _ : constant(+_), initializeDistance(), force) : distance;
+  };
+
+  return force;
+}
+
+// https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
+const a = 1664525;
+const c = 1013904223;
+const m = 4294967296; // 2^32
+
+function lcg() {
+  let s = 1;
+  return () => (s = (a * s + c) % m) / m;
+}
+
+function x$1(d) {
+  return d.x;
+}
+
+function y$1(d) {
+  return d.y;
+}
+
+var initialRadius = 10,
+    initialAngle = Math.PI * (3 - Math.sqrt(5));
+
+function simulation(nodes) {
+  var simulation,
+      alpha = 1,
+      alphaMin = 0.001,
+      alphaDecay = 1 - Math.pow(alphaMin, 1 / 300),
+      alphaTarget = 0,
+      velocityDecay = 0.6,
+      forces = new Map(),
+      stepper = d3Timer.timer(step),
+      event = d3Dispatch.dispatch("tick", "end"),
+      random = lcg();
+
+  if (nodes == null) nodes = [];
+
+  function step() {
+    tick();
+    event.call("tick", simulation);
+    if (alpha < alphaMin) {
+      stepper.stop();
+      event.call("end", simulation);
+    }
+  }
+
+  function tick(iterations) {
+    var i, n = nodes.length, node;
+
+    if (iterations === undefined) iterations = 1;
+
+    for (var k = 0; k < iterations; ++k) {
+      alpha += (alphaTarget - alpha) * alphaDecay;
+
+      forces.forEach(function(force) {
+        force(alpha);
+      });
+
+      for (i = 0; i < n; ++i) {
+        node = nodes[i];
+        if (node.fx == null) node.x += node.vx *= velocityDecay;
+        else node.x = node.fx, node.vx = 0;
+        if (node.fy == null) node.y += node.vy *= velocityDecay;
+        else node.y = node.fy, node.vy = 0;
+      }
+    }
+
+    return simulation;
+  }
+
+  function initializeNodes() {
+    for (var i = 0, n = nodes.length, node; i < n; ++i) {
+      node = nodes[i], node.index = i;
+      if (node.fx != null) node.x = node.fx;
+      if (node.fy != null) node.y = node.fy;
+      if (isNaN(node.x) || isNaN(node.y)) {
+        var radius = initialRadius * Math.sqrt(0.5 + i), angle = i * initialAngle;
+        node.x = radius * Math.cos(angle);
+        node.y = radius * Math.sin(angle);
+      }
+      if (isNaN(node.vx) || isNaN(node.vy)) {
+        node.vx = node.vy = 0;
+      }
+    }
+  }
+
+  function initializeForce(force) {
+    if (force.initialize) force.initialize(nodes, random);
+    return force;
+  }
+
+  initializeNodes();
+
+  return simulation = {
+    tick: tick,
+
+    restart: function() {
+      return stepper.restart(step), simulation;
+    },
+
+    stop: function() {
+      return stepper.stop(), simulation;
+    },
+
+    nodes: function(_) {
+      return arguments.length ? (nodes = _, initializeNodes(), forces.forEach(initializeForce), simulation) : nodes;
+    },
+
+    alpha: function(_) {
+      return arguments.length ? (alpha = +_, simulation) : alpha;
+    },
+
+    alphaMin: function(_) {
+      return arguments.length ? (alphaMin = +_, simulation) : alphaMin;
+    },
+
+    alphaDecay: function(_) {
+      return arguments.length ? (alphaDecay = +_, simulation) : +alphaDecay;
+    },
+
+    alphaTarget: function(_) {
+      return arguments.length ? (alphaTarget = +_, simulation) : alphaTarget;
+    },
+
+    velocityDecay: function(_) {
+      return arguments.length ? (velocityDecay = 1 - _, simulation) : 1 - velocityDecay;
+    },
+
+    randomSource: function(_) {
+      return arguments.length ? (random = _, forces.forEach(initializeForce), simulation) : random;
+    },
+
+    force: function(name, _) {
+      return arguments.length > 1 ? ((_ == null ? forces.delete(name) : forces.set(name, initializeForce(_))), simulation) : forces.get(name);
+    },
+
+    find: function(x, y, radius) {
+      var i = 0,
+          n = nodes.length,
+          dx,
+          dy,
+          d2,
+          node,
+          closest;
+
+      if (radius == null) radius = Infinity;
+      else radius *= radius;
+
+      for (i = 0; i < n; ++i) {
+        node = nodes[i];
+        dx = x - node.x;
+        dy = y - node.y;
+        d2 = dx * dx + dy * dy;
+        if (d2 < radius) closest = node, radius = d2;
+      }
+
+      return closest;
+    },
+
+    on: function(name, _) {
+      return arguments.length > 1 ? (event.on(name, _), simulation) : event.on(name);
+    }
+  };
+}
+
+function manyBody() {
+  var nodes,
+      node,
+      random,
+      alpha,
+      strength = constant(-30),
+      strengths,
+      distanceMin2 = 1,
+      distanceMax2 = Infinity,
+      theta2 = 0.81;
+
+  function force(_) {
+    var i, n = nodes.length, tree = d3Quadtree.quadtree(nodes, x$1, y$1).visitAfter(accumulate);
+    for (alpha = _, i = 0; i < n; ++i) node = nodes[i], tree.visit(apply);
+  }
+
+  function initialize() {
+    if (!nodes) return;
+    var i, n = nodes.length, node;
+    strengths = new Array(n);
+    for (i = 0; i < n; ++i) node = nodes[i], strengths[node.index] = +strength(node, i, nodes);
+  }
+
+  function accumulate(quad) {
+    var strength = 0, q, c, weight = 0, x, y, i;
+
+    // For internal nodes, accumulate forces from child quadrants.
+    if (quad.length) {
+      for (x = y = i = 0; i < 4; ++i) {
+        if ((q = quad[i]) && (c = Math.abs(q.value))) {
+          strength += q.value, weight += c, x += c * q.x, y += c * q.y;
+        }
+      }
+      quad.x = x / weight;
+      quad.y = y / weight;
+    }
+
+    // For leaf nodes, accumulate forces from coincident quadrants.
+    else {
+      q = quad;
+      q.x = q.data.x;
+      q.y = q.data.y;
+      do strength += strengths[q.data.index];
+      while (q = q.next);
+    }
+
+    quad.value = strength;
+  }
+
+  function apply(quad, x1, _, x2) {
+    if (!quad.value) return true;
+
+    var x = quad.x - node.x,
+        y = quad.y - node.y,
+        w = x2 - x1,
+        l = x * x + y * y;
+
+    // Apply the Barnes-Hut approximation if possible.
+    // Limit forces for very close nodes; randomize direction if coincident.
+    if (w * w / theta2 < l) {
+      if (l < distanceMax2) {
+        if (x === 0) x = jiggle(random), l += x * x;
+        if (y === 0) y = jiggle(random), l += y * y;
+        if (l < distanceMin2) l = Math.sqrt(distanceMin2 * l);
+        node.vx += x * quad.value * alpha / l;
+        node.vy += y * quad.value * alpha / l;
+      }
+      return true;
+    }
+
+    // Otherwise, process points directly.
+    else if (quad.length || l >= distanceMax2) return;
+
+    // Limit forces for very close nodes; randomize direction if coincident.
+    if (quad.data !== node || quad.next) {
+      if (x === 0) x = jiggle(random), l += x * x;
+      if (y === 0) y = jiggle(random), l += y * y;
+      if (l < distanceMin2) l = Math.sqrt(distanceMin2 * l);
+    }
+
+    do if (quad.data !== node) {
+      w = strengths[quad.data.index] * alpha / l;
+      node.vx += x * w;
+      node.vy += y * w;
+    } while (quad = quad.next);
+  }
+
+  force.initialize = function(_nodes, _random) {
+    nodes = _nodes;
+    random = _random;
+    initialize();
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = typeof _ === "function" ? _ : constant(+_), initialize(), force) : strength;
+  };
+
+  force.distanceMin = function(_) {
+    return arguments.length ? (distanceMin2 = _ * _, force) : Math.sqrt(distanceMin2);
+  };
+
+  force.distanceMax = function(_) {
+    return arguments.length ? (distanceMax2 = _ * _, force) : Math.sqrt(distanceMax2);
+  };
+
+  force.theta = function(_) {
+    return arguments.length ? (theta2 = _ * _, force) : Math.sqrt(theta2);
+  };
+
+  return force;
+}
+
+function radial(radius, x, y) {
+  var nodes,
+      strength = constant(0.1),
+      strengths,
+      radiuses;
+
+  if (typeof radius !== "function") radius = constant(+radius);
+  if (x == null) x = 0;
+  if (y == null) y = 0;
+
+  function force(alpha) {
+    for (var i = 0, n = nodes.length; i < n; ++i) {
+      var node = nodes[i],
+          dx = node.x - x || 1e-6,
+          dy = node.y - y || 1e-6,
+          r = Math.sqrt(dx * dx + dy * dy),
+          k = (radiuses[i] - r) * strengths[i] * alpha / r;
+      node.vx += dx * k;
+      node.vy += dy * k;
+    }
+  }
+
+  function initialize() {
+    if (!nodes) return;
+    var i, n = nodes.length;
+    strengths = new Array(n);
+    radiuses = new Array(n);
+    for (i = 0; i < n; ++i) {
+      radiuses[i] = +radius(nodes[i], i, nodes);
+      strengths[i] = isNaN(radiuses[i]) ? 0 : +strength(nodes[i], i, nodes);
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _, initialize();
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = typeof _ === "function" ? _ : constant(+_), initialize(), force) : strength;
+  };
+
+  force.radius = function(_) {
+    return arguments.length ? (radius = typeof _ === "function" ? _ : constant(+_), initialize(), force) : radius;
+  };
+
+  force.x = function(_) {
+    return arguments.length ? (x = +_, force) : x;
+  };
+
+  force.y = function(_) {
+    return arguments.length ? (y = +_, force) : y;
+  };
+
+  return force;
+}
+
+function x$2(x) {
+  var strength = constant(0.1),
+      nodes,
+      strengths,
+      xz;
+
+  if (typeof x !== "function") x = constant(x == null ? 0 : +x);
+
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node; i < n; ++i) {
+      node = nodes[i], node.vx += (xz[i] - node.x) * strengths[i] * alpha;
+    }
+  }
+
+  function initialize() {
+    if (!nodes) return;
+    var i, n = nodes.length;
+    strengths = new Array(n);
+    xz = new Array(n);
+    for (i = 0; i < n; ++i) {
+      strengths[i] = isNaN(xz[i] = +x(nodes[i], i, nodes)) ? 0 : +strength(nodes[i], i, nodes);
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+    initialize();
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = typeof _ === "function" ? _ : constant(+_), initialize(), force) : strength;
+  };
+
+  force.x = function(_) {
+    return arguments.length ? (x = typeof _ === "function" ? _ : constant(+_), initialize(), force) : x;
+  };
+
+  return force;
+}
+
+function y$2(y) {
+  var strength = constant(0.1),
+      nodes,
+      strengths,
+      yz;
+
+  if (typeof y !== "function") y = constant(y == null ? 0 : +y);
+
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node; i < n; ++i) {
+      node = nodes[i], node.vy += (yz[i] - node.y) * strengths[i] * alpha;
+    }
+  }
+
+  function initialize() {
+    if (!nodes) return;
+    var i, n = nodes.length;
+    strengths = new Array(n);
+    yz = new Array(n);
+    for (i = 0; i < n; ++i) {
+      strengths[i] = isNaN(yz[i] = +y(nodes[i], i, nodes)) ? 0 : +strength(nodes[i], i, nodes);
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+    initialize();
+  };
+
+  force.strength = function(_) {
+    return arguments.length ? (strength = typeof _ === "function" ? _ : constant(+_), initialize(), force) : strength;
+  };
+
+  force.y = function(_) {
+    return arguments.length ? (y = typeof _ === "function" ? _ : constant(+_), initialize(), force) : y;
+  };
+
+  return force;
+}
+
+exports.forceCenter = center;
+exports.forceCollide = collide;
+exports.forceLink = link;
+exports.forceManyBody = manyBody;
+exports.forceRadial = radial;
+exports.forceSimulation = simulation;
+exports.forceX = x$2;
+exports.forceY = y$2;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
