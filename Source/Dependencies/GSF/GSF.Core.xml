@@ -19881,6 +19881,46 @@
             <param name="exceptionHandler">Handles exceptions thrown during file enumeration.</param>
             <returns>An enumerable collection of the full names (including paths) for the files in the directory specified by <paramref name="path"/> and that match the specified search pattern and option.</returns>
         </member>
+        <member name="M:GSF.IO.FilePath.GetDirectories(System.IO.DirectoryInfo,System.String,System.IO.SearchOption,System.Action{System.Exception})">
+            <summary>
+            Returns the subdirectories that match the specified search pattern in the specified directory, and optionally searches subdirectories.
+            </summary>
+            <param name="directory">The directory to search.</param>
+            <param name="searchPattern">The search string to match against the names of subdirectories in the <paramref name="directory"/>. This parameter can contain a combination of valid literal and wildcard characters, but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+            <param name="exceptionHandler">Handles exceptions thrown during directory enumeration.</param>
+            <returns>An array of the <see cref="T:System.IO.DirectoryInfo"/> objects representing the subdirectories that match the specified search criteria.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.EnumerateDirectories(System.IO.DirectoryInfo,System.String,System.IO.SearchOption,System.Action{System.Exception})">
+            <summary>
+            Returns an enumerable collection of subdirectories that match a search pattern in a specified path, and optionally searches subdirectories.
+            </summary>
+            <param name="directory">The directory to search.</param>
+            <param name="searchPattern">The search string to match against the names of subdirectories in the <paramref name="directory"/>. This parameter can contain a combination of valid literal and wildcard characters, but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or should include all subdirectories.</param>
+            <param name="exceptionHandler">Handles exceptions thrown during directory enumeration.</param>
+            <returns>An enumerable collection of the <see cref="T:System.IO.DirectoryInfo"/> objects representing the subdirectories that match the specified search criteria.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.GetFiles(System.IO.DirectoryInfo,System.String,System.IO.SearchOption,System.Action{System.Exception})">
+            <summary>
+            Returns the files that match the specified search pattern in the specified directory, using a value to determine whether to search subdirectories.
+            </summary>
+            <param name="directory">The directory to search.</param>
+            <param name="searchPattern">The search string to match against the names of files in the <paramref name="directory"/>. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+            <param name="exceptionHandler">Handles exceptions thrown during file enumeration.</param>
+            <returns>An array of the <see cref="T:System.IO.FileInfo"/> objects representing the files in the specified directory that match the specified search pattern, or an empty array if no files are found.</returns>
+        </member>
+        <member name="M:GSF.IO.FilePath.EnumerateFiles(System.IO.DirectoryInfo,System.String,System.IO.SearchOption,System.Action{System.Exception})">
+            <summary>
+            Returns an enumerable collection of files that match a search pattern in a specified path, and optionally searches subdirectories.
+            </summary>
+            <param name="directory">The directory to search.</param>
+            <param name="searchPattern">The search string to match against the names of files in the <paramref name="directory"/>. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or should include all subdirectories.</param>
+            <param name="exceptionHandler">Handles exceptions thrown during file enumeration.</param>
+            <returns>An enumerable collection of the <see cref="T:System.IO.FileInfo"/> objects representing the files in the specified directory that match the specified search pattern, or an empty array if no files are found.</returns>
+        </member>
         <member name="M:GSF.IO.FilePath.ValidatePathName(System.String)">
             <summary>
             Ensures the supplied path name is valid.
@@ -21379,45 +21419,6 @@
             <summary>
             Tracks files processed in a list of directories, and
             notifies when new files become available to be processed.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.TrackedDirectory.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.IO.FileProcessor.TrackedDirectory"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.#ctor(System.Collections.Generic.IEnumerable{System.String},GSF.Threading.CancellationToken)">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.IO.FileProcessor.EnumerableWrapper"/> class.
-            </summary>
-            <param name="enumerable">The enumerable to be wrapped.</param>
-            <param name="cancellationToken">The token used to cancel the enumeration operation.</param>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.LastMove">
-            <summary>
-            Gets the value returned by the
-            last call to <see cref="M:GSF.IO.FileProcessor.EnumerableWrapper.MoveNext"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.Current">
-            <summary>
-            Gets the current value of the enumerator.
-            </summary>
-        </member>
-        <member name="P:GSF.IO.FileProcessor.EnumerableWrapper.CancellationToken">
-            <summary>
-            Gets the cancellation token for this enumerator.
-            </summary>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.MoveNext">
-            <summary>
-            Advances the enumerator to the next element of the collection.
-            </summary>
-            <returns>True if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.</returns>
-        </member>
-        <member name="M:GSF.IO.FileProcessor.EnumerableWrapper.Dispose">
-            <summary>
-            Releases all the resources used by the enumerable.
             </summary>
         </member>
         <member name="F:GSF.IO.FileProcessor.DefaultFilter">
@@ -37742,6 +37743,100 @@
             Gets the logical thread that is currently executing.
             </summary>
         </member>
+        <member name="T:GSF.Threading.LogicalThreadExtensions">
+            <summary>
+            Defines extensions for the <see cref="T:GSF.Threading.LogicalThread"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.Join(GSF.Threading.LogicalThread)">
+            <summary>
+            Creates an awaitable that ensures the continuation is running on the logical thread.
+            </summary>
+            <param name="thread">The thread to join.</param>
+            <returns>A context that, when awaited, runs on the logical thread.</returns>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.Join(GSF.Threading.LogicalThread,System.Int32)">
+            <summary>
+            Creates an awaitable that ensures the continuation is running on the logical thread.
+            </summary>
+            <param name="thread">The thread to join.</param>
+            <param name="priority">The priority of the continuation when completing asynchronously.</param>
+            <returns>A context that, when awaited, runs on the logical thread.</returns>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.Yield(GSF.Threading.LogicalThread)">
+            <summary>
+            Creates an awaitable that asynchronously yields
+            to a new action on the logical thread when awaited.
+            </summary>
+            <param name="thread">The thread to yield to.</param>
+            <returns>A context that, when awaited, will transition to a new action on the logical thread.</returns>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.Yield(GSF.Threading.LogicalThread,System.Int32)">
+            <summary>
+            Creates an awaitable that asynchronously yields
+            to a new action on the logical thread when awaited.
+            </summary>
+            <param name="thread">The thread to yield to.</param>
+            <param name="priority">The priority of the continuation.</param>
+            <returns>A context that, when awaited, will transition to a new action on the logical thread.</returns>
+        </member>
+        <member name="T:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable">
+            <summary>
+            Provides an awaitable context for switching into a target environment.
+            </summary>
+            <remarks>
+            This type is intended for compiler use only.
+            </remarks>
+        </member>
+        <member name="T:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter">
+            <summary>
+            Provides an awaiter that switches into a target environment.
+            </summary>
+            <remarks>
+            This type is intended for compiler use only.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter.#ctor(GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter"/> class.
+            </summary>
+            <param name="awaitable">The awaitable that spawned this awaiter.</param>
+        </member>
+        <member name="P:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter.IsCompleted">
+            <summary>
+            Gets whether a yield is not required.
+            </summary>
+            <remarks>
+            This property is intended for compiler user rather than use directly in code.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter.OnCompleted(System.Action)">
+            <summary>
+            Posts the <paramref name="continuation"/> back to the current context.
+            </summary>
+            <param name="continuation">The action to invoke asynchronously.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="continuation"/> argument is null.</exception>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.LogicalThreadAwaiter.GetResult">
+            <summary>
+            Ends the await operation.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.#ctor(GSF.Threading.LogicalThread,System.Int32,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable"/> class.
+            </summary>
+            <param name="thread">The thread on which to push continuations.</param>
+            <param name="priority">The priority of continuations pushed to the thread.</param>
+            <param name="forceYield">Force continuations to complete asynchronously.</param>
+        </member>
+        <member name="M:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable.GetAwaiter">
+            <summary>
+            Gets an awaiter for this <see cref="T:GSF.Threading.LogicalThreadExtensions.LogicalThreadAwaitable"/>.
+            </summary>
+            <returns>An awaiter for this awaitable.</returns>
+            <remarks>This method is intended for compiler user rather than use directly in code.</remarks>
+        </member>
         <member name="T:GSF.Threading.LogicalThreadLocal`1">
             <summary>
             Represents a slot in the thread local memory space of each logical thread.
@@ -38924,6 +39019,63 @@
              }
              </code>
              </remarks>
+        </member>
+        <member name="T:GSF.Threading.TaskSynchronizedOperation">
+            <summary>
+            Represents a task-based synchronized operation
+            that cannot run while it is already in progress.
+            </summary>
+            <remarks>
+            The action performed by the <see cref="T:GSF.Threading.TaskSynchronizedOperation"/> is executed using
+            <see cref="M:System.Threading.Tasks.Task.Run(System.Func{System.Threading.Tasks.Task})"/>. Pending actions run when the task returned by the
+            asynchronous action is completed. This synchronized operation only supports the async
+            versions of the <see cref="T:GSF.Threading.ISynchronizedOperation"/> interface because the async action
+            cannot be executed synchronously.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.TaskSynchronizedOperation.#ctor(System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.TaskSynchronizedOperation"/> class.
+            </summary>
+            <param name="asyncAction">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.TaskSynchronizedOperation.#ctor(System.Func{System.Threading.Tasks.Task},System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.TaskSynchronizedOperation"/> class.
+            </summary>
+            <param name="asyncAction">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="P:GSF.Threading.TaskSynchronizedOperation.IsRunning">
+            <summary>
+            Gets a value to indicate whether the synchronized
+            operation is currently executing its action.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.TaskSynchronizedOperation.IsPending">
+            <summary>
+            Gets a value to indiate whether the synchronized operation
+            has an additional operation that is pending execution after
+            the currently running action has completed.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.TaskSynchronizedOperation.RunOnceAsync">
+            <summary>
+            Executes the action on another thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.TaskSynchronizedOperation.TryRunOnceAsync">
+            <summary>
+            Attempts to execute the action on another thread.
+            Does nothing if the operation is already running.
+            </summary>
         </member>
         <member name="F:GSF.Threading.ThreadContainerBase.CallbackArgs.StartDisposalCallSuccessful">
             <summary>
