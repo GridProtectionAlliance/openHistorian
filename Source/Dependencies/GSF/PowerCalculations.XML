@@ -81,6 +81,11 @@
             Gets or sets flag that determines if zero sequence calculations should be included.
             </summary>
         </member>
+        <member name="P:PowerCalculations.BulkSequenceCalculator.UseBadQualityData">
+            <summary>
+            Gets or sets flag that determines if calculations should use data even when the bad quality flag is set. When value is false and any input has bad quality, calculation will be skipped.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterInputCount">
             <summary>
             Gets number of input measurements required by each adapter.
@@ -606,6 +611,11 @@
         <member name="P:PowerCalculations.SequenceCalculator.IncludeZeroSequence">
             <summary>
             Gets or sets flag that determines if zero sequence calculations should be included.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.SequenceCalculator.UseBadQualityData">
+            <summary>
+            Gets or sets flag that determines if calculations should use data even when the bad quality flag is set. When value is false and any input has bad quality, calculation will be skipped.
             </summary>
         </member>
         <member name="P:PowerCalculations.SequenceCalculator.SupportsTemporalProcessing">
