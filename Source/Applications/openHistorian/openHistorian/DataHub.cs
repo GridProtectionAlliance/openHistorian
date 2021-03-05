@@ -114,12 +114,10 @@ namespace openHistorian
         {
             string deviceName = null;
 
-            ModbusPoller modbusPoller = sender as ModbusPoller;
-
-            if ((object)modbusPoller != null)
+            if (sender is ModbusPoller modbusPoller)
                 deviceName = modbusPoller.Name;
 
-            if ((object)deviceName == null)
+            if (deviceName is null)
                 return;
 
             string clientID = e.Argument1;
@@ -128,10 +126,10 @@ namespace openHistorian
                 .Select(update => update.AsExpandoObject())
                 .ToList();
 
-            if ((object)clientID != null)
-                GlobalHost.ConnectionManager.GetHubContext<DataHub>().Clients.Client(clientID).deviceProgressUpdate(deviceName, updates);
-            else
+            if (clientID is null)
                 GlobalHost.ConnectionManager.GetHubContext<DataHub>().Clients.All.deviceProgressUpdate(deviceName, updates);
+            else
+                GlobalHost.ConnectionManager.GetHubContext<DataHub>().Clients.Client(clientID).deviceProgressUpdate(deviceName, updates);
         }
 
         #endregion
@@ -140,13 +138,13 @@ namespace openHistorian
         #region [ Report View Operations ]
 
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecordCount)]
-        public int QuerySNRMeasurmentCount(string filterText)
+        public int QuerySNRMeasurmentCount(string _)
         {
             return m_reportOperations.GetCount();
         }
 
         [RecordOperation(typeof(ReportMeasurements), RecordOperation.QueryRecords)]
-        public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string filterText)
+        public IEnumerable<ReportMeasurements> QueryReportMeasurments(string sortField, bool ascending, int page, int pageSize, string _)
         {
             return m_reportOperations.GetData(sortField, ascending, page, pageSize);
         }
@@ -886,28 +884,27 @@ namespace openHistorian
 
         private IEnumerable<TrendValue> ReadCOMTRADEValues(Schema schema, Dictionary<int, int> indexToPointID, bool inferTimeFromSampleRates)
         {
-            using (Parser parser = new Parser
+            using Parser parser = new Parser
             {
                 Schema = schema,
                 InferTimeFromSampleRates = inferTimeFromSampleRates
-            })
+            };
+
+            parser.OpenFiles();
+
+            while (parser.ReadNext())
             {
-                parser.OpenFiles();
+                double timestamp = parser.Timestamp.Ticks;
 
-                while (parser.ReadNext())
+                for (int i = 0; i < schema.TotalChannels; i++)
                 {
-                    double timestamp = parser.Timestamp.Ticks;
-
-                    for (int i = 0; i < schema.TotalChannels; i++)
-                    {
-                        if (indexToPointID.TryGetValue(i, out int pointID))
-                            yield return new TrendValue
-                            {
-                                ID = pointID,
-                                Timestamp = timestamp,
-                                Value = parser.Values[i]
-                            };
-                    }
+                    if (indexToPointID.TryGetValue(i, out int pointID))
+                        yield return new TrendValue
+                        {
+                            ID = pointID,
+                            Timestamp = timestamp,
+                            Value = parser.Values[i]
+                        };
                 }
             }
         }
