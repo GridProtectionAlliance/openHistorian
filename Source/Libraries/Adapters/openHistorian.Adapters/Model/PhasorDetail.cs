@@ -29,6 +29,8 @@ namespace openHistorian.Model
 
         public string DestinationPhasorLabel { get; set; }
 
+        public int BaseKV { get; set; }
+
         [DefaultValueExpression("DateTime.UtcNow")]
         public DateTime CreatedOn { get; set; }
 
