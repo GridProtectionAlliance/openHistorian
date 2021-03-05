@@ -110,10 +110,10 @@
         </div>
         <div class="form-inline pull-right" style="width: 100%">
             <br/>
-            <a role="button" class="btn btn-sm btn-default pull-right" id="exportPhasorCSVButton" data-bind="visible: $root.recordMode()!==RecordMode.AddNew, enable: $parent.dataHubIsConnected" hub-dependent>
+            <a role="button" class="btn btn-sm btn-default pull-right" id="exportDevicePhasorsCSVButton" data-bind="visible: $root.recordMode()!==RecordMode.AddNew, enable: $parent.dataHubIsConnected" hub-dependent>
                 <span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Export&nbsp;Phasor&nbsp;CSV
             </a>
-            <a id="exportPhasorCSVLink" download hidden></a> 
+            <a id="exportDevicePhasorsCSVLink" download hidden></a> 
         </div>
     </div>
 }
@@ -262,26 +262,50 @@
                     deviceUniqueInDatabase: viewModel.currentRecord().Acronym()
                 });
             });
+
+            $("<a role='button' class='btn btn-sm btn-default pull-right' id='exportAllPhasorsCSVButton' data-bind='visible: $root.recordMode()!==RecordMode.AddNew, enable: $parent.dataHubIsConnected' hub-dependent><span class='glyphicon glyphicon-download'></span>&nbsp;&nbsp;Phasor&nbsp;Export&nbsp;CSV</a>").insertAfter("#exportCSVButton");
+            $("<a id='exportAllPhasorsCSVLink' download hidden></a>").insertAfter("#exportAllPhasorsCSVButton");
+            $("#exportCSVButton").html("<span class='glyphicon glyphicon-download'></span>&nbsp;&nbsp;Device&nbsp;Export&nbsp;CSV");
+
+            $("#exportAllPhasorsCSVButton").click(function() {
+                if (!hubIsConnected)
+                    return;
+
+                dataHub.getConnectionID().done(function (connectionID) {
+                    $("#exportAllPhasorsCSVLink").attr("href", "/@@GSF/Web/Model/Handlers/CsvDownloadHandler.ashx" +
+                        "?ModelName=" + encodeURIComponent("@typeof(PhasorDetail).FullName") +
+                        "&HubName=" + encodeURIComponent("@typeof(DataHub).FullName") +
+                        "&ConnectionID=" + encodeURIComponent(connectionID) +
+                        "&FilterText=&SortField=DeviceID" +
+                        "&SortAscending=true&ShowDeleted=false" +
+                        "&ExportName=PhasorExport.csv&ParentKeys=0");
+
+                    $("#exportAllPhasorsCSVLink")[0].click();
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+                });
+            });
         });
 
         $("#addNewEditDialog").on("shown.bs.modal", function () {
-            $("#exportPhasorCSVButton").click(function() {
+            $("#exportDevicePhasorsCSVButton").click(function() {
                 if (!hubIsConnected)
                     return;
 
                 dataHub.getConnectionID().done(function (connectionID) {
                     const currentRecord = viewModel.currentRecord();
 
-                    $("#exportPhasorCSVLink").attr("href", "/@@GSF/Web/Model/Handlers/CsvDownloadHandler.ashx" +
+                    $("#exportDevicePhasorsCSVLink").attr("href", "/@@GSF/Web/Model/Handlers/CsvDownloadHandler.ashx" +
                         "?ModelName=" + encodeURIComponent("@typeof(PhasorDetail).FullName") +
                         "&HubName=" + encodeURIComponent("@typeof(DataHub).FullName") +
                         "&ConnectionID=" + encodeURIComponent(connectionID) +
-                        "&FilterText=&SortField=" + encodeURIComponent("SourceIndex") +
+                        "&FilterText=&SortField=SourceIndex" +
                         "&SortAscending=true&ShowDeleted=false" +
                         "&ExportName=" + encodeURIComponent(currentRecord.Acronym() + "-PhasorExport.csv") +
                         "&ParentKeys=" + encodeURIComponent(currentRecord.ID()));
 
-                    $("#exportPhasorCSVLink")[0].click();
+                    $("#exportDevicePhasorsCSVLink")[0].click();
                 }).
                 fail(function(error) {
                     showErrorMessage(error);
