@@ -23,17 +23,23 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Windows;
+using System.Windows.Forms;
+using System.Xml.Linq;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.IO;
 using GSF.Windows.ErrorManagement;
 using GSF.Reflection;
 using GSF.TimeSeries;
 using GSF.TimeSeries.UI;
 using openHistorianManager.Properties;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace openHistorianManager
 {
@@ -43,6 +49,9 @@ namespace openHistorianManager
     public partial class App : Application
     {
         #region [ Members ]
+
+        // Constants
+        private const string SystemSettings = CommonFunctions.DefaultSettingsCategory;
 
         // Fields
         private Guid m_nodeID;
@@ -58,7 +67,80 @@ namespace openHistorianManager
         /// </summary>
         public App()
         {
+            string systemName = null;
+
             AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+
+            try
+            {
+                string getElementValue(XElement[] elements, string name)
+                {
+                    XElement element = elements.Elements("add").FirstOrDefault(elem =>
+                        elem.Attributes("name").Any<XAttribute>(nameAttribute =>
+                        string.Compare(nameAttribute.Value, name, StringComparison.OrdinalIgnoreCase) == 0));
+
+                    return element?.Attributes("value").FirstOrDefault()?.Value;
+                }
+
+                string configPath = FilePath.GetAbsolutePath(ConfigurationFile.Current.Configuration.FilePath.Replace("Manager", ""));
+
+                if (File.Exists(configPath))
+                {
+                    XDocument hostConfig = XDocument.Load(configPath);
+                    XElement[] systemSettings = hostConfig.Descendants(SystemSettings).ToArray();
+
+                    // Validate manager database connection as compared to host service
+                    string hostConnectionString = getElementValue(systemSettings, "ConnectionString");
+                    string hostDataProviderString = getElementValue(systemSettings, "DataProviderString");
+                    string hostNodeID = getElementValue(systemSettings, "NodeID");
+
+                    ConfigurationFile config = ConfigurationFile.Current;
+                    CategorizedSettingsElementCollection configSettings = config.Settings[SystemSettings];
+
+                    configSettings.Add("KeepCustomConnection", "false", "Determines if manager should keep custom database connection setting separate from host service.");
+
+                    if (!configSettings["KeepCustomConnection"].Value.ParseBoolean())
+                    {
+                        string connectionString = configSettings["ConnectionString"].Value;
+                        string dataProviderString = configSettings["DataProviderString"].Value;
+                        string nodeID = configSettings["NodeID"].Value;
+
+                        if (!hostConnectionString.Equals(connectionString, StringComparison.OrdinalIgnoreCase) ||
+                            !hostDataProviderString.Equals(dataProviderString, StringComparison.OrdinalIgnoreCase) ||
+                            !hostNodeID.Equals(nodeID, StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (System.Windows.Forms.MessageBox.Show(new NativeWindow(), "Manager database connection does not match host service. Do you want to correct this?", "Database Mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            {
+                                configSettings["ConnectionString"].Value = hostConnectionString;
+                                configSettings["DataProviderString"].Value = hostDataProviderString;
+                                configSettings["NodeID"].Value = hostNodeID;
+                            }
+                            else
+                            {
+                                configSettings["KeepCustomConnection"].Value = "true";
+                            }
+
+                            config.Save();
+
+                            ProcessStartInfo startInfo = new ProcessStartInfo
+                            {
+                                FileName = Environment.GetCommandLineArgs()[0],
+                                Arguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1)),
+                                UseShellExecute = true
+                            };
+
+                            using (Process.Start(startInfo)) { }
+                            Environment.Exit(0);
+                        }
+                    }
+
+                    systemName = getElementValue(systemSettings, "SystemName");
+                }
+            }
+            catch
+            {
+                // If this fails, it's not a huge deal
+            }
 
             m_errorLogger = new ErrorLogger
             {
@@ -78,17 +160,21 @@ namespace openHistorianManager
 
             Title = AssemblyInfo.EntryAssembly.Title;
 
+            // Add system name to title
+            if (!string.IsNullOrWhiteSpace(systemName))
+                Title = $"{Title} [{systemName.Trim()}]";
+
             // Setup default cache for measurement keys and associated Guid based signal ID's
             AdoDataConnection database = null;
 
             try
             {
-                database = new AdoDataConnection(CommonFunctions.DefaultSettingsCategory);
+                database = new AdoDataConnection(SystemSettings);
 
                 if (!Environment.CommandLine.Contains("-elevated"))
                 {
                     ConfigurationFile configurationFile = ConfigurationFile.Current;
-                    CategorizedSettingsElementCollection systemSettings = configurationFile.Settings["SystemSettings"];
+                    CategorizedSettingsElementCollection systemSettings = configurationFile.Settings[SystemSettings];
                     string elevateSetting = systemSettings["ElevateProcess"]?.Value;
 
                     bool elevateProcess = !string.IsNullOrEmpty(elevateSetting) ? elevateSetting.ParseBoolean() : database.IsSqlite;
