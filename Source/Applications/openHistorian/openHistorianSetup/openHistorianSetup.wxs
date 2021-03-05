@@ -11,6 +11,11 @@
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED]]>
     </Condition>
 
+    <!-- Restore last installation folder -->
+    <Property Id="INSTALLFOLDER">
+      <RegistrySearch Id="InstallFolderRegSearch" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="InstallPath" Type="raw" />
+    </Property>
+
     <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER">
       <!-- openHistorian -->
       <Feature Id="openHistorianFeature" Title="openHistorian">
@@ -172,7 +177,7 @@
     <UI>
       <ProgressText Action="ConfigureServiceAction">Configuring service failure recovery operations...</ProgressText>
       <ProgressText Action="ServiceAccountAction">Applying minimum needed permissions for service user...</ProgressText>
-      <ProgressText Action="NetFxExecuteNativeImageInstall">Generating optimized native images for installation...</ProgressText>
+      <ProgressText Action="NetFxExecuteNativeImageInstall">Generating optimized native images for installation, this will take some time...</ProgressText>
     </UI>
 
     <InstallExecuteSequence>
@@ -199,6 +204,7 @@
             </CreateFolder>
           </Component>
 
+          <Directory Id="UTILITIESFOLDER" Name="Utilities" />
           <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
 
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
@@ -210,7 +216,7 @@
           </Directory>
 
           <?include WebFolders.wxi ?>
-          
+
           <?include GrafanaFolders.wxi ?>
           
           <Directory Id="OPTIONALINSTALLSFOLDER" Name="Installers" />
@@ -226,6 +232,7 @@
             </CreateFolder>
           </Component>
 
+          <Directory Id="UTILITIESFOLDER" Name="Utilities" />
           <Directory Id="SQLCLRFOLDER" Name="SqlClr" />
 
           <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
@@ -328,6 +335,8 @@
         <RemoveFolder Id="RemoveSQLServerScriptsFolder" Directory="SQLSERVERSCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveSQLiteScriptsFolder" Directory="SQLITESCRIPTSFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveDatabaseScriptsFolder" Directory="DATABASESCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveSqlClrFolder" Directory="SQLCLRFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveUtilitiesFolder" Directory="UTILITIESFOLDER" On="uninstall" />
         <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
         <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
       </Component>
@@ -487,12 +496,14 @@
         <File Id="DNP3ConfigGenerator.exe" Name="DNP3ConfigGenerator.exe" Source="$(var.ProjectDir)\DNP3ConfigGenerator.exe">
           <netfx:NativeImage Id="ngen_DNP3ConfigGenerator.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
+        <Shortcut Id="DNP3ConfigGeneratorUtilitiesShortcut" Name="DNP3ConfigGenerator" Target="[#DNP3ConfigGenerator.exe]" Description="Used to create sample DNP3 config and extract openSSL dependencies." WorkingDirectory="INSTALLFOLDER" Directory="UTILITIESFOLDER" Advertise="no" />
       </Component>
 
       <Component Id="CreateOutputStream">
         <File Id="CreateOutputStream.exe" Name="CreateOutputStream.exe" Source="$(var.ProjectDir)\CreateOutputStream.exe">
           <netfx:NativeImage Id="ngen_CreateOutputStream.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
+        <Shortcut Id="CreateOutputStreamUtilitiesShortcut" Name="CreateOutputStream" Target="[#CreateOutputStream.exe]" Description="Used to create an output stream from a CSV file." WorkingDirectory="INSTALLFOLDER" Directory="UTILITIESFOLDER" Advertise="no" />
       </Component>
     </ComponentGroup>
     
