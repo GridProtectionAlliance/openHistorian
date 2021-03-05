@@ -226,14 +226,32 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             try
                             {
-                        #if DEBUG
+                            #if DEBUG
                                 Process.Start(App.ApplicationExe);
-                        #else
+                            #else
+                                try
+                                {
+                                    DependencyObject parent = VisualTreeHelper.GetParent(this);
+                                    Window mainWindow;
+
+                                    while (parent != null && !(parent is Window))
+                                        parent = VisualTreeHelper.GetParent(parent);
+
+                                    mainWindow = parent as Window;
+
+                                    if (mainWindow != null)
+                                        mainWindow.WindowState = WindowState.Minimized;
+                                }
+                                catch
+                                {
+                                    // Nothing to do if we fail to minimize...
+                                }                                
+                                
                                 m_openHistorianServiceController.Refresh();
 
                                 if (m_openHistorianServiceController.Status != ServiceControllerStatus.Running)
                                     m_openHistorianServiceController.Start();
-                        #endif
+                            #endif
                             }
                             catch
                             {
