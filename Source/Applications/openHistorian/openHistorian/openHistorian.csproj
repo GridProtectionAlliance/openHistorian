@@ -315,6 +315,7 @@
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
     <Content Include="Full Calculations.TagTemplate" />
+    <Content Include="Grafana\data\Home.json" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <Content Include="Sample1344.PmuCapture">
