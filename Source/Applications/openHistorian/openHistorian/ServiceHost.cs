@@ -283,6 +283,7 @@ namespace openHistorian
             ServiceHelper.LoggedException += LoggedExceptionHandler;
             ServiceHelper.SendingClientResponse += SendingClientResponseHandler;
             GrafanaAuthProxyController.StatusMessage += GrafanaAuthProxyController_StatusMessage;
+            GrafanaAuthProxyController.GlobalSettings = Model.Global;
 
             if (systemSettings["WebHostingEnabled"].ValueAs(true))
             {
