@@ -154,6 +154,9 @@ namespace openHistorian.Adapters
                     return HandleGrafanaLoginPingRequest(Request, RequestContext.Principal as SecurityPrincipal);
             }
 
+            if (url.StartsWith("servervar/", StringComparison.Ordinal))
+                return HandleServerVarRequest(Request);
+
             if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
                 return HandleGrafanaAvatarRequest(Request);
 
@@ -286,6 +289,13 @@ namespace openHistorian.Adapters
         private static Dictionary<string, string[]> s_lastSecurityContext;
         private static Dictionary<string, string[]> s_latestSecurityContext;
         private static bool s_manualSynchronization;
+
+        // Static Properties
+
+        /// <summary>
+        /// Gets or sets reference top global settings.
+        /// </summary>
+        public static dynamic GlobalSettings { get; set;  }
 
         // Static Constructor
         static GrafanaAuthProxyController()
@@ -487,7 +497,7 @@ namespace openHistorian.Adapters
                     OnStatusMessage($"Issue assigning organizational role \"{organizationalRole}\" for user \"{userName}\": {message}");
             }
 
-            OnStatusMessage($"Synchronized security context with {securityContext.Count} users to Grafana.");
+            OnStatusMessage($"Synchronized security context with {securityContext.Count:N0} users to Grafana.");
         }
 
         private static bool LookupUser(string userName, out UserDetail userDetail, out string message)
@@ -704,7 +714,7 @@ namespace openHistorian.Adapters
                         <link rel=""shortcut icon"" href=""@GSF/Web/Shared/Images/Icons/favicon.ico"" />
                     </head>
                     <body>
-                        Security context with {userRoles.Count} users and associated roles queued for Grafana user synchronization.
+                        Security context with {userRoles.Count:N0} users and associated roles queued for Grafana user synchronization.
                     </body>
                     </html>
                 ",
@@ -720,6 +730,45 @@ namespace openHistorian.Adapters
                 Content = new StringContent(JObject.FromObject(new
                 {
                     serverTime = $"{DateTime.UtcNow:MM/dd/yyyy HH:mm:ss.fff} UTC"
+                })
+                .ToString(), Encoding.UTF8, "application/json")
+            };
+        }
+
+        private static HttpResponseMessage HandleServerVarRequest(HttpRequestMessage request)
+        {
+            string variableValue = "NaN";
+
+            if (!(GlobalSettings is null))
+            {
+                string[] parts = request.RequestUri.AbsolutePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length > 1)
+                {
+                    string variableName = parts[parts.Length - 1];
+
+                    if (!string.IsNullOrWhiteSpace(variableValue))
+                    {
+                        // We tightly control which variables to expose to prevent unnecessary data leakage
+                        variableValue = variableName.ToUpperInvariant() switch
+                        {
+                            "COMPANYNAME"      => GlobalSettings.CompanyName,
+                            "COMPANYACRONYM"   => GlobalSettings.CompanyAcronym,
+                            "NODEID"           => GlobalSettings.NodeID.ToString(),
+                            "NOMINALFREQUENCY" => GlobalSettings.NominalFrequency.ToString(),
+                            "SYSTEMNAME"       => GlobalSettings.SystemName,
+                            _                  => "NaN"
+                        };
+                    }
+                }
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(JObject.FromObject(new
+                {
+                    value = variableValue
                 })
                 .ToString(), Encoding.UTF8, "application/json")
             };

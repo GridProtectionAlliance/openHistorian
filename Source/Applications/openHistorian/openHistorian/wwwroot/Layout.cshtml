@@ -36,6 +36,7 @@
         ViewBag.PageControlScripts = new StringBuilder();
     }
 
+    string htmlTitle = Model.Global.ApplicationName;
     // Define ViewBag.CustomTitle in page code for custom page titles
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title ?? "";
     string subTitle = ViewBag.SubTitle ?? "";
@@ -44,6 +45,12 @@
     bool hidePageTitle = false;
     bool showMenu = true;
     bool backgroundUnset = false;
+
+    if (!string.IsNullOrWhiteSpace(Model.Global.SystemName)) {
+        htmlTitle += " [" + Model.Global.SystemName.Trim() + "]";
+    }
+
+    htmlTitle += " - " + pageTitle.Trim();
 
     if (ViewBag.HidePageTitle != null) {
         hidePageTitle = ViewBag.HidePageTitle;
@@ -121,7 +128,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @* The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags *@
-    <title>@Model.Global.ApplicationName - @pageTitle.Trim()</title>
+    <title>@htmlTitle</title>
     <meta name="application-name" content="@Model.Global.ApplicationName" />
     <meta name="description" content="@Model.Global.ApplicationDescription" />
     <meta name="keywords" content="@Model.Global.ApplicationKeywords" />

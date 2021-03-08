@@ -27,155 +27,54 @@ namespace openHistorian
 {
     public class GlobalSettings
     {
-        public string CompanyName
-        {
-            get;
-            set;
-        }
+        public string CompanyName { get; set; }
 
-        public string CompanyAcronym
-        {
-            get;
-            set;
-        }
+        public string CompanyAcronym { get; set; }
 
-        public Guid NodeID
-        {
-            get;
-            set;
-        }
+        public Guid NodeID { get; set; }
 
+        public string SubscriptionConnectionString { get; set; }
 
-        public string SubscriptionConnectionString
-        {
-            get;
-            set;
-        }
+        public string ApplicationName { get; set; }
 
-        public string ApplicationName
-        {
-            get;
-            set;
-        }
+        public string ApplicationDescription { get; set; }
 
-        public string ApplicationDescription
-        {
-            get;
-            set;
-        }
+        public string ApplicationKeywords { get; set; }
 
-        public string ApplicationKeywords
-        {
-            get;
-            set;
-        }
+        public string DateFormat { get; set; }
 
-        public string DateFormat
-        {
-            get;
-            set;
-        }
+        public string TimeFormat { get; set; }
 
-        public string TimeFormat
-        {
-            get;
-            set;
-        }
+        public string DateTimeFormat { get; set; }
 
-        public string DateTimeFormat
-        {
-            get;
-            set;
-        }
+        public string PasswordRequirementsRegex { get; set; }
 
-        public string PasswordRequirementsRegex
-        {
-            get;
-            set;
-        }
+        public string PasswordRequirementsError { get; set; }
 
-        public string PasswordRequirementsError
-        {
-            get;
-            set;
-        }
+        public string BootstrapTheme { get; set; }
 
-        public string BootstrapTheme
-        {
-            get;
-            set;
-        }
+        public string WebRootPath { get; set; }
 
-        public string WebRootPath
-        {
-            get;
-            set;
-        }
+        public bool GrafanaServerInstalled { get; set; }
 
-        public bool GrafanaServerInstalled
-        {
-            get;
-            set;
-        }
+        public string GrafanaServerPath { get; set; }
 
-        public string GrafanaServerPath
-        {
-            get;
-            set;
-        }
+        public string DefaultCorsOrigins { get; set; }
 
-        public string DefaultCorsOrigins
-        {
-            get;
-            set;
-        }
+        public string DefaultCorsHeaders { get; set; }
 
-        public string DefaultCorsHeaders
-        {
-            get;
-            set;
-        }
+        public string DefaultCorsMethods { get; set; }
 
-        public string DefaultCorsMethods
-        {
-            get;
-            set;
-        }
+        public bool DefaultCorsSupportsCredentials { get; set; }
 
-        public bool DefaultCorsSupportsCredentials
-        {
-            get;
-            set;
-        }
+        public int NominalFrequency { get; set; }
 
-        public int NominalFrequency
-        {
-            get;
-            set;
-        }
+        public double DefaultCalculationLagTime { get; set; }
 
-        public double DefaultCalculationLagTime
-        {
-            get;
-            set;
-        }
+        public double DefaultCalculationLeadTime { get; set; }
 
-        public double DefaultCalculationLeadTime
-        {
-            get;
-            set;
-        }
+        public int DefaultCalculationFramesPerSecond { get; set; }
 
-        public int DefaultCalculationFramesPerSecond
-        {
-            get;
-            set;
-        }
-
-        public string SystemName
-        {
-            get;
-            set;
-        }
+        public string SystemName { get; set; }
     }
 }
