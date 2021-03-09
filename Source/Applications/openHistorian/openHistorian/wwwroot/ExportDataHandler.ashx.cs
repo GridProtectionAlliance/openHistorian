@@ -27,8 +27,10 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Caching;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -49,6 +51,7 @@ using openHistorian.Net;
 using openHistorian.Snap;
 using Measurement = openHistorian.Model.Measurement;
 
+// ReSharper disable LocalizableElement
 // ReSharper disable once CheckNamespace
 // ReSharper disable NotResolvedInText
 // ReSharper disable AccessToDisposedClosure
@@ -63,6 +66,7 @@ namespace openHistorian
 
         // Constants
         private const string CsvContentType = "text/csv";
+        private const string TextContentType = "text/plain";
 
         #endregion
 
@@ -96,33 +100,42 @@ namespace openHistorian
         /// <param name="request">HTTP request message.</param>
         /// <param name="response">HTTP response message.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        public Task ProcessRequestAsync(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task ProcessRequestAsync(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
 
-            response.Content = new PushStreamContent(async (stream, content, context) =>
+            // Initial post request assumed to be all point IDs to query, to be cached by key on server. This operation
+            // allows for very large point ID selection posts that could otherwise exceed URI parameter string limits.
+            if (request.Method == HttpMethod.Post)
             {
-                try
-                {
-                    SecurityPrincipal securityPrincipal = request.GetRequestContext().Principal as SecurityPrincipal;
-                    await CopyModelAsCsvToStreamAsync(securityPrincipal, requestParameters, stream, cancellationToken);
-                }
-                finally
-                {
-                    stream.Close();
-                }
-            }, new MediaTypeHeaderValue(CsvContentType));
+                string content = await request.Content.ReadAsStringAsync();
+                ulong[] pointIDs = content.Split(',').Select(ulong.Parse).ToArray();
+                Array.Sort(pointIDs);
 
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                response.StatusCode = HttpStatusCode.OK;
+                response.Content = new StringContent(CachePointIDs(pointIDs), Encoding.UTF8, TextContentType);
+            }
+            else
             {
-                FileName = requestParameters["FileName"] ?? "Export.csv"
-            };
+                response.Content = new PushStreamContent(async (stream, content, context) =>
+                {
+                    try
+                    {
+                        SecurityPrincipal securityPrincipal = request.GetRequestContext().Principal as SecurityPrincipal;
+                        await CopyModelAsCsvToStreamAsync(securityPrincipal, requestParameters, stream, cancellationToken);
+                    }
+                    finally
+                    {
+                        stream.Close();
+                    }
+                },
+                new MediaTypeHeaderValue(CsvContentType));
 
-#if MONO
-            return Task.FromResult(false);
-#else
-            return Task.CompletedTask;
-#endif
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = requestParameters["FileName"] ?? "Export.csv"
+                };
+            }
         }
 
         private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
@@ -131,14 +144,7 @@ namespace openHistorian
             const int DefaultTimestampSnap = 0;
 
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
-
-            // TODO: Improve operation for large point lists:
-            // Pick-up "POST"ed parameters with a "genurl" param, then cache parameters
-            // in a memory cache and return the unique URL (a string instead of a file)
-            // with a "download" param and unique ID associated with cached parameters.
-            // Then extract params based on unique ID and follow normal steps...
-
-            // Note TSTolerance is in ms
+            string cacheIDParam = requestParameters["CacheID"];
             string pointIDsParam = requestParameters["PointIDs"];
             string startTimeParam = requestParameters["StartTime"];
             string endTimeParam = requestParameters["EndTime"];
@@ -148,27 +154,37 @@ namespace openHistorian
             string missingAsNaNParam = requestParameters["MissingAsNaN"];
             string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
             string instanceName = requestParameters["InstanceName"];
-            string toleranceParam = requestParameters["TSTolerance"];
+            string toleranceParam = requestParameters["TSTolerance"]; // In milliseconds
             ulong[] pointIDs;
             string headers;
 
-            if (string.IsNullOrEmpty(pointIDsParam))
-                throw new ArgumentNullException("PointIDs", "Cannot export data: no values were provided in \"PointIDs\" parameter.");
+            if (string.IsNullOrEmpty(cacheIDParam) && string.IsNullOrEmpty(pointIDsParam))
+                throw new ArgumentException("Cannot export data: no point ID values can be accessed. Neither the \"CacheID\" nor the \"PointIDs\" parameter was provided.");
 
-            try
+            if (string.IsNullOrEmpty(pointIDsParam))
             {
-                pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
-                Array.Sort(pointIDs);
+                pointIDs = GetCachedPointIDs(cacheIDParam);
+
+                if (pointIDs is null)
+                    throw new ArgumentNullException("CacheID", $"Cannot export data: failed to load cached point ID list referenced by \"CacheID\" parameter value \"{cacheIDParam}\".");
             }
-            catch (Exception ex)
+            else
             {
-                throw new ArgumentNullException("PointIDs", $"Cannot export data: failed to parse \"PointIDs\" parameter value \"{pointIDsParam}\": {ex.Message}");
+                try
+                {
+                    pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
+                    Array.Sort(pointIDs);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentNullException("PointIDs", $"Cannot export data: failed to parse \"PointIDs\" parameter value \"{pointIDsParam}\": {ex.Message}");
+                }
             }
 
             if (string.IsNullOrEmpty(startTimeParam))
                 throw new ArgumentNullException("StartTime", "Cannot export data: no \"StartTime\" parameter value was specified.");
 
-            if (string.IsNullOrEmpty(pointIDsParam))
+            if (string.IsNullOrEmpty(endTimeParam))
                 throw new ArgumentNullException("EndTime", "Cannot export data: no \"EndTime\" parameter value was specified.");
 
             DateTime startTime, endTime;
@@ -205,8 +221,10 @@ namespace openHistorian
 
             if (!double.TryParse(frameRateParam, out double frameRate))
                 frameRate = DefaultFrameRate;
+
             if (!int.TryParse(timestampSnapParam, out int timestampSnap))
                 timestampSnap = DefaultTimestampSnap;
+
             if (!double.TryParse(toleranceParam, out double tolerance))
                 tolerance = 0.5;
 
@@ -221,7 +239,7 @@ namespace openHistorian
             LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapter);
             HistorianServer serverInstance = adapter?.Server;
 
-            if (serverInstance == null)
+            if (serverInstance is null)
                 throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
 
             const int TargetBufferSize = 524288;
@@ -236,145 +254,134 @@ namespace openHistorian
             {
                 try
                 {
-                    using (SnapClient connection = SnapClient.Connect(serverInstance.Host))
+                    using SnapClient connection = SnapClient.Connect(serverInstance.Host);
+                    Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
+                    float[] values = new float[pointIDs.Length];
+
+                    for (int i = 0; i < pointIDs.Length; i++)
+                        pointIDIndex.Add(pointIDs[i], i);
+
+                    for (int i = 0; i < values.Length; i++)
+                        values[i] = float.NaN;
+
+                    ulong interval;
+
+                    if (Math.Abs(frameRate % 1) <= double.Epsilon * 100)
                     {
-                        Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
-                        float[] values = new float[pointIDs.Length];
+                        Ticks[] subseconds = Ticks.SubsecondDistribution((int)frameRate);
+                        interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+                    }
+                    else
+                    {
+                        interval = (ulong)(Math.Floor(1.0d / frameRate) * Ticks.PerSecond);
+                    }
+                        
+                    ulong lastTimestamp = 0;
 
-                        for (int i = 0; i < pointIDs.Length; i++)
-                            pointIDIndex.Add(pointIDs[i], i);
+                    // Write data pages
+                    SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
+                    HistorianKey historianKey = new HistorianKey();
+                    HistorianValue historianValue = new HistorianValue();
 
-                        for (int i = 0; i < values.Length; i++)
-                            values[i] = float.NaN;
+                    // Write row values function
+                    void bufferValues()
+                    {
+                        readBuffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
 
-                        ulong interval;
+                        if (readBuffer.Length < TargetBufferSize)
+                            return;
 
-                        if (Math.Abs(frameRate % 1) <= (double.Epsilon * 100))
+                        lock (writeBufferLock)
+                            writeBuffer.Add(readBuffer.ToString());
+
+                        readBuffer.Clear();
+                        bufferReady.Set();
+                    }
+
+                    // Start stream reader for the provided time window and selected points
+                    using ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName);
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+                    ulong timestamp = 0;
+
+                    // Adjust timestamp to use first timestamp as base
+                    bool adjustTimeStamp = timestampSnap switch
+                    {
+                        0 => false,
+                        1 => true,
+                        2 => false,
+                        _ => true
+                    };
+
+                    long baseTime = timestampSnap switch
+                    {
+                        0 => Ticks.RoundToSecondDistribution(startTime.Ticks, frameRate, startTime.Ticks - startTime.Ticks % Ticks.PerSecond),
+                        _ => startTime.Ticks
+                    };
+
+                    while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
+                    {
+                        if (alignTimestamps)
                         {
-                            Ticks[] subseconds = Ticks.SubsecondDistribution((int)frameRate);
+                            if (adjustTimeStamp)
+                            {
+                                adjustTimeStamp = false;
+                                baseTime = (long)historianKey.Timestamp;
+                            }
 
-                            interval = (ulong)(subseconds.Length > 1 ? subseconds[1].Value : Ticks.PerSecond);
+                            // Make sure the timestamp is actually close enough to the distribution
+                            Ticks ticks = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTime, toleranceTicks);
+                            if (ticks == Ticks.MinValue)
+                                continue;
+
+                            timestamp = (ulong)ticks.Value;
                         }
                         else
                         {
-                            interval = (ulong)(Math.Floor(1.0d / frameRate) * Ticks.PerSecond);
+                            timestamp = historianKey.Timestamp;
                         }
-                        
 
-                        ulong lastTimestamp = 0;
-
-                        // Write data pages
-                        SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
-                        MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
-                        HistorianKey historianKey = new HistorianKey();
-                        HistorianValue historianValue = new HistorianValue();
-
-                        // Write row values function
-                        Action bufferValues = () =>
+                        // Start a new row for each encountered new timestamp
+                        if (timestamp != lastTimestamp)
                         {
-                            readBuffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
-
-                            if (readBuffer.Length < TargetBufferSize)
-                                return;
-
-                            lock (writeBufferLock)
-                                writeBuffer.Add(readBuffer.ToString());
-
-                            readBuffer.Clear();
-                            bufferReady.Set();
-                        };
-
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
-                        {
-                            // Start stream reader for the provided time window and selected points
-                            TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-                            ulong timestamp = 0;
-
-                            // Adjust timestamp to use first timestamp as base
-                            bool adjustTimeStamp = true;
-                            long baseTime = startTime.Ticks;
-
-                            if (timestampSnap == 0)
-                            {
-                                adjustTimeStamp = false;
-                                baseTime = Ticks.RoundToSecondDistribution(startTime.Ticks,frameRate,startTime.Ticks - startTime.Ticks % Ticks.PerSecond);
-
-                            }
-                            else if (timestampSnap == 1)
-                            {
-                                adjustTimeStamp = true;
-                            }
-                            else if (timestampSnap == 2)
-                            {
-                                adjustTimeStamp = false;
-                                baseTime = startTime.Ticks;
-                            }
-
-                            while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
-                            {
-                                if (alignTimestamps)
-                                {
-                                    if (adjustTimeStamp)
-                                    {
-                                        adjustTimeStamp = false;
-                                        baseTime = (long)historianKey.Timestamp;
-                                    }
-
-                                    // Make sure the timestamp is actually close enough to the distribution
-                                    Ticks ticks = Ticks.ToSecondDistribution((long)historianKey.Timestamp, frameRate, baseTime, toleranceTicks);
-                                    if (ticks == Ticks.MinValue)
-                                        continue;
-
-                                    timestamp = (ulong)ticks.Value;
-                                }
-                                else
-                                {
-                                    timestamp = historianKey.Timestamp;
-                                }
-
-                                // Start a new row for each encountered new timestamp
-                                if (timestamp != lastTimestamp)
-                                {
-                                    if (lastTimestamp > 0)
-                                        bufferValues();
-
-                                    for (int i = 0; i < values.Length; i++)
-                                        values[i] = float.NaN;
-
-                                    if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
-                                    {
-                                        ulong difference = timestamp - lastTimestamp;
-
-                                        if (difference > interval)
-                                        {
-                                            ulong interpolated = lastTimestamp;
-
-                                            for (ulong i = 1; i < difference / interval; i++)
-                                            {
-                                                interpolated = (ulong)Ticks.RoundToSecondDistribution((long)(interpolated + interval), frameRate, startTime.Ticks).Value;
-                                                readBuffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                                bufferValues();
-                                            }
-                                        }
-                                    }
-
-                                    readBuffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                    lastTimestamp = timestamp;
-                                }
-
-                                // Save value to its column
-                                values[pointIDIndex[historianKey.PointID]] = historianValue.AsSingle;
-                            }
-
-                            if (timestamp > 0)
+                            if (lastTimestamp > 0)
                                 bufferValues();
 
-                            if (readBuffer.Length > 0)
+                            for (int i = 0; i < values.Length; i++)
+                                values[i] = float.NaN;
+
+                            if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
                             {
-                                lock (writeBufferLock)
-                                    writeBuffer.Add(readBuffer.ToString());
+                                ulong difference = timestamp - lastTimestamp;
+
+                                if (difference > interval)
+                                {
+                                    ulong interpolated = lastTimestamp;
+
+                                    for (ulong i = 1; i < difference / interval; i++)
+                                    {
+                                        interpolated = (ulong)Ticks.RoundToSecondDistribution((long)(interpolated + interval), frameRate, startTime.Ticks).Value;
+                                        readBuffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                                        bufferValues();
+                                    }
+                                }
                             }
+
+                            readBuffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
+                            lastTimestamp = timestamp;
                         }
+
+                        // Save value to its column
+                        values[pointIDIndex[historianKey.PointID]] = historianValue.AsSingle;
+                    }
+
+                    if (timestamp > 0)
+                        bufferValues();
+
+                    if (readBuffer.Length > 0)
+                    {
+                        lock (writeBufferLock)
+                            writeBuffer.Add(readBuffer.ToString());
                     }
                 }
                 finally
@@ -382,45 +389,98 @@ namespace openHistorian
                     readComplete = true;
                     bufferReady.Set();
                 }
-            }, cancellationToken);
+            },
+            cancellationToken);
 
             Task writeTask = Task.Factory.StartNew(() =>
             {
-                using (StreamWriter writer = new StreamWriter(responseStream))
+                using StreamWriter writer = new StreamWriter(responseStream);
+                
+                // Write column headers
+                writer.Write(headers);
+
+                while ((writeBuffer.Count > 0 || !readComplete) && !cancellationToken.IsCancellationRequested)
                 {
-                    //Ticks exportStart = DateTime.UtcNow.Ticks;
                     string[] localBuffer;
 
-                    // Write column headers
-                    writer.Write(headers);
+                    bufferReady.Wait(cancellationToken);
+                    bufferReady.Reset();
 
-                    while ((writeBuffer.Count > 0 || !readComplete) && !cancellationToken.IsCancellationRequested)
+                    lock (writeBufferLock)
                     {
-                        bufferReady.Wait(cancellationToken);
-                        bufferReady.Reset();
-
-                        lock (writeBufferLock)
-                        {
-                            localBuffer = writeBuffer.ToArray();
-                            writeBuffer.Clear();
-                        }
-
-                        foreach (string buffer in localBuffer)
-                            writer.Write(buffer);
+                        localBuffer = writeBuffer.ToArray();
+                        writeBuffer.Clear();
                     }
 
-                    // Flush stream
-                    writer.Flush();
-                    
-                    //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
+                    foreach (string buffer in localBuffer)
+                        writer.Write(buffer);
                 }
-            }, cancellationToken);
+
+                // Flush stream
+                writer.Flush();
+                    
+                //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
+            },
+            cancellationToken);
 
             await readTask;
             await writeTask;
         }
 
-        private string GetHeaders(DataContext dataContext, IEnumerable<int> pointIDs)
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+        private static readonly string s_minimumRequiredRoles;
+        private static readonly MemoryCache s_pointIDCache;
+
+        // Static Constructor
+        static ExportDataHandler()
+        {
+            Type modelType = typeof(Measurement);
+            Type hubType = typeof(DataHub);
+
+            try
+            {
+                if (!(Activator.CreateInstance(hubType) is IRecordOperationsHub hub))
+                    throw new SecurityException($"Cannot export data: hub type \"{nameof(DataHub)}\" is not an {nameof(IRecordOperationsHub)}, access cannot be validated.");
+
+                Tuple<string, string>[] recordOperations;
+
+                try
+                {
+                    // Get any authorized query roles as defined in hub records operations for modeled table, default to read allowed for query
+                    recordOperations = hub.RecordOperationsCache.GetRecordOperations(modelType);
+
+                    if (recordOperations is null)
+                        throw new NullReferenceException();
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw new SecurityException($"Cannot export data: hub type \"{nameof(DataHub)}\" does not define record operations for \"{nameof(Measurement)}\" table, access cannot be validated.", ex);
+                }
+
+                // Get record operation for querying records. Record operation tuple defines method name and allowed roles:
+                Tuple<string, string> queryRecordsOperation = recordOperations[(int)RecordOperation.QueryRecords];
+
+                if (queryRecordsOperation is null)
+                    throw new NullReferenceException();
+
+                // Get any defined role restrictions for record query operation - access to CSV download will based on these roles
+                s_minimumRequiredRoles = string.IsNullOrEmpty(queryRecordsOperation.Item1) ? "*" : queryRecordsOperation.Item2 ?? "*";
+            }
+            catch (Exception ex)
+            {
+                throw new SecurityException($"Cannot export data: failed to instantiate hub type \"{nameof(DataHub)}\" or access record operations, access cannot be validated.", ex);
+            }
+
+            s_pointIDCache = new MemoryCache($"{nameof(ExportDataHandler)}-PointIDCache");
+        }
+
+        // Static Methods
+
+        private static string GetHeaders(DataContext dataContext, IEnumerable<int> pointIDs)
         {
             object[] parameters = pointIDs.Cast<object>().ToArray();
             string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((parameter, index) => $"{{{index}}}"))})";
@@ -431,59 +491,15 @@ namespace openHistorian
                 Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\""));
         }
 
-        #endregion
-
-        #region [ Static ]
-
-        // Static Fields
-        private static readonly string s_minimumRequiredRoles;
-
-        // Static Constructor
-        static ExportDataHandler()
+        private static string CachePointIDs(ulong[] pointIDs)
         {
-            Type modelType = typeof(Measurement);
-            Type hubType = typeof(DataHub);
-            IRecordOperationsHub hub;
-
-            // Record operation tuple defines method name and allowed roles
-            Tuple<string, string> queryRecordsOperation;
-
-            try
-            {
-                hub = Activator.CreateInstance(hubType) as IRecordOperationsHub;
-
-                if (hub == null)
-                    throw new SecurityException("Cannot export data: hub type \"DataHub\" is not a IRecordOperationsHub, access cannot be validated.");
-
-                Tuple<string, string>[] recordOperations;
-
-                try
-                {
-                    // Get any authorized query roles as defined in hub records operations for modeled table, default to read allowed for query
-                    recordOperations = hub.RecordOperationsCache.GetRecordOperations(modelType);
-
-                    if (recordOperations == null)
-                        throw new NullReferenceException();
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw new SecurityException("Cannot export data: hub type \"DataHub\" does not define record operations for \"Measurement\" table, access cannot be validated.", ex);
-                }
-
-                // Get record operation for querying records
-                queryRecordsOperation = recordOperations[(int)RecordOperation.QueryRecords];
-
-                if (queryRecordsOperation == null)
-                    throw new NullReferenceException();
-
-                // Get any defined role restrictions for record query operation - access to CSV download will based on these roles
-                s_minimumRequiredRoles = string.IsNullOrEmpty(queryRecordsOperation.Item1) ? "*" : queryRecordsOperation.Item2 ?? "*";
-            }
-            catch (Exception ex)
-            {
-                throw new SecurityException("Cannot export data: failed to instantiate hub type \"DataHub\" or access record operations, access cannot be validated.", ex);
-            }
+            string cacheID = Guid.NewGuid().ToString();
+            s_pointIDCache.Add(cacheID, pointIDs, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30.0D) });
+            return cacheID;
         }
+
+        private static ulong[] GetCachedPointIDs(string cacheID) => 
+            s_pointIDCache.Get(cacheID) as ulong[];
 
         #endregion
     }

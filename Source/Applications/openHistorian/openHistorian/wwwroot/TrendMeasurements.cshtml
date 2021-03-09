@@ -25,7 +25,9 @@
 @using GSF
 @using GSF.Web
 @using GSF.Web.Model
+@using GSF.Web.Security
 @using GSF.Web.Shared
+@using Microsoft.Ajax.Utilities
 @using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
@@ -240,6 +242,33 @@
 
     // Prepend view model extension scripts to occur before model initialization
     pageControlScripts.Insert(0, ExtendedViewModel(dataContext).ToString().TrimStart());
+
+    // Setup AJAX based anti-forgery implementation
+    string verificationHeader = AuthenticationOptions.DefaultRequestVerificationToken;
+    string useAjaxVerfication = AuthenticationOptions.DefaultAjaxRequestVerificationToken;
+    ReadonlyAuthenticationOptions options = ViewBag.AuthenticationOptions;
+
+    if (options != null) {
+        if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken)) {
+            verificationHeader = options.RequestVerificationToken;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken)) {
+            useAjaxVerfication = options.AjaxRequestVerificationToken;
+        }
+    }
+
+    string verificationValue = Html.RequestVerificationHeaderToken();
+
+    string constants = string.Format(@"
+        const verificationHeader = ""{0}"";
+        const verificationValue = ""{1}"";
+        const useAjaxVerfication = ""{2}"";
+    ",
+        /* 0 */ verificationHeader.JavaScriptEncode(),
+        /* 1 */ verificationValue.JavaScriptEncode(),
+        /* 2 */ useAjaxVerfication.JavaScriptEncode()
+    );
 }
 @helper BodyRows()
 {
@@ -1035,8 +1064,11 @@
     <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.selection.min.js"></script>
     <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.time.min.js"></script>
     <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.axislabels.min.js"></script>
-    <script>        
+    <script>
+
         "use strict";
+
+        @Raw(new Minifier().MinifyJavaScript(constants));
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
         var plotData = [];
@@ -1173,7 +1205,7 @@
 
             if (startMoment <= 0 || endMoment <= 0) {
                 if (startMoment <= 0 && endMoment > 0) {
-                    startMoment = endMoment.subtract(5, "minutes");                    
+                    startMoment = endMoment.subtract(5, "minutes");
                 }
                 else if (endMoment <= 0 && startMoment > 0) {
                     endMoment = startMoment.add(5, "minutes");
@@ -1186,7 +1218,7 @@
                 startMoment = startMoment.subtract(0.25, "seconds");
                 endMoment = endMoment.add(0.25, "seconds");
             }
-            
+
             if (endMoment > moment.utc()) {
                 startMoment.subtract(endMoment.diff(moment.utc()));
                 endMoment = moment.utc();
@@ -1206,7 +1238,7 @@
             return getRangeDifference(startRange) - getRangeDifference(endRange);
         }
 
-        function initializePlot(placeholder) {            
+        function initializePlot(placeholder) {
             placeholder.on("plotselected", function(event, ranges) {
                 if (!$("#showLegend")[0].checked)
                     $(".legend").hide();
@@ -1224,7 +1256,7 @@
                 const axes = plot.getAxes();
                 var newRange = getValidTimeRange(new Date(axes.xaxis.min), new Date(axes.xaxis.max));
                 const currentRange = getValidTimeRange(viewModel.startMoment(), viewModel.endMoment());
-                const comparison = compareRange(newRange, currentRange);                
+                const comparison = compareRange(newRange, currentRange);
                 const queueZoomForTrending = args.zoomingOut ? comparison >= 0 : comparison < 0;
 
                 if (!queueZoomForTrending) {
@@ -1265,7 +1297,7 @@
             placeholder.bind("plotclick", function (event, pos, item) {
                 if (clickHandled || !item)
                     return;
-                
+
                 plot.highlight(item.series, item.datapoint);
             });
 
@@ -1282,17 +1314,17 @@
                 if (e.shiftKey) {
                     panCenter = { x: e.pageX, y: e.pageY };
                     plot.suspendSelection();
-                    
+
                     if (!$("#showLegend")[0].checked)
                         $(".legend").hide();
-                    
+
                     $(document).one("mouseup", function(e) {
                         if (e.which === 1 && panCenter != null) {
                             panCenter = null;
                             plot.resumeSelection();
-                    
+
                             if (!$("#showLegend")[0].checked)
-                                $(".legend").hide();                            
+                                $(".legend").hide();
                         }
                     });
                 }
@@ -1306,9 +1338,9 @@
                     const panDistance = { left: panCenter.x - e.pageX, top: 0 };
 
                     plot.pan(panDistance);
-                    
+
                     if (!$("#showLegend")[0].checked)
-                        $(".legend").hide();                            
+                        $(".legend").hide();
 
                     panCenter.x -= panDistance.left;
 
@@ -1342,7 +1374,7 @@
         function displayTimeRange() {
             if (!hubIsConnected || !viewModel.timeRange.isValid())
                 return;
-            
+
             dataHub.getElapsedTimeString(viewModel.startMoment().toDate(), viewModel.endMoment().toDate()).done(function(elapsedTime) {
                 viewModel.elapsedTime(elapsedTime);
             });
@@ -1379,7 +1411,7 @@
             }
 
             const trend = trendQueue.pop();
-            
+
             if (!trend)
                 return;
 
@@ -1471,23 +1503,36 @@
                 adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
 
             let tolerance = 0.5;
-            
+
             if (viewModel.tolerance())
                 tolerance = 500 / adjustedFrameRate;
 
-            $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
-                "?PointIDs=" + encodeURIComponent(selectedPointIDs.join()) + 
-                "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) + 
-                "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) + 
-                "&FrameRate=" + encodeURIComponent(adjustedFrameRate) + 
-                "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) + 
-                "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) + 
-                "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
-                "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
-                "&TSSnap=" + encodeURIComponent(viewModel.timesStampSnap()) + 
-                "&TSTolerance=" + encodeURIComponent(tolerance));
+            $.ajax({
+                cache: false,
+                url: "ExportDataHandler.ashx",
+                type: "post",
+                data: selectedPointIDs.join(),
+                dataType: "text",
+                success: function (cacheID) {
+                    $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
+                        "?CacheID=" + encodeURIComponent(cacheID) +
+                        "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) +
+                        "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) +
+                        "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
+                        "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
+                        "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) +
+                        "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
+                        "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
+                        "&TSSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
+                        "&TSTolerance=" + encodeURIComponent(tolerance));
 
-            $("#exportDataLink")[0].click();
+                    $("#exportDataLink")[0].click();
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(verificationHeader, verificationValue);
+                    xhr.setRequestHeader(useAjaxVerfication, "true");
+                }
+            });
         }
 
         var baseCalculateRemainingBodyHeight;
@@ -1538,7 +1583,7 @@
                     }, 100);
                 }
             }
-            
+
             if (getActiveTab() === 1) {
                 const placeholder = $("#placeholder");
                 const height = calculateRemainingBodyHeight() - $("#trendTimeRangeSelection").outerHeight(true);
@@ -1765,7 +1810,7 @@
             resizeScreenObjects();
 
             const selectAllCheckbox = $("#selectAllCheckbox");
-            
+
             selectAllCheckbox.click(function() {
                 selectPageRecords(selectAllCheckbox[0].checked);
             });
@@ -1820,7 +1865,7 @@
             $("#trendData").click(function() {
                 trendData();
             });
-            
+
             $("#showPoints").click(function() {
                 trendData();
             });
@@ -1881,7 +1926,7 @@
                 return;
 
             const instanceNameSelect = $("#instanceName");
-            
+
             dataHub.getInstanceNames().done(function(names) {
                 for (let i = 0; i < names.length; i++) {
                     const value = names[i];
@@ -1912,7 +1957,7 @@
                 setTimeout(keepAlive, 1000);
             });
         }
-        
+
         function showSaveSelectionsFileNameDialog() {
             $("#saveSelectionsFileNameDialog").toggle();
 
@@ -1928,7 +1973,7 @@
             viewModel.loadSelections(event.target.files[0]);
             $("#loadSelectionsFileName").val("");
         }
-        
+
         function cleanupTagName(tagName) {
             var cleanedTagName = notNull(tagName).trim();
             const prefixIndex = cleanedTagName.lastIndexOf("!");
