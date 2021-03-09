@@ -218,6 +218,7 @@ namespace openHistorian.TrenDAPController
             public double Minimum { get; set; }
             public double Average { get; set; }
             public double Maximum { get; set; }
+            public int Count { get; set; }
             public ulong QualityFlags { get; set; }
         }
 
@@ -251,6 +252,7 @@ namespace openHistorian.TrenDAPController
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
                     List<HistorianPoint> points = new List<HistorianPoint>();
+                    Dictionary<Tuple<ulong, string>, HistorianAggregatePoint> dict = new Dictionary<Tuple<ulong, string>, HistorianAggregatePoint>();
 
                     while (stream.Read(key, value))
                     {
@@ -258,16 +260,10 @@ namespace openHistorian.TrenDAPController
                         ulong timestamp = key.Timestamp;
                         float pointValue = value.AsSingle;
 
-                        //MeasurementStateFlags flags = (MeasurementStateFlags)value.Value3;
-
-                        //if (flags.HasFlag(MeasurementStateFlags.BadData)) continue;
-                        //if (flags.HasFlag(MeasurementStateFlags.BadTime)) continue;
-                        //if (flags.HasFlag(MeasurementStateFlags.DiscardedValue)) continue;
-                        //if (flags.HasFlag(MeasurementStateFlags.MeasurementError)) continue;
-                        if (((ulong)(value.Value3 / 1) & 1) == 0) continue; // Bad Data
-                        if (((ulong)(value.Value3 / 65536) & 1) == 0) continue; // Bad Time
-                        if (((ulong)(value.Value3 / 4194304) & 1) == 0) continue; // Discarded Value
-                        if (((ulong)(value.Value3 / 2147483648) & 1) == 0) continue; // MeasurementError
+                        if (((value.Value3 / 1) & 1) != 0) continue; // Bad Data
+                        if (((value.Value3 / 65536) & 1) != 0) continue; // Bad Time
+                        if (((value.Value3 / 4194304) & 1) != 0) continue; // Discarded Value
+                        if (((value.Value3 / 2147483648) & 1) != 0) continue; // MeasurementError
 
 
                         DateTime timeStamp = epoch.AddMilliseconds((timestamp - (ulong)UnixTimeTag.BaseTicks.Value) / (double)Ticks.PerMillisecond);
@@ -278,46 +274,46 @@ namespace openHistorian.TrenDAPController
                         if (((ulong)(post.Weeks / Math.Pow(2, week)) & 1) == 0) continue;
                         if (((ulong)(post.Months / Math.Pow(2, timeStamp.Month - 1)) & 1) == 0) continue;
 
-                        points.Add(new HistorianPoint
-                        {
-                            PointID = pointID,
-                            Value = pointValue,
-                            Time = timeStamp,
-                            Flags = value.Value3
-                        });
+                        Tuple<ulong, string> dictKey;
+                        if (post.Aggregate == "1m")
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:00Z"));
+                        else if (post.Aggregate == "1h")
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:00:00Z"));
+                        else if (post.Aggregate == "1d")
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddT00:00:00Z"));
+                        else
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-01T00:00:00Z"));
 
+
+                        if (dict.ContainsKey(dictKey)){
+                            HistorianAggregatePoint point = dict[dictKey];
+                            point.Maximum = point.Maximum < pointValue ? pointValue : point.Maximum;
+                            point.Minimum = point.Minimum > pointValue ? pointValue : point.Minimum;
+                            point.Average = point.Average * point.Count + pointValue;
+                            point.QualityFlags = point.QualityFlags | value.Value3;
+                            point.Count += 1;
+                            point.Average = point.Average / point.Count;
+                            dict[dictKey] = point;
+                        }
+                        else {
+                            HistorianAggregatePoint point = new HistorianAggregatePoint()
+                            {
+                                Tag = $"{post.Instance}:{pointID}",
+                                Timestamp = dictKey.Item2,
+                                Maximum = pointValue,
+                                Minimum = pointValue,
+                                Average = pointValue,
+                                Count = 1,
+                                QualityFlags = value.Value3
+                            };
+                            dict.Add(dictKey, point);
+                        }
                     }
 
-                    var orderedPoints = points.OrderBy(p => p.PointID).ThenBy(p => p.Time);
-
-                    IEnumerable<IGrouping<Tuple<ulong,string>, HistorianPoint>> grouping;
-                    if (post.Aggregate == "1m")
-                        grouping = orderedPoints.GroupBy(p => new Tuple<ulong,string>(p.PointID,p.Time.ToString("yyyy-MM-ddTHH:mm:00Z")));
-                    else if (post.Aggregate == "1h")
-                        grouping = orderedPoints.GroupBy(p => new Tuple<ulong, string>(p.PointID, p.Time.ToString("yyyy-MM-ddTHH:00:00Z")));
-                    else if (post.Aggregate == "1d")
-                        grouping = orderedPoints.GroupBy(p => new Tuple<ulong, string>(p.PointID, p.Time.ToString("yyyy-MM-ddT00:00:00Z")));
-                    else 
-                        grouping = orderedPoints.GroupBy(p => new Tuple<ulong, string>(p.PointID, p.Time.ToString("yyyy-MM-01T00:00:00Z")));
-
-                    HistorianAggregatePoint[] results = grouping.Select(g => new HistorianAggregatePoint()
-                    {
-                        Timestamp = g.Key.Item2,
-                        Tag = $"{post.Instance}:{g.Key.Item1}",
-                        Minimum = g.Min(p => p.Value),
-                        Maximum = g.Max(p => p.Value),
-                        Average = g.Average(p => p.Value),
-                        QualityFlags = g.Select(x => x.Flags).Aggregate((total,p) => total | p)
-                    }).ToArray();
+                    List<HistorianAggregatePoint> results = dict.Values.ToList();
 
                     HttpResponseMessage response = new HttpResponseMessage();
                     response.StatusCode = HttpStatusCode.OK;
-                    //MemoryStream mStream = new MemoryStream();
-                    //IFormatter formatter = new BinaryFormatter();
-                    //formatter.Serialize(mStream, results);
-                    //mStream.Position = 0;
-                    //response.Content = new StreamContent(mStream);
-                    //response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content = new StringContent(JsonConvert.SerializeObject(results));
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                     return response;
