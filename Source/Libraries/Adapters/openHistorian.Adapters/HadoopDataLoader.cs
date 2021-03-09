@@ -29,7 +29,7 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using GSF.Threading;
 using System.Timers;
 using GSF;
 using GSF.Collections;
@@ -40,6 +40,8 @@ using GSF.IO;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using Timer = System.Timers.Timer;
+using System.Threading;
+using CancellationToken = GSF.Threading.CancellationToken;
 
 namespace openHistorian.Adapters
 {
@@ -72,6 +74,7 @@ namespace openHistorian.Adapters
         private int m_currNum;
         private DateTime m_lastConnected;
         private bool m_disposed;
+        private CancellationToken m_cancelationToken;
 
         #endregion
 
@@ -266,6 +269,8 @@ namespace openHistorian.Adapters
 
             m_nTags = m_queryParameter.Count;
 
+            m_cancelationToken = new CancellationToken();
+
             //start Timer
             m_timer = new Timer();
             m_timer.Interval = UpdateInterval;
@@ -302,6 +307,8 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
+            if (m_cancelationToken != null)
+                m_cancelationToken.Cancel();
             if (m_timer != null)
             {
                 m_timer.Enabled = false;
@@ -393,6 +400,8 @@ namespace openHistorian.Adapters
                                 OnStatusMessage(MessageLevel.Info, $"Got Measurements for {m_currNum} out of {m_nTags} Tags");
                                 OnStatusMessage(MessageLevel.Info, $"Obtained {nPoints} Points For Tag {guid} up to {newerThan:dd/MM/yyyy hh:mm:ss}");
                             }
+                            if (m_cancelationToken.IsCancelled)
+                                break;
                         }
                     }
                 }
@@ -408,7 +417,7 @@ namespace openHistorian.Adapters
                 }
                 finally
                 {
-                    Monitor.Exit(m_timer);
+                    System.Threading.Monitor.Exit(m_timer);
                 }
             }
 
