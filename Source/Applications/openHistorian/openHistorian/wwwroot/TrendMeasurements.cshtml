@@ -1510,7 +1510,7 @@
             $.ajax({
                 cache: false,
                 url: "ExportDataHandler.ashx",
-                type: "post",
+                method: "post",
                 data: selectedPointIDs.join(),
                 dataType: "text",
                 success: function (cacheID) {
