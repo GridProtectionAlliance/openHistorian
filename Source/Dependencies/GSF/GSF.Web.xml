@@ -264,6 +264,11 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.RequestVerificationToken"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAjaxRequestVerificationToken">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AjaxRequestVerificationToken"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthFailureRedirectResourceExpression"/>.
@@ -324,6 +329,11 @@
         <member name="P:GSF.Web.Security.AuthenticationOptions.RequestVerificationToken">
             <summary>
             Gets or sets the token used for anti-forgery verification in HTTP request headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AjaxRequestVerificationToken">
+            <summary>
+            Gets or sets token to specify when using AJAX for request verification tokens.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
@@ -431,6 +441,11 @@
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.RequestVerificationToken">
             <summary>
             Gets the token used for anti-forgery verification in HTTP request headers.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AjaxRequestVerificationToken">
+            <summary>
+            Gets token to specify when using AJAX for request verification tokens.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
@@ -2943,12 +2958,70 @@
             <returns>Rendered page result for given page.</returns>
         </member>
         <member name="M:GSF.Web.Hosting.WebPageController.PostPage(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Common page post handler.
-            </summary>
-            <param name="pageName">Page name to render.</param>
-            <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-            <returns>Rendered page result for given page.</returns>
+             <summary>
+             Common page post handler.
+             </summary>
+             <param name="pageName">Page name to render.</param>
+             <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+             <returns>Rendered page result for given page.</returns>
+             <remarks>
+             For Ajax post-based requests to pages handled by this controller, the Ajax request will need to specify
+             verification token in the header and set flag that indicates an Ajax request. See example code below:
+             <code>
+             @{ 
+                // Setup AJAX based anti-forgery implementation
+                string verificationHeader = AuthenticationOptions.DefaultRequestVerificationToken;
+                string useAjaxVerfication = AuthenticationOptions.DefaultAjaxRequestVerificationToken;
+                ReadonlyAuthenticationOptions options = ViewBag.AuthenticationOptions;
+            
+                if (options != null) {
+                    if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken)) {
+                        verificationHeader = options.RequestVerificationToken;
+                    }
+            
+                    if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken)) {
+                        useAjaxVerfication = options.AjaxRequestVerificationToken;
+                    }
+                }
+            
+                string verificationValue = Html.RequestVerificationHeaderToken();
+            
+                string constants = string.Format(@"
+                    const verificationHeader = ""{0}"";
+                    const verificationValue = ""{1}"";
+                    const useAjaxVerfication = ""{2}"";
+                ",
+                    /* 0 */ verificationHeader.JavaScriptEncode(),
+                    /* 1 */ verificationValue.JavaScriptEncode(),
+                    /* 2 */ useAjaxVerfication.JavaScriptEncode()
+                );
+            }
+            @section Scripts {
+                <script>
+                    "use strict";
+            
+                    @Raw(new Minifier().MinifyJavaScript(constants));
+            
+                    function doAjaxThing() {
+                        $.ajax({
+                            cache: false,
+                            url: "AjaxThing.ashx",
+                            method: "post",
+                            data: { value: "some data to post" },
+                            dataType: "application/json",
+                            success: function (result) {
+                               console.log("Success: " + result);
+                            },
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader(verificationHeader, verificationValue);
+                                xhr.setRequestHeader(useAjaxVerfication, "true");
+                            }
+                        });
+                    }
+                </script>
+            }
+             </code>
+             </remarks>
         </member>
         <member name="T:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions">
             <summary>
