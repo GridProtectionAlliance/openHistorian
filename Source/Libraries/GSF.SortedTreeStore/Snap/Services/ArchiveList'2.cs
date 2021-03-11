@@ -288,8 +288,8 @@ namespace GSF.Snap.Services
                 foreach (ArchiveTableSummary<TKey, TValue> file in summaries)
                 {
                     status.AppendLine(file.IsEmpty ? 
-                        $"Empty File - Name:{FilePath.TrimFileName(file.SortedTreeTable.BaseFile.FilePath, 40)}" : 
-                        $"{file.FirstKey} - {file.LastKey} Name:{FilePath.TrimFileName(file.SortedTreeTable.BaseFile.FilePath, 40)}");
+                        $"Empty File - Name:{Environment.NewLine}        {FilePath.TrimFileName(file.SortedTreeTable.BaseFile.FilePath, 70)}" : 
+                        $"{file.FirstKey} - {file.LastKey} Name:{Environment.NewLine}        {FilePath.TrimFileName(file.SortedTreeTable.BaseFile.FilePath, 70)}");
                 }
             }
         }
