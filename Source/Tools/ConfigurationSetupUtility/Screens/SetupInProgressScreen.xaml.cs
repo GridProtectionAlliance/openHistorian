@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -101,10 +101,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public bool CanGoForward
         {
-            get
-            {
-                return m_canGoForward;
-            }
+            get => m_canGoForward;
             private set
             {
                 m_canGoForward = value;
@@ -118,10 +115,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public bool CanGoBack
         {
-            get
-            {
-                return m_canGoBack;
-            }
+            get => m_canGoBack;
             private set
             {
                 m_canGoBack = value;
@@ -135,10 +129,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public bool CanCancel
         {
-            get
-            {
-                return m_canCancel;
-            }
+            get => m_canCancel;
             private set
             {
                 m_canCancel = value;
@@ -156,10 +147,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -237,13 +225,13 @@ namespace ConfigurationSetupUtility.Screens
         // Called when the user has asked to set up a MySQL database.
         private void SetUpMySqlDatabase()
         {
-            MySqlSetup mySqlSetup = null;
+            MySqlSetup mySqlSetup;
 
             try
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                string dataProviderString = null;
+                string dataProviderString;
 
                 mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
                 m_state["newConnectionString"] = mySqlSetup.ConnectionString;
@@ -322,7 +310,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke(delegate ()
+                        this.Dispatcher.Invoke(delegate
                         {
                             while (!(sm.CurrentScreen is MySqlDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -541,7 +529,7 @@ namespace ConfigurationSetupUtility.Screens
                                     string loginName = row.ConvertField<string>("LoginName");
                                     string roleName = row.ConvertField<string>("RoleName");
 
-                                    string[] roles = (roleName != "openHistorianAdminRole")
+                                    string[] roles = roleName != "openHistorianAdminRole"
                                         ? new[] { roleName }
                                         : adminRoles;
 
@@ -680,7 +668,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke(delegate ()
+                        this.Dispatcher.Invoke(delegate
                         {
                             while (!(sm.CurrentScreen is OracleDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -933,7 +921,7 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         this.CanGoBack = true;
                         ScreenManager sm = m_state["screenManager"] as ScreenManager;
-                        this.Dispatcher.Invoke(delegate ()
+                        this.Dispatcher.Invoke(delegate
                         {
                             while (!(sm.CurrentScreen is PostgresDatabaseSetupScreen))
                                 sm.GoToPreviousScreen();
@@ -975,7 +963,7 @@ namespace ConfigurationSetupUtility.Screens
             using (ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(selectQuery))
             {
                 ManagementObject service = managementObjectSearcher.Get().Cast<ManagementObject>().FirstOrDefault();
-                return (service != null) ? service["startname"].ToString() : null;
+                return service != null ? service["startname"].ToString() : null;
             }
         }
 
@@ -1059,7 +1047,7 @@ namespace ConfigurationSetupUtility.Screens
                         sb.AppendLine("WARNING: If you delete the existing database ALL configuration in that database will be permanently deleted.");
 
                         messageBoxResult = MessageBox.Show(sb.ToString(), "Database Exists!", MessageBoxButton.YesNoCancel);
-                        m_state["cancelDBSetup"] = (messageBoxResult == MessageBoxResult.Cancel);
+                        m_state["cancelDBSetup"] = messageBoxResult == MessageBoxResult.Cancel;
                     }
 
                     if (messageBoxResult == MessageBoxResult.Yes)
@@ -1346,8 +1334,7 @@ namespace ConfigurationSetupUtility.Screens
         private void SetupAdminUserCredentials(string connectionString, string dataProviderString)
         {
             bool sampleDataScript = Convert.ToBoolean(m_state["initialDataScript"]) && Convert.ToBoolean(m_state["sampleDataScript"]);
-
-            Dictionary<string, string> settings = connectionString.ParseKeyValuePairs();
+            _ = connectionString.ParseKeyValuePairs();
             Dictionary<string, string> dataProviderSettings = dataProviderString.ParseKeyValuePairs();
             string assemblyName = dataProviderSettings["AssemblyName"];
             string connectionTypeName = dataProviderSettings["ConnectionType"];
@@ -1770,7 +1757,7 @@ namespace ConfigurationSetupUtility.Screens
             XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
             XmlNode systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings");
 
-            bool databaseConfigurationType = (m_state["configurationType"].ToString() == "database");
+            bool databaseConfigurationType = m_state["configurationType"].ToString() == "database";
 
             if (encrypted)
                 connectionString = Cipher.Encrypt(connectionString, App.CipherLookupKey, App.CryptoStrength);
@@ -1782,7 +1769,7 @@ namespace ConfigurationSetupUtility.Screens
                     if (child.Attributes["name"].Value == "DataProviderString")
                     {
                         // Retrieve the old data provider string from the config file.
-                        if (m_oldDataProviderString == null)
+                        if (m_oldDataProviderString is null)
                         {
                             m_oldDataProviderString = child.Attributes["value"].Value;
 
@@ -1797,7 +1784,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     else if (child.Attributes["name"].Value == "ConnectionString")
                     {
-                        if (m_oldConnectionString == null)
+                        if (m_oldConnectionString is null)
                         {
                             // Retrieve the old connection string from the config file.
                             m_oldConnectionString = child.Attributes["value"].Value;
@@ -1837,7 +1824,7 @@ namespace ConfigurationSetupUtility.Screens
                 XmlNode errorLoggerNode = configFile.SelectSingleNode("configuration/categorizedSettings/errorLogger");
 
                 // Ensure that error logger category exists
-                if (errorLoggerNode == null)
+                if (errorLoggerNode is null)
                 {
                     errorLoggerNode = configFile.CreateElement("errorLogger");
                     configFile.SelectSingleNode("configuration/categorizedSettings").AppendChild(errorLoggerNode);
@@ -1847,7 +1834,7 @@ namespace ConfigurationSetupUtility.Screens
                 XmlNode logToDatabaseNode = errorLoggerNode.SelectNodes("add").Cast<XmlNode>()
                                                            .SingleOrDefault(node => node.Attributes != null && node.Attributes["name"].Value == "LogToDatabase");
 
-                if (logToDatabaseNode == null)
+                if (logToDatabaseNode is null)
                 {
                     XmlElement addElement = configFile.CreateElement("add");
 
@@ -1877,7 +1864,7 @@ namespace ConfigurationSetupUtility.Screens
 
             // Make sure sttpDataPublisher settings exist
             XmlNode sttpDataPublisherNode = configFile.SelectSingleNode("configuration/categorizedSettings/sttpdatapublisher");
-            if (serviceConfigFile && sttpDataPublisherNode == null)
+            if (serviceConfigFile && sttpDataPublisherNode is null)
             {
                 sttpDataPublisherNode = configFile.CreateElement("sttpdatapublisher");
 
@@ -1905,7 +1892,7 @@ namespace ConfigurationSetupUtility.Screens
 
             // Make sure sttpsDataPublisher settings exist
             XmlNode sttpsDataPublisher = configFile.SelectSingleNode("configuration/categorizedSettings/sttpsdatapublisher");
-            if (serviceConfigFile && sttpsDataPublisher == null)
+            if (serviceConfigFile && sttpsDataPublisher is null)
             {
                 sttpsDataPublisher = configFile.CreateElement("sttpsdatapublisher");
 
@@ -1956,7 +1943,7 @@ namespace ConfigurationSetupUtility.Screens
             // Make sure alarm services settings exist
             XmlNode alarmServicesNode = configFile.SelectSingleNode("configuration/categorizedSettings/alarmservicesAlarmService");
 
-            if (serviceConfigFile && alarmServicesNode == null)
+            if (serviceConfigFile && alarmServicesNode is null)
             {
                 alarmServicesNode = configFile.CreateElement("alarmservicesAlarmService");
 

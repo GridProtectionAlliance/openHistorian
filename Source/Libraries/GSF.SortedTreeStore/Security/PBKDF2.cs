@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -67,7 +67,7 @@ namespace GSF.Security
         /// <summary>
         /// A temporary location to store the hashed bytes.
         /// </summary>
-        private Queue<byte> m_results = new Queue<byte>();
+        private readonly Queue<byte> m_results = new Queue<byte>();
 
         private HMac m_hash1;
 
@@ -82,7 +82,7 @@ namespace GSF.Security
         /// <param name="iterations">the number of iterations. Recommended to be at least 1000</param>
         public PBKDF2(HMACMethod method, byte[] password, byte[] salt, int iterations)
         {
-            if (password == null)
+            if (password is null)
                 throw new ArgumentNullException("password");
 
             switch (method)
@@ -119,11 +119,11 @@ namespace GSF.Security
             }
         }
 
-        void Initialize(HMac hash, byte[] passwordBytes, byte[] salt, int iterations)
+        private void Initialize(HMac hash, byte[] passwordBytes, byte[] salt, int iterations)
         {
-            if (hash == null)
+            if (hash is null)
                 throw new ArgumentNullException("hash");
-            if (salt == null)
+            if (salt is null)
                 throw new ArgumentNullException("salt");
 
             hash.Init(new KeyParameter(passwordBytes));
@@ -212,7 +212,7 @@ namespace GSF.Security
             }
 
             m_blockNumber++;
-            foreach (var b in final)
+            foreach (byte b in final)
                 m_results.Enqueue(b);
         }
 
@@ -231,7 +231,7 @@ namespace GSF.Security
         /// </returns>
         public static byte[] ComputeSaltedPassword(HMACMethod method, byte[] password, byte[] salt, int iterations, int length)
         {
-            using (var kdf = new PBKDF2(method, password, salt, iterations))
+            using (PBKDF2 kdf = new PBKDF2(method, password, salt, iterations))
             {
                 return kdf.GetBytes(length);
             }

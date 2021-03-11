@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using GSF.IO;
 using GSF.Snap.Types;
-using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Scada.AMI
 {
@@ -15,68 +13,33 @@ namespace openHistorian.Scada.AMI
 
         public ulong JobRunTime
         {
-            get
-            {
-                return Timestamp;
-            }
-            set
-            {
-                Timestamp = value;
-            }
+            get => Timestamp;
+            set => Timestamp = value;
         }
 
         public ulong DeviceCode
         {
-            get
-            {
-                return PointID;
-            }
-            set
-            {
-                PointID = value;
-            }
+            get => PointID;
+            set => PointID = value;
         }
 
         public DateTime JobRunTimeAsDate
         {
-            get
-            {
-                return new DateTime((long)Timestamp);
-            }
-            set
-            {
-                Timestamp = (ulong)value.Ticks;
-            }
+            get => new DateTime((long)Timestamp);
+            set => Timestamp = (ulong)value.Ticks;
         }
 
         public DateTime CollectedTimeAsDate
         {
-            get
-            {
-                return new DateTime((long)CollectedTime);
-            }
-            set
-            {
-                CollectedTime = (ulong)value.Ticks;
-            }
+            get => new DateTime((long)CollectedTime);
+            set => CollectedTime = (ulong)value.Ticks;
         }
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {CA57E35C-BCBD-4E95-89F4-419A023FF09E}
-                return new Guid(0xca57e35c, 0xbcbd, 0x4e95, 0x89, 0xf4, 0x41, 0x9a, 0x02, 0x3f, 0xf0, 0x9e);
-            }
-        }
+        public override Guid GenericTypeGuid =>
+            // {CA57E35C-BCBD-4E95-89F4-419A023FF09E}
+            new Guid(0xca57e35c, 0xbcbd, 0x4e95, 0x89, 0xf4, 0x41, 0x9a, 0x02, 0x3f, 0xf0, 0x9e);
 
-        public override int Size
-        {
-            get
-            {
-                return 28;
-            }
-        }
+        public override int Size => 28;
 
         /// <summary>
         /// Sets all of the values in this class to their minimum value

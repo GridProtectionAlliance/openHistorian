@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -28,7 +28,6 @@ using System.Data;
 using System.IO;
 using GSF.Immutable;
 using GSF.IO;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Writer
 {
@@ -76,10 +75,7 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public ArchiveDirectoryMethod DirectoryMethod
         {
-            get
-            {
-                return m_directoryMethod;
-            }
+            get => m_directoryMethod;
             set
             {
                 TestForEditable();
@@ -92,10 +88,7 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public string Prefix
         {
-            get
-            {
-                return m_prefix;
-            }
+            get => m_prefix;
             set
             {
                 TestForEditable();
@@ -113,23 +106,14 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// The list of all available paths to write files to
         /// </summary>
-        public ImmutableList<string> WritePath
-        {
-            get
-            {
-                return m_writePath;
-            }
-        }
+        public ImmutableList<string> WritePath => m_writePath;
 
         /// <summary>
         /// The extension to name the file.
         /// </summary>
         public string PendingExtension
         {
-            get
-            {
-                return m_pendingExtension;
-            }
+            get => m_pendingExtension;
             set
             {
                 TestForEditable();
@@ -143,10 +127,7 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public string FinalExtension
         {
-            get
-            {
-                return m_finalExtension;
-            }
+            get => m_finalExtension;
             set
             {
                 TestForEditable();
@@ -157,27 +138,18 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// The flags that will be added to any created archive files.
         /// </summary>
-        public ImmutableList<Guid> Flags
-        {
-            get
-            {
-                return m_flags;
-            }
-        }
+        public ImmutableList<Guid> Flags => m_flags;
 
         /// <summary>
         /// The encoding method that will be used to write files.
         /// </summary>
         public EncodingDefinition EncodingMethod
         {
-            get
-            {
-                return m_encodingMethod;
-            }
+            get => m_encodingMethod;
             set
             {
                 TestForEditable();
-                if ((object)value == null)
+                if (value is null)
                     throw new ArgumentNullException("value");
                 m_encodingMethod = value;
             }
@@ -192,10 +164,7 @@ namespace GSF.Snap.Services.Writer
         /// </remarks>
         public long DesiredRemainingSpace
         {
-            get
-            {
-                return m_desiredRemainingSpace;
-            }
+            get => m_desiredRemainingSpace;
             set
             {
                 TestForEditable();
@@ -251,12 +220,12 @@ namespace GSF.Snap.Services.Writer
             stream.Write(m_desiredRemainingSpace);
             m_encodingMethod.Save(stream);
             stream.Write(m_writePath.Count);
-            foreach (var path in m_writePath)
+            foreach (string path in m_writePath)
             {
                 stream.Write(path);
             }
             stream.Write(m_flags.Count);
-            foreach (var flag in m_flags)
+            foreach (Guid flag in m_flags)
             {
                 stream.Write(flag);
             }

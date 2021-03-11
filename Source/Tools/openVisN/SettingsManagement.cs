@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using openVisN.Library;
@@ -29,13 +30,13 @@ namespace openVisN
 
         private void ApplySettings()
         {
-            var signals = AllSignals.DefaultSignals;
+            List<SignalBook> signals = AllSignals.DefaultSignals;
             signals.Clear();
             
             foreach (DataRow row in MyData.Tables["Measurements"].Rows)
                 signals.Add(new SignalBook(row));
 
-            var terminal = AllSignalGroups.DefaultSignalGroups;
+            List<SignalGroupBook> terminal = AllSignalGroups.DefaultSignalGroups;
             terminal.Clear();
 
             foreach (DataRow row in MyData.Tables["Terminals"].Rows)

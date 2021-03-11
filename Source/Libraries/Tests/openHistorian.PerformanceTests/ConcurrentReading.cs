@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 //using System.Windows.Forms;
 using GSF.Snap;
-using GSF.Snap.Services.Configuration;
-using GSF.Snap.Services.Net;
+using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using openHistorian.Data;
-
 using NUnit.Framework;
-using openHistorian.Data.Query;
 using openHistorian.Net;
 using openHistorian.Snap;
 
@@ -23,8 +15,8 @@ namespace openHistorian.PerformanceTests
     public class ConcurrentReading
     {
         const int PointsToRead = 10000000;
-        int ReaderNumber = 0;
-        int ThreadNumber = 0;
+        int ReaderNumber;
+        int ThreadNumber;
         volatile bool StopReading;
 
         [Test]
@@ -35,7 +27,7 @@ namespace openHistorian.PerformanceTests
 
             StopReading = false;
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);
@@ -68,7 +60,7 @@ namespace openHistorian.PerformanceTests
 
             StopReading = false;
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 Thread.Sleep(1000);
@@ -103,7 +95,6 @@ namespace openHistorian.PerformanceTests
         void ScannerThread()
         {
             int threadId = Interlocked.Increment(ref ThreadNumber);
-
             try
             {
 
@@ -112,14 +103,14 @@ namespace openHistorian.PerformanceTests
                 {
 
                     Stopwatch sw = new Stopwatch();
-                    using (var client = new HistorianClient("127.0.0.1", 12345))
-                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
+                    using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
                         sw.Start();
-                        var scan = database.Read(0, ulong.MaxValue, new ulong[] { 65, 953, 5562 });
+                        TreeStream<HistorianKey, HistorianValue> scan = database.Read(0, ulong.MaxValue, new ulong[] { 65, 953, 5562 });
                         while (scan.Read(key, value))
                             ;
                         sw.Stop();
@@ -128,7 +119,7 @@ namespace openHistorian.PerformanceTests
                     //Console.WriteLine("Thread: " + threadId.ToString() + " " + "Run Number: " + myId.ToString() + " " + (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString());
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Console.WriteLine(ex.ToString());
             }
@@ -146,7 +137,6 @@ namespace openHistorian.PerformanceTests
         void ReaderThread()
         {
             int threadId = Interlocked.Increment(ref ThreadNumber);
-
             try
             {
 
@@ -157,14 +147,14 @@ namespace openHistorian.PerformanceTests
                     int myId = Interlocked.Increment(ref ReaderNumber);
                     Stopwatch sw = new Stopwatch();
                     int pointCount = 0;
-                    using (var client = new HistorianClient("127.0.0.1", 12345))
-                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
+                    using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
                         sw.Start();
-                        var scan = database.Read((ulong)start.Ticks, ulong.MaxValue);//, new ulong[] { 65, 953, 5562 });
+                        TreeStream<HistorianKey, HistorianValue> scan = database.Read((ulong)start.Ticks, ulong.MaxValue);//, new ulong[] { 65, 953, 5562 });
                         while (scan.Read(key, value) && pointCount < PointsToRead)
                             pointCount++;
                         sw.Stop();
@@ -173,7 +163,7 @@ namespace openHistorian.PerformanceTests
                     //Console.WriteLine("Thread: " + threadId.ToString() + " " + "Run Number: " + myId.ToString() + " " + (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString());
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Console.WriteLine(ex.ToString());
             }

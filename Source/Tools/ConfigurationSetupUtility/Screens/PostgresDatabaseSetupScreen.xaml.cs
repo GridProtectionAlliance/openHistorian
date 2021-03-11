@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -213,10 +213,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -254,7 +251,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                Visibility newUserVisibility = (existing && !migrate) ? Visibility.Collapsed : Visibility.Visible;
+                Visibility newUserVisibility = existing && !migrate ? Visibility.Collapsed : Visibility.Visible;
                 string newDatabaseMessage = "Please enter the needed information about the\r\nOracle database you would like to create.";
                 string oldDatabaseMessage = "Please enter the needed information about\r\nyour existing Oracle database.";
 
@@ -273,7 +270,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_rolePasswordLabel.Visibility = newUserVisibility;
                 m_roleNameTextBox.Visibility = newUserVisibility;
                 m_rolePasswordTextBox.Visibility = newUserVisibility;
-                m_postgresDatabaseInstructionTextBlock.Text = (!existing || migrate) ? newDatabaseMessage : oldDatabaseMessage;
+                m_postgresDatabaseInstructionTextBlock.Text = !existing || migrate ? newDatabaseMessage : oldDatabaseMessage;
 
                 // If connecting to existing database, user name and password need to be admin user:
                 if (existing && !migrate)
@@ -322,7 +319,7 @@ namespace ConfigurationSetupUtility.Screens
         // Occurs when the screen is made visible or invisible.
         private void PostgresDatabaseSetupScreen_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (m_advancedButton == null)
+            if (m_advancedButton is null)
             {
                 DependencyObject parent = VisualTreeHelper.GetParent(this);
                 Window mainWindow;
@@ -331,7 +328,7 @@ namespace ConfigurationSetupUtility.Screens
                     parent = VisualTreeHelper.GetParent(parent);
 
                 mainWindow = parent as Window;
-                m_advancedButton = (mainWindow == null) ? null : mainWindow.FindName("m_advancedButton") as Button;
+                m_advancedButton = mainWindow is null ? null : mainWindow.FindName("m_advancedButton") as Button;
             }
 
             if (m_advancedButton != null)
@@ -467,7 +464,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_databaseTextBox.Text = m_postgresSetup.DatabaseName;
                 m_roleNameTextBox.Text = m_postgresSetup.RoleName;
 
-                if (m_postgresSetup.RolePassword == null || m_postgresSetup.RolePassword.Length == 0)
+                if (m_postgresSetup.RolePassword is null || m_postgresSetup.RolePassword.Length == 0)
                     m_postgresSetup.RolePassword = password;
                 else
                     m_rolePasswordTextBox.Password = m_postgresSetup.RolePassword.ToUnsecureString();

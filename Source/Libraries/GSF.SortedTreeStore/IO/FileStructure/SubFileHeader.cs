@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -88,7 +88,7 @@ namespace GSF.IO.FileStructure
         /// <param name="isSimplified">if this header is a simplified header.</param>
         public SubFileHeader(ushort fileId, SubFileName fileName, bool isImmutable, bool isSimplified)
         {
-            if (fileName == null)
+            if (fileName is null)
                 throw new ArgumentException("The feature type cannot be an empty GUID value", "fileName");
             m_isSimplified = isSimplified;
             IsReadOnly = isImmutable;
@@ -103,34 +103,19 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Gets the unique file identifier for this file.
         /// </summary>
-        public ushort FileIdNumber
-        {
-            get
-            {
-                return m_fileIdNumber;
-            }
-        }
+        public ushort FileIdNumber => m_fileIdNumber;
 
         /// <summary>
         /// Gets the <see cref="SubFileName"/> that represents what type of data is contained in this file.
         /// </summary>
-        public SubFileName FileName
-        {
-            get
-            {
-                return m_fileName;
-            }
-        }
+        public SubFileName FileName => m_fileName;
 
         /// <summary>
         /// Gets the number of blocks the data portion of this file contains
         /// </summary>
         public uint DataBlockCount
         {
-            get
-            {
-                return m_dataBlockCount;
-            }
+            get => m_dataBlockCount;
             set
             {
                 TestForEditable();
@@ -164,10 +149,7 @@ namespace GSF.IO.FileStructure
         /// </summary>
         public uint DirectBlock
         {
-            get
-            {
-                return m_directBlock;
-            }
+            get => m_directBlock;
             set
             {
                 TestForEditable();
@@ -279,13 +261,13 @@ namespace GSF.IO.FileStructure
         /// Test if the class has been marked as readonly. Throws an exception if editing cannot occur.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void TestSimplifiedFile()
+        private void TestSimplifiedFile()
         {
             if (m_isSimplified)
                 ThrowSimplified();
         }
 
-        void ThrowSimplified()
+        private void ThrowSimplified()
         {
             throw new Exception("Value is not valid for a Simplified File Header");
         }

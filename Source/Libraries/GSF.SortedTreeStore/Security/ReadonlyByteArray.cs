@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -34,12 +34,12 @@ namespace GSF.Security
         : IComparable<ReadonlyByteArray>, IEquatable<ReadonlyByteArray>
     {
         private readonly byte[] m_value;
-        private int m_hashCode;
+        private readonly int m_hashCode;
 
         public ReadonlyByteArray(byte[] array)
         {
             m_value = array;
-            if (array == null)
+            if (array is null)
             {
                 m_hashCode = 0;
             }
@@ -51,11 +51,11 @@ namespace GSF.Security
 
         public int CompareTo(ReadonlyByteArray other)
         {
-            if (m_value == null && other.m_value == null)
+            if (m_value is null && other.m_value is null)
                 return 0;
-            if (m_value == null)
+            if (m_value is null)
                 return -1;
-            if (other.m_value == null)
+            if (other.m_value is null)
                 return 1;
             if (m_value.Length < other.m_value.Length)
                 return 1;
@@ -76,9 +76,9 @@ namespace GSF.Security
         {
             if (m_hashCode != other.m_hashCode)
                 return false;
-            if (m_value == null && other.m_value == null)
+            if (m_value is null && other.m_value is null)
                 return true;
-            if (m_value == null || other.m_value == null)
+            if (m_value is null || other.m_value is null)
                 return false;
             return m_value.SequenceEqual(other.m_value);
         }
@@ -98,7 +98,7 @@ namespace GSF.Security
         }
 
         //http://stackoverflow.com/questions/16340/how-do-i-generate-a-hashcode-from-a-byte-array-in-c-sharp
-        static int ComputeHash(byte[] data)
+        private static int ComputeHash(byte[] data)
         {
             unchecked
             {

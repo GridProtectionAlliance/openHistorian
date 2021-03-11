@@ -92,7 +92,7 @@ namespace HistorianView
 
                     if (disposing)
                     {
-                        if ((object)m_subscriber != null)
+                        if (m_subscriber != null)
                         {
                             // Detach from subscriber events
                             m_subscriber.ProcessException -= m_subscriber_ProcessException;
@@ -103,7 +103,7 @@ namespace HistorianView
                             m_subscriber = null;
                         }
 
-                        if ((object)m_waitHandle != null)
+                        if (m_waitHandle != null)
                         {
                             m_waitHandle.Set(); // Release any waiting threads
                             m_waitHandle.Dispose();
@@ -130,11 +130,11 @@ namespace HistorianView
                 throw new TimeoutException(string.Format("Waited for {0} seconds for meta-data, but none was received.", timeout / 1000.0D));
 
             // If meta-data was received, return it
-            if ((object)m_metadata != null)
+            if (m_metadata != null)
                 return m_metadata;
 
             // If a processing exception occurred, re-throw it
-            if ((object)m_processException != null)
+            if (m_processException != null)
                 throw new InvalidOperationException(m_processException.Message, m_processException);
 
             // Otherwise return null (unlikely to ever get to this return)

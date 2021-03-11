@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -36,7 +36,7 @@ namespace GSF.Collections
     /// <typeparam name="T">The type.</typeparam>
     public class NullableLargeArray<T> : IEnumerable<T>
     {
-        private LargeArray<T> m_list;
+        private readonly LargeArray<T> m_list;
         private readonly BitArray m_isUsed;
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace GSF.Collections
             }
             else
             {
-                value = default(T);
+                value = default;
                 return false;
             }
         }
@@ -82,35 +82,17 @@ namespace GSF.Collections
         /// <summary>
         /// Gets the number of items that can be stored in the array.
         /// </summary>
-        public int Capacity
-        {
-            get
-            {
-                return m_list.Capacity;
-            }
-        }
+        public int Capacity => m_list.Capacity;
 
         /// <summary>
         /// Gets the number of items that are in the array that are not null
         /// </summary>
-        public int CountUsed
-        {
-            get
-            {
-                return m_isUsed.SetCount;
-            }
-        }
+        public int CountUsed => m_isUsed.SetCount;
 
         /// <summary>
         /// Gets the number of available spaces in the array. Equal to <see cref="Capacity"/> - <see cref="CountUsed"/>.
         /// </summary>
-        public int CountFree
-        {
-            get
-            {
-                return m_isUsed.ClearCount;
-            }
-        }
+        public int CountFree => m_isUsed.ClearCount;
 
         /// <summary>
         /// Gets the provided item from the array. 
@@ -119,14 +101,8 @@ namespace GSF.Collections
         /// <returns>The item.</returns>
         public T this[int index]
         {
-            get
-            {
-                return GetValue(index);
-            }
-            set
-            {
-                SetValue(index, value);
-            }
+            get => GetValue(index);
+            set => SetValue(index, value);
         }
 
         /// <summary>
@@ -163,7 +139,7 @@ namespace GSF.Collections
         public void SetNull(int index)
         {
             m_isUsed.ClearBit(index);
-            m_list[index] = default(T);
+            m_list[index] = default;
         }
 
         /// <summary>

@@ -125,7 +125,7 @@ namespace NPlot.Windows
             /// </summary>
             public class RubberBandSelection : Interaction
             {
-                private bool selectionInitiated_ = false;
+                private bool selectionInitiated_;
 
                 /// <summary>
                 /// 
@@ -153,7 +153,7 @@ namespace NPlot.Windows
                 /// <param name="lastKeyEventArgs"></param>
                 public override bool DoMouseMove(MouseEventArgs e, Control ctr, KeyEventArgs lastKeyEventArgs)
                 {
-                    if ((e.Button == MouseButtons.Left) && selectionInitiated_)
+                    if (e.Button == MouseButtons.Left && selectionInitiated_)
                     {
                         // we are here
                         Point here = new Point(e.X, e.Y);
@@ -182,7 +182,7 @@ namespace NPlot.Windows
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
                     // handle left button (selecting region).
-                    if ((e.Button == MouseButtons.Left) && selectionInitiated_)
+                    if (e.Button == MouseButtons.Left && selectionInitiated_)
                     {
                         endPoint_.X = e.X;
                         endPoint_.Y = e.Y;
@@ -242,10 +242,10 @@ namespace NPlot.Windows
                     // the clipping rectangle in screen coordinates
                     Rectangle clip = ctr.RectangleToScreen(
                         new Rectangle(
-                            (int)ps.PlotAreaBoundingBoxCache.X,
-                            (int)ps.PlotAreaBoundingBoxCache.Y,
-                            (int)ps.PlotAreaBoundingBoxCache.Width,
-                            (int)ps.PlotAreaBoundingBoxCache.Height));
+                            ps.PlotAreaBoundingBoxCache.X,
+                            ps.PlotAreaBoundingBoxCache.Y,
+                            ps.PlotAreaBoundingBoxCache.Width,
+                            ps.PlotAreaBoundingBoxCache.Height));
 
                     // convert to screen coords
                     start = ctr.PointToScreen(start);
@@ -275,7 +275,7 @@ namespace NPlot.Windows
                     rect = Rectangle.Intersect(rect, clip);
 
                     ControlPaint.DrawReversibleFrame(
-                        new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height),
+                        new Rectangle(rect.X, rect.Y, rect.Width, rect.Height),
                         Color.White, FrameStyle.Dashed);
                 }
 
@@ -337,17 +337,17 @@ namespace NPlot.Windows
 
                     // if mouse isn't in plot region, then don't draw horizontal line
                     if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < ps.PlotAreaBoundingBoxCache.Right &&
-                        e.Y > ps.PlotAreaBoundingBoxCache.Top && e.Y < (ps.PlotAreaBoundingBoxCache.Bottom - 1))
+                        e.Y > ps.PlotAreaBoundingBoxCache.Top && e.Y < ps.PlotAreaBoundingBoxCache.Bottom - 1)
                     {
                         if (ps.PhysicalXAxis1Cache != null)
                         {
                             // the clipping rectangle in screen coordinates
                             Rectangle clip = ctr.RectangleToScreen(
                                 new Rectangle(
-                                    (int)ps.PlotAreaBoundingBoxCache.X,
-                                    (int)ps.PlotAreaBoundingBoxCache.Y,
-                                    (int)ps.PlotAreaBoundingBoxCache.Width,
-                                    (int)ps.PlotAreaBoundingBoxCache.Height));
+                                    ps.PlotAreaBoundingBoxCache.X,
+                                    ps.PlotAreaBoundingBoxCache.Y,
+                                    ps.PlotAreaBoundingBoxCache.Width,
+                                    ps.PlotAreaBoundingBoxCache.Height));
 
                             Point p = ctr.PointToScreen(new Point(e.X, e.Y));
 
@@ -378,10 +378,10 @@ namespace NPlot.Windows
                         {
                             Rectangle clip = ctr.RectangleToScreen(
                                 new Rectangle(
-                                    (int)ps.PlotAreaBoundingBoxCache.X,
-                                    (int)ps.PlotAreaBoundingBoxCache.Y,
-                                    (int)ps.PlotAreaBoundingBoxCache.Width,
-                                    (int)ps.PlotAreaBoundingBoxCache.Height));
+                                    ps.PlotAreaBoundingBoxCache.X,
+                                    ps.PlotAreaBoundingBoxCache.Y,
+                                    ps.PlotAreaBoundingBoxCache.Width,
+                                    ps.PlotAreaBoundingBoxCache.Height));
 
                             ControlPaint.DrawReversibleLine(
                                 new Point(clip.Left, barPos_),
@@ -408,10 +408,10 @@ namespace NPlot.Windows
 
                         Rectangle clip = ctr.RectangleToScreen(
                             new Rectangle(
-                                (int)ps.PlotAreaBoundingBoxCache.X,
-                                (int)ps.PlotAreaBoundingBoxCache.Y,
-                                (int)ps.PlotAreaBoundingBoxCache.Width,
-                                (int)ps.PlotAreaBoundingBoxCache.Height));
+                                ps.PlotAreaBoundingBoxCache.X,
+                                ps.PlotAreaBoundingBoxCache.Y,
+                                ps.PlotAreaBoundingBoxCache.Width,
+                                ps.PlotAreaBoundingBoxCache.Height));
 
                         ControlPaint.DrawReversibleLine(
                             new Point(clip.Left, barPos_),
@@ -474,7 +474,7 @@ namespace NPlot.Windows
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
                     // if mouse isn't in plot region, then don't draw horizontal line
-                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < (ps.PlotAreaBoundingBoxCache.Right - 1) &&
+                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < ps.PlotAreaBoundingBoxCache.Right - 1 &&
                         e.Y > ps.PlotAreaBoundingBoxCache.Top && e.Y < ps.PlotAreaBoundingBoxCache.Bottom)
                     {
                         if (ps.PhysicalXAxis1Cache != null)
@@ -482,10 +482,10 @@ namespace NPlot.Windows
                             // the clipping rectangle in screen coordinates
                             Rectangle clip = ctr.RectangleToScreen(
                                 new Rectangle(
-                                    (int)ps.PlotAreaBoundingBoxCache.X,
-                                    (int)ps.PlotAreaBoundingBoxCache.Y,
-                                    (int)ps.PlotAreaBoundingBoxCache.Width,
-                                    (int)ps.PlotAreaBoundingBoxCache.Height));
+                                    ps.PlotAreaBoundingBoxCache.X,
+                                    ps.PlotAreaBoundingBoxCache.Y,
+                                    ps.PlotAreaBoundingBoxCache.Width,
+                                    ps.PlotAreaBoundingBoxCache.Height));
 
                             Point p = ctr.PointToScreen(new Point(e.X, e.Y));
 
@@ -515,10 +515,10 @@ namespace NPlot.Windows
                         {
                             Rectangle clip = ctr.RectangleToScreen(
                                 new Rectangle(
-                                    (int)ps.PlotAreaBoundingBoxCache.X,
-                                    (int)ps.PlotAreaBoundingBoxCache.Y,
-                                    (int)ps.PlotAreaBoundingBoxCache.Width,
-                                    (int)ps.PlotAreaBoundingBoxCache.Height)
+                                    ps.PlotAreaBoundingBoxCache.X,
+                                    ps.PlotAreaBoundingBoxCache.Y,
+                                    ps.PlotAreaBoundingBoxCache.Width,
+                                    ps.PlotAreaBoundingBoxCache.Height)
                                 );
 
                             ControlPaint.DrawReversibleLine(
@@ -546,10 +546,10 @@ namespace NPlot.Windows
 
                         Rectangle clip = ctr.RectangleToScreen(
                             new Rectangle(
-                                (int)ps.PlotAreaBoundingBoxCache.X,
-                                (int)ps.PlotAreaBoundingBoxCache.Y,
-                                (int)ps.PlotAreaBoundingBoxCache.Width,
-                                (int)ps.PlotAreaBoundingBoxCache.Height));
+                                ps.PlotAreaBoundingBoxCache.X,
+                                ps.PlotAreaBoundingBoxCache.Y,
+                                ps.PlotAreaBoundingBoxCache.Width,
+                                ps.PlotAreaBoundingBoxCache.Height));
 
                         ControlPaint.DrawReversibleLine(
                             new Point(barPos_, clip.Top),
@@ -578,7 +578,7 @@ namespace NPlot.Windows
                 {
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
-                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < (ps.PlotAreaBoundingBoxCache.Right) &&
+                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < ps.PlotAreaBoundingBoxCache.Right &&
                         e.Y > ps.PlotAreaBoundingBoxCache.Top && e.Y < ps.PlotAreaBoundingBoxCache.Bottom)
                     {
                         dragInitiated_ = true;
@@ -600,7 +600,7 @@ namespace NPlot.Windows
                 {
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
-                    if ((e.Button == MouseButtons.Left) && dragInitiated_)
+                    if (e.Button == MouseButtons.Left && dragInitiated_)
                     {
                         int diffX = e.X - lastPoint_.X;
 
@@ -659,7 +659,7 @@ namespace NPlot.Windows
                 /// <param name="ctr"></param>
                 public override bool DoMouseUp(MouseEventArgs e, Control ctr)
                 {
-                    if ((e.Button == MouseButtons.Left) && dragInitiated_)
+                    if (e.Button == MouseButtons.Left && dragInitiated_)
                     {
                         lastPoint_ = unset_;
                         dragInitiated_ = false;
@@ -667,7 +667,7 @@ namespace NPlot.Windows
                     return false;
                 }
 
-                private bool dragInitiated_ = false;
+                private bool dragInitiated_;
                 private Point lastPoint_ = new Point(-1, -1);
                 // this is the condition for an unset point
                 private readonly Point unset_ = new Point(-1, -1);
@@ -691,7 +691,7 @@ namespace NPlot.Windows
                 {
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
-                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < (ps.PlotAreaBoundingBoxCache.Right) &&
+                    if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < ps.PlotAreaBoundingBoxCache.Right &&
                         e.Y > ps.PlotAreaBoundingBoxCache.Top && e.Y < ps.PlotAreaBoundingBoxCache.Bottom)
                     {
                         dragInitiated_ = true;
@@ -714,7 +714,7 @@ namespace NPlot.Windows
                 {
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
-                    if ((e.Button == MouseButtons.Left) && dragInitiated_)
+                    if (e.Button == MouseButtons.Left && dragInitiated_)
                     {
                         int diffY = e.Y - lastPoint_.Y;
 
@@ -769,7 +769,7 @@ namespace NPlot.Windows
                 /// <param name="ctr"></param>
                 public override bool DoMouseUp(MouseEventArgs e, Control ctr)
                 {
-                    if ((e.Button == MouseButtons.Left) && dragInitiated_)
+                    if (e.Button == MouseButtons.Left && dragInitiated_)
                     {
                         lastPoint_ = unset_;
                         dragInitiated_ = false;
@@ -778,7 +778,7 @@ namespace NPlot.Windows
                     return false;
                 }
 
-                private bool dragInitiated_ = false;
+                private bool dragInitiated_;
                 private Point lastPoint_ = new Point(-1, -1);
                 // this is the condition for an unset point
                 private readonly Point unset_ = new Point(-1, -1);
@@ -793,7 +793,7 @@ namespace NPlot.Windows
             /// </summary>
             public class HorizontalRangeSelection : Interaction
             {
-                private bool selectionInitiated_ = false;
+                private bool selectionInitiated_;
                 private Point startPoint_ = new Point(-1, -1);
                 private Point endPoint_ = new Point(-1, -1);
                 private Point previousPoint_ = new Point(-1, -1);
@@ -825,14 +825,8 @@ namespace NPlot.Windows
                 /// </summary>
                 public int MinimumPixelDistanceForSelect
                 {
-                    get
-                    {
-                        return minimumPixelDistanceForSelect_;
-                    }
-                    set
-                    {
-                        minimumPixelDistanceForSelect_ = value;
-                    }
+                    get => minimumPixelDistanceForSelect_;
+                    set => minimumPixelDistanceForSelect_ = value;
                 }
 
 
@@ -842,14 +836,8 @@ namespace NPlot.Windows
                 /// </summary>
                 public double SmallestAllowedRange
                 {
-                    get
-                    {
-                        return smallestAllowedRange_;
-                    }
-                    set
-                    {
-                        smallestAllowedRange_ = value;
-                    }
+                    get => smallestAllowedRange_;
+                    set => smallestAllowedRange_ = value;
                 }
 
 
@@ -897,7 +885,7 @@ namespace NPlot.Windows
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
                     // if dragging on axis to zoom.
-                    if ((e.Button == MouseButtons.Left) && selectionInitiated_)
+                    if (e.Button == MouseButtons.Left && selectionInitiated_)
                     {
                         Point endPoint_ = previousPoint_;
                         if (e.X > ps.PlotAreaBoundingBoxCache.Left && e.X < ps.PlotAreaBoundingBoxCache.Right &&
@@ -930,7 +918,7 @@ namespace NPlot.Windows
                 {
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
-                    if ((e.Button == MouseButtons.Left) && selectionInitiated_)
+                    if (e.Button == MouseButtons.Left && selectionInitiated_)
                     {
                         endPoint_.X = e.X;
                         endPoint_.Y = e.Y;
@@ -958,8 +946,8 @@ namespace NPlot.Windows
                         double xAxis1Max = double.NaN;
                         if (ps.XAxis1 != null)
                         {
-                            int x1 = (int)Math.Min(endPoint_.X, startPoint_.X);
-                            int x2 = (int)Math.Max(endPoint_.X, startPoint_.X);
+                            int x1 = Math.Min(endPoint_.X, startPoint_.X);
+                            int x2 = Math.Max(endPoint_.X, startPoint_.X);
                             int y = ps.PhysicalXAxis1Cache.PhysicalMax.Y;
 
                             xAxis1Min = ps.PhysicalXAxis1Cache.PhysicalToWorld(new Point(x1, y), true);
@@ -975,8 +963,8 @@ namespace NPlot.Windows
                         double xAxis2Max = double.NaN;
                         if (ps.XAxis2 != null)
                         {
-                            int x1 = (int)Math.Min(endPoint_.X, startPoint_.X);
-                            int x2 = (int)Math.Max(endPoint_.X, startPoint_.X);
+                            int x1 = Math.Min(endPoint_.X, startPoint_.X);
+                            int x2 = Math.Max(endPoint_.X, startPoint_.X);
                             int y = ps.PhysicalXAxis2Cache.PhysicalMax.Y;
 
                             xAxis2Min = ps.PhysicalXAxis2Cache.PhysicalToWorld(new Point(x1, y), true);
@@ -1017,16 +1005,16 @@ namespace NPlot.Windows
                     // the clipping rectangle in screen coordinates
                     Rectangle clip = ctr.RectangleToScreen(
                         new Rectangle(
-                            (int)ps.PlotAreaBoundingBoxCache.X,
-                            (int)ps.PlotAreaBoundingBoxCache.Y,
-                            (int)ps.PlotAreaBoundingBoxCache.Width,
-                            (int)ps.PlotAreaBoundingBoxCache.Height));
+                            ps.PlotAreaBoundingBoxCache.X,
+                            ps.PlotAreaBoundingBoxCache.Y,
+                            ps.PlotAreaBoundingBoxCache.Width,
+                            ps.PlotAreaBoundingBoxCache.Height));
 
                     start = ctr.PointToScreen(start);
                     end = ctr.PointToScreen(end);
 
                     ControlPaint.FillReversibleRectangle(
-                        new Rectangle((int)Math.Min(start.X, end.X), (int)clip.Y, (int)Math.Abs(end.X - start.X), (int)clip.Height),
+                        new Rectangle(Math.Min(start.X, end.X), clip.Y, Math.Abs(end.X - start.X), clip.Height),
                         Color.White);
                 }
             }
@@ -1049,13 +1037,13 @@ namespace NPlot.Windows
                     enableDragWithCtr_ = enableDragWithCtr;
                 }
 
-                private readonly bool enableDragWithCtr_ = false;
+                private readonly bool enableDragWithCtr_;
 
-                private Axis axis_ = null;
-                private bool doing_ = false;
-                private Point lastPoint_ = new Point();
-                private PhysicalAxis physicalAxis_ = null;
-                private Point startPoint_ = new Point();
+                private Axis axis_;
+                private bool doing_;
+                private Point lastPoint_;
+                private PhysicalAxis physicalAxis_;
+                private Point startPoint_;
 
 
                 /// <summary>
@@ -1074,7 +1062,7 @@ namespace NPlot.Windows
                         return false;
                     }
 
-                    if ((e.Button == MouseButtons.Left))
+                    if (e.Button == MouseButtons.Left)
                     {
                         // see if hit with axis.
                         ArrayList objects = ps.HitTest(new Point(e.X, e.Y));
@@ -1085,8 +1073,7 @@ namespace NPlot.Windows
                             {
                                 doing_ = true;
                                 axis_ = (Axis)o;
-
-                                PhysicalAxis[] physicalAxisList = new PhysicalAxis[] {ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache, ps.PhysicalYAxis1Cache, ps.PhysicalYAxis2Cache};
+                                _ = new PhysicalAxis[] { ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache, ps.PhysicalYAxis1Cache, ps.PhysicalYAxis2Cache };
 
                                 if (ps.PhysicalXAxis1Cache.Axis == axis_)
                                     physicalAxis_ = ps.PhysicalXAxis1Cache;
@@ -1119,7 +1106,7 @@ namespace NPlot.Windows
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
                     // if dragging on axis to zoom.
-                    if ((e.Button == MouseButtons.Left) && doing_ && physicalAxis_ != null)
+                    if (e.Button == MouseButtons.Left && doing_ && physicalAxis_ != null)
                     {
                         if (enableDragWithCtr_ && lastKeyEventArgs != null && lastKeyEventArgs.Control)
                         {
@@ -1127,8 +1114,7 @@ namespace NPlot.Windows
                         else
                         {
                             float dist =
-                                (e.X - lastPoint_.X) +
-                                (-e.Y + lastPoint_.Y);
+                                e.X - lastPoint_.X + -e.Y + lastPoint_.Y;
 
                             lastPoint_ = new Point(e.X, e.Y);
 
@@ -1201,14 +1187,8 @@ namespace NPlot.Windows
                 /// <value></value>
                 public float Sensitivity
                 {
-                    get
-                    {
-                        return sensitivity_;
-                    }
-                    set
-                    {
-                        sensitivity_ = value;
-                    }
+                    get => sensitivity_;
+                    set => sensitivity_ = value;
                 }
             }
 
@@ -1236,13 +1216,13 @@ namespace NPlot.Windows
                     set;
                 }
 
-                private readonly bool enableDragWithCtr_ = false;
+                private readonly bool enableDragWithCtr_;
 
-                private Axis axis_ = null;
-                private bool doing_ = false;
-                private Point lastPoint_ = new Point();
-                private PhysicalAxis physicalAxis_ = null;
-                private Point startPoint_ = new Point();
+                private Axis axis_;
+                private bool doing_;
+                private Point lastPoint_;
+                private PhysicalAxis physicalAxis_;
+                private Point startPoint_;
 
 
                 /// <summary>
@@ -1261,7 +1241,7 @@ namespace NPlot.Windows
                         return false;
                     }
 
-                    if ((e.Button == MouseButtons.Left))
+                    if (e.Button == MouseButtons.Left)
                     {
                         // see if hit with axis.
                         ArrayList objects = ps.HitTest(new Point(e.X, e.Y));
@@ -1270,7 +1250,7 @@ namespace NPlot.Windows
                         {
                             if (o is Axis)
                             {
-                                PhysicalAxis[] physicalAxisList = new PhysicalAxis[] {ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache};
+                                _ = new PhysicalAxis[] { ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache };
 
                                 if (ps.PhysicalXAxis1Cache.Axis == axis_)
                                     physicalAxis_ = ps.PhysicalXAxis1Cache;
@@ -1300,7 +1280,7 @@ namespace NPlot.Windows
                 public override bool DoMouseMove(MouseEventArgs e, Control ctr, KeyEventArgs lastKeyEventArgs)
                 {
                     // if dragging on axis to zoom.
-                    if ((e.Button == MouseButtons.Left) && doing_ && physicalAxis_ != null)
+                    if (e.Button == MouseButtons.Left && doing_ && physicalAxis_ != null)
                     {
                         NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
@@ -1311,7 +1291,8 @@ namespace NPlot.Windows
                         {
                             if (o is Axis)
                             {
-                                PhysicalAxis[] physicalAxisList = new PhysicalAxis[] {ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache};
+                                PhysicalAxis[] physicalAxisList;
+                                _ = new PhysicalAxis[] { ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache };
 
                                 if (ps.PhysicalXAxis1Cache.Axis == axis_)
                                     physicalAxis_ = ps.PhysicalXAxis1Cache;
@@ -1328,7 +1309,7 @@ namespace NPlot.Windows
                         else
                         {
                             float dist =
-                                (e.X - lastPoint_.X);
+                                e.X - lastPoint_.X;
 
                             lastPoint_ = new Point(e.X, e.Y);
 
@@ -1404,14 +1385,8 @@ namespace NPlot.Windows
                 /// <value></value>
                 public float Sensitivity
                 {
-                    get
-                    {
-                        return sensitivity_;
-                    }
-                    set
-                    {
-                        sensitivity_ = value;
-                    }
+                    get => sensitivity_;
+                    set => sensitivity_ = value;
                 }
             }
 
@@ -1426,13 +1401,13 @@ namespace NPlot.Windows
                     enableDragWithCtr_ = enableDragWithCtr;
                 }
 
-                private readonly bool enableDragWithCtr_ = false;
+                private readonly bool enableDragWithCtr_;
 
-                private Axis axis_ = null;
-                private bool doing_ = false;
-                private Point lastPoint_ = new Point();
-                private PhysicalAxis physicalAxis_ = null;
-                private Point startPoint_ = new Point();
+                private Axis axis_;
+                private bool doing_;
+                private Point lastPoint_;
+                private PhysicalAxis physicalAxis_;
+                private Point startPoint_;
 
                 /// <summary>
                 /// 
@@ -1450,7 +1425,7 @@ namespace NPlot.Windows
                         return false;
                     }
 
-                    if ((e.Button == MouseButtons.Left))
+                    if (e.Button == MouseButtons.Left)
                     {
                         // see if hit with axis.
                         ArrayList objects = ps.HitTest(new Point(e.X, e.Y));
@@ -1461,8 +1436,7 @@ namespace NPlot.Windows
                             {
                                 doing_ = true;
                                 axis_ = (Axis)o;
-
-                                PhysicalAxis[] physicalAxisList = new PhysicalAxis[] {ps.PhysicalYAxis1Cache, ps.PhysicalYAxis2Cache};
+                                _ = new PhysicalAxis[] { ps.PhysicalYAxis1Cache, ps.PhysicalYAxis2Cache };
 
                                 if (ps.PhysicalYAxis1Cache.Axis == axis_)
                                     physicalAxis_ = ps.PhysicalYAxis1Cache;
@@ -1491,7 +1465,7 @@ namespace NPlot.Windows
                     NPlot.PlotSurface2D ps = ((PlotSurface2D)ctr).Inner;
 
                     // if dragging on axis to zoom.
-                    if ((e.Button == MouseButtons.Left) && doing_ && physicalAxis_ != null)
+                    if (e.Button == MouseButtons.Left && doing_ && physicalAxis_ != null)
                     {
                         if (enableDragWithCtr_ && lastKeyEventArgs != null && lastKeyEventArgs.Control)
                         {
@@ -1509,7 +1483,7 @@ namespace NPlot.Windows
 
                             PointF pMin = physicalAxis_.PhysicalMin;
                             PointF pMax = physicalAxis_.PhysicalMax;
-                            double physicalWorldLength = (pMax.Y - pMin.Y);
+                            double physicalWorldLength = pMax.Y - pMin.Y;
 
                             float prop = (float)(physicalWorldLength * dist / sensitivity_);
                             prop *= 2;
@@ -1567,14 +1541,8 @@ namespace NPlot.Windows
                 /// <value></value>
                 public float Sensitivity
                 {
-                    get
-                    {
-                        return sensitivity_;
-                    }
-                    set
-                    {
-                        sensitivity_ = value;
-                    }
+                    get => sensitivity_;
+                    set => sensitivity_ = value;
                 }
             }
 
@@ -1669,7 +1637,7 @@ namespace NPlot.Windows
                     {
                         const double zoom = 0.8;
                         PlotSurface2D plot = ctr as PlotSurface2D;
-                        if (plot == null)
+                        if (plot is null)
                             return false;
 
                         Point point = ctr.PointToScreen(e.Location);
@@ -1731,14 +1699,8 @@ namespace NPlot.Windows
                 /// </summary>
                 public float Sensitivity
                 {
-                    get
-                    {
-                        return sensitivity_;
-                    }
-                    set
-                    {
-                        sensitivity_ = value;
-                    }
+                    get => sensitivity_;
+                    set => sensitivity_ = value;
                 }
 
                 private float sensitivity_ = 60.0f;

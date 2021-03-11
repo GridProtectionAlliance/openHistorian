@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 using NUnit.Framework;
-using openHistorian.Collections;
 using openHistorian.Snap;
 
 namespace GSF.Snap.Services.Reader
@@ -34,16 +30,16 @@ namespace GSF.Snap.Services.Reader
 
         public void Test(int count)
         {
-            var lst = new List<SortedTreeTable<HistorianKey, HistorianValue>>();
+            List<SortedTreeTable<HistorianKey, HistorianValue>> lst = new List<SortedTreeTable<HistorianKey, HistorianValue>>();
             for (int x = 0; x < count; x++)
             {
                 lst.Add(CreateTable());
             }
 
-            using (var reader = new UnionTreeStream<HistorianKey, HistorianValue>(lst.Select(x => new ArchiveTreeStreamWrapper<HistorianKey, HistorianValue>(x)), true))
+            using (UnionTreeStream<HistorianKey, HistorianValue> reader = new UnionTreeStream<HistorianKey, HistorianValue>(lst.Select(x => new ArchiveTreeStreamWrapper<HistorianKey, HistorianValue>(x)), true))
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 while (reader.Read(key, value))
@@ -59,13 +55,13 @@ namespace GSF.Snap.Services.Reader
 
         SortedTreeTable<HistorianKey, HistorianValue> CreateTable()
         {
-            var r = new Random(seed++);
-            var key = new HistorianKey();
-            var value = new HistorianValue();
-            var file = SortedTreeFile.CreateInMemory();
-            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
+            Random r = new Random(seed++);
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            SortedTreeFile file = SortedTreeFile.CreateInMemory();
+            SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
 
-            using (var edit = table.BeginEdit())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = table.BeginEdit())
             {
                 for (int x = 0; x < 1000; x++)
                 {

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -48,26 +48,14 @@ namespace ComparisonUtility
 
             public ulong Timestamp
             {
-                get
-                {
-                    return m_timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
-                }
-                set
-                {
-                    m_timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
-                }
+                get => m_timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
+                set => m_timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
             }
 
             public float ValueAsSingle
             {
-                get
-                {
-                    return BitConvert.ToSingle(Value);
-                }
-                set
-                {
-                    Value = BitConvert.ToUInt64(value);
-                }
+                get => BitConvert.ToSingle(Value);
+                set => Value = BitConvert.ToUInt64(value);
             }
 
             public ulong PointID;
@@ -251,7 +239,7 @@ namespace ComparisonUtility
                 Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
-                if ((object)parameters == null)
+                if (parameters is null)
                     throw new ArgumentNullException("state", "Could not interpret thread state as parameters dictionary");
 
                 ClearUpdateMessages();
@@ -295,7 +283,7 @@ namespace ComparisonUtility
                             ShowUpdateMessage("{0}Migrated {1:#,##0} points so far averaging {2:#,##0} points per second...{0}", Environment.NewLine, migratedPoints, migratedPoints / (DateTime.UtcNow.Ticks - readStartTime).ToSeconds());
 
                             if (m_pointCount > 0)
-                                UpdateProgressBar((int)((migratedPoints / (double)m_pointCount) * 100.0D));
+                                UpdateProgressBar((int)(migratedPoints / (double)m_pointCount * 100.0D));
 
                             displayMessageCount += MessageInterval;
                         }
@@ -337,7 +325,7 @@ namespace ComparisonUtility
                 long operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
-                if ((object)parameters == null)
+                if (parameters is null)
                     throw new ArgumentNullException("state", "Could not interpret thread state as parameters dictionary");
 
                 ClearUpdateMessages();
@@ -352,12 +340,10 @@ namespace ComparisonUtility
                 if (Directory.Exists(parameters["sourceFilesOffloadLocation"]))
                     sourceFiles = sourceFiles.Concat(Directory.EnumerateFiles(parameters["sourceFilesOffloadLocation"], "*.d", SearchOption.TopDirectoryOnly));
 
-                int maxThreads, methodIndex;
-
-                if (!int.TryParse(parameters["maxThreads"], out maxThreads))
+                if (!int.TryParse(parameters["maxThreads"], out int maxThreads))
                     maxThreads = m_defaultMaxThreads;
 
-                if (!int.TryParse(parameters["directoryNamingMethod"], out methodIndex) || !Enum.IsDefined(typeof(ArchiveDirectoryMethod), methodIndex))
+                if (!int.TryParse(parameters["directoryNamingMethod"], out int methodIndex) || !Enum.IsDefined(typeof(ArchiveDirectoryMethod), methodIndex))
                     methodIndex = (int)ArchiveDirectoryMethod.YearThenMonth;
 
                 ArchiveDirectoryMethod method = (ArchiveDirectoryMethod)methodIndex;
@@ -456,7 +442,7 @@ namespace ComparisonUtility
                 Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
-                if ((object)parameters == null)
+                if (parameters is null)
                     throw new ArgumentNullException("state", "Could not interpret thread state as parameters dictionary");
 
                 ClearUpdateMessages();
@@ -475,9 +461,7 @@ namespace ComparisonUtility
                 m_pointCount = 0;
                 ThreadPool.QueueUserWorkItem(CalculateSourcePointCount, new[] { parameters["sourceFilesLocation"], parameters["sourceFilesOffloadLocation"] });
 
-                int maxThreads;
-
-                if (!int.TryParse(parameters["maxThreads"], out maxThreads))
+                if (!int.TryParse(parameters["maxThreads"], out int maxThreads))
                     maxThreads = m_defaultMaxThreads;
 
                 string[] sourceFileNames = sourceFiles.ToArray();
@@ -621,7 +605,7 @@ namespace ComparisonUtility
 
                                 // Note that point count used here is estimated
                                 if (updateProgress && m_pointCount > 0)
-                                    UpdateProgressBar((int)((comparedPoints / (double)m_pointCount) * 100.0D));
+                                    UpdateProgressBar((int)(comparedPoints / (double)m_pointCount * 100.0D));
                             }
                         }
 

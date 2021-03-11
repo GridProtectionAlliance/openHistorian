@@ -125,14 +125,8 @@ namespace NPlot
         /// </summary>
         public double YValue
         {
-            get
-            {
-                return value_;
-            }
-            set
-            {
-                value_ = value;
-            }
+            get => value_;
+            set => value_ = value;
         }
 
         private Pen pen_ = new Pen(Color.Black);
@@ -142,14 +136,8 @@ namespace NPlot
         /// </summary>
         public Pen Pen
         {
-            get
-            {
-                return pen_;
-            }
-            set
-            {
-                pen_ = value;
-            }
+            get => pen_;
+            set => pen_ = value;
         }
 
 
@@ -158,17 +146,11 @@ namespace NPlot
         /// </summary>
         public int PixelIndent
         {
-            get
-            {
-                return pixelIndent_;
-            }
-            set
-            {
-                pixelIndent_ = value;
-            }
+            get => pixelIndent_;
+            set => pixelIndent_ = value;
         }
 
-        private int pixelIndent_ = 0;
+        private int pixelIndent_;
 
 
         /// <summary>
@@ -177,14 +159,8 @@ namespace NPlot
         /// </summary>
         public float LengthScale
         {
-            get
-            {
-                return scale_;
-            }
-            set
-            {
-                scale_ = value;
-            }
+            get => scale_;
+            set => scale_ = value;
         }
 
         private float scale_ = 1.0f;

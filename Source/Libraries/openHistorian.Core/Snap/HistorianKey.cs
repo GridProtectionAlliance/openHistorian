@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -43,22 +43,11 @@ namespace openHistorian.Snap
         /// </remarks>
         public ulong EntryNumber;
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {6527D41B-9D04-4BFA-8133-05273D521D46}
-                return new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
-            }
-        }
+        public override Guid GenericTypeGuid =>
+            // {6527D41B-9D04-4BFA-8133-05273D521D46}
+            new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
 
-        public override int Size
-        {
-            get
-            {
-                return 24;
-            }
-        }
+        public override int Size => 24;
 
         /// <summary>
         /// Sets all of the values in this class to their minimum value
@@ -135,9 +124,9 @@ namespace openHistorian.Snap
 
         public override unsafe int CompareTo(byte* stream)
         {
-            if (Timestamp < *(ulong*)(stream))
+            if (Timestamp < *(ulong*)stream)
                 return -1;
-            if (Timestamp > *(ulong*)(stream))
+            if (Timestamp > *(ulong*)stream)
                 return 1;
             if (PointID < *(ulong*)(stream + 8))
                 return -1;
@@ -171,14 +160,8 @@ namespace openHistorian.Snap
         /// </remarks>
         public DateTime TimestampAsDate
         {
-            get
-            {
-                return new DateTime((long)Timestamp, DateTimeKind.Utc);
-            }
-            set
-            {
-                Timestamp = (ulong)value.Ticks;
-            }
+            get => new DateTime((long)Timestamp, DateTimeKind.Utc);
+            set => Timestamp = (ulong)value.Ticks;
         }
 
         /// <summary>
@@ -186,14 +169,8 @@ namespace openHistorian.Snap
         /// </summary>
         public ulong MillisecondTimestamp
         {
-            get
-            {
-                return Timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
-            }
-            set
-            {
-                Timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
-            }
+            get => Timestamp / Ticks.PerMillisecond * Ticks.PerMillisecond;
+            set => Timestamp = value / Ticks.PerMillisecond * Ticks.PerMillisecond;
         }
 
         public override string ToString()

@@ -17,7 +17,7 @@ namespace frameworkVisN
 
         private static class ColorWheel
         {
-            private static int index = 0;
+            private static int index;
             private static readonly List<Pen> m_pens;
 
             static ColorWheel()
@@ -56,13 +56,7 @@ namespace frameworkVisN
                 Signal = signal;
             }
 
-            public string DisplayName
-            {
-                get
-                {
-                    return Signal.SignalGroupName;
-                }
-            }
+            public string DisplayName => Signal.SignalGroupName;
         }
 
         private readonly SubscriptionFramework m_framework;
@@ -119,9 +113,7 @@ namespace frameworkVisN
 
                     for (int i = 0; i < data.Count; i++)
                     {
-                        ulong time;
-                        double value;
-                        data.GetData(i, out time, out value);
+                        data.GetData(i, out ulong time, out double value);
 
                         x.Add(time);
                         y.Add(value);
@@ -158,9 +150,7 @@ namespace frameworkVisN
 
                     for (int i = 0; i < data.Count; i++)
                     {
-                        ulong time;
-                        double value;
-                        data.GetData(i, out time, out value);
+                        data.GetData(i, out ulong time, out double value);
 
                         x.Add(time);
                         y.Add(value);
@@ -202,7 +192,7 @@ namespace frameworkVisN
                 SinglePhasorTerminal calc = group as SinglePhasorTerminal;
                 if (calc != null)
                 {
-                    if (signalReference == null)
+                    if (signalReference is null)
                     {
                         signalReference = calc.VoltageAngle;
                         m_framework.SetAngleReference(signalReference);
@@ -235,7 +225,7 @@ namespace frameworkVisN
 
         private void PlotFrequency_InteractionOccured(object sender)
         {
-            if (!((sender is PlotSurface2D.Interactions.HorizontalDrag) || (sender is PlotSurface2D.Interactions.AxisDrag)))
+            if (!(sender is PlotSurface2D.Interactions.HorizontalDrag || sender is PlotSurface2D.Interactions.AxisDrag))
                 return;
             DateTime minDate, maxDate;
             minDate = new DateTime((long)PlotFrequency.XAxis1.WorldMin);
@@ -246,7 +236,7 @@ namespace frameworkVisN
 
         private void PlotVoltageAngle_InteractionOccured(object sender)
         {
-            if (!((sender is PlotSurface2D.Interactions.HorizontalDrag) || (sender is PlotSurface2D.Interactions.AxisDrag)))
+            if (!(sender is PlotSurface2D.Interactions.HorizontalDrag || sender is PlotSurface2D.Interactions.AxisDrag))
                 return;
             DateTime minDate, maxDate;
             minDate = new DateTime((long)PlotVoltageAngle.XAxis1.WorldMin);

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,10 +24,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using GSF.Snap;
-using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Filters;
-using GSF.Snap.Tree;
 using openHistorian.Data.Types;
 using openHistorian.Snap;
 
@@ -68,7 +66,7 @@ namespace openHistorian.Data.Query
             {
                 time = key.Timestamp;
                 point = key.PointID;
-                quality = hvalue.Value3;
+                _ = hvalue.Value3;
                 value = hvalue.Value1;
                 results.AddSignal(time, point, value);
             }
@@ -177,7 +175,7 @@ namespace openHistorian.Data.Query
 
             HistorianKey key = new HistorianKey();
             HistorianValue hvalue = new HistorianValue();
-            var keyParser = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
+            MatchFilterBase<HistorianKey, HistorianValue> keyParser = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
             TreeStream<HistorianKey, HistorianValue> stream = database.Read(readerOptions, timestamps, keyParser);
             ulong time, point, quality, value;
             while (stream.Read(key, hvalue))
@@ -206,8 +204,7 @@ namespace openHistorian.Data.Query
         /// <param name="value"></param>
         private static void AddSignal(this Dictionary<ulong, SignalDataBase> results, ulong time, ulong point, ulong value)
         {
-            SignalDataBase signalData;
-            if (!results.TryGetValue(point, out signalData))
+            if (!results.TryGetValue(point, out SignalDataBase signalData))
             {
                 signalData = new SignalDataUnknown();
                 results.Add(point, signalData);
@@ -225,8 +222,7 @@ namespace openHistorian.Data.Query
         /// <param name="value"></param>
         private static void AddSignalIfExists(this Dictionary<ulong, SignalDataBase> results, ulong time, ulong point, ulong value)
         {
-            SignalDataBase signalData;
-            if (results.TryGetValue(point, out signalData))
+            if (results.TryGetValue(point, out SignalDataBase signalData))
                 signalData.AddDataRaw(time, value);
         }
     }

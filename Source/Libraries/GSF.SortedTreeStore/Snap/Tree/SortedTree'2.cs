@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -47,7 +47,7 @@ namespace GSF.Snap.Tree
         private readonly TValue m_tempValue = new TValue();
 
         private bool m_isInitialized;
-        private SortedTreeHeader m_header;
+        private readonly SortedTreeHeader m_header;
 
         #endregion
 
@@ -81,7 +81,7 @@ namespace GSF.Snap.Tree
         {
             if (m_isInitialized)
                 throw new Exception("Duplicate calls to Initialize");
-            if ((object)treeNodeType == null)
+            if (treeNodeType is null)
                 throw new ArgumentNullException("treeNodeType");
 
 
@@ -124,13 +124,7 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// Gets if the sorted tree needs to be flushed to the disk. 
         /// </summary>
-        public bool IsDirty
-        {
-            get
-            {
-                return m_header.IsDirty;
-            }
-        }
+        public bool IsDirty => m_header.IsDirty;
 
         /// <summary>
         /// The sorted tree will not continuely call the <see cref="Flush"/> method every time the header is changed.
@@ -146,13 +140,7 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// Contains the block size that the tree nodes will be alligned on.
         /// </summary>
-        protected int BlockSize
-        {
-            get
-            {
-                return m_header.BlockSize;
-            }
-        }
+        protected int BlockSize => m_header.BlockSize;
 
         /// <summary>
         /// Contains the stream for reading and writing.
@@ -380,7 +368,7 @@ namespace GSF.Snap.Tree
         /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamPointerBase stream, int blockSize, EncodingDefinition treeNodeType)
         {
-            if ((object)treeNodeType == null)
+            if (treeNodeType is null)
                 throw new ArgumentNullException("treeNodeType");
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream);
             tree.InitializeCreate(treeNodeType, blockSize);

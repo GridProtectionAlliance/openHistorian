@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using GSF.Snap.Services;
-using GSF.Snap.Tree;
 using openHistorian.Snap;
 
 namespace openHistorian.Data.Query
@@ -59,9 +58,9 @@ namespace openHistorian.Data.Query
         string m_identifierColumn;
         Type m_identifierType;
 
-        DataTable m_table;
+        readonly DataTable m_table;
         internal List<KeyValuePair<object, int?[]>> m_signalGroups;
-        List<string> m_customColumns;
+        readonly List<string> m_customColumns;
 
         public TableDefinition()
         {
@@ -75,7 +74,7 @@ namespace openHistorian.Data.Query
         {
             if (m_finishedColumns)
                 throw new Exception("Cannot continue to add columns once groups have been added.");
-            if (m_timestampColumn == null)
+            if (m_timestampColumn is null)
                 throw new Exception("Duplicate calls to AddTimestampColumn");
 
 
@@ -86,7 +85,7 @@ namespace openHistorian.Data.Query
         {
             if (m_finishedColumns)
                 throw new Exception("Cannot continue to add columns once groups have been added.");
-            if (m_identifierColumn == null)
+            if (m_identifierColumn is null)
                 throw new Exception("Duplicate calls to AddColumnGroupIdentifier");
 
             m_identifierColumn = name;
@@ -105,9 +104,9 @@ namespace openHistorian.Data.Query
         {
             if (!m_finishedColumns)
             {
-                if (m_timestampColumn == null)
+                if (m_timestampColumn is null)
                     throw new Exception("Must first call AddTimestampColumn");
-                if (m_identifierColumn == null)
+                if (m_identifierColumn is null)
                     throw new Exception("Must first call AddColumnGroupIdentifier");
                 if (m_customColumns.Count == 0)
                     throw new Exception("Must have custom columns");
@@ -134,9 +133,9 @@ namespace openHistorian.Data.Query
             HashSet<ulong> allPoints = new HashSet<ulong>();
             m_tableDefinition = tableDefinition;
 
-            foreach (var signal in tableDefinition.m_signalGroups)
+            foreach (KeyValuePair<object, int?[]> signal in tableDefinition.m_signalGroups)
             {
-                foreach (var point in signal.Value)
+                foreach (int? point in signal.Value)
                 {
                     if (point.HasValue)
                         allPoints.Add((ulong)point.Value);
@@ -428,13 +427,7 @@ namespace openHistorian.Data.Query
         /// The column located at the specified index as an <see cref="T:System.Object"/>.
         /// </returns>
         /// <param name="i">The zero-based index of the column to get. </param><exception cref="T:System.IndexOutOfRangeException">The index passed was outside the range of 0 through <see cref="P:System.Data.IDataRecord.FieldCount"/>. </exception><filterpriority>2</filterpriority>
-        object IDataRecord.this[int i]
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        object IDataRecord.this[int i] => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the column with the specified name.
@@ -443,13 +436,7 @@ namespace openHistorian.Data.Query
         /// The column with the specified name as an <see cref="T:System.Object"/>.
         /// </returns>
         /// <param name="name">The name of the column to find. </param><exception cref="T:System.IndexOutOfRangeException">No column with the specified name was found. </exception><filterpriority>2</filterpriority>
-        object IDataRecord.this[string name]
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        object IDataRecord.this[string name] => throw new NotImplementedException();
 
         /// <summary>
         /// Closes the <see cref="T:System.Data.IDataReader"/> Object.
@@ -522,13 +509,7 @@ namespace openHistorian.Data.Query
         /// The number of rows changed, inserted, or deleted; 0 if no rows were affected or the statement failed; and -1 for SELECT statements.
         /// </returns>
         /// <filterpriority>2</filterpriority>
-        public int RecordsAffected
-        {
-            get
-            {
-                return -1;
-            }
-        }
+        public int RecordsAffected => -1;
     }
 
 
@@ -584,9 +565,7 @@ namespace openHistorian.Data.Query
                     SignalDataBase signal = signals[x];
                     if (signal.Count < columnPosition[x] && minDate == signals[x].GetDate(columnPosition[x]))
                     {
-                        ulong date;
-                        double value;
-                        signals[x].GetData(columnPosition[x], out date, out value);
+                        signals[x].GetData(columnPosition[x], out ulong date, out double value);
                         rowValues[x + 1] = value;
                         columnPosition[x]++;
                     }
@@ -596,7 +575,7 @@ namespace openHistorian.Data.Query
                     }
                 }
 
-                if (minDate == ulong.MaxValue && rowValues.All((x) => x == null))
+                if (minDate == ulong.MaxValue && rowValues.All((x) => x is null))
                     return table;
                 rowValues[0] = minDate;
 

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -36,12 +36,12 @@ namespace GSF.Snap.Services
         /// (For example. Call the IDispose.Dispose method)
         /// </summary>
         internal class Client
-            : Services.SnapClient
+            : SnapClient
         {
             private bool m_disposed;
-            private object m_syncRoot;
+            private readonly object m_syncRoot;
             private SnapServer m_server;
-            private Dictionary<string, ClientDatabaseBase> m_connectedDatabases;
+            private readonly Dictionary<string, ClientDatabaseBase> m_connectedDatabases;
 
             /// <summary>
             /// Creates a <see cref="Client"/>
@@ -49,7 +49,7 @@ namespace GSF.Snap.Services
             /// <param name="server">the collection to wrap</param>
             public Client(SnapServer server)
             {
-                if (server == null)
+                if (server is null)
                     throw new ArgumentNullException("server");
                 m_syncRoot = new object();
                 m_connectedDatabases = new Dictionary<string, ClientDatabaseBase>();
@@ -73,7 +73,7 @@ namespace GSF.Snap.Services
                 {
                     if (!m_connectedDatabases.TryGetValue(databaseName, out database))
                     {
-                        var serverDb = m_server.GetDatabase(databaseName);
+                        SnapServerDatabaseBase serverDb = m_server.GetDatabase(databaseName);
                         database = serverDb.CreateClientDatabase(this, Unregister);
                         m_connectedDatabases.Add(databaseName, database);
                     }
@@ -136,7 +136,7 @@ namespace GSF.Snap.Services
                         {
                             //Must include .ToArray because calling dispose will remove the item
                             //from the m_coonectionDatabase via a callback.
-                            foreach (var db in m_connectedDatabases.Values.ToArray()) 
+                            foreach (ClientDatabaseBase db in m_connectedDatabases.Values.ToArray()) 
                             {
                                 db.Dispose();
                             }

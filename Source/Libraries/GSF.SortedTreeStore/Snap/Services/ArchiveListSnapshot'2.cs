@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 
 using System;
 using System.Threading;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services
 {
@@ -45,7 +44,7 @@ namespace GSF.Snap.Services
         /// </remarks>
         public event Action DisposeRequested;
 
-        object m_syncDisposing;
+        private readonly object m_syncDisposing;
 
         private ManualResetEvent m_connectionDisposed;
 
@@ -61,7 +60,7 @@ namespace GSF.Snap.Services
         /// </summary>
         private Action<ArchiveListSnapshot<TKey, TValue>> m_acquireResources;
 
-        bool m_isDisposeRequested;
+        private bool m_isDisposeRequested;
 
         /// <summary>
         /// Contains an array of all of the resources currently used by this transaction.
@@ -99,7 +98,7 @@ namespace GSF.Snap.Services
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                if (value == null)
+                if (value is null)
                     m_tables = new ArchiveTableSummary<TKey, TValue>[0];
                 m_tables = value;
             }
@@ -114,7 +113,7 @@ namespace GSF.Snap.Services
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            foreach (var table in m_tables)
+            foreach (ArchiveTableSummary<TKey, TValue> table in m_tables)
             {
                 if (table != null)
                 {
@@ -130,24 +129,12 @@ namespace GSF.Snap.Services
         /// if this is true this means the engine is waiting for the release
         /// of this object before it can continue its next task.
         /// </summary>
-        public bool IsDisposeRequested
-        {
-            get
-            {
-                return m_isDisposeRequested;
-            }
-        }
+        public bool IsDisposeRequested => m_isDisposeRequested;
 
         /// <summary>
         /// Gets if this class has been disposed.
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Disposes this class, releasing all resource locks.

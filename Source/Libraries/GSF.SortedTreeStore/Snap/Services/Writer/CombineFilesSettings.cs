@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -52,10 +52,7 @@ namespace GSF.Snap.Services.Writer
         /// </remarks>
         public int ExecuteTimer
         {
-            get
-            {
-                return m_executeTimer;
-            }
+            get => m_executeTimer;
             set
             {
                 TestForEditable();
@@ -82,10 +79,7 @@ namespace GSF.Snap.Services.Writer
         /// </remarks>
         public string LogPath
         {
-            get
-            {
-                return m_logPath;
-            }
+            get => m_logPath;
             set
             {
                 TestForEditable();
@@ -109,10 +103,7 @@ namespace GSF.Snap.Services.Writer
         /// </remarks>
         public int CombineOnFileCount
         {
-            get
-            {
-                return m_combineOnFileCount;
-            }
+            get => m_combineOnFileCount;
             set
             {
                 TestForEditable();
@@ -139,10 +130,7 @@ namespace GSF.Snap.Services.Writer
         /// </remarks>
         public long CombineOnFileSize
         {
-            get
-            {
-                return m_combineOnFileSize;
-            }
+            get => m_combineOnFileSize;
             set
             {
                 TestForEditable();
@@ -166,10 +154,7 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public Guid MatchFlag
         {
-            get
-            {
-                return m_matchFlag;
-            }
+            get => m_matchFlag;
             set
             {
                 TestForEditable();
@@ -182,14 +167,11 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public SimplifiedArchiveInitializerSettings ArchiveSettings
         {
-            get
-            {
-                return m_archiveSettings;
-            }
+            get => m_archiveSettings;
             set
             {
                 TestForEditable();
-                if (value == null)
+                if (value is null)
                     throw new ArgumentNullException("value");
                 m_archiveSettings = value;
             }

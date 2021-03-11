@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -37,10 +37,10 @@ namespace GSF.IO.FileStructure
         {
             File.Delete(@"C:\Temp\fileTemp.~d2i");
             File.Delete(@"C:\Temp\fileTemp.d2i");
-            using (var writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
+            using (SimplifiedFileWriter writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
             {
-                using (var file = writer.CreateFile(SubFileName.CreateRandom()))
-                using (var bs = new BinaryStream(file))
+                using (ISupportsBinaryStream file = writer.CreateFile(SubFileName.CreateRandom()))
+                using (BinaryStream bs = new BinaryStream(file))
                 {
                     bs.Write(1);
                 }
@@ -49,10 +49,10 @@ namespace GSF.IO.FileStructure
             }
 
 
-            using (var reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
+            using (TransactionalFileStructure reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
             {
-                using (var file = reader.Snapshot.OpenFile(0))
-                using (var bs = new BinaryStream(file))
+                using (SubFileStream file = reader.Snapshot.OpenFile(0))
+                using (BinaryStream bs = new BinaryStream(file))
                 {
                     if (bs.ReadInt32() != 1)
                         throw new Exception();
@@ -63,14 +63,14 @@ namespace GSF.IO.FileStructure
         [Test]
         public void TestOneFileBig()
         {
-            var r = new Random(1);
+            Random r = new Random(1);
 
             File.Delete(@"C:\Temp\fileTemp.~d2i");
             File.Delete(@"C:\Temp\fileTemp.d2i");
-            using (var writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
+            using (SimplifiedFileWriter writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
             {
-                using (var file = writer.CreateFile(SubFileName.CreateRandom()))
-                using (var bs = new BinaryStream(file))
+                using (ISupportsBinaryStream file = writer.CreateFile(SubFileName.CreateRandom()))
+                using (BinaryStream bs = new BinaryStream(file))
                 {
                     bs.Write((byte)1);
                     for (int x = 0; x < 100000; x++)
@@ -83,10 +83,10 @@ namespace GSF.IO.FileStructure
             }
 
             r = new Random(1);
-            using (var reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
+            using (TransactionalFileStructure reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
             {
-                using (var file = reader.Snapshot.OpenFile(0))
-                using (var bs = new BinaryStream(file))
+                using (SubFileStream file = reader.Snapshot.OpenFile(0))
+                using (BinaryStream bs = new BinaryStream(file))
                 {
                     if (bs.ReadUInt8() != 1)
                         throw new Exception();
@@ -104,16 +104,16 @@ namespace GSF.IO.FileStructure
         [Test]
         public void TestMultipleFiles()
         {
-            var r = new Random(1);
+            Random r = new Random(1);
 
             File.Delete(@"C:\Temp\fileTemp.~d2i");
             File.Delete(@"C:\Temp\fileTemp.d2i");
-            using (var writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
+            using (SimplifiedFileWriter writer = new SimplifiedFileWriter(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, FileFlags.ManualRollover))
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    using (var file = writer.CreateFile(SubFileName.CreateRandom()))
-                    using (var bs = new BinaryStream(file))
+                    using (ISupportsBinaryStream file = writer.CreateFile(SubFileName.CreateRandom()))
+                    using (BinaryStream bs = new BinaryStream(file))
                     {
                         bs.Write((byte)1);
                         for (int x = 0; x < 100000; x++)
@@ -126,12 +126,12 @@ namespace GSF.IO.FileStructure
             }
 
             r = new Random(1);
-            using (var reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
+            using (TransactionalFileStructure reader = TransactionalFileStructure.OpenFile(@"C:\Temp\fileTemp.d2i", true))
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    using (var file = reader.Snapshot.OpenFile(i))
-                    using (var bs = new BinaryStream(file))
+                    using (SubFileStream file = reader.Snapshot.OpenFile(i))
+                    using (BinaryStream bs = new BinaryStream(file))
                     {
                         if (bs.ReadUInt8() != 1)
                             throw new Exception();

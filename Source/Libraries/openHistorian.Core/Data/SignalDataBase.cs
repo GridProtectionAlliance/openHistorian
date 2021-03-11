@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -39,13 +39,7 @@ namespace openHistorian.Data.Query
         /// <summary>
         /// Gets if this signal has been processed and can no longer be added to.
         /// </summary>
-        public bool IsComplete
-        {
-            get
-            {
-                return m_isComplete;
-            }
-        }
+        public bool IsComplete => m_isComplete;
 
         /// <summary>
         /// Flags this signal as complete which locks down the ability to add 
@@ -100,8 +94,7 @@ namespace openHistorian.Data.Query
         /// <param name="value">an output field for the converted value</param>
         public virtual void GetData(int index, out ulong time, out double value)
         {
-            ulong raw;
-            GetDataRaw(index, out time, out raw);
+            GetDataRaw(index, out time, out ulong raw);
             Method.ToValue(raw, out value);
         }
 
@@ -114,8 +107,7 @@ namespace openHistorian.Data.Query
         /// <param name="value">an output field for the converted value</param>
         public virtual void GetData(int index, out ulong time, out float value)
         {
-            ulong raw;
-            GetDataRaw(index, out time, out raw);
+            GetDataRaw(index, out time, out ulong raw);
             Method.ToValue(raw, out value);
         }
 
@@ -128,8 +120,7 @@ namespace openHistorian.Data.Query
         /// <param name="value">an output field for the converted value</param>
         public virtual void GetData(int index, out ulong time, out long value)
         {
-            ulong raw;
-            GetDataRaw(index, out time, out raw);
+            GetDataRaw(index, out time, out ulong raw);
             Method.ToValue(raw, out value);
         }
 
@@ -142,8 +133,7 @@ namespace openHistorian.Data.Query
         /// <param name="value">an output field for the converted value</param>
         public virtual void GetData(int index, out ulong time, out ulong value)
         {
-            ulong raw;
-            GetDataRaw(index, out time, out raw);
+            GetDataRaw(index, out time, out ulong raw);
             Method.ToValue(raw, out value);
         }
 

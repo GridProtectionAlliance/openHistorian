@@ -327,7 +327,7 @@ namespace openHistorian.Adapters
 
             m_isAngleMapping = InputMeasurementKeys
                 .Zip(InputMeasurementKeyTypes, (key, signalType) => new { key, signalType })
-                .ToDictionary(mapping => mapping.key.SignalID, mapping => (mapping.signalType== SignalType.IPHA || mapping.signalType == SignalType.VPHA));
+                .ToDictionary(mapping => mapping.key.SignalID, mapping => mapping.signalType== SignalType.IPHA || mapping.signalType == SignalType.VPHA);
 
             int? currentDeviceID = null;
 
@@ -379,7 +379,7 @@ namespace openHistorian.Adapters
                 {
                     SNRMapping keys = new TableOperations<SNRMapping>(connection).QueryRecordWhere("InputKey = {0}", input);
 
-                    if (keys == null)
+                    if (keys is null)
                     {
                         string perAdapterOutputName = "RESULT";
                         string outputPrefix = $"{Name}!{inputName}-{perAdapterOutputName}";

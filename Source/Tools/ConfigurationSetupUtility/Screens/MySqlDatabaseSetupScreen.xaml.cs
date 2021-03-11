@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -233,10 +233,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -277,7 +274,7 @@ namespace ConfigurationSetupUtility.Screens
 
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
-                Visibility newUserVisibility = (existing && !migrate) ? Visibility.Collapsed : Visibility.Visible;
+                Visibility newUserVisibility = existing && !migrate ? Visibility.Collapsed : Visibility.Visible;
 
                 ConfigurationFile serviceConfig;
                 string connectionString;
@@ -291,7 +288,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_newUserPasswordLabel.Visibility = newUserVisibility;
                 m_newUserNameTextBox.Visibility = newUserVisibility;
                 m_newUserPasswordTextBox.Visibility = newUserVisibility;
-                m_mySqlDatabaseInstructionTextBlock.Text = (!existing || migrate) ? NewDatabaseMessage : OldDatabaseMessage;
+                m_mySqlDatabaseInstructionTextBlock.Text = !existing || migrate ? NewDatabaseMessage : OldDatabaseMessage;
 
                 // If connecting to existing database, user name and password need not be admin user:
                 if (existing && !migrate)
@@ -347,7 +344,7 @@ namespace ConfigurationSetupUtility.Screens
         // Occurs when the screen is made visible or invisible.
         private void MySqlDatabaseSetupScreen_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (m_advancedButton == null)
+            if (m_advancedButton is null)
             {
                 DependencyObject parent = VisualTreeHelper.GetParent(this);
                 Window mainWindow;
@@ -356,7 +353,7 @@ namespace ConfigurationSetupUtility.Screens
                     parent = VisualTreeHelper.GetParent(parent);
 
                 mainWindow = parent as Window;
-                m_advancedButton = (mainWindow == null) ? null : mainWindow.FindName("m_advancedButton") as Button;
+                m_advancedButton = mainWindow is null ? null : mainWindow.FindName("m_advancedButton") as Button;
             }
 
             if (m_advancedButton != null)

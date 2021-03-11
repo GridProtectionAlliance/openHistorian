@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Tree.Specialized
@@ -47,11 +46,11 @@ namespace GSF.Snap.Tree.Specialized
         /// <param name="treeStream"></param>
         public static void Create(BinaryStreamPointerBase stream, int blockSize, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream)
         {
-            if (stream == null)
+            if (stream is null)
                 throw new ArgumentNullException("stream");
-            if (treeStream == null)
+            if (treeStream is null)
                 throw new ArgumentNullException("stream");
-            if ((object)treeNodeType == null)
+            if (treeNodeType is null)
                 throw new ArgumentNullException("treeNodeType");
             if (!(treeStream.IsAlwaysSequential && treeStream.NeverContainsDuplicates))
                 throw new ArgumentException("Stream must gaurentee sequential reads and that it never will contain a duplicate", "treeStream");

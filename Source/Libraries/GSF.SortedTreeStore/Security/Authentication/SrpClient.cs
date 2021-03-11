@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -37,13 +37,13 @@ namespace GSF.Security.Authentication
     /// </summary>
     public class SrpClient
     {
-        private PBDKFCredentials m_credentials;
+        private readonly PBDKFCredentials m_credentials;
 
         //The SRP Mechanism
         private int m_srpByteLength;
         private SrpStrength m_strength;
         private SrpConstants m_param;
-        Srp6Client m_client;
+        private Srp6Client m_client;
         private IDigest m_hash;
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace GSF.Security.Authentication
         /// <param name="password">the password</param>
         public SrpClient(string username, string password)
         {
-            if (username == null)
+            if (username is null)
                 throw new ArgumentNullException("username");
-            if (password == null)
+            if (password is null)
                 throw new ArgumentNullException("username");
          
 
@@ -71,38 +71,29 @@ namespace GSF.Security.Authentication
                 throw new ArgumentException("Username cannot consume more than 1024 bytes encoded as UTF8", "username");
         }
 
-        void SetSrpStrength(SrpStrength strength)
+        private void SetSrpStrength(SrpStrength strength)
         {
             m_strength = strength;
-            m_srpByteLength = ((int)strength) >> 3;
+            m_srpByteLength = (int)strength >> 3;
             m_param = SrpConstants.Lookup(m_strength);
             m_client = new Srp6Client(m_param);
         }
 
-        void SetHashMethod(HashMethod hashMethod)
+        private void SetHashMethod(HashMethod hashMethod)
         {
-            switch (hashMethod)
+            m_hash = hashMethod switch
             {
-                case HashMethod.Sha1:
-                    m_hash = new Sha1Digest();
-                    break;
-                case HashMethod.Sha256:
-                    m_hash = new Sha256Digest();
-                    break;
-                case HashMethod.Sha384:
-                    m_hash = new Sha384Digest();
-                    break;
-                case HashMethod.Sha512:
-                    m_hash = new Sha512Digest();
-                    break;
-                default:
-                    throw new Exception("Unsupported Hash Method");
-            }
+                HashMethod.Sha1   => new Sha1Digest(),
+                HashMethod.Sha256 => new Sha256Digest(),
+                HashMethod.Sha384 => new Sha384Digest(),
+                HashMethod.Sha512 => new Sha512Digest(),
+                _                 => throw new Exception("Unsupported Hash Method")
+            };
         }
 
         public bool AuthenticateAsClient(Stream stream, byte[] additionalChallenge = null)
         {
-            if (additionalChallenge == null)
+            if (additionalChallenge is null)
                 additionalChallenge = new byte[] { };
 
             stream.Write((short)m_credentials.UsernameBytes.Length);

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -106,7 +106,7 @@ namespace GSF.Snap.Filters
                 m_current = start;
                 m_mainInterval = mainInterval;
                 m_subInterval = subInterval;
-                m_subIntervalPerMainInterval = (uint)Math.Round((double)mainInterval / (double)subInterval);
+                m_subIntervalPerMainInterval = (uint)Math.Round(mainInterval / (double)subInterval);
                 m_tolerance = tolerance;
                 m_count = 0;
             }
@@ -119,7 +119,7 @@ namespace GSF.Snap.Filters
             {
                 checked
                 {
-                    ulong middle = m_current + (m_subInterval * m_count);
+                    ulong middle = m_current + m_subInterval * m_count;
                     startOfWindow = middle - m_tolerance;
                     endOfWindow = middle + m_tolerance;
 
@@ -145,10 +145,7 @@ namespace GSF.Snap.Filters
 
             private ulong startOfWindow 
             {
-                get
-                {
-                    return StartOfFrame.Timestamp;
-                }
+                get => StartOfFrame.Timestamp;
                 set
                 {
                     StartOfFrame.SetMin();
@@ -158,10 +155,7 @@ namespace GSF.Snap.Filters
 
             private ulong endOfWindow
             {
-                get
-                {
-                    return EndOfFrame.Timestamp;
-                }
+                get => EndOfFrame.Timestamp;
                 set
                 {
                     EndOfFrame.SetMax();
@@ -196,14 +190,7 @@ namespace GSF.Snap.Filters
                 stream.Write(m_tolerance);
             }
 
-            public override Guid FilterType
-            {
-                get
-                {
-                    return TimestampSeekFilterDefinition.FilterGuid;
-                }
-            }
-
+            public override Guid FilterType => TimestampSeekFilterDefinition.FilterGuid;
         }
 
     }

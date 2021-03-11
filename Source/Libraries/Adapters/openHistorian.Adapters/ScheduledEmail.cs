@@ -22,34 +22,17 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
-using GSF.Data.Model;
 using GSF.Diagnostics;
-using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
-using PhasorProtocolAdapters;
-using openHistorian.Model;
-using GSF.Identity;
-using Measurement = GSF.TimeSeries.Measurement;
 using MeasurementRecord = openHistorian.Model.Measurement;
-using SignalType = GSF.Units.EE.SignalType;
 using SignalTypeRecord = openHistorian.Model.SignalType;
 using System.IO;
 using GSF.IO;
-using GSF.Threading;
-using System.Collections.Concurrent;
-using System.Data;
-using GSF.TimeSeries.Data;
-using GSF.Units.EE;
-using System.Threading.Tasks;
 using GSF;
-using System.Xml.Serialization;
 using GSF.Net.Smtp;
 using System.Timers;
 using System.Xml.Linq;
@@ -343,7 +326,7 @@ namespace openHistorian.Adapters
             // Start Timer for now we just fix it at 30 for testing
             // We do not reset the timer to avoid email flooding at this stage
             m_timer = new System.Timers.Timer();
-            if ((object)m_timer != null)
+            if (m_timer != null)
             {
                 m_timer.Interval = ComputeSeconds()*1000;
                 m_timer.AutoReset = true;
@@ -426,16 +409,16 @@ namespace openHistorian.Adapters
             parser.ParseConnectionString(ConnectionString, this);
 
             // Check Required Mail Settings
-            if (From == null  || string.IsNullOrWhiteSpace(From))
+            if (From is null  || string.IsNullOrWhiteSpace(From))
                 throw new ArgumentException(string.Format(MissingRequiredMailSetting, "from"));
 
-            if (Subject == null || string.IsNullOrWhiteSpace(Subject))
+            if (Subject is null || string.IsNullOrWhiteSpace(Subject))
                 throw new ArgumentException(string.Format(MissingRequiredMailSetting, "subject"));
 
-            if (SmtpServer == null || string.IsNullOrWhiteSpace(SmtpServer))
+            if (SmtpServer is null || string.IsNullOrWhiteSpace(SmtpServer))
                 throw new ArgumentException(string.Format(MissingRequiredMailSetting, "smtpServer"));
 
-            if (TemplateFile == null || string.IsNullOrWhiteSpace(TemplateFile))
+            if (TemplateFile is null || string.IsNullOrWhiteSpace(TemplateFile))
                 throw new ArgumentException(string.Format(MissingRequiredMailSetting, "templateFile"));
 
         }

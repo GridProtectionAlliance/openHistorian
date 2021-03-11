@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -106,13 +106,7 @@ namespace GSF.IO
         /// true if the stream supports reading; otherwise, false.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public override bool CanRead
-        {
-            get
-            {
-                return BaseStream.CanRead;
-            }
-        }
+        public override bool CanRead => BaseStream.CanRead;
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
@@ -121,13 +115,7 @@ namespace GSF.IO
         /// true if the stream supports seeking; otherwise, false.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public override bool CanSeek
-        {
-            get
-            {
-                return BaseStream.CanSeek;
-            }
-        }
+        public override bool CanSeek => BaseStream.CanSeek;
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
@@ -136,13 +124,7 @@ namespace GSF.IO
         /// true if the stream supports writing; otherwise, false.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public override bool CanWrite
-        {
-            get
-            {
-                return BaseStream.CanWrite;
-            }
-        }
+        public override bool CanWrite => BaseStream.CanWrite;
 
         /// <summary>
         /// When overridden in a derived class, gets the length in bytes of the stream.
@@ -151,13 +133,7 @@ namespace GSF.IO
         /// A long value representing the length of the stream in bytes.
         /// </returns>
         /// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
-        public override long Length
-        {
-            get
-            {
-                return BaseStream.Length;
-            }
-        }
+        public override long Length => BaseStream.Length;
 
         /// <summary>
         /// When overridden in a derived class, gets or sets the position within the current stream.
@@ -168,14 +144,8 @@ namespace GSF.IO
         /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
         public override long Position
         {
-            get
-            {
-                return BaseStream.Position;
-            }
-            set
-            {
-                BaseStream.Position = value;
-            }
+            get => BaseStream.Position;
+            set => BaseStream.Position = value;
         }
     }
 }

@@ -120,7 +120,7 @@ namespace NPlot
         /// <param name="worldMin">World min of axis</param>
         /// <param name="worldMax">World max of axis</param>
         public DateTimeAxis(long worldMin, long worldMax)
-            : base((double)worldMin, (double)worldMax)
+            : base(worldMin, worldMax)
         {
             this.Init();
         }
@@ -132,7 +132,7 @@ namespace NPlot
         /// <param name="worldMin">World min of axis</param>
         /// <param name="worldMax">World max of axis</param>
         public DateTimeAxis(DateTime worldMin, DateTime worldMax)
-            : base((double)worldMin.Ticks, (double)worldMax.Ticks)
+            : base(worldMin.Ticks, worldMax.Ticks)
         {
             this.Init();
         }
@@ -161,9 +161,7 @@ namespace NPlot
             labelOffset = this.getDefaultLabelOffset(physicalMin, physicalMax);
             boundingBox = null;
 
-            List<double> largeTicks;
-            List<double> smallTicks;
-            this.WorldTickPositions(physicalMin, physicalMax, out largeTicks, out smallTicks);
+            this.WorldTickPositions(physicalMin, physicalMax, out List<double> largeTicks, out List<double> smallTicks);
 
             // draw small ticks.
             for (int i = 0; i < smallTicks.Count; ++i)
@@ -171,14 +169,14 @@ namespace NPlot
                 this.DrawTick(g, (double)smallTicks[i],
                               this.SmallTickSize, "", new Point(0, 0),
                               physicalMin, physicalMax,
-                              out tLabelOffset, out tBoundingBox);
+                              out _, out _);
                 // assume label offset and bounding box unchanged by small tick bounds.
             }
 
             // draw large ticks.
             for (int i = 0; i < largeTicks.Count; ++i)
             {
-                DateTime tickDate = new DateTime((long)((double)largeTicks[i]));
+                DateTime tickDate = new DateTime((long)(double)largeTicks[i]);
                 string label = LargeTickLabel(tickDate);
 
                 this.DrawTick(g, (double)largeTicks[i],
@@ -198,7 +196,7 @@ namespace NPlot
         {
             string label = "";
 
-            if (this.NumberFormat == null || this.NumberFormat == String.Empty)
+            if (this.NumberFormat is null || this.NumberFormat == String.Empty)
             {
                 if (this.LargeTickLabelType_ == LargeTickLabelType.year)
                 {
@@ -214,7 +212,7 @@ namespace NPlot
 
                 else if (this.LargeTickLabelType_ == LargeTickLabelType.day)
                 {
-                    label = (tickDate.Day).ToString();
+                    label = tickDate.Day.ToString();
                     label += " ";
                     label += tickDate.ToString("MMM");
                 }
@@ -362,7 +360,7 @@ namespace NPlot
 
                     while (currentTickDate < worldMaxDate)
                     {
-                        double world = (double)currentTickDate.Ticks;
+                        double world = currentTickDate.Ticks;
 
                         if (world >= this.WorldMin && world <= this.WorldMax)
                         {
@@ -404,7 +402,7 @@ namespace NPlot
 
                     while (currentTickDate < worldMaxDate)
                     {
-                        double world = (double)currentTickDate.Ticks;
+                        double world = currentTickDate.Ticks;
 
                         if (world >= this.WorldMin && world <= this.WorldMax)
                         {
@@ -441,7 +439,7 @@ namespace NPlot
 
                     while (currentTickDate < worldMaxDate)
                     {
-                        double world = (double)currentTickDate.Ticks;
+                        double world = currentTickDate.Ticks;
 
                         if (world >= this.WorldMin && world <= this.WorldMax)
                         {
@@ -514,7 +512,7 @@ namespace NPlot
                     {
                         TimeSpan timeSinceBeginning = currentTickDate - DateTime.MinValue;
 
-                        if ((timeSinceBeginning.Days / 7) % 2 == 1)
+                        if (timeSinceBeginning.Days / 7 % 2 == 1)
                         {
                             currentTickDate = currentTickDate.AddDays(-7.0);
                         }
@@ -522,7 +520,7 @@ namespace NPlot
 
                     while (currentTickDate < worldMaxDate)
                     {
-                        double world = (double)currentTickDate.Ticks;
+                        double world = currentTickDate.Ticks;
 
                         if (world >= this.WorldMin && world <= this.WorldMax)
                         {
@@ -546,7 +544,7 @@ namespace NPlot
 
                         if (timeLength.Days < daysInMonth * 10)
                             monthSpacing = 1;
-                        else if (timeLength.Days < daysInMonth * (12 * 2))
+                        else if (timeLength.Days < daysInMonth * 12 * 2)
                             monthSpacing = 3;
                         else // if ( timeLength.Days < daysInMonth*(12*3+6) )
                             monthSpacing = 6;
@@ -555,11 +553,11 @@ namespace NPlot
                     {
                         LargeTickLabelType_ = LargeTickLabelType.year;
 
-                        if (timeLength.Days < daysInMonth * (12 * 6))
+                        if (timeLength.Days < daysInMonth * 12 * 6)
                             monthSpacing = 12;
-                        else if (timeLength.Days < daysInMonth * (12 * 12))
+                        else if (timeLength.Days < daysInMonth * 12 * 12)
                             monthSpacing = 24;
-                        else if (timeLength.Days < daysInMonth * (12 * 30))
+                        else if (timeLength.Days < daysInMonth * 12 * 30)
                             monthSpacing = 60;
                         else
                             monthSpacing = 120;
@@ -582,7 +580,7 @@ namespace NPlot
                     if (monthSpacing >= 24)
                     {
                         currentTickDate = currentTickDate.AddYears(
-                            -(currentTickDate.Year) % (monthSpacing / 12));
+                            -currentTickDate.Year % (monthSpacing / 12));
                     }
 
                     //this.firstLargeTick_ = (double)currentTickDate.Ticks;
@@ -591,7 +589,7 @@ namespace NPlot
                     {
                         while (currentTickDate < worldMaxDate)
                         {
-                            double world = (double)currentTickDate.Ticks;
+                            double world = currentTickDate.Ticks;
 
                             if (world >= this.WorldMin && world <= this.WorldMax)
                             {
@@ -607,7 +605,7 @@ namespace NPlot
             {
                 for (DateTime date = worldMinDate; date < worldMaxDate; date += largeTickStep_)
                 {
-                    largeTickPositions.Add((double)date.Ticks);
+                    largeTickPositions.Add(date.Ticks);
                 }
             }
         }
@@ -632,7 +630,7 @@ namespace NPlot
             ref List<double> smallTickPositions
             )
         {
-            if (largeTickPositions.Count < 2 || !(LargeTickLabelType_.Equals(LargeTickLabelType.year)))
+            if (largeTickPositions.Count < 2 || !LargeTickLabelType_.Equals(LargeTickLabelType.year))
             {
                 smallTickPositions = new List<double>();
                 ;
@@ -640,16 +638,16 @@ namespace NPlot
             else
             {
                 smallTickPositions = new List<double>();
-                double diff = 0.5 * (((double)largeTickPositions[1]) - ((double)largeTickPositions[0]));
-                if (((double)largeTickPositions[0] - diff) > this.WorldMin)
+                double diff = 0.5 * ((double)largeTickPositions[1] - (double)largeTickPositions[0]);
+                if ((double)largeTickPositions[0] - diff > this.WorldMin)
                 {
                     smallTickPositions.Add((double)largeTickPositions[0] - diff);
                 }
                 for (int i = 0; i < largeTickPositions.Count - 1; i++)
                 {
-                    smallTickPositions.Add(((double)largeTickPositions[i]) + diff);
+                    smallTickPositions.Add((double)largeTickPositions[i] + diff);
                 }
-                if (((double)largeTickPositions[largeTickPositions.Count - 1] + diff) < this.WorldMax)
+                if ((double)largeTickPositions[largeTickPositions.Count - 1] + diff < this.WorldMax)
                 {
                     smallTickPositions.Add((double)largeTickPositions[largeTickPositions.Count - 1] + diff);
                 }
@@ -663,14 +661,8 @@ namespace NPlot
         /// </summary>
         public TimeSpan LargeTickStep
         {
-            set
-            {
-                largeTickStep_ = value;
-            }
-            get
-            {
-                return largeTickStep_;
-            }
+            set => largeTickStep_ = value;
+            get => largeTickStep_;
         }
 
         private TimeSpan largeTickStep_ = TimeSpan.Zero;

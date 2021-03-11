@@ -29,7 +29,6 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GSF.Threading;
 using System.Timers;
 using GSF;
 using GSF.Collections;

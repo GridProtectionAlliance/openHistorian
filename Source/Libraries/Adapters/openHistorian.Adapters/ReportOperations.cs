@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using GSF;
-using GSF.Data.Model;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using Microsoft.AspNet.SignalR.Hubs;

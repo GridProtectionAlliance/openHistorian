@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,7 +26,6 @@ using System.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Collection;
 using NUnit.Framework;
-using openHistorian.Collections;
 using openHistorian.Snap;
 using openHistorian.Snap.Definitions;
 
@@ -61,11 +60,11 @@ namespace GSF.Snap.Tree.Specialized
 
             points.IsReadingMode = true;
 
-            var sw = new Stopwatch();
+            Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var bs = new BinaryStream(true))
+            using (BinaryStream bs = new BinaryStream(true))
             {
-                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
+                SortedTree<HistorianKey, HistorianValue> st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
 
                 st.AddRange(points);
 
@@ -101,11 +100,11 @@ namespace GSF.Snap.Tree.Specialized
 
             points.IsReadingMode = true;
 
-            var sw = new Stopwatch();
+            Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var bs = new BinaryStream(true))
+            using (BinaryStream bs = new BinaryStream(true))
             {
-                var st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
+                SortedTree<HistorianKey, HistorianValue> st = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid);
                 st.TryAddRange(points);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
             }
@@ -140,9 +139,9 @@ namespace GSF.Snap.Tree.Specialized
 
             points.IsReadingMode = true;
 
-            var sw = new Stopwatch();
+            Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var bs = new BinaryStream(true))
+            using (BinaryStream bs = new BinaryStream(true))
             {
                 SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, HistorianFileEncodingDefinition.TypeGuid, points);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 4096, SortedTree.FixedSizeNode, points);
@@ -166,7 +165,7 @@ namespace GSF.Snap.Tree.Specialized
         public void Test(int pointCount)
         {
             SortedPointBuffer<HistorianKey, HistorianValue> points = new SortedPointBuffer<HistorianKey, HistorianValue>(pointCount, true);
-            var r = new Random(1);
+            Random r = new Random(1);
 
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
@@ -181,13 +180,13 @@ namespace GSF.Snap.Tree.Specialized
 
             points.IsReadingMode = true;
 
-            using (var bs = new BinaryStream(true))
+            using (BinaryStream bs = new BinaryStream(true))
             {
                 //var tree = new SequentialSortedTreeWriter<HistorianKey, HistorianValue>(bs, 256, SortedTree.FixedSizeNode);
                 //SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, CreateTsCombinedEncoding.TypeGuid, points);
                 SequentialSortedTreeWriter<HistorianKey, HistorianValue>.Create(bs, 512, EncodingDefinition.FixedSizeCombinedEncoding, points);
 
-                var sts = SortedTree<HistorianKey, HistorianValue>.Open(bs);
+                SortedTree<HistorianKey, HistorianValue> sts = SortedTree<HistorianKey, HistorianValue>.Open(bs);
                 r = new Random(1);
 
                 for (int x = 0; x < pointCount; x++)

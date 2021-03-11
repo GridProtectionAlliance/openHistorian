@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -75,10 +75,7 @@ namespace openHistorian.Net
         /// <remarks>Must be between 100MB and 1TB</remarks>
         public long TargetFileSize
         {
-            get
-            {
-                return m_config.TargetFileSize;
-            }
+            get => m_config.TargetFileSize;
             set
             {
                 if (value < 100 * SI2.Mega)
@@ -97,10 +94,7 @@ namespace openHistorian.Net
         /// <remarks>Must be between 100MB and 1TB</remarks>
         public long DesiredRemainingSpace
         {
-            get
-            {
-                return m_config.DesiredRemainingSpace;
-            }
+            get => m_config.DesiredRemainingSpace;
             set
             {
                 if (value < 100 * SI2.Mega)
@@ -121,10 +115,7 @@ namespace openHistorian.Net
         /// </remarks>
         public int DiskFlushInterval
         {
-            get
-            {
-                return m_config.DiskFlushInterval;
-            }
+            get => m_config.DiskFlushInterval;
             set
             {
                 if (value < 1000 || value > 60000)
@@ -143,10 +134,7 @@ namespace openHistorian.Net
         /// </remarks>
         public int CacheFlushInterval
         {
-            get
-            {
-                return m_config.CacheFlushInterval;
-            }
+            get => m_config.CacheFlushInterval;
             set
             {
                 if (value < 1 || value > 1000)
@@ -168,10 +156,7 @@ namespace openHistorian.Net
         /// </remarks>
         public int StagingCount
         {
-            get
-            {
-                return m_config.StagingCount;
-            }
+            get => m_config.StagingCount;
             set
             {
                 if (value < 3 || value > 4)

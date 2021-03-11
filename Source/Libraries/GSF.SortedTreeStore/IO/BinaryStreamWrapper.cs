@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -33,7 +33,7 @@ namespace GSF.IO
         : BinaryStreamBase
     {
         private readonly Stream m_stream;
-        bool m_ownsStream;
+        private readonly bool m_ownsStream;
 
         public BinaryStreamWrapper(Stream stream, bool ownsStream)
         {
@@ -41,37 +41,13 @@ namespace GSF.IO
             m_stream = stream;
         }
 
-        public override bool CanWrite
-        {
-            get
-            {
-                return m_stream.CanWrite;
-            }
-        }
+        public override bool CanWrite => m_stream.CanWrite;
 
-        public override long Length
-        {
-            get
-            {
-                return m_stream.Length;
-            }
-        }
+        public override long Length => m_stream.Length;
 
-        public override bool CanRead
-        {
-            get
-            {
-                return m_stream.CanRead;
-            }
-        }
+        public override bool CanRead => m_stream.CanRead;
 
-        public override bool CanSeek
-        {
-            get
-            {
-                return m_stream.CanSeek;
-            }
-        }
+        public override bool CanSeek => m_stream.CanSeek;
 
         /// <summary>
         /// Gets/Sets the current position for the stream.
@@ -81,14 +57,8 @@ namespace GSF.IO
         /// </summary>
         public override long Position
         {
-            get
-            {
-                return m_stream.Position;
-            }
-            set
-            {
-                m_stream.Position = value;
-            }
+            get => m_stream.Position;
+            set => m_stream.Position = value;
         }
 
         public override void Write(byte value)

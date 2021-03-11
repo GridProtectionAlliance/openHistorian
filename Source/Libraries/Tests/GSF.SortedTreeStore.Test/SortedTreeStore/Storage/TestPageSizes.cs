@@ -4,10 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Tree;
-using GSF.Snap;
 using NUnit.Framework;
-using GSF.Snap.Storage;
-using openHistorian.Collections;
 using GSF.IO.FileStructure.Media;
 using openHistorian.Snap;
 using openHistorian.Snap.Definitions;
@@ -169,7 +166,7 @@ namespace GSF.Snap.Storage.Test
             using (SortedTreeFile af = SortedTreeFile.CreateInMemory(blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var edit = af2.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = af2.BeginEdit())
                 {
                     for (ulong x = 0; x < 1000000; x++)
                     {
@@ -227,7 +224,7 @@ namespace GSF.Snap.Storage.Test
                 for (uint i = 0; i < pointPairs; i++)
                 {
                     uint max = i * 5000 + 5000;
-                    using (var edit = af2.BeginEdit())
+                    using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = af2.BeginEdit())
                     {
                         for (ulong x = i * 5000; x < max; x++)
                         {
@@ -282,7 +279,7 @@ namespace GSF.Snap.Storage.Test
 
             using (BinaryStream bs = new BinaryStream(allocatesOwnMemory: true))
             {
-                var table = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096);
+                SortedTree<HistorianKey, HistorianValue> table = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096);
                 for (ulong x = 0; x < count; x++)
                 {
                     key.Timestamp = (uint)R.Next();
@@ -341,7 +338,7 @@ namespace GSF.Snap.Storage.Test
             sw.Start();
             using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, blockSize: pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid))
-            using (var edit = af2.BeginEdit())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = af2.BeginEdit())
             {
                 for (uint x = 0; x < 10000000; x++)
                 {

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,7 +26,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using GSF.Diagnostics;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services
 {
@@ -47,9 +46,9 @@ namespace GSF.Snap.Services
 
         protected LogStackMessages GetSourceDetails()
         {
-            if (Info != null)
-                return LogStackMessages.Empty.Union("Database", string.Format("Database: {0} Key: {1} Value: {2}", Info.DatabaseName, Info.KeyType.FullName, Info.ValueType.FullName));
-            return LogStackMessages.Empty;
+            return Info != null ? 
+                LogStackMessages.Empty.Union("Database", $"Database: {Info.DatabaseName} Key: {Info.KeyType.FullName} Value: {Info.ValueType.FullName}") : 
+                LogStackMessages.Empty;
         }
 
         /// <summary>
@@ -66,8 +65,9 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Gets the full status text for the server.
         /// </summary>
-        /// <param name="status"></param>
-        public abstract void GetFullStatus(StringBuilder status);
+        /// <param name="status">Target status output <see cref="StringBuilder"/>.</param>
+        /// <param name="maxFileListing">Maximum file listing.</param>
+        public abstract void GetFullStatus(StringBuilder status, int maxFileListing = -1);
 
         /// <summary>
         /// Creates a new server database from the provided config.
@@ -77,24 +77,23 @@ namespace GSF.Snap.Services
         /// <returns></returns>
         public static SnapServerDatabaseBase CreateDatabase(ServerDatabaseSettings databaseConfig)
         {
-            var keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
-            var valueType = Library.GetSortedTreeType(databaseConfig.ValueType);
+            Type keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
+            Type valueType = Library.GetSortedTreeType(databaseConfig.ValueType);
 
-            var type = typeof(SnapServerDatabaseBase);
-            var method = type.GetMethod("CreateDatabase", BindingFlags.NonPublic | BindingFlags.Static);
-            var reflectionMethod = method.MakeGenericMethod(keyType, valueType);
-            return (SnapServerDatabaseBase)reflectionMethod.Invoke(null, new object[] { databaseConfig });
+            Type type = typeof(SnapServerDatabaseBase);
+            MethodInfo method = type.GetMethod("CreateDatabase", BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo reflectionMethod = method?.MakeGenericMethod(keyType, valueType);
+
+            return (SnapServerDatabaseBase)reflectionMethod?.Invoke(null, new object[] { databaseConfig });
         }
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
-        static SnapServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseSettings databaseConfig)
+        private static SnapServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseSettings databaseConfig)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             return new SnapServerDatabase<TKey, TValue>(databaseConfig);
         }
-
-
     }
 }

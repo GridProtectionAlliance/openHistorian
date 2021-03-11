@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -38,7 +38,7 @@ namespace GSF.Snap.Tree
 
         private bool m_isInitialized;
         private int m_blockSize;
-        private int m_keySize;
+        private readonly int m_keySize;
         private readonly TKey m_tmpKey;
         private readonly SnapUInt32 m_tmpValue;
         private BinaryStreamPointerBase m_stream;
@@ -117,7 +117,7 @@ namespace GSF.Snap.Tree
             m_getNextNewNodeIndex = getNextNewNodeIndex;
             m_blockSize = blockSize;
 
-            int minSize = (m_keySize + sizeof(uint)) * 4 + (12 + 2 * m_keySize); // (4 key pointers) + (Header Size))
+            int minSize = (m_keySize + sizeof(uint)) * 4 + 12 + 2 * m_keySize; // (4 key pointers) + (Header Size))
             if (blockSize < minSize)
                 throw new ArgumentOutOfRangeException("blockSize", string.Format("Must hold at least 4 elements which is {0}", minSize));
 
@@ -186,7 +186,7 @@ namespace GSF.Snap.Tree
         {
             if (RootNodeLevel == 0)
                 return RootNodeIndexAddress;
-            var node = FindNode(key, level + 1);
+            SortedTreeNodeBase<TKey, SnapUInt32> node = FindNode(key, level + 1);
             node.GetOrGetNext(key, m_tmpValue);
             return m_tmpValue.Value;
         }

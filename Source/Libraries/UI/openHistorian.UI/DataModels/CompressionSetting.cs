@@ -26,8 +26,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.Data;
 using GSF.TimeSeries.UI;
 using GSF.TimeSeries.UI.DataModels;
@@ -60,10 +58,7 @@ namespace openHistorian.UI.DataModels
         
         public int PointID
         {
-            get
-            {
-                return m_pointID;
-            }
+            get => m_pointID;
             set
             {
                 m_pointID = value;
@@ -75,10 +70,7 @@ namespace openHistorian.UI.DataModels
 
         public ulong CompressionMinTime
         {
-            get
-            {
-                return m_compressionMinTime;
-            }
+            get => m_compressionMinTime;
             set
             {
                 m_compressionMinTime = value;
@@ -88,10 +80,7 @@ namespace openHistorian.UI.DataModels
 
         public ulong CompressionMaxTime
         {
-            get
-            {
-                return m_compressionMaxTime;
-            }
+            get => m_compressionMaxTime;
             set
             {
                 m_compressionMaxTime = value;
@@ -101,10 +90,7 @@ namespace openHistorian.UI.DataModels
 
         public double CompressionLimit
         {
-            get
-            {
-                return m_compressionLimit;
-            }
+            get => m_compressionLimit;
             set
             {
                 m_compressionLimit = value;
@@ -112,13 +98,7 @@ namespace openHistorian.UI.DataModels
             }
         }
 
-        public string PointTag
-        {
-            get
-            {
-                return ReferencedMeasurement?.PointTag;
-            }
-        }
+        public string PointTag => ReferencedMeasurement?.PointTag;
 
         public bool IsNew
         {
@@ -126,15 +106,9 @@ namespace openHistorian.UI.DataModels
             set;
         }
 
-        private Measurement ReferencedMeasurement
-        {
-            get
-            {
-                return m_referencedMeasurement ?? GetReferencedMeasurement();
-            }
-        }
+        private Measurement ReferencedMeasurement => m_referencedMeasurement ?? GetReferencedMeasurement();
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -209,7 +183,7 @@ namespace openHistorian.UI.DataModels
                 DataTable compressionSettingTable;
                 int pointID;
 
-                if ((object)keys != null && keys.Count > 0)
+                if (keys != null && keys.Count > 0)
                 {
                     commaSeparatedKeys = keys.Select(key => "" + key.ToString() + "").Aggregate((str1, str2) => str1 + "," + str2);
 

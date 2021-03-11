@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -39,8 +39,8 @@ namespace GSF.Collections
     public class ConcurrentIndexedDictionary<TKey, TValue>
     {
         private TValue[] m_items = new TValue[4];
-        private Dictionary<TKey, int> m_lookup = new Dictionary<TKey, int>();
-        private object m_syncRoot = new object();
+        private readonly Dictionary<TKey, int> m_lookup = new Dictionary<TKey, int>();
+        private readonly object m_syncRoot = new object();
 
         /// <summary>
         /// Gets the number of items in the dictionary
@@ -85,8 +85,7 @@ namespace GSF.Collections
         {
             lock (m_syncRoot)
             {
-                int index;
-                if (m_lookup.TryGetValue(key, out index))
+                if (m_lookup.TryGetValue(key, out int index))
                 {
                     return index;
                 }
@@ -116,7 +115,7 @@ namespace GSF.Collections
 
             if (Count == m_items.Length)
             {
-                var newItems = new TValue[m_items.Length * 2];
+                TValue[] newItems = new TValue[m_items.Length * 2];
                 m_items.CopyTo(newItems, 0);
                 m_items = newItems;
             }
@@ -135,8 +134,7 @@ namespace GSF.Collections
         {
             lock (m_syncRoot)
             {
-                int index;
-                if (m_lookup.TryGetValue(key, out index))
+                if (m_lookup.TryGetValue(key, out int index))
                 {
                     return this[index];
                 }

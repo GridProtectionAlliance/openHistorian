@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,8 +26,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows.Forms;
-using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
@@ -37,18 +35,18 @@ namespace GSF.Security
     [TestFixture]
     public class PBKDF2_Test
     {
-        RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        readonly RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 
         [Test]
         public void TestPBE()
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var rng = new RNGCryptoServiceProvider();
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] data = new byte[30];
             rng.GetBytes(data);
-            var rfc = new Rfc2898DeriveBytes("test", data, 400000);
-            var pass = rfc.GetBytes(20);
+            Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes("test", data, 400000);
+            _ = rfc.GetBytes(20);
             sw.Stop();
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
         }
@@ -57,10 +55,10 @@ namespace GSF.Security
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var rng = new RNGCryptoServiceProvider();
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] data = new byte[30];
             rng.GetBytes(data);
-            var pass = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, Encoding.UTF8.GetBytes("test"), data, 400000, 20);
+            _ = PBKDF2.ComputeSaltedPassword(HMACMethod.SHA512, Encoding.UTF8.GetBytes("test"), data, 400000, 20);
             sw.Stop();
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
         }
@@ -70,10 +68,10 @@ namespace GSF.Security
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var rng = new RNGCryptoServiceProvider();
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] data = new byte[30];
             rng.GetBytes(data);
-            var pk = new Pkcs5S2ParametersGenerator(new Sha512Digest());
+            Pkcs5S2ParametersGenerator pk = new Pkcs5S2ParametersGenerator(new Sha512Digest());
             pk.Init(Encoding.UTF8.GetBytes("test"), data, 400000);
             pk.GenerateDerivedMacParameters(20 * 8);
             sw.Stop();
@@ -99,10 +97,10 @@ namespace GSF.Security
             rng.GetBytes(keyB);
             rng.GetBytes(valueB);
 
-            var code = HMAC<Sha1Digest>.Compute(keyB, valueB);
+            byte[] code = HMAC<Sha1Digest>.Compute(keyB, valueB);
 
             HMACSHA1 hmac1 = new HMACSHA1(keyB);
-            var code2 = hmac1.ComputeHash(valueB);
+            byte[] code2 = hmac1.ComputeHash(valueB);
             if (!code.SequenceEqual(code2))
                 throw new Exception();
 
@@ -130,7 +128,7 @@ namespace GSF.Security
         {
             byte[] dkExpected = StringToByteArray(dk);
 
-            using (var pdf = new PBKDF2(HMACMethod.SHA1, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
+            using (PBKDF2 pdf = new PBKDF2(HMACMethod.SHA1, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
             {
                 byte[] dkBytes = pdf.GetBytes(dkLen);
                 if (!dkBytes.SequenceEqual(dkExpected))
@@ -158,7 +156,7 @@ namespace GSF.Security
         {
             byte[] dkExpected = StringToByteArray(dk);
 
-            using (var pdf = new PBKDF2(HMACMethod.SHA256, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
+            using (PBKDF2 pdf = new PBKDF2(HMACMethod.SHA256, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
             {
                 byte[] dkBytes = pdf.GetBytes(dkLen);
                 if (!dkBytes.SequenceEqual(dkExpected))
@@ -185,7 +183,7 @@ namespace GSF.Security
         {
             byte[] dkExpected = StringToByteArray(dk);
 
-            using (var pdf = new PBKDF2(HMACMethod.SHA512, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
+            using (PBKDF2 pdf = new PBKDF2(HMACMethod.SHA512, Encoding.ASCII.GetBytes(P), Encoding.ASCII.GetBytes(S), c))
             {
                 byte[] dkBytes = pdf.GetBytes(dkLen);
                 if (!dkBytes.SequenceEqual(dkExpected))

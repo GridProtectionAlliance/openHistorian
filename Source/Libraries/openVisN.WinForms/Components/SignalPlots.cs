@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -90,7 +90,7 @@ namespace openVisN.Components
         {
             if (m_frameworkCtrl.Framework.Updater.Mode == ExecutionMode.Automatic)
             {
-                if (!((sender is PlotSurface2D.Interactions.AxisDragX) || (sender is PlotSurface2D.Interactions.MouseWheelZoom)))
+                if (!(sender is PlotSurface2D.Interactions.AxisDragX || sender is PlotSurface2D.Interactions.MouseWheelZoom))
                     return;
                 DateTime minDate, maxDate;
                 minDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMin);
@@ -100,7 +100,7 @@ namespace openVisN.Components
             }
             else
             {
-                if (!((sender is PlotSurface2D.Interactions.HorizontalDrag) || (sender is PlotSurface2D.Interactions.AxisDragX) || (sender is PlotSurface2D.Interactions.MouseWheelZoom)))
+                if (!(sender is PlotSurface2D.Interactions.HorizontalDrag || sender is PlotSurface2D.Interactions.AxisDragX || sender is PlotSurface2D.Interactions.MouseWheelZoom))
                     return;
                 DateTime minDate, maxDate;
                 minDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMin);
@@ -149,9 +149,7 @@ namespace openVisN.Components
 
                     for (int i = 0; i < data.Count; i++)
                     {
-                        ulong time;
-                        double value;
-                        data.GetData(i, out time, out value);
+                        data.GetData(i, out ulong time, out double value);
 
                         x.Add(time);
                         y.Add(value * m_scalingFactor);
@@ -185,9 +183,7 @@ namespace openVisN.Components
 
                     for (int i = 0; i < data.Count; i++)
                     {
-                        ulong time;
-                        double value;
-                        data.GetData(i, out time, out value);
+                        data.GetData(i, out ulong time, out double value);
 
                         x.Add(time);
                         y.Add(value * m_scalingFactor);
@@ -227,10 +223,7 @@ namespace openVisN.Components
         ]
         public VisualizationFramework Framework
         {
-            get
-            {
-                return m_frameworkCtrl;
-            }
+            get => m_frameworkCtrl;
             set
             {
                 if (!DesignMode)
@@ -274,14 +267,8 @@ namespace openVisN.Components
         ]
         public string SignalTypeToPlot
         {
-            get
-            {
-                return m_signalTypeToPlot;
-            }
-            set
-            {
-                m_signalTypeToPlot = value;
-            }
+            get => m_signalTypeToPlot;
+            set => m_signalTypeToPlot = value;
         }
 
         [
@@ -293,10 +280,7 @@ namespace openVisN.Components
         ]
         public string PlotTitle
         {
-            get
-            {
-                return m_plotTitle;
-            }
+            get => m_plotTitle;
             set
             {
                 m_plotTitle = value;
@@ -313,14 +297,8 @@ namespace openVisN.Components
         ]
         public double ScalingFactor
         {
-            get
-            {
-                return m_scalingFactor;
-            }
-            set
-            {
-                m_scalingFactor = value;
-            }
+            get => m_scalingFactor;
+            set => m_scalingFactor = value;
         }
 
         [
@@ -332,14 +310,8 @@ namespace openVisN.Components
         ]
         public ColorWheel Colors
         {
-            get
-            {
-                return m_colorWheel;
-            }
-            set
-            {
-                m_colorWheel = value;
-            }
+            get => m_colorWheel;
+            set => m_colorWheel = value;
         }
     }
 }

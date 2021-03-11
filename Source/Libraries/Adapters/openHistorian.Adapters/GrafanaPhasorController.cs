@@ -206,7 +206,7 @@ namespace openHistorian.Adapters
         {
             string target = request.target == "select metric" ? "" : request.target;
 
-            if (DataSource == null)
+            if (DataSource is null)
                 return Task.FromResult(Enumerable.Empty<Tuple<string, string, string>>());
 
             return Task.Factory.StartNew(() =>
@@ -224,7 +224,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public Task<List<TimeSeriesPhasorValues>> QueryPhasors(PhasorQueryRequest request, CancellationToken cancellationToken)
         {
-            if (DataSource == null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
+            if (DataSource is null) return Task.FromResult(new List<TimeSeriesPhasorValues>());
 
             return Task.Factory.StartNew(() =>
             {

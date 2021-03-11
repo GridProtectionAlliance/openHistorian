@@ -3,7 +3,6 @@ using System.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.Snap.Types;
 using NUnit.Framework;
-using openHistorian.Collections;
 
 namespace GSF.Snap.Tree
 {

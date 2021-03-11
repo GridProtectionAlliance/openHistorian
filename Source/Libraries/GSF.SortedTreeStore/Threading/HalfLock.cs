@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -40,10 +40,10 @@ namespace GSF.Threading
     /// </remarks>
     public class HalfLock
     {
-        const int Unlocked = 0;
-        const int Locked = 1;
-        int m_lock;
-        readonly HalfLockRelease m_release;
+        private const int Unlocked = 0;
+        private const int Locked = 1;
+        private int m_lock;
+        private readonly HalfLockRelease m_release;
 
         /// <summary>
         /// Creates a <see cref="TinyLock"/>
@@ -75,9 +75,9 @@ namespace GSF.Threading
         /// used for the SpinLock when its not needed.
         /// </summary>
         /// <returns></returns>
-        void LockSlower()
+        private void LockSlower()
         {
-            SpinWait spin = default(SpinWait);
+            SpinWait spin = default;
             while (Interlocked.Exchange(ref m_lock, Locked) != Unlocked)
                 spin.SpinOnce();
         }
@@ -87,10 +87,10 @@ namespace GSF.Threading
         /// </summary>
         public struct HalfLockRelease : IDisposable
         {
-            readonly HalfLock m_halfLock;
+            private readonly HalfLock m_halfLock;
             internal HalfLockRelease(HalfLock halfLock)
             {
-                if ((object)halfLock == null)
+                if (halfLock is null)
                     throw new ArgumentNullException("halfLock");
                 if (halfLock.m_release.m_halfLock != null)
                     throw new Exception("Object is already locked");

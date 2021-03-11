@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -109,7 +109,7 @@ namespace GSF.Snap.Collection
         /// <param name="capacity">The maximum number of items that can be stored in this class</param>
         /// <param name="duplicateHandler">Function that will handle encountered duplicates.</param>
         protected SortedPointBuffer(int capacity, Action<TKey, TKey> duplicateHandler)
-            : this(capacity, (object)duplicateHandler == null)
+            : this(capacity, duplicateHandler is null)
         {
             m_duplicateHandler = duplicateHandler;
         }
@@ -118,59 +118,29 @@ namespace GSF.Snap.Collection
         /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
         /// the data read from this stream will never contain duplicates.
         /// </summary>
-        public override bool NeverContainsDuplicates
-        {
-            get
-            {
-                return m_removeDuplicates || (object)m_duplicateHandler != null;
-            }
-        }
+        public override bool NeverContainsDuplicates => m_removeDuplicates || (object)m_duplicateHandler != null;
 
         /// <summary>
         /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
         /// the data read from this stream is sequential.
         /// </summary>
-        public override bool IsAlwaysSequential
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsAlwaysSequential => true;
 
         /// <summary>
         /// Gets the current number of items in the buffer
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return (m_enqueueIndex - m_dequeueIndex);
-            }
-        }
+        public int Count => m_enqueueIndex - m_dequeueIndex;
 
         /// <summary>
         /// Gets if this buffer is empty
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return m_dequeueIndex == m_enqueueIndex;
-            }
-        }
+        public bool IsEmpty => m_dequeueIndex == m_enqueueIndex;
 
         /// <summary>
         /// Gets if no more items can be added to this list.
         /// List must be cleared before any more items can be added.
         /// </summary>
-        public bool IsFull
-        {
-            get
-            {
-                return m_capacity == m_enqueueIndex;
-            }
-        }
+        public bool IsFull => m_capacity == m_enqueueIndex;
 
         /// <summary>
         /// Gets/Sets the current mode of the point buffer.
@@ -181,10 +151,7 @@ namespace GSF.Snap.Collection
         /// </remarks>
         public bool IsReadingMode
         {
-            get
-            {
-                return m_isReadingMode;
-            }
+            get => m_isReadingMode;
             set
             {
                 if (m_isReadingMode != value)
@@ -317,11 +284,11 @@ namespace GSF.Snap.Collection
                 else if (m_keyData[x].IsLessThanOrEqualTo(m_keyData[x + 1]))
                 {
                     m_sortingBlocks1[x] = x;
-                    m_sortingBlocks1[x + 1] = (x + 1);
+                    m_sortingBlocks1[x + 1] = x + 1;
                 }
                 else
                 {
-                    m_sortingBlocks1[x] = (x + 1);
+                    m_sortingBlocks1[x] = x + 1;
                     m_sortingBlocks1[x + 1] = x;
                 }
             }
@@ -351,7 +318,7 @@ namespace GSF.Snap.Collection
 
             if (shouldSwap)
             {
-                var b1 = m_sortingBlocks1;
+                int[] b1 = m_sortingBlocks1;
                 m_sortingBlocks1 = m_sortingBlocks2;
                 m_sortingBlocks2 = b1;
             }
@@ -365,7 +332,7 @@ namespace GSF.Snap.Collection
         /// <param name="ptr">the data</param>
         /// <param name="count">the number of entries at this level</param>
         /// <param name="stride">the number of compares per level</param>
-        unsafe void SortLevel(int* srcIndex, int* dstIndex, TKey[] ptr, int count, int stride)
+        private unsafe void SortLevel(int* srcIndex, int* dstIndex, TKey[] ptr, int count, int stride)
         {
             for (int xStart = 0; xStart < count; xStart += stride + stride)
             {
@@ -438,7 +405,7 @@ namespace GSF.Snap.Collection
 
         private void HandleDuplicates()
         {
-            if ((object)m_duplicateHandler == null)
+            if (m_duplicateHandler is null)
                 return;
 
             TKey left, right;

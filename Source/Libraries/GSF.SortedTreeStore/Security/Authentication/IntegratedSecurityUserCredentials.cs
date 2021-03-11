@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -41,7 +41,7 @@ namespace GSF.Security.Authentication
     /// </remarks>
     public class IntegratedSecurityUserCredentials
     {
-        private Dictionary<string, IntegratedSecurityUserCredential> m_users = new Dictionary<string, IntegratedSecurityUserCredential>();
+        private readonly Dictionary<string, IntegratedSecurityUserCredential> m_users = new Dictionary<string, IntegratedSecurityUserCredential>();
 
         /// <summary>
         /// Gets if the user exists in the database
@@ -54,14 +54,13 @@ namespace GSF.Security.Authentication
             token = Guid.Empty;
 
             WindowsIdentity i = identity as WindowsIdentity;
-            if (i == null)
+            if (i is null)
                 return false;
-            if ((object)i.User == null)
+            if (i.User is null)
                 return false;
             lock (m_users)
             {
-                IntegratedSecurityUserCredential user;
-                if (m_users.TryGetValue(i.User.Value, out user))
+                if (m_users.TryGetValue(i.User.Value, out IntegratedSecurityUserCredential user))
                 {
                     token = user.UserToken;
                     return true;
@@ -86,7 +85,7 @@ namespace GSF.Security.Authentication
         /// <param name="userToken"></param>
         public void AddUser(string username, Guid userToken)
         {
-            var user = new IntegratedSecurityUserCredential(username, userToken);
+            IntegratedSecurityUserCredential user = new IntegratedSecurityUserCredential(username, userToken);
             lock (m_users)
             {
                 m_users.Add(user.UserID, user);
@@ -103,7 +102,7 @@ namespace GSF.Security.Authentication
             lock (m_users)
             {
                 stream.Write(m_users.Count);
-                foreach (var user in m_users.Values)
+                foreach (IntegratedSecurityUserCredential user in m_users.Values)
                 {
                     user.Save(stream);
                 }
@@ -127,7 +126,7 @@ namespace GSF.Security.Authentication
                         while (count > 0)
                         {
                             count--;
-                            var user = new IntegratedSecurityUserCredential(stream);
+                            IntegratedSecurityUserCredential user = new IntegratedSecurityUserCredential(stream);
                             m_users.Add(user.UserID, user);
                         }
                     }

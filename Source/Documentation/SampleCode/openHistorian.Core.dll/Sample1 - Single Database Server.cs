@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
 using GSF.Diagnostics;
+using GSF.Snap;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
-using GSF.Snap.Services.Net;
 using NUnit.Framework;
-using openHistorian;
-using GSF.Snap.Tree;
 using GSF.Snap.Services.Reader;
 using openHistorian.Net;
 using openHistorian.Snap;
@@ -23,14 +20,14 @@ namespace SampleCode.openHistorian.Core.dll
 
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            var key = new HistorianKey();
-            var value = new HistorianValue();
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
-            using (var server = new HistorianServer(settings))
-            using (var client = SnapClient.Connect(server.Host))
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
+            using (HistorianServer server = new HistorianServer(settings))
+            using (SnapClient client = SnapClient.Connect(server.Host))
             {
-                var database = client.GetDatabase<HistorianKey, HistorianValue>("db");
+                ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>("db");
                 for (ulong x = 0; x < 1000; x++)
                 {
                     key.Timestamp = x;
@@ -44,12 +41,12 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void TestReadData()
         {
-            using (var server = new HistorianServer(new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", false), 1234))
+            using (HistorianServer server = new HistorianServer(new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", false), 1234))
             {
-                using (var client = SnapClient.Connect(server.Host))
+                using (SnapClient client = SnapClient.Connect(server.Host))
                 {
-                    var database = client.GetDatabase<HistorianKey, HistorianValue>("DB");
-                    var stream = database.Read(10, 800 - 1);
+                    ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>("DB");
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(10, 800 - 1);
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
                     while (stream.Read(key, value))

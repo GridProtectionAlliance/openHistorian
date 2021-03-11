@@ -12,7 +12,7 @@ namespace GSF.Test
             Assert.AreEqual(0, BitMath.CountBitsSet(0));
             Assert.AreEqual(32, BitMath.CountBitsSet(uint.MaxValue));
             Assert.AreEqual(31, BitMath.CountBitsSet(int.MaxValue));
-            Assert.AreEqual(1, BitMath.CountBitsSet((int)short.MaxValue + 1));
+            Assert.AreEqual(1, BitMath.CountBitsSet(short.MaxValue + 1));
             Assert.AreEqual(10, BitMath.CountBitsSet(0xF030207));
 
 
@@ -32,7 +32,7 @@ namespace GSF.Test
             Assert.AreEqual(32 - 0, BitMath.CountBitsCleared(0));
             Assert.AreEqual(32 - 32, BitMath.CountBitsCleared(uint.MaxValue));
             Assert.AreEqual(32 - 31, BitMath.CountBitsCleared(int.MaxValue));
-            Assert.AreEqual(32 - 1, BitMath.CountBitsCleared((int)short.MaxValue + 1));
+            Assert.AreEqual(32 - 1, BitMath.CountBitsCleared(short.MaxValue + 1));
             Assert.AreEqual(32 - 10, BitMath.CountBitsCleared(0xF030207));
 
 
@@ -72,7 +72,7 @@ namespace GSF.Test
             {
                 for (int x = 0; x < 32; x++)
                 {
-                    Assert.AreEqual(31 - x, BitMath.CountLeadingZeros((1u << x | Next(r, 1u << x))));
+                    Assert.AreEqual(31 - x, BitMath.CountLeadingZeros(1u << x | Next(r, 1u << x)));
                 }
             }
 
@@ -83,7 +83,7 @@ namespace GSF.Test
             {
                 for (int x = 0; x < 63; x++)
                 {
-                    Assert.AreEqual(63 - x, BitMath.CountLeadingZeros((1ul << x | Next(r, 1ul << x))));
+                    Assert.AreEqual(63 - x, BitMath.CountLeadingZeros(1ul << x | Next(r, 1ul << x)));
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace GSF.Test
             {
                 for (int x = 0; x < 32; x++)
                 {
-                    Assert.AreEqual(x, BitMath.CountTrailingZeros((1u << x | NextAbove(r, 1u << x))));
+                    Assert.AreEqual(x, BitMath.CountTrailingZeros(1u << x | NextAbove(r, 1u << x)));
                 }
             }
 
@@ -121,7 +121,7 @@ namespace GSF.Test
             {
                 for (int x = 0; x < 63; x++)
                 {
-                    Assert.AreEqual(x, BitMath.CountTrailingZeros((1ul << x | NextAbove(r, 1ul << x))));
+                    Assert.AreEqual(x, BitMath.CountTrailingZeros(1ul << x | NextAbove(r, 1ul << x)));
                 }
             }
         }
@@ -140,9 +140,9 @@ namespace GSF.Test
         [Test()]
         public void RoundUpToNearestPowerOfTwo()
         {
-            Assert.AreEqual(1u, BitMath.RoundUpToNearestPowerOfTwo((uint)0));
-            Assert.AreEqual(1u, BitMath.RoundUpToNearestPowerOfTwo((uint)1));
-            Assert.AreEqual(4u, BitMath.RoundUpToNearestPowerOfTwo((uint)3));
+            Assert.AreEqual(1u, BitMath.RoundUpToNearestPowerOfTwo(0));
+            Assert.AreEqual(1u, BitMath.RoundUpToNearestPowerOfTwo(1));
+            Assert.AreEqual(4u, BitMath.RoundUpToNearestPowerOfTwo(3));
             Assert.AreEqual(1u << 27, BitMath.RoundUpToNearestPowerOfTwo((uint)(1 << 27) - 256));
             Assert.AreEqual(1u << 30, BitMath.RoundUpToNearestPowerOfTwo((1u << 30) - 1));
             Assert.AreEqual(1u << 31, BitMath.RoundUpToNearestPowerOfTwo(uint.MaxValue));
@@ -164,14 +164,14 @@ namespace GSF.Test
             Assert.AreEqual(2u, BitMath.RoundDownToNearestPowerOfTwo(3u));
             Assert.AreEqual(1u << 26, BitMath.RoundDownToNearestPowerOfTwo((1u << 27) - 256));
             Assert.AreEqual(1u << 29, BitMath.RoundDownToNearestPowerOfTwo((1u << 30) - 1));
-            Assert.AreEqual(1u << 30, BitMath.RoundDownToNearestPowerOfTwo((1u << 30)));
+            Assert.AreEqual(1u << 30, BitMath.RoundDownToNearestPowerOfTwo(1u << 30));
             Assert.AreEqual(1u << 31, BitMath.RoundDownToNearestPowerOfTwo(uint.MaxValue));
 
             Assert.AreEqual(1ul, BitMath.RoundDownToNearestPowerOfTwo(0ul));
             Assert.AreEqual(1ul, BitMath.RoundDownToNearestPowerOfTwo(1ul));
             Assert.AreEqual(2ul, BitMath.RoundDownToNearestPowerOfTwo(3ul));
             Assert.AreEqual(1ul << 26, BitMath.RoundDownToNearestPowerOfTwo((1ul << 27) - 256));
-            Assert.AreEqual(1u << 30, BitMath.RoundDownToNearestPowerOfTwo((1ul << 30)));
+            Assert.AreEqual(1u << 30, BitMath.RoundDownToNearestPowerOfTwo(1ul << 30));
             Assert.AreEqual(1ul << 29, BitMath.RoundDownToNearestPowerOfTwo((1ul << 30) - 1));
             Assert.AreEqual(1ul << 63, BitMath.RoundDownToNearestPowerOfTwo(ulong.MaxValue));
         }

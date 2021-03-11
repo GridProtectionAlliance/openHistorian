@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GSF.Diagnostics;
-using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
@@ -13,7 +10,6 @@ using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Collections;
 using openHistorian.Data.Query;
 using openHistorian.Snap;
 
@@ -33,24 +29,24 @@ namespace GSF.Snap.Server
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
 
-            var master = CreateTable();
-            var table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> master = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
             AddData(master, 100, 100, 100);
             AddData(table1, 100, 100, 100);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
             }
 
-            using (var masterRead = master.BeginRead())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> masterRead = master.BeginRead())
             {
-                var masterScan = masterRead.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> masterScan = masterRead.GetTreeScanner();
                 masterScan.SeekToStart();
-                var masterScanSequential = masterScan.TestSequential();
+                TreeStreamSequential<HistorianKey, HistorianValue> masterScanSequential = masterScan.TestSequential();
 
-                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
+                using (SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    var scanner = sequencer.TestSequential();
+                    TreeStreamSequential<HistorianKey, HistorianValue> scanner = sequencer.TestSequential();
 
                     int count = 0;
                     while (scanner.Read(key1, value1))
@@ -86,28 +82,28 @@ namespace GSF.Snap.Server
             HistorianValue value1 = new HistorianValue();
             HistorianValue value2 = new HistorianValue();
 
-            var master = CreateTable();
-            var table1 = CreateTable();
-            var table2 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> master = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table2 = CreateTable();
             AddData(master, 100, 100, 100);
             AddData(table1, 100, 100, 100);
             AddData(master, 101, 100, 100);
             AddData(table2, 101, 100, 100);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
                 editor.Add(table2);
             }
 
-            using (var masterRead = master.BeginRead())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> masterRead = master.BeginRead())
             {
-                var masterScan = masterRead.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> masterScan = masterRead.GetTreeScanner();
                 masterScan.SeekToStart();
-                var masterScanSequential = masterScan.TestSequential();
+                TreeStreamSequential<HistorianKey, HistorianValue> masterScanSequential = masterScan.TestSequential();
 
-                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
+                using (SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    var scanner = sequencer.TestSequential();
+                    TreeStreamSequential<HistorianKey, HistorianValue> scanner = sequencer.TestSequential();
 
                     while (scanner.Read(key1, value1))
                     {
@@ -138,27 +134,27 @@ namespace GSF.Snap.Server
             HistorianKey key2 = new HistorianKey();
             HistorianValue value1 = new HistorianValue();
             HistorianValue value2 = new HistorianValue();
-            var master = CreateTable();
-            var table1 = CreateTable();
-            var table2 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> master = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table2 = CreateTable();
             AddData(master, 100, 100, 100);
             AddData(table1, 100, 100, 100);
             AddData(table2, 100, 100, 100);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
                 editor.Add(table2);
             }
 
-            using (var masterRead = master.BeginRead())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> masterRead = master.BeginRead())
             {
-                var masterScan = masterRead.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> masterScan = masterRead.GetTreeScanner();
                 masterScan.SeekToStart();
-                var masterScanSequential = masterScan.TestSequential();
+                TreeStreamSequential<HistorianKey, HistorianValue> masterScanSequential = masterScan.TestSequential();
 
-                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
+                using (SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    var scanner = sequencer.TestSequential();
+                    TreeStreamSequential<HistorianKey, HistorianValue> scanner = sequencer.TestSequential();
                     while (scanner.Read(key1, value1))
                     {
                         if (!masterScanSequential.Read(key2, value2))
@@ -182,17 +178,17 @@ namespace GSF.Snap.Server
 
         SortedTreeTable<HistorianKey, HistorianValue> CreateTable()
         {
-            var file = SortedTreeFile.CreateInMemory();
-            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
+            SortedTreeFile file = SortedTreeFile.CreateInMemory();
+            SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding);
             return table;
         }
 
         void AddData(SortedTreeTable<HistorianKey, HistorianValue> table, ulong start, ulong step, ulong count)
         {
-            using (var edit = table.BeginEdit())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = table.BeginEdit())
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
 
                 for (ulong v = start; v < start + step * count; v += step)
                 {
@@ -205,13 +201,13 @@ namespace GSF.Snap.Server
         }
         void AddData(SortedTreeTable<HistorianKey, HistorianValue> table, DateTime startTime, TimeSpan stepTime, int countTime, ulong startPoint, ulong stepPoint, ulong countPoint)
         {
-            using (var edit = table.BeginEdit())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = table.BeginEdit())
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 key.SetMin();
-                var stepTimeTicks = (ulong)stepTime.Ticks;
-                var stopTime = (ulong)(startTime.Ticks + countTime * stepTime.Ticks);
+                ulong stepTimeTicks = (ulong)stepTime.Ticks;
+                ulong stopTime = (ulong)(startTime.Ticks + countTime * stepTime.Ticks);
                 for (ulong t = (ulong)startTime.Ticks; t < stopTime; t += stepTimeTicks)
                 {
                     for (ulong v = startPoint; v < startPoint + stepPoint * countPoint; v += stepPoint)
@@ -226,13 +222,13 @@ namespace GSF.Snap.Server
         }
         void AddDataTerminal(SortedTreeTable<HistorianKey, HistorianValue> table, ulong pointID, DateTime startTime, TimeSpan stepTime, ulong startValue, ulong stepValue, int count)
         {
-            using (var edit = table.BeginEdit())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = table.BeginEdit())
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 key.SetMin();
-                var t = (ulong)startTime.Ticks;
-                var v = startValue;
+                ulong t = (ulong)startTime.Ticks;
+                ulong v = startValue;
 
                 while (count > 0)
                 {
@@ -259,16 +255,16 @@ namespace GSF.Snap.Server
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var master = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> master = CreateTable();
             AddData(master, 100, 100, Max);
 
 
             DebugStopwatch sw = new DebugStopwatch();
-            using (var masterRead = master.BeginRead())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> masterRead = master.BeginRead())
             {
                 double sec = sw.TimeEvent(() =>
                     {
-                        var scanner = masterRead.GetTreeScanner();
+                        SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = masterRead.GetTreeScanner();
                         scanner.SeekToStart();
                         while (scanner.Read(key, value))
                         {
@@ -289,20 +285,20 @@ namespace GSF.Snap.Server
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            var table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
             AddData(table1, 100, 100, Max);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
             }
 
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
                 {
-                    var scanner = sequencer;
+                    SequentialReaderStream<HistorianKey, HistorianValue> scanner = sequencer;
                     while (scanner.Read(key,value))
                     {
                     }
@@ -320,23 +316,23 @@ namespace GSF.Snap.Server
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            var table1 = CreateTable();
-            var table2 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table2 = CreateTable();
             AddData(table1, 100, 100, Max / 2);
             AddData(table2, 101, 100, Max / 2);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
                 editor.Add(table2);
             }
 
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer;
+                SequentialReaderStream<HistorianKey, HistorianValue> scanner = sequencer;
                 while (scanner.Read(key,value))
                 {
                 }
@@ -354,26 +350,26 @@ namespace GSF.Snap.Server
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            var table1 = CreateTable();
-            var table2 = CreateTable();
-            var table3 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table2 = CreateTable();
+            SortedTreeTable<HistorianKey, HistorianValue> table3 = CreateTable();
             AddData(table1, 100, 100, Max / 3);
             AddData(table2, 101, 100, Max / 3);
             AddData(table3, 102, 100, Max / 3);
-            using (var editor = list.AcquireEditLock())
+            using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
             {
                 editor.Add(table1);
                 editor.Add(table2);
                 editor.Add(table3);
             }
 
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer;
+                SequentialReaderStream<HistorianKey, HistorianValue> scanner = sequencer;
                 while (scanner.Read(key,value))
                 {
                 }
@@ -396,22 +392,22 @@ namespace GSF.Snap.Server
             HistorianValue value = new HistorianValue();
             for (int x = 0; x < FileCount; x++)
             {
-                var table1 = CreateTable();
+                SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
                 AddData(table1, start.AddMinutes(2 * x), new TimeSpan(TimeSpan.TicksPerSecond), 60, 100, 1, Max / 60 / FileCount);
-                using (var editor = list.AcquireEditLock())
+                using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
                 {
                     editor.Add(table1);
                 }
             }
 
-            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
+            SeekFilterBase<HistorianKey> filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
 
             DebugStopwatch sw = new DebugStopwatch();
             int xi = 0;
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer;
+                SequentialReaderStream<HistorianKey, HistorianValue> scanner = sequencer;
                 while (scanner.Read(key,value))
                 {
                     xi++;
@@ -445,17 +441,17 @@ namespace GSF.Snap.Server
 
             for (int x = 0; x < 3; x++)
             {
-                var table1 = CreateTable();
+                SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
-                using (var editor = list.AcquireEditLock())
+                using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
                 {
                     editor.Add(table1);
                 }
             }
 
-            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
-            var frames = sequencer.GetFrames();
+            SeekFilterBase<HistorianKey> filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
+            SortedList<DateTime, FrameData> frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
@@ -470,17 +466,17 @@ namespace GSF.Snap.Server
 
             for (int x = 0; x < 3; x++)
             {
-                var table1 = CreateTable();
+                SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
-                using (var editor = list.AcquireEditLock())
+                using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
                 {
                     editor.Add(table1);
                 }
             }
 
-            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
-            var frames = sequencer.GetFrames();
+            SeekFilterBase<HistorianKey> filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
+            SortedList<DateTime, FrameData> frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
@@ -495,26 +491,26 @@ namespace GSF.Snap.Server
 
             for (int x = 0; x < 3; x++)
             {
-                var table1 = CreateTable();
+                SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
-                using (var editor = list.AcquireEditLock())
+                using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
                 {
                     editor.Add(table1);
                 }
             }
             for (int x = 0; x < 3; x++)
             {
-                var table1 = CreateTable();
+                SortedTreeTable<HistorianKey, HistorianValue> table1 = CreateTable();
                 AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
-                using (var editor = list.AcquireEditLock())
+                using (ArchiveListEditor<HistorianKey, HistorianValue> editor = list.AcquireEditLock())
                 {
                     editor.Add(table1);
                 }
             }
 
-            var filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
-            var frames = sequencer.GetFrames();
+            SeekFilterBase<HistorianKey> filter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            SequentialReaderStream<HistorianKey, HistorianValue> sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
+            SortedList<DateTime, FrameData> frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
@@ -526,17 +522,17 @@ namespace GSF.Snap.Server
 
             ulong?[] data = new ulong?[10];
 
-            foreach (var frame in frames)
+            foreach (KeyValuePair<DateTime, FrameData> frame in frames)
             {
                 Array.Clear(data, 0, data.Length);
-                foreach (var sample in frame.Value.Points)
+                foreach (KeyValuePair<ulong, HistorianValueStruct> sample in frame.Value.Points)
                 {
                     data[sample.Key] = sample.Value.Value1;
                 }
 
                 sb.Append(frame.Key.ToString());
                 sb.Append('\t');
-                foreach (var value in data)
+                foreach (ulong? value in data)
                 {
                     if (value.HasValue)
                     {

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,8 +23,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap
 {
@@ -40,13 +38,13 @@ namespace GSF.Snap
         where TValue : SnapTypeBase<TValue>, new()
     {
         private BufferedTreeStream[] m_tablesOrigList;
-        private UnionTreeStreamSortHelper m_sortedArchiveStreams;
+        private readonly UnionTreeStreamSortHelper m_sortedArchiveStreams;
         private TreeStream<TKey, TValue> m_firstStream;
         private BufferedTreeStream m_firstTable;
 
-        private TKey m_readWhileUpperBounds = new TKey();
-        private TKey m_nextArchiveStreamLowerBounds = new TKey();
-        private bool m_ownsStreams;
+        private readonly TKey m_readWhileUpperBounds = new TKey();
+        private readonly TKey m_nextArchiveStreamLowerBounds = new TKey();
+        private readonly bool m_ownsStreams;
 
 
 
@@ -66,7 +64,7 @@ namespace GSF.Snap
             m_sortedArchiveStreams = new UnionTreeStreamSortHelper(m_tablesOrigList);
             m_readWhileUpperBounds.SetMin();
 
-            foreach (var table1 in m_sortedArchiveStreams.Items)
+            foreach (BufferedTreeStream table1 in m_sortedArchiveStreams.Items)
             {
                 table1.EnsureCache();
             }
@@ -91,7 +89,7 @@ namespace GSF.Snap
         {
             if (m_tablesOrigList != null && m_ownsStreams)
             {
-                foreach (var table in m_tablesOrigList)
+                foreach (BufferedTreeStream table in m_tablesOrigList)
                 {
                     table.Dispose();
                 }
@@ -100,21 +98,9 @@ namespace GSF.Snap
             base.Dispose(disposing);
         }
 
-        public override bool IsAlwaysSequential
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsAlwaysSequential => true;
 
-        public override bool NeverContainsDuplicates
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool NeverContainsDuplicates => true;
 
         protected override bool ReadNext(TKey key, TValue value)
         {
@@ -132,9 +118,9 @@ namespace GSF.Snap
         private bool Read2(TKey key, TValue value)
         {
         TryAgain:
-            if (m_firstStream == null)
+            if (m_firstStream is null)
             {
-                //If m_firstStream == null, this means either: 
+                //If m_firstStream is null, this means either: 
                 //  the value is cached.
                 // or
                 //  the end of the stream has occured.

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -40,14 +40,14 @@ namespace GSF.IO.FileStructure
 
         private bool m_disposed;
 
-        private FileHeaderBlock m_fileHeaderBlock;
+        private readonly FileHeaderBlock m_fileHeaderBlock;
 
         private SimplifiedSubFileStream m_subFileStream;
 
         public FileStream m_stream;
 
-        private string m_pendingFileName;
-        private string m_completeFileName;
+        private readonly string m_pendingFileName;
+        private readonly string m_completeFileName;
 
         /// <summary>
         /// Creates a simplified file writer.
@@ -72,17 +72,11 @@ namespace GSF.IO.FileStructure
         }
 #endif
 
-        public Guid ArchiveId
-        {
-            get
-            {
-                return m_fileHeaderBlock.ArchiveId;
-            }
-        }
+        public Guid ArchiveId => m_fileHeaderBlock.ArchiveId;
 
-        void CloseCurrentFile()
+        private void CloseCurrentFile()
         {
-            if (m_subFileStream == null)
+            if (m_subFileStream is null)
                 return;
             if (!m_subFileStream.IsDisposed)
                 throw new Exception("The previous file must be disposed before completing this action");
@@ -99,7 +93,7 @@ namespace GSF.IO.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             CloseCurrentFile();
 
-            var subFile = m_fileHeaderBlock.CreateNewFile(fileName);
+            SubFileHeader subFile = m_fileHeaderBlock.CreateNewFile(fileName);
             subFile.DirectBlock = m_fileHeaderBlock.LastAllocatedBlock + 1;
             m_subFileStream = new SimplifiedSubFileStream(m_stream, subFile, m_fileHeaderBlock);
             return m_subFileStream;

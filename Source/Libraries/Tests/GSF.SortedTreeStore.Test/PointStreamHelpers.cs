@@ -1,7 +1,6 @@
 ﻿using System;
 using GSF.Snap;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using openHistorian.Snap;
 

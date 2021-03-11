@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -45,11 +45,11 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// The file header bytes which equals: "openHistorian 2.0 Archive\00"
         /// </summary>
-        static readonly byte[] FileAllocationTableHeaderBytes = Encoding.ASCII.GetBytes("openHistorian 2.0 Archive\0");
+        private static readonly byte[] FileAllocationTableHeaderBytes = Encoding.ASCII.GetBytes("openHistorian 2.0 Archive\0");
 
-        const short FileAllocationReadTableVersion = 2;
-        const short FileAllocationWriteTableVersion = 2;
-        const short FileAllocationHeaderVersion = 2;
+        private const short FileAllocationReadTableVersion = 2;
+        private const short FileAllocationWriteTableVersion = 2;
+        private const short FileAllocationHeaderVersion = 2;
 
         /// <summary>
         /// The size of the block.
@@ -124,7 +124,7 @@ namespace GSF.IO.FileStructure
 
         #region [ Constructors ]
 
-        FileHeaderBlock()
+            private FileHeaderBlock()
         {
         }
 
@@ -135,57 +135,31 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// The number of bytes per block for the file structure.
         /// </summary>
-        public int BlockSize
-        {
-            get
-            {
-                return m_blockSize;
-            }
-        }
+        public int BlockSize => m_blockSize;
 
         /// <summary>
         /// Determines if the file can be written to because enough features are recgonized by this current version to do it without corrupting the file system.
         /// </summary>
-        public bool CanWrite
-        {
-            get
-            {
-                //ToDo: Support changing files that are from an older version.
-                return (m_minimumWriteVersion == FileAllocationWriteTableVersion);
-            }
-        }
+        public bool CanWrite =>
+            //ToDo: Support changing files that are from an older version.
+            m_minimumWriteVersion == FileAllocationWriteTableVersion;
 
         /// <summary>
         /// Determines if the archive file can be read
         /// </summary>
-        public bool CanRead
-        {
-            get
-            {
-                return (m_minimumReadVersion <= FileAllocationWriteTableVersion);
-            }
-        }
+        public bool CanRead => m_minimumReadVersion <= FileAllocationWriteTableVersion;
 
         /// <summary>
         /// The GUID number for this archive.
         /// </summary>
-        public Guid ArchiveId
-        {
-            get
-            {
-                return m_archiveId;
-            }
-        }
+        public Guid ArchiveId => m_archiveId;
 
         /// <summary>
         /// The GUID number for this archive.
         /// </summary>
         public Guid ArchiveType
         {
-            get
-            {
-                return m_archiveType;
-            }
+            get => m_archiveType;
             set
             {
                 TestForEditable();
@@ -196,93 +170,45 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Gets if this file uses the simplifed file format.
         /// </summary>
-        public bool IsSimplifiedFileFormat
-        {
-            get
-            {
-                return m_isSimplifiedFileFormat;
-            }
-        }
+        public bool IsSimplifiedFileFormat => m_isSimplifiedFileFormat;
 
         /// <summary>
         /// Gets the number of times the file header exists in the archive file.
         /// </summary>
-        public byte HeaderBlockCount
-        {
-            get
-            {
-                return m_headerBlockCount;
-            }
-        }
+        public byte HeaderBlockCount => m_headerBlockCount;
 
         /// <summary>
         /// Maintains a sequential number that represents the version of the file.
         /// </summary>
-        public uint SnapshotSequenceNumber
-        {
-            get
-            {
-                return m_snapshotSequenceNumber;
-            }
-        }
+        public uint SnapshotSequenceNumber => m_snapshotSequenceNumber;
 
         /// <summary>
         /// Represents the last block that has been allocated
         /// </summary>
-        public uint LastAllocatedBlock
-        {
-            get
-            {
-                return m_lastAllocatedBlock;
-            }
-        }
+        public uint LastAllocatedBlock => m_lastAllocatedBlock;
 
         /// <summary>
         /// Returns the number of files that are in this file system. 
         /// </summary>
         /// <returns></returns>
-        public int FileCount
-        {
-            get
-            {
-                return m_files.Count;
-            }
-        }
+        public int FileCount => m_files.Count;
 
         /// <summary>
         /// Gets the size of each data block (block size - overhead)
         /// </summary>
-        public int DataBlockSize
-        {
-            get
-            {
-                return m_blockSize - FileStructureConstants.BlockFooterLength;
-            }
-        }
+        public int DataBlockSize => m_blockSize - FileStructureConstants.BlockFooterLength;
 
         /// <summary>
         /// User definable flags to associate with archive files.
         /// </summary>
-        public ImmutableList<Guid> Flags
-        {
-            get
-            {
-                return m_flags;
-            }
-        }
+        public ImmutableList<Guid> Flags => m_flags;
 
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ImmutableList<SubFileHeader> Files
-        {
-            get
-            {
-                return m_files;
-            }
-        }
+        public ImmutableList<SubFileHeader> Files => m_files;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -335,7 +261,7 @@ namespace GSF.IO.FileStructure
         {
             TestForEditable();
             uint blockAddress = m_lastAllocatedBlock + 1;
-            m_lastAllocatedBlock += (uint)count;
+            m_lastAllocatedBlock += count;
             return blockAddress;
         }
 
@@ -408,7 +334,7 @@ namespace GSF.IO.FileStructure
             {
                 dataWriter.Write('B');
             }
-            dataWriter.Write((byte)(BitMath.CountBitsSet((uint)(m_blockSize - 1))));
+            dataWriter.Write((byte)BitMath.CountBitsSet((uint)(m_blockSize - 1)));
 
             dataWriter.Write(FileAllocationReadTableVersion);
             dataWriter.Write(FileAllocationWriteTableVersion);
@@ -431,7 +357,7 @@ namespace GSF.IO.FileStructure
             {
                 Encoding7Bit.WriteInt15(dataWriter.Write, (short)FileHeaderAttributes.FileFlags);
                 Encoding7Bit.WriteInt15(dataWriter.Write, (short)(m_flags.Count * 16));
-                foreach (var flag in m_flags)
+                foreach (Guid flag in m_flags)
                 {
                     dataWriter.Write(GuidExtensions.ToLittleEndianBytes(flag));
                 }
@@ -439,7 +365,7 @@ namespace GSF.IO.FileStructure
 
             if (m_unknownAttributes != null)
             {
-                foreach (var md in m_unknownAttributes)
+                foreach (KeyValuePair<short, byte[]> md in m_unknownAttributes)
                 {
                     Encoding7Bit.WriteInt15(dataWriter.Write, md.Key);
                     Encoding7Bit.WriteInt15(dataWriter.Write, (short)md.Value.Length);
@@ -449,7 +375,7 @@ namespace GSF.IO.FileStructure
 
             if (m_userAttributes != null)
             {
-                foreach (var md in m_userAttributes)
+                foreach (KeyValuePair<Guid, byte[]> md in m_userAttributes)
                 {
                     Encoding7Bit.WriteInt15(dataWriter.Write, (short)FileHeaderAttributes.UserAttributes);
                     dataWriter.Write(GuidExtensions.ToLittleEndianBytes(md.Key));
@@ -592,7 +518,7 @@ namespace GSF.IO.FileStructure
 
         private void AddUserAttribute(Guid id, byte[] data)
         {
-            if (m_userAttributes == null)
+            if (m_userAttributes is null)
                 m_userAttributes = new Dictionary<Guid, byte[]>();
             if (!m_userAttributes.ContainsKey(id))
                 m_userAttributes.Add(id, data);
@@ -602,7 +528,7 @@ namespace GSF.IO.FileStructure
 
         private void AddUnknownAttribute(byte id, byte[] data)
         {
-            if (m_unknownAttributes == null)
+            if (m_unknownAttributes is null)
                 m_unknownAttributes = new Dictionary<short, byte[]>();
             if (!m_unknownAttributes.ContainsKey(id))
                 m_unknownAttributes.Add(id, data);
@@ -658,11 +584,9 @@ namespace GSF.IO.FileStructure
 
         private unsafe void ValidateBlock(byte[] buffer)
         {
-            long checksum1;
-            int checksum2;
             fixed (byte* lpData = buffer)
             {
-                Footer.ComputeChecksum((IntPtr)lpData, out checksum1, out checksum2, buffer.Length - 16);
+                Footer.ComputeChecksum((IntPtr)lpData, out long checksum1, out int checksum2, buffer.Length - 16);
 
                 long checksumInData1 = *(long*)(lpData + buffer.Length - 16);
                 int checksumInData2 = *(int*)(lpData + buffer.Length - 8);
@@ -683,15 +607,12 @@ namespace GSF.IO.FileStructure
         {
             fixed (byte* lpData = buffer)
             {
-                long checksum1;
-                int checksum2;
-
                 lpData[buffer.Length - 32] = (byte)BlockType.FileAllocationTable;
                 *(int*)(lpData + buffer.Length - 28) = 0;
                 *(int*)(lpData + buffer.Length - 24) = 0;
                 *(int*)(lpData + buffer.Length - 20) = 0;
 
-                Footer.ComputeChecksum((IntPtr)lpData, out checksum1, out checksum2, buffer.Length - 16);
+                Footer.ComputeChecksum((IntPtr)lpData, out long checksum1, out int checksum2, buffer.Length - 16);
                 *(long*)(lpData + buffer.Length - 16) = checksum1;
                 *(int*)(lpData + buffer.Length - 8) = checksum2;
                 *(int*)(lpData + buffer.Length - 4) = 0;
@@ -757,7 +678,7 @@ namespace GSF.IO.FileStructure
             header.m_files = new ImmutableList<SubFileHeader>();
             header.m_flags = new ImmutableList<Guid>();
             header.m_archiveType = Guid.Empty;
-            foreach (var f in flags)
+            foreach (Guid f in flags)
             {
                 header.Flags.Add(f);
             }
@@ -787,7 +708,7 @@ namespace GSF.IO.FileStructure
             header.m_files = new ImmutableList<SubFileHeader>();
             header.m_flags = new ImmutableList<Guid>();
             header.m_archiveType = Guid.Empty;
-            foreach (var f in flags)
+            foreach (Guid f in flags)
             {
                 header.Flags.Add(f);
             }

@@ -203,14 +203,8 @@ namespace NPlot
         /// </summary>
         public Pen Pen
         {
-            get
-            {
-                return pen_;
-            }
-            set
-            {
-                pen_ = value;
-            }
+            get => pen_;
+            set => pen_ = value;
         }
 
         private Pen pen_ = new Pen(Color.Black);
@@ -232,10 +226,7 @@ namespace NPlot
                     pen_ = new Pen(value);
                 }
             }
-            get
-            {
-                return pen_.Color;
-            }
+            get => pen_.Color;
         }
     }
 }

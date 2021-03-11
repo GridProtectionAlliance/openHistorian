@@ -48,7 +48,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash1 = GetHash(value);
+                _ = GetHash(value);
             }
             sw.Stop();
 
@@ -56,7 +56,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash1 = GetHash(value);
+                _ = GetHash(value);
             }
             sw.Stop();
 
@@ -74,7 +74,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash2 = GuidSHA1Helper.ComputeHash(value);
+                _ = GuidSHA1Helper.ComputeHash(value);
             }
             sw.Stop();
 
@@ -82,7 +82,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash2 = GuidSHA1Helper.ComputeHash(value);
+                _ = GuidSHA1Helper.ComputeHash(value);
             }
             sw.Stop();
 
@@ -100,7 +100,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash2 = value.GetHashCode();
+                _ = value.GetHashCode();
             }
             sw.Stop();
 
@@ -108,7 +108,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                int hash2 = value.GetHashCode();
+                _ = value.GetHashCode();
             }
             sw.Stop();
 
@@ -126,7 +126,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                double hash2 = r.NextDouble();
+                _ = r.NextDouble();
             }
             sw.Stop();
 
@@ -134,7 +134,7 @@ namespace openHistorian.PerformanceTests
             sw.Start();
             for (int x = 0; x < 10000000; x++)
             {
-                double hash2 = r.NextDouble();
+                _ = r.NextDouble();
             }
             sw.Stop();
 
@@ -173,9 +173,9 @@ namespace openHistorian.PerformanceTests
             hash[4] = 0xc3d2e1f0;
 
             //Write GUID to buffer
-            *(Guid*)(hashBlock) = input;
+            *(Guid*)hashBlock = input;
 
-            const long bitLength = (16 << 3);
+            const long bitLength = 16 << 3;
             hashBlock[16] = 128;
 
             //Clear hash
@@ -189,7 +189,7 @@ namespace openHistorian.PerformanceTests
             hashBlock[60] = (byte)(bitLength >> 24);
             hashBlock[61] = (byte)(bitLength >> 16);
             hashBlock[62] = (byte)(bitLength >> 8);
-            hashBlock[63] = (byte)(bitLength);
+            hashBlock[63] = (byte)bitLength;
 
             if (BitConverter.IsLittleEndian)
                 SwapEndianSha((ulong*)hashBlock, (ulong*)hashBlock);

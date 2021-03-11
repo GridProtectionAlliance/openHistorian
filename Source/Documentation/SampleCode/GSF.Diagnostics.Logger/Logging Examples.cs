@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.Diagnostics;
 using NUnit.Framework;
 
@@ -43,7 +38,7 @@ namespace SampleCode.GSF.Diagnostics
 
         public class ChildClass : DisposableLoggingClassBase
         {
-            private string m_value;
+            private readonly string m_value;
 
             public ChildClass(string value)
                 : base(MessageClass.Application)
@@ -65,9 +60,9 @@ namespace SampleCode.GSF.Diagnostics
         [Test]
         public void Example1()
         {
-            var subscriber = Logger.CreateSubscriber(VerboseLevel.All);
+            LogSubscriber subscriber = Logger.CreateSubscriber(VerboseLevel.All);
             subscriber.NewLogMessage += subscriber_Log;
-            var c = new RootClass();
+            RootClass c = new RootClass();
             c.A.WriteMessage();
             c.B.WriteMessage();
             c.C.WriteMessage();

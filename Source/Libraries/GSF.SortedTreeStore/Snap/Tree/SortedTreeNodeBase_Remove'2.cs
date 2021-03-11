@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -72,9 +72,7 @@ namespace GSF.Snap.Tree
             if (RecordCount > 0 && (IsRightSiblingIndexNull || IsLeftSiblingIndexNull)) //There can be fewer than the minimum it is the first or last node on the level.
                 return true;
 
-            bool canCombineWithLeft;
-            bool canCombineWithRight;
-            SparseIndex.CanCombineWithSiblings(LowerKey, (byte)(Level + 1), out canCombineWithLeft, out canCombineWithRight);
+            SparseIndex.CanCombineWithSiblings(LowerKey, (byte)(Level + 1), out bool canCombineWithLeft, out bool canCombineWithRight);
 
 
             if (RecordCount == 0) //Only will occur if the right or left node is empty (but not both)
@@ -138,7 +136,7 @@ namespace GSF.Snap.Tree
             left.SetNodeIndex(leftNode);
             right.SetNodeIndex(rightNode);
 
-            int averageSize = (left.ValidBytes + (int)right.ValidBytes) >> 1;
+            int averageSize = (left.ValidBytes + right.ValidBytes) >> 1;
 
             if (left.ValidBytes < right.ValidBytes)
             {

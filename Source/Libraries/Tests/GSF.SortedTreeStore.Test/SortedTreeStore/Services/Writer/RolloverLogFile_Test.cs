@@ -16,13 +16,13 @@ namespace GSF.Snap.Services.Writer.Test
 
             string file = @"C:\Temp\LogFileTest.log";
 
-            var source = new List<Guid>();
+            List<Guid> source = new List<Guid>();
             source.Add(Guid.NewGuid());
-            var dest = Guid.NewGuid();
+            Guid dest = Guid.NewGuid();
 
-            var rolloverFile = new RolloverLogFile(file, source, dest);
+            RolloverLogFile rolloverFile = new RolloverLogFile(file, source, dest);
 
-            var rolloverFile2 = new RolloverLogFile(file);
+            RolloverLogFile rolloverFile2 = new RolloverLogFile(file);
 
             Assert.AreEqual(rolloverFile.IsValid, rolloverFile2.IsValid);
             Assert.AreEqual(rolloverFile.DestinationFile, rolloverFile2.DestinationFile);

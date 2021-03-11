@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.Snap.Services.Net;
 using NUnit.Framework;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
-using openHistorian.Data.Query;
-using GSF.Snap.Services.Reader;
+using GSF.Snap.Tree;
 using openHistorian.Snap;
 
 namespace openHistorian
@@ -75,12 +68,12 @@ namespace openHistorian
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var snapshot = table.BeginRead())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> snapshot = table.BeginRead())
             {
-                var scanner = snapshot.GetTreeScanner();
-                var seekKey = new HistorianKey();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = snapshot.GetTreeScanner();
+                HistorianKey seekKey = new HistorianKey();
                 seekKey.TimestampAsDate = start;
                 seekKey.PointID = 3142023;
                 scanner.SeekToKey(seekKey);

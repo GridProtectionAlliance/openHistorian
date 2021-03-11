@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -66,9 +66,9 @@ namespace GSF.IO.FileStructure.Test
         /// <remarks>A debug function</remarks>
         internal static bool AreEqual(FileHeaderBlock other, FileHeaderBlock self)
         {
-            if (other == null)
+            if (other is null)
                 return false;
-            if (self == null)
+            if (self is null)
                 return false;
             if (self.CanWrite != other.CanWrite) return false;
             if (self.CanRead != other.CanRead) return false;
@@ -79,32 +79,32 @@ namespace GSF.IO.FileStructure.Test
             if (self.FileCount != other.FileCount) return false;
 
             //compare files.
-            if (self.Files == null)
+            if (self.Files is null)
             {
                 if (other.Files != null) return false;
             }
             else
             {
-                if (other.Files == null) return false;
+                if (other.Files is null) return false;
                 if (self.Files.Count != other.Files.Count) return false;
                 for (int x = 0; x < self.Files.Count; x++)
                 {
                     SubFileHeader subFile = self.Files[x];
                     SubFileHeader subFileOther = other.Files[x];
 
-                    if (subFile == null)
+                    if (subFile is null)
                     {
                         if (subFileOther != null) return false;
                     }
                     else
                     {
-                        if (subFileOther == null) return false;
+                        if (subFileOther is null) return false;
                         if (!SubFileMetaDataTest.AreEqual(subFile, subFileOther)) return false;
                     }
                 }
             }
 
-            return (self.GetBytes().SequenceEqual(other.GetBytes()));
+            return self.GetBytes().SequenceEqual(other.GetBytes());
         }
     }
 }

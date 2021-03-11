@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -33,53 +33,17 @@ namespace openHistorian.Snap.Encoding
     public class HistorianFileEncoding
         : PairEncodingBase<HistorianKey, HistorianValue>
     {
-        public override EncodingDefinition EncodingMethod
-        {
-            get
-            {
-                return HistorianFileEncodingDefinition.TypeGuid;
-            }
-        }
+        public override EncodingDefinition EncodingMethod => HistorianFileEncodingDefinition.TypeGuid;
 
-        public override bool UsesPreviousKey
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool UsesPreviousKey => true;
 
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool UsesPreviousValue => false;
 
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return 54;
-            }
-        }
+        public override int MaxCompressionSize => 54;
 
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool ContainsEndOfStreamSymbol => false;
 
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public override byte EndOfStreamSymbol => throw new NotSupportedException();
 
         public override unsafe int Encode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
@@ -94,7 +58,7 @@ namespace openHistorian.Snap.Encoding
             //  Stage 5: Catch all
 
             if (key.Timestamp == prevKey.Timestamp
-                && key.PointID > prevKey.PointID && (key.PointID - prevKey.PointID <= 16)
+                && key.PointID > prevKey.PointID && key.PointID - prevKey.PointID <= 16
                 && key.EntryNumber == 0
                 && value.Value1 <= uint.MaxValue //must be a 32-bit value
                 && value.Value2 == 0
@@ -112,7 +76,7 @@ namespace openHistorian.Snap.Encoding
                 }
 
                 //Check for Stage 1
-                if ((value.Value1 >> 28) == 4 && deltaPointId <= 8)
+                if (value.Value1 >> 28 == 4 && deltaPointId <= 8)
                 {
                     //Stage 1: 46% of the time
                     //Big Positive Float
@@ -127,7 +91,7 @@ namespace openHistorian.Snap.Encoding
                 }
 
                 //Check for stage 2
-                if ((value.Value1 >> 28) == 12 && deltaPointId <= 4)
+                if (value.Value1 >> 28 == 12 && deltaPointId <= 4)
                 {
                     //Must be stored big endian
                     //ByteCode is 10DDVVVV

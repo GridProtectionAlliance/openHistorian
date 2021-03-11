@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -43,13 +43,7 @@ namespace GSF.Snap.Filters
         /// <summary>
         /// Gets the filter type Guid for the <see cref="TimestampPointIDSeekFilterDefinition"/>.
         /// </summary>
-        public override Guid FilterType
-        {
-            get
-            {
-                return FilterGuid;
-            }
-        }
+        public override Guid FilterType => FilterGuid;
 
         /// <summary>
         /// Creates a new seek filter for the <see cref="TimestampPointIDSeekFilterDefinition"/>.
@@ -61,7 +55,7 @@ namespace GSF.Snap.Filters
         {
             MethodInfo method = typeof(TimestampPointIDSeekFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
-            var rv = generic.Invoke(null, new[] { stream });
+            object rv = generic.Invoke(null, new[] { stream });
             return (SeekFilterBase<TKey>)rv;
         }
     }

@@ -91,9 +91,8 @@ namespace openHistorian
 
             string[] parts = historianServer.Split(':');
             string hostName = parts[0];
-            int port;
 
-            if (parts.Length < 2 || !Int32.TryParse(parts[1], out port))
+            if (parts.Length < 2 || !Int32.TryParse(parts[1], out int port))
                 port = DefaultHistorianPort;
 
             m_client = new HistorianClient(hostName, port);
@@ -107,26 +106,14 @@ namespace openHistorian
         /// <summary>
         /// Gets reference to <see cref="HistorianClient"/> instance of this <see cref="Connection"/>.
         /// </summary>
-        public HistorianClient Client
-        {
-            get
-            {
-                return m_client;
-            }
-        }
+        public HistorianClient Client => m_client;
 
         /// <summary>
         /// Gets instance name of this <see cref="Connection"/>.
         /// </summary>
-        public string InstanceName
-        {
-            get
-            {
-                return m_instanceName;
-            }
-        }
+        public string InstanceName => m_instanceName;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -151,7 +138,7 @@ namespace openHistorian
                 {
                     if (disposing)
                     {
-                        if ((object)m_client != null)
+                        if (m_client != null)
                             m_client.Dispose();
                     }
                 }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,9 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Definitions;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services
 {
@@ -70,70 +68,34 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Gets the ID for this file.
         /// </summary>
-        public Guid FileId
-        {
-            get
-            {
-                return m_fileId;
-            }
-        }
+        public Guid FileId => m_fileId;
 
         /// <summary>
         /// Gets the <see cref="SortedTreeTable{TKey, TValue}"/> that this class represents.
         /// </summary>
-        public SortedTreeTable<TKey, TValue> SortedTreeTable
-        {
-            get
-            {
-                return m_sortedTreeTable;
-            }
-        }
+        public SortedTreeTable<TKey, TValue> SortedTreeTable => m_sortedTreeTable;
 
         /// <summary>
         /// Gets the first key contained in this partition.
         /// </summary>
-        public TKey FirstKey
-        {
-            get
-            {
-                return m_firstKey;
-            }
-        }
+        public TKey FirstKey => m_firstKey;
 
         /// <summary>
         /// Gets the last key contained in this partition.
         /// </summary>
-        public TKey LastKey
-        {
-            get
-            {
-                return m_lastKey;
-            }
-        }
+        public TKey LastKey => m_lastKey;
 
         /// <summary>
         /// Gets if this table is empty.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return FirstKey.IsGreaterThan(LastKey);
-            }
-        }
+        public bool IsEmpty => FirstKey.IsGreaterThan(LastKey);
 
         /// <summary>
         /// Gets the most recent <see cref="SortedTreeTableSnapshotInfo{TKey,TValue}"/> of this class when it was created.
         /// </summary>
-        public SortedTreeTableSnapshotInfo<TKey, TValue> ActiveSnapshotInfo
-        {
-            get
-            {
-                return m_activeSnapshotInfo;
-            }
-        }
+        public SortedTreeTableSnapshotInfo<TKey, TValue> ActiveSnapshotInfo => m_activeSnapshotInfo;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 

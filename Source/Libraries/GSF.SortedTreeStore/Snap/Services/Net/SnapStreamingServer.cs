@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,13 +23,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.Diagnostics;
 using GSF.Net;
 using GSF.Security;
-using GSF.Snap.Tree;
 using GSF.IO;
 
 namespace GSF.Snap.Services.Net
@@ -43,13 +43,12 @@ namespace GSF.Snap.Services.Net
         private bool m_disposed;
         private SnapServer m_server;
         private SnapClient m_host;
-
         private Stream m_rawStream;
         private Stream m_secureStream;
         private RemoteBinaryStream m_stream;
         private SecureStreamServer<SocketUserPermissions> m_authentication;
         private SocketUserPermissions m_permissions;
-        public bool RequireSSL = false;
+        public bool RequireSSL;
 
         public SnapStreamingServer(SecureStreamServer<SocketUserPermissions> authentication, Stream stream, SnapServer server, bool requireSsl = false)
             : base(MessageClass.Framework)
@@ -64,7 +63,6 @@ namespace GSF.Snap.Services.Net
         protected SnapStreamingServer()
             : base(MessageClass.Framework)
         {
-
         }
 
         /// <summary>
@@ -78,7 +76,6 @@ namespace GSF.Snap.Services.Net
             m_server = server;
         }
 
-
         /// <summary>
         /// This function will verify the connection, create all necessary streams, set timeouts, and catch any exceptions and terminate the connection
         /// </summary>
@@ -88,15 +85,15 @@ namespace GSF.Snap.Services.Net
             try
             {
                 long code = m_rawStream.ReadInt64();
+                
                 if (code != 0x2BA517361121L)
                 {
                     m_rawStream.Write((byte)ServerResponse.UnknownProtocol);
                     m_rawStream.Flush();
                     return;
                 }
-                bool useSsl = m_rawStream.ReadBoolean();
-                if (RequireSSL)
-                    useSsl = true;
+                
+                bool useSsl = m_rawStream.ReadBoolean() || RequireSSL;
 
                 m_rawStream.Write((byte)ServerResponse.KnownProtocol);
                 m_rawStream.Write(useSsl);
@@ -119,8 +116,9 @@ namespace GSF.Snap.Services.Net
                     m_stream.Write(ex.ToString());
                     m_stream.Flush();
                 }
-                catch (Exception)
+                catch (Exception ex2)
                 {
+                    Logger.SwallowException(ex2);
                 }
                 Log.Publish(MessageLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
             }
@@ -147,10 +145,10 @@ namespace GSF.Snap.Services.Net
                 switch (command)
                 {
                     case ServerCommand.GetAllDatabases:
-                        var info = m_host.GetDatabaseInfo();
+                        List<DatabaseInfo> info = m_host.GetDatabaseInfo();
                         m_stream.Write((byte)ServerResponse.ListOfDatabases);
                         m_stream.Write(info.Count);
-                        foreach (var i in info)
+                        foreach (DatabaseInfo i in info)
                         {
                             i.Save(m_stream);
                         }
@@ -167,8 +165,8 @@ namespace GSF.Snap.Services.Net
                             m_stream.Flush();
                             return;
                         }
-                        var database = m_host.GetDatabase(databaseName);
-                        var dbinfo = database.Info;
+                        ClientDatabaseBase database = m_host.GetDatabase(databaseName);
+                        DatabaseInfo dbinfo = database.Info;
                         if (dbinfo.KeyTypeID != keyTypeId)
                         {
                             m_stream.Write((byte)ServerResponse.DatabaseKeyUnknown);
@@ -183,12 +181,15 @@ namespace GSF.Snap.Services.Net
                             m_stream.Flush();
                             return;
                         }
-                        var type = typeof(SnapStreamingServer);
-                        var method = type.GetMethod("ConnectToDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
-                        var reflectionMethod = method.MakeGenericMethod(database.Info.KeyType, database.Info.ValueType);
-                        var success = (bool)reflectionMethod.Invoke(this, new object[] { database });
+                        
+                        Type type = typeof(SnapStreamingServer);
+                        MethodInfo method = type.GetMethod("ConnectToDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
+                        MethodInfo reflectionMethod = method?.MakeGenericMethod(database.Info.KeyType, database.Info.ValueType);
+                        bool success = (bool?)reflectionMethod?.Invoke(this, new object[] { database }) ?? false;
+                        
                         if (!success)
                             return;
+
                         break;
                     case ServerCommand.Disconnect:
                         m_stream.Write((byte)ServerResponse.GoodBye);
@@ -206,13 +207,13 @@ namespace GSF.Snap.Services.Net
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
-        bool ConnectToDatabase<TKey, TValue>(SnapServerDatabase<TKey, TValue>.ClientDatabase database)
+        private bool ConnectToDatabase<TKey, TValue>(SnapServerDatabase<TKey, TValue>.ClientDatabase database)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             m_stream.Write((byte)ServerResponse.SuccessfullyConnectedToDatabase);
             m_stream.Flush();
-            var engine = new StreamingServerDatabase<TKey, TValue>(m_stream, database);
+            StreamingServerDatabase<TKey, TValue> engine = new StreamingServerDatabase<TKey, TValue>(m_stream, database);
             return engine.RunDatabaseLevel();
         }
 
@@ -223,25 +224,21 @@ namespace GSF.Snap.Services.Net
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
-            {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
+            if (m_disposed)
+                return;
 
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                        if (m_host != null)
-                            m_host.Dispose();
-                        m_host = null;
-                    }
-                }
-                finally
+            try
+            {
+                if (disposing)
                 {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
+                    m_host?.Dispose();
+                    m_host = null;
                 }
+            }
+            finally
+            {
+                m_disposed = true;       // Prevent duplicate dispose.
+                base.Dispose(disposing); // Call base class Dispose().
             }
         }
     }

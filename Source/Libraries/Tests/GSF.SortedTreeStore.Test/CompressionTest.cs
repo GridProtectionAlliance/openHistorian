@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using NUnit.Framework;
 
 namespace GSF.Test
@@ -388,11 +386,11 @@ namespace GSF.Test
                 position = 0;
                 for (int x = 0; x < 200; x++)
                 {
-                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
-                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
-                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
-                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
-                    delta = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    _ = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    _ = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    _ = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    _ = Encoding7Bit.ReadUInt32(buffer, ref position);
+                    _ = Encoding7Bit.ReadUInt32(buffer, ref position);
                 }
             }
             sw.Stop();

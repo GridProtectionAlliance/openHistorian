@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -28,7 +28,6 @@ using System.Threading;
 using GSF.Diagnostics;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 using GSF.Threading;
 
 namespace GSF.Snap.Services.Writer
@@ -42,15 +41,15 @@ namespace GSF.Snap.Services.Writer
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        private object m_syncRoot;
+        private readonly object m_syncRoot;
         private bool m_disposed;
         private ScheduledTask m_rolloverTask;
         private readonly ManualResetEvent m_rolloverComplete;
-        private CombineFilesSettings m_settings;
+        private readonly CombineFilesSettings m_settings;
 
-        private SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
-        private ArchiveList<TKey, TValue> m_archiveList;
-        private RolloverLog m_rolloverLog;
+        private readonly SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
+        private readonly ArchiveList<TKey, TValue> m_archiveList;
+        private readonly RolloverLog m_rolloverLog;
 
         /// <summary>
         /// Creates a stage writer.
@@ -97,7 +96,7 @@ namespace GSF.Snap.Services.Writer
                 if (m_disposed)
                     return;
 
-                using (var resource = m_archiveList.CreateNewClientResources())
+                using (ArchiveListSnapshot<TKey, TValue> resource = m_archiveList.CreateNewClientResources())
                 {
                     resource.UpdateSnapshot();
 
@@ -106,7 +105,7 @@ namespace GSF.Snap.Services.Writer
 
                     for (int x = 0; x < resource.Tables.Length; x++)
                     {
-                        var table = resource.Tables[x];
+                        ArchiveTableSummary<TKey, TValue> table = resource.Tables[x];
 
                         if (table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(m_settings.MatchFlag) && table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.Contains(FileFlags.IntermediateFile))
                         {
@@ -144,10 +143,10 @@ namespace GSF.Snap.Services.Writer
                         startKey.SetMax();
                         endKey.SetMin();
 
-                        foreach (var fileId in listIds)
+                        foreach (Guid fileId in listIds)
                         {
-                            var table = resource.TryGetFile(fileId);
-                            if (table == null)
+                            ArchiveTableSummary<TKey, TValue> table = resource.TryGetFile(fileId);
+                            if (table is null)
                                 throw new Exception("File not found");
 
                             if (!table.IsEmpty)
@@ -166,9 +165,9 @@ namespace GSF.Snap.Services.Writer
                             logFile = m_rolloverLog.Create(listIds, x);
                         };
 
-                        using (var reader = new UnionReader<TKey, TValue>(list))
+                        using (UnionReader<TKey, TValue> reader = new UnionReader<TKey, TValue>(list))
                         {
-                            var dest = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, createLog);
+                            SortedTreeTable<TKey, TValue> dest = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, createLog);
 
                             resource.Dispose();
 
@@ -177,7 +176,7 @@ namespace GSF.Snap.Services.Writer
                                 //Add the newly created file.
                                 edit.Add(dest);
 
-                                foreach (var table in list)
+                                foreach (ArchiveTableSummary<TKey, TValue> table in list)
                                 {
                                     edit.TryRemoveAndDelete(table.FileId);
                                 }

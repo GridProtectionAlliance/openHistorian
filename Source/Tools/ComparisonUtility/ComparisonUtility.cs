@@ -177,7 +177,7 @@ namespace ComparisonUtility
                 Ticks operationStartTime = DateTime.UtcNow.Ticks;
                 Dictionary<string, string> parameters = state as Dictionary<string, string>;
 
-                if ((object)parameters == null)
+                if (parameters is null)
                     throw new ArgumentNullException(nameof(state), "Could not interpret thread state as parameters dictionary");
 
                 string sourceHostAddress = parameters["sourceHostAddress"];
@@ -260,7 +260,7 @@ namespace ComparisonUtility
                 Func<DataPoint, bool> pointIsMissing = dataPoint =>
                 {
                     float pointValue = dataPoint.ValueAsSingle;
-                    return float.IsNaN(pointValue) || (frequencies.Contains(dataPoint.PointID) && pointValue == 0.0F);
+                    return float.IsNaN(pointValue) || frequencies.Contains(dataPoint.PointID) && pointValue == 0.0F;
                 };
 
                 Action<DataPoint, int> incrementValueCount = (dataPoint, valueIndex) =>
@@ -296,11 +296,11 @@ namespace ComparisonUtility
                 ProcessQueue<Dictionary<ulong, DataPoint[]>>.ProcessItemFunctionSignature processDataBlock = dataBlock =>
                 {
                     HashSet<ulong> missingSourceIDs = new HashSet<ulong>(sourcePointMappings.Values);
-                    missingSourceIDs.ExceptWith(dataBlock.Values.Select(points => points[SourcePoint]).Where(point => (object)point != null).Select(point => point.PointID));
+                    missingSourceIDs.ExceptWith(dataBlock.Values.Select(points => points[SourcePoint]).Where(point => point != null).Select(point => point.PointID));
                     baseSourcePointLoss += missingSourceIDs.Count;
 
                     HashSet<ulong> missingDestinationIDs = new HashSet<ulong>(destinationPointMappings.Values);
-                    missingDestinationIDs.ExceptWith(dataBlock.Values.Select(points => points[DestinationPoint]).Where(point => (object)point != null).Select(point => point.PointID));
+                    missingDestinationIDs.ExceptWith(dataBlock.Values.Select(points => points[DestinationPoint]).Where(point => point != null).Select(point => point.PointID));
                     baseDestinationPointLoss += missingDestinationIDs.Count;
                 };
 
@@ -446,7 +446,7 @@ namespace ComparisonUtility
                             {
                                 DataPoint[] points = dataBlock.GetOrAdd(sourcePoint.PointID, id => new DataPoint[2]);
 
-                                if ((object)points[SourcePoint] != null)
+                                if (points[SourcePoint] != null)
                                 {
                                     duplicateSourcePoints++;
 
@@ -485,7 +485,7 @@ namespace ComparisonUtility
                             {
                                 DataPoint[] points = dataBlock.GetOrAdd(sourcePointMappings[destinationPoint.PointID], id => new DataPoint[2]);
 
-                                if ((object)points[DestinationPoint] != null)
+                                if (points[DestinationPoint] != null)
                                 {
                                     duplicateDestinationPoints++;
 
@@ -507,14 +507,14 @@ namespace ComparisonUtility
 
                         foreach (DataPoint[] points in dataBlock.Values)
                         {
-                            if ((object)points[SourcePoint] == null)
+                            if (points[SourcePoint] is null)
                             {
                                 missingSourcePoints++;
 
                                 if (enableLogging)
                                     logMissingSourceValue(getReferencePoint(points[DestinationPoint]));
                             }
-                            else if ((object)points[DestinationPoint] == null)
+                            else if (points[DestinationPoint] is null)
                             {
                                 missingDestinationPoints++;
 
@@ -759,15 +759,11 @@ namespace ComparisonUtility
 
                     for (int i = 0; i < totalHours; i++)
                     {
-                        long[] counts;
-
-                        if (summaries.TryGetValue(i, out counts))
+                        if (summaries.TryGetValue(i, out long[] counts))
                         {
-                            string deviceName;
-
                             writer.Write($", {counts[MissingSourceValue]}, {counts[MissingDestinationValue]}, {counts[ValidValue]}, {counts[InvalidValue]}, {counts[ComparedValue]}, {counts[DuplicateSourceValue]}, {counts[DuplicateDestinationValue]}");
 
-                            if (pointDevices.TryGetValue(pointID, out deviceName))
+                            if (pointDevices.TryGetValue(pointID, out string deviceName))
                             {
                                 Dictionary<int, long[]> deviceSummaries = deviceHourlySummaries.GetOrAdd(deviceName, name => new Dictionary<int, long[]>());
                                 long[] deviceCounts = deviceSummaries.GetOrAdd(i, index => new long[5]); // Just get first 5 values, ignoring duplicate stats in device summaries
@@ -804,9 +800,7 @@ namespace ComparisonUtility
 
                     for (int i = 0; i < totalHours; i++)
                     {
-                        long[] counts;
-
-                        if (summaries.TryGetValue(i, out counts))
+                        if (summaries.TryGetValue(i, out long[] counts))
                         {
                             writer.Write($", {Math.Round(counts[MissingSourceValue] / (double)(counts[ComparedValue] + counts[MissingSourceValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");
                             writer.Write($", {Math.Round(counts[MissingDestinationValue] / (double)(counts[ComparedValue] + counts[MissingDestinationValue]).NotZero(1) * 100000.0D) / 1000.0D:0.00}");

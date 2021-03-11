@@ -107,10 +107,10 @@ namespace NPlot
         /// <param name="a">The IList to search.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <returns>true if min max set, false otherwise (a == null or zero length).</returns>
+        /// <returns>true if min max set, false otherwise (a is null or zero length).</returns>
         public static bool ArrayMinMax(IList<double> a, out double min, out double max)
         {
-            if (a == null || a.Count == 0)
+            if (a is null || a.Count == 0)
             {
                 min = 0.0;
                 max = 0.0;
@@ -124,7 +124,7 @@ namespace NPlot
             {
                 double e = o;
 
-                if ((min.Equals(double.NaN)) && (!e.Equals(double.NaN)))
+                if (min.Equals(double.NaN) && !e.Equals(double.NaN))
                 {
                     // if min/max are double.NaN and the current value not, then
                     // set them to the current value.
@@ -169,8 +169,8 @@ namespace NPlot
             if (dirNorm > 0.0f)
             {
                 dir = new PointF(
-                    (float)((1.0f / dirNorm) * dir.X),
-                    (float)((1.0f / dirNorm) * dir.Y)); // normalised axis direction vector
+                    (float)(1.0f / dirNorm * dir.X),
+                    (float)(1.0f / dirNorm * dir.Y)); // normalised axis direction vector
             }
             return dir;
         }

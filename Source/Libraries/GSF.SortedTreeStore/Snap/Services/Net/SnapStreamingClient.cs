@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -30,8 +30,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using GSF.Net;
 using GSF.Security;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 using GSF.IO;
 
 namespace GSF.Snap.Services.Net
@@ -81,9 +79,9 @@ namespace GSF.Snap.Services.Net
         /// <param name="useSsl">specifies if a ssl connection is desired.</param>
         protected void Initialize(Stream stream, SecureStreamClientBase credentials, bool useSsl)
         {
-            if (stream == null)
+            if (stream is null)
                 throw new ArgumentNullException("stream");
-            if (credentials == null)
+            if (credentials is null)
                 throw new ArgumentNullException("credentials");
 
             m_credentials = credentials;
@@ -91,7 +89,7 @@ namespace GSF.Snap.Services.Net
             m_rawStream.Write(0x2BA517361121L);
             m_rawStream.Write(useSsl); //UseSSL
 
-            var command = (ServerResponse)m_rawStream.ReadNextByte();
+            ServerResponse command = (ServerResponse)m_rawStream.ReadNextByte();
             switch (command)
             {
                 case ServerResponse.UnknownProtocol:
@@ -131,7 +129,7 @@ namespace GSF.Snap.Services.Net
             m_stream.Write((byte)ServerCommand.GetAllDatabases);
             m_stream.Flush();
 
-            var command = (ServerResponse)m_stream.ReadUInt8();
+            ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
             {
                 case ServerResponse.UnhandledException:
@@ -139,11 +137,11 @@ namespace GSF.Snap.Services.Net
                     throw new Exception("Server UnhandledExcetion: \n" + exception);
                 case ServerResponse.ListOfDatabases:
                     int cnt = m_stream.ReadInt32();
-                    var dict = new Dictionary<string, DatabaseInfo>();
+                    Dictionary<string, DatabaseInfo> dict = new Dictionary<string, DatabaseInfo>();
                     while (cnt > 0)
                     {
                         cnt--;
-                        var info = new DatabaseInfo(m_stream);
+                        DatabaseInfo info = new DatabaseInfo(m_stream);
                         dict.Add(info.DatabaseName.ToUpper(), info);
                     }
                     m_databaseInfos = dict;
@@ -161,10 +159,10 @@ namespace GSF.Snap.Services.Net
         public override ClientDatabaseBase GetDatabase(string databaseName)
         {
             DatabaseInfo info = m_databaseInfos[databaseName.ToUpper()];
-            var type = typeof(SnapStreamingClient);
-            var method = type.GetMethod("InternalGetDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
-            var reflectionMethod = method.MakeGenericMethod(info.KeyType, info.ValueType);
-            var db = (ClientDatabaseBase)reflectionMethod.Invoke(this, new object[] { databaseName });
+            Type type = typeof(SnapStreamingClient);
+            MethodInfo method = type.GetMethod("InternalGetDatabase", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo reflectionMethod = method.MakeGenericMethod(info.KeyType, info.ValueType);
+            ClientDatabaseBase db = (ClientDatabaseBase)reflectionMethod.Invoke(this, new object[] { databaseName });
             return db;
         }
 
@@ -212,13 +210,13 @@ namespace GSF.Snap.Services.Net
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <param name="encodingMethod"></param>
         /// <returns><see cref="StreamingClientDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        StreamingClientDatabase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
+        private StreamingClientDatabase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
             DatabaseInfo dbInfo = m_databaseInfos[databaseName.ToUpper()];
 
-            if ((object)encodingMethod == null)
+            if (encodingMethod is null)
                 encodingMethod = dbInfo.SupportedStreamingModes.First();
             if (m_sortedTreeEngine != null)
             {
@@ -236,7 +234,7 @@ namespace GSF.Snap.Services.Net
             m_stream.Write(new TValue().GenericTypeGuid);
             m_stream.Flush();
 
-            var command = (ServerResponse)m_stream.ReadUInt8();
+            ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
             {
                 case ServerResponse.UnhandledException:
@@ -254,7 +252,7 @@ namespace GSF.Snap.Services.Net
                     throw new Exception("Unknown server response: " + command.ToString());
             }
 
-            var db = new StreamingClientDatabase<TKey, TValue>(m_stream, () => m_sortedTreeEngine = null, dbInfo);
+            StreamingClientDatabase<TKey, TValue> db = new StreamingClientDatabase<TKey, TValue>(m_stream, () => m_sortedTreeEngine = null, dbInfo);
             m_sortedTreeEngine = db;
             m_historianDatabaseString = databaseName;
 
@@ -280,13 +278,12 @@ namespace GSF.Snap.Services.Net
                         if (m_sortedTreeEngine != null)
                             m_sortedTreeEngine.Dispose();
                         m_sortedTreeEngine = null;
-
                         try
                         {
                             m_stream.Write((byte)ServerCommand.Disconnect);
                             m_stream.Flush();
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
 
                         }

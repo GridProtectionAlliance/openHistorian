@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -38,9 +38,8 @@ namespace GSF.Snap.Tree
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-
-        int m_maxRecordsPerNode;
-        PairEncodingBase<TKey, TValue> m_encoding;
+        private int m_maxRecordsPerNode;
+        private readonly PairEncodingBase<TKey, TValue> m_encoding;
 
         /// <summary>
         /// Creates a new class
@@ -74,13 +73,7 @@ namespace GSF.Snap.Tree
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
         }
 
-        protected override int MaxOverheadWithCombineNodes
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        protected override int MaxOverheadWithCombineNodes => 0;
 
         protected override void Read(int index, TValue value)
         {
@@ -89,16 +82,15 @@ namespace GSF.Snap.Tree
 
         protected override void Read(int index, TKey key, TValue value)
         {
-            bool eos;
             byte* ptr = GetReadPointerAfterHeader() + index * KeyValueSize;
-            m_encoding.Decode(ptr, null, null, key, value, out eos);
+            m_encoding.Decode(ptr, null, null, key, value, out _);
             //key.Read(ptr);
             //value.Read(ptr + KeySize);
         }
 
         protected override bool RemoveUnlessOverflow(int index)
         {
-            if (index != (RecordCount - 1))
+            if (index != RecordCount - 1)
             {
                 byte* start = GetWritePointerAfterHeader() + index * KeyValueSize;
                 Memory.Copy(start + KeyValueSize, start, (RecordCount - index - 1) * KeyValueSize);
@@ -217,8 +209,8 @@ namespace GSF.Snap.Tree
         protected override void Split(uint newNodeIndex, TKey dividingKey)
         {
             //Determine how many entries to shift on the split.
-            int recordsInTheFirstNode = (RecordCount >> 1); // divide by 2.
-            int recordsInTheSecondNode = (RecordCount - recordsInTheFirstNode);
+            int recordsInTheFirstNode = RecordCount >> 1; // divide by 2.
+            int recordsInTheSecondNode = RecordCount - recordsInTheFirstNode;
 
             long sourceStartingAddress = StartOfDataPosition + KeyValueSize * recordsInTheFirstNode;
             long targetStartingAddress = newNodeIndex * BlockSize + HeaderSize;

@@ -79,8 +79,7 @@ namespace NPlot
             {
                 using (Graphics g = Graphics.FromImage(scratchArea))
                 {
-                    Rectangle bounds;
-                    Draw(g, out bounds);
+                    Draw(g, out Rectangle bounds);
                     return bounds;
                 }
             }
@@ -168,14 +167,8 @@ namespace NPlot
         /// </summary>
         public Point PhysicalMin
         {
-            get
-            {
-                return m_physicalMin;
-            }
-            set
-            {
-                m_physicalMin = value;
-            }
+            get => m_physicalMin;
+            set => m_physicalMin = value;
         }
 
         private Point m_physicalMin;
@@ -186,14 +179,8 @@ namespace NPlot
         /// </summary>
         public Point PhysicalMax
         {
-            get
-            {
-                return m_physicalMax;
-            }
-            set
-            {
-                m_physicalMax = value;
-            }
+            get => m_physicalMax;
+            set => m_physicalMax = value;
         }
 
         private Point m_physicalMax;
@@ -204,14 +191,8 @@ namespace NPlot
         /// </summary>
         public Axis Axis
         {
-            get
-            {
-                return m_axis;
-            }
-            set
-            {
-                m_axis = value;
-            }
+            get => m_axis;
+            set => m_axis = value;
         }
 
         private Axis m_axis;
@@ -220,23 +201,11 @@ namespace NPlot
         /// <summary>
         /// The length in pixels of the axis.
         /// </summary>
-        public int PhysicalLength
-        {
-            get
-            {
-                return Utils.Distance(PhysicalMin, PhysicalMax);
-            }
-        }
+        public int PhysicalLength => Utils.Distance(PhysicalMin, PhysicalMax);
 
         /// <summary>
         /// The length in world coordinates of one pixel. 
         /// </summary>
-        public double PixelWorldLength
-        {
-            get
-            {
-                return this.Axis.WorldLength / this.PhysicalLength;
-            }
-        }
+        public double PixelWorldLength => this.Axis.WorldLength / this.PhysicalLength;
     }
 }

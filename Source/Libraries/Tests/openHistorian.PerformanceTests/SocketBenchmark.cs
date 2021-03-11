@@ -1,16 +1,12 @@
 ﻿using System;
 using System.IO;
-using GSF.IO;
 using GSF.Snap;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
-using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
 using NUnit.Framework;
 using openHistorian;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
-using openHistorian.Data.Query;
 using openHistorian.Net;
 using openHistorian.Snap;
 using openHistorian.Snap.Definitions;
@@ -70,7 +66,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (SortedTreeFile file = SortedTreeFile.CreateInMemory())
             {
-                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
+                SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(HistorianFileEncodingDefinition.TypeGuid);
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
 
@@ -79,7 +75,7 @@ namespace SampleCode.openHistorian.Server.dll
                     //TreeKeyMethodsBase<HistorianKey>.ClearStats();
                     //TreeValueMethodsBase<HistorianKey>.ClearStats();
                     count = 0;
-                    using (var scan = table.BeginEdit())
+                    using (SortedTreeTableEditor<HistorianKey, HistorianValue> scan = table.BeginEdit())
                     {
                         for (uint x = 0; x < 10000000; x++)
                         {
@@ -112,7 +108,7 @@ namespace SampleCode.openHistorian.Server.dll
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\Scada\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\Scada\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 double count = 0;
@@ -167,14 +163,14 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (SortedTreeFile file = SortedTreeFile.OpenFile(path, true))
             {
-                var table = file.OpenTable<HistorianKey, HistorianValue>();
+                SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>();
 
                 time = sw.TimeEvent(() =>
                     {
                         count = 0;
-                        using (var scan = table.BeginRead())
+                        using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> scan = table.BeginRead())
                         {
-                            var t = scan.GetTreeScanner();
+                            SortedTreeScannerBase<HistorianKey, HistorianValue> t = scan.GetTreeScanner();
                             t.SeekToStart();
                             while (t.Read(key,value))
                             {

@@ -93,9 +93,7 @@ namespace NPlot
         {
             for (int i = 0; i < Count; ++i)
             {
-                if (!(onlyInRegion &&
-                      (Get(i).X >= region.X && Get(i).X <= region.X + region.Width) &&
-                      (Get(i).Y >= region.Y && Get(i).Y <= region.Y + region.Height)))
+                if (!(onlyInRegion && Get(i).X >= region.X && Get(i).X <= region.X + region.Width && Get(i).Y >= region.Y && Get(i).Y <= region.Y + region.Height))
                     continue;
 
                 sb.Append(Get(i).ToString());

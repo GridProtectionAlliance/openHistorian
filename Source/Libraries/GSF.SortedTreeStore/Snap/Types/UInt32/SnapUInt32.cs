@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,8 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Types
 {
@@ -43,22 +41,11 @@ namespace GSF.Snap.Types
             Value = value;
         }
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
-                return new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
-            }
-        }
+        public override Guid GenericTypeGuid =>
+            // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
+            new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
 
-        public override int Size
-        {
-            get
-            {
-                return 4;
-            }
-        }
+        public override int Size => 4;
 
         public override void CopyTo(SnapUInt32 destination)
         {
@@ -112,11 +99,11 @@ namespace GSF.Snap.Types
 
         public override unsafe void Read(byte* stream)
         {
-            Value = *(uint*)(stream);
+            Value = *(uint*)stream;
         }
         public override unsafe void Write(byte* stream)
         {
-            *(uint*)(stream) = Value;
+            *(uint*)stream = Value;
         }
         public override bool IsLessThan(SnapUInt32 right)
         {

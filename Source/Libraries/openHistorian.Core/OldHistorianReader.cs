@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -104,70 +104,34 @@ namespace openHistorian
         /// <summary>
         /// Gets start time of the data in archive as serialized in the header data.
         /// </summary>
-        private DateTime StartTime
-        {
-            get
-            {
-                return m_startTime;
-            }
-        }
+        private DateTime StartTime => m_startTime;
 
         /// <summary>
         /// Gets the end time of the data in the archive as serialized in the header data.
         /// </summary>
-        private DateTime EndTime
-        {
-            get
-            {
-                return m_endTime;
-            }
-        }
+        private DateTime EndTime => m_endTime;
 
         /// <summary>
         /// Gets points received by archive as serialized in header data.
         /// </summary>
-        public int PointsReceived
-        {
-            get
-            {
-                return m_pointsReceived;
-            }
-        }
+        public int PointsReceived => m_pointsReceived;
 
         /// <summary>
         /// Gets points received by archive as serialized in header data.
         /// </summary>
-        public int PointsArchived
-        {
-            get
-            {
-                return m_pointsArchived;
-            }
-        }
+        public int PointsArchived => m_pointsArchived;
 
         /// <summary>
         /// Gets data-block size as serialized in header data.
         /// </summary>
-        public int DataBlockSize
-        {
-            get
-            {
-                return m_dataBlockSize;
-            }
-        }
+        public int DataBlockSize => m_dataBlockSize;
 
         /// <summary>
         /// Gets data-block count as serialized in header data.
         /// </summary>
-        public int DataBlockCount
-        {
-            get
-            {
-                return m_dataBlockCount;
-            }
-        }
+        public int DataBlockCount => m_dataBlockCount;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -192,7 +156,7 @@ namespace openHistorian
                 {
                     if (disposing)
                     {
-                        if ((object)m_fileStream != null)
+                        if (m_fileStream != null)
                         {
                             m_fileStream.Dispose();
                             m_fileStream = null;
@@ -234,7 +198,7 @@ namespace openHistorian
                 // Scan through header bytes
                 reader.ReadBytes(10);
 
-                DataBlock block = default(DataBlock);
+                DataBlock block = default;
 
                 for (int x = 1; x <= m_dataBlockCount; x++)
                 {
@@ -254,7 +218,7 @@ namespace openHistorian
         /// <returns></returns>
         public IEnumerable<DataPoint> Read()
         {
-            DataPoint point = default(DataPoint);
+            DataPoint point = default;
 
             foreach (DataBlock block in m_dataBlocks)
             {

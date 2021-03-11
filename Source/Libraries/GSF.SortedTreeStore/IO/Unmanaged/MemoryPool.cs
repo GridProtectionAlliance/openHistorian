@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -197,62 +197,32 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Returns the number of bytes currently allocated by the buffer pool to other objects
         /// </summary>
-        public long AllocatedBytes
-        {
-            get
-            {
-                return CurrentAllocatedSize;
-            }
-        }
+        public long AllocatedBytes => CurrentAllocatedSize;
 
         /// <summary>
         /// The maximum amount of RAM that this memory pool is configured to support
         /// Attempting to allocate more than this will cause an out of memory exception
         /// </summary>
-        public long MaximumPoolSize
-        {
-            get
-            {
-                return m_pageList.MaximumPoolSize;
-            }
-        }
+        public long MaximumPoolSize => m_pageList.MaximumPoolSize;
 
         /// <summary>
         /// Returns the number of bytes allocated by all buffer pools.
         /// This does not include any pages that have been allocated but are not in use.
         /// </summary>
-        public long CurrentAllocatedSize
-        {
-            get
-            {
-                return m_pageList.CurrentAllocatedSize;
-            }
-        }
+        public long CurrentAllocatedSize => m_pageList.CurrentAllocatedSize;
 
         /// <summary>
         /// Gets the number of bytes that have been allocated to this buffer pool 
         /// by the OS.
         /// </summary>
-        public long CurrentCapacity
-        {
-            get
-            {
-                return m_pageList.CurrentCapacity;
-            }
-        }
+        public long CurrentCapacity => m_pageList.CurrentCapacity;
 
         /// <summary>
         /// Gets if this pool has been disposed.
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -343,7 +313,7 @@ namespace GSF.IO.Unmanaged
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                var rv = m_pageList.SetMaximumPoolSize(value);
+                long rv = m_pageList.SetMaximumPoolSize(value);
                 CalculateThresholds(rv, TargetUtilizationLevel);
 
                 Log.Publish(MessageLevel.Info, MessageFlags.PerformanceIssue, "Pool Size Changed", string.Format("Memory pool maximum set to: {0}MB", rv >> 20));

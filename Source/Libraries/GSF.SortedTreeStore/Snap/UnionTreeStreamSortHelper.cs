@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace GSF.Snap
 {
@@ -38,7 +37,7 @@ namespace GSF.Snap
             /// <summary>
             /// All of the items in this list.
             /// </summary>
-            public BufferedTreeStream[] Items;
+            public readonly BufferedTreeStream[] Items;
             private int m_validRecords;
 
             /// <summary>
@@ -57,13 +56,7 @@ namespace GSF.Snap
             /// </summary>
             /// <param name="index"></param>
             /// <returns></returns>
-            public BufferedTreeStream this[int index]
-            {
-                get
-                {
-                    return Items[index];
-                }
-            }
+            public BufferedTreeStream this[int index] => Items[index];
 
             /// <summary>
             /// Resorts the entire list. Uses an insertion sort routine
@@ -79,7 +72,7 @@ namespace GSF.Snap
 
                     int currentIndex = itemToInsertIndex - 1;
                     //While the current item is greater than itemToInsert, shift the value
-                    while ((currentIndex >= 0) && (IsLessThan(itemToInsert, Items[currentIndex])))
+                    while (currentIndex >= 0 && IsLessThan(itemToInsert, Items[currentIndex]))
                     {
                         Items[currentIndex + 1] = Items[currentIndex];
                         currentIndex--;
@@ -110,7 +103,7 @@ namespace GSF.Snap
             /// <param name="index">the index of the item to resort.</param>
             public void SortAssumingIncreased(int index)
             {
-                var itemToMove = Items[index];
+                BufferedTreeStream itemToMove = Items[index];
                 if (!itemToMove.IsValid)
                 {
                     m_validRecords--;

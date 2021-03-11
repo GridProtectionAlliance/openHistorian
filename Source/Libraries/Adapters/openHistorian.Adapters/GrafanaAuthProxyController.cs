@@ -163,7 +163,7 @@ namespace openHistorian.Adapters
             // Proxy all other requests
             SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
 
-            if (securityPrincipal?.Identity == null)
+            if (securityPrincipal?.Identity is null)
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
             Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
@@ -209,7 +209,7 @@ namespace openHistorian.Adapters
                         // Validate user has a role defined in latest security context
                         Dictionary<string, string[]> securityContext = s_latestSecurityContext ?? StartUserSynchronization(userName);
 
-                        if (securityContext == null)
+                        if (securityContext is null)
                             throw new InvalidOperationException("Failed to load security context");
 
                         string newUserMessage = securityContext.ContainsKey(userName) ? "" : $"New user \"{userName}\" encountered. ";
@@ -409,7 +409,7 @@ namespace openHistorian.Adapters
         {
             Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
-            if (securityContext == null)
+            if (securityContext is null)
                 return;
 
             // Skip user synchronization if security context has not changed
@@ -486,7 +486,7 @@ namespace openHistorian.Adapters
                 string organizationalRole = TranslateRole(roles);
 
                 // Update user's organizational status / role as needed
-                if (orgUserDetail == null && !createdUser)
+                if (orgUserDetail is null && !createdUser)
                     success = AddUserToOrganization(s_organizationID, userName, organizationalRole, out message);
                 else if (createdUser || !orgUserDetail.role.Equals(organizationalRole, StringComparison.OrdinalIgnoreCase))
                     success = UpdateUserOrganizationalRole(s_organizationID, userDetail.id, organizationalRole, out message);
@@ -517,7 +517,7 @@ namespace openHistorian.Adapters
                 return false;
             }
 
-            if (result.TryGetValue("id", out JToken token))
+            if (result.TryGetValue("id", out _))
             {
                 try
                 {
@@ -531,6 +531,7 @@ namespace openHistorian.Adapters
                 }
             }
 
+            JToken token;
             if (result.TryGetValue("message", out token))
                 message = token.Value<string>();
 
@@ -559,7 +560,7 @@ namespace openHistorian.Adapters
 
             message = result.message;
 
-            if (result.id == null)
+            if (result.id is null)
                 return false;
 
             userDetail.id = (int)result.id;
@@ -630,7 +631,7 @@ namespace openHistorian.Adapters
             if (left == right)
                 return true;
 
-            if (left == null || right == null)
+            if (left is null || right is null)
                 return false;
 
             if (left.Count != right.Count)
@@ -829,7 +830,7 @@ namespace openHistorian.Adapters
 
         private static HttpResponseMessage HandleGrafanaLoginPingRequest(HttpRequestMessage request, SecurityPrincipal securityPrincipal)
         {
-            string userLoginState = securityPrincipal?.Identity == null ? "Unauthorized" : "Logged in";
+            string userLoginState = securityPrincipal?.Identity is null ? "Unauthorized" : "Logged in";
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {

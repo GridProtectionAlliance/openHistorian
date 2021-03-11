@@ -1,6 +1,4 @@
 ﻿using System;
-using openHistorian.Collections;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Tree
 {
@@ -28,15 +26,15 @@ namespace GSF.Snap.Tree
 
         bool m_isEndOfStream;
         private bool IsValid;
-        private TKey CurrentKey;
-        private TValue CurrentValue;
+        private readonly TKey CurrentKey;
+        private readonly TValue CurrentValue;
 
         private bool m_baseStreamIsValid;
-        private TKey m_baseStreamCurrentKey;
-        private TValue m_baseStreamCurrentValue;
+        private readonly TKey m_baseStreamCurrentKey;
+        private readonly TValue m_baseStreamCurrentValue;
 
 
-        TreeStream<TKey, TValue> m_baseStream;
+        readonly TreeStream<TKey, TValue> m_baseStream;
 
         public TreeStreamSequential(TreeStream<TKey, TValue> baseStream)
         {

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -35,18 +35,18 @@ namespace GSF.IO.FileStructure
     internal unsafe class SimplifiedSubFileStreamIoSession
         : BinaryStreamIoSessionBase
     {
-        public static int ReadBlockCount=0;
-        public static int WriteBlockCount=0;
+        public static int ReadBlockCount;
+        public static int WriteBlockCount;
 
         #region [ Members ]
-        private FileStream m_stream;
+        private readonly FileStream m_stream;
         private bool m_disposed;
 
-        private byte[] m_buffer;
-        private Memory m_memory;
+        private readonly byte[] m_buffer;
+        private readonly Memory m_memory;
         private long m_currentPhysicalBlock;
         private uint m_currentBlockIndex;
-        private int m_blockSize;
+        private readonly int m_blockSize;
         private readonly FileHeaderBlock m_header;
         private readonly SubFileHeader m_subFile;
         private readonly int m_blockDataLength;
@@ -57,11 +57,11 @@ namespace GSF.IO.FileStructure
 
         public SimplifiedSubFileStreamIoSession(FileStream stream, SubFileHeader subFile, FileHeaderBlock header)
         {
-            if (stream == null)
+            if (stream is null)
                 throw new ArgumentNullException("stream");
-            if (subFile == null)
+            if (subFile is null)
                 throw new ArgumentNullException("subFile");
-            if (header == null)
+            if (header is null)
                 throw new ArgumentNullException("header");
             if (subFile.DirectBlock == 0)
                 throw new Exception("Must assign subFile.DirectBlock");
@@ -122,7 +122,7 @@ namespace GSF.IO.FileStructure
 
         public override void GetBlock(BlockArguments args)
         {
-            if (args == null)
+            if (args is null)
                 throw new ArgumentNullException("args");
 
             long pos = args.Position;
@@ -130,18 +130,18 @@ namespace GSF.IO.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             if (pos < 0)
                 throw new ArgumentOutOfRangeException("position", "cannot be negative");
-            if (pos >= (long)m_blockDataLength * (uint.MaxValue - 1))
+            if (pos >= m_blockDataLength * (uint.MaxValue - 1))
                 throw new ArgumentOutOfRangeException("position", "position reaches past the end of the file.");
 
             uint physicalBlockIndex;
             uint indexPosition;
 
             if (pos <= uint.MaxValue) //64-bit divide is 2 times slower
-                indexPosition = ((uint)pos / (uint)m_blockDataLength);
+                indexPosition = (uint)pos / (uint)m_blockDataLength;
             else
                 indexPosition = (uint)((ulong)pos / (ulong)m_blockDataLength); //64-bit signed divide is twice as slow as 64-bit unsigned.
 
-            args.FirstPosition = (long)indexPosition * m_blockDataLength;
+            args.FirstPosition = indexPosition * m_blockDataLength;
             args.Length = m_blockDataLength;
 
             physicalBlockIndex = m_subFile.DirectBlock + indexPosition;
@@ -152,13 +152,13 @@ namespace GSF.IO.FileStructure
             args.SupportsWriting = true;
         }
 
-        void Flush()
+        private void Flush()
         {
             if (m_currentPhysicalBlock < 0)
                 return;
             WriteBlockCount++;
 
-            byte* data = ((byte*)m_memory.Address + m_blockSize - 32);
+            byte* data = (byte*)m_memory.Address + m_blockSize - 32;
 
             data[0] = (byte)BlockType.DataBlock;
             data[1] = 0;
@@ -174,7 +174,7 @@ namespace GSF.IO.FileStructure
             m_currentPhysicalBlock = -1;
         }
 
-        void Read(uint physicalBlockIndex, uint blockIndex)
+        private void Read(uint physicalBlockIndex, uint blockIndex)
         {
             if (m_currentPhysicalBlock == physicalBlockIndex)
                 return;

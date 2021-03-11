@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using GSF.Snap.Storage;
 
@@ -102,13 +103,13 @@ namespace GSF.Snap.Services
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                var partitions = m_list.m_fileSummaries;
+                SortedList<Guid, ArchiveTableSummary<TKey, TValue>> partitions = m_list.m_fileSummaries;
                 if (!partitions.ContainsKey(archiveId))
                 {
                     return false;
                 }
 
-                var tree = partitions[archiveId].SortedTreeTable;
+                SortedTreeTable<TKey, TValue> tree = partitions[archiveId].SortedTreeTable;
                 partitions.Remove(archiveId);
 
                 m_list.AddFileToDispose(tree);
@@ -125,13 +126,13 @@ namespace GSF.Snap.Services
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                var partitions = m_list.m_fileSummaries;
+                SortedList<Guid, ArchiveTableSummary<TKey, TValue>> partitions = m_list.m_fileSummaries;
                 if (!partitions.ContainsKey(archiveId))
                 {
                     return false;
                 }
 
-                var tree = partitions[archiveId].SortedTreeTable;
+                SortedTreeTable<TKey, TValue> tree = partitions[archiveId].SortedTreeTable;
                 partitions.Remove(archiveId);
 
                 m_list.AddFileToDelete(tree);

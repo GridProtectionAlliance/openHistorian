@@ -1,6 +1,4 @@
 ﻿using System;
-using GSF.IO.FileStructure.Media;
-using openHistorian.PerformanceTests.Threading;
 
 namespace openHistorian.PerformanceTests
 {
@@ -15,7 +13,7 @@ namespace openHistorian.PerformanceTests
             //var m = new MeasureCompression();
             //m.Test();
 
-            var GCT = new GCTime();
+            GCTime GCT = new GCTime();
             //GCT.Test();
             GCT.Test2();
 

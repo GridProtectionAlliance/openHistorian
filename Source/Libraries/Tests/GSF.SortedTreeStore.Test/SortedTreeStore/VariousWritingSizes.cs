@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GSF.Snap.Storage;
+﻿using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using NUnit.Framework;
-using openHistorian.Collections;
 using openHistorian.Snap;
 
 namespace GSF.Snap
@@ -18,12 +11,12 @@ namespace GSF.Snap
         [Test]
         public void TestSmall()
         {
-            var key = new HistorianKey();
-            var value = new HistorianValue();
-            using (var af = SortedTreeFile.CreateInMemory())
-            using (var file = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory())
+            using (SortedTreeTable<HistorianKey, HistorianValue> file = af.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var edit = file.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = file.BeginEdit())
                 {
                   
                     for (int x = 0; x < 10000000; x++)
@@ -34,8 +27,8 @@ namespace GSF.Snap
                     edit.Commit();
                 }
 
-                using (var read = file.BeginRead())
-                using (var scan = read.GetTreeScanner())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
+                using (SortedTreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner())
                 {
                     int count = 0;
                     scan.SeekToStart();

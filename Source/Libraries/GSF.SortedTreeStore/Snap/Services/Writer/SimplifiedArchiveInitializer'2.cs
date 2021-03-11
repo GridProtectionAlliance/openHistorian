@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -40,7 +40,7 @@ namespace GSF.Snap.Services.Writer
         where TValue : SnapTypeBase<TValue>, new()
     {
         private SimplifiedArchiveInitializerSettings m_settings;
-        private ReaderWriterLockEasy m_lock;
+        private readonly ReaderWriterLockEasy m_lock;
 
         /// <summary>
         /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/>
@@ -56,13 +56,7 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// Gets current settings.
         /// </summary>
-        public SimplifiedArchiveInitializerSettings Settings
-        {
-            get
-            {
-                return m_settings;
-            }
-        }
+        public SimplifiedArchiveInitializerSettings Settings => m_settings;
 
         /// <summary>
         /// Replaces the existing settings with this new set.
@@ -89,7 +83,7 @@ namespace GSF.Snap.Services.Writer
         /// <returns></returns>
         public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey, long estimatedSize, TreeStream<TKey, TValue> data, Action<Guid> archiveIdCallback)
         {
-            var settings = m_settings;
+            SimplifiedArchiveInitializerSettings settings = m_settings;
 
             string pendingFile = CreateArchiveName(GetPathWithEnoughSpace(estimatedSize), startKey, endKey);
             string finalFile = Path.ChangeExtension(pendingFile, settings.FinalExtension);
@@ -117,13 +111,11 @@ namespace GSF.Snap.Services.Writer
         {
             IHasTimestampField startTime = startKey as IHasTimestampField;
             IHasTimestampField endTime = endKey as IHasTimestampField;
-            DateTime startDate;
-            DateTime endDate;
 
-            if (startTime == null || endTime == null)
+            if (startTime is null || endTime is null)
                 return CreateArchiveName(path);
 
-            if (!startTime.TryGetDateTime(out startDate) || !endTime.TryGetDateTime(out endDate))
+            if (!startTime.TryGetDateTime(out DateTime startDate) || !endTime.TryGetDateTime(out DateTime endDate))
                 return CreateArchiveName(path);
 
             path = GetPath(path, startDate);
@@ -158,9 +150,7 @@ namespace GSF.Snap.Services.Writer
             long remainingSpace = m_settings.DesiredRemainingSpace;
             foreach (string path in m_settings.WritePath)
             {
-                long freeSpace;
-                long totalSpace;
-                FilePath.GetAvailableFreeSpace(path, out freeSpace, out totalSpace);
+                FilePath.GetAvailableFreeSpace(path, out long freeSpace, out _);
                 if (freeSpace - estimatedSize > remainingSpace)
                     return path;
             }

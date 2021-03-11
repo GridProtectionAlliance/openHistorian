@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -35,7 +35,7 @@ namespace GSF.IO.FileStructure.Media
         abstract internal class PageLock
             : BinaryStreamIoSessionBase, IEquatable<PageLock>
         {
-            private PageReplacementAlgorithm m_parent;
+            private readonly PageReplacementAlgorithm m_parent;
             private readonly int m_hashCode;
             private int m_currentPageIndex;
             private bool m_disposed;
@@ -62,13 +62,7 @@ namespace GSF.IO.FileStructure.Media
             /// that is cached. 
             /// Returns a -1 if no page is currently being used.
             /// </summary>
-            public int CurrentPageIndex
-            {
-                get
-                {
-                    return m_currentPageIndex;
-                }
-            }
+            public int CurrentPageIndex => m_currentPageIndex;
 
             /// <summary>
             /// Releases a lock
@@ -119,14 +113,13 @@ namespace GSF.IO.FileStructure.Media
                         throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
 
                     int positionIndex = (int)(position >> m_parent.m_memoryPageSizeShiftBits);
-                    int pageIndex;
-                    if (m_parent.m_pageList.TryGetPageIndex(positionIndex, out pageIndex))
+                    if (m_parent.m_pageList.TryGetPageIndex(positionIndex, out int pageIndex))
                     {
                         m_currentPageIndex = pageIndex;
                         location = m_parent.m_pageList.GetPointerToPage(pageIndex, 1);
                         return true;
                     }
-                    location = default(IntPtr);
+                    location = default;
                     return false;
                 }
             }
@@ -156,9 +149,8 @@ namespace GSF.IO.FileStructure.Media
                     if ((position & m_parent.m_memoryPageSizeMask) != 0)
                         throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
                     int positionIndex = (int)(position >> m_parent.m_memoryPageSizeShiftBits);
-                    
-                    int pageIndex;
-                    if (m_parent.m_pageList.TryGetPageIndex(positionIndex, out pageIndex))
+
+                    if (m_parent.m_pageList.TryGetPageIndex(positionIndex, out int pageIndex))
                     {
                         m_currentPageIndex = pageIndex;
                         IntPtr location = m_parent.m_pageList.GetPointerToPage(pageIndex, 1);

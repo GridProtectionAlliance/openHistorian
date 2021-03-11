@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -108,17 +108,17 @@ namespace GSF.Snap
         /// </summary>
         private static void ReloadNewAssemblies()
         {
-            var typeCreateSingleValueEncodingBase = typeof(IndividualEncodingDefinitionBase);
-            var typeCreateDoubleValueEncodingBase = typeof(PairEncodingDefinitionBase);
-            var typeCreateFilterBase = typeof(MatchFilterDefinitionBase);
-            var typeCreateSeekFilterBase = typeof(SeekFilterDefinitionBase);
-            var typeSnapTypeBase = typeof(SnapTypeBase);
-            var typeKeyValueMethods = typeof(KeyValueMethods);
+            Type typeCreateSingleValueEncodingBase = typeof(IndividualEncodingDefinitionBase);
+            Type typeCreateDoubleValueEncodingBase = typeof(PairEncodingDefinitionBase);
+            Type typeCreateFilterBase = typeof(MatchFilterDefinitionBase);
+            Type typeCreateSeekFilterBase = typeof(SeekFilterDefinitionBase);
+            Type typeSnapTypeBase = typeof(SnapTypeBase);
+            Type typeKeyValueMethods = typeof(KeyValueMethods);
 
             try
             {
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (var assembly in assemblies)
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assemblies)
                 {
                     if (!LoadedAssemblies.Contains(assembly))
                     {
@@ -128,8 +128,8 @@ namespace GSF.Snap
                         {
                             Log.Publish(MessageLevel.Debug, "Loading Assembly", assembly.GetName().Name);
 
-                            var modules = assembly.GetModules(false);
-                            foreach (var module in modules)
+                            Module[] modules = assembly.GetModules(false);
+                            foreach (Module module in modules)
                             {
                                 try
                                 {
@@ -145,7 +145,7 @@ namespace GSF.Snap
                                             String.Join(Environment.NewLine, ex.LoaderExceptions.Select(x => x.ToString())));
                                         types = ex.Types;
                                     }
-                                    foreach (var assemblyType in types)
+                                    foreach (Type assemblyType in types)
                                     {
                                         try
                                         {
@@ -179,8 +179,8 @@ namespace GSF.Snap
                                                 else if (typeKeyValueMethods.IsAssignableFrom(assemblyType))
                                                 {
                                                     Log.Publish(MessageLevel.Debug, "Loading Key Value Methods", assemblyType.AssemblyQualifiedName);
-                                                    var obj = (KeyValueMethods)Activator.CreateInstance(assemblyType);
-                                                    var ttypes = Tuple.Create(obj.KeyType, obj.ValueType);
+                                                    KeyValueMethods obj = (KeyValueMethods)Activator.CreateInstance(assemblyType);
+                                                    Tuple<Type, Type> ttypes = Tuple.Create(obj.KeyType, obj.ValueType);
                                                     if (!KeyValueMethodsList.ContainsKey(ttypes))
                                                     {
                                                         KeyValueMethodsList.Add(ttypes, obj);
@@ -232,11 +232,10 @@ namespace GSF.Snap
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            var t = Tuple.Create(typeof(TKey), typeof(TValue));
+            Tuple<Type, Type> t = Tuple.Create(typeof(TKey), typeof(TValue));
             lock (SyncRoot)
             {
-                object obj;
-                if (KeyValueMethodsList.TryGetValue(t, out obj))
+                if (KeyValueMethodsList.TryGetValue(t, out object obj))
                 {
                     return (KeyValueMethods<TKey, TValue>)obj;
                 }
@@ -262,7 +261,7 @@ namespace GSF.Snap
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            if ((object)encodingMethod == null)
+            if (encodingMethod is null)
                 throw new ArgumentNullException("encodingMethod");
 
             if (encodingMethod.IsFixedSizeEncoding)
@@ -281,10 +280,7 @@ namespace GSF.Snap
 
             lock (SyncRoot)
             {
-                Type existingType;
-                Guid existingId;
-
-                if (RegisteredType.TryGetValue(type, out existingId))
+                if (RegisteredType.TryGetValue(type, out Guid existingId))
                 {
                     if (existingId != id)
                         throw new Exception("Existing type does not match Guid: " + type.FullName + " ID: " + id.ToString());
@@ -293,7 +289,7 @@ namespace GSF.Snap
                     return;
                 }
 
-                if (TypeLookup.TryGetValue(id, out existingType))
+                if (TypeLookup.TryGetValue(id, out Type existingType))
                 {
                     if (existingType != type)
                         throw new Exception("Existing type does not have a unique Guid. Type1:" + type.FullName + " Type2: " + existingType.FullName + " ID: " + id.ToString());

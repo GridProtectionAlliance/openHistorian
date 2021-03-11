@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -36,7 +36,7 @@ namespace GSF.Security.Authentication
     /// </remarks>
     public class SrpUserCredentials
     {
-        private Dictionary<string, SrpUserCredential> m_users = new Dictionary<string, SrpUserCredential>();
+        private readonly Dictionary<string, SrpUserCredential> m_users = new Dictionary<string, SrpUserCredential>();
 
         /// <summary>
         /// Looks up the username from the database.
@@ -61,7 +61,7 @@ namespace GSF.Security.Authentication
         /// <param name="iterations"></param>
         public void AddUser(string username, string password, SrpStrength strength = SrpStrength.Bits1024, int saltSize = 32, int iterations = 4000)
         {
-            var user = new SrpUserCredential(username, password, strength, saltSize, iterations);
+            SrpUserCredential user = new SrpUserCredential(username, password, strength, saltSize, iterations);
             lock (m_users)
             {
                 m_users.Add(username, user);
@@ -78,7 +78,7 @@ namespace GSF.Security.Authentication
         /// <param name="strength"></param>
         public void AddUser(string username, byte[] verifier, byte[] passwordSalt, int iterations, SrpStrength strength)
         {
-            var user = new SrpUserCredential(username, passwordSalt, verifier, iterations, strength);
+            SrpUserCredential user = new SrpUserCredential(username, passwordSalt, verifier, iterations, strength);
             lock (m_users)
             {
                 m_users.Add(username, user);

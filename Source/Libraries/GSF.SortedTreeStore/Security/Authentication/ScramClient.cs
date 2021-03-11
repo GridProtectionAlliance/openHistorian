@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -35,9 +35,9 @@ namespace GSF.Security.Authentication
     /// </summary>
     public class ScramClient
     {
-        private NonceGenerator m_nonce = new NonceGenerator(16);
+        private readonly NonceGenerator m_nonce = new NonceGenerator(16);
         private readonly byte[] m_usernameBytes;
-        readonly byte[] m_passwordBytes;
+        private readonly byte[] m_passwordBytes;
         private byte[] m_salt;
         private int m_iterations;
         private byte[] m_saltedPassword;
@@ -66,12 +66,12 @@ namespace GSF.Security.Authentication
         /// <param name="hashMethod">the hashing method</param>
         /// <param name="salt">the salt for the user credentials.</param>
         /// <param name="iterations">the number of iterations.</param>
-        void SetServerValues(HashMethod hashMethod, byte[] salt, int iterations)
+        private void SetServerValues(HashMethod hashMethod, byte[] salt, int iterations)
         {
             bool hasPasswordDataChanged = false;
             bool hasHashMethodChanged = false;
 
-            if (m_salt == null || !salt.SecureEquals(m_salt))
+            if (m_salt is null || !salt.SecureEquals(m_salt))
             {
                 hasPasswordDataChanged = true;
                 m_salt = salt;
@@ -104,9 +104,9 @@ namespace GSF.Security.Authentication
             }
         }
 
-        byte[] ComputeClientSignature(byte[] authMessage)
+        private byte[] ComputeClientSignature(byte[] authMessage)
         {
-            var result = new byte[m_clientSignature.GetMacSize()];
+            byte[] result = new byte[m_clientSignature.GetMacSize()];
             lock (m_clientSignature)
             {
                 m_clientSignature.BlockUpdate(authMessage, 0, authMessage.Length);
@@ -115,9 +115,9 @@ namespace GSF.Security.Authentication
             return result;
         }
 
-        byte[] ComputeServerSignature(byte[] authMessage)
+        private byte[] ComputeServerSignature(byte[] authMessage)
         {
-            var result = new byte[m_serverSignature.GetMacSize()];
+            byte[] result = new byte[m_serverSignature.GetMacSize()];
             lock (m_serverSignature)
             {
                 m_serverSignature.BlockUpdate(authMessage, 0, authMessage.Length);
@@ -128,7 +128,7 @@ namespace GSF.Security.Authentication
 
         public bool AuthenticateAsClient(Stream stream, byte[] additionalChallenge = null)
         {
-            if (additionalChallenge == null)
+            if (additionalChallenge is null)
                 additionalChallenge = new byte[] { };
 
             byte[] clientNonce = m_nonce.Next();
@@ -151,7 +151,7 @@ namespace GSF.Security.Authentication
 
             byte[] serverSignature = ComputeServerSignature(authMessage);
             byte[] serverSignatureVerify = stream.ReadBytes();
-            return (serverSignature.SecureEquals(serverSignatureVerify));
+            return serverSignature.SecureEquals(serverSignatureVerify);
         }
     }
 }

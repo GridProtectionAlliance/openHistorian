@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using GSF.Collections;
@@ -89,12 +90,12 @@ namespace GSF.Snap.Services
         public SnapServer(IToServerSettings settings)
             : this()
         {
-            if (settings == null)
+            if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
             
             ServerSettings settings2 = settings.ToServerSettings();
 
-            if (settings2 == null)
+            if (settings2 is null)
                 throw new ArgumentNullException(nameof(settings), "The ToServerSettings method returned null");
             
             settings2.Validate();
@@ -117,7 +118,7 @@ namespace GSF.Snap.Services
         /// <param name="databaseConfig"></param>
         public void AddDatabase(ServerDatabaseSettings databaseConfig)
         {
-            if ((object)databaseConfig == null)
+            if (databaseConfig is null)
                 throw new ArgumentNullException(nameof(databaseConfig));
 
             // Pre check to prevent loading a database with the same name twice.
@@ -168,7 +169,7 @@ namespace GSF.Snap.Services
         /// <param name="socketSettings">the config data for the socket listener</param>
         public void AddSocketListener(SnapSocketListenerSettings socketSettings)
         {
-            if ((object)socketSettings == null)
+            if (socketSettings is null)
                 throw new ArgumentNullException(nameof(socketSettings));
 
             using (Logger.AppendStackMessages(Log.InitialStackMessages))
@@ -227,9 +228,7 @@ namespace GSF.Snap.Services
         private SnapServerDatabaseBase GetDatabase(string databaseName)
         {
             lock (m_syncRoot)
-            {
                 return m_databases[databaseName.ToUpper()];
-            }
         }
 
         /// <summary>
@@ -240,9 +239,7 @@ namespace GSF.Snap.Services
         private bool Contains(string databaseName)
         {
             lock (m_syncRoot)
-            {
                 return m_databases.ContainsKey(databaseName.ToUpper());
-            }
         }
 
         /// <summary>
@@ -252,16 +249,7 @@ namespace GSF.Snap.Services
         private List<DatabaseInfo> GetDatabaseInfo()
         {
             lock (m_syncRoot)
-            {
-                List<DatabaseInfo> list = new List<DatabaseInfo>();
-                
-                foreach (SnapServerDatabaseBase database in m_databases.Values)
-                {
-                    list.Add(database.Info);
-                }
-                
-                return list;
-            }
+                return m_databases.Values.Select(database => database.Info).ToList();
         }
 
         /// <summary>
@@ -270,28 +258,28 @@ namespace GSF.Snap.Services
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (!disposing)
-                        return;
+            if (m_disposed)
+                return;
 
-                    foreach (SnapSocketListener socket in m_sockets.Values)
-                        socket.Dispose();
+            try
+            {
+                if (!disposing)
+                    return;
+
+                foreach (SnapSocketListener socket in m_sockets.Values)
+                    socket.Dispose();
                         
-                    m_sockets.Clear();
+                m_sockets.Clear();
                         
-                    foreach (SnapServerDatabaseBase db in m_databases.Values)
-                        db.Dispose();
+                foreach (SnapServerDatabaseBase db in m_databases.Values)
+                    db.Dispose();
                         
-                    m_databases.Clear();
-                }
-                finally
-                {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
-                }
+                m_databases.Clear();
+            }
+            finally
+            {
+                m_disposed = true;       // Prevent duplicate dispose.
+                base.Dispose(disposing); // Call base class Dispose().
             }
         }
 
@@ -313,29 +301,28 @@ namespace GSF.Snap.Services
         private void UnRegisterClient(Client client)
         {
             lock (m_syncRoot)
-            {
                 m_clients.Remove(client);
-            }
         }
 
         /// <summary>
         /// Gets the status of the server.
         /// </summary>
-        /// <param name="status"></param>
-        public void GetFullStatus(StringBuilder status)
+        /// <param name="status">Target status output <see cref="StringBuilder"/>.</param>
+        /// <param name="maxFileListing">Maximum file listing.</param>
+        public void GetFullStatus(StringBuilder status, int maxFileListing = -1)
         {
-            //ToDo: Consider a better way to get status data.
             lock (m_syncRoot)
             {
-                status.AppendFormat("Historian Instances:");
+                status.AppendLine($"Historian Instances:{Environment.NewLine}");
+                int count = 0;
                 
                 foreach (DatabaseInfo dbInfo in GetDatabaseInfo())
                 {
-                    status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
+                    status.AppendLine($"Instance {++count:N0}: {dbInfo.DatabaseName}{Environment.NewLine}");
                     
                     try
                     {
-                        GetDatabase(dbInfo.DatabaseName).GetFullStatus(status);
+                        GetDatabase(dbInfo.DatabaseName).GetFullStatus(status, maxFileListing);
                     }
                     catch (Exception ex)
                     {
@@ -343,11 +330,12 @@ namespace GSF.Snap.Services
                     }
                 }
 
-                status.AppendFormat("Socket Connections");
-                
+                status.AppendLine($"{Environment.NewLine}Socket Connections:{Environment.NewLine}");
+                count = 0;
+
                 foreach (KeyValuePair<IPEndPoint, SnapSocketListener> socket in m_sockets)
                 {
-                    status.AppendFormat("Port:{0}\r\n", socket.Key);
+                    status.AppendLine($"Connection {++count:N0}: Port: {socket.Key}{Environment.NewLine}");
                     
                     try
                     {

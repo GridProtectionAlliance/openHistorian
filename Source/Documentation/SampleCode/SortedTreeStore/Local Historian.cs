@@ -4,7 +4,6 @@ using GSF;
 using GSF.Diagnostics;
 using GSF.Snap;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
 using System.Linq;
 using openHistorian.Net;
@@ -17,8 +16,8 @@ namespace SampleCode.SortedTreeStore
     {
         public SnapServer CreateServer()
         {
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Temp\Synchrophasor", true);
-            var server = new SnapServer(settings);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Temp\Synchrophasor", true);
+            SnapServer server = new SnapServer(settings);
             return server;
         }
 
@@ -27,7 +26,7 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
 
             }
@@ -41,9 +40,9 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
-                using (var client = SnapClient.Connect(server))
+                using (SnapClient client = SnapClient.Connect(server))
                 {
                     client.GetDatabase("PPA").AttachFilesOrPaths(new string[] { @"C:\Temp\Synchrophasor\Dir\File2.d2" });
                 }
@@ -56,11 +55,11 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
-                using (var client = SnapClient.Connect(server))
-                using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
-                using (var stream = db.Read(null, null, null))
+                using (SnapClient client = SnapClient.Connect(server))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
+                using (TreeStream<HistorianKey, HistorianValue> stream = db.Read(null, null, null))
                 {
                     Console.WriteLine(stream.Count());
                 }
@@ -72,13 +71,13 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
-                using (var client = SnapClient.Connect(server))
-                using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
+                using (SnapClient client = SnapClient.Connect(server))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
                 {
-                    var key = new HistorianKey();
-                    var value = new HistorianValue();
+                    HistorianKey key = new HistorianKey();
+                    HistorianValue value = new HistorianValue();
                     key.TimestampAsDate = DateTime.Now;
                     key.PointID = LittleEndian.ToUInt64(Guid.NewGuid().ToByteArray(), 0);
                     db.Write(key, value);
@@ -91,12 +90,12 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
-                using (var client = SnapClient.Connect(server))
-                using (var db = client.GetDatabase("PPA"))
+                using (SnapClient client = SnapClient.Connect(server))
+                using (ClientDatabaseBase db = client.GetDatabase("PPA"))
                 {
-                    foreach (var f in db.GetAllAttachedFiles())
+                    foreach (ArchiveDetails f in db.GetAllAttachedFiles())
                     {
                         Console.WriteLine("{0}MB {1} TO {2}; ID:{3} Name: {4}",
                             (f.FileSize / 1024d / 1024d).ToString("0.0"),
@@ -111,17 +110,17 @@ namespace SampleCode.SortedTreeStore
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            using (var server = CreateServer())
+            using (SnapServer server = CreateServer())
             {
-                using (var client = SnapClient.Connect(server))
-                using (var db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
+                using (SnapClient client = SnapClient.Connect(server))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("PPA"))
                 {
-                    using (var stream = db.Read(null, null, null))
+                    using (TreeStream<HistorianKey, HistorianValue> stream = db.Read(null, null, null))
                     {
                         Console.WriteLine(stream.Count());
                     }
                     db.DetatchFiles(db.GetAllAttachedFiles().Select(x => x.Id).ToList());
-                    using (var stream = db.Read(null, null, null))
+                    using (TreeStream<HistorianKey, HistorianValue> stream = db.Read(null, null, null))
                     {
                         Console.WriteLine(stream.Count());
                     }

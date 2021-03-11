@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -142,7 +142,7 @@ namespace GSF.IO.FileStructure.Media
                     m_queue.Close();
                 }
             }
-            m_lengthOfCommittedData = (header.LastAllocatedBlock + 1) * (long)header.BlockSize;
+            m_lengthOfCommittedData = (header.LastAllocatedBlock + 1) * header.BlockSize;
             m_writeBuffer.ConfigureAlignment(m_lengthOfCommittedData, pool.PageSize);
         }
 
@@ -161,26 +161,14 @@ namespace GSF.IO.FileStructure.Media
         /// Gets the current number of bytes used by the file system. 
         /// This is only intended to be an approximate figure. 
         /// </summary>
-        public long Length
-        {
-            get
-            {
-                return m_queue.Length;
-            }
-        }
+        public long Length => m_queue.Length;
 
         /// <summary>
         /// Gets the file name associated with the medium. Returns an empty string if a memory file.
         /// </summary>
-        public string FileName
-        {
-            get
-            {
-                return m_queue.FileName;
-            }
-        }
+        public string FileName => m_queue.FileName;
 
-        #endregion
+    #endregion
 
         #region [ Public Methdos ]
 
@@ -191,10 +179,10 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="header"></param>
         public void CommitChanges(FileHeaderBlock header)
         {
-            using (var pageLock = new IoSession(this, m_pageReplacementAlgorithm))
+            using (IoSession pageLock = new IoSession(this, m_pageReplacementAlgorithm))
             {
                 //Determine how much committed data to write
-                long lengthOfAllData = (header.LastAllocatedBlock + 1) * (long)m_fileStructureBlockSize;
+                long lengthOfAllData = (header.LastAllocatedBlock + 1) * m_fileStructureBlockSize;
                 long copyLength = lengthOfAllData - m_lengthOfCommittedData;
 
                 //Write the uncommitted data.
@@ -223,17 +211,14 @@ namespace GSF.IO.FileStructure.Media
                 //Copy recently committed data to the buffer pool
                 if ((m_lengthOfCommittedData & (m_diskBlockSize - 1)) != 0) //Only if there is a split page.
                 {
-                    startPos = m_lengthOfCommittedData & (~(long)(m_diskBlockSize - 1));
+                    startPos = m_lengthOfCommittedData & ~(m_diskBlockSize - 1);
                     //Finish filling up the split page in the buffer.
-                    IntPtr ptrDest;
 
-                    if (pageLock.TryGetSubPage(startPos, out ptrDest))
+                    if (pageLock.TryGetSubPage(startPos, out IntPtr ptrDest))
                     {
-                        int length;
-                        IntPtr ptrSrc;
-                        m_writeBuffer.ReadBlock(m_lengthOfCommittedData, out ptrSrc, out length);
+                        m_writeBuffer.ReadBlock(m_lengthOfCommittedData, out IntPtr ptrSrc, out int length);
                         Footer.WriteChecksumResultsToFooter(ptrSrc, m_fileStructureBlockSize, length);
-                        ptrDest += (m_diskBlockSize - length);
+                        ptrDest += m_diskBlockSize - length;
                         Memory.Copy(ptrSrc, ptrDest, length);
                     }
                     startPos += m_diskBlockSize;
@@ -246,9 +231,7 @@ namespace GSF.IO.FileStructure.Media
                 while (startPos < lengthOfAllData)
                 {
                     //If the address doesn't exist in the current list. Read it from the disk.
-                    int poolPageIndex;
-                    IntPtr poolAddress;
-                    m_pool.AllocatePage(out poolPageIndex, out poolAddress);
+                    m_pool.AllocatePage(out int poolPageIndex, out IntPtr poolAddress);
                     m_writeBuffer.CopyTo(startPos, poolAddress, m_diskBlockSize);
                     Footer.WriteChecksumResultsToFooter(poolAddress, m_fileStructureBlockSize, m_diskBlockSize);
 
@@ -376,7 +359,7 @@ namespace GSF.IO.FileStructure.Media
                 args.SupportsWriting = false;
                 args.Length = m_diskBlockSize;
                 //rounds to the beginning of the block to be looked up.
-                args.FirstPosition = args.Position & ~(long)m_pool.PageMask;
+                args.FirstPosition = args.Position & ~m_pool.PageMask;
 
                 GetBlockFromCommittedSpace(pageLock, args.FirstPosition, out args.FirstPointer);
 
@@ -400,16 +383,13 @@ namespace GSF.IO.FileStructure.Media
                 return;
 
             //If the address doesn't exist in the current list. Read it from the disk.
-            int poolPageIndex;
-            IntPtr poolAddress;
-            m_pool.AllocatePage(out poolPageIndex, out poolAddress);
+            m_pool.AllocatePage(out int poolPageIndex, out IntPtr poolAddress);
 
             m_queue.Read(position, poolAddress);
 
             //Since a race condition exists, I need to check the buffer to make sure that 
             //the most recently read page already exists in the PageReplacementAlgorithm.
-            bool wasPageAdded;
-            pointer = pageLock.GetOrAddPage(position, poolAddress, poolPageIndex, out wasPageAdded);
+            pointer = pageLock.GetOrAddPage(position, poolAddress, poolPageIndex, out bool wasPageAdded);
             //If I lost on the race condition, I need to re-release this page.
             if (!wasPageAdded)
                 m_pool.ReleasePage(poolPageIndex);

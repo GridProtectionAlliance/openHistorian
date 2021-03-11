@@ -55,7 +55,7 @@ namespace openHistorian.Adapters
             public Resolution resolution;
             public int seriesLimit;
             public bool forceLimit;
-            public TimestampType timestampType = TimestampType.UnixMilliseconds;
+            public readonly TimestampType timestampType = TimestampType.UnixMilliseconds;
         }
 
         private CancellationTokenSource m_linkedTokenSource;

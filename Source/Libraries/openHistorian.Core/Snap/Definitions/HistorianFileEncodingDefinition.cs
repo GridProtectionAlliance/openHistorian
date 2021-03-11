@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -38,33 +38,15 @@ namespace openHistorian.Snap.Definitions
         /// </summary>
         public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
 
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianKey);
-            }
-        }
+        public override Type KeyTypeIfNotGeneric => typeof(HistorianKey);
 
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(HistorianValue);
-            }
-        }
+        public override Type ValueTypeIfNotGeneric => typeof(HistorianValue);
 
-        public override EncodingDefinition Method
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        public override EncodingDefinition Method => TypeGuid;
 
         public override PairEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (PairEncodingBase<TKey, TValue>)(object)(new HistorianFileEncoding());
+            return (PairEncodingBase<TKey, TValue>)(object)new HistorianFileEncoding();
         }
     }
 }

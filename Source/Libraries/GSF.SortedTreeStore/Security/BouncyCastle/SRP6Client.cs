@@ -20,7 +20,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using GSF.Security;
 using GSF.Security.Authentication;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
@@ -34,7 +33,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
      */
     internal class Srp6Client
     {
-        private SrpConstants param;
+        private readonly SrpConstants param;
 
         protected BigInteger privA;
         protected BigInteger pubA;

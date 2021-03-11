@@ -18,10 +18,8 @@ namespace HistorianView
 
         private Metadata(DataRow row)
         {
-            MeasurementKey measurementKey;
-
             Guid.TryParse(row["SignalID"].ToString(), out SignalID);
-            MeasurementKey.TryParse(row["ID"].ToString(), out measurementKey);
+            MeasurementKey.TryParse(row["ID"].ToString(), out MeasurementKey measurementKey);
 
             PointID = measurementKey.ID;
             PointTag = row["PointTag"].ToString();
@@ -64,7 +62,7 @@ namespace HistorianView
                 MessageBox.Show("Exception retrieving meta-data: " + ex.Message);
             }
 
-            if ((object)measurementTable != null)
+            if (measurementTable != null)
             {
                 // Do something with measurement records
                 foreach (DataRow measurement in measurementTable.Select("SignalAcronym <> 'STAT' and SignalAcronym <> 'DIGI'"))

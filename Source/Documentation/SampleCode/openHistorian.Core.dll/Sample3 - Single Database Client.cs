@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using GSF.Snap.Services.Configuration;
-using GSF.Snap.Services.Net;
+using GSF.Snap;
+using GSF.Snap.Services;
 using NUnit.Framework;
-using openHistorian;
-using GSF.Snap.Tree;
 using GSF.Snap.Services.Reader;
 using openHistorian.Net;
 using openHistorian.Snap;
@@ -19,14 +17,14 @@ namespace SampleCode.openHistorian.Core.dll
         {
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            var key = new HistorianKey();
-            var value = new HistorianValue();
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
-            using (var server = new HistorianServer(settings, 12345))
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
+            using (HistorianServer server = new HistorianServer(settings, 12345))
             {
-                using (var client = new HistorianClient("127.0.0.1", 12345))
-                using (var database = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+                using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
                 {
                     for (ulong x = 0; x < 1000; x++)
                     {
@@ -43,16 +41,16 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void TestReadData()
         {
-            var key = new HistorianKey();
-            var value = new HistorianValue();
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", @"c:\temp\Scada\", true);
             using (HistorianServer server = new HistorianServer(settings, 12345))
             {
-                using (var client = new HistorianClient("127.0.0.1", 12345))
-                using (var database = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+                using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
                 {
-                    var stream = database.Read(0, 1000);
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 1000);
                     while (stream.Read(key, value))
                         Console.WriteLine(key.Timestamp);
                 }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -50,7 +50,7 @@ namespace GSF.IO.FileStructure.Media
         private string m_fileName;
         private bool m_isReadOnly;
         private bool m_isSharingEnabled;
-        private int m_ioSize;
+        private readonly int m_ioSize;
         private readonly int m_fileStructureBlockSize;
         private FileStream m_stream;
         private int m_streamUsers;
@@ -111,70 +111,34 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Gets if the file was opened read only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return m_isReadOnly;
-            }
-        }
+        public bool IsReadOnly => m_isReadOnly;
 
         /// <summary>
         /// Gets if the file was opened allowing shared read access.
         /// </summary>
-        public bool IsSharingEnabled
-        {
-            get
-            {
-                return m_isSharingEnabled;
-            }
-        }
+        public bool IsSharingEnabled => m_isSharingEnabled;
 
         /// <summary>
         /// Gets the name of the file
         /// </summary>
-        public string FileName
-        {
-            get
-            {
-                return m_fileName;
-            }
-        }
+        public string FileName => m_fileName;
 
         /// <summary>
         /// Gets the number of bytes in a file structure block.
         /// </summary>
-        public int FileStructureBlockSize
-        {
-            get
-            {
-                return m_fileStructureBlockSize;
-            }
-        }
+        public int FileStructureBlockSize => m_fileStructureBlockSize;
 
         /// <summary>
         /// Gets the number of bytes in each IO operation.
         /// </summary>
-        public int IOSize
-        {
-            get
-            {
-                return m_ioSize;
-            }
-        }
+        public int IOSize => m_ioSize;
 
         /// <summary>
         /// Gets the length of the stream.
         /// </summary>
-        public long Length
-        {
-            get
-            {
-                return m_length;
-            }
-        }
+        public long Length => m_length;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -218,7 +182,7 @@ namespace GSF.IO.FileStructure.Media
         /// <returns>the number of bytes read</returns>
         public int ReadRaw(long position, byte[] buffer, int length)
         {
-            bool needsOpen = m_stream == null;
+            bool needsOpen = m_stream is null;
             try
             {
                 if (needsOpen)
@@ -272,7 +236,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="length">the number of bytes to write</param>
         public void WriteRaw(long position, byte[] buffer, int length)
         {
-            bool needsOpen = m_stream == null;
+            bool needsOpen = m_stream is null;
             try
             {
                 if (needsOpen)
@@ -326,7 +290,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="waitForWriteToDisk">True to wait for a complete commit to disk before returning from this function.</param>
         public void Write(long currentEndOfCommitPosition, MemoryPoolStreamCore stream, long length, bool waitForWriteToDisk)
         {
-            bool needsOpen = m_stream == null;
+            bool needsOpen = m_stream is null;
             try
             {
                 if (needsOpen)
@@ -337,9 +301,7 @@ namespace GSF.IO.FileStructure.Media
                 long currentPosition = currentEndOfCommitPosition;
                 while (currentPosition < endPosition)
                 {
-                    IntPtr ptr;
-                    int streamLength;
-                    stream.ReadBlock(currentPosition, out ptr, out streamLength);
+                    stream.ReadBlock(currentPosition, out IntPtr ptr, out int streamLength);
                     int subLength = (int)Math.Min(streamLength, endPosition - currentPosition);
                     Footer.ComputeChecksumAndClearFooter(ptr, m_fileStructureBlockSize, subLength);
                     Marshal.Copy(ptr, buffer, 0, subLength);
@@ -402,7 +364,7 @@ namespace GSF.IO.FileStructure.Media
                 if (File.Exists(newFileName))
                     throw new Exception("New file already exists with this extension");
 
-                bool openStream = m_stream == null;
+                bool openStream = m_stream is null;
                 m_stream?.Dispose();
                 m_stream = null;
                 File.Move(oldFileName, newFileName);
@@ -521,7 +483,7 @@ namespace GSF.IO.FileStructure.Media
         /// </summary>
         static CustomFileStream()
         {
-            ResourceList = new ResourceQueueCollection<int, byte[]>((blockSize => (() => new byte[blockSize])), 10, 20);
+            ResourceList = new ResourceQueueCollection<int, byte[]>(blockSize => () => new byte[blockSize], 10, 20);
         }
 
         #endregion

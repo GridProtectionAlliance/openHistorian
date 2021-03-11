@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -65,7 +65,7 @@ namespace GSF.Security.Authentication
         /// Contains the standard N, g, k parameters depending on the bit size
         /// as specified in RFC 5054 Appendix A.
         /// </summary>
-        private static Dictionary<int, SrpConstants> s_groupParameters = new Dictionary<int, SrpConstants>();
+        private static readonly Dictionary<int, SrpConstants> s_groupParameters = new Dictionary<int, SrpConstants>();
 
         static SrpConstants()
         {
@@ -221,8 +221,7 @@ namespace GSF.Security.Authentication
         public static SrpConstants Lookup(SrpStrength strength)
         {
             int bits = (int)strength;
-            SrpConstants value;
-            if (!s_groupParameters.TryGetValue(bits, out value))
+            if (!s_groupParameters.TryGetValue(bits, out SrpConstants value))
                 throw new InvalidEnumArgumentException("strength");
             return value;
         }
@@ -254,7 +253,7 @@ namespace GSF.Security.Authentication
         {
             Sha512Digest hash = new Sha512Digest();
             hash.Reset();
-            foreach (var w in words)
+            foreach (byte[] w in words)
             {
                 hash.BlockUpdate(w, 0, w.Length);
             }

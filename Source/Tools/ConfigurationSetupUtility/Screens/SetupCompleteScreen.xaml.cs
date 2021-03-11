@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -41,7 +41,6 @@ using GSF.Data;
 using GSF.IO;
 using GSF.Identity;
 using GSF.Security;
-using GSF.Web;
 
 namespace ConfigurationSetupUtility.Screens
 {
@@ -322,10 +321,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -389,11 +385,11 @@ namespace ConfigurationSetupUtility.Screens
 
             XmlNode categorizedSettings = configFile.SelectSingleNode("configuration/categorizedSettings");
 
-            if (categorizedSettings == null)
+            if (categorizedSettings is null)
             {
                 XmlNode config = configFile.SelectSingleNode("configuration");
 
-                if (config == null)
+                if (config is null)
                     return;
 
                 categorizedSettings = configFile.CreateElement("categorizedSettings");
@@ -413,7 +409,7 @@ namespace ConfigurationSetupUtility.Screens
                   <add name=""Enabled"" value=""{2}"" description=""{3}"" encrypted=""false"" />
                 </{0}GrafanaDataService>";
 
-            if (configFile.SelectSingleNode("configuration/categorizedSettings/statGrafanaDataService") == null)
+            if (configFile.SelectSingleNode("configuration/categorizedSettings/statGrafanaDataService") is null)
             {
                 string archiveBinding = string.Format(GrafanaArchiveBinding, "stat", "http.rest://localhost:6356/api/grafana", "True", "Determines if web service should be enabled at startup.");
 
@@ -440,7 +436,7 @@ namespace ConfigurationSetupUtility.Screens
 
                 m_state.TryGetValue("historianTypeName", out object historianTypeName);
 
-                if (historianTypeName.ToNonNullString().Equals("openHistorian.Adapters.LocalOutputAdapter") && configFile.SelectSingleNode($"configuration/categorizedSettings/{historianAcronym}GrafanaDataService") == null)
+                if (historianTypeName.ToNonNullString().Equals("openHistorian.Adapters.LocalOutputAdapter") && configFile.SelectSingleNode($"configuration/categorizedSettings/{historianAcronym}GrafanaDataService") is null)
                 {
                     // In the case of the openHistorian 2.0, we do not want to enable WCF based Grafana binding for primary archive,
                     // instead we want user to use the MVC API based Grafana controller that is hosted off of the main web UI port,
@@ -522,7 +518,7 @@ namespace ConfigurationSetupUtility.Screens
 
         //    XmlElement errorTemplateName = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings/add[@name='ErrorTemplateName']") as XmlElement;
 
-        //    if (errorTemplateName?.Attributes == null)
+        //    if (errorTemplateName?.Attributes is null)
         //    {
         //        XmlElement systemSettings = configFile.SelectSingleNode("configuration/categorizedSettings/systemSettings") as XmlElement;
 
@@ -667,7 +663,7 @@ namespace ConfigurationSetupUtility.Screens
         {
             IDbConnection connection = OpenNewConnection();
 
-            if (connection == null)
+            if (connection is null)
                 return;
 
             try
@@ -776,7 +772,7 @@ namespace ConfigurationSetupUtility.Screens
                     }
                     else //we need to add user to the UserAccount table and then attach it to admin role.
                     {
-                        bool databaseIsOracle = (databaseType == "Oracle");
+                        bool databaseIsOracle = databaseType == "Oracle";
                         char paramChar = databaseIsOracle ? ':' : '@';
 
                         // Add Administrative User.                

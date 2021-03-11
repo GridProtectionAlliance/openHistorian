@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -33,17 +33,17 @@ namespace GSF.Snap.Services.Reader
     {
 
         private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
-        CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_sortedArchiveStreams;
-        BufferedArchiveStream<TKey, TValue> m_firstTable;
-        SortedTreeScannerBase<TKey, TValue> m_firstTableScanner;
-        TKey m_readWhileUpperBounds = new TKey();
-        TKey m_nextArchiveStreamLowerBounds = new TKey();
+        private readonly CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_sortedArchiveStreams;
+        private BufferedArchiveStream<TKey, TValue> m_firstTable;
+        private SortedTreeScannerBase<TKey, TValue> m_firstTableScanner;
+        private readonly TKey m_readWhileUpperBounds = new TKey();
+        private readonly TKey m_nextArchiveStreamLowerBounds = new TKey();
 
         public UnionReader(List<ArchiveTableSummary<TKey, TValue>> tables)
         {
             m_tablesOrigList = new List<BufferedArchiveStream<TKey, TValue>>();
 
-            foreach (var table in tables)
+            foreach (ArchiveTableSummary<TKey, TValue> table in tables)
             {
                 m_tablesOrigList.Add(new BufferedArchiveStream<TKey, TValue>(0, table));
             }
@@ -65,21 +65,9 @@ namespace GSF.Snap.Services.Reader
             base.Dispose(disposing);
         }
 
-        public override bool IsAlwaysSequential
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsAlwaysSequential => true;
 
-        public override bool NeverContainsDuplicates
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool NeverContainsDuplicates => true;
 
         protected override bool ReadNext(TKey key, TValue value)
         {
@@ -93,10 +81,10 @@ namespace GSF.Snap.Services.Reader
             return ReadCatchAll(key, value);
         }
 
-        bool ReadCatchAll(TKey key, TValue value)
+        private bool ReadCatchAll(TKey key, TValue value)
         {
         TryAgain:
-            if (m_firstTableScanner == null)
+            if (m_firstTableScanner is null)
             {
                 return false;
             }
@@ -108,7 +96,7 @@ namespace GSF.Snap.Services.Reader
             goto TryAgain;
         }
 
-        void ReadWhileFollowupActions()
+        private void ReadWhileFollowupActions()
         {
             //There are certain followup requirements when a ReadWhile method returns false.
             //Condition 1:
@@ -150,7 +138,7 @@ namespace GSF.Snap.Services.Reader
         /// May be called after every single read, but better to be called
         /// when a ReadWhile function returns false.
         /// </summary>
-        void VerifyArchiveStreamSortingOrder()
+        private void VerifyArchiveStreamSortingOrder()
         {
             if (EOS)
                 return;
@@ -192,7 +180,7 @@ namespace GSF.Snap.Services.Reader
             }
         }
 
-        bool IsLessThan(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+        private bool IsLessThan(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
         {
             if (!item1.CacheIsValid && !item2.CacheIsValid)
                 return false;
@@ -209,7 +197,7 @@ namespace GSF.Snap.Services.Reader
         /// <param name="item1"></param>
         /// <param name="item2"></param>
         /// <returns></returns>
-        int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+        private int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
         {
             if (!item1.CacheIsValid && !item2.CacheIsValid)
                 return 0;
@@ -224,9 +212,9 @@ namespace GSF.Snap.Services.Reader
         /// Does an unconditional seek operation to the provided key.
         /// </summary>
         /// <param name="key"></param>
-        void SeekToKey(TKey key)
+        private void SeekToKey(TKey key)
         {
-            foreach (var table in m_sortedArchiveStreams.Items)
+            foreach (BufferedArchiveStream<TKey, TValue> table in m_sortedArchiveStreams.Items)
             {
                 table.SeekToKeyAndUpdateCacheValue(key);
             }
@@ -252,7 +240,7 @@ namespace GSF.Snap.Services.Reader
         /// <summary>
         /// Checks the first 2 Archive Streams for a duplicate entry. If one exists, then removes the duplicate and resorts the list.
         /// </summary>
-        void RemoveDuplicatesIfExists()
+        private void RemoveDuplicatesIfExists()
         {
             if (m_sortedArchiveStreams.Items.Length > 1)
             {
@@ -270,7 +258,7 @@ namespace GSF.Snap.Services.Reader
         /// 
         /// Assums that the archiveStream's cached value is current.
         /// </summary>
-        void RemoveDuplicatesFromList()
+        private void RemoveDuplicatesFromList()
         {
             int lastDuplicateIndex = -1;
             for (int index = 1; index < m_sortedArchiveStreams.Items.Length; index++)
@@ -299,7 +287,7 @@ namespace GSF.Snap.Services.Reader
         /// The first point in the adjacent table or
         /// The end of the current seek window.
         ///  </summary>
-        void SetReadWhileUpperBoundsValue()
+        private void SetReadWhileUpperBoundsValue()
         {
             if (m_sortedArchiveStreams.Items.Length > 1 && m_sortedArchiveStreams[1].CacheIsValid)
             {

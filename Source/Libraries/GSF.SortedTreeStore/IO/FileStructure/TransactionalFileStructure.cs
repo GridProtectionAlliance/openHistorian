@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -93,7 +93,7 @@ namespace GSF.IO.FileStructure
         /// </summary>
         public static TransactionalFileStructure CreateFile(string fileName, int blockSize, params Guid[] flags)
         {
-            if (fileName == null)
+            if (fileName is null)
                 throw new ArgumentNullException("fileName");
             if (File.Exists(fileName))
                 throw new Exception("fileName Already Exists");
@@ -107,7 +107,7 @@ namespace GSF.IO.FileStructure
         /// </summary>
         public static TransactionalFileStructure OpenFile(string fileName, bool isReadOnly)
         {
-            if (fileName == null)
+            if (fileName is null)
                 throw new ArgumentNullException("fileName");
             if (!File.Exists(fileName))
                 throw new Exception("fileName Does Not Exists");
@@ -126,38 +126,20 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Gets the current size of the archive.
         /// </summary>
-        public long ArchiveSize
-        {
-            get
-            {
-                return m_diskIo.FileSize;
-            }
-        }
+        public long ArchiveSize => m_diskIo.FileSize;
 
         /// <summary>
         /// Gets the last committed read snapshot on the file system.
         /// </summary>
         /// <returns></returns>
-        public ReadSnapshot Snapshot
-        {
-            get
-            {
-                return m_currentReadTransaction;
-            }
-        }
+        public ReadSnapshot Snapshot => m_currentReadTransaction;
 
         /// <summary>
         /// Gets the file name for the <see cref="TransactionalFileStructure"/>
         /// </summary>
-        public string FileName
-        {
-            get
-            {
-                return m_diskIo.FileName;
-            }
-        }
+        public string FileName => m_diskIo.FileName;
 
-        #region [ Methods ]
+    #region [ Methods ]
 
         /// <summary>
         /// This will start a transactional edit on the file. 

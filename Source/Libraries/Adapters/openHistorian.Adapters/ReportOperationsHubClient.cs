@@ -155,7 +155,7 @@ namespace openHistorian.Adapters
 
         private void UpdatePercentage(int current, int total)
         {
-            m_percentComplete = (1.0D -((double)current/(double)total)) * 100.0D;
+            m_percentComplete = (1.0D -current / (double)total) * 100.0D;
         }
 
         /// <summary>
@@ -233,23 +233,23 @@ namespace openHistorian.Adapters
             // For now lump I and V together since we have to change all of this logic anyway to get away from SignalID back to Point Tags eventually
             // and get away from SQLLite files - waiting for ritchies comments before implementing that
             // Also using SignalID for everything this will be adjusted once I figured out how to combine the 2 SQL DB
-            string idCollumn = (type == ReportType.SNR? "SignalID" : "PositivePhaseSignalID");
+            string idCollumn = type == ReportType.SNR? "SignalID" : "PositivePhaseSignalID";
             string sortCollumn = "Max";
             string typerestriction = $" AND SignalType = '{(type == ReportType.Unbalance_I? "I" : "V")}'";
 
 
             switch (criteria)
             {
-                case (ReportCriteria.Maximum):
+                case ReportCriteria.Maximum:
                     sortCollumn = "Max";
                     break;
-                case (ReportCriteria.Mean):
+                case ReportCriteria.Mean:
                     sortCollumn = "Mean";
                     break;
-                case (ReportCriteria.StandardDev):
+                case ReportCriteria.StandardDev:
                     sortCollumn = "StandardDeviation";
                     break;
-                case (ReportCriteria.TimeInAlarm):
+                case ReportCriteria.TimeInAlarm:
                     sortCollumn = "PercentAlarms";
                     break;
             }
@@ -289,7 +289,7 @@ namespace openHistorian.Adapters
                     Guid signalID = row.Field<Guid>("SignalID");
                     ActiveMeasurement sourceMeasurement = activeMeasurementTbl.QueryRecordWhere("SignalID = {0}", signalID);
                     
-                    if (sourceMeasurement == null)
+                    if (sourceMeasurement is null)
                         continue;
 
                     Phasor phasor = phasorTbl.QueryRecordWhere("ID = {0}", sourceMeasurement.PhasorID);
@@ -297,7 +297,7 @@ namespace openHistorian.Adapters
                     result.Add(new ReportMeasurements()
                     {
                         SignalID = signalID,
-                        PointTag = (((phasor != null) && (type != ReportType.SNR))? phasor.Label : sourceMeasurement.PointTag),
+                        PointTag = phasor != null && type != ReportType.SNR? phasor.Label : sourceMeasurement.PointTag,
                         SignalReference = sourceMeasurement.SignalReference,
                         SignalType = sourceMeasurement.SignalType,
                         DeviceName = sourceMeasurement.Device,
@@ -316,7 +316,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets the number of <see cref="ReportMeasurements"/> in the report.
         /// </summary>
-        public int GetCount() => (m_listing == null ? 0 : m_listing.Count());
+        public int GetCount() => m_listing is null ? 0 : m_listing.Count();
 
         /// <summary>
         /// Gets the <see cref="ReportMeasurements"/> for a given page (and sorted by a given Field).
@@ -327,26 +327,26 @@ namespace openHistorian.Adapters
         /// <param name="sortField">The Field by which the data is sorted. </param>
         public IEnumerable<ReportMeasurements> GetData(string sortField, bool ascending, int page, int pageSize)
         {
-            if (m_listing == null)
+            if (m_listing is null)
                 return new List<ReportMeasurements>();
 
             if (string.Compare(m_currentSort,sortField,true) != 0)
             {
                 switch(sortField)
                 {
-                    case ("PointTag"):
+                    case "PointTag":
                         Sort(ascending, item => item.PointTag);
                         break;
-                    case ("DeviceName"):
+                    case "DeviceName":
                         Sort(ascending, item => item.DeviceName);
                         break;
-                    case ("Mean"):
+                    case "Mean":
                         Sort(ascending, item => item.Mean);
                         break;
-                    case ("Max"):
+                    case "Max":
                         Sort(ascending, item => item.Max);
                         break;
-                    case ("Min"):
+                    case "Min":
                         Sort(ascending, item => item.Min);
                         break;
                 }

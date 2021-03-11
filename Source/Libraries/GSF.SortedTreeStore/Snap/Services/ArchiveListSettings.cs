@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -38,9 +38,9 @@ namespace GSF.Snap.Services
     public class ArchiveListSettings
         : SettingsBase<ArchiveListSettings>
     {
-        private ImmutableList<string> m_importPaths;
-        private ImmutableList<string> m_importExtensions;
-        private ArchiveListLogSettings m_logSettings;
+        private readonly ImmutableList<string> m_importPaths;
+        private readonly ImmutableList<string> m_importExtensions;
+        private readonly ArchiveListLogSettings m_logSettings;
 
         /// <summary>
         /// Creates a new instance of <see cref="ArchiveListSettings"/>
@@ -59,13 +59,7 @@ namespace GSF.Snap.Services
         /// <summary>
         /// The log settings to use for logging deletions.
         /// </summary>
-        public ArchiveListLogSettings LogSettings
-        {
-            get
-            {
-                return m_logSettings;
-            }
-        }
+        public ArchiveListLogSettings LogSettings => m_logSettings;
 
         /// <summary>
         /// A set of all import paths to load upon initialization.
@@ -73,24 +67,12 @@ namespace GSF.Snap.Services
         /// restarted since the ArchiveListLog processes immediately upon 
         /// construction.
         /// </summary>
-        public IEnumerable<string> ImportPaths
-        {
-            get
-            {
-                return m_importPaths;
-            }
-        }
+        public IEnumerable<string> ImportPaths => m_importPaths;
 
         /// <summary>
         /// A set of all file extensions that will need to be loaded from each path.
         /// </summary>
-        public IEnumerable<string> ImportExtensions
-        {
-            get
-            {
-                return m_importExtensions;
-            }
-        }
+        public IEnumerable<string> ImportExtensions => m_importExtensions;
 
         /// <summary>
         /// Adds the supplied path to the list.
@@ -113,7 +95,7 @@ namespace GSF.Snap.Services
         public void AddPaths(IEnumerable<string> paths)
         {
             TestForEditable();
-            foreach (var p in paths)
+            foreach (string p in paths)
             {
                 AddPath(p);
             }
@@ -137,12 +119,12 @@ namespace GSF.Snap.Services
         {
             stream.Write((byte)1);
             stream.Write(m_importPaths.Count);
-            foreach (var path in m_importPaths)
+            foreach (string path in m_importPaths)
             {
                 stream.Write(path);
             }
             stream.Write(m_importExtensions.Count);
-            foreach (var extensions in m_importExtensions)
+            foreach (string extensions in m_importExtensions)
             {
                 stream.Write(extensions);
             }

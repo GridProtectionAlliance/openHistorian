@@ -62,14 +62,8 @@ namespace NPlot
         /// </summary>
         public string Text
         {
-            get
-            {
-                return text_;
-            }
-            set
-            {
-                text_ = value;
-            }
+            get => text_;
+            set => text_ = value;
         }
 
         private string text_ = "";
@@ -80,14 +74,8 @@ namespace NPlot
         /// </summary>
         public PointD Start
         {
-            get
-            {
-                return start_;
-            }
-            set
-            {
-                start_ = value;
-            }
+            get => start_;
+            set => start_ = value;
         }
 
         private PointD start_;
@@ -105,7 +93,7 @@ namespace NPlot
                 (int)xAxis.WorldToPhysical(start_.X, true).X,
                 (int)yAxis.WorldToPhysical(start_.Y, true).Y);
 
-            g.DrawString(text_, font_, textBrush_, (int)startPoint.X, (int)startPoint.Y);
+            g.DrawString(text_, font_, textBrush_, startPoint.X, startPoint.Y);
         }
 
 
@@ -114,14 +102,8 @@ namespace NPlot
         /// </summary>
         public Brush TextBrush
         {
-            get
-            {
-                return textBrush_;
-            }
-            set
-            {
-                textBrush_ = value;
-            }
+            get => textBrush_;
+            set => textBrush_ = value;
         }
 
 
@@ -130,10 +112,7 @@ namespace NPlot
         /// </summary>
         public Color TextColor
         {
-            set
-            {
-                textBrush_ = new SolidBrush(value);
-            }
+            set => textBrush_ = new SolidBrush(value);
         }
 
         /// <summary>
@@ -141,14 +120,8 @@ namespace NPlot
         /// </summary>
         public Font TextFont
         {
-            get
-            {
-                return this.font_;
-            }
-            set
-            {
-                this.font_ = value;
-            }
+            get => this.font_;
+            set => this.font_ = value;
         }
 
         private Brush textBrush_ = new SolidBrush(Color.Black);

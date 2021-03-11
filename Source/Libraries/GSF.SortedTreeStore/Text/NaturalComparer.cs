@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 // Origional Source From http://www.codeproject.com/Articles/22517/Natural-Sort-Comparer
 // Licensed under The Code Project Open License (CPOL)
 
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -37,7 +36,7 @@ namespace GSF.Text
     public class NaturalComparer
         : Comparer<string>
     {
-        private Dictionary<string, string[]> m_table;
+        private readonly Dictionary<string, string[]> m_table;
 
         /// <summary>
         /// Creates a new <see cref="NaturalComparer"/>
@@ -56,23 +55,23 @@ namespace GSF.Text
         /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
         public override int Compare(string x, string y)
         {
-            if (x == null && y == null)
+            if (x is null && y is null)
                 return 0;
-            if (x == null)
+            if (x is null)
                 return -1;
-            if (y == null)
+            if (y is null)
                 return 1;
             if (x == y)
             {
                 return 0;
             }
-            string[] x1, y1;
-            if (!m_table.TryGetValue(x, out x1))
+
+            if (!m_table.TryGetValue(x, out string[] x1))
             {
                 x1 = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
                 m_table.Add(x, x1);
             }
-            if (!m_table.TryGetValue(y, out y1))
+            if (!m_table.TryGetValue(y, out string[] y1))
             {
                 y1 = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
                 m_table.Add(y, y1);
@@ -101,13 +100,12 @@ namespace GSF.Text
 
         private static int PartCompare(string left, string right)
         {
-            int x, y;
-            if (!int.TryParse(left, out x))
+            if (!int.TryParse(left, out int x))
             {
                 return left.CompareTo(right);
             }
 
-            if (!int.TryParse(right, out y))
+            if (!int.TryParse(right, out int y))
             {
                 return left.CompareTo(right);
             }

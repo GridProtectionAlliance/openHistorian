@@ -139,7 +139,7 @@ namespace openHistorian.OSIPIGrafanaController
                     {
                         AFValue currentPoint = dataReader.Current;
 
-                        if (currentPoint == null)
+                        if (currentPoint is null)
                             continue;
 
                         yield return new DataSourceValue
@@ -211,7 +211,7 @@ namespace openHistorian.OSIPIGrafanaController
         [HttpGet]
         public HttpResponseMessage Index(string instanceName, string serverName)
         {
-            if ((object)DataSource(instanceName, serverName) == null)
+            if (DataSource(instanceName, serverName) is null)
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
@@ -228,7 +228,7 @@ namespace openHistorian.OSIPIGrafanaController
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<List<TimeSeriesValues>> Query(string instanceName, string serverName, QueryRequest request, CancellationToken cancellationToken)
         {
-            if (request.targets.FirstOrDefault()?.target == null)
+            if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(new List<TimeSeriesValues>());
 
             return DataSource(instanceName, serverName)?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
@@ -377,7 +377,7 @@ namespace openHistorian.OSIPIGrafanaController
             // If PI is not connected, keep trying to connect by creating a new data source
             dataSource = CreateNewDataSource(keyName);
 
-            if ((object)dataSource != null)
+            if (dataSource != null)
                 DataSources[keyName] = dataSource;
 
             return dataSource;

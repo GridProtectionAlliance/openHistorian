@@ -1,12 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using openHistorian.Collections;
-using GSF.Snap.Tree;
-using GSF.Snap.Tree.CustomCompression;
-using openHistorian.Snap.Definitions;
-using openHistorian.Utility;
 
 namespace winformsVisN
 {

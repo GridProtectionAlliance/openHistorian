@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -83,11 +83,11 @@ namespace GSF.IO.FileStructure
         /// <param name="isReadOnly">Determines if the stream allows editing.</param>
         internal SubFileStream(DiskIo dataReader, SubFileHeader subFile, FileHeaderBlock fileHeaderBlock, bool isReadOnly)
         {
-            if (dataReader == null)
+            if (dataReader is null)
                 throw new ArgumentNullException("dataReader");
-            if (subFile == null)
+            if (subFile is null)
                 throw new ArgumentNullException("subFile");
-            if (fileHeaderBlock == null)
+            if (fileHeaderBlock is null)
                 throw new ArgumentNullException("subFile");
 
             if (!isReadOnly)
@@ -118,13 +118,7 @@ namespace GSF.IO.FileStructure
 
         #region [ Properties ]
 
-        internal SubFileHeader SubFile
-        {
-            get
-            {
-                return m_subFile;
-            }
-        }
+        internal SubFileHeader SubFile => m_subFile;
 
         /// <summary>
         /// Gets if this file was opened in readonly mode.
@@ -142,13 +136,7 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Determines if the file system has been disposed yet.
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Gets the number of available simultaneous read/write sessions.
@@ -162,9 +150,9 @@ namespace GSF.IO.FileStructure
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 int count = 0;
-                if (m_ioStream1 == null || m_ioStream1.IsDisposed)
+                if (m_ioStream1 is null || m_ioStream1.IsDisposed)
                     count++;
-                if (m_ioStream2 == null || m_ioStream2.IsDisposed)
+                if (m_ioStream2 is null || m_ioStream2.IsDisposed)
                     count++;
                 return count;
             }
@@ -233,7 +221,7 @@ namespace GSF.IO.FileStructure
             {
                 session = new IoSession(this);
             }
-            if (m_ioStream1 == null || m_ioStream1.IsDisposed)
+            if (m_ioStream1 is null || m_ioStream1.IsDisposed)
             {
                 m_ioStream1 = session;
             }

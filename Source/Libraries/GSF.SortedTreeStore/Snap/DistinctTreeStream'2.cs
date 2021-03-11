@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,8 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Snap.Definitions;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap
 {
@@ -39,10 +37,10 @@ namespace GSF.Snap
         where TValue : SnapTypeBase<TValue>, new()
     {
         private bool m_isLastValueValid;
-        private TKey m_lastKey;
-        private TValue m_lastValue;
+        private readonly TKey m_lastKey;
+        private readonly TValue m_lastValue;
 
-        private TreeStream<TKey, TValue> m_baseStream;
+        private readonly TreeStream<TKey, TValue> m_baseStream;
 
         /// <summary>
         /// Creates a <see cref="DistinctTreeStream{TKey,Value}"/>
@@ -59,21 +57,9 @@ namespace GSF.Snap
             m_baseStream = baseStream;
         }
 
-        public override bool IsAlwaysSequential
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsAlwaysSequential => true;
 
-        public override bool NeverContainsDuplicates
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool NeverContainsDuplicates => true;
 
         protected override void Dispose(bool disposing)
         {

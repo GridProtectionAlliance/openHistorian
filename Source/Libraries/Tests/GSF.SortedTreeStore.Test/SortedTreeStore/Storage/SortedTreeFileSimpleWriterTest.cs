@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.IO.FileStructure;
-using GSF.IO.Unmanaged;
 using GSF.Snap.Collection;
 using GSF.Snap.Tree;
 using NUnit.Framework;
-using openHistorian.Collections;
 using openHistorian.Snap;
 
 namespace GSF.Snap.Storage
@@ -43,10 +37,10 @@ namespace GSF.Snap.Storage
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            using (var file = SortedTreeFile.CreateFile(@"C:\Temp\fileTemp.~d2i"))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
+            using (SortedTreeFile file = SortedTreeFile.CreateFile(@"C:\Temp\fileTemp.~d2i"))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var edit = table.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> edit = table.BeginEdit())
                 {
                     edit.AddPoints(points);
                     edit.Commit();
@@ -130,10 +124,10 @@ namespace GSF.Snap.Storage
             SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, null, EncodingDefinition.FixedSizeCombinedEncoding, points);
             if (!verify)
                 return;
-            using (var file = SortedTreeFile.OpenFile(@"C:\Temp\fileTemp.d2i", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var read = table.AcquireReadSnapshot().CreateReadSnapshot())
-            using (var scanner = read.GetTreeScanner())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Temp\fileTemp.d2i", true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = table.AcquireReadSnapshot().CreateReadSnapshot())
+            using (SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = read.GetTreeScanner())
             {
                 scanner.SeekToStart();
                 int cnt = 0;
@@ -182,10 +176,10 @@ namespace GSF.Snap.Storage
             SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.CreateNonSequential(@"C:\Temp\fileTemp.~d2i", @"C:\Temp\fileTemp.d2i", 4096, null, EncodingDefinition.FixedSizeCombinedEncoding, points);
             if (!verify)
                 return;
-            using (var file = SortedTreeFile.OpenFile(@"C:\Temp\fileTemp.d2i", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var read = table.AcquireReadSnapshot().CreateReadSnapshot())
-            using (var scanner = read.GetTreeScanner())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Temp\fileTemp.d2i", true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = table.AcquireReadSnapshot().CreateReadSnapshot())
+            using (SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = read.GetTreeScanner())
             {
                 scanner.SeekToStart();
                 int cnt = 0;

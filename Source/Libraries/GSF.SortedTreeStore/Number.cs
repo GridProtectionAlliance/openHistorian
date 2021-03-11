@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GSF
 {
@@ -11,7 +7,7 @@ namespace GSF
 
     public static class Number
     {
-        static double[] PowersOf10d = new double[] { 1f, 10f, 100f, 1000f, 10000f, 100000f, 1000000f, 10000000f, 100000000f, 1000000000f, 10000000000f, 100000000000f };
+        private static readonly double[] PowersOf10d = new double[] { 1f, 10f, 100f, 1000f, 10000f, 100000f, 1000000f, 10000000f, 100000000f, 1000000000f, 10000000000f, 100000000000f };
 
         public static int WriteToChars(this float value, char[] str, int position)
         {
@@ -50,15 +46,15 @@ namespace GSF
 
             //Any number outside of this range will take the exponent form,
             // and I'd rather not have to deal with this.
-            const float MaxValue = (9999999f);
-            const float MinValue = (-9999999f);
-            const float ZeroMax = (0.0001f);
-            const float ZeroMin = (-0.0001f);
+            const float MaxValue = 9999999f;
+            const float MinValue = -9999999f;
+            const float ZeroMax = 0.0001f;
+            const float ZeroMin = -0.0001f;
 
-            if (value > MaxValue || value < MinValue || (value < ZeroMax && value > ZeroMin))
+            if (value > MaxValue || value < MinValue || value < ZeroMax && value > ZeroMin)
             {
                 //Not worth coding for this case.
-                var T = value.ToString();
+                string T = value.ToString();
                 for (int x = 0; x < T.Length; x++)
                 {
                     str[pos + x] = T[pos + x];
@@ -75,19 +71,19 @@ namespace GSF
             }
 
 
-            int r = (value >= 999999.5f) ? 7 : (value >= 99999.95f) ? 6 : (value >= 9999.995f) ? 5 :
-                (value >= 999.9995f) ? 4 : (value >= 99.99995f) ? 3 : (value >= 9.999995f) ? 2 :
-                (value >= 0.9999995f) ? 1 : (value >= 0.09999995f) ? 0 : (value >= 0.009999995f) ? -1 :
-                (value >= 0.0009999995f) ? -2 : -3;
+            int r = value >= 999999.5f ? 7 : value >= 99999.95f ? 6 : value >= 9999.995f ? 5 :
+                value >= 999.9995f ? 4 : value >= 99.99995f ? 3 : value >= 9.999995f ? 2 :
+                value >= 0.9999995f ? 1 : value >= 0.09999995f ? 0 : value >= 0.009999995f ? -1 :
+                value >= 0.0009999995f ? -2 : -3;
 
             int wholePrecision = r;
             int fracPrecision = 7 - r;
 
-            double scaled = (double)value * PowersOf10d[fracPrecision];
-            uint number = (uint)(scaled);
+            double scaled = value * PowersOf10d[fracPrecision];
+            uint number = (uint)scaled;
 
             //Do the rounding
-            double fraction = (scaled - number);
+            double fraction = scaled - number;
             if (fraction >= 0.5)
             {
                 //Round
@@ -132,7 +128,7 @@ namespace GSF
 
         }
 
-        static int MeasureDigits(uint value)
+        private static int MeasureDigits(uint value)
         {
             const uint Digits2 = 10;
             const uint Digits3 = 100;
@@ -259,9 +255,7 @@ namespace GSF
         }
 
 
-
-
-        static unsafe void strreverse(char* begin, char* end)
+        private static unsafe void strreverse(char* begin, char* end)
         {
             char aux;
             while (end > begin)
@@ -421,7 +415,7 @@ namespace GSF
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        static ulong BinToReverseBCD(this uint value)
+        private static ulong BinToReverseBCD(this uint value)
         {
             ulong result = 0;
             do

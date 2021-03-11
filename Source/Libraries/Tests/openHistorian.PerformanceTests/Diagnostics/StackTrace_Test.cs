@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GSF.Diagnostics;
 using NUnit.Framework;
 
@@ -19,7 +16,7 @@ namespace openHistorian.PerformanceTests.Diagnostics
 
             RunMethod();
             DebugStopwatch sw = new DebugStopwatch();
-            var time = sw.TimeEvent(() =>
+            double time = sw.TimeEvent(() =>
             {
                 for (int x = 0; x < 1000; x++)
                 {
@@ -31,17 +28,17 @@ namespace openHistorian.PerformanceTests.Diagnostics
 
         void RunMethod()
         {
-            var str = Environment.StackTrace;
-            if (str == null)
+            string str = Environment.StackTrace;
+            if (str is null)
                 throw new Exception();
         }
         void RunMethod2()
         {
-            var st = new StackTrace(true);
-            var frames = st.GetFrames();
+            StackTrace st = new StackTrace(true);
+            StackFrame[] frames = st.GetFrames();
 
-            var sb = new StringBuilder();
-            foreach (var frame in frames)
+            StringBuilder sb = new StringBuilder();
+            foreach (StackFrame frame in frames)
             {
                 sb.AppendLine(frame.GetMethod().Name);
                 sb.AppendLine(frame.GetMethod().Module.Assembly.FullName);
@@ -54,7 +51,7 @@ namespace openHistorian.PerformanceTests.Diagnostics
         }
         void RunMethod3()
         {
-            var st = new LogStackTrace();
+            _ = new LogStackTrace();
         }
 
 

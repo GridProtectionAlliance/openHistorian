@@ -107,13 +107,13 @@ namespace openHistorian.Adapters
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
-                if (server == null)
+                if (server is null)
                     yield break;
 
                 using (SnapClient connection = SnapClient.Connect(server))
                 using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
                 {
-                    if (database == null)
+                    if (database is null)
                         yield break;
 
                     if (!TryParseInterval(interval, out TimeSpan resolutionInterval))
@@ -330,7 +330,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
-            if (request.targets.FirstOrDefault()?.target == null)
+            if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(new List<TimeSeriesValues>());
 
             
@@ -552,7 +552,7 @@ namespace openHistorian.Adapters
         {
             if (string.IsNullOrWhiteSpace(interval))
             {
-                timeSpan = default(TimeSpan);
+                timeSpan = default;
                 return false;
             }
 
@@ -580,7 +580,7 @@ namespace openHistorian.Adapters
                 }
             }
 
-            timeSpan = default(TimeSpan);
+            timeSpan = default;
             return false;
         }
 

@@ -12,14 +12,8 @@ namespace ComparisonUtility
 
         public float ValueAsSingle
         {
-            get
-            {
-                return BitConvert.ToSingle(Value);
-            }
-            set
-            {
-                Value = BitConvert.ToUInt64(value);
-            }
+            get => BitConvert.ToSingle(Value);
+            set => Value = BitConvert.ToUInt64(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

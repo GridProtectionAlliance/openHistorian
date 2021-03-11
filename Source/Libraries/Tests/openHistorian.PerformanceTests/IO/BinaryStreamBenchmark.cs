@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.IO;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
@@ -21,10 +13,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096*5];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -39,7 +31,7 @@ namespace openHistorian.PerformanceTests.IO
                         }
 
                     });
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -49,10 +41,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 5];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -67,7 +59,7 @@ namespace openHistorian.PerformanceTests.IO
                         }
 
                     });
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -78,10 +70,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 5];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -96,7 +88,7 @@ namespace openHistorian.PerformanceTests.IO
                         }
 
                     });
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -107,10 +99,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 5];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -125,7 +117,7 @@ namespace openHistorian.PerformanceTests.IO
                         }
 
                     });
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -136,10 +128,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 6];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -154,7 +146,7 @@ namespace openHistorian.PerformanceTests.IO
                         }
 
                     });
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -166,10 +158,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -185,7 +177,7 @@ namespace openHistorian.PerformanceTests.IO
 
                     });
 
-                    Console.WriteLine((4*1000*1000)/time/1000/1000);
+                    Console.WriteLine(4*1000*1000/time/1000/1000);
 
                 }
             }
@@ -197,10 +189,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096*2];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -216,7 +208,7 @@ namespace openHistorian.PerformanceTests.IO
 
                     });
 
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
 
                 }
             }
@@ -228,10 +220,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 4];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -247,7 +239,7 @@ namespace openHistorian.PerformanceTests.IO
 
                     });
 
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }
@@ -258,10 +250,10 @@ namespace openHistorian.PerformanceTests.IO
             byte[] data = new byte[4096 * 8];
             fixed (byte* lp = data)
             {
-                using (var bs = new BinaryStreamPointerWrapper(lp, data.Length))
+                using (BinaryStreamPointerWrapper bs = new BinaryStreamPointerWrapper(lp, data.Length))
                 {
                     DebugStopwatch sw = new DebugStopwatch();
-                    var time = sw.TimeEventMedian(() =>
+                    double time = sw.TimeEventMedian(() =>
                     {
                         for (int repeat = 0; repeat < 1000; repeat++)
                         {
@@ -277,7 +269,7 @@ namespace openHistorian.PerformanceTests.IO
 
                     });
 
-                    Console.WriteLine((4 * 1000 * 1000) / time / 1000 / 1000);
+                    Console.WriteLine(4 * 1000 * 1000 / time / 1000 / 1000);
                 }
             }
         }

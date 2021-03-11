@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -140,7 +140,7 @@ namespace GSF.IO.Unmanaged
 
             m_memoryBlockAllocations = 0;
             m_usedPageCount = 0;
-            m_pagesPerMemoryBlock = (m_memoryBlockSize / PageSize);
+            m_pagesPerMemoryBlock = m_memoryBlockSize / PageSize;
             m_pagesPerMemoryBlockMask = m_pagesPerMemoryBlock - 1;
             m_pagesPerMemoryBlockShiftBits = BitMath.CountBitsSet((uint)m_pagesPerMemoryBlockMask);
             m_isPageFree = new BitArray(false);
@@ -164,64 +164,35 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public long MaximumPoolSize
         {
-            get
-            {
-                return m_maximumPoolSize;
-            }
-            private set
-            {
-                m_maximumPoolSize.Value = value;
-            }
+            get => m_maximumPoolSize;
+            private set => m_maximumPoolSize.Value = value;
         }
 
         /// <summary>
         /// Gets the number of bytes that have been allocated to this buffer pool 
         /// by the OS.
         /// </summary>
-        public long CurrentCapacity
-        {
-            get
-            {
-                return m_memoryBlockAllocations * (long)m_memoryBlockSize;
-            }
-        }
+        public long CurrentCapacity => m_memoryBlockAllocations * (long)m_memoryBlockSize;
 
         /// <summary>
         /// Returns the number of bytes allocated by all buffer pools.
         /// This does not include any pages that have been allocated but are not in use.
         /// </summary>
-        public long CurrentAllocatedSize
-        {
-            get
-            {
-                return m_usedPageCount * (long)PageSize;
-            }
-        }
+        public long CurrentAllocatedSize => m_usedPageCount * (long)PageSize;
 
         /// <summary>
         /// Gets if there is any free space.
         /// </summary>
-        public long FreeSpaceBytes
-        {
-            get
-            {
-                //In case a race condition yields a negative value
-                return Math.Max(CurrentCapacity - CurrentAllocatedSize, 0);
-            }
-        }
+        public long FreeSpaceBytes =>
+            //In case a race condition yields a negative value
+            Math.Max(CurrentCapacity - CurrentAllocatedSize, 0);
 
         /// <summary>
         /// Gets if the pool is currently full
         /// </summary>
-        public bool IsFull
-        {
-            get
-            {
-                return CurrentCapacity == CurrentAllocatedSize;
-            }
-        }
+        public bool IsFull => CurrentCapacity == CurrentAllocatedSize;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -252,7 +223,7 @@ namespace GSF.IO.Unmanaged
                 int allocationIndex = index >> m_pagesPerMemoryBlockShiftBits;
                 int blockOffset = index & m_pagesPerMemoryBlockMask;
                 Memory block = m_memoryBlocks[allocationIndex];
-                if (block == null)
+                if (block is null)
                 {
                     Log.Publish(MessageLevel.Warning, MessageFlags.BugReport, "Memory Block inside Memory Pool is null. Possible race condition.");
                     throw new NullReferenceException("Memory Block is null");
@@ -448,7 +419,7 @@ namespace GSF.IO.Unmanaged
         {
             long targetMemoryBlockSize = totalSystemMemory / 1000;
             targetMemoryBlockSize = Math.Min(targetMemoryBlockSize, 1024 * 1024 * 1024);
-            targetMemoryBlockSize = targetMemoryBlockSize - (targetMemoryBlockSize % pageSize);
+            targetMemoryBlockSize = targetMemoryBlockSize - targetMemoryBlockSize % pageSize;
             targetMemoryBlockSize = (int)Math.Max(targetMemoryBlockSize, pageSize);
             targetMemoryBlockSize = (int)BitMath.RoundUpToNearestPowerOfTwo((ulong)targetMemoryBlockSize);
             return (int)targetMemoryBlockSize;

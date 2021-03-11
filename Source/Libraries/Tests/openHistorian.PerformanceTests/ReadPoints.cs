@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+using GSF.Snap;
+using GSF.Snap.Services;
 //using System.Windows.Forms;
-using GSF.Snap.Services.Configuration;
-using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
-using openHistorian.Data;
-
 using NUnit.Framework;
-using openHistorian.Data.Query;
 using openHistorian.Net;
 using openHistorian.Snap;
 
@@ -70,19 +62,19 @@ namespace openHistorian.PerformanceTests
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 DateTime start = DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
 
-                using (var client = new HistorianClient("127.0.0.1", 12345))
-                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
+                using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
 
                     sw.Start();
-                    var scan = database.Read((ulong)start.Ticks, ulong.MaxValue);
+                    TreeStream<HistorianKey, HistorianValue> scan = database.Read((ulong)start.Ticks, ulong.MaxValue);
                     while (scan.Read(key, value) && pointCount < 10000000)
                         pointCount++;
                     sw.Stop();
@@ -166,15 +158,15 @@ namespace openHistorian.PerformanceTests
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
 
             using (HistorianServer server = new HistorianServer(settings))
             {
-                using (var client = new HistorianClient("127.0.0.1", 12345))
-                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
+                using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 
-                    var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
                     while (stream.Read(key, value))
                         ;
 
@@ -282,16 +274,16 @@ namespace openHistorian.PerformanceTests
             int pointCount = 0;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            var settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"C:\Program Files\openHistorian\Archive\", true);
             using (HistorianServer server = new HistorianServer(settings))
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                using (var client = new HistorianClient("127.0.0.1", 12345))
-                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
+                using (HistorianClient client = new HistorianClient("127.0.0.1", 12345))
+                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 
-                    var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
                     while (stream.Read(key, value))
                         pointCount++;
 

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -56,16 +56,14 @@ namespace openVisN.Calculations
 
             SignalDataBase newSignal = TryGetSignal(m_newSignal, signals);
 
-            if (newSignal == null || newSignal.IsComplete)
+            if (newSignal is null || newSignal.IsComplete)
                 return;
 
             int pos = 0;
 
             while (pos < origionalSignal.Count)
             {
-                ulong time;
-                double vm;
-                origionalSignal.GetData(pos, out time, out vm);
+                origionalSignal.GetData(pos, out ulong time, out double vm);
                 pos++;
 
                 newSignal.AddData(time, vm);
@@ -75,8 +73,7 @@ namespace openVisN.Calculations
 
         private SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
         {
-            SignalDataBase data;
-            if (results.TryGetValue(signal.UniqueId, out data))
+            if (results.TryGetValue(signal.UniqueId, out SignalDataBase data))
                 return data;
             return null;
         }

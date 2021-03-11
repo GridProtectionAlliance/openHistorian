@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -56,20 +56,20 @@ namespace GSF.Snap.Encoding
         /// <param name="encoding"></param>
         public void Register(PairEncodingDefinitionBase encoding)
         {
-            if ((object)encoding == null)
+            if (encoding is null)
                 throw new ArgumentNullException("encoding");
 
             lock (m_syncRoot)
             {
-                if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
+                if (encoding.KeyTypeIfNotGeneric is null && encoding.ValueTypeIfNotGeneric is null)
                 {
                     m_combinedEncoding.Add(encoding.Method, encoding);
                 }
-                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric == null)
+                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric is null)
                 {
                     m_keyTypedCombinedEncoding.Add(Tuple.Create(encoding.Method, encoding.KeyTypeIfNotGeneric), encoding);
                 }
-                else if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric != null)
+                else if (encoding.KeyTypeIfNotGeneric is null && encoding.ValueTypeIfNotGeneric != null)
                 {
                     m_valueTypedCombinedEncoding.Add(Tuple.Create(encoding.Method, encoding.ValueTypeIfNotGeneric), encoding);
                 }
@@ -92,7 +92,7 @@ namespace GSF.Snap.Encoding
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            if ((object)encodingMethod == null)
+            if (encodingMethod is null)
                 throw new ArgumentNullException("encodingMethod");
 
             Type keyType = typeof(TKey);

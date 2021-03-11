@@ -1,8 +1,6 @@
 ﻿using System.Threading;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Configuration;
 using NUnit.Framework;
-using openHistorian.Collections;
 using openHistorian.Net;
 using openHistorian.Queues;
 using openHistorian.Snap;
@@ -18,10 +16,10 @@ namespace openHistorian.Adapters
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            var settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\historian\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("PPA", @"c:\temp\historian\", true);
 
             using (HistorianServer server = new HistorianServer(settings))
-            using (var client = SnapClient.Connect(server.Host))
+            using (SnapClient client = SnapClient.Connect(server.Host))
             {
                 using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey, HistorianValue>(string.Empty)))
                 {

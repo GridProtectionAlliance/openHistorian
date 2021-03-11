@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -29,6 +29,7 @@ using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
 using GSF.Threading;
 
+// ReSharper disable NotAccessedField.Local
 namespace GSF.Snap.Services
 {
     public partial class SnapServerDatabase<TKey, TValue>
@@ -39,29 +40,25 @@ namespace GSF.Snap.Services
         internal class ClientDatabase
             : ClientDatabaseBase<TKey, TValue>
         {
-            private object m_syncRoot;
+            private readonly object m_syncRoot;
             private bool m_disposed;
-            private SnapServerDatabase<TKey, TValue> m_server;
-            private SnapServer.Client m_client;
-            private Action<ClientDatabaseBase> m_onDispose;
-            private WeakList<SequentialReaderStream<TKey, TValue>> m_openStreams;
+            private readonly SnapServerDatabase<TKey, TValue> m_server;
+            private readonly SnapServer.Client m_client;
+            private readonly Action<ClientDatabaseBase> m_onDispose;
+            private readonly WeakList<SequentialReaderStream<TKey, TValue>> m_openStreams;
 
             public ClientDatabase(SnapServerDatabase<TKey, TValue> server, SnapClient client, Action<ClientDatabaseBase> onDispose)
             {
-                if ((object)server == null)
-                    throw new ArgumentNullException("server");
-                if ((object)client == null)
-                    throw new ArgumentNullException("client");
-                if ((object)onDispose == null)
-                    throw new ArgumentNullException("onDispose");
+                m_server = server ?? throw new ArgumentNullException(nameof(server));
+                m_client = client as SnapServer.Client ?? throw new ArgumentNullException(nameof(client));
+                m_onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
+                
                 if (!ReferenceEquals(client, onDispose.Target))
-                    throw new ArgumentException("Does not reference a method in clientHost", "onDispose");
+                    throw new ArgumentException("Does not reference a method in clientHost", nameof(onDispose));
 
                 m_syncRoot = new object();
                 m_openStreams = new WeakList<SequentialReaderStream<TKey, TValue>>();
-                m_server = server;
-                m_client = (SnapServer.Client)client;
-                m_onDispose = onDispose;
+                
             }
 
             public override void AttachFilesOrPaths(IEnumerable<string> paths)
@@ -87,13 +84,7 @@ namespace GSF.Snap.Services
             /// <summary>
             /// Gets if has been disposed.
             /// </summary>
-            public override bool IsDisposed
-            {
-                get
-                {
-                    return m_disposed;
-                }
-            }
+            public override bool IsDisposed => m_disposed;
 
             /// <summary>
             /// Gets basic information about the current Database.
@@ -104,6 +95,7 @@ namespace GSF.Snap.Services
                 {
                     if (m_disposed)
                         throw new ObjectDisposedException(GetType().FullName);
+
                     return m_server.Info;
                 }
             }
@@ -118,6 +110,7 @@ namespace GSF.Snap.Services
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
+
                 m_server.SoftCommit();
             }
 
@@ -131,6 +124,7 @@ namespace GSF.Snap.Services
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
+
                 m_server.HardCommit();
             }
 
@@ -140,17 +134,16 @@ namespace GSF.Snap.Services
             /// <filterpriority>2</filterpriority>
             public override void Dispose()
             {
-                if (!m_disposed)
+                if (m_disposed)
+                    return;
+
+                lock (m_syncRoot)
                 {
-                    lock (m_syncRoot)
-                    {
-                        foreach (var stream in m_openStreams)
-                        {
-                            stream.Dispose();
-                        }
-                        m_onDispose(this);
-                        m_disposed = true;
-                    }
+                    foreach (SequentialReaderStream<TKey, TValue> stream in m_openStreams)
+                        stream.Dispose();
+
+                    m_onDispose(this);
+                    m_disposed = true;
                 }
             }
 
@@ -171,23 +164,23 @@ namespace GSF.Snap.Services
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                var stream = m_server.Read(readerOptions, keySeekFilter, keyMatchFilter, workerThreadSynchronization);
+                SequentialReaderStream<TKey, TValue> stream = m_server.Read(readerOptions, keySeekFilter, keyMatchFilter, workerThreadSynchronization);
 
                 if (!stream.EOS)
                 {
                     stream.Disposed += OnStreamDisposal;
+
                     lock (m_syncRoot)
-                    {
                         m_openStreams.Add(stream);
-                    }
                 }
 
                 return stream;
             }
 
-            void OnStreamDisposal(SequentialReaderStream<TKey, TValue> stream)
+            private void OnStreamDisposal(SequentialReaderStream<TKey, TValue> stream)
             {
-                m_openStreams.Remove(stream);
+                lock (m_syncRoot)
+                    m_openStreams.Remove(stream);
             }
 
             /// <summary>
@@ -198,6 +191,7 @@ namespace GSF.Snap.Services
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
+
                 m_server.Write(stream);
             }
 
@@ -210,6 +204,7 @@ namespace GSF.Snap.Services
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
+
                 m_server.Write(key, value);
             }
         }

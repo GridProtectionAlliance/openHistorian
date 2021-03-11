@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using openHistorian.UI.WPF.ViewModels;
 
 namespace openHistorian.UI.WPF.UserControls
@@ -25,7 +15,7 @@ namespace openHistorian.UI.WPF.UserControls
         #region [ Members ]
 
         // Fields
-        private CompressionSettingsViewModel m_viewModel;
+        private readonly CompressionSettingsViewModel m_viewModel;
         private DataGridColumn m_sortColumn;
         private string m_sortMemberPath;
         private ListSortDirection m_sortDirection;
@@ -123,7 +113,7 @@ namespace openHistorian.UI.WPF.UserControls
 
         private void SortDataGrid()
         {
-            if ((object)m_sortColumn != null)
+            if (m_sortColumn != null)
             {
                 m_sortColumn.SortDirection = m_sortDirection;
                 DataGridList.Items.SortDescriptions.Clear();

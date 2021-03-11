@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GSF.Snap;
 using GSF.Snap.Storage;
+using GSF.Snap.Tree;
 using NUnit.Framework;
 using openHistorian.Snap;
 
@@ -18,10 +16,10 @@ namespace openHistorian.PerformanceTests
         {
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            using (var file = SortedTreeFile.OpenFile(@"C:\Unison\GPA\Codeplex\openHistorian\Main\Build\Output\Release\Applications\openHistorian\Archive\635293583194231435-Stage2-0ef36dcc-4264-498f-b194-01b2043a9231.d2", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var reader = table.BeginRead())
-            using (var scan = reader.GetTreeScanner())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Unison\GPA\Codeplex\openHistorian\Main\Build\Output\Release\Applications\openHistorian\Archive\635293583194231435-Stage2-0ef36dcc-4264-498f-b194-01b2043a9231.d2", true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
+            using (SortedTreeScannerBase<HistorianKey, HistorianValue> scan = reader.GetTreeScanner())
             {
                 scan.SeekToStart();
                 while (scan.Read(key,value))
@@ -36,10 +34,10 @@ namespace openHistorian.PerformanceTests
             HistorianValue value = new HistorianValue();
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Higher Bits, Bucket Number, Count, FloatValue");
-            using (var file = SortedTreeFile.OpenFile(@"C:\Archive\635184227258021940-Stage2-8b835d6a-8299-45bb-9624-d4a470e4abe1.d2", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var reader = table.BeginRead())
-            using (var scan = reader.GetTreeScanner())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Archive\635184227258021940-Stage2-8b835d6a-8299-45bb-9624-d4a470e4abe1.d2", true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
+            using (SortedTreeScannerBase<HistorianKey, HistorianValue> scan = reader.GetTreeScanner())
             {
                 int count = 0;
                 scan.SeekToStart();
@@ -49,7 +47,7 @@ namespace openHistorian.PerformanceTests
                 for (int x = 1; x < 24; x++)
                 {
                     scan.SeekToStart();
-                    var bucket = MeasureBits(scan, x);
+                    int[] bucket = MeasureBits(scan, x);
                     Write(sb, bucket, x, count);
                 }
             }
@@ -78,7 +76,7 @@ namespace openHistorian.PerformanceTests
             {
                 uint value = x << shift;
                 float valuef = *(float*)&value;
-                double percent = (buckets[x] / (double)count * 100.0);
+                double percent = buckets[x] / (double)count * 100.0;
                 if (percent > 0.01)
                     sb.AppendLine(higherBits.ToString() + "," + x.ToString() + "," + (buckets[x] / (double)count * 100.0).ToString("0.00") + "," + valuef.ToString());
             }
@@ -90,10 +88,10 @@ namespace openHistorian.PerformanceTests
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Bucket Number, Count");
-            using (var file = SortedTreeFile.OpenFile(@"C:\Unison\GPA\Codeplex\openHistorian\Main\Build\Output\Release\Applications\openHistorian\Archive\635293583194231435-Stage2-0ef36dcc-4264-498f-b194-01b2043a9231.d2", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var reader = table.BeginRead())
-            using (var scan = reader.GetTreeScanner())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Unison\GPA\Codeplex\openHistorian\Main\Build\Output\Release\Applications\openHistorian\Archive\635293583194231435-Stage2-0ef36dcc-4264-498f-b194-01b2043a9231.d2", true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
+            using (SortedTreeScannerBase<HistorianKey, HistorianValue> scan = reader.GetTreeScanner())
             {
 
                 HistorianKey key1 = new HistorianKey();

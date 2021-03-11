@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -48,22 +48,11 @@ namespace openHistorian.Snap
         /// </summary>
         public ulong Value3;
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {24DDE7DC-67F9-42B6-A11B-E27C3E62D9EF}
-                return new Guid(0x24dde7dc, 0x67f9, 0x42b6, 0xa1, 0x1b, 0xe2, 0x7c, 0x3e, 0x62, 0xd9, 0xef);
-            }
-        }
+        public override Guid GenericTypeGuid =>
+            // {24DDE7DC-67F9-42B6-A11B-E27C3E62D9EF}
+            new Guid(0x24dde7dc, 0x67f9, 0x42b6, 0xa1, 0x1b, 0xe2, 0x7c, 0x3e, 0x62, 0xd9, 0xef);
 
-        public override int Size
-        {
-            get
-            {
-                return 24;
-            }
-        }
+        public override int Size => 24;
 
         public override void CopyTo(HistorianValue destination)
         {
@@ -160,14 +149,8 @@ namespace openHistorian.Snap
         /// </summary>
         public float AsSingle
         {
-            get
-            {
-                return BitConvert.ToSingle(Value1);
-            }
-            set
-            {
-                Value1 = BitConvert.ToUInt64(value);
-            }
+            get => BitConvert.ToSingle(Value1);
+            set => Value1 = BitConvert.ToUInt64(value);
         }
 
         /// <summary>

@@ -274,7 +274,7 @@ namespace openHistorian.Adapters
             settings.TryGetValue("instanceName", out string setting);
             InstanceName = setting;
 
-            if ((OutputSourceIDs == null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(InstanceName))
+            if ((OutputSourceIDs is null || OutputSourceIDs.Length == 0) && string.IsNullOrEmpty(InstanceName))
                 throw new ArgumentException(string.Format(errorMessage, "instanceName"));
 
             if (settings.TryGetValue("historianServer", out setting))

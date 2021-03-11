@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -27,7 +27,6 @@ using System;
 using System.Threading;
 using GSF.Diagnostics;
 using GSF.Snap.Collection;
-using GSF.Snap.Tree;
 using GSF.Threading;
 
 namespace GSF.Snap.Services.Writer
@@ -59,12 +58,12 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         private bool m_stopped;
 
-        private PrebufferWriterSettings m_settings;
+        private readonly PrebufferWriterSettings m_settings;
 
         /// <summary>
         /// The point sequence number assigned to points when they are added to the prebuffer.
         /// </summary>
-        private AtomicInt64 m_latestTransactionId = new AtomicInt64();
+        private readonly AtomicInt64 m_latestTransactionId = new AtomicInt64();
 
         /// <summary>
         /// The Transaction Id that is currently being processed by the rollover thread.
@@ -75,10 +74,10 @@ namespace GSF.Snap.Services.Writer
         private readonly object m_syncRoot;
         private readonly Action<PrebufferRolloverArgs<TKey, TValue>> m_onRollover;
         private readonly SafeManualResetEvent m_waitForEmptyActiveQueue;
-        private ScheduledTask m_rolloverTask;
+        private readonly ScheduledTask m_rolloverTask;
         private SortedPointBuffer<TKey, TValue> m_processingQueue;
         private SortedPointBuffer<TKey, TValue> m_activeQueue;
-        private LogEventPublisher m_performanceLog;
+        private readonly LogEventPublisher m_performanceLog;
 
         /// <summary>
         /// Creates a prestage writer.
@@ -88,9 +87,9 @@ namespace GSF.Snap.Services.Writer
         public PrebufferWriter(PrebufferWriterSettings settings, Action<PrebufferRolloverArgs<TKey, TValue>> onRollover)
             : base(MessageClass.Framework)
         {
-            if (settings == null)
+            if (settings is null)
                 throw new ArgumentNullException("settings");
-            if (onRollover == null)
+            if (onRollover is null)
                 throw new ArgumentNullException("onRollover");
 
             m_settings = settings.CloneReadonly();
@@ -115,13 +114,7 @@ namespace GSF.Snap.Services.Writer
         /// Gets the latest transaction id which is a sequential counter 
         /// based on the number of insert operations that have occured.
         /// </summary>
-        public long LatestTransactionId
-        {
-            get
-            {
-                return m_latestTransactionId;
-            }
-        }
+        public long LatestTransactionId => m_latestTransactionId;
 
 
         /// <summary>
@@ -231,7 +224,7 @@ namespace GSF.Snap.Services.Writer
                 }
 
                 //Swap active and processing.
-                var swap = m_activeQueue;
+                SortedPointBuffer<TKey, TValue> swap = m_activeQueue;
                 m_activeQueue = m_processingQueue;
                 m_processingQueue = swap;
                 m_activeQueue.IsReadingMode = false; //Should do nothing, but just to be sure.
@@ -248,7 +241,7 @@ namespace GSF.Snap.Services.Writer
             try
             {
                 m_processingQueue.IsReadingMode = true; //Very CPU intensive. This does a sort on the incoming measurements. Profiling shows that about 33% of the time is spent sorting elements.
-                var args = new PrebufferRolloverArgs<TKey, TValue>(m_processingQueue, m_currentTransactionIdRollingOver);
+                PrebufferRolloverArgs<TKey, TValue> args = new PrebufferRolloverArgs<TKey, TValue>(m_processingQueue, m_currentTransactionIdRollingOver);
                 m_onRollover(args);
                 m_processingQueue.IsReadingMode = false; //Clears the queue
             }

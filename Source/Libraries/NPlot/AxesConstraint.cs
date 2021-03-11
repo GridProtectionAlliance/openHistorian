@@ -49,8 +49,8 @@ namespace NPlot
         /// </summary>
         public class XPixelWorldLength : AxesConstraint
         {
-            private readonly double pWorldLength_ = 0.0f;
-            private readonly object holdFixedY_ = null;
+            private readonly double pWorldLength_;
+            private readonly object holdFixedY_;
 
             /// <summary>
             /// Constructor, which defines the world pixel length only. Both 
@@ -89,7 +89,7 @@ namespace NPlot
                 PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
                 PhysicalAxis pXAxis2, PhysicalAxis pYAxis2)
             {
-                int desiredLength = (int)(pXAxis1.Axis.WorldLength / (double)this.pWorldLength_);
+                int desiredLength = (int)(pXAxis1.Axis.WorldLength / pWorldLength_);
                 int currentLength = pXAxis1.PhysicalLength;
                 int delta = currentLength - desiredLength;
 
@@ -129,8 +129,8 @@ namespace NPlot
         /// </summary>
         public class YPixelWorldLength : AxesConstraint
         {
-            private readonly double pWorldLength_ = 0.0;
-            private readonly object holdFixedX_ = null;
+            private readonly double pWorldLength_;
+            private readonly object holdFixedX_;
 
             /// <summary>
             /// Constructor, which defines the world pixel length only. Both 
@@ -305,8 +305,8 @@ namespace NPlot
         public class AspectRatio : AxesConstraint
         {
             private readonly double a_;
-            private readonly object holdFixedX_ = null;
-            private readonly object holdFixedY_ = null;
+            private readonly object holdFixedX_;
+            private readonly object holdFixedY_;
 
             /// <summary>
             /// Constructor.

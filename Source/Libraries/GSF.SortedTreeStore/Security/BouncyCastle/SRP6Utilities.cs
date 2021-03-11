@@ -21,7 +21,6 @@
 //
 
 using System;
-using GSF.Security;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;

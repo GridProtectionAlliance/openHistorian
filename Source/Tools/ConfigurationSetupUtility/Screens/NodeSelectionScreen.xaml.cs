@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -129,10 +129,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -181,7 +178,7 @@ namespace ConfigurationSetupUtility.Screens
 
             // Avoid accessing the database again
             // if we already have database nodes.
-            if (m_dbNodes == null)
+            if (m_dbNodes is null)
             {
                 connection = GetDatabaseConnection();
                 m_dbNodes = GetNodes(connection);
@@ -258,7 +255,7 @@ namespace ConfigurationSetupUtility.Screens
             if (string.IsNullOrWhiteSpace(nodeName))
                 return;
 
-            if (m_newNode == null)
+            if (m_newNode is null)
             {
                 m_newNode = new NodeInfo();
                 m_newNode.Company = GetCompanyNameFromConfigFile();
@@ -306,15 +303,15 @@ namespace ConfigurationSetupUtility.Screens
         // Gets a database connection to the SQL Server database configured earlier in the setup.
         private IDbConnection GetSqlServerConnection()
         {
-            return (!(m_state["sqlServerSetup"] is SqlServerSetup sqlSetup)) ? null : new SqlConnection(sqlSetup.ConnectionString);
+            return !(m_state["sqlServerSetup"] is SqlServerSetup sqlSetup) ? null : new SqlConnection(sqlSetup.ConnectionString);
         }
 
         // Gets a database connection to the MySQL database configured earlier in the setup.
         private IDbConnection GetMySqlConnection()
         {
             MySqlSetup sqlSetup = m_state["mySqlSetup"] as MySqlSetup;
-            string connectionString = (sqlSetup == null) ? null : sqlSetup.ConnectionString;
-            string dataProviderString = (sqlSetup == null) ? null : sqlSetup.DataProviderString;
+            string connectionString = sqlSetup is null ? null : sqlSetup.ConnectionString;
+            string dataProviderString = sqlSetup is null ? null : sqlSetup.DataProviderString;
             return GetConnection(connectionString, dataProviderString);
         }
 
@@ -322,8 +319,8 @@ namespace ConfigurationSetupUtility.Screens
         private IDbConnection GetOracleConnection()
         {
             OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
-            string connectionString = (oracleSetup == null) ? null : oracleSetup.ConnectionString;
-            string dataProviderString = (oracleSetup == null) ? OracleSetup.DefaultDataProviderString : oracleSetup.DataProviderString;
+            string connectionString = oracleSetup is null ? null : oracleSetup.ConnectionString;
+            string dataProviderString = oracleSetup is null ? OracleSetup.DefaultDataProviderString : oracleSetup.DataProviderString;
             return GetConnection(connectionString, dataProviderString);
         }
 
@@ -519,7 +516,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_state["selectedNodeId"] = info.Id;
 
             if (m_state != null)
-                m_state["createNewNode"] = (selectedItem != null) && (selectedItem == m_newNode);
+                m_state["createNewNode"] = selectedItem != null && selectedItem == m_newNode;
         }
 
         // Occurs when the user uses the keyboard when the new node text box is in focus.

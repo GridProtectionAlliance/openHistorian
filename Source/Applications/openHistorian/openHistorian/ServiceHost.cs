@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -612,7 +612,7 @@ namespace openHistorian
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
-            if (request == null)
+            if (request is null)
                 return;
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
@@ -623,7 +623,7 @@ namespace openHistorian
 
             ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
 
-            if (requestHandler == null)
+            if (requestHandler is null)
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
                 return;
@@ -741,7 +741,7 @@ namespace openHistorian
                     TableOperations<ApplicationRole> applicationRoleTable = new TableOperations<ApplicationRole>(connection);
                     ApplicationRole applicationRole = applicationRoleTable.QueryRecordWhere("Name = {0} AND NodeID = {1}", GrafanaAdminRoleName, nodeID);
 
-                    if (applicationRole == null)
+                    if (applicationRole is null)
                     {
                         applicationRole = applicationRoleTable.NewRecord();
                         applicationRole.NodeID = nodeID;

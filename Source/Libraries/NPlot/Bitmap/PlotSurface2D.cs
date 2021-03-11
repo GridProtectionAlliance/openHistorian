@@ -113,14 +113,8 @@ namespace NPlot
             /// </summary>
             public string Title
             {
-                get
-                {
-                    return ps_.Title;
-                }
-                set
-                {
-                    ps_.Title = value;
-                }
+                get => ps_.Title;
+                set => ps_.Title = value;
             }
 
 
@@ -129,14 +123,8 @@ namespace NPlot
             /// </summary>
             public Font TitleFont
             {
-                get
-                {
-                    return ps_.TitleFont;
-                }
-                set
-                {
-                    ps_.TitleFont = value;
-                }
+                get => ps_.TitleFont;
+                set => ps_.TitleFont = value;
             }
 
 
@@ -146,14 +134,8 @@ namespace NPlot
             /// </summary>
             public int Padding
             {
-                get
-                {
-                    return ps_.Padding;
-                }
-                set
-                {
-                    ps_.Padding = value;
-                }
+                get => ps_.Padding;
+                set => ps_.Padding = value;
             }
 
 
@@ -162,14 +144,8 @@ namespace NPlot
             /// </summary>
             public DateTimeAxis XAxis1
             {
-                get
-                {
-                    return ps_.XAxis1;
-                }
-                set
-                {
-                    ps_.XAxis1 = value;
-                }
+                get => ps_.XAxis1;
+                set => ps_.XAxis1 = value;
             }
 
 
@@ -178,14 +154,8 @@ namespace NPlot
             /// </summary>
             public LinearAxis YAxis1
             {
-                get
-                {
-                    return ps_.YAxis1;
-                }
-                set
-                {
-                    ps_.YAxis1 = value;
-                }
+                get => ps_.YAxis1;
+                set => ps_.YAxis1 = value;
             }
 
 
@@ -194,14 +164,8 @@ namespace NPlot
             /// </summary>
             public DateTimeAxis XAxis2
             {
-                get
-                {
-                    return ps_.XAxis2;
-                }
-                set
-                {
-                    ps_.XAxis2 = value;
-                }
+                get => ps_.XAxis2;
+                set => ps_.XAxis2 = value;
             }
 
 
@@ -210,14 +174,8 @@ namespace NPlot
             /// </summary>
             public LinearAxis YAxis2
             {
-                get
-                {
-                    return ps_.YAxis2;
-                }
-                set
-                {
-                    ps_.YAxis2 = value;
-                }
+                get => ps_.YAxis2;
+                set => ps_.YAxis2 = value;
             }
 
             /// <summary>
@@ -225,10 +183,7 @@ namespace NPlot
             /// </summary>
             public Color PlotBackColor
             {
-                set
-                {
-                    ps_.PlotBackColor = value;
-                }
+                set => ps_.PlotBackColor = value;
             }
 
 
@@ -237,39 +192,21 @@ namespace NPlot
             /// </summary>
             public SmoothingMode SmoothingMode
             {
-                get
-                {
-                    return ps_.SmoothingMode;
-                }
-                set
-                {
-                    ps_.SmoothingMode = value;
-                }
+                get => ps_.SmoothingMode;
+                set => ps_.SmoothingMode = value;
             }
 
 
             /// <summary>
             /// The bitmap width
             /// </summary>
-            public int Width
-            {
-                get
-                {
-                    return b_.Width;
-                }
-            }
+            public int Width => b_.Width;
 
 
             /// <summary>
             /// The bitmap height
             /// </summary>
-            public int Height
-            {
-                get
-                {
-                    return b_.Height;
-                }
-            }
+            public int Height => b_.Height;
 
 
             /// <summary>
@@ -291,14 +228,8 @@ namespace NPlot
             /// </summary>
             public System.Drawing.Bitmap Bitmap
             {
-                get
-                {
-                    return b_;
-                }
-                set
-                {
-                    b_ = value;
-                }
+                get => b_;
+                set => b_ = value;
             }
 
 
@@ -307,13 +238,10 @@ namespace NPlot
             /// </summary>
             public Color BackColor
             {
-                set
-                {
-                    backColor_ = value;
-                }
+                set => backColor_ = value;
             }
 
-            private object backColor_ = null;
+            private object backColor_;
 
 
             /// <summary>
@@ -324,7 +252,7 @@ namespace NPlot
                 if (this.backColor_ != null)
                 {
                     Graphics g = Graphics.FromImage(b_);
-                    g.FillRectangle((new Pen((Color)this.backColor_)).Brush, 0, 0, b_.Width, b_.Height);
+                    g.FillRectangle(new Pen((Color)this.backColor_).Brush, 0, 0, b_.Width, b_.Height);
                 }
                 ps_.Draw(Graphics.FromImage(b_), new Rectangle(0, 0, b_.Width, b_.Height));
             }
@@ -351,14 +279,8 @@ namespace NPlot
             /// </summary>
             public bool AutoScaleTitle
             {
-                get
-                {
-                    return ps_.AutoScaleTitle;
-                }
-                set
-                {
-                    ps_.AutoScaleTitle = value;
-                }
+                get => ps_.AutoScaleTitle;
+                set => ps_.AutoScaleTitle = value;
             }
 
 
@@ -372,14 +294,8 @@ namespace NPlot
             /// </summary>
             public bool AutoScaleAutoGeneratedAxes
             {
-                get
-                {
-                    return ps_.AutoScaleAutoGeneratedAxes;
-                }
-                set
-                {
-                    ps_.AutoScaleAutoGeneratedAxes = value;
-                }
+                get => ps_.AutoScaleAutoGeneratedAxes;
+                set => ps_.AutoScaleAutoGeneratedAxes = value;
             }
 
 
@@ -388,10 +304,7 @@ namespace NPlot
             /// </summary>
             public Color TitleColor
             {
-                set
-                {
-                    ps_.TitleColor = value;
-                }
+                set => ps_.TitleColor = value;
             }
 
 
@@ -400,14 +313,8 @@ namespace NPlot
             /// </summary>
             public Brush TitleBrush
             {
-                get
-                {
-                    return ps_.TitleBrush;
-                }
-                set
-                {
-                    ps_.TitleBrush = value;
-                }
+                get => ps_.TitleBrush;
+                set => ps_.TitleBrush = value;
             }
 
             /// <summary>
@@ -424,13 +331,7 @@ namespace NPlot
             /// <summary>
             /// Gets an array list containing all drawables currently added to the PlotSurface2D.
             /// </summary>
-            public List<IDrawable> Drawables
-            {
-                get
-                {
-                    return ps_.Drawables;
-                }
-            }
+            public List<IDrawable> Drawables => ps_.Drawables;
         }
     }
 }
