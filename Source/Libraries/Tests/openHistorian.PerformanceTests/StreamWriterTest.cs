@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using GSF;
 using NUnit.Framework;
 
@@ -19,7 +15,7 @@ namespace openHistorian.PerformanceTests
         public void TestOrig()
         {
 
-            using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+            using (StreamWriter csvStream = new StreamWriter("C:\\temp\\file.csv"))
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -37,10 +33,10 @@ namespace openHistorian.PerformanceTests
         public void TestOpt1()
         {
 
-            using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+            using (StreamWriter csvStream = new StreamWriter("C:\\temp\\file.csv"))
             {
-                var format = csvStream.FormatProvider;
-                var info = NumberFormatInfo.GetInstance(format);
+                IFormatProvider format = csvStream.FormatProvider;
+                NumberFormatInfo info = NumberFormatInfo.GetInstance(format);
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -57,11 +53,11 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void TestOpt3()
         {
-            using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+            using (StreamWriter csvStream = new StreamWriter("C:\\temp\\file.csv"))
             {
-                var usw = new UltraStreamWriter(csvStream);
-                var format = csvStream.FormatProvider;
-                var info = NumberFormatInfo.GetInstance(format);
+                UltraStreamWriter usw = new UltraStreamWriter(csvStream);
+                IFormatProvider format = csvStream.FormatProvider;
+                NumberFormatInfo info = NumberFormatInfo.GetInstance(format);
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -122,7 +118,7 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void TestWriteOrig()
         {
-            char[] data = new char[300];
+            _ = new char[300];
 
             for (int x = 0; x < 500000; x++)
                 FloatToConvert.ToString();
@@ -230,16 +226,16 @@ namespace openHistorian.PerformanceTests
             Console.WriteLine(9999999f.ToString());
             Console.WriteLine(9999998.5f.ToString());
 
-            Console.WriteLine((12345605e-1f).ToString());
-            Console.WriteLine((12345615e-1f).ToString());
-            Console.WriteLine((12345625e-1f).ToString());
-            Console.WriteLine((12345635e-1f).ToString());
-            Console.WriteLine((12345645e-1f).ToString());
-            Console.WriteLine((12345655e-1f).ToString());
-            Console.WriteLine((12345665e-1f).ToString());
-            Console.WriteLine((12345675e-1f).ToString());
-            Console.WriteLine((12345685e-1f).ToString());
-            Console.WriteLine((12345695e-1f).ToString());
+            Console.WriteLine(12345605e-1f.ToString());
+            Console.WriteLine(12345615e-1f.ToString());
+            Console.WriteLine(12345625e-1f.ToString());
+            Console.WriteLine(12345635e-1f.ToString());
+            Console.WriteLine(12345645e-1f.ToString());
+            Console.WriteLine(12345655e-1f.ToString());
+            Console.WriteLine(12345665e-1f.ToString());
+            Console.WriteLine(12345675e-1f.ToString());
+            Console.WriteLine(12345685e-1f.ToString());
+            Console.WriteLine(12345695e-1f.ToString());
 
             Console.WriteLine(7234567890123456789e-0f.ToString());
             Console.WriteLine(7234567890123456789e-1f.ToString());
@@ -278,10 +274,10 @@ namespace openHistorian.PerformanceTests
         {
             const int Size = 1024;
             const int FlushSize = 1024 - 40;
-            char[] m_buffer;
+            readonly char[] m_buffer;
             int m_position;
-            StreamWriter m_stream;
-            string nl = Environment.NewLine;
+            readonly StreamWriter m_stream;
+            readonly string nl = Environment.NewLine;
             public UltraStreamWriter(StreamWriter stream)
             {
                 m_buffer = new char[Size];

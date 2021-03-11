@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataExtractionUtility.Properties;
 using GSF;
 using GSF.IO;
-using GSF.Snap.Services.Net;
 using GSF.Snap.Filters;
-using GSF.TimeSeries;
-using GSF.Snap.Tree;
+using GSF.Snap.Services;
 using openHistorian.Net;
 using openHistorian.Snap;
-using openVisN;
-using openHistorian;
 using openHistorian.Data.Query;
 
 namespace DataExtractionUtility
@@ -36,7 +27,7 @@ namespace DataExtractionUtility
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            var res = Resolutions.GetAllResolutions();
+            List<string> res = Resolutions.GetAllResolutions();
             cmbResolution.Items.AddRange(res.ToArray());
             cmbResolution.SelectedIndex = 0;
             dateStartTime.Value = DateTime.Now.Date;
@@ -46,7 +37,7 @@ namespace DataExtractionUtility
         private void BtnGetMetadata_Click(object sender, EventArgs e)
         {
             m_meta = new MetaData();
-            var signals = m_meta.Measurements.Select((x) => x.SignalAcronym).Distinct().ToList();
+            List<string> signals = m_meta.Measurements.Select((x) => x.SignalAcronym).Distinct().ToList();
             signals.Sort();
             ChkSignalType.Items.Clear();
             ChkSignalType.Items.AddRange(signals.ToArray());
@@ -54,7 +45,7 @@ namespace DataExtractionUtility
 
         private void ChkSignalType_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            var types = ChkSignalType.CheckedItems.Cast<string>().ToList();
+            List<string> types = ChkSignalType.CheckedItems.Cast<string>().ToList();
             if (e.NewValue == CheckState.Checked)
                 types.Add((string)ChkSignalType.Items[e.Index]);
             else
@@ -83,12 +74,12 @@ namespace DataExtractionUtility
         //private void BtnExport_Click(object sender, EventArgs e)
         //{
         //    Settings.Default.Save();
-        //    if (m_meta == null)
+        //    if (m_meta is null)
         //    {
         //        MessageBox.Show("Please download the metadata first.");
         //        return;
         //    }
-        //    if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+        //    if (m_selectedMeasurements is null || m_selectedMeasurements.Count == 0)
         //    {
         //        MessageBox.Show("There are no measurements to extract");
         //        return;
@@ -158,12 +149,12 @@ namespace DataExtractionUtility
         //private void BtnExport_Click(object sender, EventArgs e)
         //{
         //    Settings.Default.Save();
-        //    if (m_meta == null)
+        //    if (m_meta is null)
         //    {
         //        MessageBox.Show("Please download the metadata first.");
         //        return;
         //    }
-        //    if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+        //    if (m_selectedMeasurements is null || m_selectedMeasurements.Count == 0)
         //    {
         //        MessageBox.Show("There are no measurements to extract");
         //        return;
@@ -237,12 +228,12 @@ namespace DataExtractionUtility
         //private void BtnExport_Click(object sender, EventArgs e)
         //{
         //    Settings.Default.Save();
-        //    if (m_meta == null)
+        //    if (m_meta is null)
         //    {
         //        MessageBox.Show("Please download the metadata first.");
         //        return;
         //    }
-        //    if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+        //    if (m_selectedMeasurements is null || m_selectedMeasurements.Count == 0)
         //    {
         //        MessageBox.Show("There are no measurements to extract");
         //        return;
@@ -326,12 +317,12 @@ namespace DataExtractionUtility
         private void BtnExport_Click(object sender, EventArgs e)
         {
             Settings.Default.Save();
-            if (m_meta == null)
+            if (m_meta is null)
             {
                 MessageBox.Show("Please download the metadata first.");
                 return;
             }
-            if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+            if (m_selectedMeasurements is null || m_selectedMeasurements.Count == 0)
             {
                 MessageBox.Show("There are no measurements to extract");
                 return;
@@ -361,9 +352,9 @@ namespace DataExtractionUtility
                     m_fillMeasurements.Clear();
                     m_measurementsInOrder.Clear();
 
-                    foreach (var signal in m_selectedMeasurements)
+                    foreach (MeasurementRow signal in m_selectedMeasurements)
                     {
-                        var m = new Measurements();
+                        Measurements m = new Measurements();
                         m_fillMeasurements.Add((ulong)signal.PointID, m);
                         m_measurementsInOrder.Add(m);
                     }
@@ -374,20 +365,20 @@ namespace DataExtractionUtility
                     else
                         timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
-                    var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
-                    var pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(points);
+                    ulong[] points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
+                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
-                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(TxtHistorianInstance.Text))
+                    using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(TxtHistorianInstance.Text))
                     {
                         string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
 
-                        using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
-                        using (var csvStream = new StreamWriter(fileName))
+                        using (DataFillAdapter fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
+                        using (StreamWriter csvStream = new StreamWriter(fileName))
                         {
-                            var ultraStream = new UltraStreamWriter(csvStream);
+                            UltraStreamWriter ultraStream = new UltraStreamWriter(csvStream);
                             //csvStream.AutoFlush = false;
                             csvStream.Write("Timestamp,");
-                            foreach (var signal in m_selectedMeasurements)
+                            foreach (MeasurementRow signal in m_selectedMeasurements)
                             {
                                 csvStream.Write(signal.Description);
                                 csvStream.Write(',');
@@ -400,7 +391,7 @@ namespace DataExtractionUtility
                                 csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
                                 csvStream.Write(',');
 
-                                foreach (var signal in m_measurementsInOrder)
+                                foreach (Measurements signal in m_measurementsInOrder)
                                 {
                                     if (signal.ReadNumber == m_readIndex)
                                     {
@@ -446,8 +437,7 @@ namespace DataExtractionUtility
 
         void FillData(ulong pointId, HistorianValue key)
         {
-            Measurements m;
-            if (m_fillMeasurements.TryGetValue(pointId, out m))
+            if (m_fillMeasurements.TryGetValue(pointId, out Measurements m))
             {
                 m.ReadNumber = m_readIndex;
                 m.Value = key.AsSingle;

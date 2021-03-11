@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -35,11 +35,11 @@ namespace GSF.Snap.Filters
         /// <summary>
         /// A filter that uses a <see cref="BitArray"/> to set true and false values
         /// </summary>
-        class UIntHashSet<TKey, TValue>
+        private class UIntHashSet<TKey, TValue>
             : MatchFilterBase<TKey, TValue>
             where TKey : TimestampPointIDBase<TKey>, new()
         {
-            ulong m_maxValue;
+            private readonly ulong m_maxValue;
             private readonly HashSet<uint> m_points;
 
 
@@ -72,13 +72,7 @@ namespace GSF.Snap.Filters
                 m_points.UnionWith(points.Select(x => (uint)x));
             }
 
-            public override Guid FilterType
-            {
-                get
-                {
-                    return PointIdMatchFilterDefinition.FilterGuid;
-                }
-            }
+            public override Guid FilterType => PointIdMatchFilterDefinition.FilterGuid;
 
             public override void Save(BinaryStreamBase stream)
             {

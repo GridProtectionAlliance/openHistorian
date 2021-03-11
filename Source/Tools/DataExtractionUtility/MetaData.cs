@@ -18,9 +18,7 @@ namespace DataExtractionUtility
 
         public MeasurementRow(DataRow row)
         {
-            MeasurementKey measurementKey;
-
-            MeasurementKey.TryParse(row["ID"].ToString(), out measurementKey);
+            MeasurementKey.TryParse(row["ID"].ToString(), out MeasurementKey measurementKey);
 
             PointID = unchecked((long)measurementKey.ID);
             DeviceName = row["DeviceAcronym"].ToString();
@@ -67,7 +65,7 @@ namespace DataExtractionUtility
                 MessageBox.Show("Exception retrieving meta-data: " + ex.Message);
             }
 
-            if ((object)measurementTable != null)
+            if (measurementTable != null)
             {
                 // Do something with measurement records
                 foreach (DataRow measurement in measurementTable.Select("SignalAcronym <> 'STAT' and SignalAcronym <> 'DIGI'"))

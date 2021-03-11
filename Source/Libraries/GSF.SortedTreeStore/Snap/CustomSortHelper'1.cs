@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -38,7 +38,8 @@ namespace GSF.Snap
         /// All of the items in this list.
         /// </summary>
         public T[] Items;
-        Func<T, T, bool> m_isLessThan;
+
+        private readonly Func<T, T, bool> m_isLessThan;
 
         /// <summary>
         /// Creates a new custom sort helper and presorts the list.
@@ -59,14 +60,8 @@ namespace GSF.Snap
         /// <returns></returns>
         public T this[int index]
         {
-            get
-            {
-                return Items[index];
-            }
-            set
-            {
-                Items[index] = value;
-            }
+            get => Items[index];
+            set => Items[index] = value;
         }
 
         /// <summary>
@@ -83,7 +78,7 @@ namespace GSF.Snap
 
                 int currentIndex = itemToInsertIndex - 1;
                 //While the current item is greater than itemToInsert, shift the value
-                while ((currentIndex >= 0) && (m_isLessThan(itemToInsert, Items[currentIndex])))
+                while (currentIndex >= 0 && m_isLessThan(itemToInsert, Items[currentIndex]))
                 {
                     Items[currentIndex + 1] = Items[currentIndex];
                     currentIndex--;
@@ -100,7 +95,7 @@ namespace GSF.Snap
         /// <param name="index">the index of the item to resort.</param>
         public void SortAssumingIncreased(int index)
         {
-            var itemToMove = Items[index];
+            T itemToMove = Items[index];
             int currentIndex = index + 1;
             while (currentIndex < Items.Length && m_isLessThan(Items[currentIndex], itemToMove))
             {

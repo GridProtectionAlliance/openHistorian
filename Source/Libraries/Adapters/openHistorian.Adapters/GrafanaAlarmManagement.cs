@@ -82,9 +82,9 @@ namespace openHistorian.Adapters
             if (index == -1)
                 return false;
 
-            Alarm alarmState = (AlarmAdapter.Default?.GetAlarmStatus(alarms[index].SignalID))?.FirstOrDefault(item => item.ID == alarms[index].ID);
+            Alarm alarmState = AlarmAdapter.Default?.GetAlarmStatus(alarms[index].SignalID)?.FirstOrDefault(item => item.ID == alarms[index].ID);
 
-            if (alarmState == null || alarmRecord.Field<string>("state") == "unknown")
+            if (alarmState is null || alarmRecord.Field<string>("state") == "unknown")
                 return false;
 
             if (alarmState.State == GSF.TimeSeries.AlarmState.Cleared && alarmRecord.Field<string>("state") == "ok")
@@ -107,7 +107,7 @@ namespace openHistorian.Adapters
                 return;
             }
 
-            Alarm alarmState = (AlarmAdapter.Default?.GetAlarmStatus(alarms[index].SignalID))?.FirstOrDefault(item => item.ID == alarms[index].ID);
+            Alarm alarmState = AlarmAdapter.Default?.GetAlarmStatus(alarms[index].SignalID)?.FirstOrDefault(item => item.ID == alarms[index].ID);
 
             if (alarmState != null)
             {
@@ -126,9 +126,9 @@ namespace openHistorian.Adapters
                                      "({0}, 0, 1, {1}, {2}, {3}, {4}, '', '', 60, 0, 0, 0, '', 0, {5}, {6})";
 
             // Start by adding the Alarm
-            Alarm alarmState = (AlarmAdapter.Default?.GetAlarmStatus(alarm.SignalID))?.FirstOrDefault(item => item.ID == alarm.ID);
+            Alarm alarmState = AlarmAdapter.Default?.GetAlarmStatus(alarm.SignalID)?.FirstOrDefault(item => item.ID == alarm.ID);
 
-            if (alarmState == null)
+            if (alarmState is null)
                 return;
 
             string recordState = "ok";

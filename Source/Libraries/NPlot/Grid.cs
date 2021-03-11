@@ -84,14 +84,8 @@ namespace NPlot
         /// </summary>
         public GridType HorizontalGridType
         {
-            get
-            {
-                return horizontalGridType_;
-            }
-            set
-            {
-                horizontalGridType_ = value;
-            }
+            get => horizontalGridType_;
+            set => horizontalGridType_ = value;
         }
 
         private GridType horizontalGridType_;
@@ -102,14 +96,8 @@ namespace NPlot
         /// </summary>
         public GridType VerticalGridType
         {
-            get
-            {
-                return verticalGridType_;
-            }
-            set
-            {
-                verticalGridType_ = value;
-            }
+            get => verticalGridType_;
+            set => verticalGridType_ = value;
         }
 
         private GridType verticalGridType_;
@@ -120,14 +108,8 @@ namespace NPlot
         /// </summary>
         public Pen MajorGridPen
         {
-            get
-            {
-                return majorGridPen_;
-            }
-            set
-            {
-                majorGridPen_ = value;
-            }
+            get => majorGridPen_;
+            set => majorGridPen_ = value;
         }
 
         private Pen majorGridPen_;
@@ -138,14 +120,8 @@ namespace NPlot
         /// </summary>
         public Pen MinorGridPen
         {
-            get
-            {
-                return minorGridPen_;
-            }
-            set
-            {
-                minorGridPen_ = value;
-            }
+            get => minorGridPen_;
+            set => minorGridPen_ = value;
         }
 
         private Pen minorGridPen_;

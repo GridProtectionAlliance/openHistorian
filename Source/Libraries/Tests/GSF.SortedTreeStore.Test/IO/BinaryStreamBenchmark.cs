@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
@@ -141,7 +140,7 @@ namespace GSF.IO.Test
             }
             sw1.Stop();
 
-            return "Inserts\t" + (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Inserts\t" + thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static unsafe string GetReadPointer(int thousands, BinaryStream bs)
@@ -227,7 +226,7 @@ namespace GSF.IO.Test
             }
             sw1.Stop();
 
-            return "Seeks\t" + (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Seeks\t" + thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunULong(int thousands, BinaryStream bs)
@@ -293,8 +292,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "ULong\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "ULong\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunLong(int thousands, BinaryStream bs)
@@ -360,8 +359,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Long\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Long\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunDouble(int thousands, BinaryStream bs)
@@ -427,8 +426,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Double\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Double\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string Run7Bit64(int thousands, BinaryStream bs, ulong b)
@@ -493,8 +492,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "7Bit64 " + Encoding7Bit.GetSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "7Bit64 " + Encoding7Bit.GetSize(b) + "\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string Run7Bit32(int thousands, BinaryStream bs, uint b)
@@ -559,8 +558,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "7Bit32 " + Encoding7Bit.GetSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "7Bit32 " + Encoding7Bit.GetSize(b) + "\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunUInt(int thousands, BinaryStream bs)
@@ -626,8 +625,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "UInt\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "UInt\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunInt(int thousands, BinaryStream bs)
@@ -693,8 +692,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Int\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Int\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunSingle(int thousands, BinaryStream bs)
@@ -760,8 +759,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Single\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Single\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunUShort(int thousands, BinaryStream bs)
@@ -827,8 +826,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "UShort\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "UShort\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunShort(int thousands, BinaryStream bs)
@@ -894,8 +893,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Short\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Short\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunSByte(int thousands, BinaryStream bs)
@@ -961,8 +960,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "SByte\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "SByte\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
 
         public static string RunByte(int thousands, BinaryStream bs)
@@ -1028,8 +1027,8 @@ namespace GSF.IO.Test
                 }
             }
             sw2.Stop();
-            return "Byte\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
-                   (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+            return "Byte\t" + thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000 + "\t" +
+                   thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000;
         }
     }
 }

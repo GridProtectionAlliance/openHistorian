@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -33,7 +33,7 @@ namespace GSF.Snap.Encoding
         : IndividualEncodingBase<T>
         where T : SnapTypeBase<T>, new()
     {
-        int m_size;
+        private readonly int m_size;
 
         /// <summary>
         /// Creates a fixed size encoding class for a single key.
@@ -58,38 +58,20 @@ namespace GSF.Snap.Encoding
         /// streaming points will include its own symbol to represent the end of the
         /// stream, taking 1 extra byte per point encoded.
         /// </remarks>
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool ContainsEndOfStreamSymbol => false;
 
         /// <summary>
         /// The byte code to use as the end of stream symbol.
         /// May throw NotSupportedException if <see cref="IndividualEncodingBase{T}.ContainsEndOfStreamSymbol"/> is false.
         /// </summary>
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public override byte EndOfStreamSymbol => throw new NotSupportedException();
 
         /// <summary>
         /// Gets if the previous value will need to be presented to the encoding algorithms to
         /// property encode the next sample. Returning false will cause nulls to be passed
         /// in a parameters to the encoding.
         /// </summary>
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool UsesPreviousValue => false;
 
         /// <summary>
         /// Gets the maximum amount of space that is required for the compression algorithm. This
@@ -97,13 +79,7 @@ namespace GSF.Snap.Encoding
         /// that this value be correct. Error on the side of too large of a value as a value
         /// too small will corrupt data and be next to impossible to track down the point of corruption
         /// </summary>
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return m_size;
-            }
-        }
+        public override int MaxCompressionSize => m_size;
 
         /// <summary>
         /// Encodes <see cref="value"/> to the provided <see cref="stream"/>.

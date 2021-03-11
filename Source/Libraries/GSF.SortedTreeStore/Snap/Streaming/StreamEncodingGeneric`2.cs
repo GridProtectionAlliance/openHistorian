@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -37,9 +37,9 @@ namespace GSF.Snap.Streaming
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        PairEncodingBase<TKey, TValue> m_encoding;
-        TKey m_prevKey;
-        TValue m_prevValue;
+        private readonly PairEncodingBase<TKey, TValue> m_encoding;
+        private readonly TKey m_prevKey;
+        private readonly TValue m_prevValue;
 
         /// <summary>
         /// Creates a new <see cref="StreamEncodingGeneric{TKey,TValue}"/> based on the supplied <see cref="encodingMethod"/>
@@ -55,13 +55,7 @@ namespace GSF.Snap.Streaming
         /// <summary>
         /// Gets the definition of the encoding used.
         /// </summary>
-        public override EncodingDefinition EncodingMethod
-        {
-            get
-            {
-                return m_encoding.EncodingMethod;
-            }
-        }
+        public override EncodingDefinition EncodingMethod => m_encoding.EncodingMethod;
 
         /// <summary>
         /// Writes the end of the stream symbol to the <see cref="stream"/>.
@@ -106,8 +100,8 @@ namespace GSF.Snap.Streaming
                 if (stream.ReadUInt8() == 0)
                     return false;
             }
-            bool endOfStream;
-            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
+
+            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out bool endOfStream);
             key.CopyTo(m_prevKey);
             value.CopyTo(m_prevValue);
             return !endOfStream;

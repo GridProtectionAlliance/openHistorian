@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -40,12 +40,12 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Lists all of the databases that are part of the server
         /// </summary>
-        private ImmutableList<ServerDatabaseSettings> m_databases;
+        private readonly ImmutableList<ServerDatabaseSettings> m_databases;
 
         /// <summary>
         /// All of the socket based listeners for the database.
         /// </summary>
-        private ImmutableList<SnapSocketListenerSettings> m_listeners;
+        private readonly ImmutableList<SnapSocketListenerSettings> m_listeners;
 
         /// <summary>
         /// Creates a new instance of <see cref="ServerSettings"/>
@@ -54,13 +54,13 @@ namespace GSF.Snap.Services
         {
             m_databases = new ImmutableList<ServerDatabaseSettings>(x =>
             {
-                if ((object)x == null)
+                if (x is null)
                     throw new ArgumentNullException("value");
                 return x;
             });
             m_listeners = new ImmutableList<SnapSocketListenerSettings>(x =>
             {
-                if ((object)x == null)
+                if (x is null)
                     throw new ArgumentNullException("value");
                 return x;
             });
@@ -69,24 +69,12 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Lists all of the databases that are part of the server
         /// </summary>
-        public ImmutableList<ServerDatabaseSettings> Databases
-        {
-            get
-            {
-                return m_databases;
-            }
-        }
+        public ImmutableList<ServerDatabaseSettings> Databases => m_databases;
 
         /// <summary>
         /// All of the socket based listeners for the database.
         /// </summary>
-        public ImmutableList<SnapSocketListenerSettings> Listeners
-        {
-            get
-            {
-                return m_listeners;
-            }
-        }
+        public ImmutableList<SnapSocketListenerSettings> Listeners => m_listeners;
 
         /// <summary>
         /// Creates a <see cref="ServerSettings"/> configuration that can be used for <see cref="SnapServer"/>
@@ -101,12 +89,12 @@ namespace GSF.Snap.Services
         {
             stream.Write((byte)1);
             stream.Write(m_databases.Count);
-            foreach (var databaseSettings in m_databases)
+            foreach (ServerDatabaseSettings databaseSettings in m_databases)
             {
                 databaseSettings.Save(stream);
             }
             stream.Write(m_listeners.Count);
-            foreach (var listenerSettings in m_listeners)
+            foreach (SnapSocketListenerSettings listenerSettings in m_listeners)
             {
                 listenerSettings.Save(stream);
             }
@@ -124,7 +112,7 @@ namespace GSF.Snap.Services
                     while (cnt > 0)
                     {
                         cnt--;
-                        var database = new ServerDatabaseSettings();
+                        ServerDatabaseSettings database = new ServerDatabaseSettings();
                         database.Load(stream);
                         m_databases.Add(database);
                     }
@@ -133,7 +121,7 @@ namespace GSF.Snap.Services
                     while (cnt > 0)
                     {
                         cnt--;
-                        var listener = new SnapSocketListenerSettings();
+                        SnapSocketListenerSettings listener = new SnapSocketListenerSettings();
                         listener.Load(stream);
                         m_listeners.Add(listener);
                     }
@@ -146,11 +134,11 @@ namespace GSF.Snap.Services
 
         public override void Validate()
         {
-            foreach (var db in m_databases)
+            foreach (ServerDatabaseSettings db in m_databases)
             {
                 db.Validate();
             }
-            foreach (var lst in m_listeners)
+            foreach (SnapSocketListenerSettings lst in m_listeners)
             {
                 lst.Validate();
             }

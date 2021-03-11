@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -31,7 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
-using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -123,7 +122,7 @@ namespace ConfigurationSetupUtility.Screens
 
                             if (userData.Length == 2)
                             {
-                                if (UserInfo.AuthenticateUser(userData[0], userData[1], WindowsUserPasswordTextBox.Password, out errorMessage) == null)
+                                if (UserInfo.AuthenticateUser(userData[0], userData[1], WindowsUserPasswordTextBox.Password, out errorMessage) is null)
                                 {
                                     MessageBox.Show("Authentication failed. Please verify your username and password.\r\n\r\n" + errorMessage, "Windows Authentication User Setup Error");
                                     WindowsUserPasswordTextBox.Focus();
@@ -231,10 +230,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -261,12 +257,12 @@ namespace ConfigurationSetupUtility.Screens
         {
             if (m_state != null)
             {
-                m_state["authenticationType"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? "windows" : "database";
-                m_state["adminUserName"] = (RadioButtonWindowsAuthentication.IsChecked == true) ? ToLoginID(WindowsUserNameTextBox.Text.Trim()) : DbUserNameTextBox.Text.Trim();
+                m_state["authenticationType"] = RadioButtonWindowsAuthentication.IsChecked == true ? "windows" : "database";
+                m_state["adminUserName"] = RadioButtonWindowsAuthentication.IsChecked == true ? ToLoginID(WindowsUserNameTextBox.Text.Trim()) : DbUserNameTextBox.Text.Trim();
                 m_state["adminPassword"] = DbUserPasswordTextBox.Password.Trim();
                 m_state["adminUserFirstName"] = DbUserFirstNameTextBox.Text.Trim();
                 m_state["adminUserLastName"] = DbUserLastNameTextBox.Text.Trim();
-                m_state["allowPassThroughAuthentication"] = (CheckBoxPassThroughAuthentication.IsChecked == true) ? "True" : "False";
+                m_state["allowPassThroughAuthentication"] = CheckBoxPassThroughAuthentication.IsChecked == true ? "True" : "False";
             }
         }
 
@@ -354,8 +350,8 @@ namespace ConfigurationSetupUtility.Screens
 
         private void SetFocus()
         {
-            TextBox userNameTextBox = (RadioButtonWindowsAuthentication.IsChecked == true) ? WindowsUserNameTextBox : DbUserNameTextBox;
-            PasswordBox userPasswordBox = (RadioButtonWindowsAuthentication.IsChecked == true) ? WindowsUserPasswordTextBox : DbUserPasswordTextBox;
+            TextBox userNameTextBox = RadioButtonWindowsAuthentication.IsChecked == true ? WindowsUserNameTextBox : DbUserNameTextBox;
+            PasswordBox userPasswordBox = RadioButtonWindowsAuthentication.IsChecked == true ? WindowsUserPasswordTextBox : DbUserPasswordTextBox;
 
             if (!string.IsNullOrEmpty(userNameTextBox.Text))
                 userPasswordBox.Focus();

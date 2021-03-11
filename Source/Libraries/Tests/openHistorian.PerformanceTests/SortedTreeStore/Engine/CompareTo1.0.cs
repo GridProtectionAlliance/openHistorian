@@ -19,7 +19,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void TestWriteSpeed()
         {
-            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
                 File.Delete(file);
 
             Console.WriteLine("Creating initial archive file...");

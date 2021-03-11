@@ -6,6 +6,7 @@ using System.Threading;
 using GSF;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
+using GSF.Snap;
 using GSF.Snap.Services;
 using NUnit.Framework;
 using openHistorian.Net;
@@ -30,14 +31,14 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             Globals.MemoryPool.SetMaximumBufferSize(1000 * 1024 * 1024);
             Globals.MemoryPool.SetTargetUtilizationLevel(TargetUtilizationLevels.Low);
 
-            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
-            using (var engine = new SnapServer(settings))
-            using (var client = SnapClient.Connect(engine))
-            using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
-            using (var scan = db.Read(null, null, null))
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
+            using (SnapServer engine = new SnapServer(settings))
+            using (SnapClient client = SnapClient.Connect(engine))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+            using (TreeStream<HistorianKey, HistorianValue> scan = db.Read(null, null, null))
             {
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -135,20 +136,20 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             //th.Start();
 
             //Quit = false;
-            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles("c:\\temp\\benchmark\\", "*.*", SearchOption.AllDirectories))
                 File.Delete(file);
 
             //PointCount = 0;
 
-            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new SnapServer(settings))
-            using (var client = SnapClient.Connect(engine))
-            using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+            using (SnapServer engine = new SnapServer(settings))
+            using (SnapClient client = SnapClient.Connect(engine))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -189,20 +190,20 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             th.Start();
 
             Quit = false;
-            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\"))
+            foreach (string file in Directory.GetFiles("c:\\temp\\benchmark\\"))
                 File.Delete(file);
 
             PointCount = 0;
 
-            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\benchmark\\", true);
 
-            using (var engine = new SnapServer(settings))
-            using (var client = SnapClient.Connect(engine))
-            using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+            using (SnapServer engine = new SnapServer(settings))
+            using (SnapClient client = SnapClient.Connect(engine))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 for (int x = 0; x < 10000000; x++)
                 {
                     key.Timestamp = (ulong)r.Next();
@@ -214,7 +215,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             Quit = true;
             th.Join();
             Console.WriteLine("Time (sec)\tPoints");
-            foreach (var kvp in PointSamples)
+            foreach (KeyValuePair<double, int> kvp in PointSamples)
             {
                 Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
             }
@@ -246,28 +247,28 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
 
             Globals.MemoryPool.SetMaximumBufferSize(4000 * 1024 * 1024L);
 
-            foreach (var file in Directory.GetFiles("c:\\temp\\Test\\", "*.*", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles("c:\\temp\\Test\\", "*.*", SearchOption.AllDirectories))
                 File.Delete(file);
 
             PointCount = 0;
 
-            var settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\Test\\Main\\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", "c:\\temp\\Test\\Main\\", true);
             settings.FinalWritePaths.Add("c:\\temp\\Test\\Rollover\\");
 
             ulong time = (ulong)DateTime.Now.Ticks;
 
-            using (var engine = new SnapServer(settings))
-            using (var client = SnapClient.Connect(engine))
-            using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+            using (SnapServer engine = new SnapServer(settings))
+            using (SnapClient client = SnapClient.Connect(engine))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
             {
                 Thread.Sleep(100);
-                var key = new HistorianKey();
-                var value = new HistorianValue();
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 for (int x = 0; x < 100000000; x++)
                 {
                     if (x % 100 == 0)
                         Thread.Sleep(10);
-                    key.Timestamp = (ulong)time;
+                    key.Timestamp = time;
                     time += TimeSpan.TicksPerMinute;
                     db.Write(key, value);
                 }

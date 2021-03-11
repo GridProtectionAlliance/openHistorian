@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
@@ -51,12 +50,12 @@ namespace GSF.Collections
         /// </summary>
         public const int BitsPerElement = sizeof(int) * 8;
 
-        int[] m_array;
+        private int[] m_array;
         private int m_count;
         private int m_setCount;
         private int m_lastFoundClearedIndex;
         private int m_lastFoundSetIndex;
-        private bool m_initialState;
+        private readonly bool m_initialState;
 
         #endregion
 
@@ -107,10 +106,7 @@ namespace GSF.Collections
         /// <returns></returns>
         public bool this[int index]
         {
-            get
-            {
-                return GetBit(index);
-            }
+            get => GetBit(index);
             set
             {
                 if (value)
@@ -123,37 +119,19 @@ namespace GSF.Collections
         /// <summary>
         /// Gets the number of bits this array contains.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return m_count;
-            }
-        }
+        public int Count => m_count;
 
         /// <summary>
         /// Gets the number of bits that are set in this array.
         /// </summary>
-        public int SetCount
-        {
-            get
-            {
-                return m_setCount;
-            }
-        }
+        public int SetCount => m_setCount;
 
         /// <summary>
         /// Gets the number of bits that are cleared in this array.
         /// </summary>
-        public int ClearCount
-        {
-            get
-            {
-                return m_count - m_setCount;
-            }
-        }
+        public int ClearCount => m_count - m_setCount;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 

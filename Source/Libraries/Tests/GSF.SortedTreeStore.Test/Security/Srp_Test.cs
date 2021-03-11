@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Threading;
 using GSF.IO;
-using GSF.Net;
 using GSF.Security.Authentication;
 using NUnit.Framework;
 using openHistorian;
@@ -20,11 +16,11 @@ namespace GSF.Security
         [Test]
         public void TestDHKeyExchangeTime()
         {
-            var c = SrpConstants.Lookup(SrpStrength.Bits1024);
+            SrpConstants c = SrpConstants.Lookup(SrpStrength.Bits1024);
             c.g.ModPow(c.N, c.N);
 
             DebugStopwatch sw = new DebugStopwatch();
-            var time = sw.TimeEvent(() => Hash<Sha1Digest>.Compute(c.Nb));
+            double time = sw.TimeEvent(() => Hash<Sha1Digest>.Compute(c.Nb));
             System.Console.WriteLine(time);
 
 
@@ -36,7 +32,7 @@ namespace GSF.Security
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var srp = new SrpServer();
+            SrpServer srp = new SrpServer();
             sw.Stop();
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
 
@@ -51,22 +47,22 @@ namespace GSF.Security
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
         }
 
-        Stopwatch m_sw = new Stopwatch();
+        readonly Stopwatch m_sw = new Stopwatch();
 
         [Test]
         public void Test1()
         {
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
 
-            var sa = new SrpServer();
+            SrpServer sa = new SrpServer();
             sa.Users.AddUser("user1", "password1", SrpStrength.Bits1024);
 
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);
-            var user = sa.AuthenticateAsServer(net.ServerStream);
+            SrpServerSession user = sa.AuthenticateAsServer(net.ServerStream);
             user = sa.AuthenticateAsServer(net.ServerStream);
-            if (user == null)
+            if (user is null)
                 throw new Exception();
 
             Thread.Sleep(100);
@@ -75,13 +71,13 @@ namespace GSF.Security
         void Client1(object state)
         {
             Stream client = (Stream)state;
-            var sa = new SrpClient("user1", "password1");
+            SrpClient sa = new SrpClient("user1", "password1");
             m_sw.Start();
-            var success = sa.AuthenticateAsClient(client);
+            _ = sa.AuthenticateAsClient(client);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             m_sw.Restart();
-            success = sa.AuthenticateAsClient(client);
+            bool success = sa.AuthenticateAsClient(client);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             if (!success)

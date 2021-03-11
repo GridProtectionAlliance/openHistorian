@@ -131,12 +131,10 @@ namespace NPlot
             Point tLabelOffset;
             Rectangle tBoundingBox;
 
-            labelOffset = this.getDefaultLabelOffset(physicalMin, physicalMax);
+            _ = this.getDefaultLabelOffset(physicalMin, physicalMax);
             boundingBox = null;
 
-            List<double> largeTickPositions;
-            List<double> smallTickPositions;
-            this.WorldTickPositions(physicalMin, physicalMax, out largeTickPositions, out smallTickPositions);
+            this.WorldTickPositions(physicalMin, physicalMax, out List<double> largeTickPositions, out List<double> smallTickPositions);
 
             labelOffset = new Point(0, 0);
             boundingBox = null;
@@ -156,7 +154,7 @@ namespace NPlot
                     StringBuilder label = new StringBuilder();
                     label.AppendFormat(this.NumberFormat, labelNumber);
 
-                    this.DrawTick(g, ((double)largeTickPositions[i] / this.scale_ - this.offset_),
+                    this.DrawTick(g, (double)largeTickPositions[i] / this.scale_ - this.offset_,
                                   this.LargeTickSize, label.ToString(),
                                   new Point(0, 0), physicalMin, physicalMax,
                                   out tLabelOffset, out tBoundingBox);
@@ -168,10 +166,10 @@ namespace NPlot
 
             for (int i = 0; i < smallTickPositions.Count; ++i)
             {
-                this.DrawTick(g, ((double)smallTickPositions[i] / this.scale_ - this.offset_),
+                this.DrawTick(g, (double)smallTickPositions[i] / this.scale_ - this.offset_,
                               this.SmallTickSize, "",
                               new Point(0, 0), physicalMin, physicalMax,
-                              out tLabelOffset, out tBoundingBox);
+                              out _, out _);
 
                 // assume bounding box and label offset unchanged by small tick bounds.
             }
@@ -205,11 +203,10 @@ namespace NPlot
             smallTickPositions = new List<double>();
 
             // TODO: Can optimize this now.
-            bool shouldCullMiddle;
-            double bigTickSpacing = this.DetermineLargeTickStep(physicalAxisLength, out shouldCullMiddle);
+            double bigTickSpacing = this.DetermineLargeTickStep(physicalAxisLength, out _);
 
             int nSmall = this.DetermineNumberSmallTicks(bigTickSpacing);
-            double smallTickSpacing = bigTickSpacing / (double)nSmall;
+            double smallTickSpacing = bigTickSpacing / nSmall;
 
             // if there is at least one big tick
             if (largeTickPositions.Count > 0)
@@ -226,7 +223,7 @@ namespace NPlot
             {
                 for (int j = 1; j < nSmall; ++j)
                 {
-                    double pos = (double)largeTickPositions[i] + ((double)j) * smallTickSpacing;
+                    double pos = (double)largeTickPositions[i] + j * smallTickSpacing;
                     if (pos <= adjustedMax)
                     {
                         smallTickPositions.Add(pos);
@@ -278,10 +275,9 @@ namespace NPlot
             double adjustedMin = this.AdjustedWorldValue(WorldMin);
 
             // (2) determine distance between large ticks.
-            bool shouldCullMiddle;
             double tickDist = this.DetermineLargeTickStep(
                 Utils.Distance(physicalMin, physicalMax),
-                out shouldCullMiddle);
+                out bool shouldCullMiddle);
 
             // (3) determine starting position.
 
@@ -290,7 +286,7 @@ namespace NPlot
             if (!double.IsNaN(largeTickValue_))
             {
                 // this works for both case when largTickValue_ lt or gt adjustedMin.
-                first = largeTickValue_ + (Math.Ceiling((adjustedMin - largeTickValue_) / tickDist)) * tickDist;
+                first = largeTickValue_ + Math.Ceiling((adjustedMin - largeTickValue_) / tickDist) * tickDist;
             }
 
             else
@@ -307,7 +303,7 @@ namespace NPlot
                 }
 
                 // could miss one, if first is just below zero.
-                if ((first - tickDist) >= adjustedMin)
+                if (first - tickDist >= adjustedMin)
                 {
                     first -= tickDist;
                 }
@@ -324,8 +320,8 @@ namespace NPlot
             double position = first;
             int safetyCount = 0;
             while (
-                (position <= adjustedMax) &&
-                (++safetyCount < 5000))
+                position <= adjustedMax &&
+                ++safetyCount < 5000)
             {
                 largeTickPositions.Add(position);
                 position += tickDist;
@@ -407,7 +403,7 @@ namespace NPlot
             }
             else
             {
-                approxTickStep = (MinPhysicalLargeTickStep / physicalLength) * range;
+                approxTickStep = MinPhysicalLargeTickStep / physicalLength * range;
             }
 
             double exponent = Math.Floor(Math.Log10(approxTickStep));
@@ -437,7 +433,7 @@ namespace NPlot
                 // now make sure that the returned value is such that at least two 
                 // large tick marks will be displayed.
                 double tickStep = Math.Pow(10.0, exponent) * Mantissas[mantissaIndex];
-                float physicalStep = (float)((tickStep / range) * physicalLength);
+                float physicalStep = (float)(tickStep / range * physicalLength);
 
                 while (physicalStep > physicalLength / 2)
                 {
@@ -451,7 +447,7 @@ namespace NPlot
                     }
 
                     tickStep = Math.Pow(10.0, exponent) * Mantissas[mantissaIndex];
-                    physicalStep = (float)((tickStep / range) * physicalLength);
+                    physicalStep = (float)(tickStep / range * physicalLength);
                 }
             }
 
@@ -502,14 +498,8 @@ namespace NPlot
         /// </summary>
         public double LargeTickStep
         {
-            set
-            {
-                largeTickStep_ = value;
-            }
-            get
-            {
-                return largeTickStep_;
-            }
+            set => largeTickStep_ = value;
+            get => largeTickStep_;
         }
 
         /// <summary>
@@ -524,14 +514,8 @@ namespace NPlot
         /// </summary>
         public double LargeTickValue
         {
-            set
-            {
-                largeTickValue_ = value;
-            }
-            get
-            {
-                return largeTickValue_;
-            }
+            set => largeTickValue_ = value;
+            get => largeTickValue_;
         }
 
         private double largeTickValue_ = double.NaN;
@@ -541,18 +525,13 @@ namespace NPlot
         /// </summary>
         public int NumberOfSmallTicks
         {
-            set
-            {
-                numberSmallTicks_ = value;
-            }
-            get
-            {
+            set => numberSmallTicks_ = value;
+            get =>
                 // TODO: something better here.
-                return (int)numberSmallTicks_;
-            }
+                (int)numberSmallTicks_;
         }
 
-        private object numberSmallTicks_ = null;
+        private object numberSmallTicks_;
 
         /// <summary>
         /// Scale to apply to world values when labelling axis:
@@ -561,14 +540,8 @@ namespace NPlot
         /// </summary>
         public double Scale
         {
-            get
-            {
-                return scale_;
-            }
-            set
-            {
-                scale_ = value;
-            }
+            get => scale_;
+            set => scale_ = value;
         }
 
         /// <summary>
@@ -578,14 +551,8 @@ namespace NPlot
         /// </summary>
         public double Offset
         {
-            get
-            {
-                return offset_;
-            }
-            set
-            {
-                offset_ = value;
-            }
+            get => offset_;
+            set => offset_ = value;
         }
 
         /// <summary>
@@ -611,7 +578,7 @@ namespace NPlot
         /// </summary>
         public int[] SmallTickCounts = {4, 1, 4};
 
-        private double offset_ = 0.0;
+        private double offset_;
 
         private double scale_ = 1.0;
     }

@@ -5,7 +5,6 @@ using System.Threading;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Security.Authentication;
-using GSF.Snap.Services;
 using NUnit.Framework;
 
 namespace GSF.Security
@@ -14,7 +13,7 @@ namespace GSF.Security
     public class SecureStream_Test
     {
         public NullToken T;
-        Stopwatch m_sw = new Stopwatch();
+        readonly Stopwatch m_sw = new Stopwatch();
 
         //[Test]
         //public void Test1()
@@ -73,13 +72,12 @@ namespace GSF.Security
             Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
-            var sa = new SecureStreamServer<NullToken>();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
+            SecureStreamServer<NullToken> sa = new SecureStreamServer<NullToken>();
             sa.SetDefaultUser(true, new NullToken());
             ThreadPool.QueueUserWorkItem(ClientDefault, net.ClientStream);
 
-            Stream stream;
-            if (!sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T))
+            if (!sa.TryAuthenticateAsServer(net.ServerStream, true, out Stream stream, out T))
             {
                 throw new Exception();
             }
@@ -96,9 +94,8 @@ namespace GSF.Security
         void ClientDefault(object state)
         {
             Stream client = (Stream)state;
-            var sa = new SecureStreamClientDefault();
-            Stream stream;
-            if (!sa.TryAuthenticate(client, true, out stream))
+            SecureStreamClientDefault sa = new SecureStreamClientDefault();
+            if (!sa.TryAuthenticate(client, true, out Stream stream))
             {
                 throw new Exception();
             }
@@ -123,14 +120,13 @@ namespace GSF.Security
             Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
 
-            var sa = new SecureStreamServer<NullToken>();
+            SecureStreamServer<NullToken> sa = new SecureStreamServer<NullToken>();
             sa.SetDefaultUser(true, new NullToken());
             ThreadPool.QueueUserWorkItem(ClientBenchmarkDefault, net.ClientStream);
 
-            Stream stream;
-            sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
+            sa.TryAuthenticateAsServer(net.ServerStream, false, out Stream stream, out T);
             sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
             sa.TryAuthenticateAsServer(net.ServerStream, false, out stream, out T);
             sa.TryAuthenticateAsServer(net.ServerStream, true, out stream, out T);
@@ -142,7 +138,7 @@ namespace GSF.Security
         void ClientBenchmarkDefault(object state)
         {
             Stream client = (Stream)state;
-            var sa = new SecureStreamClientDefault();
+            SecureStreamClientDefault sa = new SecureStreamClientDefault();
             m_sw.Start();
             sa.TryAuthenticate(client, false);
             m_sw.Stop();
@@ -176,9 +172,9 @@ namespace GSF.Security
             Logger.Console.Verbose = VerboseLevel.All;
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
 
-            var sa = new SecureStreamServer<NullToken>();
+            SecureStreamServer<NullToken> sa = new SecureStreamServer<NullToken>();
             sa.AddUserIntegratedSecurity("Zthe\\steven", new NullToken());
             ThreadPool.QueueUserWorkItem(ClientBenchmarkIntegrated, net.ClientStream);
 
@@ -195,7 +191,7 @@ namespace GSF.Security
         void ClientBenchmarkIntegrated(object state)
         {
             Stream client = (Stream)state;
-            var sa = new SecureStreamClientIntegratedSecurity();
+            SecureStreamClientIntegratedSecurity sa = new SecureStreamClientIntegratedSecurity();
             m_sw.Start();
             sa.TryAuthenticate(client);
             m_sw.Stop();

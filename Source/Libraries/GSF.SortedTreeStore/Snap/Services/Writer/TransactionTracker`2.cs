@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Writer
 {
@@ -50,7 +49,7 @@ namespace GSF.Snap.Services.Writer
         private class WaitForCommit : IDisposable
         {
             public long TransactionId { get; private set; }
-            ManualResetEvent m_resetEvent;
+            private ManualResetEvent m_resetEvent;
             public WaitForCommit(long transactionId)
             {
                 TransactionId = transactionId;
@@ -69,7 +68,7 @@ namespace GSF.Snap.Services.Writer
 
             public void Dispose()
             {
-                if ((object)m_resetEvent != null)
+                if (m_resetEvent != null)
                 {
                     m_resetEvent.Dispose();
                     m_resetEvent = null;
@@ -77,13 +76,13 @@ namespace GSF.Snap.Services.Writer
             }
         }
 
-        object m_syncRoot;
-        long m_transactionSoftCommitted;
-        long m_transactionHardCommitted;
-        PrebufferWriter<TKey, TValue> m_prebuffer;
-        FirstStageWriter<TKey, TValue> m_firstStageWriter;
-        List<WaitForCommit> m_waitingForSoftCommit;
-        List<WaitForCommit> m_waitingForHardCommit;
+        private readonly object m_syncRoot;
+        private long m_transactionSoftCommitted;
+        private long m_transactionHardCommitted;
+        private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
+        private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
+        private readonly List<WaitForCommit> m_waitingForSoftCommit;
+        private readonly List<WaitForCommit> m_waitingForHardCommit;
 
         /// <summary>
         /// Creates a new transaction tracker that monitors the provided buffers.
@@ -108,14 +107,14 @@ namespace GSF.Snap.Services.Writer
         /// Event handler.
         /// </summary>
         /// <param name="transactionId"></param>
-        void TransactionSoftCommitted(long transactionId)
+        private void TransactionSoftCommitted(long transactionId)
         {
             lock (m_syncRoot)
             {
                 m_transactionSoftCommitted = transactionId;
                 for (int x = m_waitingForSoftCommit.Count - 1; x > 0; x--)
                 {
-                    var waiting = m_waitingForSoftCommit[x];
+                    WaitForCommit waiting = m_waitingForSoftCommit[x];
                     if (transactionId >= waiting.TransactionId)
                     {
                         waiting.Signal();
@@ -129,14 +128,14 @@ namespace GSF.Snap.Services.Writer
         /// Event handler.
         /// </summary>
         /// <param name="transactionId"></param>
-        void TransactionHardCommitted(long transactionId)
+        private void TransactionHardCommitted(long transactionId)
         {
             lock (m_syncRoot)
             {
                 m_transactionHardCommitted = transactionId;
                 for (int x = m_waitingForHardCommit.Count - 1; x > 0; x--)
                 {
-                    var waiting = m_waitingForHardCommit[x];
+                    WaitForCommit waiting = m_waitingForHardCommit[x];
                     if (transactionId >= waiting.TransactionId)
                     {
                         waiting.Signal();
@@ -159,7 +158,7 @@ namespace GSF.Snap.Services.Writer
             }
             m_prebuffer.Commit(transactionId);
 
-            using (var wait = new WaitForCommit(transactionId))
+            using (WaitForCommit wait = new WaitForCommit(transactionId))
             {
                 lock (m_syncRoot)
                 {
@@ -190,7 +189,7 @@ namespace GSF.Snap.Services.Writer
             m_firstStageWriter.Commit(transactionId);
 
 
-            using (var wait = new WaitForCommit(transactionId))
+            using (WaitForCommit wait = new WaitForCommit(transactionId))
             {
                 lock (m_syncRoot)
                 {

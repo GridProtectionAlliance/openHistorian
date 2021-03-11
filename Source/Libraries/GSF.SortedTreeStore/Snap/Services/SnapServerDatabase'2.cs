@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,11 +26,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GSF.Diagnostics;
-using GSF.Snap.Definitions;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Services.Writer;
-using GSF.Snap.Tree;
 using GSF.Threading;
 
 namespace GSF.Snap.Services
@@ -47,20 +45,18 @@ namespace GSF.Snap.Services
 
         // Fields
         //private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_pendingDispose;
-        private DatabaseInfo m_info;
-        private TKey m_tmpKey;
-        private TValue m_tmpValue;
-        private WriteProcessor<TKey, TValue> m_archiveWriter;
-        private ArchiveList<TKey, TValue> m_archiveList;
+        private readonly TKey m_tmpKey;
+        private readonly TValue m_tmpValue;
+        private readonly WriteProcessor<TKey, TValue> m_archiveWriter;
+        private readonly ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
-        private List<EncodingDefinition> m_supportedStreamingMethods;
-        private ServerDatabaseSettings m_settings;
-        private RolloverLog m_rolloverLog;
+        private readonly List<EncodingDefinition> m_supportedStreamingMethods;
+        private readonly ServerDatabaseSettings m_settings;
+        private readonly RolloverLog m_rolloverLog;
 
         #endregion
 
         #region [ Constructors ]
-
 
         /// <summary>
         /// 
@@ -68,15 +64,17 @@ namespace GSF.Snap.Services
         /// <param name="settings"></param>
         public SnapServerDatabase(ServerDatabaseSettings settings)
         {
-            if (settings == null)
-                throw new ArgumentNullException("settings");
+            if (settings is null)
+                throw new ArgumentNullException(nameof(settings));
+
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
 
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_supportedStreamingMethods = settings.StreamingEncodingMethods.ToList();
-            m_info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
+
+            Info = new DatabaseInfo(m_settings.DatabaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
 
             using (Logger.AppendStackMessages(GetSourceDetails()))
             {
@@ -86,7 +84,6 @@ namespace GSF.Snap.Services
                 if (m_settings.SupportsWriting)
                     m_archiveWriter = new WriteProcessor<TKey, TValue>(m_archiveList, m_settings.WriteProcessor, m_rolloverLog);
             }
-
         }
 
         /// <summary>
@@ -102,6 +99,11 @@ namespace GSF.Snap.Services
 
         #region [ Properties ]
 
+        /// <summary>
+        /// Gets basic information about the current Database.
+        /// </summary>
+        public override DatabaseInfo Info { get; }
+
         #endregion
 
         #region [ Methods ]
@@ -109,10 +111,11 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Gets status information for the SortedTreeEngine
         /// </summary>
-        /// <param name="status">where to append the status log.</param>
-        public override void GetFullStatus(StringBuilder status)
+        /// <param name="status">Target status output <see cref="StringBuilder"/>.</param>
+        /// <param name="maxFileListing">Maximum file listing.</param>
+        public override void GetFullStatus(StringBuilder status, int maxFileListing = -1)
         {
-            m_archiveList.GetFullStatus(status);
+            m_archiveList.GetFullStatus(status, maxFileListing);
         }
 
         private List<ArchiveDetails> GetAllAttachedFiles()
@@ -122,35 +125,18 @@ namespace GSF.Snap.Services
 
         private void DetatchFiles(List<Guid> files)
         {
-            using (var editor = m_archiveList.AcquireEditLock())
-            {
-                foreach (var file in files)
-                {
-                    editor.TryRemoveAndDispose(file);
-                }
-            }
+            using ArchiveListEditor<TKey, TValue> editor = m_archiveList.AcquireEditLock();
+            
+            foreach (Guid file in files)
+                editor.TryRemoveAndDispose(file);
         }
 
         private void DeleteFiles(List<Guid> files)
         {
-            using (var editor = m_archiveList.AcquireEditLock())
-            {
-                foreach (var file in files)
-                {
-                    editor.TryRemoveAndDelete(file);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets basic information about the current Database.
-        /// </summary>
-        public override DatabaseInfo Info
-        {
-            get
-            {
-                return m_info;
-            }
+            using ArchiveListEditor<TKey, TValue> editor = m_archiveList.AcquireEditLock();
+            
+            foreach (Guid file in files)
+                editor.TryRemoveAndDelete(file);
         }
 
         /// <summary>
@@ -159,31 +145,28 @@ namespace GSF.Snap.Services
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+
+            try
             {
-                try
+                // This will be done regardless of whether the object is finalized or disposed.
+                if (disposing)
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
+                    m_disposed = true;
 
-                    if (disposing)
-                    {
-                        m_disposed = true;
-                        if (m_archiveWriter != null)
-                            m_archiveWriter.Dispose();
+                    if (m_archiveWriter != null)
+                        m_archiveWriter.Dispose();
 
-                        m_archiveList.Dispose();
-
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;          // Prevent duplicate dispose.
-                    base.Dispose(disposing);    // Call base class Dispose().
+                    m_archiveList.Dispose();
                 }
             }
+            finally
+            {
+                m_disposed = true;       // Prevent duplicate dispose.
+                base.Dispose(disposing); // Call base class Dispose().
+            }
         }
-
 
         /// <summary>
         /// Forces a soft commit on the database. A soft commit 
@@ -212,7 +195,7 @@ namespace GSF.Snap.Services
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (m_archiveWriter == null)
+            if (m_archiveWriter is null)
                 throw new Exception("Writing is not configured on this historian");
 
             m_archiveWriter.Write(key, value);
@@ -222,7 +205,8 @@ namespace GSF.Snap.Services
         {
             TKey key = new TKey();
             TValue value = new TValue();
-            //ToDo: Prebuffer the points in the stream. It is possible that this call may be behind a slow socket interface, therefore it will lockup the writing speed.
+
+            // TODO: Pre=buffer the points in the stream. It is possible that this call may be behind a slow socket interface, therefore it will lockup the writing speed.
             while (stream.Read(key, value))
                 Write(key, value);
         }
@@ -249,6 +233,5 @@ namespace GSF.Snap.Services
         }
 
         #endregion
-
     }
 }

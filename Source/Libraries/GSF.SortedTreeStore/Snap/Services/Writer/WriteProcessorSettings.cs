@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -37,9 +37,9 @@ namespace GSF.Snap.Services.Writer
         : SettingsBase<WriteProcessorSettings>
     {
         private bool m_isEnabled;
-        private PrebufferWriterSettings m_prebufferWriter;
-        private FirstStageWriterSettings m_firstStageWriter;
-        private ImmutableList<CombineFilesSettings> m_stagingRollovers;
+        private readonly PrebufferWriterSettings m_prebufferWriter;
+        private readonly FirstStageWriterSettings m_firstStageWriter;
+        private readonly ImmutableList<CombineFilesSettings> m_stagingRollovers;
 
         /// <summary>
         /// The default write processor settings
@@ -51,7 +51,7 @@ namespace GSF.Snap.Services.Writer
             m_firstStageWriter = new FirstStageWriterSettings();
             m_stagingRollovers = new ImmutableList<CombineFilesSettings>(x =>
             {
-                if (x == null)
+                if (x is null)
                     throw new ArgumentNullException("value", "cannot be null");
                 return x;
             });
@@ -60,45 +60,24 @@ namespace GSF.Snap.Services.Writer
         /// <summary>
         /// The settings for the prebuffer.
         /// </summary>
-        public PrebufferWriterSettings PrebufferWriter
-        {
-            get
-            {
-                return m_prebufferWriter;
-            }
-        }
+        public PrebufferWriterSettings PrebufferWriter => m_prebufferWriter;
 
         /// <summary>
         /// The settings for the first stage writer.
         /// </summary>
-        public FirstStageWriterSettings FirstStageWriter
-        {
-            get
-            {
-                return m_firstStageWriter;
-            }
-        }
+        public FirstStageWriterSettings FirstStageWriter => m_firstStageWriter;
 
         /// <summary>
         /// Contains all of the staging rollovers.
         /// </summary>
-        public ImmutableList<CombineFilesSettings> StagingRollovers
-        {
-            get
-            {
-                return m_stagingRollovers;
-            }
-        }
+        public ImmutableList<CombineFilesSettings> StagingRollovers => m_stagingRollovers;
 
         /// <summary>
         /// Gets/Sets if writing will be enabled
         /// </summary>
         public bool IsEnabled
         {
-            get
-            {
-                return m_isEnabled;
-            }
+            get => m_isEnabled;
             set
             {
                 TestForEditable();
@@ -113,7 +92,7 @@ namespace GSF.Snap.Services.Writer
             m_prebufferWriter.Save(stream);
             m_firstStageWriter.Save(stream);
             stream.Write(m_stagingRollovers.Count);
-            foreach (var stage in m_stagingRollovers)
+            foreach (CombineFilesSettings stage in m_stagingRollovers)
             {
                 stage.Save(stream);
             }
@@ -134,7 +113,7 @@ namespace GSF.Snap.Services.Writer
                     while (cnt > 0)
                     {
                         cnt--;
-                        var cfs = new CombineFilesSettings();
+                        CombineFilesSettings cfs = new CombineFilesSettings();
                         cfs.Load(stream);
                         m_stagingRollovers.Add(cfs);
                     }
@@ -150,7 +129,7 @@ namespace GSF.Snap.Services.Writer
             {
                 m_prebufferWriter.Validate();
                 m_firstStageWriter.Validate();
-                foreach (var stage in m_stagingRollovers)
+                foreach (CombineFilesSettings stage in m_stagingRollovers)
                 {
                     stage.Validate();
                 }

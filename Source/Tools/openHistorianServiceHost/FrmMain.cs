@@ -3,8 +3,6 @@ using System.Threading;
 using System.Windows.Forms;
 using GSF.Snap;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Net;
-using openHistorian;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 using openHistorian.Net;
@@ -50,7 +48,7 @@ namespace openHistorianServiceHost
                         {
                             count++;
                             database.Write(key, value);
-                            if ((count % 10) == 1)
+                            if (count % 10 == 1)
                                 Thread.Sleep(1);
                         }
                     }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -165,7 +165,7 @@ namespace GSF.IO.Test
                 for (int x = 0; x < 10000; x++)
                 {
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) bs.Write(*(byte*)lp);
+                    while (rand.Next(4) < 2) bs.Write(*lp);
                     int skip = rand.Next(40) + 1;
                     bs.Position += skip;
                     bs.Position -= rand.Next(skip);
@@ -201,7 +201,7 @@ namespace GSF.IO.Test
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(NextDouble(data, rand));
                     rand.NextBytes(data);
-                    bool value = (*lp != 0);
+                    bool value = *lp != 0;
                     while (rand.Next(4) < 2) bs.Write(value);
 
                     rand.NextBytes(data);
@@ -262,24 +262,24 @@ namespace GSF.IO.Test
                 for (int x = 0; x < 10000; x++)
                 {
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadUInt8() != (*(byte*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadUInt8() != *lp) throw new Exception();
                     int skip = rand.Next(40) + 1;
                     bs.Position += skip;
                     bs.Position -= rand.Next(skip);
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadInt8() != (*(sbyte*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadInt8() != *(sbyte*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadInt16() != (*(short*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadInt16() != *(short*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadInt32() != (*(int*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadInt32() != *(int*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadInt64() != (*(long*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadInt64() != *(long*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadUInt16() != (*(ushort*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadUInt16() != *(ushort*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadUInt32() != (*(uint*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadUInt32() != *(uint*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadUInt64() != *(ulong*)lp) throw new Exception();
 
                     for (int i = 0; i < 9; i++)
                     {
@@ -288,9 +288,9 @@ namespace GSF.IO.Test
                     }
 
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadDecimal() != (*(decimal*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadDecimal() != *(decimal*)lp) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadGuid() != (*(Guid*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadGuid() != *(Guid*)lp) throw new Exception();
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadDateTime() != NextDate(data, rand)) throw new Exception();
                     rand.NextBytes(data);
@@ -298,38 +298,38 @@ namespace GSF.IO.Test
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadDouble() != NextDouble(data, rand)) throw new Exception();
                     rand.NextBytes(data);
-                    bool b2 = (*lp != 0);
+                    bool b2 = *lp != 0;
                     while (rand.Next(4) < 2) if (bs.ReadBoolean() != b2) throw new Exception();
 
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != (*(uint*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != *(uint*)lp) throw new Exception();
                     data[3] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != (*(uint*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != *(uint*)lp) throw new Exception();
                     data[2] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != (*(uint*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != *(uint*)lp) throw new Exception();
                     data[1] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != (*(uint*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != *(uint*)lp) throw new Exception();
 
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[7] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[6] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[5] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[4] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[3] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[2] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
                     data[1] = 0;
-                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != *(ulong*)lp) throw new Exception();
 
                     rand.NextBytes(data);
                     bs.ReadAll(data2, 0, 16);
-                    if (!data2.SequenceEqual<byte>(data)) throw new Exception();
+                    if (!data2.SequenceEqual(data)) throw new Exception();
 
                     while (rand.Next(4) < 2)
                     {

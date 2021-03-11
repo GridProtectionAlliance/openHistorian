@@ -12,7 +12,7 @@ namespace GSF.Snap.Tree
         private readonly List<KeyValuePair<uint, uint>> m_items = new List<KeyValuePair<uint, uint>>();
 
         private int m_maxCount;
-        private uint m_current = 0;
+        private uint m_current;
 
         public override void Reset(int maxCount)
         {
@@ -50,7 +50,7 @@ namespace GSF.Snap.Tree
         private readonly List<KeyValuePair<uint, uint>> m_items = new List<KeyValuePair<uint, uint>>();
 
         private int m_maxCount;
-        private uint m_current = 0;
+        private uint m_current;
 
         public override void Reset(int maxCount)
         {
@@ -149,7 +149,7 @@ namespace GSF.Snap.Tree
         [Test]
         public void BenchmarkSequently()
         {
-            var tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -157,7 +157,7 @@ namespace GSF.Snap.Tree
         [Test]
         public void BenchmarkReverseSequently()
         {
-            var tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -165,7 +165,7 @@ namespace GSF.Snap.Tree
         [Test]
         public void BenchmarkRandom()
         {
-            var tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
@@ -173,7 +173,7 @@ namespace GSF.Snap.Tree
         [Test]
         public void BenchmarkBigRandom()
         {
-            var tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
+            SortedTreeNodeBase<SnapUInt32, SnapUInt32> tree = Library.CreateTreeNode<SnapUInt32, SnapUInt32>(EncodingDefinition.FixedSizeCombinedEncoding, 0);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 5000, 4096);
         }

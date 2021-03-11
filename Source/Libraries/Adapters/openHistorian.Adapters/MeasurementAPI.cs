@@ -227,7 +227,7 @@ namespace openHistorian.Adapters
         /// </remarks>
         public static IEnumerable<IMeasurement> GetInterpolatedData(Connection connection, DateTime startTime, DateTime stopTime, TimeSpan interval, string measurementIDs)
         {
-            if ((object)measurementIDs == null)
+            if (measurementIDs is null)
                 throw new ArgumentNullException(nameof(measurementIDs));
 
             // TODO: This was based on code that aligns data and fills time - this function will

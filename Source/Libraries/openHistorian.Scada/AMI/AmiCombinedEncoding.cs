@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 using GSF.IO;
 using GSF.Snap;
 using GSF.Snap.Definitions;
@@ -37,86 +36,32 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
         // {FEB9D85C-DF2E-477E-A9F3-3ED6C7708A78}
         public static EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xfeb9d85c, 0xdf2e, 0x477e, 0xa9, 0xf3, 0x3e, 0xd6, 0xc7, 0x70, 0x8a, 0x78));
 
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(AmiKey);
-            }
-        }
+        public override Type KeyTypeIfNotGeneric => typeof(AmiKey);
 
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return typeof(AmiValue);
-            }
-        }
+        public override Type ValueTypeIfNotGeneric => typeof(AmiValue);
 
-        public override EncodingDefinition Method
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        public override EncodingDefinition Method => TypeGuid;
 
         public override PairEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return (PairEncodingBase<TKey, TValue>)(object)(new AmiPairEncoding());
+            return (PairEncodingBase<TKey, TValue>)(object)new AmiPairEncoding();
         }
     }
 
     public class AmiPairEncoding
         : PairEncodingBase<AmiKey, AmiValue>
     {
-        public override EncodingDefinition EncodingMethod
-        {
-            get
-            {
-                return CreateAmiPairEncoding.TypeGuid;
-            }
-        }
+        public override EncodingDefinition EncodingMethod => CreateAmiPairEncoding.TypeGuid;
 
-        public override bool UsesPreviousKey
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool UsesPreviousKey => false;
 
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool UsesPreviousValue => false;
 
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return 100;
-            }
-        }
+        public override int MaxCompressionSize => 100;
 
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool ContainsEndOfStreamSymbol => false;
 
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public override byte EndOfStreamSymbol => throw new NotSupportedException();
 
         public unsafe override void Encode(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
         {

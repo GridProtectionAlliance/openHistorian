@@ -2,8 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GSF.Diagnostics;
-using GSF.Snap.Services.Configuration;
-using openHistorian;
 using openHistorian.Net;
 
 namespace openHistorianShell
@@ -29,7 +27,7 @@ namespace openHistorianShell
         {
             GSF.Globals.MemoryPool.SetMaximumBufferSize(long.Parse(TxtMaxMB.Text) * 1024 * 1024);
 
-            var settings = new HistorianServerDatabaseConfig(txtDbName.Text, TxtArchivePath.Text, true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig(txtDbName.Text, TxtArchivePath.Text, true);
             m_server = new HistorianServer(settings, int.Parse(TxtLocalPort.Text));
             BtnStart.Enabled = false;
 

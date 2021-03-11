@@ -56,14 +56,14 @@ namespace openVisN
                 m_sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsScanned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsReturned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (Stats.SeeksRequested / m_sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (m_pointCount - Stats.PointsReturned).ToString().PadRight(7)));
-                sb.Append(("| Queries Per Second: " + (1 / m_sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));            
+                sb.Append("Scanned: " + Stats.PointsScanned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsScanned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Points: " + Stats.PointsReturned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsReturned / m_sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8));
+                sb.Append("" + (Stats.SeeksRequested / m_sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9));
+                sb.Append("| Calculated: " + (m_pointCount - Stats.PointsReturned).ToString().PadRight(7));
+                sb.Append("| Queries Per Second: " + (1 / m_sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9));            
 
                 this.BeginInvoke(new Action(() => lblStatus.Text = sb.ToString()));
             }

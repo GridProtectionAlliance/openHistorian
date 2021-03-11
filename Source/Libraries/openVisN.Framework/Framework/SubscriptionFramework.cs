@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,8 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GSF.Snap.Services.Net;
-using openHistorian;
 using openHistorian.Data.Query;
 using GSF.Snap.Services;
 using openHistorian.Net;
@@ -78,10 +76,10 @@ namespace openVisN.Framework
         public void Start(string[] paths)
         {
             m_database = "PPA";
-            var settings = new HistorianServerDatabaseConfig(m_database, null, false);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig(m_database, null, false);
             settings.ImportPaths.AddRange(paths);
             m_localServer = new HistorianServer(settings);
-            var query = new HistorianQuery(SnapClient.Connect(m_localServer.Host));
+            HistorianQuery query = new HistorianQuery(SnapClient.Connect(m_localServer.Host));
 
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
@@ -98,26 +96,13 @@ namespace openVisN.Framework
             m_updateFramework.Enabled = true;
         }
 
-        public IEnumerable<MetadataBase> AllSignals
-        {
-            get
-            {
-                return m_allSignals;
-            }
-        }
+        public IEnumerable<MetadataBase> AllSignals => m_allSignals;
 
-        public IEnumerable<SignalGroup> AllSignalGroups
-        {
-            get
-            {
-                return m_allSignalGroups;
-            }
-        }
+        public IEnumerable<SignalGroup> AllSignalGroups => m_allSignalGroups;
 
         public void ReLoadSignalsAndSignalGroups()
         {
-            MetadataBase angleReference;
-            m_angleReference.GetPoints(out angleReference);
+            m_angleReference.GetPoints(out MetadataBase angleReference);
 
             AllSignals allSignals = new AllSignals();
             AllSignalGroups allSignalGroups = new AllSignalGroups();
@@ -203,13 +188,7 @@ namespace openVisN.Framework
             m_updateFramework.Execute();
         }
 
-        public UpdateFramework Updater
-        {
-            get
-            {
-                return m_updateFramework;
-            }
-        }
+        public UpdateFramework Updater => m_updateFramework;
 
         public void Dispose()
         {

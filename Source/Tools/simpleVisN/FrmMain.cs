@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using GSF.Snap;
-using GSF.Snap.Services.Configuration;
 using GSF.Snap.Services.Reader;
 using NPlot;
-using openHistorian;
-using GSF.Snap.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
 using GSF.Snap.Services;
@@ -58,7 +55,7 @@ namespace simpleVisN
                 dlgOpen.Filter = "openHistorian 2.0 file|*.d2";
                 if (dlgOpen.ShowDialog() == DialogResult.OK)
                 {
-                    var db = new HistorianServerDatabaseConfig("", "", false);
+                    HistorianServerDatabaseConfig db = new HistorianServerDatabaseConfig("", "", false);
                     db.ImportPaths.AddRange(dlgOpen.FileNames);
                     m_archiveFile = new HistorianServer(db);
                 }
@@ -69,8 +66,8 @@ namespace simpleVisN
         private void BuildListOfAllPoints()
         {
             HashSet<ulong> keys = new HashSet<ulong>();
-            var client = SnapClient.Connect(m_archiveFile.Host);
-            var db = client.GetDatabase<HistorianKey, HistorianValue>("");
+            SnapClient client = SnapClient.Connect(m_archiveFile.Host);
+            ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("");
             TreeStream<HistorianKey, HistorianValue> scanner = db.Read(0, ulong.MaxValue);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
@@ -100,8 +97,8 @@ namespace simpleVisN
 
             if (keys.Count == 0)
                 return;
-            var client = SnapClient.Connect(m_archiveFile.Host);
-            var db = client.GetDatabase<HistorianKey, HistorianValue>("");
+            SnapClient client = SnapClient.Connect(m_archiveFile.Host);
+            ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("");
             
             Dictionary<ulong, SignalDataBase> results = db.GetSignals(0, ulong.MaxValue, keys, TypeSingle.Instance);
 
@@ -113,9 +110,7 @@ namespace simpleVisN
 
                 for (int i = 0; i < data.Count; i++)
                 {
-                    ulong time;
-                    double value;
-                    data.GetData(i, out time, out value);
+                    data.GetData(i, out ulong time, out double value);
 
                     x.Add(time);
                     y.Add(value);

@@ -37,7 +37,7 @@ namespace GSF.Collections.Test
                             values.Add(x);
                         }
 
-                        var sl = SortedListConstructor.Create(keys, values);
+                        SortedList<int, int> sl = SortedListConstructor.Create(keys, values);
 
                     };
 

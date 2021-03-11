@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -44,13 +44,7 @@ namespace openVisN
             private set;
         }
 
-        public TypeBase Functions
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public TypeBase Functions => this;
 
         public abstract EnumValueType ValueType
         {
@@ -77,7 +71,7 @@ namespace openVisN
 
         protected MetadataBase(Guid uniqueId, ulong? historianId, string name, string description, CalculationMethod calculations)
         {
-            if (calculations == null)
+            if (calculations is null)
             {
                 calculations = CalculationMethod.Empty;
             }
@@ -91,7 +85,7 @@ namespace openVisN
         public override bool Equals(object obj)
         {
             MetadataBase obj2 = obj as MetadataBase;
-            if (obj2 == null)
+            if (obj2 is null)
                 return false;
             return obj2.UniqueId == UniqueId;
         }
@@ -101,13 +95,7 @@ namespace openVisN
             return UniqueId.GetHashCode();
         }
 
-        public Guid SignalId
-        {
-            get
-            {
-                return UniqueId;
-            }
-        }
+        public Guid SignalId => UniqueId;
 
         public void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
@@ -122,13 +110,7 @@ namespace openVisN
         {
         }
 
-        public override EnumValueType ValueType
-        {
-            get
-            {
-                return EnumValueType.Single;
-            }
-        }
+        public override EnumValueType ValueType => EnumValueType.Single;
 
         protected override ulong ToRaw(IConvertible value)
         {
@@ -149,13 +131,7 @@ namespace openVisN
         {
         }
 
-        public override EnumValueType ValueType
-        {
-            get
-            {
-                return EnumValueType.Single;
-            }
-        }
+        public override EnumValueType ValueType => EnumValueType.Single;
 
         protected override IConvertible GetValue(ulong value)
         {

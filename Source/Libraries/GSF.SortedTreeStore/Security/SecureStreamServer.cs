@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -189,7 +189,7 @@ namespace GSF.Security
         /// <returns>true if successful, false otherwise</returns>
         public bool TryAuthenticateAsServer(Stream stream, bool useSsl, out Stream secureStream, out T token)
         {
-            token = default(T);
+            token = default;
             secureStream = null;
             SslStream ssl = null;
 
@@ -335,14 +335,12 @@ namespace GSF.Security
             byte[] clientChallenge = stream.ReadBytes(stream.ReadNextByte());
             byte[] clientResponse = stream.ReadBytes(stream.ReadByte());
 
-            byte[] secret;
-
             // S => C
             // bool   IsSuccessful
             // byte   ServerResponseLength
             // byte[] ServerResponse
 
-            if (TryLoadTicket(ticket, out secret, out userToken))
+            if (TryLoadTicket(ticket, out byte[] secret, out userToken))
             {
                 byte[] clientResponseCheck = hash.ComputeHash(serverChallenge, clientChallenge, secret, certSignatures);
                 if (clientResponse.SecureEquals(clientResponseCheck))
@@ -361,7 +359,7 @@ namespace GSF.Security
                 }
             }
             stream.Write(false);
-            userToken = default(Guid);
+            userToken = default;
             return false;
 #endif
         }
@@ -377,7 +375,7 @@ namespace GSF.Security
             const int encryptedLength = 32 + 16;
             const int ticketSize = 1 + 16 + 8 + 16 + encryptedLength + 32;
 
-            userToken = default(Guid);
+            userToken = default;
             sessionSecret = null;
 
             //Ticket Structure:
@@ -388,7 +386,7 @@ namespace GSF.Security
             //  byte[]    Encrypted Session Data 32+16
             //  byte[32]  HMAC (Sha2-256)
 
-            if (ticket == null || ticket.Length != ticketSize)
+            if (ticket is null || ticket.Length != ticketSize)
                 return false;
 
             fixed (byte* lp = ticket)

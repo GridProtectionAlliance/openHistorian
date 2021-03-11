@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.TimeSeries;
 
@@ -13,7 +8,7 @@ namespace openVisN
 {
     public partial class FrmConfigure : Form
     {
-        SettingsManagement m_settings;
+        readonly SettingsManagement m_settings;
         public FrmConfigure(SettingsManagement settings)
         {
             m_settings = settings;
@@ -60,7 +55,7 @@ namespace openVisN
 
             SortedDictionary<ulong, Tuple<Guid, string, string, string>> pointData = new SortedDictionary<ulong, Tuple<Guid, string, string, string>>();
 
-            if ((object)measurementTable != null)
+            if (measurementTable != null)
             {
                 // Could filter measurements if desired (e.g., no stats)
                 DataRow[] measurements = measurementTable.Select("SignalAcronym <> 'STAT' and SignalAcronym <> 'DIGI'");
@@ -70,11 +65,8 @@ namespace openVisN
                 // Do something with measurement records
                 foreach (DataRow measurement in measurements)
                 {
-                    Guid signalID;
-                    MeasurementKey measurementKey;
-                    
-                    Guid.TryParse(measurement["SignalID"].ToString(), out signalID);
-                    MeasurementKey.TryParse(measurement["ID"].ToString(), out measurementKey);
+                    Guid.TryParse(measurement["SignalID"].ToString(), out Guid signalID);
+                    MeasurementKey.TryParse(measurement["ID"].ToString(), out MeasurementKey measurementKey);
 
                     pointData[measurementKey.ID] = new Tuple<Guid, string, string, string>(signalID, measurement["DeviceAcronym"].ToString(), measurement["SignalAcronym"].ToString(), measurement["Description"].ToString());
                 }

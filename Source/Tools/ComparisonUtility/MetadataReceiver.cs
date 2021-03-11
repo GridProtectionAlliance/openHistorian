@@ -94,7 +94,7 @@ namespace ComparisonUtility
 
                     if (disposing)
                     {
-                        if ((object)m_subscriber != null)
+                        if (m_subscriber != null)
                         {
                             // Detach from subscriber events
                             m_subscriber.ProcessException -= m_subscriber_ProcessException;
@@ -105,7 +105,7 @@ namespace ComparisonUtility
                             m_subscriber = null;
                         }
 
-                        if ((object)m_waitHandle != null)
+                        if (m_waitHandle != null)
                         {
                             m_waitHandle.Set(); // Release any waiting threads
                             m_waitHandle.Dispose();
@@ -132,11 +132,11 @@ namespace ComparisonUtility
                 throw new TimeoutException($"Waited for {timeout / 1000.0D} seconds for meta-data, but none was received.");
 
             // If meta-data was received, return it
-            if ((object)m_metadata != null)
+            if (m_metadata != null)
                 return m_metadata;
 
             // If a processing exception occurred, re-throw it
-            if ((object)m_processException != null)
+            if (m_processException != null)
                 throw new InvalidOperationException(m_processException.Message, m_processException);
 
             // Otherwise return null (unlikely to ever get to this return)

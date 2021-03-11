@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -124,7 +124,7 @@ namespace GSF.IO.FileStructure
             // we only read aligned longs, so a simple casting is enough
             fixed (byte* pbyte = &bb[pos])
             {
-                return *((ulong*)pbyte);
+                return *(ulong*)pbyte;
             }
         }
     }
@@ -135,8 +135,8 @@ namespace GSF.IO.FileStructure
         // 128 bit output, 64 bit platform version
 
         public static ulong READ_SIZE = 16;
-        private static ulong C1 = 0x87c37b91114253d5L;
-        private static ulong C2 = 0x4cf5ad432745937fL;
+        private static readonly ulong C1 = 0x87c37b91114253d5L;
+        private static readonly ulong C2 = 0x4cf5ad432745937fL;
 
         private ulong length;
         private uint seed; // if want to start with a seed, create a constructor
@@ -249,7 +249,7 @@ namespace GSF.IO.FileStructure
                     k2 ^= (ulong)bb[pos + 9] << 8; // fall through
                     goto case 9;
                 case 9:
-                    k2 ^= (ulong)bb[pos + 8]; // fall through
+                    k2 ^= bb[pos + 8]; // fall through
                     goto case 8;
                 case 8:
                     k1 ^= bb.GetUInt64(pos);
@@ -273,7 +273,7 @@ namespace GSF.IO.FileStructure
                     k1 ^= (ulong)bb[pos + 1] << 8; // fall through
                     goto case 1;
                 case 1:
-                    k1 ^= (ulong)bb[pos]; // fall through
+                    k1 ^= bb[pos]; // fall through
                     break;
                 default:
                     throw new Exception("Something went wrong with remaining bytes calculation.");

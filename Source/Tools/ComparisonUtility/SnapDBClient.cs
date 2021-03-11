@@ -50,13 +50,13 @@ namespace ComparisonUtility
                 {
                     if (disposing)
                     {
-                        if ((object)m_stream != null)
+                        if (m_stream != null)
                             m_stream.Dispose();
 
-                        if ((object)m_database != null)
+                        if (m_database != null)
                             m_database.Dispose();
 
-                        if ((object)m_client != null)
+                        if (m_client != null)
                             m_client.Dispose();
                     }
                 }
@@ -69,7 +69,7 @@ namespace ComparisonUtility
 
         public bool ReadNext(DataPoint point)
         {
-            if ((object)m_stream == null)
+            if (m_stream is null)
                 throw new NullReferenceException("Stream is not initialized");
 
             if (!m_stream.Read(m_key, m_value))

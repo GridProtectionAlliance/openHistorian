@@ -11,25 +11,25 @@ namespace GSF.Security
     [TestFixture]
     public class Scram_Test
     {
-        Stopwatch m_sw = new Stopwatch();
+        readonly Stopwatch m_sw = new Stopwatch();
 
         [Test]
         public void Test1()
         {
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
 
-            var sw = new Stopwatch();
-            var sa = new ScramServer();
+            Stopwatch sw = new Stopwatch();
+            ScramServer sa = new ScramServer();
             sw.Start();
             sa.Users.AddUser("user1", "password1", 10000, 1, HashMethod.Sha256);
             sw.Stop();
             System.Console.WriteLine(sw.Elapsed.TotalMilliseconds);
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);
-            var user = sa.AuthenticateAsServer(net.ServerStream, new byte[] { 100, 29 });
+            ScramServerSession user = sa.AuthenticateAsServer(net.ServerStream, new byte[] { 100, 29 });
             user = sa.AuthenticateAsServer(net.ServerStream, new byte[] { 100, 29 });
-            if (user == null)
+            if (user is null)
                 throw new Exception();
 
             Thread.Sleep(100);
@@ -38,10 +38,10 @@ namespace GSF.Security
         void Client1(object state)
         {
             Stream client = (Stream)state;
-            var sa = new ScramClient("user1", "password1");
+            ScramClient sa = new ScramClient("user1", "password1");
             sa.AuthenticateAsClient(client, new byte[] { 100, 29 });
             m_sw.Start();
-            var success = sa.AuthenticateAsClient(client, new byte[] { 100, 29 });
+            bool success = sa.AuthenticateAsClient(client, new byte[] { 100, 29 });
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             if (!success)

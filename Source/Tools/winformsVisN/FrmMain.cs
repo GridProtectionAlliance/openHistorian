@@ -7,11 +7,9 @@ using System.Text;
 using System.Windows.Forms;
 using GSF.Snap;
 using NPlot;
-using openHistorian;
 using openHistorian.Data.Query;
 using openVisN;
 using openVisN.Framework;
-using openVisN.Library;
 using winformsVisN.Properties;
 
 namespace winformsVisN
@@ -121,14 +119,14 @@ namespace winformsVisN
                 sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
-                sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
+                sb.Append("Scanned: " + Stats.PointsScanned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Points: " + Stats.PointsReturned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8));
+                sb.Append("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9));
+                sb.Append("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7));
+                sb.Append("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9));
 
                 //if (pointCount < Stats.PointsReturned)
                 //{
@@ -165,7 +163,7 @@ namespace winformsVisN
         private void BtnExport_Click(object sender, EventArgs e)
         {
             QueryResultsEventArgs results = m_lastResults;
-            if (results == null)
+            if (results is null)
             {
                 MessageBox.Show("No query has been executed");
                 return;
@@ -184,9 +182,7 @@ namespace winformsVisN
                     {
                         for (int x = 0; x < value.Count; x++)
                         {
-                            ulong date;
-                            double v;
-                            value.GetData(x, out date, out v);
+                            value.GetData(x, out ulong date, out double v);
                             DateTime d = new DateTime((long)date);
                             if (!list.ContainsKey(d))
                             {

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -78,8 +78,8 @@ namespace GSF.Snap
                 IsKeyValueEncoded = false;
             }
             m_hashCode = ComputeHashCode();
-            m_isFixedSizeEncoding = (this == FixedSizeCombinedEncoding ||
-                                     this == FixedSizeIndividualEncoding);
+            m_isFixedSizeEncoding = this == FixedSizeCombinedEncoding ||
+                                    this == FixedSizeIndividualEncoding;
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace GSF.Snap
                 IsKeyValueEncoded = false;
             }
             m_hashCode = ComputeHashCode();
-            m_isFixedSizeEncoding = (this == FixedSizeCombinedEncoding ||
-                                     this == FixedSizeIndividualEncoding);
+            m_isFixedSizeEncoding = this == FixedSizeCombinedEncoding ||
+                                    this == FixedSizeIndividualEncoding;
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace GSF.Snap
             m_keyValueEncodingMethod = keyValueEncoding;
             IsKeyValueEncoded = true;
             m_hashCode = ComputeHashCode();
-            m_isFixedSizeEncoding = (keyValueEncoding == FixedSizeIndividualGuid);
+            m_isFixedSizeEncoding = keyValueEncoding == FixedSizeIndividualGuid;
         }
 
         /// <summary>
@@ -134,20 +134,14 @@ namespace GSF.Snap
             m_keyValueEncodingMethod = Guid.Empty;
             IsKeyValueEncoded = false;
             m_hashCode = ComputeHashCode();
-            m_isFixedSizeEncoding = (keyEncoding == FixedSizeIndividualGuid &&
-                                     valueEncoding == FixedSizeIndividualGuid);
+            m_isFixedSizeEncoding = keyEncoding == FixedSizeIndividualGuid &&
+                                    valueEncoding == FixedSizeIndividualGuid;
         }
 
         /// <summary>
         /// Gets if the encoding method is the special fixed size encoding method.
         /// </summary>
-        public bool IsFixedSizeEncoding
-        {
-            get
-            {
-                return m_isFixedSizeEncoding;
-            }
-        }
+        public bool IsFixedSizeEncoding => m_isFixedSizeEncoding;
 
         /// <summary>
         /// Gets the compression method if <see cref="IsKeyValueEncoded"/> is false.
@@ -271,8 +265,8 @@ namespace GSF.Snap
         /// <param name="obj">The object to compare with the current object. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            var o = obj as EncodingDefinition;
-            if ((object)o == null)
+            EncodingDefinition o = obj as EncodingDefinition;
+            if (o is null)
                 return false;
             return Equals(o);
         }
@@ -286,8 +280,8 @@ namespace GSF.Snap
         /// <param name="obj">An object to compare with this instance. </param><exception cref="T:System.ArgumentException"><paramref name="obj"/> is not the same type as this instance. </exception><filterpriority>2</filterpriority>
         public int CompareTo(object obj)
         {
-            var o = obj as EncodingDefinition;
-            if (o == null)
+            EncodingDefinition o = obj as EncodingDefinition;
+            if (o is null)
                 return -1;
             return CompareTo(o);
         }
@@ -304,7 +298,7 @@ namespace GSF.Snap
             return m_hashCode;
         }
 
-        int ComputeHashCode()
+        private int ComputeHashCode()
         {
             return IsKeyValueEncoded.GetHashCode() ^
                           m_keyEncodingMethod.GetHashCode() ^
@@ -333,7 +327,7 @@ namespace GSF.Snap
         {
             if (ReferenceEquals(a, b))
                 return true;
-            if ((object)a == null)
+            if (a is null)
                 return false;
             return a.Equals(b);
         }

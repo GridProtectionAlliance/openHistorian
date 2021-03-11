@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using GSF.Collections;
 using GSF.IO;
-using GSF.Snap.Encoding;
 using GSF.Snap.Types;
 
 namespace GSF.Snap.Filters
@@ -39,7 +38,7 @@ namespace GSF.Snap.Filters
             : MatchFilterBase<TKey, TValue>
             where TKey : TimestampPointIDBase<TKey>, new()
         {
-            readonly BitArray m_points;
+            private readonly BitArray m_points;
 
             public ulong MaxValue = ulong.MaxValue;
             public ulong MinValue = ulong.MinValue;
@@ -93,13 +92,7 @@ namespace GSF.Snap.Filters
 
             }
 
-            public override Guid FilterType
-            {
-                get
-                {
-                    return PointIdMatchFilterDefinition.FilterGuid;
-                }
-            }
+            public override Guid FilterType => PointIdMatchFilterDefinition.FilterGuid;
 
             public override void Save(BinaryStreamBase stream)
             {
@@ -115,7 +108,7 @@ namespace GSF.Snap.Filters
             public override bool Contains(TKey key, TValue value)
             {
                 int point = (int)key.PointID;
-                return (key.PointID <= MaxValue && m_points.GetBitUnchecked(point));
+                return key.PointID <= MaxValue && m_points.GetBitUnchecked(point);
             }
         }
     }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -103,10 +103,7 @@ namespace HistorianView
             /// </summary>
             public bool Export
             {
-                get
-                {
-                    return m_export;
-                }
+                get => m_export;
                 set
                 {
                     m_export = value;
@@ -117,46 +114,22 @@ namespace HistorianView
             /// <summary>
             /// Gets the point number of the measurement.
             /// </summary>
-            public ulong PointNumber
-            {
-                get
-                {
-                    return m_metadata.PointID;
-                }
-            }
+            public ulong PointNumber => m_metadata.PointID;
 
             /// <summary>
             /// Gets the name of the measurement.
             /// </summary>
-            public string Name
-            {
-                get
-                {
-                    return m_metadata.PointTag;
-                }
-            }
+            public string Name => m_metadata.PointTag;
 
             /// <summary>
             /// Gets the description of the measurement.
             /// </summary>
-            public string Description
-            {
-                get
-                {
-                    return m_metadata.Description;
-                }
-            }
+            public string Description => m_metadata.Description;
 
             /// <summary>
             /// Gets the signal reference for the measurement.
             /// </summary>
-            public string SignalReference
-            {
-                get
-                {
-                    return m_metadata.SignalReference;
-                }
-            }
+            public string SignalReference => m_metadata.SignalReference;
 
             /// <summary>
             /// Returns the wrapped <see cref="Metadata"/>.
@@ -258,7 +231,7 @@ namespace HistorianView
             EndTime = AdapterBase.ParseTimeTag("*");
             m_currentTimeCheckBox.IsChecked = true;
 
-            if ((object)ConnectionDialog == null)
+            if (ConnectionDialog is null)
                 ConnectionDialog = new Connection();
 
             ConnectionDialog.ServerHost.Text = ConfigurationFile.Current.Settings.General["ServerHost", true].ValueAs("127.0.0.1");
@@ -288,10 +261,7 @@ namespace HistorianView
         /// </summary>
         public bool ArchiveIsOpen
         {
-            get
-            {
-                return m_trendButton.IsEnabled;
-            }
+            get => m_trendButton.IsEnabled;
             set
             {
                 //m_saveButton.IsEnabled = value;
@@ -313,10 +283,7 @@ namespace HistorianView
         /// </summary>
         public DateTime StartTime
         {
-            get
-            {
-                return m_startTime;
-            }
+            get => m_startTime;
             set
             {
                 m_startTime = value;
@@ -331,10 +298,7 @@ namespace HistorianView
         /// </summary>
         public DateTime EndTime
         {
-            get
-            {
-                return m_endTime;
-            }
+            get => m_endTime;
             set
             {
                 m_endTime = value;
@@ -351,7 +315,7 @@ namespace HistorianView
         // Initializes the chart window.
         private void InitializeChartWindow()
         {
-            if (m_chartWindow == null)
+            if (m_chartWindow is null)
             {
                 m_chartWindow = new ChartWindow();
                 m_chartWindow.ChartUpdated += ChartWindow_ChartUpdated;
@@ -427,7 +391,7 @@ namespace HistorianView
                         m_chartResolution.SelectedIndex = selectedIndex;
                         m_chartResolution.InvalidateVisual();
 
-                        if ((object)m_chartWindow != null)
+                        if (m_chartWindow != null)
                             m_chartWindow.ChartResolution = new TimeSpan(Resolutions.Values[selectedIndex]);
                     }
                 }
@@ -457,7 +421,7 @@ namespace HistorianView
         // Prompts the user to open one or more archive files.
         private void ShowOpenArchiveFileDialog()
         {
-            if ((object)ConnectionDialog.Owner == null)
+            if (ConnectionDialog.Owner is null)
                 ConnectionDialog.Owner = this;
 
             if (ConnectionDialog.ShowDialog().GetValueOrDefault())
@@ -617,7 +581,7 @@ namespace HistorianView
         //                    {
         //                        row = rowList[rowIndex];
 
-        //                        if (row[index] == null)
+        //                        if (row[index] is null)
         //                        {
         //                            row[index] = point.Value.ToString();
         //                            break;
@@ -872,9 +836,7 @@ namespace HistorianView
         {
             m_chartWindow.ChartResolution = new TimeSpan(Resolutions.Values[m_chartResolution.SelectedIndex]);
 
-            int sampleSize;
-
-            if (int.TryParse(m_chartSamples.Text, out sampleSize))
+            if (int.TryParse(m_chartSamples.Text, out int sampleSize))
             {
                 m_chartWindow.SampleSize = sampleSize;
             }
@@ -917,7 +879,7 @@ namespace HistorianView
         // Closes the archive files and clears the archive file collection.
         private void ClearArchives()
         {
-            if ((object)m_client != null)
+            if (m_client != null)
             {
                 m_client.Dispose();
                 m_client = null;
@@ -952,9 +914,7 @@ namespace HistorianView
         // Occurs when the user changes the starting time.
         private void StartTimeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TimeSpan startTime;
-
-            if (TimeSpan.TryParse(m_startTimeTextBox.Text, out startTime))
+            if (TimeSpan.TryParse(m_startTimeTextBox.Text, out TimeSpan startTime))
             {
                 m_startTime = m_startTime.Date + startTime;
                 SetAppropriateResolution();
@@ -964,9 +924,7 @@ namespace HistorianView
         // Occurs when the user changes the ending time.
         private void EndTimeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TimeSpan endTime;
-
-            if (TimeSpan.TryParse(m_endTimeTextBox.Text, out endTime))
+            if (TimeSpan.TryParse(m_endTimeTextBox.Text, out TimeSpan endTime))
             {
                 m_endTime = m_endTime.Date + endTime;
                 SetAppropriateResolution();
@@ -1001,9 +959,7 @@ namespace HistorianView
         // Filters text input so that only numbers can be entered into the text box.
         private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            int num;
-
-            if (!int.TryParse(e.Text, out num))
+            if (!int.TryParse(e.Text, out _))
                 e.Handled = true;
         }
 
@@ -1022,9 +978,7 @@ namespace HistorianView
             if (numericTextBox != null)
             {
                 string text = Clipboard.GetText();
-                int num;
-
-                if (int.TryParse(text, out num))
+                if (int.TryParse(text, out _))
                     numericTextBox.Paste();
 
                 e.Handled = true;
@@ -1277,7 +1231,7 @@ namespace HistorianView
             }
             finally
             {
-                if ((object)m_client != null)
+                if (m_client != null)
                     m_client.Dispose();
             }
 
@@ -1367,7 +1321,7 @@ namespace HistorianView
 //    doc.Load(filePath);
 //    root = doc.SelectSingleNode("historianDataViewer");
 
-//    if ((object)root == null || (object)root.Attributes == null)
+//    if ((object)root is null || (object)root.Attributes is null)
 //        return;
 
 //    StartTime = DateTime.Parse(root.Attributes["startTime"].Value);
@@ -1405,7 +1359,7 @@ namespace HistorianView
 //{
 //    const string errorMessage = "Unable to save current time interval. Please enter a start time that is less than or equal to the end time.";
 
-//    if (m_currentSessionPath == null)
+//    if (m_currentSessionPath is null)
 //    {
 //        ShowSaveSessionDialog();
 //    }

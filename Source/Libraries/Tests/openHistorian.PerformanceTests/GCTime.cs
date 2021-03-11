@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 //using System.Windows.Forms;
 using NUnit.Framework;
 
@@ -13,8 +10,8 @@ namespace openHistorian.PerformanceTests
     [TestFixture]
     public class GCTime
     {
-        private List<AClass[]> m_objects = new List<AClass[]>();
-        private List<FinalizableClass[]> m_objects2 = new List<FinalizableClass[]>();
+        private readonly List<AClass[]> m_objects = new List<AClass[]>();
+        private readonly List<FinalizableClass[]> m_objects2 = new List<FinalizableClass[]>();
 
         [Test]
         public void Test()
@@ -25,7 +22,7 @@ namespace openHistorian.PerformanceTests
 
         void AddItemsAndTime()
         {
-            var array = new AClass[100000];
+            AClass[] array = new AClass[100000];
             for (int x = 0; x < array.Length; x++)
                 array[x] = new AClass();
 
@@ -43,7 +40,7 @@ namespace openHistorian.PerformanceTests
             GC.WaitForPendingFinalizers();
 
             Stopwatch sw = new Stopwatch();
-            var swap = m_objects[0][0];
+            AClass swap = m_objects[0][0];
             m_objects[0][0] = m_objects[0][1];
             m_objects[0][1] = swap;
             m_objects[0][m_objects.Count] = null;
@@ -63,7 +60,7 @@ namespace openHistorian.PerformanceTests
 
         private class FinalizableClass
         {
-            public int Value = 1;
+            public readonly int Value = 1;
 
             ~FinalizableClass()
             {
@@ -83,7 +80,7 @@ namespace openHistorian.PerformanceTests
 
         void AddItemsAndTime2()
         {
-            var array = new FinalizableClass[100000];
+            FinalizableClass[] array = new FinalizableClass[100000];
             for (int x = 0; x < array.Length; x++)
                 array[x] = new FinalizableClass();
 
@@ -101,7 +98,7 @@ namespace openHistorian.PerformanceTests
             GC.WaitForPendingFinalizers();
 
             Stopwatch sw = new Stopwatch();
-            var swap = m_objects2[0][0];
+            FinalizableClass swap = m_objects2[0][0];
             m_objects2[0][0] = m_objects2[0][1];
             m_objects2[0][1] = swap;
             m_objects2[0][m_objects2.Count] = null;

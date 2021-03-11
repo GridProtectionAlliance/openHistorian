@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -37,15 +37,15 @@ namespace GSF.Net
     public class RemoteBinaryStream
         : BinaryStreamBase
     {
-        const int BufferSize = 1420;
+        private const int BufferSize = 1420;
         private int m_receivePosition;
         private int m_receiveLength;
         private int m_sendLength;
-        private byte[] m_receiveBuffer;
-        private byte[] m_sendBuffer;
+        private readonly byte[] m_receiveBuffer;
+        private readonly byte[] m_sendBuffer;
 
-        private Stream m_stream;
-        private WorkerThreadSynchronization m_workerThreadSynchronization;
+        private readonly Stream m_stream;
+        private readonly WorkerThreadSynchronization m_workerThreadSynchronization;
 
         /// <summary>
         /// Creates a <see cref="RemoteBinaryStream"/>
@@ -57,7 +57,7 @@ namespace GSF.Net
             if (!BitConverter.IsLittleEndian)
                 throw new Exception("BigEndian processors are not supported");
 
-            if (workerThreadSynchronization == null)
+            if (workerThreadSynchronization is null)
                 workerThreadSynchronization = new WorkerThreadSynchronization();
 
             m_workerThreadSynchronization = workerThreadSynchronization;
@@ -73,56 +73,20 @@ namespace GSF.Net
         /// Gets the <see cref="WorkerThreadSynchronization"/>. 
         /// This context will be entered when communcating to the socket layer.
         /// </summary>
-        public WorkerThreadSynchronization WorkerThreadSynchronization
-        {
-            get
-            {
-                return m_workerThreadSynchronization;
-            }
-        }
+        public WorkerThreadSynchronization WorkerThreadSynchronization => m_workerThreadSynchronization;
 
-        int SendBufferFreeSpace
-        {
-            get
-            {
-                return BufferSize - m_sendLength;
-            }
-        }
+        private int SendBufferFreeSpace => BufferSize - m_sendLength;
 
-        protected int ReceiveBufferAvailable
-        {
-            get
-            {
-                return m_receiveLength - m_receivePosition;
-            }
-        }
+        protected int ReceiveBufferAvailable => m_receiveLength - m_receivePosition;
 
-        public override bool CanWrite
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public override long Length => throw new NotSupportedException();
 
         public override long Position
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public override void Flush()
@@ -402,49 +366,49 @@ namespace GSF.Net
                         m_receivePosition += 1;
                         return value11;
                     }
-                    value11 ^= ((ulong)stream[1] << (7));
+                    value11 ^= (ulong)stream[1] << 7;
                     if (value11 < 128 * 128)
                     {
                         m_receivePosition += 2;
                         return value11 ^ 0x80;
                     }
-                    value11 ^= ((ulong)stream[2] << (7 + 7));
+                    value11 ^= (ulong)stream[2] << (7 + 7);
                     if (value11 < 128 * 128 * 128)
                     {
                         m_receivePosition += 3;
                         return value11 ^ 0x4080;
                     }
-                    value11 ^= ((ulong)stream[3] << (7 + 7 + 7));
+                    value11 ^= (ulong)stream[3] << (7 + 7 + 7);
                     if (value11 < 128 * 128 * 128 * 128)
                     {
                         m_receivePosition += 4;
                         return value11 ^ 0x204080;
                     }
-                    value11 ^= ((ulong)stream[4] << (7 + 7 + 7 + 7));
+                    value11 ^= (ulong)stream[4] << (7 + 7 + 7 + 7);
                     if (value11 < 128L * 128 * 128 * 128 * 128)
                     {
                         m_receivePosition += 5;
                         return value11 ^ 0x10204080L;
                     }
-                    value11 ^= ((ulong)stream[5] << (7 + 7 + 7 + 7 + 7));
+                    value11 ^= (ulong)stream[5] << (7 + 7 + 7 + 7 + 7);
                     if (value11 < 128L * 128 * 128 * 128 * 128 * 128)
                     {
                         m_receivePosition += 6;
                         return value11 ^ 0x810204080L;
                     }
-                    value11 ^= ((ulong)stream[6] << (7 + 7 + 7 + 7 + 7 + 7));
+                    value11 ^= (ulong)stream[6] << (7 + 7 + 7 + 7 + 7 + 7);
                     if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
                     {
                         m_receivePosition += 7;
                         return value11 ^ 0x40810204080L;
                     }
-                    value11 ^= ((ulong)stream[7] << (7 + 7 + 7 + 7 + 7 + 7 + 7));
+                    value11 ^= (ulong)stream[7] << (7 + 7 + 7 + 7 + 7 + 7 + 7);
                     if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
                     {
                         m_receivePosition += 8;
                         return value11 ^ 0x2040810204080L;
                     }
-                    value11 ^= ((ulong)stream[8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+                    value11 ^= (ulong)stream[8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7);
                     m_receivePosition += 9;
                     return value11 ^ 0x102040810204080L;
                 }
@@ -477,20 +441,8 @@ namespace GSF.Net
             }
         }
 
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanSeek => false;
     }
 }

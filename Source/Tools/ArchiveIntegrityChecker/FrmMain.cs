@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
 using GSF.IO;
@@ -43,7 +37,7 @@ namespace ArchiveIntegrityChecker
             m_quit = false;
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Result\tName");
-            using (var dlg = new OpenFileDialog())
+            using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.Filter = "Archive Files|*.d2";
                 dlg.Multiselect = true;
@@ -51,7 +45,7 @@ namespace ArchiveIntegrityChecker
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     m_filesToScan = dlg.FileNames.Length;
-                    foreach (var file in dlg.FileNames)
+                    foreach (string file in dlg.FileNames)
                     {
                         sb.AppendLine($"{TestFile(file)}\t{file}");
                         txtResults.Text = sb.ToString();
@@ -74,13 +68,13 @@ namespace ArchiveIntegrityChecker
             uint firstBlockWithError = uint.MaxValue;
             try
             {
-                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     int blockSize = FileHeaderBlock.SearchForBlockSize(stream);
                     stream.Position = 0;
                     byte[] data = new byte[blockSize];
                     stream.ReadAll(data, 0, blockSize);
-                    var header = FileHeaderBlock.Open(data);
+                    FileHeaderBlock header = FileHeaderBlock.Open(data);
 
                     fixed (byte* lp = data)
                     {
@@ -98,12 +92,9 @@ namespace ArchiveIntegrityChecker
 
                         for (uint x = startingBlock; x <= header.LastAllocatedBlock; x++)
                         {
-                            long checksum1;
-                            int checksum2;
-
                             stream.ReadAll(data, 0, blockSize);
 
-                            Footer.ComputeChecksum((IntPtr)lp, out checksum1, out checksum2, blockSize - 16);
+                            Footer.ComputeChecksum((IntPtr)lp, out long checksum1, out int checksum2, blockSize - 16);
 
                             long checksumInData1 = *(long*)(lp + blockSize - 16);
                             int checksumInData2 = *(int*)(lp + blockSize - 8);
@@ -157,7 +148,7 @@ namespace ArchiveIntegrityChecker
 
         private void txtResults_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && (e.KeyCode == Keys.A))
+            if (e.Control && e.KeyCode == Keys.A)
             {
                 if (sender != null)
                     ((TextBox)sender).SelectAll();

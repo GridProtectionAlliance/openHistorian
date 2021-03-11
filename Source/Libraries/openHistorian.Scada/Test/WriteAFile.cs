@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using GSF.Snap;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Configuration;
 using GSF.Snap.Storage;
@@ -21,12 +19,12 @@ namespace openHistorian.Scada.Test
         {
             int count = 10000000;
             Stopwatch sw = new Stopwatch();
-            using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory())
+            using (SortedTreeTable<AmiKey, AmiKey> table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                var key = new AmiKey();
-                var value = new AmiKey();
-                using (var edit = table.BeginEdit())
+                AmiKey key = new AmiKey();
+                AmiKey value = new AmiKey();
+                using (SortedTreeTableEditor<AmiKey, AmiKey> edit = table.BeginEdit())
                 {
                     sw.Start();
 
@@ -44,8 +42,8 @@ namespace openHistorian.Scada.Test
                     Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
                 }
 
-                using (var read = table.BeginRead())
-                using (var scan = read.GetTreeScanner())
+                using (SortedTreeTableReadSnapshot<AmiKey, AmiKey> read = table.BeginRead())
+                using (SortedTreeScannerBase<AmiKey, AmiKey> scan = read.GetTreeScanner())
                 {
                     scan.SeekToStart();
                     while (scan.Read(key, value))
@@ -60,14 +58,14 @@ namespace openHistorian.Scada.Test
         {
             int count = 1000000;
             Stopwatch sw = new Stopwatch();
-            using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory())
+            using (SortedTreeTable<AmiKey, AmiKey> table = af.OpenOrCreateTable<AmiKey, AmiKey>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var edit = table.BeginEdit())
+                using (SortedTreeTableEditor<AmiKey, AmiKey> edit = table.BeginEdit())
                 {
                     sw.Start();
-                    var key = new AmiKey();
-                    var value = new AmiKey();
+                    AmiKey key = new AmiKey();
+                    AmiKey value = new AmiKey();
 
                     for (int x = 0; x < count; x++)
                     {
@@ -82,12 +80,12 @@ namespace openHistorian.Scada.Test
                     Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
                 }
 
-                using (var af2 = SortedTreeFile.CreateInMemory())
-                using (var table2 = af2.OpenOrCreateTable<AmiKey, AmiKey>(new EncodingDefinition(EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod, EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod)))
-                using (var edit = table2.BeginEdit())
+                using (SortedTreeFile af2 = SortedTreeFile.CreateInMemory())
+                using (SortedTreeTable<AmiKey, AmiKey> table2 = af2.OpenOrCreateTable<AmiKey, AmiKey>(new EncodingDefinition(EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod, EncodingDefinition.FixedSizeCombinedEncoding.KeyValueEncodingMethod)))
+                using (SortedTreeTableEditor<AmiKey, AmiKey> edit = table2.BeginEdit())
                 {
-                    using (var read = table.BeginRead())
-                    using (var scan = read.GetTreeScanner())
+                    using (SortedTreeTableReadSnapshot<AmiKey, AmiKey> read = table.BeginRead())
+                    using (SortedTreeScannerBase<AmiKey, AmiKey> scan = read.GetTreeScanner())
                     {
                         scan.SeekToStart();
                         edit.AddPoints(scan);
@@ -102,18 +100,18 @@ namespace openHistorian.Scada.Test
         public void TestArchiveWriter()
         {
             Random r = new Random(3);
-            var KV2CEncoding = new EncodingDefinition(EncodingDefinition.FixedSizeIndividualGuid, EncodingDefinition.FixedSizeIndividualGuid);
-            var config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
-            using (var server = new SnapServer(config))
+            _ = new EncodingDefinition(EncodingDefinition.FixedSizeIndividualGuid, EncodingDefinition.FixedSizeIndividualGuid);
+            AdvancedServerDatabaseConfig<AmiKey, AmiKey> config = new AdvancedServerDatabaseConfig<AmiKey, AmiKey>("KV2CPQ", "C:\\Temp\\AMI", true);
+            using (SnapServer server = new SnapServer(config))
             {
-                using (var client = SnapClient.Connect(server))
-                using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))
+                using (SnapClient client = SnapClient.Connect(server))
+                using (ClientDatabaseBase<AmiKey, AmiKey> db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))
                 {
                     int count = 10000000;
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var key = new AmiKey();
-                    var value = new AmiKey();
+                    AmiKey key = new AmiKey();
+                    AmiKey value = new AmiKey();
 
                     for (int x = count; x >= 0; x--)
                     {
@@ -173,14 +171,14 @@ namespace openHistorian.Scada.Test
         {
             int count = 10000000;
             Stopwatch sw = new Stopwatch();
-            using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiValue>(EncodingDefinition.FixedSizeCombinedEncoding))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory())
+            using (SortedTreeTable<AmiKey, AmiValue> table = af.OpenOrCreateTable<AmiKey, AmiValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var edit = table.BeginEdit())
+                using (SortedTreeTableEditor<AmiKey, AmiValue> edit = table.BeginEdit())
                 {
                     sw.Start();
-                    var key = new AmiKey();
-                    var value = new AmiValue();
+                    AmiKey key = new AmiKey();
+                    AmiValue value = new AmiValue();
 
                     for (int x = 0; x < count; x++)
                     {

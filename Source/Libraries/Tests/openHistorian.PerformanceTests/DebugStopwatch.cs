@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime;
-using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
 
 namespace openHistorian

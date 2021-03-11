@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -87,21 +87,9 @@ namespace HistorianView
                 m_value = value.AsSingle;
             }
 
-            public DateTime Time
-            {
-                get
-                {
-                    return m_time;
-                }
-            }
+            public DateTime Time => m_time;
 
-            public float Value
-            {
-                get
-                {
-                    return m_value;
-                }
-            }
+            public float Value => m_value;
         }
 
         // Events
@@ -144,10 +132,7 @@ namespace HistorianView
 
         public ClientDatabaseBase<HistorianKey, HistorianValue> ArchiveReader
         {
-            get
-            {
-                return m_archiveReader;
-            }
+            get => m_archiveReader;
             set
             {
                 m_archiveReader = value;
@@ -157,62 +142,32 @@ namespace HistorianView
 
         public Dictionary<ulong, Metadata> VisiblePoints
         {
-            get
-            {
-                return m_visiblePoints;
-            }
-            set
-            {
-                m_visiblePoints = value;
-            }
+            get => m_visiblePoints;
+            set => m_visiblePoints = value;
         }
 
         public TimeSpan ChartResolution
         {
-            get
-            {
-                return m_chartResolution;
-            }
-            set
-            {
-                m_chartResolution = value;
-            }
+            get => m_chartResolution;
+            set => m_chartResolution = value;
         }
 
         public int SampleSize
         {
-            get
-            {
-                return m_sampleSize;
-            }
-            set
-            {
-                m_sampleSize = value;
-            }
+            get => m_sampleSize;
+            set => m_sampleSize = value;
         }
 
-        public DateTime StartTime
-        {
-            get
-            {
-                return m_xAxis.ActualMinimum != null ? m_xAxis.ActualMinimum.Value : DateTime.MinValue;
-            }
-        }
+        public DateTime StartTime => m_xAxis.ActualMinimum != null ? m_xAxis.ActualMinimum.Value : DateTime.MinValue;
 
-        public DateTime EndTime
-        {
-            get
-            {
-                return m_xAxis.ActualMaximum != null ? m_xAxis.ActualMaximum.Value : DateTime.MaxValue;
-            }
-        }
+        public DateTime EndTime => m_xAxis.ActualMaximum != null ? m_xAxis.ActualMaximum.Value : DateTime.MaxValue;
 
         private Grid PlotArea
         {
             get
             {
-                FrameworkElement chartChild = (VisualTreeHelper.GetChildrenCount(m_chart) == 0) ? null : VisualTreeHelper.GetChild(m_chart, 0) as FrameworkElement;
-                return (chartChild == null) ? null : chartChild.FindName("PlotArea") as Grid;
+                FrameworkElement chartChild = VisualTreeHelper.GetChildrenCount(m_chart) == 0 ? null : VisualTreeHelper.GetChild(m_chart, 0) as FrameworkElement;
+                return chartChild is null ? null : chartChild.FindName("PlotArea") as Grid;
             }
         }
 
@@ -248,7 +203,7 @@ namespace HistorianView
         /// </summary>
         public void UpdateChart()
         {
-            if ((object)m_archiveReader == null)
+            if (m_archiveReader is null)
                 return;
 
             Cursor windowCursor = Cursor;
@@ -303,7 +258,7 @@ namespace HistorianView
                     pointCounts[key.PointID] = pointCounts.GetOrAdd(key.PointID, 0L) + 1;
 
                 foreach (ulong pointID in pointCounts.Keys)
-                    intervals[pointID] = (pointCounts[pointID] / m_sampleSize) + 1;
+                    intervals[pointID] = pointCounts[pointID] / m_sampleSize + 1;
             }
 
             // Load data into dictionary
@@ -592,8 +547,8 @@ namespace HistorianView
             {
                 double leftPercent = m_selectionArea.Margin.Left / plotArea.ActualWidth;
                 double topPercent = m_selectionArea.Margin.Top / plotArea.ActualHeight;
-                double rightPercent = leftPercent + (m_selectionArea.Width / plotArea.ActualWidth);
-                double bottomPercent = topPercent + (m_selectionArea.Height / plotArea.ActualHeight);
+                double rightPercent = leftPercent + m_selectionArea.Width / plotArea.ActualWidth;
+                double bottomPercent = topPercent + m_selectionArea.Height / plotArea.ActualHeight;
 
                 Zoom(leftPercent, topPercent, rightPercent, bottomPercent);
                 plotArea.Children.Remove(m_selectionArea);

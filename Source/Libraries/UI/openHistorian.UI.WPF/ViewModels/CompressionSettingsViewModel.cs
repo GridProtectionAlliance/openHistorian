@@ -21,13 +21,7 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.TimeSeries.UI;
-using GSF.TimeSeries.UI.DataModels;
 using openHistorian.UI.DataModels;
 
 namespace openHistorian.UI.WPF.ViewModels
@@ -45,15 +39,9 @@ namespace openHistorian.UI.WPF.ViewModels
 
         #region [ Properties ]
 
-        public override bool IsNewRecord
-        {
-            get
-            {
-                return CurrentItem.IsNew;
-            }
-        }
+        public override bool IsNewRecord => CurrentItem.IsNew;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 

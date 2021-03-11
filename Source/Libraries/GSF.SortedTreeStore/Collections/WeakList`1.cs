@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -47,7 +47,7 @@ namespace GSF.Collections
         /// <summary>
         /// Contains a snapshot of the data so read operations can be non-blocking
         /// </summary>
-        class Snapshot
+        private class Snapshot
         {
             public WeakReference[] Items;
             public int Size;
@@ -61,82 +61,80 @@ namespace GSF.Collections
             /// <summary>
             /// Grows the snapshot, doubling the size of the number of entries.
             /// </summary>
-            /// <returns></returns>
             public Snapshot Grow()
             {
                 int itemCount = 0;
 
-                //Count the number of entries that are valid
+                // Count the number of entries that are valid
                 for (int x = 0; x < Items.Length; x++)
                 {
                     WeakReference reference = Items[x];
-                    if (reference != null)
-                    {
-                        T item = reference.Target as T;
-                        if (item != null)
-                        {
-                            itemCount++;
-                        }
-                        else
-                        {
-                            Items[x] = null;
-                        }
-                    }
+
+                    if (reference is null)
+                        continue;
+
+                    if (reference.Target is T)
+                        itemCount++;
+                    else
+                        Items[x] = null;
                 }
 
-                //copy the snapshot.
+                // copy the snapshot.
                 int capacity = Math.Max(itemCount * 2, 8);
-                Snapshot clone = new Snapshot(capacity);
 
-                clone.Items = new WeakReference[capacity];
-                clone.Size = 0;
+                Snapshot clone = new Snapshot(capacity)
+                {
+                    Items = new WeakReference[capacity], 
+                    Size = 0
+                };
+
                 for (int x = 0; x < Items.Length; x++)
                 {
                     WeakReference reference = Items[x];
-                    if (reference != null)
-                    {
-                        //Since checking the weak reference is slow, just assume that 
-                        //it still has reference. It won't hurt anything
-                        if (!clone.TryAdd(reference))
-                            throw new Exception("List is full");
-                    }
+
+                    if (reference is null)
+                        continue;
+
+                    // Since checking the weak reference is slow, just assume that 
+                    // it still has reference. It won't hurt anything
+                    if (!clone.TryAdd(reference))
+                        throw new Exception("List is full");
                 }
 
                 return clone;
             }
 
-       
             /// <summary>
-            /// Removes all occurances of <see cref="item"/> from the list
+            /// Removes all occurrences of <see cref="item"/> from the list
             /// </summary>
-            /// <param name="item"></param>
+            /// <param name="item">Item to remove.</param>
             public void Remove(T item)
             {
-                if (item == null)
+                if (item is null)
                     return;
 
                 int count = Size;
-                var compare = EqualityComparer<T>.Default;
+                EqualityComparer<T> compare = EqualityComparer<T>.Default;
+
                 for (int x = 0; x < count; x++)
                 {
                     WeakReference reference = Items[x];
-                    if (reference != null)
+
+                    if (reference is null)
+                        continue;
+
+                    if (reference.Target is T itemCompare)
                     {
-                        T itemCompare = reference.Target as T;
-                        if (itemCompare != null)
-                        {
-                            if (compare.Equals(itemCompare, item))
-                            {
-                                Items[x] = null;
-                            }
-                        }
-                        else
-                        {
+                        if (compare.Equals(itemCompare, item))
                             Items[x] = null;
-                        }
+                    }
+                    else
+                    {
+                        Items[x] = null;
                     }
                 }
             }
+
             /// <summary>
             /// Attempts to add <see cref="item"/> to the list. 
             /// </summary>
@@ -147,7 +145,7 @@ namespace GSF.Collections
                 return TryAdd(new WeakReference(item));
             }
 
-            bool TryAdd(WeakReference item)
+            private bool TryAdd(WeakReference item)
             {
                 if (Size < Items.Length)
                 {
@@ -155,6 +153,7 @@ namespace GSF.Collections
                     Size++;
                     return true;
                 }
+
                 return false;
             }
         }
@@ -164,10 +163,10 @@ namespace GSF.Collections
         /// </summary>
         public struct Enumerator : IEnumerator<T>
         {
-            WeakReference[] m_items;
-            int m_lastItem;
-            int m_currentIndex;
-            T m_current;
+            private readonly WeakReference[] m_items;
+            private readonly int m_lastItem;
+            private int m_currentIndex;
+            private T m_current;
 
             /// <summary>
             /// Creates a <see cref="Enumerator"/>
@@ -188,13 +187,7 @@ namespace GSF.Collections
             /// <returns>
             /// The element in the collection at the current position of the enumerator.
             /// </returns>
-            public T Current
-            {
-                get
-                {
-                    return m_current;
-                }
-            }
+            public T Current => m_current;
 
             /// <summary>
             /// Gets the current element in the collection.
@@ -202,14 +195,7 @@ namespace GSF.Collections
             /// <returns>
             /// The current element in the collection.
             /// </returns>
-            /// <filterpriority>2</filterpriority>
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return Current;
-                }
-            }
+            object IEnumerator.Current => Current;
 
             /// <summary>
             /// Advances the enumerator to the next element of the collection.
@@ -224,17 +210,19 @@ namespace GSF.Collections
                 {
                     m_currentIndex++;
                     WeakReference reference = m_items[m_currentIndex];
-                    if (reference != null)
+
+                    if (reference is null)
+                        continue;
+
+                    if (reference.Target is T item)
                     {
-                        T item = reference.Target as T;
-                        if (item != null)
-                        {
-                            m_current = item;
-                            return true;
-                        }
-                        m_items[m_currentIndex] = null;
+                        m_current = item;
+                        return true;
                     }
+
+                    m_items[m_currentIndex] = null;
                 }
+
                 return false;
             }
 
@@ -251,15 +239,11 @@ namespace GSF.Collections
             /// <summary>
             /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             /// </summary>
-            /// <filterpriority>2</filterpriority>
-            public void Dispose()
-            {
-                m_current = null;
-            }
+            public void Dispose() => m_current = null;
         }
 
-        object m_syncRoot;
-        Snapshot m_data;
+        private readonly object m_syncRoot;
+        private Snapshot m_data;
 
         /// <summary>
         /// Creates a <see cref="WeakList{T}"/>
@@ -285,7 +269,7 @@ namespace GSF.Collections
         /// <summary>
         /// Adds the <see cref="item"/> to the list. Method is thread safe.
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="item">Item to add.</param>
         public void Add(T item)
         {
             lock (m_syncRoot)
@@ -293,6 +277,7 @@ namespace GSF.Collections
                 if (!m_data.TryAdd(item))
                 {
                     m_data = m_data.Grow();
+
                     if (!m_data.TryAdd(item))
                         throw new Exception("Could not grow list");
                 }
@@ -300,15 +285,13 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Removes all occurances of the <see cref="item"/> from the list. Method is thread safe.
+        /// Removes all occurrences of the <see cref="item"/> from the list. Method is thread safe.
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="item">Item to remove.</param>
         public void Remove(T item)
         {
             lock (m_syncRoot)
-            {
                 m_data.Remove(item);
-            }
         }
 
         /// <summary>
@@ -317,10 +300,10 @@ namespace GSF.Collections
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        /// <filterpriority>1</filterpriority>
         public Enumerator GetEnumerator()
         {
-            var snapshot = m_data;
+            // ReSharper disable once InconsistentlySynchronizedField
+            Snapshot snapshot = m_data;
             return new Enumerator(snapshot.Items, snapshot.Size);
         }
 
@@ -330,11 +313,7 @@ namespace GSF.Collections
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        /// <filterpriority>1</filterpriority>
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -342,13 +321,6 @@ namespace GSF.Collections
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
-        /// <filterpriority>2</filterpriority>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-
-        
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

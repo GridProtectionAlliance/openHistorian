@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using GSF.Snap.Services.Configuration;
-using openHistorian;
 using openHistorian.Net;
 
 namespace openHistorianServiceHost
@@ -14,7 +12,7 @@ namespace openHistorianServiceHost
         public HistorianHost()
         {
             Directory.GetFiles(@"G:\HistorianData\", "*.d2").ToList().ForEach(File.Delete);
-            var settings = new HistorianServerDatabaseConfig("DB", @"G:\HistorianData\", true);
+            HistorianServerDatabaseConfig settings = new HistorianServerDatabaseConfig("DB", @"G:\HistorianData\", true);
             m_server = new HistorianServer(settings);
         }
 

@@ -32,13 +32,13 @@ namespace openHistorian.PerformanceTests.Threading
             }
             sw.Stop();
 
-            Console.WriteLine((count * 10.0 / sw.Elapsed.TotalSeconds / 1000000));
+            Console.WriteLine(count * 10.0 / sw.Elapsed.TotalSeconds / 1000000);
         }
 
         [Test]
         public void TestTinyLock_Lock()
         {
-            var tl = new TinyLock();
+            TinyLock tl = new TinyLock();
             const int count = 100000000;
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -59,7 +59,7 @@ namespace openHistorian.PerformanceTests.Threading
             }
             sw.Stop();
 
-            Console.WriteLine((count * 10.0 / sw.Elapsed.TotalSeconds / 1000000));
+            Console.WriteLine(count * 10.0 / sw.Elapsed.TotalSeconds / 1000000);
         }
         
         ManualResetEvent m_event;

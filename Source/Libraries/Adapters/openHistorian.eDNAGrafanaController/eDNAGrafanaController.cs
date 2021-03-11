@@ -380,7 +380,7 @@ namespace openHistorian.eDNAGrafanaController
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<List<TimeSeriesValues>> Query(string site, string service, QueryRequest request, CancellationToken cancellationToken)
         {
-            if (request.targets.FirstOrDefault()?.target == null)
+            if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(new List<TimeSeriesValues>());
 
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))

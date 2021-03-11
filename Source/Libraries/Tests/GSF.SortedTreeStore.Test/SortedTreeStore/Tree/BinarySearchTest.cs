@@ -19,7 +19,7 @@ namespace openHistorian.Collections
             {
                 byte[] box = new byte[1];
                 do provider.GetBytes(box); while (!(box[0] < n * (Byte.MaxValue / n)));
-                int k = (box[0] % n);
+                int k = box[0] % n;
                 n--;
                 T value = list[k];
                 list[k] = list[n];
@@ -101,7 +101,7 @@ namespace openHistorian.Collections
             //Console.Write(count.ToString("Tree\t0\t"));
             //SB.Append((count * 4).ToString("0\t") + (count / StepTimer.GetAverage("Lookup") / 1000000).ToString("0.000\t"));
             //SB.Append((count * 4.0 / 1024).ToString("0.###\t") + ((StepTimer.GetAverage("Lookup") / Math.Log(count, 2)) / count * 1000000000).ToString("0.00\t"));
-            SB.Append(((StepTimer.GetSlowest("Lookup") / Math.Log(count, 2)) / count * 1000000000).ToString("0.00\t"));
+            SB.Append((StepTimer.GetSlowest("Lookup") / Math.Log(count, 2) / count * 1000000000).ToString("0.00\t"));
             //SB.Append(((StepTimer.GetAverage("Lookup") / Math.Log(count, 2)) / count * 1000000000).ToString("0.00\t"));
             Console.WriteLine(SB.ToString());
         }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -35,9 +35,9 @@ namespace GSF.Snap.Encoding
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        EncodingDefinition m_encodingMethod;
-        IndividualEncodingBase<TKey> m_keyEncoding;
-        IndividualEncodingBase<TValue> m_valueEncoding;
+        private readonly EncodingDefinition m_encodingMethod;
+        private readonly IndividualEncodingBase<TKey> m_keyEncoding;
+        private readonly IndividualEncodingBase<TValue> m_valueEncoding;
         /// <summary>
         /// Creates a new class
         /// </summary>
@@ -49,39 +49,21 @@ namespace GSF.Snap.Encoding
             m_valueEncoding = Library.Encodings.GetEncodingMethod<TValue>(encodingMethod.ValueEncodingMethod);
         }
 
-        public override EncodingDefinition EncodingMethod
-        {
-            get
-            {
-                return m_encodingMethod;
-            }
-        }
+        public override EncodingDefinition EncodingMethod => m_encodingMethod;
 
         /// <summary>
         /// Gets if the previous key will need to be presented to the encoding algorithms to
         /// property encode the next sample. Returning false will cause nulls to be passed
         /// in a parameters to the encoding.
         /// </summary>
-        public override bool UsesPreviousKey
-        {
-            get
-            {
-                return m_keyEncoding.UsesPreviousValue;
-            }
-        }
+        public override bool UsesPreviousKey => m_keyEncoding.UsesPreviousValue;
 
         /// <summary>
         /// Gets if the previous value will need to be presented to the encoding algorithms to
         /// property encode the next sample. Returning false will cause nulls to be passed
         /// in a parameters to the encoding.
         /// </summary>
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return m_valueEncoding.UsesPreviousValue;
-            }
-        }
+        public override bool UsesPreviousValue => m_valueEncoding.UsesPreviousValue;
 
         /// <summary>
         /// Gets the maximum amount of space that is required for the compression algorithm. This
@@ -89,13 +71,7 @@ namespace GSF.Snap.Encoding
         /// that this value be correct. Error on the side of too large of a value as a value
         /// too small will corrupt data and be next to impossible to track down the point of corruption
         /// </summary>
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return m_keyEncoding.MaxCompressionSize + m_valueEncoding.MaxCompressionSize;
-            }
-        }
+        public override int MaxCompressionSize => m_keyEncoding.MaxCompressionSize + m_valueEncoding.MaxCompressionSize;
 
         /// <summary>
         /// Gets if the stream supports a symbol that 
@@ -112,25 +88,13 @@ namespace GSF.Snap.Encoding
         /// streaming points will include its own symbol to represent the end of the
         /// stream, taking 1 extra byte per point encoded.
         /// </remarks>
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return m_keyEncoding.ContainsEndOfStreamSymbol;
-            }
-        }
+        public override bool ContainsEndOfStreamSymbol => m_keyEncoding.ContainsEndOfStreamSymbol;
 
         /// <summary>
         /// The byte code to use as the end of stream symbol.
         /// May throw NotSupportedException if <see cref="PairEncodingBase{TKey,TValue}.ContainsEndOfStreamSymbol"/> is false.
         /// </summary>
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                return m_keyEncoding.EndOfStreamSymbol;
-            }
-        }
+        public override byte EndOfStreamSymbol => m_keyEncoding.EndOfStreamSymbol;
 
         /// <summary>
         /// Encodes <see cref="key"/> and <see cref="value"/> to the provided <see cref="stream"/>.

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -103,7 +103,7 @@ namespace GSF.Security.Authentication
             //  Bool    Success (if false, done)
             //  byte[]  Server Proof: H(Public B | Public A | SessionKey)
 
-            int srpNumberLength = ((int)m_user.SrpStrength) >> 3;
+            int srpNumberLength = (int)m_user.SrpStrength >> 3;
             stream.WriteByte((byte)PasswordHashMethod);
             stream.WriteByte((byte)m_user.Salt.Length);
             stream.Write(m_user.Salt);
@@ -283,7 +283,7 @@ namespace GSF.Security.Authentication
             //  byte[]    Encrypted Session Data (Round [Session Key Length] up to a 128 bit number to get the length of the encrypted data)
             //  byte[32]  HMAC (Sha2-256)
 
-            if (ticket == null || ticket.Length < 1 + 16 + 8 + 16 + 2 + 32)
+            if (ticket is null || ticket.Length < 1 + 16 + 8 + 16 + 2 + 32)
                 return false;
 
             fixed (byte* lp = ticket)

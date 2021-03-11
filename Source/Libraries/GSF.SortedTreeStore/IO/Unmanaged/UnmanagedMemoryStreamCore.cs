@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using GSF.IO.Unmanaged;
 
 namespace GSF.IO.Unmanaged
 {
@@ -64,13 +63,7 @@ namespace GSF.IO.Unmanaged
 
 
 
-            public bool AddingRequiresClone
-            {
-                get
-                {
-                    return m_pagePointer.Length * ElementsPerRow == PageCount;
-                }
-            }
+            public bool AddingRequiresClone => m_pagePointer.Length * ElementsPerRow == PageCount;
 
             private void EnsureCapacity()
             {
@@ -83,7 +76,7 @@ namespace GSF.IO.Unmanaged
                 }
 
                 int bigIndex = PageCount >> ShiftBits;
-                if (m_pagePointer[bigIndex] == null)
+                if (m_pagePointer[bigIndex] is null)
                 {
                     m_pagePointer[bigIndex] = new IntPtr[ElementsPerRow];
                 }
@@ -109,7 +102,7 @@ namespace GSF.IO.Unmanaged
 
         #region [ Members ]
 
-        List<Memory> m_memoryBlocks;
+            private List<Memory> m_memoryBlocks;
 
         private readonly object m_syncRoot;
 
@@ -156,7 +149,7 @@ namespace GSF.IO.Unmanaged
                 throw new ArgumentOutOfRangeException("allocationSize", "Must be a power of 2 between 4KB and 1MB");
             m_shiftLength = BitMath.CountBitsSet((uint)(allocationSize - 1));
             m_pageSize = allocationSize;
-            m_invertMask = ~(long)(allocationSize - 1);
+            m_invertMask = ~(allocationSize - 1);
             m_settings = new Settings();
             m_syncRoot = new object();
             m_memoryBlocks = new List<Memory>();
@@ -169,26 +162,14 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Gets if the stream has been disposed.
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Gets the length of the current stream.
         /// </summary>
-        public long Length
-        {
-            get
-            {
-                return (long)m_pageSize * m_settings.PageCount;
-            }
-        }
+        public long Length => (long)m_pageSize * m_settings.PageCount;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -215,11 +196,11 @@ namespace GSF.IO.Unmanaged
                 throw new ArgumentOutOfRangeException("alignment", "Must be a positive factor of the buffer pool's page size.");
             if (alignment > m_pageSize)
                 throw new ArgumentOutOfRangeException("alignment", "Cannot be greater than the buffer pool's page size.");
-            if ((m_pageSize % alignment) != 0)
+            if (m_pageSize % alignment != 0)
                 throw new ArgumentException("Must be an even factor of the buffer pool's page size", "alignment");
 
             m_firstValidPosition = startPosition;
-            m_firstAddressablePosition = startPosition - (startPosition % alignment);
+            m_firstAddressablePosition = startPosition - startPosition % alignment;
         }
 
         /// <summary>
@@ -263,7 +244,7 @@ namespace GSF.IO.Unmanaged
             {
                 try
                 {
-                    foreach (var page in m_memoryBlocks)
+                    foreach (Memory page in m_memoryBlocks)
                         page.Dispose();
                 }
                 finally

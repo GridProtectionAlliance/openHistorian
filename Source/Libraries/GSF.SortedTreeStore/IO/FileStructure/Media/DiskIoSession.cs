@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -61,13 +61,13 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="file">The file that will be read from this diskIoSession</param>
         public DiskIoSession(DiskIo diskIo, BinaryStreamIoSessionBase ioSession, FileHeaderBlock header, SubFileHeader file)
         {
-            if (diskIo == null)
+            if (diskIo is null)
                 throw new ArgumentNullException("diskIo");
             if (diskIo.IsDisposed)
                 throw new ObjectDisposedException(diskIo.GetType().FullName);
-            if (ioSession == null)
+            if (ioSession is null)
                 throw new ArgumentNullException("ioSession");
-            if (file == null)
+            if (file is null)
                 throw new ArgumentNullException("file");
 
             m_args = new BlockArguments();
@@ -176,7 +176,7 @@ namespace GSF.IO.FileStructure.Media
                 throw new ObjectDisposedException(typeof(DiskIo).FullName);
             if (m_isReadOnly)
                 throw new ReadOnlyException("The subfile used for this io session is read only.");
-            if ((blockIndex > 10 && blockIndex <= m_lastReadonlyBlock))
+            if (blockIndex > 10 && blockIndex <= m_lastReadonlyBlock)
                 throw new ArgumentOutOfRangeException("blockIndex", "Cannot write to committed blocks");
 
             IsValid = true;
@@ -210,7 +210,7 @@ namespace GSF.IO.FileStructure.Media
                 throw new ObjectDisposedException(typeof(DiskIo).FullName);
             if (m_isReadOnly)
                 throw new ReadOnlyException("The subfile used for this io session is read only.");
-            if ((blockIndex > 10 && blockIndex <= m_lastReadonlyBlock))
+            if (blockIndex > 10 && blockIndex <= m_lastReadonlyBlock)
                 throw new ArgumentOutOfRangeException("blockIndex", "Cannot write to committed blocks");
 
             IsValid = true;
@@ -335,7 +335,7 @@ namespace GSF.IO.FileStructure.Media
         /// <param name="requestWriteAccess">true if reading data from this block for the purpose of writing to it later</param>
         private void ReadBlock(bool requestWriteAccess)
         {
-            long position = (long)BlockIndex * m_blockSize;
+            long position = BlockIndex * m_blockSize;
 
             if (position >= m_args.FirstPosition && position < m_args.FirstPosition + m_args.Length && (m_args.SupportsWriting || !requestWriteAccess))
             {
@@ -367,7 +367,7 @@ namespace GSF.IO.FileStructure.Media
                 return IoReadState.ChecksumInvalid;
             if (checksumState == Footer.ChecksumIsValid || checksumState == Footer.ChecksumMustBeRecomputed)
             {
-                if (lpdata[0] != (byte)BlockType)
+                if (lpdata[0] != BlockType)
                     return IoReadState.BlockTypeMismatch;
                 if (*(uint*)(lpdata + 4) != IndexValue)
                     return IoReadState.IndexNumberMissmatch;
@@ -424,7 +424,7 @@ namespace GSF.IO.FileStructure.Media
 
         private void WriteFooterData()
         {
-            byte* data = (Pointer + m_blockSize - 32);
+            byte* data = Pointer + m_blockSize - 32;
 
             data[28] = Footer.ChecksumMustBeRecomputed;
             data[0] = BlockType;
@@ -448,8 +448,8 @@ namespace GSF.IO.FileStructure.Media
 
         internal static long ReadCount;
         internal static long WriteCount;
-        public static long CachedLookups = 0;
-        public static long Lookups = 0;
+        public static long CachedLookups;
+        public static long Lookups;
 
         #endregion
     }

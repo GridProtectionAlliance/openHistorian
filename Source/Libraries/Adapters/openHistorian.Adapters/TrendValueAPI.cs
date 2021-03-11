@@ -72,7 +72,7 @@ namespace openHistorian.Adapters
                     TableOperations<IaonOutputAdapter> operations = new TableOperations<IaonOutputAdapter>(connection);
                     IaonOutputAdapter record = operations.QueryRecordWhere("TypeName = {0}", typeof(LocalOutputAdapter).FullName);
 
-                    if (record == null)
+                    if (record is null)
                         throw new NullReferenceException("Primary openHistorian adapter instance not found.");
 
                     Dictionary<string, string> settings = record.ConnectionString.ParseKeyValuePairs();
@@ -157,10 +157,10 @@ namespace openHistorian.Adapters
         /// <returns>Enumeration of <see cref="TrendValue"/> instances read for time range.</returns>
         public static IEnumerable<TrendValue> GetHistorianData(SnapServer server, string instanceName, DateTime startTime, DateTime stopTime, ulong[] measurementIDs, Resolution resolution, int seriesLimit, bool forceLimit, ICancellationToken cancellationToken = null)
         {
-            if (cancellationToken == null)
+            if (cancellationToken is null)
                 cancellationToken = new CancellationToken();
 
-            if (server == null)
+            if (server is null)
                 yield break;
 
             // Setting series limit to zero requests full resolution data, which overrides provided parameter
@@ -201,13 +201,13 @@ namespace openHistorian.Adapters
             using (SnapClient connection = SnapClient.Connect(server))
             using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
             {
-                if (database == null)
+                if (database is null)
                     yield break;
 
                 if (LocalOutputAdapter.Instances.TryGetValue(database.Info?.DatabaseName ?? DefaultInstanceName, out LocalOutputAdapter historianAdapter))
                     metadata = historianAdapter?.Measurements;
 
-                if (metadata == null)
+                if (metadata is null)
                     yield break;
 
                 // Setup point ID selections

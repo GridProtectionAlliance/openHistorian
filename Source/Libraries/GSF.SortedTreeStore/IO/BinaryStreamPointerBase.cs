@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -80,37 +80,13 @@ namespace GSF.IO
         protected byte* LastWrite;
 
 
-        public override bool CanWrite
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public override long Length => throw new NotSupportedException();
 
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanSeek => true;
 
         /// <summary>
         /// Gets/Sets the current position for the stream.
@@ -120,10 +96,7 @@ namespace GSF.IO
         /// </summary>
         public override long Position
         {
-            get
-            {
-                return FirstPosition + (Current - First);
-            }
+            get => FirstPosition + (Current - First);
             set
             {
                 if (FirstPosition <= value && value < LastPosition)
@@ -145,24 +118,12 @@ namespace GSF.IO
         /// <summary>
         /// Returns the number of bytes available at the end of the stream.
         /// </summary>
-        protected long RemainingReadLength
-        {
-            get
-            {
-                return (LastRead - Current);
-            }
-        }
+        protected long RemainingReadLength => LastRead - Current;
 
         /// <summary>
         /// Returns the number of bytes available at the end of the stream for writing purposes.
         /// </summary>
-        protected long RemainingWriteLength
-        {
-            get
-            {
-                return (LastWrite - Current);
-            }
-        }
+        protected long RemainingWriteLength => LastWrite - Current;
 
         /// <summary>
         /// Gets a pointer from the current position that can be used for writing up the the provided length.
@@ -216,7 +177,7 @@ namespace GSF.IO
                 UpdateLocalBuffer(false);
             if (RemainingReadLength < length)
                 throw new Exception("Cannot get the provided length.");
-            supportsWriting = (RemainingWriteLength >= length);
+            supportsWriting = RemainingWriteLength >= length;
             return Current;
         }
 
@@ -241,8 +202,8 @@ namespace GSF.IO
             Position = source;
             UpdateLocalBuffer(false);
 
-            bool containsSource = (length <= LastRead - Current); //RemainingReadLength = (m_lastRead - m_current)
-            bool containsDestination = (FirstPosition <= destination && destination + length < LastPosition);
+            bool containsSource = length <= LastRead - Current; //RemainingReadLength = (m_lastRead - m_current)
+            bool containsDestination = FirstPosition <= destination && destination + length < LastPosition;
 
             if (containsSource && containsDestination)
             {
@@ -578,19 +539,19 @@ namespace GSF.IO
                     Current += 1;
                     return value11;
                 }
-                value11 ^= ((uint)stream[1] << 7);
+                value11 ^= (uint)stream[1] << 7;
                 if (value11 < 128 * 128)
                 {
                     Current += 2;
                     return value11 ^ 0x80;
                 }
-                value11 ^= ((uint)stream[2] << 14);
+                value11 ^= (uint)stream[2] << 14;
                 if (value11 < 128 * 128 * 128)
                 {
                     Current += 3;
                     return value11 ^ 0x4080;
                 }
-                value11 ^= ((uint)stream[3] << 21);
+                value11 ^= (uint)stream[3] << 21;
                 if (value11 < 128 * 128 * 128 * 128)
                 {
                     Current += 4;
@@ -616,49 +577,49 @@ namespace GSF.IO
                     Current += 1;
                     return value11;
                 }
-                value11 ^= ((ulong)stream[1] << (7));
+                value11 ^= (ulong)stream[1] << 7;
                 if (value11 < 128 * 128)
                 {
                     Current += 2;
                     return value11 ^ 0x80;
                 }
-                value11 ^= ((ulong)stream[2] << (7 + 7));
+                value11 ^= (ulong)stream[2] << (7 + 7);
                 if (value11 < 128 * 128 * 128)
                 {
                     Current += 3;
                     return value11 ^ 0x4080;
                 }
-                value11 ^= ((ulong)stream[3] << (7 + 7 + 7));
+                value11 ^= (ulong)stream[3] << (7 + 7 + 7);
                 if (value11 < 128 * 128 * 128 * 128)
                 {
                     Current += 4;
                     return value11 ^ 0x204080;
                 }
-                value11 ^= ((ulong)stream[4] << (7 + 7 + 7 + 7));
+                value11 ^= (ulong)stream[4] << (7 + 7 + 7 + 7);
                 if (value11 < 128L * 128 * 128 * 128 * 128)
                 {
                     Current += 5;
                     return value11 ^ 0x10204080L;
                 }
-                value11 ^= ((ulong)stream[5] << (7 + 7 + 7 + 7 + 7));
+                value11 ^= (ulong)stream[5] << (7 + 7 + 7 + 7 + 7);
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128)
                 {
                     Current += 6;
                     return value11 ^ 0x810204080L;
                 }
-                value11 ^= ((ulong)stream[6] << (7 + 7 + 7 + 7 + 7 + 7));
+                value11 ^= (ulong)stream[6] << (7 + 7 + 7 + 7 + 7 + 7);
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
                 {
                     Current += 7;
                     return value11 ^ 0x40810204080L;
                 }
-                value11 ^= ((ulong)stream[7] << (7 + 7 + 7 + 7 + 7 + 7 + 7));
+                value11 ^= (ulong)stream[7] << (7 + 7 + 7 + 7 + 7 + 7 + 7);
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
                 {
                     Current += 8;
                     return value11 ^ 0x2040810204080L;
                 }
-                value11 ^= ((ulong)stream[8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+                value11 ^= (ulong)stream[8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7);
                 Current += 9;
                 return value11 ^ 0x102040810204080L;
             }
@@ -671,7 +632,7 @@ namespace GSF.IO
         {
             if (RemainingReadLength >= count)
             {
-                Marshal.Copy((IntPtr)(Current), value, offset, count);
+                Marshal.Copy((IntPtr)Current, value, offset, count);
                 Current += count;
                 return count;
             }

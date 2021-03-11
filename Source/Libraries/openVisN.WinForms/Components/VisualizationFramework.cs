@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Net.NetworkInformation;
 using openVisN.Framework;
 
 namespace openVisN.Components
@@ -34,7 +33,7 @@ namespace openVisN.Components
         private readonly SubscriptionFramework m_framework;
         private string m_server = string.Empty;
         private string m_database = string.Empty;
-        private int m_port = 0;
+        private int m_port;
         private bool m_useNetworkHistorian;
         private bool m_enabled;
         private List<ISubscriber> m_pendingSubscribers = new List<ISubscriber>();
@@ -80,13 +79,7 @@ namespace openVisN.Components
         {
         }
 
-        public SubscriptionFramework Framework
-        {
-            get
-            {
-                return m_framework;
-            }
-        }
+        public SubscriptionFramework Framework => m_framework;
 
         [
             Bindable(true),
@@ -97,14 +90,8 @@ namespace openVisN.Components
         ]
         public bool Enabled
         {
-            get
-            {
-                return m_enabled;
-            }
-            set
-            {
-                m_enabled = value;
-            }
+            get => m_enabled;
+            set => m_enabled = value;
         }
 
         [
@@ -116,14 +103,8 @@ namespace openVisN.Components
         ]
         public string[] Paths
         {
-            get
-            {
-                return m_localDirectories;
-            }
-            set
-            {
-                m_localDirectories = value;
-            }
+            get => m_localDirectories;
+            set => m_localDirectories = value;
         }
 
         [
@@ -135,14 +116,8 @@ namespace openVisN.Components
         ]
         public bool UseNetworkHistorian
         {
-            get
-            {
-                return m_useNetworkHistorian;
-            }
-            set
-            {
-                m_useNetworkHistorian = value;
-            }
+            get => m_useNetworkHistorian;
+            set => m_useNetworkHistorian = value;
         }
 
         [
@@ -154,14 +129,8 @@ namespace openVisN.Components
         ]
         public string Server
         {
-            get
-            {
-                return m_server;
-            }
-            set
-            {
-                m_server = value;
-            }
+            get => m_server;
+            set => m_server = value;
         }
 
         [
@@ -173,14 +142,8 @@ namespace openVisN.Components
         ]
         public int Port
         {
-            get
-            {
-                return m_port;
-            }
-            set
-            {
-                m_port = value;
-            }
+            get => m_port;
+            set => m_port = value;
         }
 
         [
@@ -192,14 +155,8 @@ namespace openVisN.Components
        ]
         public string Database
         {
-            get
-            {
-                return m_database;
-            }
-            set
-            {
-                m_database = value;
-            }
+            get => m_database;
+            set => m_database = value;
         }
     }
 }

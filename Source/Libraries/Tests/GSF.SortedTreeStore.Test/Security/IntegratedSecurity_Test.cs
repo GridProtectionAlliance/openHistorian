@@ -1,40 +1,33 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Threading;
 using GSF.IO;
-using GSF.Net;
 using GSF.Security.Authentication;
 using NUnit.Framework;
-using openHistorian;
 
 namespace GSF.Security
 {
     [TestFixture]
     public class IntegratedSecurity_Test
     {
-
-        Stopwatch m_sw = new Stopwatch();
+        readonly Stopwatch m_sw = new Stopwatch();
 
         [Test]
         public void Test1()
         {
-            Guid token;
             m_sw.Reset();
 
-            var net = new NetworkStreamSimulator();
+            NetworkStreamSimulator net = new NetworkStreamSimulator();
 
-            var sa = new IntegratedSecurityServer();
+            IntegratedSecurityServer sa = new IntegratedSecurityServer();
             sa.Users.AddUser("zthe\\steven");
 
             ThreadPool.QueueUserWorkItem(Client1, net.ClientStream);
-            var user = sa.TryAuthenticateAsServer(net.ServerStream, out token);
+            bool user = sa.TryAuthenticateAsServer(net.ServerStream, out Guid token);
             user = sa.TryAuthenticateAsServer(net.ServerStream, out token);
-            if (user == null)
-                throw new Exception();
+            //if (user is null)
+            //    throw new Exception();
 
             Thread.Sleep(100);
         }
@@ -42,13 +35,13 @@ namespace GSF.Security
         void Client1(object state)
         {
             Stream client = (Stream)state;
-            var sa = new IntegratedSecurityClient();
+            IntegratedSecurityClient sa = new IntegratedSecurityClient();
             m_sw.Start();
-            var success = sa.TryAuthenticateAsClient(client);
+            _ = sa.TryAuthenticateAsClient(client);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             m_sw.Restart();
-            success = sa.TryAuthenticateAsClient(client);
+            bool success = sa.TryAuthenticateAsClient(client);
             m_sw.Stop();
             System.Console.WriteLine(m_sw.Elapsed.TotalMilliseconds);
             if (!success)

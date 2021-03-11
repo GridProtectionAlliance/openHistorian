@@ -52,17 +52,11 @@ namespace NPlot
         /// </summary>
         public bool TicksCrossAxis
         {
-            get
-            {
-                return ticksCrossAxis_;
-            }
-            set
-            {
-                ticksCrossAxis_ = value;
-            }
+            get => ticksCrossAxis_;
+            set => ticksCrossAxis_ = value;
         }
 
-        private bool ticksCrossAxis_ = false;
+        private bool ticksCrossAxis_;
 
 
         /// <summary>
@@ -76,20 +70,14 @@ namespace NPlot
         /// </summary>
         public virtual double WorldMax
         {
-            get
-            {
-                return worldMax_;
-            }
-            set
-            {
-                this.worldMax_ = value;
-                /*
+            get => worldMax_;
+            set => this.worldMax_ = value;
+            /*
                 if (this.WorldExtentsChanged != null)
                     this.WorldExtentsChanged(this, new WorldValueChangedArgs(worldMax_, WorldValueChangedArgs.MinMaxType.Max));
                 if (this.WorldMaxChanged != null)
                     this.WorldMaxChanged(this, new WorldValueChangedArgs(worldMax_, WorldValueChangedArgs.MinMaxType.Max));
                 */
-            }
         }
 
         private double worldMax_;
@@ -106,20 +94,14 @@ namespace NPlot
         /// </summary>
         public virtual double WorldMin
         {
-            get
-            {
-                return this.worldMin_;
-            }
-            set
-            {
-                this.worldMin_ = value;
-                /*
+            get => this.worldMin_;
+            set => this.worldMin_ = value;
+            /*
                 if (this.WorldExtentsChanged != null)
                     this.WorldExtentsChanged( this, new WorldValueChangedArgs( worldMin_, WorldValueChangedArgs.MinMaxType.Min) );
                 if (this.WorldMinChanged != null)
                     this.WorldMinChanged( this, new WorldValueChangedArgs(worldMin_, WorldValueChangedArgs.MinMaxType.Min) );
                 */
-            }
         }
 
         private double worldMin_;
@@ -131,14 +113,8 @@ namespace NPlot
         /// </summary>
         public int LargeTickSize
         {
-            get
-            {
-                return largeTickSize_;
-            }
-            set
-            {
-                largeTickSize_ = value;
-            }
+            get => largeTickSize_;
+            set => largeTickSize_ = value;
         }
 
         private int largeTickSize_;
@@ -149,14 +125,8 @@ namespace NPlot
         /// </summary>
         public int SmallTickSize
         {
-            get
-            {
-                return smallTickSize_;
-            }
-            set
-            {
-                smallTickSize_ = value;
-            }
+            get => smallTickSize_;
+            set => smallTickSize_ = value;
         }
 
         private int smallTickSize_;
@@ -167,14 +137,8 @@ namespace NPlot
         /// </summary>
         public string Label
         {
-            get
-            {
-                return label_;
-            }
-            set
-            {
-                label_ = value;
-            }
+            get => label_;
+            set => label_ = value;
         }
 
         private string label_;
@@ -187,14 +151,8 @@ namespace NPlot
         /// </summary>
         public bool TickTextNextToAxis
         {
-            get
-            {
-                return tickTextNextToAxis_;
-            }
-            set
-            {
-                tickTextNextToAxis_ = value;
-            }
+            get => tickTextNextToAxis_;
+            set => tickTextNextToAxis_ = value;
         }
 
         private bool tickTextNextToAxis_;
@@ -206,14 +164,8 @@ namespace NPlot
         /// </summary>
         public bool Hidden
         {
-            get
-            {
-                return hidden_;
-            }
-            set
-            {
-                hidden_ = value;
-            }
+            get => hidden_;
+            set => hidden_ = value;
         }
 
         private bool hidden_;
@@ -223,14 +175,8 @@ namespace NPlot
         /// </summary>
         public bool HideTickText
         {
-            get
-            {
-                return hideTickText_;
-            }
-            set
-            {
-                hideTickText_ = value;
-            }
+            get => hideTickText_;
+            set => hideTickText_ = value;
         }
 
         private bool hideTickText_;
@@ -241,10 +187,7 @@ namespace NPlot
         /// </summary>
         public Font TickTextFont
         {
-            get
-            {
-                return this.tickTextFont_;
-            }
+            get => this.tickTextFont_;
             set
             {
                 this.tickTextFont_ = value;
@@ -261,10 +204,7 @@ namespace NPlot
         /// </summary>
         public Font LabelFont
         {
-            get
-            {
-                return labelFont_;
-            }
+            get => labelFont_;
             set
             {
                 labelFont_ = value;
@@ -283,14 +223,8 @@ namespace NPlot
         /// </summary>
         public string NumberFormat
         {
-            get
-            {
-                return numberFormat_;
-            }
-            set
-            {
-                numberFormat_ = value;
-            }
+            get => numberFormat_;
+            set => numberFormat_ = value;
         }
 
         private string numberFormat_;
@@ -303,14 +237,8 @@ namespace NPlot
         /// </summary>
         public int MinPhysicalLargeTickStep
         {
-            get
-            {
-                return minPhysicalLargeTickStep_;
-            }
-            set
-            {
-                minPhysicalLargeTickStep_ = value;
-            }
+            get => minPhysicalLargeTickStep_;
+            set => minPhysicalLargeTickStep_ = value;
         }
 
         private int minPhysicalLargeTickStep_ = 30;
@@ -321,14 +249,8 @@ namespace NPlot
         /// </summary>
         public Color AxisColor
         {
-            get
-            {
-                return linePen_.Color;
-            }
-            set
-            {
-                linePen_ = new Pen((Color)value);
-            }
+            get => linePen_.Color;
+            set => linePen_ = new Pen(value);
         }
 
 
@@ -337,14 +259,8 @@ namespace NPlot
         /// </summary>
         public Pen AxisPen
         {
-            get
-            {
-                return linePen_;
-            }
-            set
-            {
-                linePen_ = value;
-            }
+            get => linePen_;
+            set => linePen_ = value;
         }
 
         private Pen linePen_;
@@ -363,17 +279,11 @@ namespace NPlot
         /// </summary>
         public bool TicksIndependentOfPhysicalExtent
         {
-            get
-            {
-                return ticksIndependentOfPhysicalExtent_;
-            }
-            set
-            {
-                ticksIndependentOfPhysicalExtent_ = value;
-            }
+            get => ticksIndependentOfPhysicalExtent_;
+            set => ticksIndependentOfPhysicalExtent_ = value;
         }
 
-        private bool ticksIndependentOfPhysicalExtent_ = false;
+        private bool ticksIndependentOfPhysicalExtent_;
 
 
         /// <summary>
@@ -381,17 +291,11 @@ namespace NPlot
         /// </summary>
         public bool FlipTicksLabel
         {
-            get
-            {
-                return flipTicksLabel_;
-            }
-            set
-            {
-                flipTicksLabel_ = value;
-            }
+            get => flipTicksLabel_;
+            set => flipTicksLabel_ = value;
         }
 
-        private bool flipTicksLabel_ = false;
+        private bool flipTicksLabel_;
 
 
         /// <summary>
@@ -399,14 +303,8 @@ namespace NPlot
         /// </summary>
         public float TicksAngle
         {
-            get
-            {
-                return ticksAngle_;
-            }
-            set
-            {
-                ticksAngle_ = value;
-            }
+            get => ticksAngle_;
+            set => ticksAngle_ = value;
         }
 
         private float ticksAngle_ = (float)Math.PI / 2.0f;
@@ -418,17 +316,11 @@ namespace NPlot
         /// </summary>
         public float TicksLabelAngle
         {
-            get
-            {
-                return ticksLabelAngle_;
-            }
-            set
-            {
-                ticksLabelAngle_ = value;
-            }
+            get => ticksLabelAngle_;
+            set => ticksLabelAngle_ = value;
         }
 
-        private float ticksLabelAngle_ = 0.0f;
+        private float ticksLabelAngle_;
 
 
         /// <summary>
@@ -436,10 +328,7 @@ namespace NPlot
         /// </summary>
         public Color LabelColor
         {
-            set
-            {
-                labelBrush_ = new SolidBrush(value);
-            }
+            set => labelBrush_ = new SolidBrush(value);
         }
 
 
@@ -448,14 +337,8 @@ namespace NPlot
         /// </summary>
         public Brush LabelBrush
         {
-            get
-            {
-                return labelBrush_;
-            }
-            set
-            {
-                labelBrush_ = value;
-            }
+            get => labelBrush_;
+            set => labelBrush_ = value;
         }
 
         private Brush labelBrush_;
@@ -466,10 +349,7 @@ namespace NPlot
         /// </summary>
         public Color TickTextColor
         {
-            set
-            {
-                tickTextBrush_ = new SolidBrush(value);
-            }
+            set => tickTextBrush_ = new SolidBrush(value);
         }
 
 
@@ -478,14 +358,8 @@ namespace NPlot
         /// </summary>
         public Brush TickTextBrush
         {
-            get
-            {
-                return tickTextBrush_;
-            }
-            set
-            {
-                tickTextBrush_ = value;
-            }
+            get => tickTextBrush_;
+            set => tickTextBrush_ = value;
         }
 
         private Brush tickTextBrush_;
@@ -498,14 +372,8 @@ namespace NPlot
         /// <remarks>Could also be argued this belongs in PlotSurface2D</remarks>
         public bool AutoScaleText
         {
-            get
-            {
-                return autoScaleText_;
-            }
-            set
-            {
-                autoScaleText_ = value;
-            }
+            get => autoScaleText_;
+            set => autoScaleText_ = value;
         }
 
         private bool autoScaleText_;
@@ -518,14 +386,8 @@ namespace NPlot
         /// <remarks>Could also be argued this belongs in PlotSurface2D</remarks>
         public bool AutoScaleTicks
         {
-            get
-            {
-                return autoScaleTicks_;
-            }
-            set
-            {
-                autoScaleTicks_ = value;
-            }
+            get => autoScaleTicks_;
+            set => autoScaleTicks_ = value;
         }
 
         private bool autoScaleTicks_;
@@ -709,7 +571,7 @@ namespace NPlot
         /// <param name="a">The other Axis instance.</param>
         public void LUB(Axis a)
         {
-            if (a == null)
+            if (a is null)
             {
                 return;
             }
@@ -832,7 +694,7 @@ namespace NPlot
                 (float)(prop * (_physicalMax.X - _physicalMin.X)),
                 (float)(prop * (_physicalMax.Y - _physicalMin.Y)));
 
-            return new PointF((_physicalMin.X + offset.X), (_physicalMin.Y + offset.Y));
+            return new PointF(_physicalMin.X + offset.X, _physicalMin.Y + offset.Y);
         }
 
 
@@ -981,7 +843,7 @@ namespace NPlot
                 g.ResetTransform();
 
                 // and return label bounding box.
-                return new Rectangle(x1, y1, (x2 - x1), (y2 - y1));
+                return new Rectangle(x1, y1, x2 - x1, y2 - y1);
             }
 
             return null;
@@ -1117,7 +979,7 @@ namespace NPlot
                     float actualAngle;
                     if (flipTicksLabel_)
                     {
-                        double radAngle = (Math.PI / 180) * this.TicksLabelAngle;
+                        double radAngle = Math.PI / 180 * this.TicksLabelAngle;
                         rotatePoint.X += textSize.Width * (float)Math.Cos(radAngle);
                         rotatePoint.Y += textSize.Width * (float)Math.Sin(radAngle);
                         actualAngle = this.TicksLabelAngle + 180;
@@ -1166,8 +1028,8 @@ namespace NPlot
                 }
                 else
                 {
-                    float bx1 = (textCenterX - textSize.Width / 2.0f);
-                    float by1 = (textCenterY - textSize.Height / 2.0f);
+                    float bx1 = textCenterX - textSize.Width / 2.0f;
+                    float by1 = textCenterY - textSize.Height / 2.0f;
                     float bx2 = textSize.Width;
                     float by2 = textSize.Height;
 
@@ -1227,9 +1089,7 @@ namespace NPlot
 
                 // (2) draw tick marks (subclass responsibility). 
 
-                object labelOffset;
-                object tickBounds;
-                this.DrawTicks(g, physicalMin, physicalMax, out labelOffset, out tickBounds);
+                this.DrawTicks(g, physicalMin, physicalMax, out object labelOffset, out object tickBounds);
 
                 // (3) draw the axis label
                 object labelBounds = null;
@@ -1274,7 +1134,7 @@ namespace NPlot
 
             // determining bounding box.
             Rectangle b = mergeBoundingBox;
-            if (boundingBox == null)
+            if (boundingBox is null)
             {
                 boundingBox = b;
             }
@@ -1311,13 +1171,7 @@ namespace NPlot
         /// <summary>
         /// World extent of the axis.
         /// </summary>
-        public double WorldLength
-        {
-            get
-            {
-                return Math.Abs(worldMax_ - worldMin_);
-            }
-        }
+        public double WorldLength => Math.Abs(worldMax_ - worldMin_);
 
         /// <summary>
         /// Determines the positions, in world coordinates, of the large ticks. 
@@ -1361,7 +1215,7 @@ namespace NPlot
             List<double> largeTickPositions,
             ref List<double> smallTickPositions)
         {
-            if (smallTickPositions == null)
+            if (smallTickPositions is null)
                 smallTickPositions = new List<double>();
         }
 
@@ -1420,10 +1274,7 @@ namespace NPlot
         /// </summary>
         internal float FontScale
         {
-            get
-            {
-                return fontScale_;
-            }
+            get => fontScale_;
 
             set
             {
@@ -1441,14 +1292,8 @@ namespace NPlot
         /// </summary>		
         internal float TickScale
         {
-            get
-            {
-                return tickScale_;
-            }
-            set
-            {
-                tickScale_ = value;
-            }
+            get => tickScale_;
+            set => tickScale_ = value;
         }
 
         private float tickScale_;
@@ -1467,15 +1312,9 @@ namespace NPlot
         /// <summary>
         /// Get whether or not this axis is linear.
         /// </summary>
-        public virtual bool IsLinear
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public virtual bool IsLinear => true;
 
-        private float labelOffset_ = 0;
+        private float labelOffset_;
 
         /// <summary>
         /// If LabelOffsetAbsolute is false (default) then this is the offset 
@@ -1487,17 +1326,11 @@ namespace NPlot
         /// </summary>
         public float LabelOffset
         {
-            get
-            {
-                return labelOffset_;
-            }
-            set
-            {
-                labelOffset_ = value;
-            }
+            get => labelOffset_;
+            set => labelOffset_ = value;
         }
 
-        private bool labelOffsetAbsolute_ = false;
+        private bool labelOffsetAbsolute_;
 
         /// <summary>
         /// If true, the value specified by LabelOffset is the absolute distance
@@ -1508,14 +1341,8 @@ namespace NPlot
         /// <value></value>
         public bool LabelOffsetAbsolute
         {
-            get
-            {
-                return labelOffsetAbsolute_;
-            }
-            set
-            {
-                labelOffsetAbsolute_ = value;
-            }
+            get => labelOffsetAbsolute_;
+            set => labelOffsetAbsolute_ = value;
         }
 
         private bool labelOffsetScaled_ = true;
@@ -1526,14 +1353,8 @@ namespace NPlot
         /// </summary>
         public bool LabelOffsetScaled
         {
-            get
-            {
-                return labelOffsetScaled_;
-            }
-            set
-            {
-                labelOffsetScaled_ = value;
-            }
+            get => labelOffsetScaled_;
+            set => labelOffsetScaled_ = value;
         }
 
 
@@ -1546,14 +1367,11 @@ namespace NPlot
         /// <returns>axis label offset</returns>
         protected Point getDefaultLabelOffset(Point physicalMin, Point physicalMax)
         {
-            Rectangle tBoundingBox;
-            Point tLabelOffset;
-
             this.DrawTick(null, this.WorldMax, this.LargeTickSize,
                           "",
                           new Point(0, 0),
                           physicalMin, physicalMax,
-                          out tLabelOffset, out tBoundingBox);
+                          out Point tLabelOffset, out _);
 
             return tLabelOffset;
         }

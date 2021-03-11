@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -47,7 +47,7 @@ namespace GSF.Snap.Tree
         protected const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         protected const int IndexSize = sizeof(uint);
 
-        const byte Version = 0;
+        private const byte Version = 0;
         protected int KeySize;
         private byte* m_pointer;
         private byte* m_pointerAfterHeader;
@@ -111,45 +111,24 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// Gets the byte offset of the upper bouds key
         /// </summary>
-        private int OffsetOfUpperBounds
-        {
-            get
-            {
-                return OffsetOfLowerBounds + KeySize;
-            }
-        }
+        private int OffsetOfUpperBounds => OffsetOfLowerBounds + KeySize;
 
         /// <summary>
         /// Gets the byte offset of the header size.
         /// </summary>
-        protected int HeaderSize
-        {
-            get
-            {
-                return OffsetOfLowerBounds + KeySize * 2;
-            }
-        }
+        protected int HeaderSize => OffsetOfLowerBounds + KeySize * 2;
 
         /// <summary>
         /// Gets the node index of this current node.
         /// </summary>
-        public uint NodeIndex
-        {
-            get
-            {
-                return m_nodeIndex;
-            }
-        }
+        public uint NodeIndex => m_nodeIndex;
 
         /// <summary>
         /// Gets/Sets the number of records in this node.
         /// </summary>
         public ushort RecordCount
         {
-            get
-            {
-                return m_recordCount;
-            }
+            get => m_recordCount;
             set
             {
                 *(ushort*)(GetWritePointer() + OffsetOfRecordCount) = value;
@@ -160,23 +139,14 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// Gets/Sets the number of unused bytes in the node.
         /// </summary>
-        protected ushort RemainingBytes
-        {
-            get
-            {
-                return (ushort)(BlockSize - m_validBytes);
-            }
-        }
+        protected ushort RemainingBytes => (ushort)(BlockSize - m_validBytes);
 
         /// <summary>
         /// The number of bytes that are used in this node.
         /// </summary>
         public ushort ValidBytes
         {
-            get
-            {
-                return m_validBytes;
-            }
+            get => m_validBytes;
             set
             {
                 *(ushort*)(GetWritePointer() + OffsetOfValidBytes) = value;
@@ -211,10 +181,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public uint LeftSiblingNodeIndex
         {
-            get
-            {
-                return m_leftSiblingNodeIndex;
-            }
+            get => m_leftSiblingNodeIndex;
             set
             {
                 *(uint*)(GetWritePointer() + OffsetOfLeftSibling) = value;
@@ -227,10 +194,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public uint RightSiblingNodeIndex
         {
-            get
-            {
-                return m_rightSiblingNodeIndex;
-            }
+            get => m_rightSiblingNodeIndex;
             set
             {
                 *(uint*)(GetWritePointer() + OffsetOfRightSibling) = value;
@@ -241,34 +205,19 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// Is the index of the right sibling null. i.e. equal to <see cref="uint.MaxValue"/>
         /// </summary>
-        protected bool IsRightSiblingIndexNull
-        {
-            get
-            {
-                return m_rightSiblingNodeIndex == uint.MaxValue;
-            }
-        }
+        protected bool IsRightSiblingIndexNull => m_rightSiblingNodeIndex == uint.MaxValue;
 
         /// <summary>
         /// Is the index of the left sibling null. i.e. equal to <see cref="uint.MaxValue"/>
         /// </summary>
-        protected bool IsLeftSiblingIndexNull
-        {
-            get
-            {
-                return m_leftSiblingNodeIndex == uint.MaxValue;
-            }
-        }
+        protected bool IsLeftSiblingIndexNull => m_leftSiblingNodeIndex == uint.MaxValue;
 
         /// <summary>
         /// The lower bounds of the node. This is an inclusive bounds and always valid.
         /// </summary>
         public TKey LowerKey
         {
-            get
-            {
-                return m_lowerKey;
-            }
+            get => m_lowerKey;
             set
             {
                 value.Write(GetWritePointer() + OffsetOfLowerBounds);
@@ -283,10 +232,7 @@ namespace GSF.Snap.Tree
         /// </summary>
         public TKey UpperKey
         {
-            get
-            {
-                return m_upperKey;
-            }
+            get => m_upperKey;
             set
             {
                 value.Write(GetWritePointer() + OffsetOfUpperBounds);
@@ -298,24 +244,12 @@ namespace GSF.Snap.Tree
         /// The position that points to the location right after the header which is the 
         /// start of the data within the node.
         /// </summary>
-        protected long StartOfDataPosition
-        {
-            get
-            {
-                return NodeIndex * BlockSize + HeaderSize;
-            }
-        }
+        protected long StartOfDataPosition => NodeIndex * BlockSize + HeaderSize;
 
         /// <summary>
         /// Gets the first position for the current node.
         /// </summary>
-        public long NodePosition
-        {
-            get
-            {
-                return BlockSize * NodeIndex;
-            }
-        }
+        public long NodePosition => BlockSize * NodeIndex;
 
         /// <summary>
         /// Invalidates the current node.
@@ -370,7 +304,7 @@ namespace GSF.Snap.Tree
         /// <param name="newNodeIndex"></param>
         public void CreateEmptyNode(uint newNodeIndex)
         {
-            var key = new TKey();
+            TKey key = new TKey();
             byte* ptr = Stream.GetWritePointer(newNodeIndex * BlockSize, BlockSize);
             ptr[OffsetOfVersion] = Version;
             ptr[OffsetOfNodeLevel] = Level;
@@ -415,7 +349,7 @@ namespace GSF.Snap.Tree
         /// <returns></returns>
         public bool IsKeyInsideBounds(TKey key)
         {
-            return (NodeIndex != uint.MaxValue) &&
+            return NodeIndex != uint.MaxValue &&
                    (LeftSiblingNodeIndex == uint.MaxValue || LowerKey.IsLessThanOrEqualTo(key)) &&
                    (RightSiblingNodeIndex == uint.MaxValue || key.IsLessThan(UpperKey));
         }
@@ -516,8 +450,7 @@ namespace GSF.Snap.Tree
 
         private void UpdateReadPointer()
         {
-            bool ptrSupportsWrite;
-            m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out ptrSupportsWrite);
+            m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out bool ptrSupportsWrite);
             m_pointerAfterHeader = m_pointer + HeaderSize;
             m_pointerReadVersion = Stream.PointerVersion;
             if (ptrSupportsWrite)

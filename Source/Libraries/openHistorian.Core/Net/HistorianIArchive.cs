@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -36,7 +36,6 @@ using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
 using openHistorian.Snap;
 using DataType = GSF.Historian.Files.DataType;
-using GSF.Historian.MetadataProviders;
 
 namespace openHistorian.Net
 {
@@ -74,31 +73,13 @@ namespace openHistorian.Net
 
         #region [ Properties ]
 
-        public HistorianServer Server
-        {
-            get
-            {
-                return m_server;
-            }
-        }
+        public HistorianServer Server => m_server;
 
-        public SnapClient Client
-        {
-            get
-            {
-                return m_client;
-            }
-        }
+        public SnapClient Client => m_client;
 
-        public ClientDatabaseBase<HistorianKey, HistorianValue> ClientDatabase
-        {
-            get
-            {
-                return m_clientDatabase;
-            }
-        }
+        public ClientDatabaseBase<HistorianKey, HistorianValue> ClientDatabase => m_clientDatabase;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -191,7 +172,7 @@ namespace openHistorian.Net
         {
             MetadataRecord record = ReadMetadataRecord(historianID);
 
-            if ((object)record != null)
+            if (record != null)
                 return record.BinaryImage();
 
             return null;
@@ -201,7 +182,7 @@ namespace openHistorian.Net
         {
             MetadataRecord record = ReadMetadataRecord(historianID);
 
-            if ((object)record != null)
+            if (record != null)
                 return record.Summary.BinaryImage();
 
             return null;

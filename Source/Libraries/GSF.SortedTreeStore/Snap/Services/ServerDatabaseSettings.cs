@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using GSF.IO;
 using GSF.Immutable;
 using GSF.Snap.Services.Writer;
@@ -40,10 +39,10 @@ namespace GSF.Snap.Services
         private Guid m_keyType;
         private Guid m_valueType;
         private string m_databaseName;
-        private ImmutableList<EncodingDefinition> m_streamingEncodingMethods;
-        private ArchiveListSettings m_archiveList;
-        private WriteProcessorSettings m_writeProcessor;
-        private RolloverLogSettings m_rolloverLog;
+        private readonly ImmutableList<EncodingDefinition> m_streamingEncodingMethods;
+        private readonly ArchiveListSettings m_archiveList;
+        private readonly WriteProcessorSettings m_writeProcessor;
+        private readonly RolloverLogSettings m_rolloverLog;
         private bool m_supportsWriting;
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace GSF.Snap.Services
             m_valueType = Guid.Empty;
             m_streamingEncodingMethods = new ImmutableList<EncodingDefinition>(x =>
             {
-                if ((object)x == null)
+                if (x is null)
                     throw new ArgumentNullException("value");
                 return x;
             });
@@ -70,10 +69,7 @@ namespace GSF.Snap.Services
         /// </summary>
         public Guid KeyType
         {
-            get
-            {
-                return m_keyType;
-            }
+            get => m_keyType;
             set
             {
                 TestForEditable();
@@ -86,10 +82,7 @@ namespace GSF.Snap.Services
         /// </summary>
         public Guid ValueType
         {
-            get
-            {
-                return m_valueType;
-            }
+            get => m_valueType;
             set
             {
                 TestForEditable();
@@ -102,10 +95,7 @@ namespace GSF.Snap.Services
         /// </summary>
         public string DatabaseName
         {
-            get
-            {
-                return m_databaseName;
-            }
+            get => m_databaseName;
             set
             {
                 TestForEditable();
@@ -116,56 +106,29 @@ namespace GSF.Snap.Services
         /// <summary>
         /// Gets the supported streaming methods.
         /// </summary>
-        public ImmutableList<EncodingDefinition> StreamingEncodingMethods
-        {
-            get
-            {
-                return m_streamingEncodingMethods;
-            }
-        }
+        public ImmutableList<EncodingDefinition> StreamingEncodingMethods => m_streamingEncodingMethods;
 
         /// <summary>
         /// The settings for the ArchiveList.
         /// </summary>
-        public ArchiveListSettings ArchiveList
-        {
-            get
-            {
-                return m_archiveList;
-            }
-        }
+        public ArchiveListSettings ArchiveList => m_archiveList;
 
         /// <summary>
         /// Settings for the writer. Null if the server does not support writing.
         /// </summary>
-        public WriteProcessorSettings WriteProcessor
-        {
-            get
-            {
-                return m_writeProcessor;
-            }
-        }
+        public WriteProcessorSettings WriteProcessor => m_writeProcessor;
 
         /// <summary>
         /// The settings for the rollover log.
         /// </summary>
-        public RolloverLogSettings RolloverLog
-        {
-            get
-            {
-                return m_rolloverLog;
-            }
-        }
+        public RolloverLogSettings RolloverLog => m_rolloverLog;
 
         /// <summary>
         /// Gets if writing or file combination will be enabled.
         /// </summary>
         public bool SupportsWriting
         {
-            get
-            {
-                return m_supportsWriting;
-            }
+            get => m_supportsWriting;
             set
             {
                 TestForEditable();
@@ -185,7 +148,7 @@ namespace GSF.Snap.Services
             stream.Write(m_valueType);
             stream.Write(m_databaseName);
             stream.Write(m_streamingEncodingMethods.Count);
-            foreach (var path in m_streamingEncodingMethods)
+            foreach (EncodingDefinition path in m_streamingEncodingMethods)
             {
                 path.Save(stream);
             }

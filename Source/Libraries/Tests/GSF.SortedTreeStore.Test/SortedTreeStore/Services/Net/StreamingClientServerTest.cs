@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Security;
-using GSF.Snap.Services.Configuration;
 using GSF.Snap.Storage;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Tree;
 using NUnit.Framework;
-using openHistorian;
-using openHistorian.Collections;
-using Org.BouncyCastle.Security;
 using openHistorian.Net;
 using openHistorian.Snap;
 
@@ -29,11 +19,11 @@ namespace GSF.Snap.Services.Net
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            var netStream = new NetworkStreamSimulator();
+            NetworkStreamSimulator netStream = new NetworkStreamSimulator();
 
-            var dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Archive", true);
-            var server = new HistorianServer(dbcfg);
-            var auth = new SecureStreamServer<SocketUserPermissions>();
+            HistorianServerDatabaseConfig dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Archive", true);
+            HistorianServer server = new HistorianServer(dbcfg);
+            SecureStreamServer<SocketUserPermissions> auth = new SecureStreamServer<SocketUserPermissions>();
             auth.SetDefaultUser(true, new SocketUserPermissions()
             {
                 CanRead = true,
@@ -41,13 +31,13 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
+            SnapStreamingServer netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
+            SnapStreamingClient client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
 
-            var db = client.GetDatabase("DB");
+            ClientDatabaseBase db = client.GetDatabase("DB");
 
             client.Dispose();
             server.Dispose();
@@ -59,12 +49,12 @@ namespace GSF.Snap.Services.Net
             //		FilePath	"C:\\Temp\\Historian\\635287587300536177-Stage1-d559e63e-d938-46a9-8d57-268f7c8ba194.d2"	string
             //635329017197429979-Stage1-38887e11-4097-4937-b269-ce4037157691.d2
             //using (var file = SortedTreeFile.OpenFile(@"C:\Temp\Historian\635287587300536177-Stage1-d559e63e-d938-46a9-8d57-268f7c8ba194.d2", true))
-            using (var file = SortedTreeFile.OpenFile(@"C:\Archive\635329017197429979-Stage1-38887e11-4097-4937-b269-ce4037157691.d2", true))
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(@"C:\Archive\635329017197429979-Stage1-38887e11-4097-4937-b269-ce4037157691.d2", true))
             //using (var file = SortedTreeFile.OpenFile(@"C:\Temp\Historian\635255664136496199-Stage2-6e758046-b2af-40ff-ae4e-85cd0c0e4501.d2", true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var reader = table.BeginRead())
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
             {
-                var scanner = reader.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = reader.GetTreeScanner();
                 scanner.SeekToStart();
                 scanner.TestSequential().Count();
 
@@ -91,11 +81,11 @@ namespace GSF.Snap.Services.Net
         {
             Logger.Console.Verbose = VerboseLevel.All;
 
-            var netStream = new NetworkStreamSimulator();
+            NetworkStreamSimulator netStream = new NetworkStreamSimulator();
 
-            var dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Archive", true);
-            var server = new HistorianServer(dbcfg);
-            var auth = new SecureStreamServer<SocketUserPermissions>();
+            HistorianServerDatabaseConfig dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Archive", true);
+            HistorianServer server = new HistorianServer(dbcfg);
+            SecureStreamServer<SocketUserPermissions> auth = new SecureStreamServer<SocketUserPermissions>();
             auth.SetDefaultUser(true, new SocketUserPermissions()
             {
                 CanRead = true,
@@ -103,13 +93,13 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
+            SnapStreamingServer netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
+            SnapStreamingClient client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), true);
 
-            var db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
+            ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
             long len = db.Read().Count();
             System.Console.WriteLine(len);
 
@@ -127,11 +117,11 @@ namespace GSF.Snap.Services.Net
             Logger.Console.Verbose = VerboseLevel.All;
             Logger.FileWriter.SetPath(@"C:\Temp\", VerboseLevel.All);
 
-            var netStream = new NetworkStreamSimulator();
+            NetworkStreamSimulator netStream = new NetworkStreamSimulator();
 
-            var dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Temp\Scada", true);
-            var server = new HistorianServer(dbcfg);
-            var auth = new SecureStreamServer<SocketUserPermissions>();
+            HistorianServerDatabaseConfig dbcfg = new HistorianServerDatabaseConfig("DB", @"C:\Temp\Scada", true);
+            HistorianServer server = new HistorianServer(dbcfg);
+            SecureStreamServer<SocketUserPermissions> auth = new SecureStreamServer<SocketUserPermissions>();
             auth.SetDefaultUser(true, new SocketUserPermissions()
             {
                 CanRead = true,
@@ -139,13 +129,13 @@ namespace GSF.Snap.Services.Net
                 IsAdmin = true
             });
 
-            var netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
+            SnapStreamingServer netServer = new SnapStreamingServer(auth, netStream.ServerStream, server.Host);
 
             ThreadPool.QueueUserWorkItem(ProcessClient, netServer);
 
-            var client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), false);
+            SnapStreamingClient client = new SnapStreamingClient(netStream.ClientStream, new SecureStreamClientDefault(), false);
 
-            var db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
+            ClientDatabaseBase<HistorianKey, HistorianValue> db = client.GetDatabase<HistorianKey, HistorianValue>("DB");
             for (uint x = 0; x < 1000; x++)
             {
                 key.Timestamp = x;

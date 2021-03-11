@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Text;
-using GSF;
 using GSF.IO.Unmanaged;
-using GSF.Snap.Definitions;
 
 namespace GSF.Snap.Tree
 {

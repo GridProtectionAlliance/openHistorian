@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.IO;
 using GSF.Snap;
-using GSF.Snap.Tree;
 
 namespace openHistorian.Scada.AMI
 {
@@ -18,22 +13,11 @@ namespace openHistorian.Scada.AMI
         public byte DataLength;
         public byte[] Data = new byte[40];
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {12E31741-8F7F-4027-B10C-68B16387CE3B}
-                return new Guid(0x12e31741, 0x8f7f, 0x4027, 0xb1, 0x0c, 0x68, 0xb1, 0x63, 0x87, 0xce, 0x3b);
-            }
-        }
+        public override Guid GenericTypeGuid =>
+            // {12E31741-8F7F-4027-B10C-68B16387CE3B}
+            new Guid(0x12e31741, 0x8f7f, 0x4027, 0xb1, 0x0c, 0x68, 0xb1, 0x63, 0x87, 0xce, 0x3b);
 
-        public override int Size
-        {
-            get
-            {
-                return 53;
-            }
-        }
+        public override int Size => 53;
 
         public override void CopyTo(AmiValue destination)
         {

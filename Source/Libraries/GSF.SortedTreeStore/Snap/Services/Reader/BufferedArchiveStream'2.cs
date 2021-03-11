@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -34,8 +34,8 @@ namespace GSF.Snap.Services.Reader
         where TValue : SnapTypeBase<TValue>, new()
     {
         public SortedTreeScannerBase<TKey, TValue> Scanner;
-        ArchiveTableSummary<TKey, TValue> m_table;
-        SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
+        private readonly ArchiveTableSummary<TKey, TValue> m_table;
+        private SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
 
         /// <summary>
         /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="SortedTreeEngineReaderSequential{TKey,TValue}"/>
@@ -55,7 +55,7 @@ namespace GSF.Snap.Services.Reader
             Scanner = m_snapshot.GetTreeScanner();
         }
 
-        public bool CacheIsValid = false;
+        public bool CacheIsValid;
         public TKey CacheKey = new TKey();
         public TValue CacheValue = new TValue();
 

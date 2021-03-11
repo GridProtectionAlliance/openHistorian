@@ -390,7 +390,7 @@ namespace openHistorian.Adapters
             base.Initialize();
 
             //Ensure AggregationWindow and Alarming Delay do not Conflict
-            if (AggregationWindow > (AlarmDelay * FramesPerSecond))
+            if (AggregationWindow > AlarmDelay * FramesPerSecond)
                 throw new ArgumentException("Aggregation Window (in frames) needs to be smaller than AlarmDelay (in seconds)");
 
             m_skipped = 0;
@@ -437,7 +437,7 @@ namespace openHistorian.Adapters
 
             ConcurrentBag<MeasurementKey> inputs = new ConcurrentBag<MeasurementKey>();
 
-            Parallel.For(0, (entries.Count), (i) =>
+            Parallel.For(0, entries.Count, (i) =>
             {
                 List<string> pointTags = entries[i].Split(',').Select(item => item.Trim()).ToList();
                 if (pointTags.Count != 3)
@@ -473,7 +473,7 @@ namespace openHistorian.Adapters
                 {
                     ThreePhaseSet keys = new TableOperations<ThreePhaseSet>(connection).QueryRecordWhere("PositiveSequence = {0} AND NegativeSequence = {1} AND ZeroSequence = {2}", input1.SignalID, input2.SignalID, input3.SignalID);
 
-                    if (keys == null)
+                    if (keys is null)
                     {
                         string inputName = LookupPointTag(input1.SignalID);
                         string alternateTagPrefix = null;
@@ -626,11 +626,11 @@ namespace openHistorian.Adapters
                     if (s0s1 > AlarmSetPoint)
                         set.countExceeding++;
 
-                    if (set.countExceeding > (AlarmDelay * FramesPerSecond))
+                    if (set.countExceeding > AlarmDelay * FramesPerSecond)
                         set.activeAlarm = true;
 
 
-                    if (s0s1 < (AlarmSetPoint - AlarmHysterisis))
+                    if (s0s1 < AlarmSetPoint - AlarmHysterisis)
                     {
                         set.countExceeding = 0;
                         set.acknowlegedAlarm = false;
@@ -638,7 +638,7 @@ namespace openHistorian.Adapters
                     }
                 }
 
-                if (ReportSQL && (!double.IsNaN(s0s1)))
+                if (ReportSQL && !double.IsNaN(s0s1))
                 {
                     set.sum += s0s1;
                     set.count += 1.0;
@@ -648,7 +648,7 @@ namespace openHistorian.Adapters
                         DailySummary summary = new DailySummary()
                         {
                             PositivePhaseSignalID = set.PositiveSequence,
-                            S0S1 = (set.sum / set.count),
+                            S0S1 = set.sum / set.count,
                             Date = ((DateTime)frame.Timestamp).RoundDownToNearestDay(),
                             Alarm = 0,
                             PercentAlarm = 0,

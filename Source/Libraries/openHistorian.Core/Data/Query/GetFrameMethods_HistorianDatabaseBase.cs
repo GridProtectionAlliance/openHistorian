@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -26,11 +26,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
 using GSF.Snap;
-using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Filters;
-using GSF.Snap.Tree;
-using openHistorian.Data.Types;
 using openHistorian.Snap;
 
 namespace openHistorian.Data.Query
@@ -152,11 +149,10 @@ namespace openHistorian.Data.Query
 
             SortedList<DateTime, List<FrameData>> buckets = new SortedList<DateTime, List<FrameData>>();
 
-            foreach (var items in origional)
+            foreach (KeyValuePair<DateTime, FrameData> items in origional)
             {
                 DateTime roundedDate = items.Key.Round(tolerance);
-                List<FrameData> frames;
-                if (!buckets.TryGetValue(roundedDate, out frames))
+                if (!buckets.TryGetValue(roundedDate, out List<FrameData> frames))
                 {
                     frames = new List<FrameData>();
                     buckets.Add(roundedDate, frames);
@@ -164,7 +160,7 @@ namespace openHistorian.Data.Query
                 frames.Add(items.Value);
             }
 
-            foreach (var bucket in buckets)
+            foreach (KeyValuePair<DateTime, List<FrameData>> bucket in buckets)
             {
                 if (bucket.Value.Count == 1)
                 {
@@ -179,9 +175,9 @@ namespace openHistorian.Data.Query
                     FrameData tempFrame = new FrameData();
                     tempFrame.Points = new SortedList<ulong, HistorianValueStruct>();
 
-                    var allFrames = new List<EnumerableHelper>();
+                    List<EnumerableHelper> allFrames = new List<EnumerableHelper>();
 
-                    foreach (var frame in bucket.Value)
+                    foreach (FrameData frame in bucket.Value)
                     {
                         allFrames.Add(new EnumerableHelper(frame));
                     }
@@ -190,10 +186,10 @@ namespace openHistorian.Data.Query
                     {
                         EnumerableHelper lowestKey = null;
 
-                        foreach (var item in allFrames)
+                        foreach (EnumerableHelper item in allFrames)
                             lowestKey = Min(lowestKey, item);
 
-                        if (lowestKey == null)
+                        if (lowestKey is null)
                             break;
 
                         keys.Add(lowestKey.PointId);
@@ -211,17 +207,17 @@ namespace openHistorian.Data.Query
 
         static DateTime Round(this DateTime origional, TimeSpan tolerance)
         {
-            long delta = (origional.Ticks % tolerance.Ticks);
-            if (delta >= (tolerance.Ticks >> 1))
+            long delta = origional.Ticks % tolerance.Ticks;
+            if (delta >= tolerance.Ticks >> 1)
                 return new DateTime(origional.Ticks - delta + tolerance.Ticks);
             return new DateTime(origional.Ticks - delta);
         }
 
         static EnumerableHelper Min(EnumerableHelper left, EnumerableHelper right)
         {
-            if (left == null)
+            if (left is null)
                 return right;
-            if (right == null)
+            if (right is null)
                 return left;
             if (!left.IsValid && !right.IsValid)
                 return null;
@@ -239,7 +235,7 @@ namespace openHistorian.Data.Query
             public bool IsValid;
             public ulong PointId;
             public HistorianValueStruct Value;
-            IEnumerator<KeyValuePair<ulong, HistorianValueStruct>> m_enumerator;
+            readonly IEnumerator<KeyValuePair<ulong, HistorianValueStruct>> m_enumerator;
             public EnumerableHelper(FrameData frame)
             {
                 m_enumerator = frame.Points.GetEnumerator();

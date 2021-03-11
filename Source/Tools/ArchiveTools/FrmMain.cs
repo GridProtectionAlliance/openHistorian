@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.Snap.Storage;
 using openHistorian.Snap;
@@ -27,23 +21,23 @@ namespace ArchiveTools
             resultsTable.Columns.Add("ID", typeof(string));
             StringBuilder sb = new StringBuilder();
 
-            using (var dlg = new OpenFileDialog())
+            using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.Multiselect = true;
                 dlg.Filter = "Open Historian 2.0 File|*.d2";
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    foreach (var fileName in dlg.FileNames)
+                    foreach (string fileName in dlg.FileNames)
                     {
                         sb.Clear();
                         try
                         {
-                            using (var file = SortedTreeFile.OpenFile(fileName, true))
+                            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, true))
                             {
                                 sb.AppendFormat("ID: {0} ", file.Snapshot.Header.ArchiveId);
                                 sb.AppendFormat("Commit Number: {0} ", file.Snapshot.Header.SnapshotSequenceNumber);
-                                var table = file.OpenTable<HistorianKey, HistorianValue>();
-                                if (table == null)
+                                SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>();
+                                if (table is null)
                                 {
                                     sb.Append("ERROR - No Historian Table ");
                                 }
@@ -87,7 +81,7 @@ namespace ArchiveTools
                         resultsTable.Rows.Add(fileName, sb.ToString());
                     }
 
-                    var win = new FrmDisplayFileMetaData(resultsTable);
+                    FrmDisplayFileMetaData win = new FrmDisplayFileMetaData(resultsTable);
                     win.Show();
                 }
             }

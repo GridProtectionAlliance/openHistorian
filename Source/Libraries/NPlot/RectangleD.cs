@@ -53,14 +53,8 @@ namespace NPlot
         /// </summary>
         public double Height
         {
-            get
-            {
-                return height_;
-            }
-            set
-            {
-                height_ = value;
-            }
+            get => height_;
+            set => height_ = value;
         }
 
         /// <summary>
@@ -68,14 +62,8 @@ namespace NPlot
         /// </summary>
         public double Width
         {
-            get
-            {
-                return width_;
-            }
-            set
-            {
-                width_ = value;
-            }
+            get => width_;
+            set => width_ = value;
         }
 
         /// <summary>
@@ -83,14 +71,8 @@ namespace NPlot
         /// </summary>
         public double X
         {
-            get
-            {
-                return x_;
-            }
-            set
-            {
-                x_ = value;
-            }
+            get => x_;
+            set => x_ = value;
         }
 
 
@@ -99,14 +81,8 @@ namespace NPlot
         /// </summary>
         public double Y
         {
-            get
-            {
-                return y_;
-            }
-            set
-            {
-                y_ = value;
-            }
+            get => y_;
+            set => y_ = value;
         }
 
 

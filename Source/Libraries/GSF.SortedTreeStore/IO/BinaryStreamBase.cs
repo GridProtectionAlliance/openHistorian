@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -276,7 +276,7 @@ namespace GSF.IO
         /// <param name="value">the value to write</param>
         public void Write(float value)
         {
-            Write(*(int*)(&value));
+            Write(*(int*)&value);
         }
         /// <summary>
         /// Writes the specifed <see cref="value"/> to the underlying stream in little-endian format.
@@ -351,7 +351,7 @@ namespace GSF.IO
             {
                 fixed (byte* lp = m_buffer)
                 {
-                    *(decimal*)(lp) = value;
+                    *(decimal*)lp = value;
                 }
             }
             else
@@ -693,8 +693,8 @@ namespace GSF.IO
         public virtual short ReadInt16()
         {
             ReadAll(m_buffer, 0, 2);
-            return (short)((int)m_buffer[0]
-                | (int)m_buffer[1] << 8);
+            return (short)(m_buffer[0]
+                | m_buffer[1] << 8);
         }
         /// <summary>
         /// Reads from the underlying stream in little endian format. Advancing the position.
@@ -703,10 +703,10 @@ namespace GSF.IO
         public virtual int ReadInt32()
         {
             ReadAll(m_buffer, 0, 4);
-            return (int)m_buffer[0]
-                | (int)m_buffer[1] << 8
-                | (int)m_buffer[2] << 16
-                | (int)m_buffer[3] << 24;
+            return m_buffer[0]
+                | m_buffer[1] << 8
+                | m_buffer[2] << 16
+                | m_buffer[3] << 24;
         }
         /// <summary>
         /// Reads from the underlying stream in little endian format. Advancing the position.
@@ -715,7 +715,7 @@ namespace GSF.IO
         public virtual long ReadInt64()
         {
             ReadAll(m_buffer, 0, 8);
-            return (long)m_buffer[0]
+            return m_buffer[0]
                    | (long)m_buffer[1] << 8
                    | (long)m_buffer[2] << 16
                    | (long)m_buffer[3] << 24
@@ -736,7 +736,7 @@ namespace GSF.IO
             {
                 fixed (byte* lp = m_buffer)
                 {
-                    return *(decimal*)(lp);
+                    return *(decimal*)lp;
                 }
             }
             else
@@ -892,8 +892,7 @@ namespace GSF.IO
         /// </remarks>
         public bool TryReadString(int maxLength, out string value)
         {
-            byte[] data;
-            if (!TryReadBytes(maxLength * 6, out data))
+            if (!TryReadBytes(maxLength * 6, out byte[] data))
             {
                 value = null;
                 return false;

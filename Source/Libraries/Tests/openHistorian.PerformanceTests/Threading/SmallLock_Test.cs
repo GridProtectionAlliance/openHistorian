@@ -32,7 +32,7 @@ namespace openHistorian.PerformanceTests.Threading
             }
             sw.Stop();
 
-            Console.WriteLine((count * 10.0 / sw.Elapsed.TotalSeconds / 1000000));
+            Console.WriteLine(count * 10.0 / sw.Elapsed.TotalSeconds / 1000000);
         }
 
         ManualResetEvent m_event;

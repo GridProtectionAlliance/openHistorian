@@ -18,10 +18,7 @@ namespace openHistorian.Model
         [Searchable]
         public string ID
         {
-            get
-            {
-                return m_id;
-            }
+            get => m_id;
             set
             {
                 m_id = value;

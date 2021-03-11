@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -49,7 +49,7 @@ namespace ComparisonUtility
             if (!string.IsNullOrEmpty(operationName))
                 m_operationName = operationName;
 
-            if ((object)m_archiveReader == null)
+            if ((object)m_archiveReader is null)
             {
                 m_archiveReader = new ArchiveReader();
                 m_archiveReader.RolloverStart += m_archiveReader_RolloverStart;
@@ -60,7 +60,7 @@ namespace ComparisonUtility
                 m_archiveReader.DataReadException += m_archiveReader_DataReadException;
             }
 
-            if (!string.IsNullOrEmpty(sourceFilesLocation) && Directory.Exists(sourceFilesLocation) && (reopen || m_archiveReader.StateFile == null || !m_archiveReader.StateFile.IsOpen))
+            if (!string.IsNullOrEmpty(sourceFilesLocation) && Directory.Exists(sourceFilesLocation) && (reopen || m_archiveReader.StateFile is null || !m_archiveReader.StateFile.IsOpen))
             {
                 // Specified directory is a valid one.
                 try
@@ -117,7 +117,7 @@ namespace ComparisonUtility
 
         private bool ReadNextGSFHistorianPoint(DataPoint point)
         {
-            if ((object)m_enumerator == null)
+            if ((object)m_enumerator is null)
             {
                 // We want data for all possible point IDs
                 IEnumerable<int> historianIDs = Enumerable.Range(1, m_maxPointID);
@@ -305,7 +305,7 @@ namespace ComparisonUtility
             {
                 string[] parameters = state as string[];
 
-                if ((object)parameters == null || parameters.Length != 2)
+                if ((object)parameters is null || parameters.Length != 2)
                     return;
 
                 if (!Directory.Exists(parameters[0]))

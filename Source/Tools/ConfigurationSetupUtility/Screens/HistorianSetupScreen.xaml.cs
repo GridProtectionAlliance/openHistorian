@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -138,14 +138,14 @@ namespace ConfigurationSetupUtility.Screens
             {
                 m_defaultAdapter = m_historianAdapters.Find(adapter => adapter.TypeName == DefaultType);
 
-                if (m_defaultAdapter == null)
+                if (m_defaultAdapter is null)
                     m_defaultAdapter = m_historianAdapters[0];
 
                 m_assemblyName = m_defaultAdapter.AssemblyName;
                 m_typeName = m_defaultAdapter.TypeName;
             }
 
-            if (m_defaultAdapter == null)
+            if (m_defaultAdapter is null)
             {
                 m_assemblyName = FilePath.GetAbsolutePath(DefaultAssembly);
                 m_typeName = DefaultType;
@@ -219,10 +219,7 @@ namespace ConfigurationSetupUtility.Screens
         /// </summary>
         public Dictionary<string, object> State
         {
-            get
-            {
-                return m_state;
-            }
+            get => m_state;
             set
             {
                 m_state = value;
@@ -287,7 +284,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 try
                 {
-                    return (Activator.CreateInstance(type) is IOutputAdapter adapter) && adapter.OutputIsForArchive;
+                    return Activator.CreateInstance(type) is IOutputAdapter adapter && adapter.OutputIsForArchive;
                 }
                 catch (Exception ex)
                 {

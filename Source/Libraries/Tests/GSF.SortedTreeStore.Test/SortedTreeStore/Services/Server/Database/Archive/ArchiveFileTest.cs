@@ -1,7 +1,6 @@
 ﻿using GSF.Snap;
 using NUnit.Framework;
 using GSF.Snap.Storage;
-using openHistorian.Collections;
 using GSF.Snap.Tree;
 using openHistorian.Snap;
 
@@ -34,7 +33,7 @@ namespace openHistorian.Test
 
             using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var fileEditor = target.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(new HistorianKey(), new HistorianValue());
                     fileEditor.Commit();
@@ -54,7 +53,7 @@ namespace openHistorian.Test
             {
                 for (uint x = 0; x < 100; x++)
                 {
-                    using (var fileEditor = target.BeginEdit())
+                    using (SortedTreeTableEditor<HistorianKey, HistorianValue> fileEditor = target.BeginEdit())
                     {
                         for (int y = 0; y < 10; y++)
                         {
@@ -67,8 +66,8 @@ namespace openHistorian.Test
                         }
                         fileEditor.Commit();
                     }
-                    Assert.AreEqual(target.FirstKey.Timestamp, (ulong)0);
-                    Assert.AreEqual(target.LastKey.Timestamp, (ulong)(x - 1));
+                    Assert.AreEqual(target.FirstKey.Timestamp, 0);
+                    Assert.AreEqual(target.LastKey.Timestamp, x - 1);
                 }
             }
         }
@@ -92,7 +91,7 @@ namespace openHistorian.Test
                 ulong value1 = 3;
                 ulong value2 = 4;
                 SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
-                using (var fileEditor = target.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(key, value);
                     key.Timestamp++;
@@ -143,7 +142,7 @@ namespace openHistorian.Test
                 ulong value1 = 3;
                 ulong value2 = 4;
                 SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
-                using (var fileEditor = target.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(key, value);
                     snap1 = target.AcquireReadSnapshot();

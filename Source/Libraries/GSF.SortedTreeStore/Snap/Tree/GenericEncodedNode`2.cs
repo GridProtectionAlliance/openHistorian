@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -36,18 +36,18 @@ namespace GSF.Snap.Tree
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        PairEncodingBase<TKey, TValue> m_encoding;
-        int m_maximumStorageSize;
-        int m_nextOffset;
-        int m_currentOffset;
+        private readonly PairEncodingBase<TKey, TValue> m_encoding;
+        private int m_maximumStorageSize;
+        private int m_nextOffset;
+        private int m_currentOffset;
         private int m_currentIndex;
         private readonly TKey m_nullKey;
         private readonly TValue m_nullValue;
-        readonly TKey m_currentKey;
-        readonly TValue m_currentValue;
+        private readonly TKey m_currentKey;
+        private readonly TValue m_currentValue;
         private readonly TKey m_prevKey;
         private readonly TValue m_prevValue;
-        byte[] m_buffer1;
+        private byte[] m_buffer1;
         private byte[] m_buffer2;
 
         public GenericEncodedNode(PairEncodingBase<TKey, TValue> encoding, byte level)
@@ -81,13 +81,7 @@ namespace GSF.Snap.Tree
             return new GenericEncodedNodeScanner<TKey, TValue>(m_encoding, Level, BlockSize, Stream, SparseIndex.Get);
         }
 
-        protected override int MaxOverheadWithCombineNodes
-        {
-            get
-            {
-                return MaximumStorageSize * 2 + 1;
-            }
-        }
+        protected override int MaxOverheadWithCombineNodes => MaximumStorageSize * 2 + 1;
 
         protected int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
         {
@@ -96,17 +90,10 @@ namespace GSF.Snap.Tree
 
         protected int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
         {
-            bool endOfStream;
-            return m_encoding.Decode(stream, prevKey, prevValue, currentKey, currentValue, out endOfStream);
+            return m_encoding.Decode(stream, prevKey, prevValue, currentKey, currentValue, out _);
         }
 
-        protected int MaximumStorageSize
-        {
-            get
-            {
-                return m_encoding.MaxCompressionSize;
-            }
-        }
+        protected int MaximumStorageSize => m_encoding.MaxCompressionSize;
 
         protected override void InitializeType()
         {
@@ -161,6 +148,7 @@ namespace GSF.Snap.Tree
             int recordsAdded = 0;
             int additionalValidBytes = 0;
             byte* writePointer = GetWritePointer();
+
             fixed (byte* buffer = m_buffer1)
             {
                 SeekTo(RecordCount);
@@ -176,7 +164,8 @@ namespace GSF.Snap.Tree
                     stream.PrevValue.Clear();
                 }
 
-            TryAgain:
+                TryAgain:
+
                 if (!stream.IsValid || !stream.IsStillSequential)
                 {
                     isFull = false;
@@ -244,7 +233,7 @@ namespace GSF.Snap.Tree
                     goto TryAgain;
                 }
             }
-         }
+        }
 
         /// <summary>
         /// Inserts a point before the current position.
@@ -299,16 +288,16 @@ namespace GSF.Snap.Tree
                 int shiftDelta2 = EncodeRecord(buffer2, key, value, m_currentKey, m_currentValue);
                 int shiftDelta = shiftDelta1 + shiftDelta2;
 
-                shiftDelta -= (m_nextOffset - m_currentOffset);
+                shiftDelta -= m_nextOffset - m_currentOffset;
 
                 if (RemainingBytes < shiftDelta)
                     return false;
 
                 Stream.Position = NodePosition + m_currentOffset;
                 if (shiftDelta < 0)
-                    Stream.RemoveBytes(-shiftDelta, (int)(ValidBytes - m_currentOffset));
+                    Stream.RemoveBytes(-shiftDelta, ValidBytes - m_currentOffset);
                 else
-                    Stream.InsertBytes(shiftDelta, (int)(ValidBytes - m_currentOffset));
+                    Stream.InsertBytes(shiftDelta, ValidBytes - m_currentOffset);
 
                 Stream.Write(buffer, shiftDelta1);
                 Stream.Write(buffer2, shiftDelta2);
@@ -363,7 +352,7 @@ namespace GSF.Snap.Tree
             fixed (byte* buffer = m_buffer1)
             {
                 ClearNodeCache();
-                while (m_currentOffset < (BlockSize >> 1))
+                while (m_currentOffset < BlockSize >> 1)
                 {
                     Read();
                 }
@@ -397,7 +386,7 @@ namespace GSF.Snap.Tree
 
                 //update the original header
                 RecordCount = (ushort)recordsInTheFirstNode;
-                ValidBytes = (ushort)(m_currentOffset);
+                ValidBytes = (ushort)m_currentOffset;
                 RightSiblingNodeIndex = newNodeIndex;
                 UpperKey = dividingKey;
 
@@ -498,20 +487,25 @@ namespace GSF.Snap.Tree
             //ToDo: Optimize this seek algorithm
             if (m_currentIndex == 0 && key.IsLessThan(m_prevKey))
                 return;
+
             if (m_currentIndex >= 0 && m_prevKey.IsLessThan(key))
             {
                 if (!m_currentKey.IsLessThan(key) || m_currentIndex == RecordCount)
                 {
                     return;
                 }
+                
                 while (Read() && m_currentKey.IsLessThan(key))
-                    ;
+                {
+                }
             }
             else
             {
                 ClearNodeCache();
+                
                 while (Read() && m_currentKey.IsLessThan(key))
-                    ;
+                {
+                }
             }
         }
 
@@ -528,6 +522,7 @@ namespace GSF.Snap.Tree
             if (m_currentIndex > index)
             {
                 ClearNodeCache();
+
                 for (int x = 0; x <= index; x++)
                     Read();
             }
@@ -538,12 +533,12 @@ namespace GSF.Snap.Tree
             }
         }
 
-        void OnNodeIndexChanged(object sender, EventArgs e)
+        private void OnNodeIndexChanged(object sender, EventArgs e)
         {
             ClearNodeCache();
         }
 
-        void ClearNodeCache()
+        private void ClearNodeCache()
         {
             m_nextOffset = HeaderSize;
             m_currentOffset = HeaderSize;
@@ -573,6 +568,6 @@ namespace GSF.Snap.Tree
             return true;
         }
 
-        #endregion
+    #endregion
     }
 }

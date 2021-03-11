@@ -318,7 +318,7 @@ namespace MAS
 
                 foreach (MeasurementKey currentMagnitude in currentMagnitudeKeys)
                 {
-                    if (currentMagnitude == null)
+                    if (currentMagnitude is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -328,7 +328,7 @@ namespace MAS
                     MeasurementRecord currentMagnitudeMeasurement = measurementTable.QueryRecordWhere("SignalID = {0}", currentMagnitude.SignalID);
 
                     // If current magnitude measurement is not found, skip configuration
-                    if (currentMagnitudeMeasurement == null)
+                    if (currentMagnitudeMeasurement is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -338,7 +338,7 @@ namespace MAS
                     PhasorRecord currentPhasor = phasorTable.QueryRecordWhere("DeviceID = {0} AND SourceIndex = {1}", currentMagnitudeMeasurement.DeviceID, currentMagnitudeMeasurement.PhasorSourceIndex);
 
                     // If no associated voltage phasor is assigned, skip configuration
-                    if (currentPhasor?.DestinationPhasorID == null)
+                    if (currentPhasor?.DestinationPhasorID is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -348,7 +348,7 @@ namespace MAS
                     MeasurementRecord currentAngleMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", currentPhasor.DeviceID, currentPhasor.SourceIndex, currentAngleSignalTypeID);
 
                     // If current angle measurement is not found, skip configuration
-                    if (currentAngleMeasurement == null)
+                    if (currentAngleMeasurement is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -358,7 +358,7 @@ namespace MAS
                     MeasurementKey currentAngle = currentAngleKeys.FirstOrDefault(angleKey => angleKey.SignalID == currentAngleMeasurement.SignalID);
 
                     // If current angle is not found as an input, skip configuration
-                    if (currentAngle == null)
+                    if (currentAngle is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -368,7 +368,7 @@ namespace MAS
                     PhasorRecord voltagePhasor = phasorTable.QueryRecordWhere("ID = {0}", currentPhasor.DestinationPhasorID);
 
                     // If associated voltage phasor is not found, skip configuration
-                    if (voltagePhasor == null)
+                    if (voltagePhasor is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -378,7 +378,7 @@ namespace MAS
                     MeasurementRecord voltageMagnitudeMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageMagnitudeSignalTypeID);
 
                     // If voltage magnitude measurement is not found, skip configuration
-                    if (voltageMagnitudeMeasurement == null)
+                    if (voltageMagnitudeMeasurement is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -388,7 +388,7 @@ namespace MAS
                     MeasurementKey voltageMagnitude = voltageMagnitudeKeys.FirstOrDefault(magnitudeKey => magnitudeKey.SignalID == voltageMagnitudeMeasurement.SignalID);
 
                     // If voltage magnitude is not found as an input, skip configuration
-                    if (voltageMagnitude == null)
+                    if (voltageMagnitude is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -398,7 +398,7 @@ namespace MAS
                     MeasurementRecord voltageAngleMeasurement = measurementTable.QueryRecordWhere("DeviceID = {0} AND PhasorSourceIndex = {1} AND SignalTypeID = {2}", voltagePhasor.DeviceID, voltagePhasor.SourceIndex, voltageAngleSignalTypeID);
 
                     // If voltage angle measurement is not found, skip configuration
-                    if (voltageAngleMeasurement == null)
+                    if (voltageAngleMeasurement is null)
                     {
                         unassociatedCount++;
                         continue;
@@ -408,7 +408,7 @@ namespace MAS
                     MeasurementKey voltageAngle = voltageAngleKeys.FirstOrDefault(angleKey => angleKey.SignalID == voltageAngleMeasurement.SignalID);
 
                     // If voltage angle is not found as an input, skip configuration
-                    if (voltageAngle == null)
+                    if (voltageAngle is null)
                     {
                         unassociatedCount++;
                         continue;

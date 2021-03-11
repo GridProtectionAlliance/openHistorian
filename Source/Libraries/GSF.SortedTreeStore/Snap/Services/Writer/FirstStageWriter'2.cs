@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -29,7 +29,6 @@ using System.Threading;
 using GSF.Diagnostics;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Storage;
-using GSF.Snap.Tree;
 using GSF.Threading;
 
 namespace GSF.Snap.Services.Writer
@@ -53,20 +52,20 @@ namespace GSF.Snap.Services.Writer
         /// </summary>
         public event Action<long> RolloverComplete;
 
-        private FirstStageWriterSettings m_settings;
+        private readonly FirstStageWriterSettings m_settings;
         private bool m_stopped;
         private bool m_disposed;
         private readonly AtomicInt64 m_lastCommitedSequenceNumber = new AtomicInt64();
         private readonly AtomicInt64 m_lastRolledOverSequenceNumber = new AtomicInt64();
 
-        private ScheduledTask m_rolloverTask;
+        private readonly ScheduledTask m_rolloverTask;
         private readonly object m_syncRoot;
         private readonly SafeManualResetEvent m_rolloverComplete;
-        private ArchiveList<TKey, TValue> m_list;
+        private readonly ArchiveList<TKey, TValue> m_list;
         private List<SortedTreeTable<TKey, TValue>> m_pendingTables1;
         private List<SortedTreeTable<TKey, TValue>> m_pendingTables2;
         private List<SortedTreeTable<TKey, TValue>> m_pendingTables3;
-        private SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
+        private readonly SimplifiedArchiveInitializer<TKey, TValue> m_createNextStageFile;
 
         /// <summary>
         /// Creates a stage writer.
@@ -74,7 +73,7 @@ namespace GSF.Snap.Services.Writer
         public FirstStageWriter(FirstStageWriterSettings settings, ArchiveList<TKey, TValue> list)
             : base(MessageClass.Framework)
         {
-            if (settings == null)
+            if (settings is null)
                 throw new ArgumentNullException("settings");
             m_settings = settings.CloneReadonly();
             m_settings.Validate();
@@ -111,9 +110,9 @@ namespace GSF.Snap.Services.Writer
                 return;
             }
 
-            var file = SortedTreeFile.CreateInMemory(4096);
-            var table = file.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
-            using (var edit = table.BeginEdit())
+            SortedTreeFile file = SortedTreeFile.CreateInMemory(4096);
+            SortedTreeTable<TKey, TValue> table = file.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+            using (SortedTreeTableEditor<TKey, TValue> edit = table.BeginEdit())
             {
                 edit.AddPoints(args.Stream);
                 edit.Commit();
@@ -136,7 +135,7 @@ namespace GSF.Snap.Services.Writer
                     return;
                 }
 
-                using (var edit = m_list.AcquireEditLock())
+                using (ArchiveListEditor<TKey, TValue> edit = m_list.AcquireEditLock())
                 {
                     edit.Add(table);
                 }
@@ -144,11 +143,11 @@ namespace GSF.Snap.Services.Writer
 
                 if (m_pendingTables1.Count == 10)
                 {
-                    using (var reader = new UnionTreeStream<TKey, TValue>(m_pendingTables1.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
+                    using (UnionTreeStream<TKey, TValue> reader = new UnionTreeStream<TKey, TValue>(m_pendingTables1.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
                     {
-                        var file1 = SortedTreeFile.CreateInMemory(4096);
-                        var table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
-                        using (var edit = table1.BeginEdit())
+                        SortedTreeFile file1 = SortedTreeFile.CreateInMemory(4096);
+                        SortedTreeTable<TKey, TValue> table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                        using (SortedTreeTableEditor<TKey, TValue> edit = table1.BeginEdit())
                         {
                             edit.AddPoints(reader);
                             edit.Commit();
@@ -159,7 +158,7 @@ namespace GSF.Snap.Services.Writer
                             //Add the newly created file.
                             edit.Add(table1);
 
-                            foreach (var table2 in m_pendingTables1)
+                            foreach (SortedTreeTable<TKey, TValue> table2 in m_pendingTables1)
                             {
                                 edit.TryRemoveAndDelete(table2.ArchiveId);
                             }
@@ -172,11 +171,11 @@ namespace GSF.Snap.Services.Writer
 
                 if (m_pendingTables2.Count == 10)
                 {
-                    using (var reader = new UnionTreeStream<TKey, TValue>(m_pendingTables2.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
+                    using (UnionTreeStream<TKey, TValue> reader = new UnionTreeStream<TKey, TValue>(m_pendingTables2.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
                     {
-                        var file1 = SortedTreeFile.CreateInMemory(4096);
-                        var table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
-                        using (var edit = table1.BeginEdit())
+                        SortedTreeFile file1 = SortedTreeFile.CreateInMemory(4096);
+                        SortedTreeTable<TKey, TValue> table1 = file1.OpenOrCreateTable<TKey, TValue>(m_settings.EncodingMethod);
+                        using (SortedTreeTableEditor<TKey, TValue> edit = table1.BeginEdit())
                         {
                             edit.AddPoints(reader);
                             edit.Commit();
@@ -187,7 +186,7 @@ namespace GSF.Snap.Services.Writer
                             //Add the newly created file.
                             edit.Add(table1);
 
-                            foreach (var table2 in m_pendingTables2)
+                            foreach (SortedTreeTable<TKey, TValue> table2 in m_pendingTables2)
                             {
                                 edit.TryRemoveAndDelete(table2.ArchiveId);
                             }
@@ -264,9 +263,9 @@ namespace GSF.Snap.Services.Writer
             Log.Publish(MessageLevel.Info, "Pending Tables Report", "Pending Tables V1: " + pendingTables1.Count + " V2: " + pendingTables2.Count + " V3: " + pendingTables3.Count);
 
             List<ArchiveTableSummary<TKey, TValue>> summaryTables = new List<ArchiveTableSummary<TKey, TValue>>();
-            foreach (var table in pendingTables1)
+            foreach (SortedTreeTable<TKey, TValue> table in pendingTables1)
             {
-                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                ArchiveTableSummary<TKey, TValue> summary = new ArchiveTableSummary<TKey, TValue>(table);
                 if (!summary.IsEmpty)
                 {
                     summaryTables.Add(summary);
@@ -276,9 +275,9 @@ namespace GSF.Snap.Services.Writer
                         summary.LastKey.CopyTo(endKey);
                 }
             }
-            foreach (var table in pendingTables2)
+            foreach (SortedTreeTable<TKey, TValue> table in pendingTables2)
             {
-                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                ArchiveTableSummary<TKey, TValue> summary = new ArchiveTableSummary<TKey, TValue>(table);
                 if (!summary.IsEmpty)
                 {
                     summaryTables.Add(summary);
@@ -288,9 +287,9 @@ namespace GSF.Snap.Services.Writer
                         summary.LastKey.CopyTo(endKey);
                 }
             }
-            foreach (var table in pendingTables3)
+            foreach (SortedTreeTable<TKey, TValue> table in pendingTables3)
             {
-                var summary = new ArchiveTableSummary<TKey, TValue>(table);
+                ArchiveTableSummary<TKey, TValue> summary = new ArchiveTableSummary<TKey, TValue>(table);
                 if (!summary.IsEmpty)
                 {
                     summaryTables.Add(summary);
@@ -306,27 +305,27 @@ namespace GSF.Snap.Services.Writer
 
             if (summaryTables.Count > 0)
             {
-                using (var reader = new UnionTreeStream<TKey, TValue>(summaryTables.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
+                using (UnionTreeStream<TKey, TValue> reader = new UnionTreeStream<TKey, TValue>(summaryTables.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), true))
                 {
-                    var newTable = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, null);
+                    SortedTreeTable<TKey, TValue> newTable = m_createNextStageFile.CreateArchiveFile(startKey, endKey, size, reader, null);
 
                     using (ArchiveListEditor<TKey, TValue> edit = m_list.AcquireEditLock())
                     {
                         //Add the newly created file.
                         edit.Add(newTable);
 
-                        foreach (var table in pendingTables1)
+                        foreach (SortedTreeTable<TKey, TValue> table in pendingTables1)
                         {
                             edit.TryRemoveAndDelete(table.ArchiveId);
                         }
 
-                        foreach (var table in pendingTables2)
+                        foreach (SortedTreeTable<TKey, TValue> table in pendingTables2)
                         {
                             edit.TryRemoveAndDelete(table.ArchiveId);
                         }
 
 
-                        foreach (var table in pendingTables3)
+                        foreach (SortedTreeTable<TKey, TValue> table in pendingTables3)
                         {
                             edit.TryRemoveAndDelete(table.ArchiveId);
                         }

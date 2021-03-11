@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -74,7 +74,7 @@ namespace GSF.Security.Authentication
             salt.CopyTo(data, serverNonce.Length + clientNonce.Length);
             username.CopyTo(data, serverNonce.Length + clientNonce.Length + salt.Length);
             additionalChallenge.CopyTo(data, serverNonce.Length + clientNonce.Length + salt.Length + username.Length);
-            data[data.Length - 4] = (byte)(iterations);
+            data[data.Length - 4] = (byte)iterations;
             data[data.Length - 3] = (byte)(iterations >> 8);
             data[data.Length - 2] = (byte)(iterations >> 16);
             data[data.Length - 1] = (byte)(iterations >> 24);
@@ -109,7 +109,7 @@ namespace GSF.Security.Authentication
 
         internal static byte[] GenerateSaltedPassword(byte[] passwordBytes, byte[] salt, int iterations)
         {
-            using (var pass = new PBKDF2(HMACMethod.SHA512, passwordBytes, salt, iterations))
+            using (PBKDF2 pass = new PBKDF2(HMACMethod.SHA512, passwordBytes, salt, iterations))
             {
                 return pass.GetBytes(PasswordSize);
             }

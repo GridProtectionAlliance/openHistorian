@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 
 using System.Collections.Generic;
 using GSF.Diagnostics;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Writer
 {
@@ -38,13 +37,13 @@ namespace GSF.Snap.Services.Writer
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        private bool m_isMemoryOnly;
+        private readonly bool m_isMemoryOnly;
         private bool m_disposed;
-        private PrebufferWriter<TKey, TValue> m_prebuffer;
-        private FirstStageWriter<TKey, TValue> m_firstStageWriter;
-        private TransactionTracker<TKey, TValue> m_transactionTracker;
-        private List<CombineFiles<TKey, TValue>> m_stagingRollovers;
-        private WriteProcessorSettings m_settings;
+        private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
+        private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
+        private readonly TransactionTracker<TKey, TValue> m_transactionTracker;
+        private readonly List<CombineFiles<TKey, TValue>> m_stagingRollovers;
+        private readonly WriteProcessorSettings m_settings;
 
         /// <summary>
         /// Creates a <see cref="WriteProcessor{TKey,TValue}"/>.
@@ -63,7 +62,7 @@ namespace GSF.Snap.Services.Writer
             m_isMemoryOnly = false; 
             m_prebuffer = new PrebufferWriter<TKey, TValue>(settings.PrebufferWriter, m_firstStageWriter.AppendData);
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
-            foreach (var rollover in settings.StagingRollovers)
+            foreach (CombineFilesSettings rollover in settings.StagingRollovers)
             {
                 m_stagingRollovers.Add(new CombineFiles<TKey, TValue>(rollover, list, rolloverLog));
             }

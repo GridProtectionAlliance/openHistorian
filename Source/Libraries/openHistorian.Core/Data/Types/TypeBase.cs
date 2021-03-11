@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -91,78 +91,67 @@ namespace openHistorian.Data.Types
 
         public double ToDouble(ulong value)
         {
-            double tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out double tmp);
             return tmp;
         }
 
         public float ToSingle(ulong value)
         {
-            float tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out float tmp);
             return tmp;
         }
 
         public long ToInt64(ulong value)
         {
-            long tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out long tmp);
             return tmp;
         }
 
         public ulong ToUInt64(ulong value)
         {
-            ulong tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out ulong tmp);
             return tmp;
         }
 
         public int ToInt32(ulong value)
         {
-            int tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out int tmp);
             return tmp;
         }
 
         public uint ToUInt32(ulong value)
         {
-            uint tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out uint tmp);
             return tmp;
         }
 
         public short ToInt16(ulong value)
         {
-            short tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out short tmp);
             return tmp;
         }
 
         public ushort ToUInt16(ulong value)
         {
-            ushort tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out ushort tmp);
             return tmp;
         }
 
         public sbyte ToSByte(ulong value)
         {
-            sbyte tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out sbyte tmp);
             return tmp;
         }
 
         public byte ToByte(ulong value)
         {
-            byte tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out byte tmp);
             return tmp;
         }
 
         public bool ToBoolean(ulong value)
         {
-            bool tmp;
-            ToValue(value, out tmp);
+            ToValue(value, out bool tmp);
             return tmp;
         }
 

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -48,9 +48,7 @@ namespace GSF.IO.FileStructure.Test
 
                 fixed (byte* lp = data)
                 {
-                    ulong value1;
-                    ulong value2;
-                    Murmur3.ComputeHash(lp, data.Length, out value1, out value2);
+                    Murmur3.ComputeHash(lp, data.Length, out ulong value1, out ulong value2);
 
                     Array.Copy(BitConverter.GetBytes(value1), 0, checksum2, 0, 8);
                     Array.Copy(BitConverter.GetBytes(value2), 0, checksum2, 8, 8);
@@ -73,15 +71,11 @@ namespace GSF.IO.FileStructure.Test
                 mm3.ComputeHash(data);
             fixed (byte* lp = data)
             {
-                ulong value1;
-                ulong value2;
-                long value3;
-                int value4;
                 for (int x = 0; x < 1000; x++)
-                    Murmur3.ComputeHash(lp, data.Length, out value1, out value2);
+                    Murmur3.ComputeHash(lp, data.Length, out ulong value1, out ulong value2);
 
                 for (int x = 0; x < 1000; x++)
-                    Footer.ComputeChecksum((IntPtr)lp, out value3, out value4, data.Length);
+                    Footer.ComputeChecksum((IntPtr)lp, out long value3, out int value4, data.Length);
             }
 
 
@@ -96,18 +90,14 @@ namespace GSF.IO.FileStructure.Test
 
             fixed (byte* lp = data)
             {
-                ulong value1;
-                ulong value2;
-                long value3;
-                int value4;
                 sw2.Start();
                 for (int x = 0; x < 10000; x++)
-                    Murmur3.ComputeHash(lp, data.Length, out value1, out value2);
+                    Murmur3.ComputeHash(lp, data.Length, out ulong value1, out ulong value2);
                 sw2.Stop();
 
                 sw3.Start();
                 for (int x = 0; x < 10000; x++)
-                    Footer.ComputeChecksum((IntPtr)lp, out value3, out value4, data.Length);
+                    Footer.ComputeChecksum((IntPtr)lp, out long value3, out int value4, data.Length);
                 sw3.Stop();
             }
 

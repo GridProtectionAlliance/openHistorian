@@ -381,7 +381,7 @@
 //        //    scan.SeekToKey(0, 0);
 //        //    while (scan.Read(out key1, out key2, out value1, out value2))
 //        //    {
-//        //        if (map[(int)key2] == null)
+//        //        if (map[(int)key2] is null)
 //        //            map[(int)key2] = new PointValue();
 //        //        map[(int)key2].Value = value2;
 //        //    }

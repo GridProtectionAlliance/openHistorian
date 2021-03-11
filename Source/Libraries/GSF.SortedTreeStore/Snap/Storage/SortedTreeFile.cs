@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -119,36 +119,18 @@ namespace GSF.Snap.Storage
         /// <summary>
         /// Determines if the archive file has been disposed. 
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Returns the name of the file.  Returns <see cref="String.Empty"/> if this is a memory archive.
         /// This is the name of the entire path.
         /// </summary>
-        public string FilePath
-        {
-            get
-            {
-                return m_filePath;
-            }
-        }
+        public string FilePath => m_filePath;
 
         /// <summary>
         /// Gets if the file is a memory file.
         /// </summary>
-        public bool IsMemoryFile
-        {
-            get
-            {
-                return m_filePath == string.Empty;
-            }
-        }
+        public bool IsMemoryFile => m_filePath == string.Empty;
 
         /// <summary>
         /// Gets the name of the file, but only the file, not the entire path.
@@ -167,26 +149,14 @@ namespace GSF.Snap.Storage
         /// Gets the last committed read snapshot on the file system.
         /// </summary>
         /// <returns></returns>
-        public ReadSnapshot Snapshot
-        {
-            get
-            {
-                return m_fileStructure.Snapshot;
-            }
-        }
+        public ReadSnapshot Snapshot => m_fileStructure.Snapshot;
 
         /// <summary>
         /// Gets the size of the file.
         /// </summary>
-        public long ArchiveSize
-        {
-            get
-            {
-                return m_fileStructure.ArchiveSize;
-            }
-        }
+        public long ArchiveSize => m_fileStructure.ArchiveSize;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -280,7 +250,7 @@ namespace GSF.Snap.Storage
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            if ((object)storageMethod == null)
+            if (storageMethod is null)
                 throw new ArgumentNullException("storageMethod");
 
             SubFileName fileName = GetFileName<TKey, TValue>(tableName);
@@ -300,7 +270,7 @@ namespace GSF.Snap.Storage
             where TKey : SnapTypeBase<TKey>, new()
             where TValue : SnapTypeBase<TValue>, new()
         {
-            if ((object)storageMethod == null)
+            if (storageMethod is null)
                 throw new ArgumentNullException("storageMethod");
 
             SubFileName fileName = GetFileName<TKey, TValue>();
@@ -350,7 +320,7 @@ namespace GSF.Snap.Storage
         {
             if (maxSortedTreeBlockSize < 1024)
                 throw new ArgumentOutOfRangeException(nameof(maxSortedTreeBlockSize), "Must be greater than 1024");
-            if ((object)storageMethod == null)
+            if (storageMethod is null)
                 throw new ArgumentNullException("storageMethod");
 
             using (TransactionalEdit trans = m_fileStructure.BeginEdit())

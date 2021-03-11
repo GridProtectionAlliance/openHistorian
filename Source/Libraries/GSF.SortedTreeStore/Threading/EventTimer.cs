@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -43,18 +43,18 @@ namespace GSF.Threading
         private ScheduledTask m_timer;
         private TimeSpan m_period;
         private TimeSpan m_dayOffset;
-        private object m_syncRoot;
+        private readonly object m_syncRoot;
         private bool m_isRunning;
         private bool m_stopping;
         private bool m_disposed;
 
-        private LogStackMessages m_message;
+        private readonly LogStackMessages m_message;
         /// <summary>
         /// Creates a <see cref="EventTimer"/>
         /// </summary>
         /// <param name="period"></param>
         /// <param name="dayOffset"></param>
-        EventTimer(TimeSpan period, TimeSpan dayOffset)
+        private EventTimer(TimeSpan period, TimeSpan dayOffset)
             : base(MessageClass.Component)
         {
             m_stopping = false;
@@ -71,7 +71,7 @@ namespace GSF.Threading
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void m_timer_Running(object sender, EventArgs<ScheduledTaskRunningReason> e)
+        private void m_timer_Running(object sender, EventArgs<ScheduledTaskRunningReason> e)
         {
             //This cannot be combined with m_directoryPolling because 
             //Scheduled task does not support managing multiple conflicting timers.
@@ -106,10 +106,7 @@ namespace GSF.Threading
         /// </summary>
         public bool Enabled
         {
-            get
-            {
-                return m_isRunning;
-            }
+            get => m_isRunning;
             set
             {
                 if (value)
@@ -209,7 +206,7 @@ namespace GSF.Threading
         /// <param name="period">the period of the timer</param>
         /// <param name="dayOffset">the day offset when the timer will run.</param>
         /// <returns></returns>
-        public static EventTimer Create(TimeSpan period, TimeSpan dayOffset = default(TimeSpan))
+        public static EventTimer Create(TimeSpan period, TimeSpan dayOffset = default)
         {
             return new EventTimer(period, dayOffset);
         }

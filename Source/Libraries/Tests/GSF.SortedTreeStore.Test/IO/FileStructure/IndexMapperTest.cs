@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -24,7 +24,6 @@
 
 using System;
 using System.Diagnostics;
-using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
@@ -99,7 +98,7 @@ namespace GSF.IO.FileStructure.Test
             IndexMapper map = new IndexMapper(blockSize);
             CheckValues check = new CheckValues(blockSize);
 
-            uint lastAddress = (uint)Math.Min(uint.MaxValue, (long)check.BlocksPerPage * (long)check.BlocksPerPage * (long)check.BlocksPerPage * (long)check.BlocksPerPage - 1);
+            uint lastAddress = (uint)Math.Min(uint.MaxValue, check.BlocksPerPage * (long)check.BlocksPerPage * check.BlocksPerPage * check.BlocksPerPage - 1);
 
             //this line is to shortcut so the test is less comprehensive.
             for (uint x = 0; x <= lastAddress; x++)
@@ -112,11 +111,11 @@ namespace GSF.IO.FileStructure.Test
 
         private class CheckValues
         {
-            public int FirstRedirectOffset = 0;
-            public int SecondRedirectOffset = 0;
-            public int ThirdRedirectOffset = 0;
-            public int FourthRedirectOffset = 0;
-            public readonly int BlocksPerPage = 0;
+            public int FirstRedirectOffset;
+            public int SecondRedirectOffset;
+            public int ThirdRedirectOffset;
+            public int FourthRedirectOffset;
+            public readonly int BlocksPerPage;
 
             public int BaseVirtualAddressIndexValue;
 

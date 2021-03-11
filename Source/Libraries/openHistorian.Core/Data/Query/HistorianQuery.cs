@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,8 +23,8 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Snap.Filters;
 using GSF.Snap.Services;
-using GSF.Snap.Services.Net;
 using GSF.Snap.Services.Reader;
 using openHistorian.Snap;
 
@@ -33,7 +33,7 @@ namespace openHistorian.Data.Query
     public class HistorianQuery
     {
         private readonly SnapClient m_historian;
-        private int m_samplesPerSecond = 30;
+        private readonly int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
         {
@@ -48,13 +48,13 @@ namespace openHistorian.Data.Query
 
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
-            using (var db = m_historian.GetDatabase<HistorianKey, HistorianValue>("PPA"))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> db = m_historian.GetDatabase<HistorianKey, HistorianValue>("PPA"))
             {
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
-                var timestamps = scanner.GetParser(startTime, endTime, 1500u);
+                SeekFilterBase<HistorianKey> timestamps = scanner.GetParser(startTime, endTime, 1500u);
                 SortedTreeEngineReaderOptions options = new SortedTreeEngineReaderOptions(TimeSpan.FromSeconds(1));
-                var results = db.GetSignalsWithCalculations(timestamps, signals, options);
+                IDictionary<Guid, SignalDataBase> results = db.GetSignalsWithCalculations(timestamps, signals, options);
                 return results;
             }
         }

@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -25,12 +25,9 @@
 using System;
 using System.Collections.Generic;
 using GSF.Net;
-using GSF.Snap.Definitions;
-using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Streaming;
-using GSF.Snap.Tree;
 
 namespace GSF.Snap.Services.Net
 {
@@ -45,15 +42,15 @@ namespace GSF.Snap.Services.Net
         where TKey : SnapTypeBase<TKey>, new()
         where TValue : SnapTypeBase<TValue>, new()
     {
-        BulkWriting m_writer;
-        TKey m_tmpKey;
-        TValue m_tmpValue;
+        private BulkWriting m_writer;
+        private readonly TKey m_tmpKey;
+        private readonly TValue m_tmpValue;
         private PointReader m_reader;
         private bool m_disposed;
-        RemoteBinaryStream m_stream;
+        private readonly RemoteBinaryStream m_stream;
         private readonly Action m_onDispose;
-        StreamEncodingBase<TKey, TValue> m_encodingMode;
-        DatabaseInfo m_info;
+        private StreamEncodingBase<TKey, TValue> m_encodingMode;
+        private readonly DatabaseInfo m_info;
 
         /// <summary>
         /// Creates a streaming wrapper around a database.
@@ -81,7 +78,7 @@ namespace GSF.Snap.Services.Net
             encoding.Save(m_stream);
             m_stream.Flush();
 
-            var command = (ServerResponse)m_stream.ReadUInt8();
+            ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
             {
                 case ServerResponse.UnhandledException:
@@ -110,7 +107,7 @@ namespace GSF.Snap.Services.Net
                 throw new Exception("Sockets do not support concurrent readers. Dispose of old reader.");
 
             m_stream.Write((byte)ServerCommand.Read);
-            if (keySeekFilter == null)
+            if (keySeekFilter is null)
             {
                 m_stream.Write(false);
             }
@@ -121,7 +118,7 @@ namespace GSF.Snap.Services.Net
                 keySeekFilter.Save(m_stream);
             }
 
-            if (keyMatchFilter == null)
+            if (keyMatchFilter is null)
             {
                 m_stream.Write(false);
             }
@@ -132,7 +129,7 @@ namespace GSF.Snap.Services.Net
                 keyMatchFilter.Save(m_stream);
             }
 
-            if (readerOptions == null)
+            if (readerOptions is null)
             {
                 m_stream.Write(false);
             }
@@ -144,7 +141,7 @@ namespace GSF.Snap.Services.Net
             m_stream.Flush();
 
 
-            var command = (ServerResponse)m_stream.ReadUInt8();
+            ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
             switch (command)
             {
                 case ServerResponse.UnhandledException:
@@ -240,24 +237,12 @@ namespace GSF.Snap.Services.Net
         /// <summary>
         /// Gets if has been disposed.
         /// </summary>
-        public override bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public override bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Gets basic information about the current Database.
         /// </summary>
-        public override DatabaseInfo Info
-        {
-            get
-            {
-                return m_info;
-            }
-        }
+        public override DatabaseInfo Info => m_info;
 
         /// <summary>
         /// Forces a soft commit on the database. A soft commit 
@@ -299,7 +284,7 @@ namespace GSF.Snap.Services.Net
                 m_stream.Flush();
                 m_onDispose();
 
-                var command = (ServerResponse)m_stream.ReadUInt8();
+                ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
                 switch (command)
                 {
                     case ServerResponse.UnhandledException:
@@ -319,10 +304,10 @@ namespace GSF.Snap.Services.Net
         public class BulkWriting
             : IDisposable
         {
-            bool m_disposed;
-            StreamingClientDatabase<TKey, TValue> m_client;
-            RemoteBinaryStream m_stream;
-            StreamEncodingBase<TKey, TValue> m_encodingMode;
+            private bool m_disposed;
+            private readonly StreamingClientDatabase<TKey, TValue> m_client;
+            private readonly RemoteBinaryStream m_stream;
+            private readonly StreamEncodingBase<TKey, TValue> m_encodingMode;
 
             internal BulkWriting(StreamingClientDatabase<TKey, TValue> client)
             {
@@ -370,8 +355,8 @@ namespace GSF.Snap.Services.Net
         {
             private bool m_completed;
             private readonly Action m_onComplete;
-            StreamEncodingBase<TKey, TValue> m_encodingMethod;
-            private RemoteBinaryStream m_stream;
+            private readonly StreamEncodingBase<TKey, TValue> m_encodingMethod;
+            private readonly RemoteBinaryStream m_stream;
 
             public PointReader(StreamEncodingBase<TKey, TValue> encodingMethod, RemoteBinaryStream stream, Action onComplete)
             {
@@ -422,7 +407,7 @@ namespace GSF.Snap.Services.Net
                     m_completed = true;
                     m_onComplete();
                     string exception;
-                    var command = (ServerResponse)m_stream.ReadUInt8();
+                    ServerResponse command = (ServerResponse)m_stream.ReadUInt8();
                     switch (command)
                     {
                         case ServerResponse.UnhandledException:

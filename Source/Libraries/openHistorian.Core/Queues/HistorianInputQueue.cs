@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -87,13 +87,7 @@ namespace openHistorian.Queues
         /// <summary>
         /// Gets queue size.
         /// </summary>
-        public long Size
-        {
-            get
-            {
-                return (object)m_blocks == null ? 0L : m_blocks.Count;
-            }
-        }
+        public long Size => m_blocks is null ? 0L : m_blocks.Count;
 
         /// <summary>
         /// Provides a thread safe way to enqueue points. 
@@ -105,7 +99,7 @@ namespace openHistorian.Queues
         {
             lock (m_syncWrite)
             {
-                PointData data = default(PointData);
+                PointData data = default;
                 while (data.Load(stream))
                 {
                     m_blocks.Enqueue(data);
@@ -139,7 +133,7 @@ namespace openHistorian.Queues
 
             try
             {
-                if (m_database == null)
+                if (m_database is null)
                     m_database = m_getDatabase();
                 m_database.Write(m_pointStream);
             }
@@ -181,18 +175,11 @@ namespace openHistorian.Queues
                 SetEos(true);
             }
 
-            public bool QuitOnPointCount
-            {
-                get
-                {
-                    return m_count >= m_maxPoints;
-                }
-            }
+            public bool QuitOnPointCount => m_count >= m_maxPoints;
 
             protected override bool ReadNext(HistorianKey key, HistorianValue value)
             {
-                PointData data;
-                if (m_count < m_maxPoints && m_measurements.TryDequeue(out data))
+                if (m_count < m_maxPoints && m_measurements.TryDequeue(out PointData data))
                 {
                     key.Timestamp = data.Key1;
                     key.PointID = data.Key2;

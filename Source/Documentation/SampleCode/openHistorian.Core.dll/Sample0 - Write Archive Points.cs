@@ -19,11 +19,11 @@ namespace SampleCode.openHistorian.Core.dll
             string fileName = @"C:\Temp\ArchiveFile.d2";
             if (File.Exists(fileName))
                 File.Delete(fileName);
-            var key = new HistorianKey();
-            var value = new HistorianValue();
-            using (var file = SortedTreeFile.CreateFile(fileName))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
-            using (var editor = table.BeginEdit())
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (SortedTreeFile file = SortedTreeFile.CreateFile(fileName))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> editor = table.BeginEdit())
             {
                 key.TimestampAsDate = DateTime.Now;
                 key.PointID = 1;
@@ -41,11 +41,11 @@ namespace SampleCode.openHistorian.Core.dll
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var snapshot = table.BeginRead())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> snapshot = table.BeginRead())
             {
-                var scanner = snapshot.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = snapshot.GetTreeScanner();
                 scanner.SeekToStart();
                 while (scanner.Read(key,value))
                 {
@@ -59,11 +59,11 @@ namespace SampleCode.openHistorian.Core.dll
         public void AppendDataToAnExistingFile()
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
-            var key = new HistorianKey();
-            var value = new HistorianValue();
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
-            using (var editor = table.BeginEdit())
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeTableEditor<HistorianKey, HistorianValue> editor = table.BeginEdit())
             {
                 key.TimestampAsDate = DateTime.Now;
                 key.PointID = 2;
@@ -78,12 +78,12 @@ namespace SampleCode.openHistorian.Core.dll
         public void RollbackChangesToAFile()
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
-            var key = new HistorianKey();
-            var value = new HistorianValue();
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(EncodingDefinition.FixedSizeCombinedEncoding))
             {
-                using (var editor = table.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> editor = table.BeginEdit())
                 {
                     key.TimestampAsDate = DateTime.Now.AddDays(-1);
                     key.PointID = 234;
@@ -92,7 +92,7 @@ namespace SampleCode.openHistorian.Core.dll
                     editor.Commit();
                 }
 
-                using (var editor = table.BeginEdit())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> editor = table.BeginEdit())
                 {
                     key.Timestamp = 31;
                     value.AsString = "But Not Me";
@@ -114,17 +114,17 @@ namespace SampleCode.openHistorian.Core.dll
             HistorianValue value1 = new HistorianValue();
             HistorianValue value2 = new HistorianValue();
 
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
             {
-                var snapshotInfo = table.AcquireReadSnapshot();
+                SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snapshotInfo = table.AcquireReadSnapshot();
 
                 
-                using (var reader1 = snapshotInfo.CreateReadSnapshot())
-                using (var reader2 = snapshotInfo.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader1 = snapshotInfo.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader2 = snapshotInfo.CreateReadSnapshot())
                 {
-                    var scanner1 = reader1.GetTreeScanner();
-                    var scanner2 = reader2.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner1 = reader1.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner2 = reader2.GetTreeScanner();
 
                     scanner1.SeekToStart();
                     scanner2.SeekToStart();
@@ -153,17 +153,17 @@ namespace SampleCode.openHistorian.Core.dll
         [Test]
         public void ReadFromAFileWhileWritingToIt()
         {
-            var key = new HistorianKey();
-            var value = new HistorianValue();
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
+            using (SortedTreeTable<HistorianKey, HistorianValue> table = file.OpenTable<HistorianKey, HistorianValue>())
             {
-                using (var writer = table.BeginEdit())
-                using (var reader = table.BeginRead())
+                using (SortedTreeTableEditor<HistorianKey, HistorianValue> writer = table.BeginEdit())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
                 {
-                    var scanner = reader.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = reader.GetTreeScanner();
                     scanner.SeekToStart();
                     while (scanner.Read(key,value))
                     {

@@ -232,13 +232,13 @@ namespace openHistorian.Adapters
                 {
                     SnapServer server = GetServer(instanceName)?.Host;
 
-                    if (server == null)
+                    if (server is null)
                         throw new InvalidOperationException($"Server is null for instance [{instanceName}].");
 
                     using (SnapClient connection = SnapClient.Connect(server))
                     using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName))
                     {
-                        if (database == null)
+                        if (database is null)
                             throw new InvalidOperationException($"Database is null for instance [{instanceName}].");
 
                         HistorianKey key = new HistorianKey();

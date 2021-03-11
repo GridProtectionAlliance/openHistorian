@@ -5,11 +5,9 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using GSF.Snap;
-using openHistorian;
 using openHistorian.Data.Query;
 using openHistorianServiceHost.Properties;
 using openVisN.Framework;
-using openVisN.Library;
 
 namespace openHistorianServiceHost
 {
@@ -119,14 +117,14 @@ namespace openHistorianServiceHost
                 sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 100).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
-                sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
+                sb.Append("Scanned: " + Stats.PointsScanned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Points: " + Stats.PointsReturned.ToString().PadRight(9));
+                sb.Append("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9));
+                sb.Append("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8));
+                sb.Append("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 100).ToString("0 K/s").PadRight(9));
+                sb.Append("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7));
+                sb.Append("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9));
 
                 //if (pointCount < Stats.PointsReturned)
                 //{

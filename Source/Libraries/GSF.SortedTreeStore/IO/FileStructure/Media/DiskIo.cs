@@ -5,10 +5,10 @@
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
 //  not use this file except in compliance with the License. You may obtain a copy of the License at:
 //
-//      http://www.opensource.org/licenses/eclipse-1.0.php
+//      http://opensource.org/licenses/MIT
 //
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
@@ -23,7 +23,6 @@
 
 using System;
 using System.Data;
-using System.IO;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
@@ -51,7 +50,7 @@ namespace GSF.IO.FileStructure.Media
 
         private DiskIo(DiskMedium stream, bool isReadOnly)
         {
-            if (stream == null)
+            if (stream is null)
                 throw new ArgumentNullException("stream");
             m_isReadOnly = isReadOnly;
             m_blockSize = stream.BlockSize;
@@ -72,13 +71,7 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Gets the number of bytes in a single block.
         /// </summary>
-        public int BlockSize
-        {
-            get
-            {
-                return m_blockSize;
-            }
-        }
+        public int BlockSize => m_blockSize;
 
         /// <summary>
         /// Gets if the disk supports writing.
@@ -96,13 +89,7 @@ namespace GSF.IO.FileStructure.Media
         /// <summary>
         /// Gets if the class has been disposed.
         /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
+        public bool IsDisposed => m_disposed;
 
         /// <summary>
         /// Gets the current size of the file.
@@ -143,15 +130,9 @@ namespace GSF.IO.FileStructure.Media
             }
         }
 
-        public string FileName
-        {
-            get
-            {
-                return m_stream.FileName;
-            }
-        }
+        public string FileName => m_stream.FileName;
 
-        #endregion
+    #endregion
 
         #region [ Methods ]
 
@@ -256,8 +237,7 @@ namespace GSF.IO.FileStructure.Media
 
         public static DiskIo OpenFile(string fileName, MemoryPool pool, bool isReadOnly)
         {
-            int fileStructureBlockSize;
-            CustomFileStream fileStream = CustomFileStream.OpenFile(fileName, pool.PageSize, out fileStructureBlockSize, isReadOnly, true);
+            CustomFileStream fileStream = CustomFileStream.OpenFile(fileName, pool.PageSize, out int fileStructureBlockSize, isReadOnly, true);
             DiskMedium disk = DiskMedium.OpenFile(fileStream, pool, fileStructureBlockSize);
             return new DiskIo(disk, isReadOnly);
         }
