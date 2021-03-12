@@ -776,6 +776,32 @@
             IEC 61850-90-5 Output.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputProtocolValueConverter">
+            <summary>
+            Defines a value converter for the <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputProtocol"/> enumeration.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputProtocolValueConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>Converts a value.</summary>
+            <param name="value">The value produced by the binding source.</param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">The converter parameter to use.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A converted value. If the method returns <see langword="null" />, the valid null value is used.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputProtocolValueConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>Converts a value.</summary>
+            <param name="value">The value that is produced by the binding target.</param>
+            <param name="targetType">The type to convert to.</param>
+            <param name="parameter">The converter parameter to use.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>A converted value. If the method returns <see langword="null" />, the valid null value is used.</returns>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.DataModels.OutputProtocolValueConverter.Default">
+            <summary>
+            Gets default instance of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputProtocolValueConverter"/>.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputStream">
             <summary>
             Represents a record of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> as defined in the database.
@@ -784,6 +810,11 @@
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStream.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.UpdateConfigFrameSize">
+            <summary>
+            Gets or sets function to call when config frame size calculation should be updated.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.NodeID">
@@ -809,11 +840,6 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.Type">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s output protocol type.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.TypeAsInt">
-            <summary>
-            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/>'s output protocol type as an integer.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.OutputStream.ConnectionString">

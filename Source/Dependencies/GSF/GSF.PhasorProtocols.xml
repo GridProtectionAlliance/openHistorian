@@ -230,7 +230,7 @@
             <remarks>
             The attributes dictionary is relevant to all channel properties.  This dictionary will only be instantiated with a call to
             the <c>Attributes</c> property which will begin the enumeration of relevant system properties.  This is typically used for
-            display purposes. For example, this information is displayed in a tree view on the the <b>PMU Connection Tester</b> to display
+            display purposes. For example, this information is displayed in a tree view on the <b>PMU Connection Tester</b> to display
             attributes of data elements that may be protocol specific.
             </remarks>
         </member>
@@ -7972,6 +7972,16 @@
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.Parent3">
             <summary>
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/> parent of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/>, if applicable.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.MaximumLabelLength">
+            <summary>
+            Gets the maximum length of the <see cref="P:GSF.PhasorProtocols.ChannelDefinitionBase.Label"/> of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.AutoPadLabelImage">
+            <summary>
+            Gets flag that indicates if <see cref="P:GSF.PhasorProtocols.ChannelDefinitionBase.LabelImage"/> should auto pad-right value to <see cref="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.MaximumLabelLength"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.BodyLength">
