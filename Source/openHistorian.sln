@@ -313,6 +313,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{880E5A
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "openhistorian-python", "Libraries\PythonAPIModule\openhistorian-python.pyproj", "{D61BBB31-74A7-498D-8C36-FB18C72609F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.TrenDAPController", "Libraries\Adapters\openHistorian.TrenDAPController\openHistorian.TrenDAPController.csproj", "{9DE89239-FEDC-4218-8770-1167A22EC999}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -944,6 +946,24 @@ Global
 		{D61BBB31-74A7-498D-8C36-FB18C72609F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D61BBB31-74A7-498D-8C36-FB18C72609F8}.Release|x64.ActiveCfg = Release|Any CPU
 		{D61BBB31-74A7-498D-8C36-FB18C72609F8}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|x64.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Debug|x86.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|Any CPU.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|x64.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|x64.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|x86.ActiveCfg = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Mono|x86.Build.0 = Debug|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|x64.ActiveCfg = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|x64.Build.0 = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DE89239-FEDC-4218-8770-1167A22EC999}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1003,6 +1023,7 @@ Global
 		{74DB9FAA-D991-4142-9628-2402054DF5E6} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{880E5A69-EE1E-46EC-838F-783F188D8B49} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{D61BBB31-74A7-498D-8C36-FB18C72609F8} = {880E5A69-EE1E-46EC-838F-783F188D8B49}
+		{9DE89239-FEDC-4218-8770-1167A22EC999} = {550621C3-C903-4405-971A-DC4BAA286BA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA73B94E-45F7-4272-BCA2-4B4386CC92B2}

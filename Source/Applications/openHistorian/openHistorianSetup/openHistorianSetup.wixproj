@@ -75,6 +75,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.TrenDAPController\openHistorian.TrenDAPController.csproj">
+      <Name>openHistorian.TrenDAPController</Name>
+      <Project>{9de89239-fedc-4218-8770-1167a22ec999}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Name>GSF.SortedTreeStore</Name>
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>

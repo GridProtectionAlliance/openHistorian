@@ -59,6 +59,7 @@ namespace openHistorian
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
             bool osiPIGrafanaControllerEnabled = systemSettings["OSIPIGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
             bool eDNAGrafanaControllerEnabled = systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
+            bool trenDAPControllerEnabled = systemSettings["TrenDAPControllerEnabled", true]?.Value.ParseBoolean() ?? true;
 
             // Modify the JSON serializer to serialize dates as UTC - otherwise, timezone will not be appended
             // to date strings and browsers will select whatever timezone suits them
@@ -117,6 +118,9 @@ namespace openHistorian
 
             if (eDNAGrafanaControllerEnabled)
                 Load_eDNAGrafanaController();
+
+            if (trenDAPControllerEnabled)
+                Load_TrenDAPController();
 
             // Configure Windows Authentication for self-hosted web service
             HubConfiguration hubConfig = new HubConfiguration();
@@ -197,6 +201,25 @@ namespace openHistorian
                     Program.Host.LogStatusMessage($"WARNING: Failed to initialize eDNA Grafana controller routes: {ex.Message}", UpdateType.Warning);
                 }
             }
+
+            if (trenDAPControllerEnabled)
+            {
+                // Map eDNA Grafana controller
+                try
+                {
+                    httpConfig.Routes.MapHttpRoute(
+                        name: "TrenDAP",
+                        routeTemplate: "api/trendap/{action}",
+                        defaults: new { action = "Index", controller = "TrenDAP" }
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Program.Host.LogStatusMessage($"WARNING: Failed to initialize TrenDAP controller routes: {ex.Message}", UpdateType.Warning);
+                }
+            }
+
+
 
             // Map custom API controllers
             try
@@ -295,6 +318,25 @@ namespace openHistorian
                 Program.Host.LogStatusMessage($"WARNING: Failed to load eDNA Grafana controller, validate eDNA DLL's exists in program directory: {ex.Message}", UpdateType.Warning);
             }
         }
+
+        private void Load_TrenDAPController()
+        {
+            // Load external eDNAGrafanaController so route map can find it
+            try
+            {
+                // Wrap class reference in lambda function to force
+                // assembly load errors to occur within the try-catch
+                new Action(() =>
+                {
+                    using (new TrenDAPController.TrenDAPController()) { }
+                })();
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogStatusMessage($"WARNING: Failed to load TrenDAP controller, validate TrenDAP DLL's exists in program directory: {ex.Message}", UpdateType.Warning);
+            }
+        }
+
 
         // Static Properties
 
