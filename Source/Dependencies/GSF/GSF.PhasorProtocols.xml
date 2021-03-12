@@ -59,11 +59,12 @@
             Represents a protocol independent collection of <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/> objects.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.AnalogDefinitionCollection.#ctor(System.Int32)">
+        <member name="M:GSF.PhasorProtocols.AnalogDefinitionCollection.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.AnalogDefinitionCollection"/> using specified <paramref name="lastValidIndex"/>.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit
@@ -356,7 +357,7 @@
             Creates a new <see cref="T:GSF.PhasorProtocols.ChannelCellCollectionBase`1"/> from specified parameters.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
-            <param name="constantCellLength">Sets flag that determines if the lengths of <see cref="T:GSF.PhasorProtocols.IChannelCell"/> elements in this <see cref="T:GSF.PhasorProtocols.ChannelCellCollectionBase`1"/> are constant.</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit
@@ -370,31 +371,6 @@
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelCellCollectionBase`1.ConstantCellLength">
-            <summary>
-            Gets flag that determines if the lengths of <see cref="T:GSF.PhasorProtocols.IChannelCell"/> elements in this <see cref="T:GSF.PhasorProtocols.ChannelCellCollectionBase`1"/> are constant.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelCellCollectionBase`1.BinaryLength">
-            <summary>
-            Gets the length of the <see cref="T:GSF.PhasorProtocols.ChannelCollectionBase`1"/>.
-            </summary>
-            <remarks>
-            The length of the <see cref="T:GSF.PhasorProtocols.ChannelCellCollectionBase`1"/> binary image is the combined length of all the items in the collection.
-            </remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelCellCollectionBase`1.Attributes">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for this <see cref="T:GSF.PhasorProtocols.ChannelCellCollectionBase`1"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.ChannelCellCollectionBase`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
         </member>
         <member name="T:GSF.PhasorProtocols.ChannelCellParsingStateBase">
             <summary>
@@ -438,11 +414,12 @@
             Creates a new <see cref="T:GSF.PhasorProtocols.ChannelCollectionBase`1"/>.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.ChannelCollectionBase`1.#ctor(System.Int32)">
+        <member name="M:GSF.PhasorProtocols.ChannelCollectionBase`1.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.ChannelCollectionBase`1"/> using specified <paramref name="lastValidIndex"/>.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit
@@ -476,6 +453,11 @@
             The default implementation assumes all <see cref="T:GSF.PhasorProtocols.IChannel"/> items in the collection have the same length, hence the value returned
             is the <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> of the first item in the collection times the <see cref="P:System.Collections.Generic.List`1.Count"/>.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.ChannelCollectionBase`1.FixedElementSize">
+            <summary>
+            Gets flag that indicates if collection elements have a fixed size.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelCollectionBase`1.Attributes">
             <summary>
@@ -750,11 +732,12 @@
             </summary>
             <typeparam name="T">Specific <see cref="T:GSF.PhasorProtocols.IChannelDefinition"/> type that the <see cref="T:GSF.PhasorProtocols.ChannelDefinitionCollectionBase`1"/> contains.</typeparam>
         </member>
-        <member name="M:GSF.PhasorProtocols.ChannelDefinitionCollectionBase`1.#ctor(System.Int32)">
+        <member name="M:GSF.PhasorProtocols.ChannelDefinitionCollectionBase`1.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.ChannelDefinitionCollectionBase`1"/> using specified <paramref name="lastValidIndex"/>.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit
@@ -931,6 +914,11 @@
             Gets or sets flag that determines if frame's check-sum should be validated - this should normally be left as <c>true</c>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.ChannelFrameBase`1.Checksum">
+            <summary>
+            Gets calculated checksum for this <see cref="T:GSF.PhasorProtocols.ChannelFrameBase`1"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.ChannelFrameBase`1.BodyLength">
             <summary>
             Gets the length of the <see cref="P:GSF.PhasorProtocols.ChannelFrameBase`1.BodyImage"/>.
@@ -1105,14 +1093,6 @@
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
-        </member>
-        <member name="P:GSF.PhasorProtocols.ChannelFrameCollectionBase`1.BinaryLength">
-            <summary>
-            Gets the length of the <see cref="T:GSF.PhasorProtocols.ChannelCollectionBase`1"/>.
-            </summary>
-            <remarks>
-            The length of the <see cref="T:GSF.PhasorProtocols.ChannelFrameCollectionBase`1"/> binary image is the combined length of all the items in the collection.
-            </remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.ChannelFrameParsingStateBase`1">
             <summary>
@@ -1579,7 +1559,7 @@
             Represents the protocol independent common implementation of all configuration elements for cells in a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/>.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.ConfigurationCellBase.#ctor(GSF.PhasorProtocols.IConfigurationFrame,System.UInt16,System.Int32,System.Int32,System.Int32)">
+        <member name="M:GSF.PhasorProtocols.ConfigurationCellBase.#ctor(GSF.PhasorProtocols.IConfigurationFrame,System.UInt16,System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.ConfigurationCellBase"/> from specified parameters.
             </summary>
@@ -1588,6 +1568,7 @@
             <param name="maximumPhasors">Sets the maximum number of phasors for the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.PhasorDefinitions"/> collection.</param>
             <param name="maximumAnalogs">Sets the maximum number of phasors for the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.AnalogDefinitions"/> collection.</param>
             <param name="maximumDigitals">Sets the maximum number of phasors for the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.DigitalDefinitions"/> collection.</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.ConfigurationCellBase.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -2673,11 +2654,12 @@
             Represents a protocol independent collection of <see cref="T:GSF.PhasorProtocols.IDigitalDefinition"/> objects.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.DigitalDefinitionCollection.#ctor(System.Int32)">
+        <member name="M:GSF.PhasorProtocols.DigitalDefinitionCollection.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.DigitalDefinitionCollection"/> using specified <paramref name="lastValidIndex"/>.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit
@@ -4387,11 +4369,6 @@
             </summary>
             <typeparam name="T">Generic type used.</typeparam>
         </member>
-        <member name="P:GSF.PhasorProtocols.IChannelCellCollection`1.ConstantCellLength">
-            <summary>
-            Gets flag that determines if the lengths of <see cref="T:GSF.PhasorProtocols.IChannelCell"/> elements in this <see cref="T:GSF.PhasorProtocols.IChannelCellCollection`1"/> are constant.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.IChannelCellParsingState">
             <summary>
             Represents a protocol independent interface representation of the parsing state of any kind of <see cref="T:GSF.PhasorProtocols.IChannelCell"/>.
@@ -4414,12 +4391,16 @@
         </member>
         <member name="T:GSF.PhasorProtocols.IChannelCollection`1">
             <summary>
-            Represents a protocol independent interface representation of a collection of any
-            <see cref="T:GSF.PhasorProtocols.IChannel"/> objects.<br/>
-            This is the base interface implemented by all collections classes in the phasor
-            protocols library; it is the root of the collection interface hierarchy.
+            Represents a protocol independent interface representation of a collection of any <see cref="T:GSF.PhasorProtocols.IChannel"/> objects.<br/>
+            This is the base interface implemented by all collections classes in the phasor protocols library; it is the root of
+            the collection interface hierarchy.
             </summary>
             <typeparam name="T">Specific <see cref="T:GSF.PhasorProtocols.IChannel"/> type that the <see cref="T:GSF.PhasorProtocols.IChannelCollection`1"/> contains.</typeparam>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IChannelCollection`1.FixedElementSize">
+            <summary>
+            Gets flag that indicates if collection elements have a fixed size.
+            </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.DataFormat">
             <summary>
@@ -5883,6 +5864,11 @@
             Gets the binary header image of the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/> object.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.BodyLength">
+            <summary>
+            Gets the length of the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.BodyImage"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.FooterLength">
             <summary>
             Gets the length of the <see cref="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.FooterImage"/>.
@@ -7244,6 +7230,13 @@
             <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/> object.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.Clone(GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader)">
+            <summary>
+            Creates a copy of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/>.
+            </summary>
+            <param name="header">Source header to use for clone.</param>
+            <returns>A copy of the current <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/>.</returns>
+        </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Parses the binary header image.
@@ -7968,11 +7961,17 @@
             <summary>
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/>.
             </summary>
+            <remarks>
+            Return value can be <c>null</c> if parent configuration cell is a <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/>.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.Parent3">
             <summary>
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/> parent of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition"/>, if applicable.
             </summary>
+            <remarks>
+            Return value can be <c>null</c> if parent configuration cell is a <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell"/>.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.FrequencyDefinition.MaximumLabelLength">
             <summary>
@@ -9973,11 +9972,12 @@
             Represents a protocol independent collection of <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> objects.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.PhasorDefinitionCollection.#ctor(System.Int32)">
+        <member name="M:GSF.PhasorProtocols.PhasorDefinitionCollection.#ctor(System.Int32,System.Boolean)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.PhasorDefinitionCollection"/> using specified <paramref name="lastValidIndex"/>.
             </summary>
             <param name="lastValidIndex">Last valid index for the collection (i.e., maximum count - 1).</param>
+            <param name="fixedElementSize">Flag that indicates if collections elements have a fixed size.</param>
             <remarks>
             <paramref name="lastValidIndex"/> is used instead of maximum count so that maximum type values may
             be specified as needed. For example, if the protocol specifies a collection with a signed 16-bit

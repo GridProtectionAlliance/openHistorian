@@ -40498,6 +40498,13 @@
             these failures and returns a default value if the named parameter does not exist or cannot be deserialized.
             </remarks>
         </member>
+        <member name="M:GSF.Serialization.GetValues(System.Runtime.Serialization.SerializationInfo)">
+            <summary>
+            Gets values of a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> instance compatible with Linq operations.
+            </summary>
+            <param name="info">Target <see cref="T:System.Runtime.Serialization.SerializationInfo"/> instance.</param>
+            <returns>Enumeration of <see cref="T:System.Runtime.Serialization.SerializationEntry"/> objects from <paramref name="info"/> instance.</returns>
+        </member>
         <member name="T:GSF.TimeSpanExtensions">
             <summary>
             Extends the TimeSpan Class
