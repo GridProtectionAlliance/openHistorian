@@ -678,12 +678,22 @@
         <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.TargetConfigurationType">
             <summary>
             Gets or sets target output type for configuration frames. For example, setting property to
-            <see cref="F:GSF.PhasorProtocols.IEEEC37_118.DraftRevision.Std2011"/> will target <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> outputs.
+            <see cref="F:GSF.PhasorProtocols.IEEEC37_118.DraftRevision.Std2011"/> will target <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame3"/> outputs.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.MaximumLabelLength">
             <summary>
             Gets the maximum label length for string fields in configuration frames.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame2">
+            <summary>
+            Gets the CFG-2 frame instance.
+            </summary>
+        </member>
+        <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame3">
+            <summary>
+            Gets the CFG-3 frame instance.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.Status">
@@ -744,22 +754,22 @@
         </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame2(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency)">
             <summary>
-            Creates a new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            Creates a new IEEE C37.118 <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame2"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/></param>.
-            <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame2"/>.</returns>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame2"/></param>.
+            <returns>A new IEEE C37.118 <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame2"/>.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.IeeeC37_118.Concentrator.CreateConfigurationFrame3(GSF.PhasorProtocols.Anonymous.ConfigurationFrame,System.UInt32,GSF.Units.EE.LineFrequency,PhasorProtocolAdapters.IeeeC37_118.Concentrator)">
             <summary>
-            Creates a new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
+            Creates a new IEEE C37.118 <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame3"/> based on provided protocol independent <paramref name="baseConfigurationFrame"/>.
             </summary>
             <param name="baseConfigurationFrame">Protocol independent <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationFrame"/>.</param>
             <param name="timeBase">Timebase to use for fraction second resolution.</param>
-            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/></param>.
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> to use for the new <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame3"/></param>.
             <param name="parent">Gets reference to parent <see cref="T:PhasorProtocolAdapters.IeeeC37_118.Concentrator"/> instance, if available.</param>
-            <returns>A new IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3"/>.</returns>
+            <returns>A new IEEE C37.118 <see cref="P:PhasorProtocolAdapters.IeeeC37_118.Concentrator.ConfigurationFrame3"/>.</returns>
             <remarks>
             When <paramref name="parent"/> reference is not available, ancillary configuration frame 3 data will be attempted to be loaded from last cached
             instance of the configuration matching the defined <see cref="P:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.Name"/> of the <paramref name="baseConfigurationFrame"/>.
