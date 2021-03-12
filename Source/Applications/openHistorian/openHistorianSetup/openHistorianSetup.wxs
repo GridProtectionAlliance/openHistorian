@@ -424,6 +424,11 @@
           <netfx:NativeImage Id="ngen_openHistorian.OSIPIGrafanaController.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="openHistorian.TrenDAPController">
+        <File Id="openHistorian.TrenDAPController.dll" Name="$(var.openHistorian.TrenDAPController.TargetFileName)" Source="$(var.openHistorian.TrenDAPController.TargetPath)" >
+          <netfx:NativeImage Id="ngen_openHistorian.TrenDAPController.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
 
       <Component Id="WebManagerShortcutComponent" Guid="{81B17113-C022-4751-9C08-D5BC57D08F7F}">
         <Shortcut Id="WebManagerStartMenuShortcut" Directory="ApplicationProgramsFolder" Name="openHistorian Web Manager" Icon="openHistorianWebManager.ico.exe" Description="URL to the openHistorian Web Manager." Target="[WEBMANAGERURL]" />
