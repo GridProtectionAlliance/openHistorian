@@ -43051,13 +43051,16 @@
             Defines extension methods related to enumerations.
             </summary>
         </member>
-        <member name="M:GSF.EnumExtensions.GetDescription(System.Enum)">
+        <member name="M:GSF.EnumExtensions.GetDescription(System.Enum,System.Boolean)">
             <summary>
             Retrieves the description of the value that this <see cref="T:System.Enum"/> represents extracted from the <see cref="T:System.ComponentModel.DescriptionAttribute"/>, or the enumeration name
             if no description is available.
             </summary>
             <param name="enumeration"><see cref="T:System.Enum"/> to operate on.</param>
-            <returns>Description of the <see cref="T:System.Enum"/> if specified, otherwise the <see cref="T:System.String"/> representation of this <paramref name="enumeration"/>.</returns>
+            <param name="defaultToName">When <c>true</c>, return enum name when no description attribute exists; otherwise, return <c>null</c>.</param>
+            <returns>
+            Description of the <see cref="T:System.Enum"/> if specified, otherwise the <see cref="T:System.String"/> representation of this <paramref name="enumeration"/> or
+            <c>null</c> if <paramref name="defaultToName"/> is <c>false</c>.</returns>
         </member>
         <member name="M:GSF.EnumExtensions.GetEnumValueOrDefault``1(System.Object,System.Object)">
             <summary>

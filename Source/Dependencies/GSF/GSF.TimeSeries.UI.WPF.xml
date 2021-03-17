@@ -213,7 +213,7 @@
         </member>
         <member name="M:GSF.TimeSeries.UI.UserControls.AdapterUserControl.DataGrid_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
             <summary>
-            Handles PreviewKeyDown event on the datagrid.
+            Handles PreviewKeyDown event on the data-grid.
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Arguments for the event.</param>
@@ -1895,6 +1895,17 @@
             that is annotated with the <see cref="T:System.ComponentModel.DefaultValueAttribute"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.EnumValues">
+            <summary>
+            Gets a list of enum types if this <see cref="T:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter"/>'s type is an enum.
+            If it is not an enum, this returns an empty array.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.EnumDescription">
+            <summary>
+            Gets enum description, if defined.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.Color">
             <summary>
             Gets or sets the color of the item in the <see cref="T:System.Windows.Controls.ListBox"/>
@@ -1905,12 +1916,6 @@
             <summary>
             Gets or sets the boldness of the item in the <see cref="T:System.Windows.Controls.ListBox"/> that the
             <see cref="T:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter"/> is modeling.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.EnumValues">
-            <summary>
-            Gets a list of enum types if this <see cref="T:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter"/>'s type is an enum.
-            If it is not an enum, this returns null.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.IsFalseChecked">
@@ -1924,8 +1929,8 @@
         <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.IsCustom">
             <summary>
             Gets a value that indicates whether the value of this parameter can be configured via a
-            custom control. This determines whether the hyperlink that links to the custom configuration
-            popup is visible.
+            custom control. This determines whether the hyper-link that links to the custom configuration
+            pop-up is visible.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.AdapterConnectionStringParameter.IsBoolean">
@@ -2130,7 +2135,7 @@
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.TypeInfo">
             <summary>
-            Gets additional information about the type selected from the dropdown.
+            Gets additional information about the type selected from the drop-down.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.Adapters.ParameterList">
