@@ -236,7 +236,9 @@ namespace ConfigurationSetupUtility.Screens
         private void UpdateAll()
         {
             List<ListBoxItem> parameterNames = GetConnectionStringParameterNamesList();
+            ListBoxItem selectedItem = ParameterNameListBox.SelectedItem as ListBoxItem;
             bool suppress = m_suppressTextChangedEvents;
+
             // Update the list of parameter names.
             m_suppressTextChangedEvents = true;
             ParameterNameListBox.ItemsSource = parameterNames;
@@ -247,9 +249,9 @@ namespace ConfigurationSetupUtility.Screens
 
             // Since the list of parameter names may have changed,
             // attempt to find the previous selection in the new list and select it.
-            if (ParameterNameListBox.SelectedItem is ListBoxItem selectedParameter)
+            if (!(selectedItem is null))
             {
-                ListBoxItem itemToSelect = parameterNames.SingleOrDefault(parameter => parameter.Content.Equals(selectedParameter.Content));
+                ListBoxItem itemToSelect = parameterNames.SingleOrDefault(parameter => parameter.Content.Equals(selectedItem.Content));
 
                 if (itemToSelect != null)
                     ParameterNameListBox.SelectedIndex = parameterNames.IndexOf(itemToSelect);
