@@ -79,6 +79,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>CS0168</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>DatabaseSetupUtility.ico</ApplicationIcon>
