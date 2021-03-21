@@ -29,6 +29,7 @@ using GSF.Snap.Filters;
 using openHistorian.Data.Types;
 using openHistorian.Snap;
 
+// ReSharper disable NotAccessedVariable
 namespace openHistorian.Data.Query
 {
     /// <summary>
@@ -66,7 +67,7 @@ namespace openHistorian.Data.Query
             {
                 time = key.Timestamp;
                 point = key.PointID;
-                _ = hvalue.Value3;
+                quality = hvalue.Value3;
                 value = hvalue.Value1;
                 results.AddSignal(time, point, value);
             }

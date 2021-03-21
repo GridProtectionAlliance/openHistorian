@@ -22,24 +22,17 @@
 //******************************************************************************************************
 
 using GSF;
-using GSF.Collections;
-using GSF.Configuration;
 using GSF.Data;
-using GSF.Diagnostics;
-using GSF.Security;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
-using GSF.TimeSeries;
 using Newtonsoft.Json;
 using openHistorian.Adapters;
 using openHistorian.Snap;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -48,9 +41,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
+
+#pragma warning disable CS1591
 
 // ReSharper disable VirtualMemberCallInConstructor
 namespace openHistorian.TrenDAPController
@@ -61,20 +54,6 @@ namespace openHistorian.TrenDAPController
     /// </summary>
     public class TrenDAPController : ApiController
     {
-        #region [ Members ]
-
-
-        #endregion
-
-        #region [ Static ]
-
-
-        #endregion
-
-        #region [ Properties ]
-
-        #endregion
-
         #region [ Methods ]
 
         /// <summary>
@@ -316,30 +295,19 @@ namespace openHistorian.TrenDAPController
                     response.StatusCode = HttpStatusCode.OK;
                     response.Content = new StringContent(JsonConvert.SerializeObject(results));
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                
                     return response;
-
                 }
-
-
-
             }
-
         }
-
-
-        
 
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)
         {
-            if (!string.IsNullOrWhiteSpace(instanceName))
-            {
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance))
-                    return adapterInstance;
-            }
+            if (string.IsNullOrWhiteSpace(instanceName))
+                return null;
 
-            return null;
+            return LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance) ? adapterInstance : null;
         }
-
 
         #endregion
     }
