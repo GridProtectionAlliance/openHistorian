@@ -1269,7 +1269,7 @@
             <summary>
             Raises <see cref="E:GSF.ServiceProcess.ServiceHelper.LoggedException"/> event with logged exception.
             </summary>
-            <param name="ex">Logged <see cref="T:System.Exception"/>.</param>
+            <param name="exception">Logged <see cref="T:System.Exception"/>.</param>
         </member>
         <member name="M:GSF.ServiceProcess.ServiceHelper.Dispose(System.Boolean)">
             <summary>
