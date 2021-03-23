@@ -310,6 +310,11 @@
             received values to fill in values missing from the current frame.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.SkipNaNOutput">
+            <summary>
+            Gets or sets the flag indicating whether to skip processing of an output with a value of NaN.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.SentinelValue">
             <summary>
             Gets or sets the value used when no other value can be determined for a variable.
