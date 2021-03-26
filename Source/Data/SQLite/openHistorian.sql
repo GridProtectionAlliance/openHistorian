@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 12 AS VersionNumber;
+SELECT 13 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -288,7 +288,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
     NodeID NCHAR(36) NOT NULL,
     OutputStreamDeviceID INTEGER NOT NULL,
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    Label VARCHAR(16) NOT NULL,
+    Label VARCHAR(200) NOT NULL,
     Type INTEGER NOT NULL DEFAULT 0,
     ScalingValue INTEGER NOT NULL DEFAULT 0,
     LoadOrder INTEGER NOT NULL DEFAULT 0,
@@ -1731,18 +1731,18 @@ BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SE
 -- **************************
 
 CREATE TABLE AlarmState(
-	ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	State VARCHAR(50) NULL,
-	Color VARCHAR(50) NULL
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    State VARCHAR(50) NULL,
+    Color VARCHAR(50) NULL
 );
 
 CREATE TABLE AlarmDevice(
-	ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	DeviceID INTEGER NULL,
-	StateID INTEGER NULL,
-	TimeStamp DATETIME NULL,
-	DisplayData VARCHAR(10) NULL,
-	CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device (ID) ON DELETE CASCADE ON UPDATE CASCADE,
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    DeviceID INTEGER NULL,
+    StateID INTEGER NULL,
+    TimeStamp DATETIME NULL,
+    DisplayData VARCHAR(10) NULL,
+    CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device (ID) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_AlarmDevice_AlarmState FOREIGN KEY(StateID) REFERENCES AlarmState (ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

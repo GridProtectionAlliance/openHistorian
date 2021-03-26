@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 11 AS VersionNumber;
+SELECT 13 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -358,7 +358,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
     NodeID NCHAR(36) NOT NULL,
     OutputStreamDeviceID INTEGER NOT NULL,
     ID SERIAL NOT NULL PRIMARY KEY,
-    Label VARCHAR(16) NOT NULL,
+    Label VARCHAR(200) NOT NULL,
     Type INTEGER NOT NULL DEFAULT 0,
     ScalingValue INTEGER NOT NULL DEFAULT 0,
     LoadOrder INTEGER NOT NULL DEFAULT 0,
@@ -1872,23 +1872,23 @@ EXECUTE PROCEDURE SignalType_UpdateTrackerFn();
 -- Alarm Panel Data
 -- **************************
 CREATE TABLE AlarmState(
-	ID SERIAL NOT NULL PRIMARY KEY,
-	State varchar(50) NULL,
-	Color varchar(50) NULL
+    ID SERIAL NOT NULL PRIMARY KEY,
+    State varchar(50) NULL,
+    Color varchar(50) NULL
 );
 
 CREATE TABLE AlarmDevice(
-	ID SERIAL NOT NULL PRIMARY KEY,
-	DeviceID INTEGER NULL,
-	StateID INTEGER NULL,
-	TimeStamp TIMESTAMP NULL,
-	DisplayData varchar(10) NULL,
-	CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device (ID) ON DELETE CASCADE,
+    ID SERIAL NOT NULL PRIMARY KEY,
+    DeviceID INTEGER NULL,
+    StateID INTEGER NULL,
+    TimeStamp TIMESTAMP NULL,
+    DisplayData varchar(10) NULL,
+    CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device (ID) ON DELETE CASCADE,
     CONSTRAINT FK_AlarmDevice_AlarmState FOREIGN KEY(StateID) REFERENCES AlarmState (ID) ON DELETE CASCADE
 );
 
 CREATE VIEW AlarmDeviceStateView AS
-SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData
+SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData, Device.ID AS DeviceID
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID; 

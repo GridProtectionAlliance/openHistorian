@@ -38,7 +38,7 @@ USE openHistorian;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 12 AS VersionNumber;
+SELECT 13 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -291,7 +291,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
     NodeID NCHAR(36) NOT NULL,
     OutputStreamDeviceID INT NOT NULL,
     ID INT AUTO_INCREMENT NOT NULL,
-    Label VARCHAR(16) NOT NULL,
+    Label VARCHAR(200) NOT NULL,
     Type INT NOT NULL DEFAULT 0,
     ScalingValue INT NOT NULL DEFAULT 0,
     LoadOrder INT NOT NULL DEFAULT 0,
@@ -1829,19 +1829,19 @@ DELIMITER ;
 
 
 CREATE TABLE AlarmState(
-	ID int AUTO_INCREMENT NOT NULL,
-	State varchar(50) NULL,
-	Color varchar(50) NULL,
-	PRIMARY KEY(ID)
+    ID int AUTO_INCREMENT NOT NULL,
+    State varchar(50) NULL,
+    Color varchar(50) NULL,
+    PRIMARY KEY(ID)
 );
 
 CREATE TABLE AlarmDevice(
-	ID int AUTO_INCREMENT NOT NULL,
-	DeviceID int NULL,
-	StateID int NULL,
-	TimeStamp datetime NULL,
-	DisplayData varchar(10) NULL,
-	PRIMARY KEY(ID)
+    ID int AUTO_INCREMENT NOT NULL,
+    DeviceID int NULL,
+    StateID int NULL,
+    TimeStamp datetime NULL,
+    DisplayData varchar(10) NULL,
+    PRIMARY KEY(ID)
 );
 
 ALTER TABLE AlarmDevice

@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 12 AS VersionNumber
+SELECT 13 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -438,7 +438,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
     NodeID VARCHAR2(36) NOT NULL,
     OutputStreamDeviceID NUMBER NOT NULL,
     ID NUMBER NOT NULL,
-    Label VARCHAR2(16) NOT NULL,
+    Label VARCHAR2(200) NOT NULL,
     Type NUMBER DEFAULT 0 NOT NULL,
     ScalingValue NUMBER DEFAULT 0 NOT NULL,
     LoadOrder NUMBER DEFAULT 0 NOT NULL,
@@ -2759,9 +2759,9 @@ END;
 -- Alarm Panel Data
 -- **************************
 CREATE TABLE AlarmState(
-	ID NUMBER NOT NULL,
-	State varchar(50) NULL,
-	Color varchar(50) NULL,
+    ID NUMBER NOT NULL,
+    State varchar(50) NULL,
+    Color varchar(50) NULL,
 );
 
 ALTER TABLE AlarmState ADD CONSTRAINT PK_AlarmState PRIMARY KEY (ID);
@@ -2773,11 +2773,11 @@ CREATE TRIGGER AI_AlarmState BEFORE INSERT ON AlarmState
 END;
 
 CREATE TABLE AlarmDevice(
-	ID NUMBER IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	DeviceID NUMBER NULL,
-	StateID NUMBER NULL,
-	TimeStamp datetime NULL,
-	DisplayData varchar(10) NULL
+    ID NUMBER IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    DeviceID NUMBER NULL,
+    StateID NUMBER NULL,
+    TimeStamp datetime NULL,
+    DisplayData varchar(10) NULL
 );
 
 ALTER TABLE AlarmDevice ADD CONSTRAINT PK_AlarmDevice PRIMARY KEY (ID);

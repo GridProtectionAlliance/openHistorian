@@ -1434,7 +1434,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConfigurationFileName">
             <summary>
-            Gets or sets name of the xml configuration file used for configuration.
+            Gets or sets name of the XML configuration file used for configuration.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.IniFileName">
@@ -1469,12 +1469,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConnectionString">
             <summary>
-            Gets or sets connection string to backend service.
+            Gets or sets connection string to back-end service.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.AlternateCommandChannel">
             <summary>
-            Gets or sets command channel to communicate with backend service.
+            Gets or sets command channel to communicate with back-end service.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.AccessID">
@@ -1565,12 +1565,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationPopupIsOpen">
             <summary>
-            Gets or set a boolean flag for whether the  configuration frame request popup is open.
+            Gets or set a boolean flag for whether the  configuration frame request pop-up is open.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationPopupText">
             <summary>
-            Gets or sets the text displayed on the configuration frame request popup.
+            Gets or sets the text displayed on the configuration frame request pop-up.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationSuccess">
@@ -1580,7 +1580,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.LaunchWalkthroughCommand">
             <summary>
-            Gets <see cref="T:System.Windows.Input.ICommand"/> to launch the wizard walkthrough.
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to launch the wizard walk through.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConnectionFileCommand">

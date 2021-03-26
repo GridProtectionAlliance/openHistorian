@@ -510,7 +510,7 @@
             <param name="device">Information about <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>        
             <returns>String, for display use, indicating success.</returns>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.SaveWithAnalogsDigitals(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.SaveWithAnalogsDigitals(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Tuple{System.Single,System.Single}[])">
             <summary>
             Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information to database along with analogs and digital measurements if requested..
             </summary>
@@ -521,6 +521,7 @@
             <param name="analogCount">Number of analog measurements to add.</param>
             <param name="digitalLabels">Collection of digital labels associated with a device in configuration frame.</param>
             <param name="analogLabels">Collection of analog labels associated with a device in configuration frame.</param>
+            <param name="analogScalars">Collection of analog scalars associated with a device in configuration frame.</param>
             <returns>String, for display use, indicating success.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.Delete(GSF.Data.AdoDataConnection,GSF.PhasorProtocols.UI.DataModels.Device)">
@@ -578,6 +579,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ID">
             <summary>
             Gets or sets existing device ID, if any.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.UniqueID">
+            <summary>
+            Gets or sets and provided unique ID for the device.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Acronym">
@@ -675,6 +681,11 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> AnalogLabels.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.AnalogScalars">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> analog scalars, i.e., adders and multipliers.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Load(GSF.Data.AdoDataConnection)">
             <summary>
             Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
@@ -749,6 +760,16 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.Include">
             <summary>
             Gets or sets boolean flag indicating if <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor"/> needs to be saved into database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.MagnitudeMultiplier">
+            <summary>
+            Gets or sets any multiplier to be applied to the phasor magnitudes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevicePhasor.AngleAdder">
+            <summary>
+            Gets or sets and adder to be applied to the phasor angle, in radians.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.UI.DataModels.OutputProtocol">
@@ -1316,7 +1337,7 @@
             Loads <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="keys">Keys of the measuremnets to be loaded from the database</param>
+            <param name="keys">Keys of the measurements to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog.GetLookupList(GSF.Data.AdoDataConnection,System.Int32,System.Boolean)">
@@ -1725,6 +1746,16 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.SourceIndex">
             <summary>
             Gets or sets Source Index for the current Phasor.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.MagnitudeMultiplier">
+            <summary>
+            Gets or sets any multiplier to be applied to the phasor magnitudes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.AngleAdder">
+            <summary>
+            Gets or sets and adder to be applied to the phasor angle, in radians.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Phasor.CreatedOn">

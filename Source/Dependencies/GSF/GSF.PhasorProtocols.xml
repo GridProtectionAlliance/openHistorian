@@ -5750,6 +5750,11 @@
             Represents the IEEE C37.118 implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> that can be sent or received.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.CoordinateDecimalInfinity">
+            <summary>
+            Represents <see cref="T:System.Decimal"/> infinity value for longitude and latitude coordinate values.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.#ctor(GSF.PhasorProtocols.IConfigurationFrame)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/>.
@@ -5814,9 +5819,19 @@
             Gets or sets PMU_LAT value for this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.LatitudeM">
+            <summary>
+            Gets <see cref="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.Latitude"/> as a <see cref="T:System.Decimal"/>, infinity represented by <see cref="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.CoordinateDecimalInfinity"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.Longitude">
             <summary>
             Gets or sets PMU_LON value for this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.LongitudeM">
+            <summary>
+            Gets <see cref="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.Longitude"/> as a <see cref="T:System.Decimal"/>, infinity represented by <see cref="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.CoordinateDecimalInfinity"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.Elevation">
@@ -5932,6 +5947,14 @@
             <param name="buffer">Source buffer.</param>
             <param name="offset">Source buffer offset. Value is auto-incremented.</param>
             <returns>Decoded string from bytes encoded in <paramref name="buffer"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.GetCoordinateFromDecimal(System.Nullable{System.Decimal})">
+            <summary>
+            Gets longitude or latitude coordinate stored as a <see cref="T:System.Decimal"/> as a <see cref="T:System.Single"/>
+            accounting for possible <see cref="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationCell3.CoordinateDecimalInfinity"/> value.
+            </summary>
+            <param name="coordinate">Source value.</param>
+            <returns><paramref name="coordinate"/> as <see cref="T:System.Single"/>.</returns>
         </member>
         <member name="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame3">
             <summary>
