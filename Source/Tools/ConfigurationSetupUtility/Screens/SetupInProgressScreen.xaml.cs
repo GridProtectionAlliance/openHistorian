@@ -498,61 +498,69 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (migrateUsers)
                 {
-                    string oldConnectionString = m_state["oldConnectionString"].ToString();
-                    string oldDataProviderString = m_state["oldDataProviderString"].ToString();
-
-                    using (AdoDataConnection connection = new AdoDataConnection(oldConnectionString, oldDataProviderString))
+                    try
                     {
-                        if (connection.IsSQLServer)
+                        string oldConnectionString = m_state["oldConnectionString"].ToString();
+                        string oldDataProviderString = m_state["oldDataProviderString"].ToString();
+
+                        using (AdoDataConnection connection = new AdoDataConnection(oldConnectionString, oldDataProviderString))
                         {
-                            AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
-
-                            string existingUsersQuery =
-                                "SELECT " +
-                                "    sysusers.name UserName, " +
-                                "    syslogins.name LoginName, " +
-                                "    sysroles.name RoleName " +
-                                "FROM " +
-                                "    sys.sysusers JOIN " +
-                                "    sys.database_role_members ON sysusers.uid = database_role_members.member_principal_id JOIN " +
-                                "    sys.sysusers sysroles ON database_role_members.role_principal_id = sysroles.uid JOIN " +
-                                "    sys.syslogins ON sysusers.sid = syslogins.sid";
-
-                            DataTable existingUsers = connection.RetrieveData(existingUsersQuery);
-                            string[] adminRoles = { "db_datareader", "db_datawriter" };
-
-                            foreach (DataRow row in existingUsers.Rows)
+                            if (connection.IsSQLServer)
                             {
-                                try
+                                AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
+
+                                const string existingUsersQuery =
+                                    "SELECT " +
+                                    "    sysusers.name UserName, " +
+                                    "    syslogins.name LoginName, " +
+                                    "    sysroles.name RoleName " +
+                                    "FROM " +
+                                    "    sys.sysusers JOIN " +
+                                    "    sys.database_role_members ON sysusers.uid = database_role_members.member_principal_id JOIN " +
+                                    "    sys.sysusers sysroles ON database_role_members.role_principal_id = sysroles.uid JOIN " +
+                                    "    sys.syslogins ON sysusers.sid = syslogins.sid";
+
+                                DataTable existingUsers = connection.RetrieveData(existingUsersQuery);
+                                string[] adminRoles = { "db_datareader", "db_datawriter" };
+
+                                foreach (DataRow row in existingUsers.Rows)
                                 {
-                                    string userName = row.ConvertField<string>("UserName");
-                                    string loginName = row.ConvertField<string>("LoginName");
-                                    string roleName = row.ConvertField<string>("RoleName");
+                                    try
+                                    {
+                                        string userName = row.ConvertField<string>("UserName");
+                                        string loginName = row.ConvertField<string>("LoginName");
+                                        string roleName = row.ConvertField<string>("RoleName");
 
-                                    string[] roles = roleName != "openHistorianAdminRole"
-                                        ? new[] { roleName }
-                                        : adminRoles;
+                                        string[] roles = roleName != "openHistorianAdminRole"
+                                            ? new[] { roleName }
+                                            : adminRoles;
 
-                                    if (userName == "dbo")
-                                        userName = loginName;
+                                        if (userName == "dbo")
+                                            userName = loginName;
 
-                                    AppendStatusMessage($"Granting database access to {loginName}...");
+                                        AppendStatusMessage($"Granting database access to {loginName}...");
 
-                                    foreach (string role in roles)
-                                        adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
+                                        foreach (string role in roles)
+                                            adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
 
-                                    AppendStatusMessage("Database access granted successfully.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    AppendStatusMessage($"ERROR: {ex.Message}");
-                                    AppendStatusMessage("Failed to grant database access, but continuing anyway...");
+                                        AppendStatusMessage("Database access granted successfully.");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        AppendStatusMessage($"WARNING: {ex.Message}");
+                                        AppendStatusMessage("Failed to grant database access permissions from existing database, but continuing anyway...");
+                                    }
                                 }
                             }
-
-                            AppendStatusMessage("");
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        AppendStatusMessage($"WARNING: {ex.Message}");
+                        AppendStatusMessage("Failed to migrate database access permissions from existing database, continuing anyway...");
+                    }
+
+                    AppendStatusMessage("");
                 }
 
                 // Remove cached configuration since it will
