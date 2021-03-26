@@ -408,11 +408,13 @@ namespace ConfigurationSetupUtility.Screens
 
                 MessageBox.Show("Database connection succeeded.");
             }
-            catch
+            catch (Exception ex)
             {
                 string failMessage = "Database connection failed."
                     + " Please check your username and password."
-                    + " Additionally, you may need to modify your connection under advanced settings.";
+                    + " Additionally, you may need to modify your connection under advanced settings."
+                    + Environment.NewLine + Environment.NewLine
+                    + "Error: " + ex.Message;
 
                 MessageBox.Show(failMessage);
             }
