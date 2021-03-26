@@ -45,7 +45,7 @@ namespace ConfigurationSetupUtility
         /// Data provider string used to load the assembly for making PostgreSQL DB connections.
         /// </summary>
         public const string DataProviderString =
-            "AssemblyName={Npgsql, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7}; " +
+            "AssemblyName={Npgsql, Version=4.0.11.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7}; " +
             "ConnectionType=Npgsql.NpgsqlConnection; AdapterType=Npgsql.NpgsqlDataAdapter";
 
         #endregion
