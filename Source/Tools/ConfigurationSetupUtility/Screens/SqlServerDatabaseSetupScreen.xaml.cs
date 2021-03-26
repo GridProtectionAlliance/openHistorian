@@ -238,12 +238,13 @@ namespace ConfigurationSetupUtility.Screens
                             userExists = count > 0;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        string failMessage =
-                            "Database connection failed. " +
-                            "Please check your username and password. " +
-                            "Additionally, you may need to modify your connection under advanced settings.";
+                        string failMessage = "Database connection failed."
+                            + " Please check your username and password."
+                            + " Additionally, you may need to modify your connection under advanced settings."
+                            + Environment.NewLine + Environment.NewLine
+                            + "Error: " + ex.Message;
 
                         MessageBox.Show(failMessage);
                         return false;
