@@ -44,6 +44,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
 using GSF;
+using GSF.Collections;
 using GSF.Communication;
 using GSF.Data;
 using GSF.Identity;
@@ -502,55 +503,105 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         string oldConnectionString = m_state["oldConnectionString"].ToString();
                         string oldDataProviderString = m_state["oldDataProviderString"].ToString();
+                        using AdoDataConnection connection = new AdoDataConnection(oldConnectionString, oldDataProviderString);
 
-                        using (AdoDataConnection connection = new AdoDataConnection(oldConnectionString, oldDataProviderString))
+                        if (connection.IsSQLServer)
                         {
-                            if (connection.IsSQLServer)
+                            AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
+                            AppendStatusMessage("");
+
+                            const string existingUsersQuery =
+                                "SELECT " +
+                                "    sysusers.name UserName, " +
+                                "    syslogins.name LoginName, " +
+                                "    sysroles.name RoleName " +
+                                "FROM " +
+                                "    sys.sysusers JOIN " +
+                                "    sys.database_role_members ON sysusers.uid = database_role_members.member_principal_id JOIN " +
+                                "    sys.sysusers sysroles ON database_role_members.role_principal_id = sysroles.uid JOIN " +
+                                "    sys.syslogins ON sysusers.sid = syslogins.sid";
+
+                            DataTable existingUsers = connection.RetrieveData(existingUsersQuery);
+                            string[] adminRoles = { "db_datareader", "db_datawriter" };
+
+                            foreach (DataRow row in existingUsers.Rows)
                             {
-                                AppendStatusMessage("Attempting to grant database access to existing user accounts and groups...");
-
-                                const string existingUsersQuery =
-                                    "SELECT " +
-                                    "    sysusers.name UserName, " +
-                                    "    syslogins.name LoginName, " +
-                                    "    sysroles.name RoleName " +
-                                    "FROM " +
-                                    "    sys.sysusers JOIN " +
-                                    "    sys.database_role_members ON sysusers.uid = database_role_members.member_principal_id JOIN " +
-                                    "    sys.sysusers sysroles ON database_role_members.role_principal_id = sysroles.uid JOIN " +
-                                    "    sys.syslogins ON sysusers.sid = syslogins.sid";
-
-                                DataTable existingUsers = connection.RetrieveData(existingUsersQuery);
-                                string[] adminRoles = { "db_datareader", "db_datawriter" };
-
-                                foreach (DataRow row in existingUsers.Rows)
+                                try
                                 {
-                                    try
+                                    string userName = row.ConvertField<string>("UserName");
+                                    string loginName = row.ConvertField<string>("LoginName");
+                                    string roleName = row.ConvertField<string>("RoleName");
+
+                                    string[] roles = roleName != "openHistorianAdminRole"
+                                        ? new[] { roleName }
+                                        : adminRoles;
+
+                                    if (userName == "dbo")
+                                        userName = loginName;
+
+                                    AppendStatusMessage($"Granting database access to {loginName}...");
+
+                                    foreach (string role in roles)
+                                        adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
+
+                                    AppendStatusMessage("Database access granted successfully.");
+                                }
+                                catch (Exception ex)
+                                {
+                                    AppendStatusMessage($"WARNING: {ex.Message}");
+                                    AppendStatusMessage("Failed to grant database access permissions from existing database, but continuing anyway...");
+                                }
+                            }
+
+                            try
+                            {
+                                int version = connection.RetrieveRow("SELECT VersionNumber FROM SchemaVersion")?.ConvertField<int>("VersionNumber") ?? 0;
+
+                                // SQL Server GSF TSL schema versions less than version 13 did not enforce a unique ID constraint in the Device table
+                                if (version < 13)
+                                {
+                                    AppendStatusMessage("");
+                                    AppendStatusMessage($"Validating unique IDs for Device table from schema version {version}...");
+                                    AppendStatusMessage("");
+
+                                    DataTable devices = connection.RetrieveData("SELECT ID, UniqueID, Acronym FROM Device");
+
+                                    Dictionary<Guid, List<Tuple<int, string>>> uniqueIDMap = new Dictionary<Guid, List<Tuple<int, string>>>();
+
+                                    foreach (DataRow row in devices.Rows)
                                     {
-                                        string userName = row.ConvertField<string>("UserName");
-                                        string loginName = row.ConvertField<string>("LoginName");
-                                        string roleName = row.ConvertField<string>("RoleName");
-
-                                        string[] roles = roleName != "openHistorianAdminRole"
-                                            ? new[] { roleName }
-                                            : adminRoles;
-
-                                        if (userName == "dbo")
-                                            userName = loginName;
-
-                                        AppendStatusMessage($"Granting database access to {loginName}...");
-
-                                        foreach (string role in roles)
-                                            adminSqlServerSetup.GrantDatabaseAccess(userName, loginName, role);
-
-                                        AppendStatusMessage("Database access granted successfully.");
+                                        int deviceID = row.ConvertField<int>("ID");
+                                        Guid uniqueID = row.ConvertField<Guid>("UniqueID"); // Safe, connection is for SQL Server only
+                                        string acronym = row.ConvertField<string>("Acronym");
+                                        uniqueIDMap.GetOrAdd(uniqueID, _ => new List<Tuple<int, string>>()).Add(new Tuple<int, string>(deviceID, acronym));
                                     }
-                                    catch (Exception ex)
+
+                                    foreach (List<Tuple<int, string>> duplicates in uniqueIDMap.Select(kvp => kvp.Value).Where(items => items.Count > 1))
                                     {
-                                        AppendStatusMessage($"WARNING: {ex.Message}");
-                                        AppendStatusMessage("Failed to grant database access permissions from existing database, but continuing anyway...");
+                                        // Start fixing duplicates after first item
+                                        foreach (Tuple<int, string> map in duplicates.Skip(1))
+                                        {
+                                            int deviceID = map.Item1;
+                                            string acronym = map.Item2;
+
+                                            try
+                                            {
+                                                AppendStatusMessage($"Correcting device \"{acronym}\" with duplicated unique ID...");
+                                                connection.ExecuteNonQuery($"UPDATE Device SET UniqueID = '{Guid.NewGuid()}' WHERE ID = {deviceID}");
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                AppendStatusMessage($"WARNING: {ex.Message}");
+                                                AppendStatusMessage("Failed to correct unique ID for device \"{acronym}\", device migration may fail. Continuing anyway...");
+                                            }
+                                        }
                                     }
                                 }
+                            }
+                            catch (Exception ex)
+                            {
+                                AppendStatusMessage($"WARNING: {ex.Message}");
+                                AppendStatusMessage("Failed to validate unique IDs for Device table, continuing anyway...");
                             }
                         }
                     }
