@@ -1047,6 +1047,31 @@
           <netfx:NativeImage Id="ngen_Npgsql.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="System.Buffers">
+        <File Id="System.Buffers" Name="System.Buffers" Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll">
+          <netfx:NativeImage Id="ngen_System.Buffers.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Memory">
+        <File Id="System.Memory" Name="System.Memory" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.dll">
+          <netfx:NativeImage Id="ngen_System.Memory.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Runtime.CompilerServices.Unsafe">
+        <File Id="System.Runtime.CompilerServices.Unsafe" Name="System.Runtime.CompilerServices.Unsafe" Source="$(var.SolutionDir)\Dependencies\GSF\System.Runtime.CompilerServices.Unsafe.dll">
+          <netfx:NativeImage Id="ngen_System.Runtime.CompilerServices.Unsafe.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Threading.Tasks.Extensions">
+        <File Id="System.Threading.Tasks.Extensions" Name="System.Threading.Tasks.Extensions" Source="$(var.SolutionDir)\Dependencies\GSF\System.Threading.Tasks.Extensions.dll">
+          <netfx:NativeImage Id="ngen_System.Threading.Tasks.Extensions.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.ValueTuple">
+        <File Id="System.ValueTuple" Name="System.ValueTuple" Source="$(var.SolutionDir)\Dependencies\GSF\System.ValueTuple.dll">
+          <netfx:NativeImage Id="ngen_System.ValueTuple.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
       <Component Id="System.Data.SQLite">
         <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Data.SQLite.dll">
           <netfx:NativeImage Id="ngen_System.Data.SQLite.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
