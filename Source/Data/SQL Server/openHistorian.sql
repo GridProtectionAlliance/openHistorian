@@ -406,7 +406,7 @@ CREATE TABLE [dbo].[DataOperation](
 
 GO
 SET ANSI_NULLS ON
-GOIX_ApplicationRole
+GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Device](
