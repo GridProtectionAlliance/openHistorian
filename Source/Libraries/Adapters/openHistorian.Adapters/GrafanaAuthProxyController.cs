@@ -41,6 +41,7 @@ using GSF.Collections;
 using GSF.Configuration;
 using GSF.Data;
 using GSF.Data.Model;
+using GSF.Diagnostics;
 using GSF.Security;
 using GSF.Security.Cryptography;
 using GSF.Security.Model;
@@ -407,164 +408,183 @@ namespace openHistorian.Adapters
 
         private static void SynchronizeUsers()
         {
-            Dictionary<string, string[]> securityContext = s_latestSecurityContext;
-
-            if (securityContext is null)
-                return;
-
-            // Skip user synchronization if security context has not changed
-            if (!s_manualSynchronization && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
-                return;
-
-            s_manualSynchronization = false;
-            Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
-
-            // Give initialization - which includes starting Grafana server process - a chance to complete
-            if (!s_initializationWaitHandle.Wait(s_initializationTimeout))
-                OnStatusMessage($"WARNING: Grafana user synchronization reported timeout awaiting Grafana initialization. Timeout configured as {Ticks.FromMilliseconds(s_initializationTimeout).ToElapsedTimeString(2)}.");
-
-            // Lookup Grafana Administrative user
-            if (!LookupUser(s_adminUser, out UserDetail userDetail, out string message))
+            using (Logger.SuppressFirstChanceExceptionLogMessages())
             {
-                OnStatusMessage($"WARNING: Failed to synchronize Grafana users, cannot find Grafana Administrator \"{s_adminUser}\": {message}");
-                return;
-            }
-            
-            // Get user list for target organization
-            OrgUserDetail[] organizationUsers = GetOrganizationUsers(s_organizationID, out message);
+                Dictionary<string, string[]> securityContext = s_latestSecurityContext;
 
-            if (!string.IsNullOrEmpty(message))
-                OnStatusMessage($"Issue retrieving user list for default organization: {message}");
+                if (securityContext is null)
+                    return;
 
-            // Make sure Grafana Administrator has an admin role in the default organization
-            bool success = organizationUsers.Any(user => user.userId == userDetail.id) ? 
-                UpdateUserOrganizationalRole(s_organizationID, userDetail.id, "Admin", out message) : 
-                AddUserToOrganization(s_organizationID, s_adminUser, "Admin", out message);
-            
-            if (!success)
-                OnStatusMessage($"Issue validating organizational admin role for Grafana Administrator \"{s_adminUser}\" - Grafana user synchronization may not succeed: {message}");
+                // Skip user synchronization if security context has not changed
+                if (!s_manualSynchronization && SecurityContextsAreEqual(securityContext, s_lastSecurityContext))
+                    return;
 
-            foreach (KeyValuePair<string, string[]> item in securityContext)
-            {
-                string userName = item.Key;
-                string[] roles = item.Value;
-                bool createdUser = false;
+                s_manualSynchronization = false;
+                Interlocked.Exchange(ref s_lastSecurityContext, securityContext);
 
-                if (userName.Equals("_logout", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                // Give initialization - which includes starting Grafana server process - a chance to complete
+                if (!s_initializationWaitHandle.Wait(s_initializationTimeout))
+                    OnStatusMessage($"WARNING: Grafana user synchronization reported timeout awaiting Grafana initialization. Timeout configured as {Ticks.FromMilliseconds(s_initializationTimeout).ToElapsedTimeString(2)}.");
 
-                // Check if user exists
-                if (!LookupUser(userName, out userDetail, out message))
+                // Lookup Grafana Administrative user
+                if (!LookupUser(s_adminUser, out UserDetail userDetail, out string message))
                 {
-                    createdUser = CreateUser(userName, s_organizationID, out userDetail, out message);
-                    OnStatusMessage($"Encountered new user \"{userName}\": {message}");
+                    OnStatusMessage($"WARNING: Failed to synchronize Grafana users, cannot find Grafana Administrator \"{s_adminUser}\": {message}");
+                    return;
                 }
 
-                if (userDetail.id == 0)
-                    continue;
+                // Get user list for target organization
+                OrgUserDetail[] organizationUsers = GetOrganizationUsers(s_organizationID, out message);
 
-                // Update user's Grafana admin role status if needed
-                bool userIsGrafanaAdmin = UserIsGrafanaAdmin(roles);
+                if (!string.IsNullOrEmpty(message))
+                    OnStatusMessage($"Issue retrieving user list for default organization: {message}");
 
-                if (userDetail.isGrafanaAdmin != userIsGrafanaAdmin)
-                {
-                    JObject content = JObject.FromObject(new
-                    {
-                        isGrafanaAdmin = userIsGrafanaAdmin
-                    });
-
-                    message = CallAPIFunction(HttpMethod.Put, $"{s_baseUrl}/api/admin/users/{userDetail.id}/permissions", content.ToString()).Result.message;
-
-                    if (!message.Equals("User permissions updated", StringComparison.OrdinalIgnoreCase))
-                        OnStatusMessage($"Issue updating permissions for user \"{userName}\": {message}");
-                }
-
-                // Attempt to lookup user in default organization
-                OrgUserDetail orgUserDetail = organizationUsers.FirstOrDefault(user => user.userId == userDetail.id);
-
-                // Get user's organizational role: Admin / Editor / Viewer
-                string organizationalRole = TranslateRole(roles);
-
-                // Update user's organizational status / role as needed
-                if (orgUserDetail is null && !createdUser)
-                    success = AddUserToOrganization(s_organizationID, userName, organizationalRole, out message);
-                else if (createdUser || !orgUserDetail.role.Equals(organizationalRole, StringComparison.OrdinalIgnoreCase))
-                    success = UpdateUserOrganizationalRole(s_organizationID, userDetail.id, organizationalRole, out message);
-                else
-                    success = true;
+                // Make sure Grafana Administrator has an admin role in the default organization
+                bool success = organizationUsers.Any(user => user.userId == userDetail.id) ?
+                    UpdateUserOrganizationalRole(s_organizationID, userDetail.id, "Admin", out message) :
+                    AddUserToOrganization(s_organizationID, s_adminUser, "Admin", out message);
 
                 if (!success)
-                    OnStatusMessage($"Issue assigning organizational role \"{organizationalRole}\" for user \"{userName}\": {message}");
-            }
+                    OnStatusMessage($"Issue validating organizational admin role for Grafana Administrator \"{s_adminUser}\" - Grafana user synchronization may not succeed: {message}");
 
-            OnStatusMessage($"Synchronized security context with {securityContext.Count:N0} users to Grafana.");
+                foreach (KeyValuePair<string, string[]> item in securityContext)
+                {
+                    string userName = item.Key;
+                    string[] roles = item.Value;
+                    bool createdUser = false;
+
+                    if (userName.Equals("_logout", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // Check if user exists
+                    if (!LookupUser(userName, out userDetail, out message))
+                    {
+                        createdUser = CreateUser(userName, s_organizationID, out userDetail, out message);
+                        OnStatusMessage($"Encountered new user \"{userName}\": {message}");
+                    }
+
+                    if (userDetail.id == 0)
+                        continue;
+
+                    // Update user's Grafana admin role status if needed
+                    bool userIsGrafanaAdmin = UserIsGrafanaAdmin(roles);
+
+                    if (userDetail.isGrafanaAdmin != userIsGrafanaAdmin)
+                    {
+                        JObject content = JObject.FromObject(new
+                        {
+                            isGrafanaAdmin = userIsGrafanaAdmin
+                        });
+
+                        message = CallAPIFunction(HttpMethod.Put, $"{s_baseUrl}/api/admin/users/{userDetail.id}/permissions", content.ToString()).Result.message;
+
+                        if (!message.Equals("User permissions updated", StringComparison.OrdinalIgnoreCase))
+                            OnStatusMessage($"Issue updating permissions for user \"{userName}\": {message}");
+                    }
+
+                    // Attempt to lookup user in default organization
+                    OrgUserDetail orgUserDetail = organizationUsers.FirstOrDefault(user => user.userId == userDetail.id);
+
+                    // Get user's organizational role: Admin / Editor / Viewer
+                    string organizationalRole = TranslateRole(roles);
+
+                    // Update user's organizational status / role as needed
+                    if (orgUserDetail is null && !createdUser)
+                        success = AddUserToOrganization(s_organizationID, userName, organizationalRole, out message);
+                    else if (createdUser || !orgUserDetail.role.Equals(organizationalRole, StringComparison.OrdinalIgnoreCase))
+                        success = UpdateUserOrganizationalRole(s_organizationID, userDetail.id, organizationalRole, out message);
+                    else
+                        success = true;
+
+                    if (!success)
+                        OnStatusMessage($"Issue assigning organizational role \"{organizationalRole}\" for user \"{userName}\": {message}");
+                }
+
+                OnStatusMessage($"Synchronized security context with {securityContext.Count:N0} users to Grafana.");
+            }
         }
 
         private static bool LookupUser(string userName, out UserDetail userDetail, out string message)
         {
-            JObject result;
-
             userDetail = null;
-            message = null;
 
             try
             {
-                result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}/api/users/lookup?loginOrEmail={userName}").Result;
-            }
-            catch (Exception ex)
-            {
-                message = GetExceptionMessage(ex);
-                return false;
-            }
+                JObject result;
+                message = null;
 
-            if (result.TryGetValue("id", out _))
-            {
                 try
                 {
-                    userDetail = result.ToObject<UserDetail>();
-                    return true;
+                    result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}/api/users/lookup?loginOrEmail={userName}").Result;
                 }
                 catch (Exception ex)
                 {
-                    message = ex.Message;
+                    message = GetExceptionMessage(ex);
                     return false;
                 }
+
+                if (result.TryGetValue("id", out _))
+                {
+                    try
+                    {
+                        userDetail = result.ToObject<UserDetail>();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        message = ex.Message;
+                        return false;
+                    }
+                }
+
+                if (result.TryGetValue("message", out JToken token))
+                    message = token.Value<string>();
+
+                return false;
             }
-
-            JToken token;
-            if (result.TryGetValue("message", out token))
-                message = token.Value<string>();
-
-            return false;
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
         }
 
         private static bool CreateUser(string userName, int orgID, out UserDetail userDetail, out string message)
         {
-            // Create a new user
-            JObject content = JObject.FromObject(new
+            try
             {
-                name = userName,
-                email = "",
-                login = userName,
-                password = PasswordGenerator.Default.GeneratePassword()
-            });
+                // Create a new user
+                JObject content = JObject.FromObject(new
+                {
+                    name = userName,
+                    email = "",
+                    login = userName,
+                    password = PasswordGenerator.Default.GeneratePassword()
+                });
 
-            userDetail = new UserDetail
+                userDetail = new UserDetail
+                {
+                    name = userName,
+                    login = userName,
+                    orgId = orgID
+                };
+
+                dynamic result = CallAPIFunction(HttpMethod.Post, $"{s_baseUrl}/api/admin/users", content.ToString()).Result;
+
+                message = result.message;
+
+                if (result.id is null)
+                    return false;
+
+                userDetail.id = (int)result.id;
+                return true;
+            }
+            catch (Exception ex)
             {
-                name = userName,
-                login = userName,
-                orgId = orgID
-            };
-
-            dynamic result = CallAPIFunction(HttpMethod.Post, $"{s_baseUrl}/api/admin/users", content.ToString()).Result;
-
-            message = result.message;
-
-            if (result.id is null)
+                userDetail = null;
+                message = ex.Message;
                 return false;
-
-            userDetail.id = (int)result.id;
-            return true;
+            }
         }
 
         private static OrgUserDetail[] GetOrganizationUsers(int orgID, out string message)
@@ -583,27 +603,43 @@ namespace openHistorian.Adapters
 
         private static bool UpdateUserOrganizationalRole(int orgID, int userID, string organizationalRole, out string message)
         {
-            JObject content = JObject.FromObject(new
+            try
             {
-                role = organizationalRole
-            });
+                JObject content = JObject.FromObject(new
+                {
+                    role = organizationalRole
+                });
 
-            message = CallAPIFunction(new HttpMethod("PATCH"), $"{s_baseUrl}/api/orgs/{orgID}/users/{userID}", content.ToString()).Result.message;
+                message = CallAPIFunction(new HttpMethod("PATCH"), $"{s_baseUrl}/api/orgs/{orgID}/users/{userID}", content.ToString()).Result.message;
 
-            return message.Equals("Organization user updated", StringComparison.OrdinalIgnoreCase);
+                return message.Equals("Organization user updated", StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
         }
 
         private static bool AddUserToOrganization(int orgID, string userName, string organizationalRole, out string message)
         {
-            JObject content = JObject.FromObject(new
+            try
             {
-                loginOrEmail = userName,
-                role = organizationalRole
-            });
+                JObject content = JObject.FromObject(new
+                {
+                    loginOrEmail = userName,
+                    role = organizationalRole
+                });
 
-            message = CallAPIFunction(HttpMethod.Post, $"{s_baseUrl}/api/orgs/{orgID}/users", content.ToString()).Result.message;
+                message = CallAPIFunction(HttpMethod.Post, $"{s_baseUrl}/api/orgs/{orgID}/users", content.ToString()).Result.message;
 
-            return message.Equals("User added to organization", StringComparison.OrdinalIgnoreCase);
+                return message.Equals("User added to organization", StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
         }
 
         private static async Task<dynamic> CallAPIFunction(HttpMethod method, string url, string content = null, bool responseIsArray = false)
