@@ -787,12 +787,14 @@
           <netfx:NativeImage Id="ngen_KafkaAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
-      <Component Id="NAudio"> <!-- Dependency for AudioAdapters -->
+      <Component Id="NAudio">
+        <!-- Dependency for AudioAdapters -->
         <File Id="NAudio.dll" Name="NAudio.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NAudio.dll">
           <netfx:NativeImage Id="ngen_NAudio.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
-      <Component Id="Misakai.Kafka"> <!-- Dependency for KafkaAdapters -->
+      <Component Id="Misakai.Kafka">
+        <!-- Dependency for KafkaAdapters -->
         <File Id="Misakai.Kafka.dll" Name="Misakai.Kafka.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Misakai.Kafka.dll">
           <netfx:NativeImage Id="ngen_Misakai.Kafka.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
@@ -832,7 +834,8 @@
           <netfx:NativeImage Id="ngen_PhasorProtocolAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
-      <Component Id="PIAdapters"> <!-- OSI-PI Historian Adapters -->
+      <Component Id="PIAdapters">
+        <!-- OSI-PI Historian Adapters -->
         <File Id="PIAdapters.dll" Name="PIAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PIAdapters.dll">
           <netfx:NativeImage Id="ngen_PIAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
@@ -862,7 +865,8 @@
           <netfx:NativeImage Id="ngen_WavInputAdapter.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
-      <Component Id="eDNAAdapters"> <!-- eDNA Historian Adapters -->
+      <Component Id="eDNAAdapters">
+        <!-- eDNA Historian Adapters -->
         <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll">
           <netfx:NativeImage Id="ngen_eDNAAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
@@ -1048,27 +1052,27 @@
         </File>
       </Component>
       <Component Id="System.Buffers">
-        <File Id="System.Buffers" Name="System.Buffers" Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll">
+        <File Id="System.Buffers.dll" Name="System.Buffers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll">
           <netfx:NativeImage Id="ngen_System.Buffers.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="System.Memory">
-        <File Id="System.Memory" Name="System.Memory" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.dll">
+        <File Id="System.Memory.dll" Name="System.Memory.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.dll">
           <netfx:NativeImage Id="ngen_System.Memory.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
-        <File Id="System.Runtime.CompilerServices.Unsafe" Name="System.Runtime.CompilerServices.Unsafe" Source="$(var.SolutionDir)\Dependencies\GSF\System.Runtime.CompilerServices.Unsafe.dll">
+        <File Id="System.Runtime.CompilerServices.Unsafe.dll" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Runtime.CompilerServices.Unsafe.dll">
           <netfx:NativeImage Id="ngen_System.Runtime.CompilerServices.Unsafe.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="System.Threading.Tasks.Extensions">
-        <File Id="System.Threading.Tasks.Extensions" Name="System.Threading.Tasks.Extensions" Source="$(var.SolutionDir)\Dependencies\GSF\System.Threading.Tasks.Extensions.dll">
+        <File Id="System.Threading.Tasks.Extensions.dll" Name="System.Threading.Tasks.Extensions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Threading.Tasks.Extensions.dll">
           <netfx:NativeImage Id="ngen_System.Threading.Tasks.Extensions.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="System.ValueTuple">
-        <File Id="System.ValueTuple" Name="System.ValueTuple" Source="$(var.SolutionDir)\Dependencies\GSF\System.ValueTuple.dll">
+        <File Id="System.ValueTuple.dll" Name="System.ValueTuple.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.ValueTuple.dll">
           <netfx:NativeImage Id="ngen_System.ValueTuple.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
