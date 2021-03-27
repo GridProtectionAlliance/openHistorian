@@ -471,12 +471,19 @@ namespace openHistorian.Adapters
 
                     if (userDetail.isGrafanaAdmin != userIsGrafanaAdmin)
                     {
-                        JObject content = JObject.FromObject(new
+                        try
                         {
-                            isGrafanaAdmin = userIsGrafanaAdmin
-                        });
+                            JObject content = JObject.FromObject(new
+                            {
+                                isGrafanaAdmin = userIsGrafanaAdmin
+                            });
 
-                        message = CallAPIFunction(HttpMethod.Put, $"{s_baseUrl}/api/admin/users/{userDetail.id}/permissions", content.ToString()).Result.message;
+                            message = CallAPIFunction(HttpMethod.Put, $"{s_baseUrl}/api/admin/users/{userDetail.id}/permissions", content.ToString()).Result.message;
+                        }
+                        catch (Exception ex)
+                        {
+                            message = ex.Message;
+                        }
 
                         if (!message.Equals("User permissions updated", StringComparison.OrdinalIgnoreCase))
                             OnStatusMessage($"Issue updating permissions for user \"{userName}\": {message}");
