@@ -62,6 +62,7 @@ namespace openHistorian
 
         // Constants
         private const int DefaultMaximumDiagnosticLogSize = 10;
+        private const string DefaultMinifyJavascriptExclusionExpression = @"^/?Scripts/force\-graph\.js$";
 
         // Events
 
@@ -101,6 +102,20 @@ namespace openHistorian
             m_logSubscriber.SubscribeToAssembly(typeof(Number).Assembly, VerboseLevel.High);
             m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
+
+            try
+            {
+                // Assign default minification exclusion early (well before web server static initialization)
+                CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
+                systemSettings.Add("MinifyJavascriptExclusionExpression", DefaultMinifyJavascriptExclusionExpression, "Defines the regular expression that will exclude Javascript files from being minified. Empty value will target all files for minification.");
+                
+                if (string.IsNullOrWhiteSpace(systemSettings["MinifyJavascriptExclusionExpression"].Value))
+                    systemSettings["MinifyJavascriptExclusionExpression"].Value = DefaultMinifyJavascriptExclusionExpression;
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+            }
 
             // This function needs to be called before establishing time-series IaonSession
             SetupGrafanaHostingAdapter();
