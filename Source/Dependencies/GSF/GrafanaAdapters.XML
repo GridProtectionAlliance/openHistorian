@@ -609,8 +609,41 @@
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
             </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
             <summary>
-            Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
+            Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the web service is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Historian.IArchive"/> used by the web service for its data.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaDataService.LocationData">
+            <summary>
+            Gets the <see cref="P:GrafanaAdapters.GrafanaDataService.LocationData"/> used by the web service to get geographic information for Phasors.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GrafanaDataService"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.Initialize">
+            <summary>
+            Initializes the web service.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataService.TestDataSource">
+            <summary>
+            Validates that openHistorian Grafana data source is responding as expected.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
@@ -621,13 +654,13 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
             <summary>
-            Queries openPDC Alarmstates as a Grafana data source.
+            Queries openPDC alarm states as a Grafana data source.
             </summary>
             <param name="request">Query request.</param>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.GetDeviceAlarms(GrafanaAdapters.QueryRequest)">
             <summary>
-            Queries openHistorian Device Alarmstates.
+            Queries openHistorian Device alarm states.
             </summary>
             <param name="request">Query request.</param>
         </member>
@@ -697,42 +730,6 @@
             Requests available tag values.
             </summary>
             <param name="request">Tag values request.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
-            <summary>
-            Creates a new instance of a <see cref="T:GrafanaAdapters.GrafanaDataService"/>.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataService.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the web service is currently enabled.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataService.Archive">
-            <summary>
-            Gets or sets the <see cref="T:GSF.Historian.IArchive"/> used by the web service for its data.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.GrafanaDataService.LocationData">
-            <summary>
-            Gets the <see cref="P:GrafanaAdapters.GrafanaDataService.LocationData"/> used by the web service to get geographic information for Phasors.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GrafanaAdapters.GrafanaDataService"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.Initialize">
-            <summary>
-            Initializes the web service.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.TestDataSource">
-            <summary>
-            Validates that openHistorian Grafana data source is responding as expected.
-            </summary>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
@@ -1396,8 +1393,10 @@
             <summary>
             Defines needed API calls for a Grafana data source.
             </summary>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
             <summary>
-            Defines needed API calls for a Grafana data source.
+            Validates that openHistorian Grafana data source is responding as expected.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.Query(GrafanaAdapters.QueryRequest)">
@@ -1408,7 +1407,7 @@
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
             <summary>
-            Queries openPDC Alarmstates as a Grafana data source.
+            Queries openPDC alarm states as a Grafana data source.
             </summary>
             <param name="request">Query request.</param>
         </member>
@@ -1459,11 +1458,6 @@
             Requests available tag values.
             </summary>
             <param name="request">Tag values request.</param>
-        </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
-            <summary>
-            Validates that openHistorian Grafana data source is responding as expected.
-            </summary>
         </member>
         <member name="T:GrafanaAdapters.LocationData">
             <summary>
