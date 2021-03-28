@@ -158,20 +158,6 @@ namespace ConfigurationSetupUtility.Screens
                     return false;
                 }
 
-                if (string.IsNullOrEmpty(m_roleNameTextBox.Text))
-                {
-                    MessageBox.Show("Please enter a valid name for the role to grant permissions to.");
-                    m_roleNameTextBox.Focus();
-                    return false;
-                }
-
-                if (m_rolePasswordTextBox.SecurePassword.Length == 0)
-                {
-                    MessageBox.Show("Please enter a valid password for the role to grant permissions to.");
-                    m_rolePasswordTextBox.Focus();
-                    return false;
-                }
-
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
@@ -201,6 +187,22 @@ namespace ConfigurationSetupUtility.Screens
                     finally
                     {
                         connection?.Dispose();
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(m_roleNameTextBox.Text))
+                    {
+                        MessageBox.Show("Please enter a valid name for the role to grant permissions to.");
+                        m_roleNameTextBox.Focus();
+                        return false;
+                    }
+
+                    if (m_rolePasswordTextBox.SecurePassword.Length == 0)
+                    {
+                        MessageBox.Show("Please enter a valid password for the role to grant permissions to.");
+                        m_rolePasswordTextBox.Focus();
+                        return false;
                     }
                 }
 
