@@ -3156,9 +3156,19 @@
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyJavascriptExclusionExpression">
+            <summary>
+            Default value for the <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascriptExclusionExpression"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyStyleSheets">
             <summary>
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultMinifyStyleSheetsExclusionExpression">
+            <summary>
+            Default value for the <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheetsExclusionExpression"/>.
             </summary>
         </member>
         <member name="F:GSF.Web.Hosting.WebServerOptions.DefaultUseMinifyInDebug">
@@ -3166,9 +3176,19 @@
             Default value for <see cref="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug"/>.
             </summary>
         </member>
+        <member name="M:GSF.Web.Hosting.WebServerOptions.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Web.Hosting.WebServerOptions"/> instance.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.WebRootPath">
             <summary>
             Gets or sets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.PhysicalWebRootPath">
+            <summary>
+            Gets physical path for <see cref="P:GSF.Web.Hosting.WebServerOptions.WebRootPath"/>.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.ClientCacheEnabled">
@@ -3181,9 +3201,21 @@
             Gets or sets value that determines if minification should be applied to rendered Javascript files.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascriptExclusionExpression">
+            <summary>
+            Gets or sets the regular expression that will exclude Javascript files from being minified.
+            Assigning empty or <c>null</c> value results in all files targeted for minification.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets">
             <summary>
             Gets or sets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheetsExclusionExpression">
+            <summary>
+            Gets or sets the regular expression that will exclude CSS files from being minified.
+            Assigning empty or <c>null</c> value results in all files targeted for minification.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.WebServerOptions.UseMinifyInDebug">
@@ -3215,6 +3247,28 @@
             Gets an immutable version of the web server options.
             </summary>
         </member>
+        <member name="M:GSF.Web.Hosting.WebServerOptions.MinifyJavascriptResource(System.String)">
+            <summary>
+            Determines if Javascript file referenced by <paramref name="urlPath"/> should be minified
+            according to <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascriptExclusionExpression"/>.
+            </summary>
+            <param name="urlPath">Javascript filename to check.</param>
+            <returns><c>true</c> if <paramref name="urlPath"/> should be minified; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Result will always be <c>false</c> if <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyJavascript"/> is not <c>true</c>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheetResource(System.String)">
+            <summary>
+            Determines if CSS file referenced by <paramref name="urlPath"/> should be minified
+            according to <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheetsExclusionExpression"/>.
+            </summary>
+            <param name="urlPath">CSS filename to check.</param>
+            <returns><c>true</c> if <paramref name="urlPath"/> should be minified; otherwise, <c>false</c>.</returns>
+            <remarks>
+            Result will always be <c>false</c> if <see cref="P:GSF.Web.Hosting.WebServerOptions.MinifyStyleSheets"/> is not <c>true</c>.
+            </remarks>
+        </member>
         <member name="T:GSF.Web.Hosting.ReadonlyWebServerOptions">
             <summary>
             Represents an immutable version of <see cref="T:GSF.Web.Hosting.WebServerOptions"/>.
@@ -3223,6 +3277,11 @@
         <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.WebRootPath">
             <summary>
             Gets root path defined for this <see cref="T:GSF.Web.Hosting.WebServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.PhysicalWebRootPath">
+            <summary>
+            Gets physical path for <see cref="P:GSF.Web.Hosting.ReadonlyWebServerOptions.WebRootPath"/>.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.ClientCacheEnabled">
@@ -3235,9 +3294,19 @@
             Gets value that determines if minification should be applied to rendered Javascript files.
             </summary>
         </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyJavascriptExclusionExpression">
+            <summary>
+            Gets regular expression that will exclude Javascript files from being minified.
+            </summary>
+        </member>
         <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyStyleSheets">
             <summary>
             Gets value that determines if minification should be applied to rendered CSS files.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.MinifyStyleSheetsExclusionExpression">
+            <summary>
+            Gets regular expression that will exclude CSS files from being minified.
             </summary>
         </member>
         <member name="P:GSF.Web.Hosting.ReadonlyWebServerOptions.UseMinifyInDebug">
