@@ -90,7 +90,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Defines the default value for <see cref="DesiredRemainingSpace"/>.
         /// </summary>
-        public const double DefaultDesiredRemainingSpace = 500.0D;
+        public const double DefaultDesiredRemainingSpace = 100.0D;
 
         /// <summary>
         /// Defines the default value for <see cref="MaximumArchiveDays"/>.
