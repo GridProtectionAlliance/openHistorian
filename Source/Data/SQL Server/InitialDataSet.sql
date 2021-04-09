@@ -25,7 +25,7 @@ GO
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DOM', 'DOM', 'Dominion', 8)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ESI', 'ESI', 'Entergy Services Inc', 9)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ENT', 'ENT', 'Entergy Services Inc', 9)
 GO
 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EXE', 'EXE', 'Exelon Energy', 10)
@@ -100,49 +100,55 @@ GO
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NEISO', 'NEI', 'New England ISO', 33)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MPC', 'MPC', 'Minnkota Power Collective', 34)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NOJA', 'NOJA', 'NOJA Power Switchgear', 34)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MAM', 'MAM', 'MidAmerican Power', 35)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MPC', 'MPC', 'Minnkota Power Collective', 35)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('HEC', 'HEC', 'Hawaiian Electric Company', 36)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MAM', 'MAM', 'MidAmerican Power', 36)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('OGE', 'OGE', 'Oklahoma Gas & Electric', 37)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('HEC', 'HEC', 'Hawaiian Electric Company', 37)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ITC', 'ITC', 'International Transmission Company', 38)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('OGE', 'OGE', 'Oklahoma Gas & Electric', 38)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DUKE', 'DUK', 'Duke Power', 39)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ITC', 'ITC', 'International Transmission Company', 39)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ME', 'ME', 'Central Maine Power Company', 40)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DUKE', 'DUK', 'Duke Power', 40)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UI', 'UI', 'United Illuminating Company', 41)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ME', 'ME', 'Central Maine Power Company', 41)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NH', 'NH', 'Public Service Company of New Hampshire', 42)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UI', 'UI', 'United Illuminating Company', 42)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('VE', 'VE', 'Vermont Electric Company', 43)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NH', 'NH', 'Public Service Company of New Hampshire', 43)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'Northeast Utilities Services Company', 44)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('VE', 'VE', 'Vermont Electric Company', 44)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 45)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'Northeast Utilities Services Company', 45)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 46)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 46)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 47)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 47)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 48)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 48)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 49)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SSE', 'SSE', 'Scottish and Southern Energy', 50)
 GO
 
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonFilterAdapter', 'FilterAdapters', 'Defines IFilterAdapter definitions for a PDC node', 1, 1)
