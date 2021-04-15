@@ -32,6 +32,7 @@ using System.Xml.Linq;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.Diagnostics;
 using GSF.IO;
 using GSF.Windows.ErrorManagement;
 using GSF.Reflection;
@@ -41,6 +42,8 @@ using openHistorianManager.Properties;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable ConstantConditionalAccessQualifier
 namespace openHistorianManager
 {
     /// <summary>
@@ -70,6 +73,7 @@ namespace openHistorianManager
             string systemName = null;
 
             AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+            Application.Current.SessionEnding += Application_SessionEnding;
 
             try
             {
@@ -88,6 +92,9 @@ namespace openHistorianManager
                 {
                     XDocument hostConfig = XDocument.Load(configPath);
                     XElement[] systemSettings = hostConfig.Descendants(SystemSettings).ToArray();
+
+                    // Get system name from host service config
+                    systemName = getElementValue(systemSettings, "SystemName");
 
                     // Validate manager database connection as compared to host service
                     string hostConnectionString = getElementValue(systemSettings, "ConnectionString");
@@ -109,32 +116,44 @@ namespace openHistorianManager
                             !hostDataProviderString.Equals(dataProviderString, StringComparison.OrdinalIgnoreCase) ||
                             !hostNodeID.Equals(nodeID, StringComparison.OrdinalIgnoreCase))
                         {
-                            if (System.Windows.Forms.MessageBox.Show(new NativeWindow(), "Manager database connection does not match host service. Do you want to correct this?", "Database Mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            bool mismatchHandled = false;
+
+                            if (Environment.CommandLine.Contains("-elevated") && Environment.CommandLine.Contains("-connection"))
                             {
-                                configSettings["ConnectionString"].Value = hostConnectionString;
-                                configSettings["DataProviderString"].Value = hostDataProviderString;
-                                configSettings["NodeID"].Value = hostNodeID;
+                                if (Environment.CommandLine.Contains("-connectionFix"))
+                                {
+                                    configSettings["ConnectionString"].Value = hostConnectionString;
+                                    configSettings["DataProviderString"].Value = hostDataProviderString;
+                                    configSettings["NodeID"].Value = hostNodeID;
+                                    config.Save();
+                                    mismatchHandled = true;
+                                }
+                                else if (Environment.CommandLine.Contains("-connectionKeep"))
+                                {
+                                    configSettings["KeepCustomConnection"].Value = "true";
+                                    config.Save();
+                                    mismatchHandled = true;
+                                }
                             }
-                            else
+                            
+                            if (!mismatchHandled)
                             {
-                                configSettings["KeepCustomConnection"].Value = "true";
+                                bool correctMismatch = System.Windows.Forms.MessageBox.Show(new NativeWindow(), "Manager database connection does not match host service. Do you want to correct this?", "Database Mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+                                string elevatedOperation = correctMismatch ? "-connectionFix" : "-connectionKeep";
+
+                                ProcessStartInfo startInfo = new ProcessStartInfo
+                                {
+                                    FileName = Environment.GetCommandLineArgs()[0],
+                                    Arguments = $"{string.Join(" ", Environment.GetCommandLineArgs().Skip(1))} -elevated {elevatedOperation}",
+                                    UseShellExecute = true,
+                                    Verb = "runas"
+                                };
+
+                                using (Process.Start(startInfo)) { }
+                                Environment.Exit(0);
                             }
-
-                            config.Save();
-
-                            ProcessStartInfo startInfo = new ProcessStartInfo
-                            {
-                                FileName = Environment.GetCommandLineArgs()[0],
-                                Arguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1)),
-                                UseShellExecute = true
-                            };
-
-                            using (Process.Start(startInfo)) { }
-                            Environment.Exit(0);
                         }
                     }
-
-                    systemName = getElementValue(systemSettings, "SystemName");
                 }
             }
             catch
@@ -184,7 +203,7 @@ namespace openHistorianManager
                         ProcessStartInfo startInfo = new ProcessStartInfo
                         {
                             FileName = Environment.GetCommandLineArgs()[0],
-                            Arguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1)) + " -elevated",
+                            Arguments = $"{string.Join(" ", Environment.GetCommandLineArgs().Skip(1))} -elevated",
                             UseShellExecute = true,
                             Verb = "runas"
                         };
@@ -239,7 +258,17 @@ namespace openHistorianManager
 
         #region [ Methods ]
 
-        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e) => Settings.Default.Save();
+        private static void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            try
+            {
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+            }
+        }
 
         private string ErrorText()
         {
