@@ -540,6 +540,16 @@
             Factor of Sqrt(3) adjustment (S=Sqrt(3)*V*I)
             </summary>
         </member>
+        <member name="F:PowerCalculations.VoltageAdjustmentStrategy.LineToNeutralSinglePhase">
+            <summary>
+            Factor of 1 adjustment (S=1*V*I). Same as <see cref="F:PowerCalculations.VoltageAdjustmentStrategy.None"/>.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.VoltageAdjustmentStrategy.LineToLineSinglePhase">
+            <summary>
+            Factor of 1/Sqrt(3) adjustment (S=V*I/Sqrt(3))
+            </summary>
+        </member>
         <member name="F:PowerCalculations.VoltageAdjustmentStrategy.None">
             <summary>
             No adjustment (S=V*I)
