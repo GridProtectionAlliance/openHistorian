@@ -1290,11 +1290,11 @@
         <table style="width: 95%">
             <tr>
                 <td class="input-label">
-                    <label for="inputConfigFile">Configuration File:</label>
+                    <label for="inputConfigFile">CFF or Config File:</label>
                 </td>
                 <td>
                     <div class="input-group input-area" data-bind="css: { 'has-error': !fieldIsValid(configFile), 'has-feedback': !fieldIsValid(configFile) }">
-                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User account \"{0}\" will need rights to specified path", UserInfo.CurrentUserID.Replace(" ", "\u00A0"))" class="form-control" style="width: 100%" data-bind="textInput: configFile">
+                        <input id="inputConfigFile" type="text" placeholder="Full path to openHistorian service accessible COMTRADE CFF or configuration file name..." data-toggle="tooltip" data-placement="left" title="@string.Format("User account \"{0}\" will need rights to specified path", UserInfo.CurrentUserID.Replace(" ", "\u00A0"))" class="form-control" style="width: 100%" data-bind="textInput: configFile">
                         <span class="input-group-btn">
                             <button class="btn btn-default" id="analyzeConfig" data-bind="enable: dataHubIsConnected() && fieldIsValid(configFile, true)">Analyze</button>
                         </span>
