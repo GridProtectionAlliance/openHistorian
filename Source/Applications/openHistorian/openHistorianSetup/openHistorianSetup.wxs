@@ -271,6 +271,10 @@
   </Fragment>
 
   <Fragment>
+    <?include EEFiles.wxi ?>
+  </Fragment>
+
+  <Fragment>
     <ComponentGroup Id="OptionalInstallsFiles" Directory="OPTIONALINSTALLSFOLDER">
       <Component Id="PMUConnectionTesterSetup">
         <File Id="PMUConnectionTesterSetup" Name="PMUConnectionTesterSetup.msi" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterSetup.msi" />

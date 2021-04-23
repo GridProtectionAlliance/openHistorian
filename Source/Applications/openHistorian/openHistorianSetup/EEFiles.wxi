@@ -1,0 +1,9 @@
+<Include>
+<ComponentGroup Id="EEFiles" Directory="INSTALLFOLDER">
+<!-- Example:
+  <Component Id="EEFile_dll">
+    <File Id="EEFile.dll" Name="EEFile.dll" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\EEFile.dll" />
+  </Component>
+-->
+</ComponentGroup>
+</Include>

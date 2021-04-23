@@ -237,17 +237,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AdapterExplorer.exe" />
+    <Content Include="AdapterExplorer.exe.config" />
     <Content Include="BulkCalculationState.exe" />
     <Content Include="BulkCalculationState.exe.config" />
     <Content Include="ConfigCrypter.exe" />
     <Content Include="ConfigCrypter.exe.config" />
     <Content Include="ConfigurationEditor.exe" />
     <Content Include="ConfigurationEditor.exe.Config" />
+    <Content Include="CreateOutputStream.exe" />
     <Content Include="CSVDataManager.exe" />
     <Content Include="CSVDataManager.exe.config" />
     <Content Include="DataMigrationUtility.exe" />
     <Content Include="DataMigrationUtility.exe.config" />
     <Content Include="DNP3ConfigGenerator.exe" />
+    <Content Include="EEFiles.wxi" />
     <Content Include="GEPDataExtractor.exe" />
     <Content Include="GEPDataExtractor.exe.Config" />
     <Content Include="GrafanaFeatures.wxi" />
