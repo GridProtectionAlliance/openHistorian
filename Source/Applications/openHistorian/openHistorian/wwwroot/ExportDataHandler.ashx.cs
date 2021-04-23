@@ -67,6 +67,7 @@ namespace openHistorian
         // Constants
         private const string CsvContentType = "text/csv";
         private const string TextContentType = "text/plain";
+        private const int TargetBufferSize = 524288;
 
         #endregion
 
@@ -138,7 +139,7 @@ namespace openHistorian
             }
         }
 
-        private async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private static async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             const double DefaultFrameRate = 30;
             const int DefaultTimestampSnap = 0;
@@ -242,20 +243,24 @@ namespace openHistorian
             if (serverInstance is null)
                 throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
 
-            const int TargetBufferSize = 524288;
-
-            StringBuilder readBuffer = new StringBuilder(TargetBufferSize * 2);
             ManualResetEventSlim bufferReady = new ManualResetEventSlim(false);
             List<string> writeBuffer = new List<string>();
-            object writeBufferLock = new object();
-            bool readComplete = false;
+            bool[] readComplete = { false };
+
+            Task readTask = ReadTask(serverInstance, instanceName, pointIDs, startTime, endTime, writeBuffer, bufferReady, frameRate, missingAsNaN, timestampSnap, alignTimestamps, toleranceTicks, fillMissingTimestamps, dateTimeFormat, readComplete, cancellationToken);
+            Task writeTask = WriteTask(responseStream, headers, writeBuffer, bufferReady, readComplete, cancellationToken);
             
-            Task readTask = Task.Factory.StartNew(() =>
+            await Task.WhenAll(writeTask, readTask);
+        }
+
+        private static Task ReadTask(HistorianServer serverInstance, string instanceName, ulong[] pointIDs, DateTime startTime, DateTime endTime, List<string> writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, CancellationToken cancellationToken) =>
+            Task.Factory.StartNew(() =>
             {
                 try
                 {
                     using SnapClient connection = SnapClient.Connect(serverInstance.Host);
                     Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
+                    StringBuilder readBuffer = new StringBuilder(TargetBufferSize * 2);
                     float[] values = new float[pointIDs.Length];
 
                     for (int i = 0; i < pointIDs.Length; i++)
@@ -275,7 +280,7 @@ namespace openHistorian
                     {
                         interval = (ulong)(Math.Floor(1.0d / frameRate) * Ticks.PerSecond);
                     }
-                        
+
                     ulong lastTimestamp = 0;
 
                     // Write data pages
@@ -292,7 +297,7 @@ namespace openHistorian
                         if (readBuffer.Length < TargetBufferSize)
                             return;
 
-                        lock (writeBufferLock)
+                        lock (writeBuffer)
                             writeBuffer.Add(readBuffer.ToString());
 
                         readBuffer.Clear();
@@ -380,33 +385,34 @@ namespace openHistorian
 
                     if (readBuffer.Length > 0)
                     {
-                        lock (writeBufferLock)
+                        lock (writeBuffer)
                             writeBuffer.Add(readBuffer.ToString());
                     }
                 }
                 finally
                 {
-                    readComplete = true;
+                    readComplete[0] = true;
                     bufferReady.Set();
                 }
             },
             cancellationToken);
 
-            Task writeTask = Task.Factory.StartNew(() =>
+        private static Task WriteTask(Stream responseStream, string headers, List<string> writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, CancellationToken cancellationToken) =>
+            Task.Factory.StartNew(() =>
             {
                 using StreamWriter writer = new StreamWriter(responseStream);
-                
+
                 // Write column headers
                 writer.Write(headers);
 
-                while ((writeBuffer.Count > 0 || !readComplete) && !cancellationToken.IsCancellationRequested)
+                while ((writeBuffer.Count > 0 || !readComplete[0]) && !cancellationToken.IsCancellationRequested)
                 {
                     string[] localBuffer;
 
                     bufferReady.Wait(cancellationToken);
                     bufferReady.Reset();
 
-                    lock (writeBufferLock)
+                    lock (writeBuffer)
                     {
                         localBuffer = writeBuffer.ToArray();
                         writeBuffer.Clear();
@@ -418,14 +424,10 @@ namespace openHistorian
 
                 // Flush stream
                 writer.Flush();
-                    
+
                 //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
             },
             cancellationToken);
-
-            await readTask;
-            await writeTask;
-        }
 
         #endregion
 
@@ -498,7 +500,7 @@ namespace openHistorian
             return cacheID;
         }
 
-        private static ulong[] GetCachedPointIDs(string cacheID) => 
+        private static ulong[] GetCachedPointIDs(string cacheID) =>
             s_pointIDCache.Get(cacheID) as ulong[];
 
         #endregion
