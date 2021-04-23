@@ -217,7 +217,7 @@ namespace openHistorian
                 if (!dataContext.UserIsInRole(securityPrincipal, s_minimumRequiredRoles))
                     throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
 
-                headers = GetHeaders(dataContext, pointIDs.Select(id => (int)id));
+                headers = GetHeaders(dataContext, pointIDs);
             }
 
             if (!double.TryParse(frameRateParam, out double frameRate))
@@ -481,16 +481,26 @@ namespace openHistorian
         }
 
         // Static Methods
-
-        private static string GetHeaders(DataContext dataContext, IEnumerable<int> pointIDs)
+        private static string GetHeaders(DataContext dataContext, ulong[] pointIDs)
         {
-            object[] parameters = pointIDs.Cast<object>().ToArray();
-            string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((parameter, index) => $"{{{index}}}"))})";
-            RecordRestriction pointIDRestriction = new RecordRestriction(parameterizedQueryString, parameters);
+            const int MaxSqlParams = 50;
 
-            return "\"Timestamp\"," + string.Join(",", dataContext.Table<Measurement>().
-                QueryRecords(restriction: pointIDRestriction).
-                Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\""));
+            TableOperations<Measurement> measurementTable = dataContext.Table<Measurement>();
+            StringBuilder headers = new StringBuilder("\"Timestamp\"");
+
+            for (int i = 0; i < pointIDs.Length; i+= MaxSqlParams)
+            {
+                object[] parameters = pointIDs.Skip(i).Take(MaxSqlParams).Select(id => (object)(int)id).ToArray();
+                string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((_, index) => $"{{{index}}}"))})";
+                RecordRestriction pointIDRestriction = new RecordRestriction(parameterizedQueryString, parameters);
+
+                headers.Append(',');
+                headers.Append(string.Join(",", measurementTable.
+                    QueryRecords(restriction: pointIDRestriction).
+                    Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\"")));
+            }
+
+            return headers.ToString();
         }
 
         private static string CachePointIDs(ulong[] pointIDs)
