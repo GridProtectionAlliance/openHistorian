@@ -40600,7 +40600,7 @@
             <param name="binariesDirectory">The directory containing the assemblies to be processed.</param>
             <returns>Public types that implement the specified <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GSF.TypeExtensions.LoadImplementations(System.Type,System.String,System.Boolean,System.Boolean)">
+        <member name="M:GSF.TypeExtensions.LoadImplementations(System.Type,System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Loads public types from assemblies in the specified <paramref name="binariesDirectory"/> that implement 
             the specified <paramref name="type"/> either through class inheritance or interface implementation.
@@ -40609,6 +40609,7 @@
             <param name="binariesDirectory">The directory containing the assemblies to be processed.</param>
             <param name="excludeAbstractTypes">true to exclude public types that are abstract; otherwise false.</param>
             <param name="validateReferences">True to validate references of loaded assemblies before attempting to instantiate types; false otherwise.</param>
+            <param name="executeStaticConstructors">True to execute static constructors of loaded implementations; false otherwise.</param>
             <returns>Public types that implement the specified <paramref name="type"/>.</returns>
         </member>
         <member name="M:GSF.TypeExtensions.IsNumeric(System.Type)">
