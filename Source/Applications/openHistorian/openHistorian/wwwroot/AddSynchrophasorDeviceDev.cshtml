@@ -530,21 +530,69 @@
             setTimeout(function () { $("#loadingDataLabel").css("visibility", "hidden"); }, 500);
         }
 
-        function phaseEndsWith(phaseLabel, phaseMatches) {
+        @{ /* Make sure any updates to phase guessing is synchronized with "InputWizardDevices.cs" in the "GSF.PhasorProtocol.UI.WPF" assembly */ }
+        function phaseMatchExact(phaseLabel, phaseMatches) {
             for (let i = 0; i < phaseMatches.length; i++) {
-                if (phaseLabel.endsWith(phaseMatches[i]))
+                if (phaseLabel === phaseMatches[i])
                     return true;
             }
 
             return false;
         }
 
-        function phaseMatchHighConfidence(phaseLabel, phaseMatches) {
+        function phaseEndsWith(phaseLabel, phaseMatches, ignoreCase) {
+            if (ignoreCase)
+                phaseLabel = phaseLabel.toUpperCase();
+
             for (let i = 0; i < phaseMatches.length; i++) {
-                const match = phaseMatches[i];
+                let phaseMatch = phaseMatches[i];
+
+                if (ignoreCase)
+                    phaseMatch = phaseMatch.toUpperCase();
+
+                if (phaseLabel.endsWith(phaseMatch))
+                    return true;
+            }
+
+            return false;
+        }
+
+        function phaseContains(phaseLabel, phaseMatches, ignoreCase) {
+            if (ignoreCase)
+                phaseLabel = phaseLabel.toUpperCase();
+
+            for (let i = 0; i < phaseMatches.length; i++) {
+                let phaseMatch = phaseMatches[i];
+
+                if (ignoreCase)
+                    phaseMatch = phaseMatch.toUpperCase();
+
+                if (phaseLabel.indexOf(phaseMatch) > -1)
+                    return true;
+            }
+
+            return false;
+        }
+
+        function phaseMatchHighConfidence(phaseLabel, containsMatches, endsWithMatches) {
+            if (phaseEndsWith(phaseLabel, containsMatches, true))
+                return true;
+
+            const matches = containsMatches.concat(endsWithMatches);
+
+            for (let i = 0; i < matches.length; i++) {
+                const match = matches[i];
                 const variations = [ " " + match, "_" + match, "-" + match, "." + match ];
 
-                if (phaseEndsWith(phaseLabel, variations))
+                if (phaseEndsWith(phaseLabel, variations, false))
+                    return true;
+            }
+
+            for (let i = 0; i < containsMatches.length; i++) {
+                const match = containsMatches[i];
+                const variations = [ " " + match + " ", "_" + match + "_", "-" + match + "-", "-" + match + "_", "_" + match + "-", "." + match + "." ];
+
+                if (phaseContains(phaseLabel, variations, false))
                     return true;
             }
 
@@ -554,42 +602,40 @@
         function phaseMatchLowConfidence(phaseLabel, phaseMatches) {
             for (let i = 0; i < phaseMatches.length; i++) {
                 const match = phaseMatches[i];
-                const variations = [ " " + match, match + " ", "_" + match, match + "_", "_" + match + "_", "." + match, match + ".", "." + match + "." ];
+                const variations = [ " " + match, match + " ", "_" + match, match + "_", "_" + match + "_", "-" + match, match + "-", "-" + match + "-", "-" + match + "_", "_" + match + "-", "." + match, match + ".", "." + match + "." ];
 
-                for (let j = 0; j < variations.length; j++) {
-                    if (phaseLabel.indexOf(variations[j]) > -1)
-                        return true;
-                }
+                if (phaseContains(phaseLabel, variations, true))
+                    return true;
             }
 
             return false;
         }
 
         function guessPhase(phase, phasorLabel) {
-            if (!isEmpty(phase) && phase !== "+")
+            if (!isEmpty(phase) && phase !== "+" && !phase.endsWith("?"))
                 return phase;
 
             // Handle high confidence phase matches when no phase is defined or when phase is "+" - since positive sequence is often default value, it's treated with suspicion
             if (isEmpty(phase) || phase === "+") {
-                if (phaseMatchHighConfidence(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI" ]) || phaseEndsWith(phasorLabel, [ "+SV", "+SI", "+V", "+I" ]))
+                if (phaseMatchExact(phasorLabel, [ "V1PM", "I1PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V1", "I1" ], [ "POS", "V1PM", "I1PM", "PS", "PSV", "PSI" ]) || phaseEndsWith(phasorLabel, [ "+SV", "+SI", "+V", "+I" ], true))
                     return "+";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI" ]) || phaseEndsWith(phasorLabel, [ "0SV", "0SI" ]))
+                if (phaseMatchExact(phasorLabel, [ "V0PM", "I0PM", "VZPM", "IZPM" ]) || phaseMatchHighConfidence(phasorLabel, ["V0", "I0"], [ "ZERO", "ZPV", "ZPI", "VSPM", "V0PM", "I0PM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI" ]) || phaseEndsWith(phasorLabel, [ "0SV", "0SI" ], true))
                     return "0";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "VA", "IA", "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
+                if (phaseMatchExact(phasorLabel, [ "VAPM", "IAPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VA", "IA" ], [ "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
                     return "A";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
+                if (phaseMatchExact(phasorLabel, [ "VBPM", "IBPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VB", "IB" ], [ "BPV", "BPI", "VBPM", "IBPM", "BV", "BI" ]))
                     return "B";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
+                if (phaseMatchExact(phasorLabel, [ "VCPM", "ICPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VC", "IC" ], [ "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ]))
                     return "C";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
+                if (phaseMatchExact(phasorLabel, [ "VNPM", "INPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VN", "IN" ], [ "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
                     return "N";
 
-                if (phaseMatchHighConfidence(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI" ]) || phaseEndsWith(phasorLabel, [ "-V", "-I" ]))
+                if (phaseMatchExact(phasorLabel, [ "V2PM", "I2PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V2", "I2" ], [ "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI" ]))
                     return "-";
             }
 
@@ -614,11 +660,36 @@
                 if (phaseMatchLowConfidence(phasorLabel, [ "VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
                     return "N?";
 
-                // -V and -I may match too often, so check these last
-                if (phaseMatchLowConfidence(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI", "-V", "-I" ]))
+                if (phaseMatchLowConfidence(phasorLabel, [ "V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI" ]))
                     return "-?";
 
-                return "?";
+                // Test for contains after checks with separators
+                if (phaseContains(phasorLabel, ["V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I"], true))
+                    return "+?";
+
+                if (phaseContains(phasorLabel, ["V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI"], true))
+                    return "0?";
+
+                if (phaseContains(phasorLabel, ["VA", "IA", "APV", "API", "VAPM", "IAPM", "AV", "AI"], true))
+                    return "A?";
+
+                if (phaseContains(phasorLabel, ["VB", "IB", "BPV", "BPI", "VBPM", "IBPM", "BV", "BI"], true))
+                    return "B?";
+
+                if (phaseContains(phasorLabel, [ "VC", "IC", "CPV", "CPI", "VCPM", "ICPM", "CV", "CI" ], true))
+                    return "C?";
+
+                if (phaseContains(phasorLabel, ["VN", "IN", "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI"], true))
+                    return "N?";
+
+                if (phaseContains(phasorLabel, ["V2", "I2", "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI"], true))
+                    return "-?";
+
+                // -V and -I may match too often, so check these last
+                if (phaseMatchLowConfidence(phasorLabel, ["-V", "-I"]) || phaseContains(phasorLabel, ["-V", "-I"], true))
+                    return "-?";
+
+                return "+?";
             }
 
             return phase;
@@ -628,7 +699,7 @@
             if (!isEmpty(nominalVoltage) && nominalVoltage !== 0)
                 return nominalVoltage;
 
-            const commonVoltageLevels = ["69", "115", "138", "161", "230", "345", "500", "765"];
+            const commonVoltageLevels = [ "44", "69", "115", "138", "161", "169", "230", "345", "500", "765", "1100" ];
 
             // Check phasor label before device
             for (let i = 0; i < commonVoltageLevels.length; i++) {
@@ -1153,6 +1224,13 @@
                 for (let i = 0; i < deviceCount; i++) {
                     const cell = self.configFrame().Cells[i];
 
+                    // TODO: Update screen to accomodate lat/long at the device level
+                    if (!isEmpty(cell.Latitude))
+                        self.latitude(cell.Latitude);
+
+                    if (!isEmpty(cell.Longitude))
+                        self.longitude(cell.Longitude);
+
                     let cellAcronym = cell.IDLabel;
 
                     if (isEmpty(cellAcronym))
@@ -1221,6 +1299,9 @@
                         return {
                             ID: cell.ID,
                             ParentID: cell.ParentID,
+                            UniqueID: cell.UniqueID,
+                            Longitude: cell.Longitude,
+                            Latitude: cell.Latitude,
                             IDCode: cell.IDCode,
                             StationName: self.configFrame().Cells.length === 1 ? self.deviceName() : cell.IDLabel(),
                             IDLabel: cell.IDLabel(),
@@ -1437,8 +1518,8 @@
                 voltage.Phase.extend({
                     required: true,
                     pattern: {
-                        message: "Must be one of: A, B, C, 0, +, - or N",
-                        params: "^[A-C0+\\-N]$"
+                        message: "Must be one of: A, B, C, 0, +, -, N or L",
+                        params: "^[A-C0+\\-NL]$"
                     }
                 });
 
@@ -2289,11 +2370,8 @@
                                 powerCalculation.CurrentMagSignalID = iphmID;
                                 powerCalculation.Enabled = true;
 
-                                // For direct phase power calculations, do not apply voltage adjustment strategy
-                                if (phase === "A" || phase === "B" || phase === "C")
-                                    powerCalculation.CircuitDescription = circuitDescription + "; AdjustmentStrategy = None";
-                                else
-                                    powerCalculation.CircuitDescription = circuitDescription;
+                                // For all phase power calculations, do not apply any voltage adjustment strategy
+                                powerCalculation.CircuitDescription = circuitDescription + "; AdjustmentStrategy = None";
 
                                 if (powerCalculation.ID === 0) {
                                     return phasorHub.addNewPowerCalculation(powerCalculation).fail(function (error) {
@@ -2405,7 +2483,7 @@
                 attempt = 1;
 
             if (attempt > 4) {
-                showErrorMessage("Failed to find power output measurement after waiting 4 seconds - skipping 3-phase power calculations.");
+                showErrorMessage("Failed to find power output measurement after waiting 12 seconds - skipping 3-phase power calculations.");
                 return $.Deferred().resolve(null).promise();
             }
 
@@ -2422,17 +2500,17 @@
                     switch (type) {
                         case "MW":
                             if (powerCalculation.ActivePowerOutputSignalID == null || powerCalculation.ActivePowerOutputSignalID === 0)
-                                return delayedPromise(1000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ActivePowerOutputSignalID).promise();
                         case "MVAR":
                             if (powerCalculation.ReactivePowerOutputSignalID == null || powerCalculation.ReactivePowerOutputSignalID === 0)
-                                return delayedPromise(1000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ReactivePowerOutputSignalID).promise();
                         case "MVA":
                             if (powerCalculation.ApparentPowerOutputSignalID == null || powerCalculation.ApparentPowerOutputSignalID === 0)
-                                return delayedPromise(1000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ApparentPowerOutputSignalID).promise();
                     }
@@ -2470,7 +2548,7 @@
                 let phaseBSignalID = null;
                 let phaseCSignalID = null;
 
-                // These queries will keep looping while power calculations are initializing until power output measurements exist or timeout after 4 seconds:
+                // These queries will keep looping while power calculations are initializing until power output measurements exist or timeout after 12 seconds:
                 queryPromises.push(queryPowerOutput(type, line.A, 1).then(function (signalID) {
                     phaseASignalID = signalID;
                 }));
@@ -2994,7 +3072,7 @@
 
             const templateType = viewModel.templateType();
 
-            if (templateType.toUpperCase() === "NONE")
+            if (templateType.toUpperCase().startsWith("NONE:"))
                 return $.Deferred().resolve().promise();
 
             const calcSignalType = getDeviceSignalType("CALC");
@@ -3130,6 +3208,9 @@
 
                                 // Check if this is a new device or an edit to an existing one
                                 if (device.ID === 0) {
+                                    if (!isEmpty(cell.UniqueID))
+                                        device.UniqueID = cell.UniqueID;
+
                                     // Add new device record
                                     return phasorHub.addNewDevice(device).then(function () {
                                         // Get newly added device with auto-incremented ID
@@ -4087,7 +4168,7 @@
                     <td width="55px" class="text-center">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true), 'error-margin': !fieldIsValid(Phase, true) }">
-                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
+                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '75px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                         </div>
                     </td>
@@ -4156,7 +4237,7 @@
                     <td width="55px" class="text-center">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
                         <div class="input-group" data-bind="css: { 'has-error': !fieldIsValid(Phase, true), 'has-feedback': !fieldIsValid(Phase, true), 'error-margin': !fieldIsValid(Phase, true)}">
-                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '70px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
+                            <input type="text" class="form-control" maxlength="1" style="width: 37px; margin-left: 3px" onclick="this.select()" data-bind="upperCase: Phase, textInput: Phase, style: { width: Phase.isValid() ? '37px' : '75px' }, selectOnError: Phase, enable: Enabled" placeholder="Ø" required>
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                         </div>
                     </td>
