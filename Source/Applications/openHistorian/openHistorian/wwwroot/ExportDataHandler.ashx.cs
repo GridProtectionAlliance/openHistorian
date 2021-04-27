@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using GSF;
 using GSF.Collections;
+using GSF.COMTRADE;
 using GSF.Data.Model;
+using GSF.Diagnostics;
+using GSF.IO;
 using GSF.Security;
 using GSF.Snap;
 using GSF.Snap.Filters;
@@ -47,9 +51,11 @@ using GSF.Web.Hosting;
 using GSF.Web.Hubs;
 using GSF.Web.Model;
 using openHistorian.Adapters;
+using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
 using Measurement = openHistorian.Model.Measurement;
+using EESignalType = GSF.Units.EE.SignalType;
 
 // ReSharper disable LocalizableElement
 // ReSharper disable once CheckNamespace
@@ -62,11 +68,23 @@ namespace openHistorian
     /// </summary>
     public class ExportDataHandler : IHostedHttpHandler
     {
-        #region [ Members ]
+    #region [ Members ]
+
+        // Nested Types
+        private class PointMetadata
+        {
+            public ulong[] PointIDs;
+            public Measurement[] Measurements;
+            public string StationName;
+            public string DeviceID;
+            public string TargetDeviceName;
+            public int TargetQualityFlagsID;
+        }
 
         // Constants
         private const string CsvContentType = "text/csv";
         private const string TextContentType = "text/plain";
+        private const string BinaryContentType = "application/octet-stream";
         private const int TargetBufferSize = 524288;
 
         #endregion
@@ -104,6 +122,7 @@ namespace openHistorian
         public async Task ProcessRequestAsync(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
         {
             NameValueCollection requestParameters = request.RequestUri.ParseQueryString();
+            SecurityPrincipal securityPrincipal = request.GetRequestContext().Principal as SecurityPrincipal;
 
             // Initial post request assumed to be all point IDs to query, to be cached by key on server. This operation
             // allows for very large point ID selection posts that could otherwise exceed URI parameter string limits.
@@ -114,73 +133,82 @@ namespace openHistorian
                 Array.Sort(pointIDs);
 
                 response.StatusCode = HttpStatusCode.OK;
-                response.Content = new StringContent(CachePointIDs(pointIDs), Encoding.UTF8, TextContentType);
+                response.Content = new StringContent(CachePointMetadata(securityPrincipal, pointIDs), Encoding.UTF8, TextContentType);
             }
             else
             {
+                if (!int.TryParse(requestParameters["FileFormat"], out int fileFormat))
+                    fileFormat = -1; // Default to CSV
+
+                string cacheIDParam = requestParameters["CacheID"];
+                string pointIDsParam = requestParameters["PointIDs"];
+                PointMetadata metadata;
+
+                if (string.IsNullOrEmpty(cacheIDParam) && string.IsNullOrEmpty(pointIDsParam))
+                    throw new ArgumentException("Cannot export data: no point ID values can be accessed. Neither the \"CacheID\" nor the \"PointIDs\" parameter was provided.");
+
+                if (string.IsNullOrEmpty(pointIDsParam))
+                {
+                    metadata = GetCachedPointMetadata(cacheIDParam);
+
+                    if (metadata is null)
+                        throw new ArgumentNullException("CacheID", $"Cannot export data: failed to load cached point metadata referenced by \"CacheID\" parameter value \"{cacheIDParam}\".");
+                }
+                else
+                {
+                    try
+                    {
+                        ulong[] pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
+                        Array.Sort(pointIDs);
+                        metadata = CreatePointMetadata(securityPrincipal, pointIDs);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentNullException("PointIDs", $"Cannot export data: failed to parse \"PointIDs\" parameter value \"{pointIDsParam}\": {ex.Message}");
+                    }
+                }
+
                 response.Content = new PushStreamContent(async (stream, content, context) =>
                 {
                     try
                     {
-                        SecurityPrincipal securityPrincipal = request.GetRequestContext().Principal as SecurityPrincipal;
-                        await CopyModelAsCsvToStreamAsync(securityPrincipal, requestParameters, stream, cancellationToken);
+                        await ExportToStreamAsync(fileFormat, metadata, requestParameters, stream, cancellationToken);
                     }
                     finally
                     {
                         stream.Close();
                     }
                 },
-                new MediaTypeHeaderValue(CsvContentType));
+                new MediaTypeHeaderValue(fileFormat switch
+                {
+                    -1 => CsvContentType,   // CSV
+                    0 => TextContentType,   // COMTRADE ASCII
+                    _ => BinaryContentType  // COMTRADE Binary
+                }));
 
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
                 {
-                    FileName = requestParameters["FileName"] ?? "Export.csv"
+                    FileName = requestParameters["FileName"] ?? $"{metadata.TargetDeviceName ?? "Export"}.{(fileFormat < 0 ? "csv" : "cff")}"
                 };
             }
         }
 
-        private static async Task CopyModelAsCsvToStreamAsync(SecurityPrincipal securityPrincipal, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private static async Task ExportToStreamAsync(int fileFormat, PointMetadata metadata, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
-            const double DefaultFrameRate = 30;
+            const double DefaultFrameRate = 30D;
             const int DefaultTimestampSnap = 0;
+            const double DefaultTolerance = 0.5D;
 
             string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
-            string cacheIDParam = requestParameters["CacheID"];
-            string pointIDsParam = requestParameters["PointIDs"];
             string startTimeParam = requestParameters["StartTime"];
             string endTimeParam = requestParameters["EndTime"];
-            string timestampSnapParam = requestParameters["TSSnap"];
             string frameRateParam = requestParameters["FrameRate"];
             string alignTimestampsParam = requestParameters["AlignTimestamps"];
             string missingAsNaNParam = requestParameters["MissingAsNaN"];
             string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
             string instanceName = requestParameters["InstanceName"];
-            string toleranceParam = requestParameters["TSTolerance"]; // In milliseconds
-            ulong[] pointIDs;
-            string headers;
-
-            if (string.IsNullOrEmpty(cacheIDParam) && string.IsNullOrEmpty(pointIDsParam))
-                throw new ArgumentException("Cannot export data: no point ID values can be accessed. Neither the \"CacheID\" nor the \"PointIDs\" parameter was provided.");
-
-            if (string.IsNullOrEmpty(pointIDsParam))
-            {
-                pointIDs = GetCachedPointIDs(cacheIDParam);
-
-                if (pointIDs is null)
-                    throw new ArgumentNullException("CacheID", $"Cannot export data: failed to load cached point ID list referenced by \"CacheID\" parameter value \"{cacheIDParam}\".");
-            }
-            else
-            {
-                try
-                {
-                    pointIDs = pointIDsParam.Split(',').Select(ulong.Parse).ToArray();
-                    Array.Sort(pointIDs);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentNullException("PointIDs", $"Cannot export data: failed to parse \"PointIDs\" parameter value \"{pointIDsParam}\": {ex.Message}");
-                }
-            }
+            string timestampSnapParam = requestParameters["TimestampSnap"];
+            string toleranceParam = requestParameters["Tolerance"]; // In milliseconds
 
             if (string.IsNullOrEmpty(startTimeParam))
                 throw new ArgumentNullException("StartTime", "Cannot export data: no \"StartTime\" parameter value was specified.");
@@ -211,14 +239,13 @@ namespace openHistorian
             if (startTime > endTime)
                 throw new ArgumentOutOfRangeException("StartTime", "Cannot export data: start time exceeds end time.");
 
-            using (DataContext dataContext = new DataContext())
-            {
-                // Validate current user has access to requested data
-                if (!dataContext.UserIsInRole(securityPrincipal, s_minimumRequiredRoles))
-                    throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
+            FileType? fileType = null;
 
-                headers = GetHeaders(dataContext, pointIDs);
-            }
+            if (fileFormat > -1)
+                fileType = (FileType)fileFormat;
+
+            Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(metadata.PointIDs.Length);
+            byte[] headers = GetHeaders(fileType, metadata, pointIDIndex, startTime, out Schema schema);
 
             if (!double.TryParse(frameRateParam, out double frameRate))
                 frameRate = DefaultFrameRate;
@@ -227,7 +254,7 @@ namespace openHistorian
                 timestampSnap = DefaultTimestampSnap;
 
             if (!double.TryParse(toleranceParam, out double tolerance))
-                tolerance = 0.5;
+                tolerance = DefaultTolerance;
 
             int toleranceTicks = (int)Math.Ceiling(tolerance * Ticks.PerMillisecond);
             bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
@@ -244,30 +271,32 @@ namespace openHistorian
                 throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
 
             ManualResetEventSlim bufferReady = new ManualResetEventSlim(false);
-            List<string> writeBuffer = new List<string>();
+            BlockAllocatedMemoryStream writeBuffer = new BlockAllocatedMemoryStream();
             bool[] readComplete = { false };
 
-            Task readTask = ReadTask(serverInstance, instanceName, pointIDs, startTime, endTime, writeBuffer, bufferReady, frameRate, missingAsNaN, timestampSnap, alignTimestamps, toleranceTicks, fillMissingTimestamps, dateTimeFormat, readComplete, cancellationToken);
+            Task readTask = ReadTask(fileType, schema, serverInstance, instanceName, metadata, pointIDIndex, startTime, endTime, writeBuffer, bufferReady, frameRate, missingAsNaN, timestampSnap, alignTimestamps, toleranceTicks, fillMissingTimestamps, dateTimeFormat, readComplete, cancellationToken);
             Task writeTask = WriteTask(responseStream, headers, writeBuffer, bufferReady, readComplete, cancellationToken);
             
             await Task.WhenAll(writeTask, readTask);
         }
 
-        private static Task ReadTask(HistorianServer serverInstance, string instanceName, ulong[] pointIDs, DateTime startTime, DateTime endTime, List<string> writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, CancellationToken cancellationToken) =>
+        private static Task ReadTask(FileType? fileType, Schema schema, HistorianServer serverInstance, string instanceName, PointMetadata metadata, Dictionary<ulong, int> pointIDIndex, DateTime startTime, DateTime endTime, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
                 try
                 {
                     using SnapClient connection = SnapClient.Connect(serverInstance.Host);
-                    Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(pointIDs.Length);
-                    StringBuilder readBuffer = new StringBuilder(TargetBufferSize * 2);
-                    float[] values = new float[pointIDs.Length];
+                    BlockAllocatedMemoryStream readBuffer = new BlockAllocatedMemoryStream();
+                    StreamWriter readBufferWriter = new StreamWriter(readBuffer) { NewLine = Writer.CRLF };
+                    int valueCount = metadata.PointIDs.Length;
 
-                    for (int i = 0; i < pointIDs.Length; i++)
-                        pointIDIndex.Add(pointIDs[i], i);
+                    if (!(fileType is null) && metadata.TargetQualityFlagsID > 0)
+                        valueCount--;
+
+                    double[] values = new double[valueCount];
 
                     for (int i = 0; i < values.Length; i++)
-                        values[i] = float.NaN;
+                        values[i] = double.NaN;
 
                     ulong interval;
 
@@ -285,20 +314,42 @@ namespace openHistorian
 
                     // Write data pages
                     SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
-                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(pointIDs);
+                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(metadata.PointIDs);
                     HistorianKey historianKey = new HistorianKey();
                     HistorianValue historianValue = new HistorianValue();
+                    ushort fracSecValue = 0;
+                    uint sample = 0U;
 
                     // Write row values function
-                    void bufferValues()
+                    void bufferValues(DateTime recordTimestamp)
                     {
-                        readBuffer.Append(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => float.IsNaN(val) ? "" : $"{val}")));
+                        switch (fileType)
+                        {
+                            case FileType.Ascii:
+                                Writer.WriteNextRecordAscii(readBufferWriter, schema, recordTimestamp, values, sample++, true, fracSecValue);
+                                break;
+                            case FileType.Binary:
+                                Writer.WriteNextRecordBinary(readBuffer, schema, recordTimestamp, values, sample++, true, fracSecValue);
+                                break;
+                            case FileType.Binary32:
+                                Writer.WriteNextRecordBinary32(readBuffer, schema, recordTimestamp, values, sample++, true, fracSecValue);
+                                break;
+                            case FileType.Float32:
+                                Writer.WriteNextRecordFloat32(readBuffer, schema, recordTimestamp, values, sample++, true, fracSecValue);
+                                break;
+                            case null:
+                                readBufferWriter.Write($"{Environment.NewLine}{recordTimestamp.ToString(dateTimeFormat)},");
+                                readBufferWriter.Write(missingAsNaN ? string.Join(",", values) : string.Join(",", values.Select(val => double.IsNaN(val) ? "" : $"{val}")));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(fileType), fileType, null);
+                        }
 
                         if (readBuffer.Length < TargetBufferSize)
                             return;
 
                         lock (writeBuffer)
-                            writeBuffer.Add(readBuffer.ToString());
+                            readBuffer.WriteTo(writeBuffer);
 
                         readBuffer.Clear();
                         bufferReady.Set();
@@ -307,7 +358,6 @@ namespace openHistorian
                     // Start stream reader for the provided time window and selected points
                     using ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(instanceName);
                     TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
-                    ulong timestamp = 0;
 
                     // Adjust timestamp to use first timestamp as base
                     bool adjustTimeStamp = timestampSnap switch
@@ -326,6 +376,8 @@ namespace openHistorian
 
                     while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
                     {
+                        ulong timestamp;
+
                         if (alignTimestamps)
                         {
                             if (adjustTimeStamp)
@@ -349,13 +401,13 @@ namespace openHistorian
                         // Start a new row for each encountered new timestamp
                         if (timestamp != lastTimestamp)
                         {
-                            if (lastTimestamp > 0)
-                                bufferValues();
+                            if (lastTimestamp > 0UL)
+                                bufferValues(new DateTime((long)lastTimestamp));
 
                             for (int i = 0; i < values.Length; i++)
-                                values[i] = float.NaN;
+                                values[i] = double.NaN;
 
-                            if (fillMissingTimestamps && lastTimestamp > 0 && timestamp > lastTimestamp)
+                            if (fillMissingTimestamps && lastTimestamp > 0UL && timestamp > lastTimestamp)
                             {
                                 ulong difference = timestamp - lastTimestamp;
 
@@ -366,27 +418,54 @@ namespace openHistorian
                                     for (ulong i = 1; i < difference / interval; i++)
                                     {
                                         interpolated = (ulong)Ticks.RoundToSecondDistribution((long)(interpolated + interval), frameRate, startTime.Ticks).Value;
-                                        readBuffer.Append($"{Environment.NewLine}{new DateTime((long)interpolated, DateTimeKind.Utc).ToString(dateTimeFormat)},");
-                                        bufferValues();
+                                        bufferValues(new DateTime((long)interpolated, DateTimeKind.Utc));
                                     }
                                 }
                             }
 
-                            readBuffer.Append($"{Environment.NewLine}{new DateTime((long)timestamp, DateTimeKind.Utc).ToString(dateTimeFormat)},");
                             lastTimestamp = timestamp;
                         }
 
                         // Save value to its column
-                        values[pointIDIndex[historianKey.PointID]] = historianValue.AsSingle;
+                        if (pointIDIndex.TryGetValue(historianKey.PointID, out int index))
+                            values[index] = historianValue.AsSingle;
+                        else if (historianKey.PointID == (ulong)metadata.TargetQualityFlagsID)
+                            fracSecValue = (ushort)historianValue.AsSingle;
+                    }   
+
+                    if (lastTimestamp > 0UL)
+                    {
+                        bufferValues(new DateTime((long)lastTimestamp));
+                    }
+                    else
+                    {
+                        // No data queried, interpolate blank rows if requested
+                        if (fillMissingTimestamps)
+                        {
+                            ulong difference = (ulong)(endTime.Ticks - startTime.Ticks);
+
+                            if (difference > interval)
+                            {
+                                for (int i = 0; i < values.Length; i++)
+                                    values[i] = double.NaN;
+
+                                ulong interpolated = (ulong)startTime.Ticks;
+
+                                for (ulong i = 1; i < difference / interval; i++)
+                                {
+                                    interpolated = (ulong)Ticks.RoundToSecondDistribution((long)(interpolated + interval), frameRate, startTime.Ticks).Value;
+                                    bufferValues(new DateTime((long)interpolated, DateTimeKind.Utc));
+                                }
+                            }
+                        }
                     }
 
-                    if (timestamp > 0)
-                        bufferValues();
+                    readBufferWriter.Flush();
 
                     if (readBuffer.Length > 0)
                     {
                         lock (writeBuffer)
-                            writeBuffer.Add(readBuffer.ToString());
+                            readBuffer.WriteTo(writeBuffer);
                     }
                 }
                 finally
@@ -397,33 +476,30 @@ namespace openHistorian
             },
             cancellationToken);
 
-        private static Task WriteTask(Stream responseStream, string headers, List<string> writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, CancellationToken cancellationToken) =>
+        private static Task WriteTask(Stream responseStream, byte[] header, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
-                using StreamWriter writer = new StreamWriter(responseStream);
+                // Write headers, e.g., CSV header row or CFF schema
+                responseStream.Write(header, 0, header.Length);
 
-                // Write column headers
-                writer.Write(headers);
-
-                while ((writeBuffer.Count > 0 || !readComplete[0]) && !cancellationToken.IsCancellationRequested)
+                while ((writeBuffer.Length > 0 || !readComplete[0]) && !cancellationToken.IsCancellationRequested)
                 {
-                    string[] localBuffer;
+                    byte[] bytes;
 
                     bufferReady.Wait(cancellationToken);
                     bufferReady.Reset();
 
                     lock (writeBuffer)
                     {
-                        localBuffer = writeBuffer.ToArray();
+                        bytes = writeBuffer.ToArray();
                         writeBuffer.Clear();
                     }
 
-                    foreach (string buffer in localBuffer)
-                        writer.Write(buffer);
+                    responseStream.Write(bytes, 0, bytes.Length);
                 }
 
                 // Flush stream
-                writer.Flush();
+                responseStream.Flush();
 
                 //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
             },
@@ -435,7 +511,7 @@ namespace openHistorian
 
         // Static Fields
         private static readonly string s_minimumRequiredRoles;
-        private static readonly MemoryCache s_pointIDCache;
+        private static readonly MemoryCache s_pointMetadataCache;
 
         // Static Constructor
         static ExportDataHandler()
@@ -477,41 +553,238 @@ namespace openHistorian
                 throw new SecurityException($"Cannot export data: failed to instantiate hub type \"{nameof(DataHub)}\" or access record operations, access cannot be validated.", ex);
             }
 
-            s_pointIDCache = new MemoryCache($"{nameof(ExportDataHandler)}-PointIDCache");
+            s_pointMetadataCache = new MemoryCache($"{nameof(ExportDataHandler)}-{nameof(PointMetadata)}Cache");
         }
 
         // Static Methods
-        private static string GetHeaders(DataContext dataContext, ulong[] pointIDs)
+        private static byte[] GetHeaders(FileType? fileType, PointMetadata metadata, Dictionary<ulong, int> pointIDIndex, DateTime startTime, out Schema schema)
+        {
+            using DataContext dataContext = new DataContext();
+            TableOperations<Device> deviceTable = dataContext.Table<Device>();
+            Dictionary<int, Device> deviceIDMap = new Dictionary<int, Device>();
+            byte[] bytes;
+
+            Device lookupDevice(int? id) =>
+                id is null ? null : deviceIDMap.GetOrAdd(id.Value, _ => deviceTable.QueryRecordWhere("ID = {0}", id));
+
+            if (fileType is null)
+            {
+                // Create CSV header
+                StringBuilder headers = new StringBuilder("\"Timestamp\"");
+
+                if (metadata.Measurements.Length > 0)
+                {
+                    headers.Append(',');
+                    headers.Append(string.Join(",", metadata.Measurements.Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\"")));
+                }
+
+                for (int i = 0; i < metadata.PointIDs.Length; i++)
+                    pointIDIndex.Add(metadata.PointIDs[i], i);
+
+                bytes = new UTF8Encoding(false).GetBytes(headers.ToString());
+                schema = null;
+            }
+            else
+            {
+                // Create COMTRADE header
+                TableOperations<SignalType> signalTypeTable = dataContext.Table<SignalType>();
+                SignalType[] signalTypes = signalTypeTable.QueryRecords().ToArray();
+                Dictionary<int, EESignalType> signalTypeAcronyms = signalTypes.ToDictionary(key => key.ID, value => Enum.TryParse(value.Acronym, true, out EESignalType signalType) ? signalType : EESignalType.NONE);
+                Dictionary<int, string> signalTypeUnits = signalTypes.ToDictionary(key => key.ID, value => value.EngineeringUnits);
+                string[] digitalSignalTypes = { "FLAG", "DIGI", "QUAL" };
+                int[] digitalSignalTypeIDs = signalTypes.Where(signalType => digitalSignalTypes.Contains(signalType.Acronym)).Select(signalType => signalType.ID).ToArray();
+                Measurement[] analogs = metadata.Measurements.Where(measurement => !digitalSignalTypeIDs.Contains(measurement.SignalTypeID)).ToArray();
+                Measurement[] digitals = metadata.Measurements.Where(measurement => digitalSignalTypeIDs.Contains(measurement.SignalTypeID) && measurement.PointID != metadata.TargetQualityFlagsID).ToArray();
+                Dictionary<int, Measurement> digitalIDMap = digitals.ToDictionary(key => key.PointID);
+                Dictionary<ChannelMetadata, Measurement> analogChannelMeasurementMap = new Dictionary<ChannelMetadata, Measurement>();
+                Dictionary<ChannelMetadata, Measurement> digitalChannelMeasurementMap = new Dictionary<ChannelMetadata, Measurement>();
+
+                ChannelMetadata getAnalogChannel(Measurement analogMeasurement)
+                {
+                    ChannelMetadata analogChannel = new ChannelMetadata
+                    {
+                        Name = analogMeasurement.PointTag,
+                        SignalType = signalTypeAcronyms[analogMeasurement.SignalTypeID],
+                        IsDigital = false,
+                        Units = signalTypeUnits[analogMeasurement.SignalTypeID],
+                        CircuitComponent = lookupDevice(analogMeasurement.DeviceID)?.Acronym
+                    };
+
+                    analogChannelMeasurementMap[analogChannel] = analogMeasurement;
+                    return analogChannel;
+                }
+
+                ChannelMetadata getDigitalChannel(Measurement digitalMeasurement)
+                {
+                    EESignalType signalType = signalTypeAcronyms[digitalMeasurement.SignalTypeID];
+                    string deviceAcronym = lookupDevice(digitalMeasurement.DeviceID)?.Acronym;
+
+                    ChannelMetadata digitalChannel = new ChannelMetadata
+                    {
+                        Name = signalType == EESignalType.FLAG ? deviceAcronym ?? digitalMeasurement.PointTag.Replace(":", "_") : digitalMeasurement.PointID.ToString(),
+                        SignalType = signalType,
+                        IsDigital = true,
+                        CircuitComponent = deviceAcronym
+                    };
+
+                    digitalChannelMeasurementMap[digitalChannel] = digitalMeasurement;
+                    return digitalChannel;
+                }
+
+                // Create channel metadata
+                List<ChannelMetadata> channels = new List<ChannelMetadata>(analogs.Select(getAnalogChannel).Concat(digitals.Select(getDigitalChannel)));
+                channels.Sort(ChannelMetadataSorter.Default);
+
+                // Create schema
+                schema = Writer.CreateSchema(channels, metadata.StationName, metadata.DeviceID, startTime.Ticks, Writer.MaxEndSample, 2013, fileType.Value, 1.0D, 0.0D, Program.Host.Model.Global?.NominalFrequency ?? 60);
+                
+                // Load indexed digital labels
+                Dictionary<int, string[]> digitalLabels = new Dictionary<int, string[]>();
+
+                foreach (DigitalChannel digital in schema.DigitalChannels)
+                {
+                    if (int.TryParse(digital.Name, out int pointID) && digitalIDMap.TryGetValue(pointID, out Measurement digitalMeasurement))
+                    {
+                        string phaseID = digital.PhaseID?.Trim();
+
+                        if (!string.IsNullOrEmpty(phaseID) && phaseID.Length > 1 && int.TryParse(phaseID.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int index))
+                        {
+                            if (index < 0)
+                                index = 0;
+
+                            if (index > 15)
+                                index = 15;
+
+                            string[] labels = digitalLabels.GetOrAdd(pointID, _ => ParseDigitalLabels(digitalMeasurement?.AlternateTag ?? ""));
+                            digital.Name = string.IsNullOrWhiteSpace(labels[index]) ? $"{digitalMeasurement.PointTag} ({index})" : labels[index];
+                        }
+                    }
+                }
+
+                // Create COMTRADE CFF header
+                BlockAllocatedMemoryStream stream = new BlockAllocatedMemoryStream();
+                Writer.CreateCFFStream(stream, schema);
+                bytes = stream.ToArray();
+
+                // Create properly ordered point ID index
+                for (int i = 0; i < channels.Count; i++)
+                {
+                    ChannelMetadata channel = channels[i];
+
+                    if (analogChannelMeasurementMap.TryGetValue(channel, out Measurement analog))
+                        pointIDIndex.Add((ulong)analog.PointID, i);
+                    else if (digitalChannelMeasurementMap.TryGetValue(channel, out Measurement digital))
+                        pointIDIndex.Add((ulong)digital.PointID, i);
+                }
+            }
+
+            Debug.Assert(pointIDIndex.Count + (fileType is null || metadata.TargetQualityFlagsID == 0 ? 0 : 1) == metadata.PointIDs.Length);
+            return bytes;
+        }
+
+        private static string[] ParseDigitalLabels(string digitalLabels)
+        {
+            string[] labels = new string[16];
+
+            if (digitalLabels.Contains("|"))
+            {
+                string[] parts = digitalLabels.Split('|');
+
+                for (int i = 0; i < parts.Length && i < 16; i++)
+                    labels[i] = parts[i].Trim();
+            }
+            else
+            {
+                int i = 0;
+
+                for (int j = 0; j < digitalLabels.Length && i < 16; j += 16)
+                {
+                    int length = 16;
+                    int remaining = digitalLabels.Length - j;
+
+                    if (remaining <= 0)
+                        break;
+
+                    if (remaining < 16)
+                        length = remaining;
+
+                    labels[i++] = digitalLabels.Substring(j, length).Trim();
+                }
+            }
+
+            return labels;
+        }
+        
+        private static PointMetadata CreatePointMetadata(SecurityPrincipal securityPrincipal, ulong[] pointIDs)
         {
             const int MaxSqlParams = 50;
 
-            TableOperations<Measurement> measurementTable = dataContext.Table<Measurement>();
-            StringBuilder headers = new StringBuilder("\"Timestamp\"");
+            using DataContext dataContext = new DataContext();
 
-            for (int i = 0; i < pointIDs.Length; i+= MaxSqlParams)
+            // Validate current user has access to requested data
+            if (!dataContext.UserIsInRole(securityPrincipal, s_minimumRequiredRoles))
+                throw new SecurityException($"Cannot export data: access is denied for user \"{Thread.CurrentPrincipal.Identity?.Name ?? "Undefined"}\", minimum required roles = {s_minimumRequiredRoles.ToDelimitedString(", ")}.");
+
+            PointMetadata metadata = new PointMetadata
+            {
+                PointIDs = pointIDs,
+                StationName = nameof(openHistorian),
+            };
+
+            TableOperations<Measurement> measurementTable = dataContext.Table<Measurement>();
+            List<Measurement> measurements = new List<Measurement>();
+
+            for (int i = 0; i < pointIDs.Length; i += MaxSqlParams)
             {
                 object[] parameters = pointIDs.Skip(i).Take(MaxSqlParams).Select(id => (object)(int)id).ToArray();
                 string parameterizedQueryString = $"PointID IN ({string.Join(",", parameters.Select((_, index) => $"{{{index}}}"))})";
                 RecordRestriction pointIDRestriction = new RecordRestriction(parameterizedQueryString, parameters);
-
-                headers.Append(',');
-                headers.Append(string.Join(",", measurementTable.
-                    QueryRecords(restriction: pointIDRestriction).
-                    Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\"")));
+                measurements.AddRange(measurementTable.QueryRecords(pointIDRestriction));
             }
 
-            return headers.ToString();
+            metadata.Measurements = measurements.ToArray();
+            metadata.DeviceID = $"Export for {pointIDs.Length} measurements";
+
+            try
+            {
+                int? firstDeviceID = metadata.Measurements.First()?.DeviceID;
+
+                // If all data is from a single device, can pick up device name and acronym for station name and device ID, respectively
+                if (!(firstDeviceID is null) && metadata.Measurements.All(measurement => measurement.DeviceID == firstDeviceID))
+                {
+                    TableOperations<Device> deviceTable = dataContext.Table<Device>();
+                    Device device = deviceTable.QueryRecordWhere("ID = {0}", firstDeviceID);
+
+                    if (!(device is null))
+                    {
+                        metadata.TargetDeviceName = device.Acronym;
+                        metadata.StationName = device.Name ?? metadata.TargetDeviceName;
+                        metadata.DeviceID = $"{metadata.TargetDeviceName} (ID {device.ID})";
+
+                        Measurement qualityFlags = measurementTable.QueryRecordWhere($"SignalReference = '{device.Acronym}-QF'");
+
+                        if (qualityFlags?.PointID > 0 && measurements.Any(measurement => measurement.PointID == qualityFlags.PointID))
+                            metadata.TargetQualityFlagsID = qualityFlags.PointID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+            }
+
+            return metadata;
         }
 
-        private static string CachePointIDs(ulong[] pointIDs)
+        private static string CachePointMetadata(SecurityPrincipal securityPrincipal, ulong[] pointIDs)
         {
             string cacheID = Guid.NewGuid().ToString();
-            s_pointIDCache.Add(cacheID, pointIDs, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30.0D) });
+            s_pointMetadataCache.Add(cacheID, CreatePointMetadata(securityPrincipal, pointIDs), new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30.0D) });
             return cacheID;
         }
 
-        private static ulong[] GetCachedPointIDs(string cacheID) =>
-            s_pointIDCache.Get(cacheID) as ulong[];
+        private static PointMetadata GetCachedPointMetadata(string cacheID) =>
+            s_pointMetadataCache.Get(cacheID) as PointMetadata;
 
         #endregion
     }

@@ -20,6 +20,11 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@* ReSharper disable UnknownCssClass *@
+@* ReSharper disable Html.PathError *@
+@* ReSharper disable InlineOutVariableDeclaration *@
+@* ReSharper disable ArrangeAccessorOwnerBody *@
+@* ReSharper disable SymbolFromNotCopiedLocallyReferenceUsedWarning *@
 @using System.Net.Http
 @using System.Text
 @using GSF
@@ -703,21 +708,37 @@
             var missingAsNaN = Cookies.get("missingAsNaN");
             var fillMissingTimestamps = Cookies.get("fillMissingTimestamps");
             var tolerance = Cookies.get("tolerance");
+            var fileFormat = Cookies.get("fileFormat");
 
             if (timesStampSnap === undefined)
                 timesStampSnap = 0;
+            else
+                timesStampSnap = parseInt(timesStampSnap);
 
             if (alignTimestamps === undefined)
                 alignTimestamps = true;
+            else
+                alignTimestamps = getBool(alignTimestamps);
 
             if (missingAsNaN === undefined)
                 missingAsNaN = true;
+            else
+                missingAsNaN = getBool(missingAsNaN);
 
             if (fillMissingTimestamps === undefined)
                 fillMissingTimestamps = false;
+            else
+                fillMissingTimestamps = getBool(fillMissingTimestamps);
 
             if (tolerance === undefined)
-                tolerance = true;
+                tolerance = 0.5;
+            else
+                tolerance = parseFloat(tolerance);
+
+            if (fileFormat === undefined)
+                fileFormat = -1;
+            else
+                fileFormat = getBool(fileFormat);
 
             self.tolerance = ko.observable(tolerance);
 
@@ -747,7 +768,7 @@
 
             self.trendResolution = ko.observable(Resolution.EverySecond);
             self.elapsedTime = ko.observable("");
-            self.fileFormat = ko.observable(0);
+            self.fileFormat = ko.observable(fileFormat);
             self.frameRate = ko.observable(30);
             self.frameBase = ko.observable(0);
             self.timesStampSnap = ko.observable(timesStampSnap);
@@ -774,6 +795,10 @@
                 if (val) {
                     showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000);
                 }
+            });
+
+            self.fileFormat.subscribe(function(val) {
+                Cookies.set("fileFormat", val.toString(), { expires: 365 });
             });
 
             self.instanceName = ko.pureComputed({
@@ -1520,11 +1545,12 @@
                         "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) +
                         "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
                         "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
-                        "&MissingAsNaNParam=" + encodeURIComponent(viewModel.missingAsNaN()) +
+                        "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
                         "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
                         "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
-                        "&TSSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
-                        "&TSTolerance=" + encodeURIComponent(tolerance));
+                        "&TimestampSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
+                        "&Tolerance=" + encodeURIComponent(tolerance) + 
+                        "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()));
 
                     $("#exportDataLink")[0].click();
                 },
@@ -2137,9 +2163,11 @@
                             <div class="form-group form-group-sm">
                                 <label for="exportFileFormat">File Format:</label>
                                 <select class="form-control" id="exportFileFormat" data-bind="value: fileFormat">
-                                    <option value="0" selected>Comma Separated Values (CSV)</option>
-                                    <option value="1" disabled>COMTRADE (ASCII)</option>
-                                    <option value="2" disabled>COMTRADE (Binary)</option>
+                                    <option value="-1" selected>Comma Separated Values (CSV)</option>
+                                    <option value="0">COMTRADE ASCII (CFF)</option>
+                                    <option value="1">COMTRADE Binary UInt16 (CFF)</option>
+                                    <option value="2">COMTRADE Binary UInt32 (CFF)</option>
+                                    <option value="3">COMTRADE Binary Float32 (CFF)</option>
                                 </select>
                                 &nbsp;&nbsp;
                             </div>
