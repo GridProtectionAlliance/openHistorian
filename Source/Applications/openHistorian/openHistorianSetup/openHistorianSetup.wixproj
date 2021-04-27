@@ -260,6 +260,7 @@
     <Content Include="HistorianPlaybackUtility.exe" />
     <Content Include="HistorianView.exe" />
     <Content Include="HistorianView.exe.config" />
+    <Content Include="EEFeatures.wxi" />
     <Content Include="INSTALL_LICENSE.rtf" />
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

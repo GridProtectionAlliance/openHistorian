@@ -1,0 +1,5 @@
+<Include >
+  <Feature Id="EEFilesFeature" Title="EE Files" Description="Enterprise Edition Files">
+    <ComponentGroupRef Id="EEFiles" />
+  </Feature>
+</Include>

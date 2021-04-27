@@ -38,6 +38,9 @@
 
         <!-- Grafana -->
         <?include GrafanaFeatures.wxi ?>
+
+        <!-- EE Files -->
+        <?include EEFeatures.wxi ?>
       </Feature>
 
       <!-- openHistorian Manager -->
