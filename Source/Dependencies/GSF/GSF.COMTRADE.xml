@@ -781,6 +781,11 @@
             Value represents 256TB, arbitrarily chosen extreme maximum file size.
             </remarks>
         </member>
+        <member name="F:GSF.COMTRADE.Writer.MaxEndSample">
+            <summary>
+            Defines the maximum COMTRADE end sample number.
+            </summary>
+        </member>
         <member name="F:GSF.COMTRADE.Writer.CRLF">
             <summary>
             Defines a carriage return and line feed constant, i.e., <c>"\r\n"</c>.
@@ -791,7 +796,7 @@
             markers be both a carriage return and line feed, <c>"\r\n"</c>.
             </remarks>
         </member>
-        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Int32,GSF.COMTRADE.FileType,System.Double,System.Double,System.Double,System.Boolean)">
+        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int64,System.Int32,GSF.COMTRADE.FileType,System.Double,System.Double,System.Double,System.Boolean)">
             <summary>
             Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
             </summary>
@@ -823,29 +828,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Boolean,System.Double,System.Double,System.Double,System.Boolean)">
-            <summary>
-            Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
-            </summary>
-            <param name="metadata">Schema <see cref="T:GSF.COMTRADE.ChannelMetadata"/> records.</param>
-            <param name="stationName">Station name for the schema.</param>
-            <param name="deviceID">Device ID for the schema.</param>
-            <param name="dataStartTime">Data start time.</param>
-            <param name="sampleCount">Total data samples (i.e., total number of rows).</param>
-            <param name="isBinary">Determines if data file should be binary or ASCII - defaults to <c>true</c> for binary.</param>
-            <param name="timeFactor">Time factor to use in schema - defaults to 1000.</param>
-            <param name="samplingRate">Desired sampling rate - defaults to 33.3333Hz.</param>
-            <param name="nominalFrequency">Nominal frequency - defaults to 60Hz.</param>
-            <param name="includeFracSecDefinition">Determines if the FRACSEC word digital definitions should be included - defaults to <c>true</c>.</param>
-            <returns>New COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.</returns>
-            <remarks>
-            This function is primarily intended to create a configuration based on synchrophasor data
-            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
-            it may be necessary to manually create a schema object for other COMTRADE needs. You can call
-            the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that can be written to a file
-            that will be the contents of the configuration file.
-            </remarks>
-        </member>
         <member name="M:GSF.COMTRADE.Writer.CreateCFFStream(System.String,GSF.COMTRADE.Schema,System.String[],System.String[],System.Text.Encoding)">
             <summary>
             Creates a new Combined File Format (.cff) COMTRADE file stream.
@@ -874,11 +856,47 @@
             <paramref name="encoding"/> parameter will need to be set to <see cref="P:System.Text.Encoding.ASCII"/>.
             </remarks>
         </member>
+        <member name="M:GSF.COMTRADE.Writer.CreateCFFStream(System.IO.Stream,GSF.COMTRADE.Schema,System.String[],System.String[],System.Text.Encoding)">
+            <summary>
+            Creates a new Combined File Format (.cff) COMTRADE file stream.
+            </summary>
+            <param name="stream">Target stream.</param>
+            <param name="schema">Schema of file stream.</param>
+            <param name="infLines">Lines of "INF" section to write to stream, if any.</param>
+            <param name="hdrLines">Lines of "HDR" section to write to stream, if any.</param>
+            <param name="encoding">Target encoding; <c>null</c> value will default to UTF-8 (no BOM).</param>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.CreateCFFStreamAscii(System.IO.Stream,GSF.COMTRADE.Schema,System.String[],System.String[],System.Text.Encoding)">
+            <summary>
+            Creates a new Combined File Format (.cff) COMTRADE file stream targeted for ASCII.
+            </summary>
+            <param name="stream">Target stream.</param>
+            <param name="schema">Schema of file stream.</param>
+            <param name="infLines">Lines of "INF" section to write to stream, if any.</param>
+            <param name="hdrLines">Lines of "HDR" section to write to stream, if any.</param>
+            <param name="encoding">Target encoding; <c>null</c> value will default to UTF-8 (no BOM).</param>
+            <returns>New stream writer for Combined File Format (.cff) COMTRADE file, ready to write at data section.</returns>
+            <remarks>
+            For COMTRADE versions greater than 2001, any use of the term ASCII also inherently implies Unicode UTF-8.
+            When then <paramref name="encoding"/> parameter is <c>null</c>, the default, UTF-8 encoding will be used
+            for text writes. If ASCII encoding needs to be enforced for backwards compatibility reasons, then the
+            <paramref name="encoding"/> parameter will need to be set to <see cref="P:System.Text.Encoding.ASCII"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.UpdateCFFEndSample(System.IO.Stream,System.Int64,System.Int32,System.Text.Encoding)">
+            <summary>
+            Updates a Combined File Format (.cff) COMTRADE file stream with a final end sample number.
+            </summary>
+            <param name="stream">Destination stream.</param>
+            <param name="endSample">End sample value.</param>
+            <param name="rateIndex">Zero-based rate index to update.</param>
+            <param name="encoding">Target encoding; <c>null</c> value will default to UTF-8 (no BOM).</param>
+        </member>
         <member name="M:GSF.COMTRADE.Writer.UpdateCFFStreamBinaryByteCount(System.IO.Stream,System.Int64,System.Text.Encoding)">
             <summary>
             Updates a Combined File Format (.cff) COMTRADE file stream with a final binary byte count.
             </summary>
-            <param name="output">Destination stream.</param>
+            <param name="stream">Destination stream.</param>
             <param name="byteCount">Binary byte count.</param>
             <param name="encoding">Target encoding; <c>null</c> value will default to UTF-8 (no BOM).</param>
         </member>
