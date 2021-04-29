@@ -284,6 +284,11 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLogoutPage">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LogoutPage"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAuthTestPage">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>.
@@ -339,6 +344,11 @@
         <member name="P:GSF.Web.Security.AuthenticationOptions.LoginPage">
             <summary>
             Gets or sets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.LogoutPage">
+            <summary>
+            Gets or sets the path for the logout page.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage">
@@ -451,6 +461,11 @@
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage">
             <summary>
             Gets the login page used as a redirect location when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LogoutPage">
+            <summary>
+            Gets the path for the logout page.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage">
