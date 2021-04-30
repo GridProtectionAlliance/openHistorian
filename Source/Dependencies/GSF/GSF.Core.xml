@@ -14587,6 +14587,160 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Diagnostics.PerformanceMonitorBase">
+            <summary>
+            Represents a base class for performance monitors, e.g., the process level <see cref="T:GSF.Diagnostics.PerformanceMonitor"/>
+            and the system level <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Diagnostics.PerformanceMonitorBase.DefaultSamplingInterval">
+            <summary>
+            Default interval for sampling the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> class.
+            </summary>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.SamplingInterval">
+            <summary>
+            Gets or sets the interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Counters">
+            <summary>
+            Gets a read-only list of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> objects monitored by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Name">
+            <summary>
+            Gets the friendly name of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.Status">
+            <summary>
+            Gets the current status of the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceMonitorBase.LifetimeStatus">
+            <summary>
+            Gets the lifetime status statistics of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitorBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single})">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
+            <param name="counterName">The name of the performance counter.</param>
+            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
+            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
+            <param name="readOnly">Flag that determines if this counter is read-only.</param>
+            <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(GSF.Diagnostics.PerformanceCounter)">
+            <summary>
+            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
+            </summary>
+            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be monitored.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.RemoveCounter(GSF.Diagnostics.PerformanceCounter)">
+            <summary>
+            Removes a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> being monitored.
+            </summary>
+            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be unmonitored.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String)">
+            <summary>
+            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
+            </summary>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
+            <remarks>
+            First <see cref="T:GSF.Diagnostics.PerformanceCounter"/> with matching name is returned. If same name exists within
+            multiple monitored categories, use <see cref="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String,System.String)"/> overload instead.
+            </remarks>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounter(System.String,System.String)">
+            <summary>
+            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
+            </summary>
+            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounters(System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.FindCounters(System.String,System.String)">
+            <summary>
+            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
+            </summary>
+            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
+            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.SampleCounters">
+            <summary>
+            Sample all defined counters.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.SampleCustomCounters">
+            <summary>
+            Derived class should override this method to sample any custom counters.
+            </summary>
+        </member>
         <member name="T:GSF.Diagnostics.ProcessUtilizationCalculator">
             <summary>
             Represents a utilization calculator for a <see cref="T:System.Diagnostics.Process"/>.
@@ -14631,6 +14785,42 @@
             Starts calculating the processor utilization of the specified <paramref name="process"/>.
             </summary>
             <param name="process">The <see cref="T:System.Diagnostics.Process"/> to monitor for processor utilization.</param>
+        </member>
+        <member name="T:GSF.Diagnostics.SystemPerformanceMonitor">
+            <summary>
+            Represents a system performance monitor for system level performance statistics, e.g.,
+            CPU utilization and available memory.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.SystemPerformanceMonitor.#ctor(System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
+            <param name="samplingInterval">
+            Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/>
+            are to be sampled.
+            </param>
+            <remarks>
+            It is recommended to use the <see cref="P:GSF.Diagnostics.SystemPerformanceMonitor.Default"/> instance of this class
+            instead of creating a new instance where applicable.
+            </remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.CPUUsage">
+            <summary>
+            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the processor utilization of the system.
+            </summary>
+            <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.AvailableMemory">
+            <summary>
+            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the remaining available memory of the system.
+            </summary>
+            <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
+        </member>
+        <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.Default">
+            <summary>
+            Gets default reference of <see cref="T:GSF.Diagnostics.SystemPerformanceMonitor"/>.
+            </summary>
         </member>
         <member name="T:GSF.Diagnostics.ThreadPoolMonitor">
             <summary>
@@ -14870,11 +15060,6 @@
             Name of the custom thread pool counters category.
             </summary>
         </member>
-        <member name="F:GSF.Diagnostics.PerformanceMonitor.DefaultSamplingInterval">
-            <summary>
-            Default interval for sampling the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/>.
-            </summary>
-        </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
@@ -14884,7 +15069,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
             </summary>
-            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.</param>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
             <param name="addDefaultCounters">Set to <c>true</c> to add default counters; otherwise <c>false</c>.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.#ctor(System.String,System.Boolean)">
@@ -14899,7 +15084,7 @@
             Initializes a new instance of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> class.
             </summary>
             <param name="processName">Name of the <see cref="T:System.Diagnostics.Process"/> whose performance is to be monitored.</param>
-            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.</param>
+            <param name="samplingInterval">Interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitorBase.Counters"/> are to be sampled.</param>
             <param name="addDefaultCounters">Set to <c>true</c> to add default counters; otherwise <c>false</c>.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitor.Finalize">
@@ -14910,16 +15095,6 @@
         <member name="P:GSF.Diagnostics.PerformanceMonitor.ProcessName">
             <summary>
             Gets or sets the name of the <see cref="T:System.Diagnostics.Process"/> to be monitored.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.SamplingInterval">
-            <summary>
-            Gets or sets the interval, in milliseconds, at which the <see cref="P:GSF.Diagnostics.PerformanceMonitor.Counters"/> are to be sampled.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.Counters">
-            <summary>
-            Gets a read-only list of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> objects monitored by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
             </summary>
         </member>
         <member name="P:GSF.Diagnostics.PerformanceMonitor.CPUUsage">
@@ -14985,116 +15160,9 @@
             Gets the friendly name of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
             </summary>
         </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.Status">
+        <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCustomCounters">
             <summary>
-            Gets the current status of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="P:GSF.Diagnostics.PerformanceMonitor.LifetimeStatus">
-            <summary>
-            Gets the lifetime status statistics of the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.Diagnostics.PerformanceMonitor"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single})">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="categoryName">The name of the performance counter category (performance object) with which this performance counter is associated.</param>
-            <param name="counterName">The name of the performance counter.</param>
-            <param name="instanceName">The name of the performance counter category instance, or an empty string (""), if the category contains a single instance.</param>
-            <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
-            <param name="readOnly">Flag that determines if this counter is read-only.</param>
-            <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.AddCounter(GSF.Diagnostics.PerformanceCounter)">
-            <summary>
-            Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
-            </summary>
-            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be monitored.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.RemoveCounter(GSF.Diagnostics.PerformanceCounter)">
-            <summary>
-            Removes a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> being monitored.
-            </summary>
-            <param name="counter">The <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object to be unmonitored.</param>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String)">
-            <summary>
-            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
-            </summary>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
-            <remarks>
-            First <see cref="T:GSF.Diagnostics.PerformanceCounter"/> with matching name is returned. If same name exists within
-            multiple monitored categories, use <see cref="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String,System.String)"/> overload instead.
-            </remarks>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounter(System.String,System.String)">
-            <summary>
-            Returns a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object matching the specified counter name.
-            </summary>
-            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object if a match is found; otherwise null.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String)">
-            <summary>
-            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
-            </summary>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.FindCounters(System.String,System.String)">
-            <summary>
-            Returns <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array matching the specified counter name.
-            </summary>
-            <param name="categoryName">Category of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <param name="counterName">Name of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be retrieved.</param>
-            <returns>A <see cref="T:GSF.Diagnostics.PerformanceCounter"/> array of found matches, if any.</returns>
-        </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitor.SampleCounters">
-            <summary>
-            Sample all defined counters.
+            Handle sampling of custom counters.
             </summary>
         </member>
         <member name="T:GSF.Diagnostics.LogFileWriterInMemory">
