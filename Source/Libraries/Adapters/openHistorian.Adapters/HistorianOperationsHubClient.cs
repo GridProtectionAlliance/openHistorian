@@ -58,24 +58,24 @@ namespace openHistorian.Adapters
     }
 
     /// <summary>
-    /// Represents the current operational state for a given historian write.
+    /// Represents the current operational state for a given historian operation, e.g., read or write.
     /// </summary>
-    public class HistorianWriteOperationState
+    public class HistorianOperationState
     {
         private long m_stopTime;
 
         /// <summary>
-        /// Gets or sets the cancellation token for a historian write operation.
+        /// Gets or sets the cancellation token for a historian operation.
         /// </summary>
         public CancellationToken CancellationToken { get; } = new CancellationToken();
 
         /// <summary>
-        /// Gets or sets progress that represents number of completed historian writes.
+        /// Gets or sets progress that represents number of completed operations.
         /// </summary>
         public long Progress { get; set; }
 
         /// <summary>
-        /// Gets or sets total number of historian writes to be completed.
+        /// Gets or sets total number of historian operations to be completed.
         /// </summary>
         public long Total { get; set; }
 
@@ -95,12 +95,12 @@ namespace openHistorian.Adapters
         public string FailedReason { get; set; }
 
         /// <summary>
-        /// Gets or sets the start time, in Ticks, of the write operation.
+        /// Gets or sets the start time, in Ticks, of the operation.
         /// </summary>
         public long StartTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the stop time, in Ticks, of the write operation.
+        /// Gets or sets the stop time, in Ticks, of the operation.
         /// </summary>
         public long StopTime
         {
@@ -109,14 +109,14 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets the calculated import rate, in writes per second, of the write operation.
+        /// Gets the calculated operation rate, in operations per second.
         /// </summary>
-        public long ImportRate => (long)(Progress / new Ticks(StopTime - StartTime).ToSeconds());
+        public long OperationRate => (long)(Progress / new Ticks(StopTime - StartTime).ToSeconds());
 
         /// <summary>
         /// Gets the estimated remaining import time as an elapsed time string.
         /// </summary>
-        public string RemainingTimeEstimate => Ticks.FromSeconds((Total - Progress) / (double)ImportRate).ToElapsedTimeString(0);
+        public string RemainingTimeEstimate => Ticks.FromSeconds((Total - Progress) / (double)OperationRate).ToElapsedTimeString(0);
 
         /// <summary>
         /// Gets total operation time as an elapsed time string.
@@ -132,7 +132,7 @@ namespace openHistorian.Adapters
         #region [ Members ]
 
         // Fields
-        private readonly ConcurrentDictionary<uint, HistorianWriteOperationState> m_historianWriteOperationStates;
+        private readonly ConcurrentDictionary<uint, HistorianOperationState> m_historianOperationStates;
         private string m_instanceName = TrendValueAPI.DefaultInstanceName;
         private CancellationToken m_readCancellationToken;
         private bool m_disposed;
@@ -146,7 +146,7 @@ namespace openHistorian.Adapters
         /// </summary>
         public HistorianOperationsHubClient()
         {
-            m_historianWriteOperationStates = new ConcurrentDictionary<uint, HistorianWriteOperationState>();
+            m_historianOperationStates = new ConcurrentDictionary<uint, HistorianOperationState>();
         }
 
         #endregion
@@ -166,10 +166,10 @@ namespace openHistorian.Adapters
             {
                 if (disposing)
                 {
-                    HistorianWriteOperationState[] operationStates = m_historianWriteOperationStates.Values.ToArray();
-                    m_historianWriteOperationStates.Clear();
+                    HistorianOperationState[] operationStates = m_historianOperationStates.Values.ToArray();
+                    m_historianOperationStates.Clear();
 
-                    foreach (HistorianWriteOperationState operationState in operationStates)
+                    foreach (HistorianOperationState operationState in operationStates)
                         operationState.CancellationToken?.Cancel();
                 }
             }
@@ -205,23 +205,27 @@ namespace openHistorian.Adapters
         public IEnumerable<string> GetInstanceNames() => TrendValueAPI.GetInstanceNames();
 
         /// <summary>
+        /// Begins a new historian read operation.
+        /// </summary>
+        /// <param name="totalValues">Total values or timespan to read, if known in advance.</param>
+        /// <returns>New operational state handle.</returns>
+        public uint BeginHistorianRead(long totalValues = 0) => 
+            AddNewHistorianOperationState(new HistorianOperationState { Total = totalValues });
+
+        /// <summary>
         /// Begins a new historian write operation.
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
-        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="totalValues">Total values or timespan to write, if known in advance.</param>
         /// <param name="timestampType">Type of timestamps.</param>
         /// <returns>New operational state handle.</returns>
         public uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues = 0, TimestampType timestampType = TimestampType.UnixMilliseconds)
         {
-            HistorianWriteOperationState operationState = new HistorianWriteOperationState
-            {
-                Total = totalValues
-            };
+            HistorianOperationState operationState = new HistorianOperationState { Total = totalValues };
+            uint operationHandle = AddNewHistorianOperationState(operationState);
 
-            uint operationHandle = Random.UInt32;
-
-            while (!m_historianWriteOperationStates.TryAdd(operationHandle, operationState))
+            while (!m_historianOperationStates.TryAdd(operationHandle, operationState))
                 operationHandle = Random.UInt32;
 
             new Thread(() =>
@@ -280,7 +284,7 @@ namespace openHistorian.Adapters
                 }
 
                 // Schedule operation handle to be removed
-                CancelHistorianWrite(operationHandle);
+                CancelHistorianOperation(operationHandle);
 
                 operationState.StopTime = DateTime.UtcNow.Ticks;
             })
@@ -293,42 +297,42 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets current historian write operation state for specified handle.
+        /// Gets current historian operation state for specified handle.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns>Current historian write operation state.</returns>
-        public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
+        public HistorianOperationState GetHistorianOperationState(uint operationHandle)
         {
-            if (m_historianWriteOperationStates.TryGetValue(operationHandle, out HistorianWriteOperationState operationState))
+            if (m_historianOperationStates.TryGetValue(operationHandle, out HistorianOperationState operationState))
                 return operationState;
 
             // Returned a cancelled operation state if operation handle was not found
-            operationState = new HistorianWriteOperationState();
+            operationState = new HistorianOperationState();
             operationState.CancellationToken.Cancel();
 
             return operationState;
         }
 
         /// <summary>
-        /// Cancels a historian write operation.
+        /// Cancels a historian operation.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
         /// <remarks>
-        /// Any <see cref="HistorianWriteOperationState"/> associated with the <paramref name="operationHandle"/>
-        /// will remain available for query from the <see cref="GetHistorianWriteState"/> for 30 seconds after
+        /// Any <see cref="HistorianOperationState"/> associated with the <paramref name="operationHandle"/>
+        /// will remain available for query from the <see cref="GetHistorianOperationState"/> for 30 seconds after
         /// successful cancellation of the operation.
         /// </remarks>
-        public bool CancelHistorianWrite(uint operationHandle)
+        public bool CancelHistorianOperation(uint operationHandle)
         {
-            if (!m_historianWriteOperationStates.TryGetValue(operationHandle, out HistorianWriteOperationState operationState))
+            if (!m_historianOperationStates.TryGetValue(operationHandle, out HistorianOperationState operationState))
                 return false;
 
             // Immediately signal for operation cancellation
             operationState.CancellationToken.Cancel();
 
             // Schedule operation handle to be removed after about 30 seconds
-            Action action = () => m_historianWriteOperationStates.TryRemove(operationHandle, out operationState);
+            Action action = () => m_historianOperationStates.TryRemove(operationHandle, out operationState);
             action.DelayAndExecute(30000);
 
             return true;
@@ -374,13 +378,18 @@ namespace openHistorian.Adapters
             }
         }
 
-        private HistorianServer GetServer(string instanceName)
+        private uint AddNewHistorianOperationState(HistorianOperationState operationState)
         {
-            if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter historianAdapter))
-                return historianAdapter?.Server;
+            uint operationHandle = Random.UInt32;
 
-            return null;
+            while (!m_historianOperationStates.TryAdd(operationHandle, operationState))
+                operationHandle = Random.UInt32;
+
+            return operationHandle;
         }
+
+        private static HistorianServer GetServer(string instanceName) => 
+            LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter historianAdapter) ? historianAdapter?.Server : null;
 
         #endregion
     }

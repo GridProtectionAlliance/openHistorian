@@ -57,28 +57,35 @@ namespace openHistorian.Adapters
         IEnumerable<string> GetInstanceNames();
 
         /// <summary>
+        /// Begins a new historian read operation.
+        /// </summary>
+        /// <param name="totalValues">Total values or timespan to read, if known in advance.</param>
+        /// <returns>New operational state handle.</returns>
+        uint BeginHistorianRead(long totalValues);
+
+        /// <summary>
         /// Begins a new historian write operation.
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
-        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="totalValues">Total values or timespan to write, if known in advance.</param>
         /// <param name="timestampType">Type of timestamps.</param>
         /// <returns>New operational state handle.</returns>
         uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues, TimestampType timestampType);
 
         /// <summary>
-        /// Gets current historian write operation state for specified handle.
+        /// Gets current historian operation state for specified handle.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
-        /// <returns>Current historian write operation state.</returns>
-        HistorianWriteOperationState GetHistorianWriteState(uint operationHandle);
+        /// <param name="operationHandle">Handle to historian operation state.</param>
+        /// <returns>Current historian operation state.</returns>
+        HistorianOperationState GetHistorianOperationState(uint operationHandle);
 
         /// <summary>
-        /// Cancels a historian write operation.
+        /// Cancels a historian operation.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
-        bool CancelHistorianWrite(uint operationHandle);
+        bool CancelHistorianOperation(uint operationHandle);
 
         /// <summary>
         /// Read historian data from server.
@@ -154,11 +161,21 @@ namespace openHistorian.Adapters
         public IEnumerable<string> GetInstanceNames() => HubClient.GetInstanceNames();
 
         /// <summary>
+        /// Begins a new historian read operation.
+        /// </summary>
+        /// <param name="totalValues">Total values or timespan to read, if known in advance.</param>
+        /// <returns>New operational state handle.</returns>
+        public uint BeginHistorianRead(long totalValues)
+        {
+            return HubClient.BeginHistorianRead(totalValues);
+        }
+
+        /// <summary>
         /// Begins a new historian write operation.
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
-        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="totalValues">Total values or timestpan to write, if known in advance.</param>
         /// <param name="timestampType">Type of timestamps.</param>
         /// <returns>New operational state handle.</returns>
         public uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues, TimestampType timestampType)
@@ -170,20 +187,20 @@ namespace openHistorian.Adapters
         /// Gets current historian write operation state for specified handle.
         /// </summary>
         /// <param name="operationHandle">Handle to historian write operation state.</param>
-        /// <returns>Current historian write operation state.</returns>
-        public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
+        /// <returns>Current historian operation state.</returns>
+        public HistorianOperationState GetHistorianOperationState(uint operationHandle)
         {
-            return HubClient.GetHistorianWriteState(operationHandle);
+            return HubClient.GetHistorianOperationState(operationHandle);
         }
 
         /// <summary>
-        /// Cancels a historian write operation.
+        /// Cancels a historian operation.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
-        public bool CancelHistorianWrite(uint operationHandle)
+        public bool CancelHistorianOperation(uint operationHandle)
         {
-            return HubClient.CancelHistorianWrite(operationHandle);
+            return HubClient.CancelHistorianOperation(operationHandle);
         }
 
         /// <summary>

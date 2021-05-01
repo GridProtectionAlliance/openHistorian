@@ -52,18 +52,18 @@
             background: none;
             border-width: 0;
         }
-         
-        .tabs-nohdr .ui-tabs-nav {
-            padding: 0;
-            background: transparent;
-            border: none;
-        }
 
-        .tabs-nohdr .ui-tabs-panel {
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
+            .tabs-nohdr .ui-tabs-nav {
+                padding: 0;
+                background: transparent;
+                border: none;
+            }
+
+            .tabs-nohdr .ui-tabs-panel {
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
 
         /* Collapsable button style */
         .btn-collapsable.btn {
@@ -74,15 +74,15 @@
             height: 18px;
         }
 
-        /* Collapsable button icon when content is shown - arrow down */
-        .btn-collapsable.btn:after {
-            content: "\e114";
-        }
+            /* Collapsable button icon when content is shown - arrow down */
+            .btn-collapsable.btn:after {
+                content: "\e114";
+            }
 
-        /* Collapsable button icon when content is hidden - arrow right */
-        .btn-collapsable.btn.collapsed:after {
-            content: "\e080";
-        }
+            /* Collapsable button icon when content is hidden - arrow right */
+            .btn-collapsable.btn.collapsed:after {
+                content: "\e080";
+            }
 
         #collapseSelectedPoints.btn-collapsable.btn {
             margin-top: 3px;
@@ -92,10 +92,10 @@
             transition: all .75s ease-out;
         }
 
-        #collapseSelectedPoints.btn-collapsable.btn.collapsed {
-            margin-top: 3px;
-            margin-left: -345px;
-        }
+            #collapseSelectedPoints.btn-collapsable.btn.collapsed {
+                margin-top: 3px;
+                margin-left: -345px;
+            }
 
         #collapseTrendSetup.btn-collapsable.btn {
             margin-top: 7px;
@@ -105,9 +105,9 @@
             transition: all .75s ease-out;
         }
 
-        #collapseTrendSetup.btn-collapsable.btn.collapsed {
-            margin-top: -24px;
-        }
+            #collapseTrendSetup.btn-collapsable.btn.collapsed {
+                margin-top: -24px;
+            }
 
         span.fixed-font {
             font-size: small;
@@ -135,7 +135,7 @@
         }
 
         #scrollablePointsArea {
-            overflow: -moz-scrollbars-vertical; 
+            overflow: -moz-scrollbars-vertical;
             overflow-y: scroll;
         }
 
@@ -167,24 +167,24 @@
             font-size: smaller;
         }
 
-        #selectAllMessage a {
-            color: #337ab7;
-            text-decoration: none;
-        }
+            #selectAllMessage a {
+                color: #337ab7;
+                text-decoration: none;
+            }
 
-        #selectAllMessage a:active, a:hover, a:focus {
-            color: #23527c;
-            text-decoration: underline;
-            cursor: pointer;
-        }
+                #selectAllMessage a:active, a:hover, a:focus {
+                    color: #23527c;
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
 
         #tabs ul li {
             outline: none;
         }
 
-        #tabs ul li a {
-            outline: none;
-        }
+            #tabs ul li a {
+                outline: none;
+            }
 
         button.set-midnight-time {
             font-size: 13px;
@@ -195,16 +195,17 @@
 
         .noselect {
             -webkit-touch-callout: none; /* iOS Safari */
-            -webkit-user-select: none;   /* Safari */
-            -khtml-user-select: none;    /* Konqueror HTML */
-            -moz-user-select: none;      /* Firefox */
-            -ms-user-select: none;       /* Internet Explorer / Edge */
-            user-select: none;           /* Non-prefixed version, currently Chrome / Opera */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer / Edge */
+            user-select: none; /* Non-prefixed version, currently Chrome / Opera */
         }
     </style>
 }
-@{ 
-    if (ViewBag.PageControlScripts == null) {
+@{
+    if (ViewBag.PageControlScripts == null)
+    {
         ViewBag.PageControlScripts = new StringBuilder();
     }
 
@@ -216,7 +217,8 @@
     string showMenu;
     parameters.TryGetValue("ShowMenu", out showMenu);
 
-    if (string.IsNullOrEmpty(showMenu)){
+    if (string.IsNullOrEmpty(showMenu))
+    {
         showMenu = "true";
     }
 
@@ -253,12 +255,15 @@
     string useAjaxVerfication = AuthenticationOptions.DefaultAjaxRequestVerificationToken;
     ReadonlyAuthenticationOptions options = ViewBag.AuthenticationOptions;
 
-    if (options != null) {
-        if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken)) {
+    if (options != null)
+    {
+        if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken))
+        {
             verificationHeader = options.RequestVerificationToken;
         }
 
-        if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken)) {
+        if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken))
+        {
             useAjaxVerfication = options.AjaxRequestVerificationToken;
         }
     }
@@ -266,10 +271,10 @@
     string verificationValue = Html.RequestVerificationHeaderToken();
 
     string constants = string.Format(@"
-        const verificationHeader = ""{0}"";
-        const verificationValue = ""{1}"";
-        const useAjaxVerfication = ""{2}"";
-    ",
+const verificationHeader = ""{0}"";
+const verificationValue = ""{1}"";
+const useAjaxVerfication = ""{2}"";
+",
         /* 0 */ verificationHeader.JavaScriptEncode(),
         /* 1 */ verificationValue.JavaScriptEncode(),
         /* 2 */ useAjaxVerfication.JavaScriptEncode()
@@ -381,7 +386,7 @@
                 else
                     return Resolution.EveryHour;
             }
-                        
+
             return Resolution.Full;
         }
 
@@ -578,7 +583,7 @@
                 if (!series)
                     return "transparent";
 
-                return series.value.color;                    
+                return series.value.color;
             }
 
             self._startTime = ko.observable(adjustSubsecondDigits(moment.utc().subtract(5, "minutes").format(MomentDateTimeFormat)));
@@ -699,7 +704,7 @@
             }]);
 
             var trendSeriesLimitValue = Cookies.get("trendSeriesLimit");
-            
+
             if (trendSeriesLimitValue === undefined)
                 trendSeriesLimitValue = "500";
 
@@ -731,9 +736,9 @@
                 fillMissingTimestamps = getBool(fillMissingTimestamps);
 
             if (tolerance === undefined)
-                tolerance = 0.5;
+                tolerance = true;
             else
-                tolerance = parseFloat(tolerance);
+                tolerance = getBool(tolerance);
 
             if (fileFormat === undefined)
                 fileFormat = -1;
@@ -791,7 +796,7 @@
 
             self.tolerance.subscribe(function(val) {
                 Cookies.set("tolerance", val.toString(), { expires: 365 });
-                
+
                 if (val) {
                     showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000);
                 }
@@ -946,7 +951,7 @@
                     self.fromNow(value === "FromNow");
                 },
                 owner: self
-            });          
+            });
 
             self.interval = ko.pureComputed({
                 read: function() {
@@ -1096,6 +1101,9 @@
         @Raw(new Minifier().MinifyJavaScript(constants));
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
+        const progressRefreshRate = 1000;
+        var exportOperationHandle = 0;
+        var lastProgress = 0;
         var plotData = [];
         var trendQueue = [];
         var clickHandled = false;
@@ -1510,54 +1518,166 @@
             setTimeout(processNextTrend, 200);
         }
 
+        // Define a function to update UI with data export progress
+        function updateProgress(state) {
+            const progressBar = $("#progressBar");
+            const progress = state.Progress;
+            const total = state.Completed ? state.Progress : state.Total;
+            const progressValue = (progress / total * 100.0).toFixed(2);
+
+            $("#progressLabel").text(String.format("{0} / {1}", Math.round(progress / 10000000).toLocaleString(), Math.round(total / 10000000).toLocaleString()));
+
+            if (isNumber(progressValue)) {
+                progressBar.text(progressValue.toString() + "%");
+                progressBar.css("width", progressBar.text());
+
+                if (progressValue < 100.0 && !progressBar.hasClass("active"))
+                    progressBar.addClass("active");
+                else if (progressValue >= 100.0 && progressBar.hasClass("active"))
+                    progressBar.removeClass("active");
+            }
+
+            if (progress > 0) {
+                $("#progressRate").text(String.format("Exporting {0} minutes of data per second...", (state.OperationRate / 6000000000).toLocaleString()));
+                $("#remainingTime").text(state.RemainingTimeEstimate);
+                $("#totalTime").text(state.TotalOperationTime);
+
+                if (lastProgress === 0)
+                    setTimeout(function() { $("#timeEstimate").show(); }, progressRefreshRate * 2);
+                    
+                lastProgress = progress;
+            }
+        };
+
+        // Define a function to check data export progress
+        function checkProgress() {
+            if (!viewModel.dataHubIsConnected())
+                return;
+
+            dataHub.getHistorianOperationState(exportOperationHandle).done(function (state) {
+                if (state.Completed) {
+                    showInfoMessage(String.format(
+                        "Data export complete in {0} averaging {1} minutes of data per second",
+                        state.TotalOperationTime,
+                        (state.OperationRate / 6000000000).toLocaleString()
+                    ), -1);
+                    $("#exportingLabel").text("Complete");
+                    $("#progressIcon").hide();
+                    $("#cancelDataExport").disable();
+                    updateProgress(state);
+                    setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1500);
+                }
+                else if (state.Failed) {
+                    showErrorMessage("Data export failed: " + state.FailedReason);
+                    $("#exportingLabel").text("Failed");
+                    $("#progressIcon").hide();
+                    $("#cancelDataExport").disable();
+                    setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1000);
+                }
+                else if (state.CancellationToken.IsCancelled) {
+                    showInfoMessage("Data export cancelled", -1);
+                    $("#exportingLabel").text("Cancelled");
+                    $("#progressIcon").hide();
+                    $("#cancelDataExport").disable();
+                    setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1000);
+                }
+                else {
+                    updateProgress(state);
+                    setTimeout(checkProgress, progressRefreshRate);
+                }
+            })
+            .fail(function (error) {
+                $("#exportingDataDialog").modal("hide");
+                showErrorMessage("Failed while checking data export status: " + error);
+            });
+        };
+
         function exportData() {
             if (!hubIsConnected)
                 return;
 
-            const selectedPointIDs = viewModel.getSelectedPointIDs();
+            showInfoMessage("Exporting data, please wait...", -1);
+            disableUIButtons();
 
-            if (selectedPointIDs.length === 0)
-                return;
+            const startTime = adjustSubsecondDigits(viewModel.startTime());
+            const endTime = adjustSubsecondDigits(viewModel.endTime());
 
-            let adjustedFrameRate = viewModel.frameRate();
+            dataHub.beginDataExport(startTime, endTime).done(function (operationHandle) {
+                // Track export operation handle so data export can be monitored or cancelled
+                exportOperationHandle = operationHandle;
 
-            if (viewModel.frameBase() === 1)
-                adjustedFrameRate = adjustedFrameRate / 60.0;
+                const selectedPointIDs = viewModel.getSelectedPointIDs();
 
-            if (viewModel.frameBase() === 2)
-                adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
+                if (selectedPointIDs.length === 0)
+                    return;
 
-            let tolerance = 0.5;
+                let adjustedFrameRate = viewModel.frameRate();
 
-            if (viewModel.tolerance())
-                tolerance = 500 / adjustedFrameRate;
+                if (viewModel.frameBase() === 1)
+                    adjustedFrameRate = adjustedFrameRate / 60.0;
 
-            $.ajax({
-                cache: false,
-                url: "ExportDataHandler.ashx",
-                method: "post",
-                data: selectedPointIDs.join(),
-                dataType: "text",
-                success: function (cacheID) {
-                    $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
-                        "?CacheID=" + encodeURIComponent(cacheID) +
-                        "&StartTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.startTime())) +
-                        "&EndTime=" + encodeURIComponent(adjustSubsecondDigits(viewModel.endTime())) +
-                        "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
-                        "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
-                        "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
-                        "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
-                        "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
-                        "&TimestampSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
-                        "&Tolerance=" + encodeURIComponent(tolerance) + 
-                        "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()));
+                if (viewModel.frameBase() === 2)
+                    adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
 
-                    $("#exportDataLink")[0].click();
-                },
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader(verificationHeader, verificationValue);
-                    xhr.setRequestHeader(useAjaxVerfication, "true");
-                }
+                let tolerance = 0.5;
+
+                if (viewModel.tolerance())
+                    tolerance = 500 / adjustedFrameRate;
+
+                $.ajax({
+                    cache: false,
+                    url: "ExportDataHandler.ashx",
+                    method: "post",
+                    data: selectedPointIDs.join(),
+                    dataType: "text",
+                    success: function (cacheID) {
+                        const progressBar = $("#progressBar");
+
+                        progressBar.text("0%");
+                        progressBar.css("width", "0");
+                        progressBar.removeClass("active");
+                    
+                        $("#progressLabel").text("");
+                        $("#exportingLabel").text("Exporting");
+                        $("#progressRate").text("");
+                        $("#remainingTime").text("");
+                        $("#totalTime").text("");
+                        $("#timeEstimate").hide();
+                        $("#progressIcon").show();
+                        $("#cancelDataExport").enable();
+                        $("#exportingDataDialog").modal("show");                    
+
+                        $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
+                            "?CacheID=" + encodeURIComponent(cacheID) +
+                            "&StartTime=" + encodeURIComponent(startTime) +
+                            "&EndTime=" + encodeURIComponent(endTime) +
+                            "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
+                            "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
+                            "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
+                            "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
+                            "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
+                            "&TimestampSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
+                            "&Tolerance=" + encodeURIComponent(tolerance) +
+                            "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()) +
+                            "&ConnectionID=" + encodeURIComponent($.connection.hub.id) +
+                            "&OperationHandle=" + encodeURIComponent(exportOperationHandle)
+                        );
+
+                        $("#exportDataLink")[0].click();
+
+                        // Start checking operation progress
+                        lastProgress = 0;
+                        setTimeout(checkProgress, progressRefreshRate);
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(verificationHeader, verificationValue);
+                        xhr.setRequestHeader(useAjaxVerfication, "true");
+                    }
+                });
+            })
+            .fail(function(error) {
+                showErrorMessage(error);
+                enableUIButtons();
             });
         }
 
@@ -1733,44 +1853,54 @@
                 }
 
                 viewModel.queryRecords(sortField, sortAscending, page, currentPageSize, filterText).done(function(records) {
-                        if (!selectAllRecordsCanceled) {
-                            records.forEach(function(record) {
-                                viewModel.addNewSelectedPointByRecord(record);
-                                return !selectAllRecordsCanceled;
-                            });
-                        }
+                    if (!selectAllRecordsCanceled) {
+                        records.forEach(function(record) {
+                            viewModel.addNewSelectedPointByRecord(record);
+                            return !selectAllRecordsCanceled;
+                        });
+                    }
 
-                        viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
+                    viewModel.selectAllProgress(String.format("{0}%", (++processedPages / totalPages * 100).truncate()));
 
-                        if (page === totalPages) {
-                            $("#selectAllProgressCancel").text("Done!");
+                    if (page === totalPages) {
+                        $("#selectAllProgressCancel").text("Done!");
 
-                            setTimeout(function() {
-                                $("#selectAllProgress").invisible();
-                            }, 2000);
-                        } else if (selectAllRecordsCanceled) {
-                            $("#selectAllProgressCancel").text("Canceled!");
-
-                            setTimeout(function() {
-                                $("#selectAllProgress").invisible();
-                            }, 2000);
-                        } else {
-                            page++;
-
-                            if (page <= totalPages)
-                                selectPageRecords();
-                        }
-                    }).
-                    fail(function(error) {
-                        showErrorMessage(error);
-
-                        if (page === totalPages)
+                        setTimeout(function() {
                             $("#selectAllProgress").invisible();
-                    });
+                        }, 2000);
+                    } else if (selectAllRecordsCanceled) {
+                        $("#selectAllProgressCancel").text("Canceled!");
+
+                        setTimeout(function() {
+                            $("#selectAllProgress").invisible();
+                        }, 2000);
+                    } else {
+                        page++;
+
+                        if (page <= totalPages)
+                            selectPageRecords();
+                    }
+                }).
+                fail(function(error) {
+                    showErrorMessage(error);
+
+                    if (page === totalPages)
+                        $("#selectAllProgress").invisible();
+                });
             }
 
             // Start page level record selection
             selectPageRecords();
+        }
+
+        function disableUIButtons() {
+            $("#exportData").disable();
+            $("#tabs").disable();
+        }
+
+        function enableUIButtons() {
+            $("#exportData").enable();
+            $("#tabs").enable();
         }
 
         $(function() {
@@ -1829,6 +1959,32 @@
 
             $(viewModel).on("pageRecordsQueried", function() {
                 $("#selectAllMessage").invisible();
+            });
+
+            $("#cancelDataExport").click(function () {
+                if (!hubIsConnected)
+                    return;
+
+                $("#cancelDataExport").disable();
+
+                dataHub.cancelHistorianOperation(exportOperationHandle).done(function (success) {
+                    if (success)
+                        showInfoMessage("Request to cancel data export initiated...");
+                    else
+                        showInfoMessage("Request to cancel data export did not succeed: operation has already completed or handle " + exportOperationHandle + " is invalid");
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to cancel data export: " + error);
+                    $("#cancelDataExport").enable();
+                });
+            });
+
+            $("#exportingDataDialog").on("shown.bs.modal", function () {
+                disableUIButtons();
+            });
+
+            $("#exportingDataDialog").on("hidden.bs.modal", function () {
+                enableUIButtons();
             });
 
             $(window).resize(resizeScreenObjects);
@@ -1974,6 +2130,14 @@
             });
         });
 
+        $(window).on("hubDisconnected", function() {
+            if (exportOperationHandle > 0) {
+                exportOperationHandle = 0;
+                $("#exportingDataDialog").modal("hide");
+                showInfoMessage("Data connection lost, data export cancelled...");
+            }
+        });
+
         function keepAlive() {
             if (!hubIsConnected)
                 return;
@@ -2021,7 +2185,7 @@
         <td id="selectedPointsColumn" style="width: 20%; vertical-align: top; padding-right: 3px" class="collapse in">
             <div id="selectedPointsArea" class="well" style="padding: 5px">
                 <div id="selectedPointsHeader" class="clearfix">
-                    Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br/>
+                    Selected Points&nbsp;<span data-bind="text: selectedPoints().length"></span><br />
                     <button type="button" class="btn btn-sm" onclick="showSaveSelectionsFileNameDialog()" id="showSaveSelectionsFileNameDialog" data-bind="enable: selectedPoints().length > 0">Save</button>
                     <div class="well well-sm floating-form" id="saveSelectionsFileNameDialog" style="z-index: 1000">
                         <form class="form-inline" role="form">
@@ -2045,14 +2209,14 @@
                 <div id="scrollablePointsArea" style="overflow-x: hidden">
                     <table class="table table-striped table-bordered table-hover table-condensed" style="table-layout: fixed">
                         <tbody id="selectedPoints" data-bind="foreach: selectedPoints">
-                        <tr>
-                            <td style="width: 20%; overflow: hidden" class="text-center valign-middle" data-bind="text: id, attr: { title: id }"></td>
-                            <td style="width: 60%" class="table-cell-hard-wrap">
-                                <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
-                                <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
-                            </td>
-                            <td style="width: 20%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
-                        </tr>
+                            <tr>
+                                <td style="width: 20%; overflow: hidden" class="text-center valign-middle" data-bind="text: id, attr: { title: id }"></td>
+                                <td style="width: 60%" class="table-cell-hard-wrap">
+                                    <span class="fixed-font" data-bind="text: cleanupTagName(tag), attr: { title: String.format('{0}: {1} - {2}', signalType, tag, description) }"></span>
+                                    <hr class="series-color" data-bind="style: { 'background-color': $parent.getSeriesColor($data) }" />
+                                </td>
+                                <td style="width: 20%" class="text-center valign-middle"><button type="button" class="btn btn-xs" title="Unselect Point" data-bind="click: $parent.deleteSelectedPoint"><span class="glyphicon glyphicon-remove"></span></button></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -2070,7 +2234,7 @@
                         <a href="#tab3">Export Data</a>
                         <span id="selectAllMessage" style="visibility: hidden">Selected <span data-bind="text: pageRecords().length"></span> points on the current page, <a class="active" onclick="selectAllRecords()">click here</a> to select all <span data-bind="text: recordCount"></span> points on all pages.</span>
                         <div class="input-group" id="selectAllProgress" style="visibility: hidden">
-                            <span style="display: table-cell; font-size: small">Selecting&nbsp;Points:&nbsp;</span>                            
+                            <span style="display: table-cell; font-size: small">Selecting&nbsp;Points:&nbsp;</span>
                             <div class="progress" style="width: 180px; height: 22px">
                                 <div class="progress-bar-info" id="selectAllProgressBar" role="progressbar" data-bind="style: { 'width': selectAllProgress }"><span data-bind="text: selectAllProgress">0%</span> Complete...</div>
                             </div>
@@ -2097,7 +2261,7 @@
                             </div>
                             <div class="checkbox">
                                 <label for="autoEstimateResolution"><input type="checkbox" id="autoEstimateResolution" data-bind="checked: autoEstimateResolution"> <strong>Auto&nbsp;Estimate</strong></label>
-                            </div>                            
+                            </div>
                             <div class="checkbox pull-right">
                                 <label for="showAdvanced" style="margin-top: 4px"><input type="checkbox" id="showAdvanced" onclick="showAdvancedTrendOptions()"> Advanced&nbsp;Options</label>
                             </div>
@@ -2211,7 +2375,7 @@
                             </div>
                             &nbsp;&nbsp;
                         </form>
-                        <hr class="quarter-break"/>
+                        <hr class="quarter-break" />
                         <div style="max-width: 600px">
                             <table>
                                 <tr>
@@ -2245,3 +2409,33 @@
         </td>
     </tr>
 </table>
+@* Exporting Data Dialog *@
+<div id="exportingDataDialog" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Exporting Data...</h4>
+            </div>
+            <div class="modal-body">
+                <div style="margin: 10px">
+                    <div class="pull-right" style="font-weight: bold">
+                        <span id="exportingLabel">Exporting</span>&nbsp;<span id="progressLabel"></span>&nbsp;&nbsp;<span id="progressIcon" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                    </div>
+                    <br />
+                    <div class="progress" style="margin-top: 5px; margin-bottom: -5px">
+                        <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">0%</div>
+                    </div>
+                    <br />
+                    <div>
+                        <span id="progressRate" class="pull-left"></span>
+                        <span id="timeEstimate" class="pull-right">Estimated remaining time: <span id="remainingTime"></span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="pull-left">Total elapsed time: <span id="totalTime"></span></span>
+                <button id="cancelDataExport" type="button" class="btn btn-default pull-right">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

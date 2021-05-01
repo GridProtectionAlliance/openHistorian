@@ -35,6 +35,7 @@ using openHistorian.Adapters;
 using openHistorian.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -103,6 +104,7 @@ namespace openHistorian
         private static int s_ieeeC37_118ID;
         private static int s_virtualProtocolID;
         //private static int s_vphmSignalTypeID;
+        private static string s_dateTimeFormat;
 
         // Static Constructor
         static DataHub()
@@ -632,11 +634,21 @@ namespace openHistorian
         public IEnumerable<string> GetInstanceNames() => m_historianOperations.GetInstanceNames();
 
         /// <summary>
+        /// Begins a new historian read operation.
+        /// </summary>
+        /// <param name="totalValues">Total values or timespan to read, if known in advance.</param>
+        /// <returns>New operational state handle.</returns>
+        public uint BeginHistorianRead(long totalValues)
+        {
+            return m_historianOperations.BeginHistorianRead(totalValues);
+        }
+
+        /// <summary>
         /// Begins a new historian write operation.
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="values">Enumeration of <see cref="TrendValue"/> instances to write.</param>
-        /// <param name="totalValues">Total values to write, if known in advance.</param>
+        /// <param name="totalValues">Total values or timespan to write, if known in advance.</param>
         /// <param name="timestampType">Type of timestamps.</param>
         /// <returns>New operational state handle.</returns>
         public uint BeginHistorianWrite(string instanceName, IEnumerable<TrendValue> values, long totalValues, TimestampType timestampType)
@@ -645,23 +657,23 @@ namespace openHistorian
         }
 
         /// <summary>
-        /// Gets current historian write operation state for specified handle.
+        /// Gets current historian operation state for specified handle.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
-        /// <returns>Current historian write operation state.</returns>
-        public HistorianWriteOperationState GetHistorianWriteState(uint operationHandle)
+        /// <param name="operationHandle">Handle to historian operation state.</param>
+        /// <returns>Current historian operation state.</returns>
+        public HistorianOperationState GetHistorianOperationState(uint operationHandle)
         {
-            return m_historianOperations.GetHistorianWriteState(operationHandle);
+            return m_historianOperations.GetHistorianOperationState(operationHandle);
         }
 
         /// <summary>
-        /// Cancels a historian write operation.
+        /// Cancels a historian operation.
         /// </summary>
-        /// <param name="operationHandle">Handle to historian write operation state.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if operation was successfully terminated; otherwise, <c>false</c>.</returns>
-        public bool CancelHistorianWrite(uint operationHandle)
+        public bool CancelHistorianOperation(uint operationHandle)
         {
-            return m_historianOperations.CancelHistorianWrite(operationHandle);
+            return m_historianOperations.CancelHistorianOperation(operationHandle);
         }
 
         /// <summary>
@@ -853,6 +865,38 @@ namespace openHistorian
 
         #endregion
 
+        #region [ Data Export Operations ]
+
+        public uint BeginDataExport(string startTime, string endTime)
+        {
+            long startTicks, endTicks;
+
+            try
+            {
+                startTicks = DateTime.ParseExact(startTime, DateTimeFormat, null, DateTimeStyles.AdjustToUniversal).Ticks;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Cannot export data: failed to parse \"{nameof(startTime)}\" parameter value \"{startTime}\". Expected format is \"{DateTimeFormat}\". Error message: {ex.Message}", nameof(startTime), ex);
+            }
+
+            try
+            {
+                endTicks = DateTime.ParseExact(endTime, DateTimeFormat, null, DateTimeStyles.AdjustToUniversal).Ticks;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Cannot export data: failed to parse \"{nameof(endTime)}\" parameter value \"{endTime}\". Expected format is \"{DateTimeFormat}\". Error message: {ex.Message}", nameof(endTime), ex);
+            }
+
+            if (startTicks > endTicks)
+                throw new ArgumentOutOfRangeException(nameof(startTime), "Cannot export data: start time exceeds end time.");
+
+            return BeginHistorianRead(endTicks - startTicks);
+        }
+
+        #endregion
+
         #region [ COMTRADE Operations ]
 
         public Schema LoadCOMTRADEConfiguration(string configFile)
@@ -923,6 +967,8 @@ namespace openHistorian
 
         //private int VphmSignalTypeID => s_vphmSignalTypeID != 0 ? s_vphmSignalTypeID : (s_vphmSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='VPHM'"));
 
+        private static string DateTimeFormat => s_dateTimeFormat ??= Program.Host.Model.Global.DateTimeFormat;
+
         /// <summary>
         /// Gets protocol ID for "ModbusPoller" protocol.
         /// </summary>
@@ -933,30 +979,24 @@ namespace openHistorian
         /// </summary>
         public int GetComtradeProtocolID() => ComtradeProtocolID;
 
-        public string GetProtocolCategory(int protocolID)
-        {
-            return DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID)?.Category ?? "Undefined";
-        }
+        public string GetProtocolCategory(int protocolID) => 
+            DataContext.Table<Protocol>().QueryRecordWhere("ID = {0}", protocolID)?.Category ?? "Undefined";
 
         /// <summary>
         /// Determines if directory exists from server's perspective.
         /// </summary>
         /// <param name="path">Directory path to test for existence.</param>
         /// <returns><c>true</c> if directory exists; otherwise, <c>false</c>.</returns>
-        public bool DirectoryExists(string path)
-        {
-            return Directory.Exists(path);
-        }
+        public bool DirectoryExists(string path) => 
+            Directory.Exists(path);
 
         /// <summary>
         /// Determines if file exists from server's perspective.
         /// </summary>
         /// <param name="path">Path and file name to test for existence.</param>
         /// <returns><c>true</c> if file exists; otherwise, <c>false</c>.</returns>
-        public bool FileExists(string path)
-        {
-            return File.Exists(path);
-        }
+        public bool FileExists(string path) => 
+            File.Exists(path);
 
         /// <summary>
         /// Requests that the device send the current list of progress updates.
@@ -970,10 +1010,8 @@ namespace openHistorian
         /// Gets current user ID.
         /// </summary>
         /// <returns>Current user ID.</returns>
-        public string GetCurrentUserID()
-        {
-            return Thread.CurrentPrincipal.Identity?.Name ?? UserInfo.CurrentUserID;
-        }
+        public string GetCurrentUserID() => 
+            Thread.CurrentPrincipal.Identity?.Name ?? UserInfo.CurrentUserID;
 
         /// <summary>
         /// Gets elapsed time between two dates as a range.
@@ -981,10 +1019,8 @@ namespace openHistorian
         /// <param name="startTime">Start time of query.</param>
         /// <param name="stopTime">Stop time of query.</param>
         /// <returns>Elapsed time between two dates as a range.</returns>
-        public Task<string> GetElapsedTimeString(DateTime startTime, DateTime stopTime)
-        {
-            return Task.Factory.StartNew(() => new Ticks(stopTime - startTime).ToElapsedTimeString(2));
-        }
+        public Task<string> GetElapsedTimeString(DateTime startTime, DateTime stopTime) => 
+            Task.Factory.StartNew(() => new Ticks(stopTime - startTime).ToElapsedTimeString(2));
 
         #endregion
     }

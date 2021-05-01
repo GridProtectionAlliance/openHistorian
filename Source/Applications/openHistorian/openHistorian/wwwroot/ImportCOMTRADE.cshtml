@@ -773,7 +773,7 @@
                 }
 
                 if (progress > 0) {
-                    $("#progressRate").text(String.format("Loading {0} measurements per second...", state.ImportRate.toLocaleString()));
+                    $("#progressRate").text(String.format("Loading {0} measurements per second...", state.OperationRate.toLocaleString()));
                     $("#remainingTime").text(state.RemainingTimeEstimate);
                     $("#totalTime").text(state.TotalOperationTime);
 
@@ -789,14 +789,14 @@
                 if (!viewModel.dataHubIsConnected())
                     return;
 
-                dataHub.getHistorianWriteState(writeOperationHandle)
+                dataHub.getHistorianOperationState(writeOperationHandle)
                     .done(function(state) {
                         if (state.Completed) {
                             showInfoMessage(String.format(
                                 "COMTRADE data load complete for {0} measurements in {1} averaging {2} measurements per second",
                                     state.Progress.toLocaleString(),
                                     state.TotalOperationTime,
-                                    state.ImportRate.toLocaleString()
+                                    state.OperationRate.toLocaleString()
                                 ), -1);
                             $("#loadingLabel").text("Complete");
                             $("#progressIcon").hide();
@@ -1252,7 +1252,7 @@
 
                 $("#cancelDataLoad").disable();
 
-                dataHub.cancelHistorianWrite(writeOperationHandle)
+                dataHub.cancelHistorianOperation(writeOperationHandle)
                     .done(function(success) {
                         if (success)
                             showInfoMessage("Request to cancel COMTRADE data load initiated...");

@@ -195,92 +195,133 @@ namespace openHistorian
 
         private static async Task ExportToStreamAsync(int fileFormat, PointMetadata metadata, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
-            const double DefaultFrameRate = 30D;
-            const int DefaultTimestampSnap = 0;
-            const double DefaultTolerance = 0.5D;
-
-            string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
-            string startTimeParam = requestParameters["StartTime"];
-            string endTimeParam = requestParameters["EndTime"];
-            string frameRateParam = requestParameters["FrameRate"];
-            string alignTimestampsParam = requestParameters["AlignTimestamps"];
-            string missingAsNaNParam = requestParameters["MissingAsNaN"];
-            string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
-            string instanceName = requestParameters["InstanceName"];
-            string timestampSnapParam = requestParameters["TimestampSnap"];
-            string toleranceParam = requestParameters["Tolerance"]; // In milliseconds
-
-            if (string.IsNullOrEmpty(startTimeParam))
-                throw new ArgumentNullException("StartTime", "Cannot export data: no \"StartTime\" parameter value was specified.");
-
-            if (string.IsNullOrEmpty(endTimeParam))
-                throw new ArgumentNullException("EndTime", "Cannot export data: no \"EndTime\" parameter value was specified.");
-
-            DateTime startTime, endTime;
-
-            try
-            {
-                startTime = DateTime.ParseExact(startTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Cannot export data: failed to parse \"StartTime\" parameter value \"{startTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "StartTime", ex);
-            }
-
-            try
-            {
-                endTime = DateTime.ParseExact(endTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Cannot export data: failed to parse \"EndTime\" parameter value \"{endTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "EndTime", ex);
-            }
-
-            if (startTime > endTime)
-                throw new ArgumentOutOfRangeException("StartTime", "Cannot export data: start time exceeds end time.");
-
-            FileType? fileType = null;
-
-            if (fileFormat > -1)
-                fileType = (FileType)fileFormat;
-
-            Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(metadata.PointIDs.Length);
-            byte[] headers = GetHeaders(fileType, metadata, pointIDIndex, startTime, out Schema schema);
-
-            if (!double.TryParse(frameRateParam, out double frameRate))
-                frameRate = DefaultFrameRate;
-
-            if (!int.TryParse(timestampSnapParam, out int timestampSnap))
-                timestampSnap = DefaultTimestampSnap;
-
-            if (!double.TryParse(toleranceParam, out double tolerance))
-                tolerance = DefaultTolerance;
-
-            int toleranceTicks = (int)Math.Ceiling(tolerance * Ticks.PerMillisecond);
-            bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
-            bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
-            bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
-
-            if (string.IsNullOrEmpty(instanceName))
-                instanceName = TrendValueAPI.DefaultInstanceName;
-
-            LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapter);
-            HistorianServer serverInstance = adapter?.Server;
-
-            if (serverInstance is null)
-                throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
-
-            ManualResetEventSlim bufferReady = new ManualResetEventSlim(false);
-            BlockAllocatedMemoryStream writeBuffer = new BlockAllocatedMemoryStream();
-            bool[] readComplete = { false };
-
-            Task readTask = ReadTask(fileType, schema, serverInstance, instanceName, metadata, pointIDIndex, startTime, endTime, writeBuffer, bufferReady, frameRate, missingAsNaN, timestampSnap, alignTimestamps, toleranceTicks, fillMissingTimestamps, dateTimeFormat, readComplete, cancellationToken);
-            Task writeTask = WriteTask(responseStream, headers, writeBuffer, bufferReady, readComplete, cancellationToken);
+            // See if operation state for this export can be found
+            string connectionID = requestParameters["ConnectionID"];
+            string operationHandleParam = requestParameters["OperationHandle"];
             
-            await Task.WhenAll(writeTask, readTask);
+            HistorianOperationState operationState = null;
+            Action completeHistorianOperation = null;
+
+            if (!string.IsNullOrEmpty(connectionID) && HistorianOperations.TryGetHubClient(connectionID, out HistorianOperationsHubClient hubClient) && uint.TryParse(operationHandleParam, out uint operationaHandle))
+            {
+                operationState = hubClient.GetHistorianOperationState(operationaHandle);
+
+                if (operationState.CancellationToken.IsCancelled)
+                {
+                    operationState = null;
+                }
+                else
+                {
+                    operationState.StartTime = DateTime.UtcNow.Ticks;
+
+                    completeHistorianOperation = () =>
+                    {
+                        operationState.Completed = !operationState.CancellationToken.IsCancelled;
+                        operationState.StopTime = DateTime.UtcNow.Ticks;
+                        hubClient.CancelHistorianOperation(operationaHandle);
+                    };
+                }
+            }
+
+            try
+            {
+                const double DefaultFrameRate = 30D;
+                const int DefaultTimestampSnap = 0;
+                const double DefaultTolerance = 0.5D;
+
+                string dateTimeFormat = Program.Host.Model.Global.DateTimeFormat;
+                string startTimeParam = requestParameters["StartTime"];
+                string endTimeParam = requestParameters["EndTime"];
+                string frameRateParam = requestParameters["FrameRate"];
+                string alignTimestampsParam = requestParameters["AlignTimestamps"];
+                string missingAsNaNParam = requestParameters["MissingAsNaN"];
+                string fillMissingTimestampsParam = requestParameters["FillMissingTimestamps"];
+                string instanceName = requestParameters["InstanceName"];
+                string timestampSnapParam = requestParameters["TimestampSnap"];
+                string toleranceParam = requestParameters["Tolerance"]; // In milliseconds
+
+                if (string.IsNullOrEmpty(startTimeParam))
+                    throw new ArgumentNullException("StartTime", "Cannot export data: no \"StartTime\" parameter value was specified.");
+
+                if (string.IsNullOrEmpty(endTimeParam))
+                    throw new ArgumentNullException("EndTime", "Cannot export data: no \"EndTime\" parameter value was specified.");
+
+                DateTime startTime, endTime;
+
+                try
+                {
+                    startTime = DateTime.ParseExact(startTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Cannot export data: failed to parse \"StartTime\" parameter value \"{startTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "StartTime", ex);
+                }
+
+                try
+                {
+                    endTime = DateTime.ParseExact(endTimeParam, dateTimeFormat, null, DateTimeStyles.AdjustToUniversal);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Cannot export data: failed to parse \"EndTime\" parameter value \"{endTimeParam}\". Expected format is \"{dateTimeFormat}\". Error message: {ex.Message}", "EndTime", ex);
+                }
+
+                if (startTime > endTime)
+                    throw new ArgumentOutOfRangeException("StartTime", "Cannot export data: start time exceeds end time.");
+
+                FileType? fileType = null;
+
+                if (fileFormat > -1)
+                    fileType = (FileType)fileFormat;
+
+                Dictionary<ulong, int> pointIDIndex = new Dictionary<ulong, int>(metadata.PointIDs.Length);
+                byte[] headers = GetHeaders(fileType, metadata, pointIDIndex, startTime, out Schema schema);
+
+                if (!double.TryParse(frameRateParam, out double frameRate))
+                    frameRate = DefaultFrameRate;
+
+                if (!int.TryParse(timestampSnapParam, out int timestampSnap))
+                    timestampSnap = DefaultTimestampSnap;
+
+                if (!double.TryParse(toleranceParam, out double tolerance))
+                    tolerance = DefaultTolerance;
+
+                int toleranceTicks = (int)Math.Ceiling(tolerance * Ticks.PerMillisecond);
+                bool alignTimestamps = alignTimestampsParam?.ParseBoolean() ?? true;
+                bool missingAsNaN = missingAsNaNParam?.ParseBoolean() ?? true;
+                bool fillMissingTimestamps = alignTimestamps && (fillMissingTimestampsParam?.ParseBoolean() ?? false);
+
+                if (string.IsNullOrEmpty(instanceName))
+                    instanceName = TrendValueAPI.DefaultInstanceName;
+
+                LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapter);
+                HistorianServer serverInstance = adapter?.Server;
+
+                if (serverInstance is null)
+                    throw new InvalidOperationException($"Cannot export data: failed to access internal historian server instance \"{instanceName}\".");
+
+                ManualResetEventSlim bufferReady = new ManualResetEventSlim(false);
+                BlockAllocatedMemoryStream writeBuffer = new BlockAllocatedMemoryStream();
+                bool[] readComplete = { false };
+
+                Task readTask = ReadTask(fileType, schema, serverInstance, instanceName, metadata, pointIDIndex, startTime, endTime, writeBuffer, bufferReady, frameRate, missingAsNaN, timestampSnap, alignTimestamps, toleranceTicks, fillMissingTimestamps, dateTimeFormat, readComplete, operationState, cancellationToken);
+                Task writeTask = WriteTask(responseStream, headers, writeBuffer, bufferReady, readComplete, operationState, completeHistorianOperation, cancellationToken);
+
+                await Task.WhenAll(writeTask, readTask);
+            }
+            catch (Exception ex)
+            {
+                if (!(operationState is null))
+                {
+                    operationState.Failed = true;
+                    operationState.FailedReason = ex.Message;
+                }
+
+                throw;
+            }
         }
 
-        private static Task ReadTask(FileType? fileType, Schema schema, HistorianServer serverInstance, string instanceName, PointMetadata metadata, Dictionary<ulong, int> pointIDIndex, DateTime startTime, DateTime endTime, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, CancellationToken cancellationToken) =>
+        private static Task ReadTask(FileType? fileType, Schema schema, HistorianServer serverInstance, string instanceName, PointMetadata metadata, Dictionary<ulong, int> pointIDIndex, DateTime startTime, DateTime endTime, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, HistorianOperationState operationState, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
                 try
@@ -345,6 +386,10 @@ namespace openHistorian
                                 throw new ArgumentOutOfRangeException(nameof(fileType), fileType, null);
                         }
 
+                        // Update progress based on time
+                        if (!(operationState is null))
+                            operationState.Progress = recordTimestamp.Ticks - startTime.Ticks;
+
                         if (readBuffer.Length < TargetBufferSize)
                             return;
 
@@ -374,7 +419,7 @@ namespace openHistorian
                         _ => startTime.Ticks
                     };
 
-                    while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested)
+                    while (stream.Read(historianKey, historianValue) && !cancellationToken.IsCancellationRequested && !(operationState?.CancellationToken.IsCancelled ?? false))
                     {
                         ulong timestamp;
 
@@ -467,6 +512,19 @@ namespace openHistorian
                         lock (writeBuffer)
                             readBuffer.WriteTo(writeBuffer);
                     }
+
+                    if (!(operationState is null))
+                        operationState.Progress = operationState.Total;
+                }
+                catch (Exception ex)
+                {
+                    if (!(operationState is null))
+                    {
+                        operationState.Failed = true;
+                        operationState.FailedReason = ex.Message;
+                    }
+
+                    throw;
                 }
                 finally
                 {
@@ -476,32 +534,47 @@ namespace openHistorian
             },
             cancellationToken);
 
-        private static Task WriteTask(Stream responseStream, byte[] header, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, CancellationToken cancellationToken) =>
+        private static Task WriteTask(Stream responseStream, byte[] header, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, HistorianOperationState operationState, Action completeHistorianOperation, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
-                // Write headers, e.g., CSV header row or CFF schema
-                responseStream.Write(header, 0, header.Length);
-
-                while ((writeBuffer.Length > 0 || !readComplete[0]) && !cancellationToken.IsCancellationRequested)
+                try
                 {
-                    byte[] bytes;
+                    // Write headers, e.g., CSV header row or CFF schema
+                    responseStream.Write(header, 0, header.Length);
 
-                    bufferReady.Wait(cancellationToken);
-                    bufferReady.Reset();
-
-                    lock (writeBuffer)
+                    while ((writeBuffer.Length > 0 || !readComplete[0]) && !cancellationToken.IsCancellationRequested && !(operationState?.CancellationToken.IsCancelled ?? false))
                     {
-                        bytes = writeBuffer.ToArray();
-                        writeBuffer.Clear();
+                        byte[] bytes;
+
+                        bufferReady.Wait(cancellationToken);
+                        bufferReady.Reset();
+
+                        lock (writeBuffer)
+                        {
+                            bytes = writeBuffer.ToArray();
+                            writeBuffer.Clear();
+                        }
+
+                        responseStream.Write(bytes, 0, bytes.Length);
                     }
 
-                    responseStream.Write(bytes, 0, bytes.Length);
+                    // Flush stream
+                    responseStream.Flush();
                 }
+                catch (Exception ex)
+                {
+                    if (!(operationState is null))
+                    {
+                        operationState.Failed = true;
+                        operationState.FailedReason = ex.Message;
+                    }
 
-                // Flush stream
-                responseStream.Flush();
-
-                //Debug.WriteLine("Export time: " + (DateTime.UtcNow.Ticks - exportStart).ToElapsedTimeString(3));
+                    throw;
+                }
+                finally
+                {
+                    completeHistorianOperation?.Invoke();
+                }
             },
             cancellationToken);
 
