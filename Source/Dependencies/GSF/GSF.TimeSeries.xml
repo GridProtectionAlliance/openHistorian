@@ -8491,62 +8491,6 @@
             <param name="sender">Sending object.</param>
             <param name="e">Event arguments, if any.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_DataQualityErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of data quality errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Data Quality Errors Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_TimeQualityErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of time quality errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Time Quality Errors Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_DeviceErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of device errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Device Errors Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsReceived(System.Object,System.String)">
-            <summary>
-            Calculates number of measurements received from device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Measurements Received Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsExpected(System.Object,System.String)">
-            <summary>
-            Calculates expected number of measurements received from device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Measurements Expected Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsWithError(System.Object,System.String)">
-            <summary>
-            Calculates expected number of measurements received while device was reporting errors during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Measurements Expected Statistic.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsDefined(System.Object,System.String)">
-            <summary>
-            Calculates number of defined measurements from device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Defined Measurements Statistic.</returns>
-        </member>
         <member name="T:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1">
             <summary>
             Helper class for calculating device statistics.

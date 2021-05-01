@@ -3490,6 +3490,14 @@
             This method should be called within implementing SignalR hub when stop is called.
             </remarks>
         </member>
+        <member name="M:GSF.Web.Hubs.HubClientOperationsBase`1.TryGetHubClient(System.String,`0@)">
+            <summary>
+            Attempts to get hub client for SignalR session with specified <paramref name="connectionID"/>.
+            </summary>
+            <param name="connectionID">SignalR session ID to attempt to find.</param>
+            <param name="client">Associated client, if found.</param>
+            <returns><c>true</c> if session was found; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Web.Hubs.HubClientOperationsBase`1.EndSession(System.String)">
             <summary>
             Disposes any associated <see cref="T:GSF.Web.Hubs.IHubClient"/> when SignalR session is disconnected.

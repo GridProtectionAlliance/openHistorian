@@ -14813,7 +14813,7 @@
         </member>
         <member name="P:GSF.Diagnostics.SystemPerformanceMonitor.AvailableMemory">
             <summary>
-            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the remaining available memory of the system.
+            Gets the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> that monitors the remaining available memory of the system in GB.
             </summary>
             <remarks>This <see cref="T:GSF.Diagnostics.PerformanceCounter"/> is added by default.</remarks>
         </member>
