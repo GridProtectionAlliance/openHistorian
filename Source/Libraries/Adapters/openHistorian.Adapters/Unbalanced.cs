@@ -449,84 +449,88 @@ namespace openHistorian.Adapters
                 Guid signalId2;
                 Guid signalId3;
 
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                try
                 {
-                    signalId1 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[0].Trim());
-                    signalId2 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[1].Trim());
-                    signalId3 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[2].Trim());
-
-                    if (signalId1 == Guid.Empty || signalId2 == Guid.Empty || signalId3 == Guid.Empty)
+                    using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                     {
-                        OnStatusMessage(MessageLevel.Warning, $"Skipping Line {i} in mapping file.");
-                        return;
-                    }
-                }
-                MeasurementKey input1 = MeasurementKey.LookUpBySignalID(signalId1);
-                MeasurementKey input2 = MeasurementKey.LookUpBySignalID(signalId2);
-                MeasurementKey input3 = MeasurementKey.LookUpBySignalID(signalId3);
+                        signalId1 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[0].Trim());
+                        signalId2 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[1].Trim());
+                        signalId3 = connection.ExecuteScalar<Guid>("SELECT SignalID FROM ActiveMeasurement WHERE PointTag = {0}", pointTags[2].Trim());
 
-                // We Assume they are in order... +, -, 0 This is important
-                Guid output;
-
-                // Check if an Output Model already exists
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-                {
-                    ThreePhaseSet keys = new TableOperations<ThreePhaseSet>(connection).QueryRecordWhere("PositiveSequence = {0} AND NegativeSequence = {1} AND ZeroSequence = {2}", input1.SignalID, input2.SignalID, input3.SignalID);
-
-                    if (keys is null)
-                    {
-                        string inputName = LookupPointTag(input1.SignalID);
-                        string alternateTagPrefix = null;
-
-                        if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
+                        if (signalId1 == Guid.Empty || signalId2 == Guid.Empty || signalId3 == Guid.Empty)
                         {
-                            string deviceName = LookupDevice(input1.SignalID);
-                            string phasorLabel = LookupPhasorLabel(input1.SignalID);
-                            alternateTagPrefix = $"{deviceName}-{phasorLabel}";
+                            OnStatusMessage(MessageLevel.Warning, $"Skipping Line {i} in mapping file.");
+                            return;
                         }
-                        string perAdapterOutputName = "RESULT";
-                        string outputPrefix = $"{Name}!{inputName}-{perAdapterOutputName}";
-                        string outputPointTag = string.Format(PointTagTemplate, outputPrefix);
-                        string outputAlternateTag = string.Format(AlternateTagTemplate, alternateTagPrefix is null ? "" : $"{alternateTagPrefix}-{perAdapterOutputName}");
-                        string signalReference = string.Format(SignalReferenceTemplate, outputPrefix);
-                        string description = string.Format(DescriptionTemplate, outputPrefix, SignalType.CALC, Name, GetType().Name);
+                    }
+                    MeasurementKey input1 = MeasurementKey.LookUpBySignalID(signalId1);
+                    MeasurementKey input2 = MeasurementKey.LookUpBySignalID(signalId2);
+                    MeasurementKey input3 = MeasurementKey.LookUpBySignalID(signalId3);
 
-                        // Get output measurement record, creating a new one if needed
-                        MeasurementRecord measurement = GetMeasurementRecord(currentDeviceID ?? CurrentDeviceID(i), outputPointTag, outputAlternateTag, signalReference, description, SignalType.CALC, TargetHistorianAcronym);
+                    // We Assume they are in order... +, -, 0 This is important
+                    Guid output;
 
-                        MeasurementRecord posSeq = new TableOperations<MeasurementRecord>(connection).QueryRecordWhere("SignalId = {0}",input1.SignalID);
-                        string unbalancetype = "X";
+                    // Check if an Output Model already exists
+                    using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+                    {
+                        ThreePhaseSet keys = new TableOperations<ThreePhaseSet>(connection).QueryRecordWhere("PositiveSequence = {0} AND NegativeSequence = {1} AND ZeroSequence = {2}", input1.SignalID, input2.SignalID, input3.SignalID);
 
-                        if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.IPHM)
-                            unbalancetype = "I";
-                        else if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.VPHM)
-                            unbalancetype = "V";
+                        if (keys is null)
+                        {
+                            string inputName = LookupPointTag(input1.SignalID);
+                            string alternateTagPrefix = null;
 
-                        output = measurement.SignalID;
+                            if (!string.IsNullOrWhiteSpace(AlternateTagTemplate))
+                            {
+                                string deviceName = LookupDevice(input1.SignalID);
+                                string phasorLabel = LookupPhasorLabel(input1.SignalID);
+                                alternateTagPrefix = $"{deviceName}-{phasorLabel}";
+                            }
+                            string perAdapterOutputName = "RESULT";
+                            string outputPrefix = $"{Name}!{inputName}-{perAdapterOutputName}";
+                            string outputPointTag = string.Format(PointTagTemplate, outputPrefix);
+                            string outputAlternateTag = string.Format(AlternateTagTemplate, alternateTagPrefix is null ? "" : $"{alternateTagPrefix}-{perAdapterOutputName}");
+                            string signalReference = string.Format(SignalReferenceTemplate, outputPrefix);
+                            string description = string.Format(DescriptionTemplate, outputPrefix, SignalType.CALC, Name, GetType().Name);
 
-                        keys = new ThreePhaseSet() { PositiveSequence = input1.SignalID, NegativeSequence = input2.SignalID, ZeroSequence = input3.SignalID, S0S1 = output, S2S1 = output };
-                        keys.SignalType = unbalancetype;
-                        new TableOperations<ThreePhaseSet>(connection).AddNewRecord(keys);
+                            // Get output measurement record, creating a new one if needed
+                            MeasurementRecord measurement = GetMeasurementRecord(currentDeviceID ?? CurrentDeviceID(i), outputPointTag, outputAlternateTag, signalReference, description, SignalType.CALC, TargetHistorianAcronym);
 
+                            MeasurementRecord posSeq = new TableOperations<MeasurementRecord>(connection).QueryRecordWhere("SignalId = {0}", input1.SignalID);
+                            string unbalancetype = "X";
+
+                            if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.IPHM)
+                                unbalancetype = "I";
+                            else if (posSeq != null && posSeq.SignalTypeID == (int)SignalType.VPHM)
+                                unbalancetype = "V";
+
+                            output = measurement.SignalID;
+
+                            keys = new ThreePhaseSet() { PositiveSequence = input1.SignalID, NegativeSequence = input2.SignalID, ZeroSequence = input3.SignalID, S0S1 = output, S2S1 = output };
+                            keys.SignalType = unbalancetype;
+                            new TableOperations<ThreePhaseSet>(connection).AddNewRecord(keys);
+
+
+                        }
+
+                        keys.Reset();
+                        keys.activeAlarm = false;
+                        keys.countExceeding = 0;
+                        keys.acknowlegedAlarm = false;
+                        keys.BaseVoltage = connection.ExecuteScalar<int>("SELECT COALESCE((SELECT BaseKV FROM Phasor WHERE ID = (SELECT PhasorID FROM ActiveMeasurement WHERE SignalID = {0})), 0)", keys.PositiveSequence);
+                        m_threePhaseComponent.Add(keys);
 
                     }
-                    //else
-                    //{
-                    //    output = keys.S0S1; // Variable assignment not used on any execution path
-                    //}
 
-                    keys.Reset();
-                    keys.activeAlarm = false;
-                    keys.countExceeding = 0;
-                    keys.acknowlegedAlarm = false;
-                    keys.BaseVoltage = connection.ExecuteScalar<int>("SELECT COALESCE((SELECT BaseKV FROM Phasor WHERE ID = (SELECT PhasorID FROM ActiveMeasurement WHERE SignalID = '{0}')), 0)", keys.PositiveSequence.ToString());
-                    m_threePhaseComponent.Add(keys);
-                    
+                    // Need to add Measurements to inputMeasuremetnKeys
+                    inputs.Add(input1);
+                    inputs.Add(input2);
+                    inputs.Add(input3);
                 }
-                // Need to add Measurements to inputMeasuremetnKeys
-                inputs.Add(input1);
-                inputs.Add(input2);
-                inputs.Add(input3);
+                catch (Exception ex)
+                {
+                    OnStatusMessage(MessageLevel.Error, $"An Error Occurred while Processing Line {i}: {ex.Message}.");
+                }
             });
 
             InputMeasurementKeys = inputs.ToArray();
