@@ -538,7 +538,7 @@
         </member>
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.ConvertValueToType(System.String,System.String)">
             <summary>
-            Converts xml element to datatype
+            Converts value to specified type.
             </summary>
             <param name="xmlValue"></param>
             <param name="xmlDataType"></param>

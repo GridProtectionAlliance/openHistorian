@@ -7317,7 +7317,7 @@
         </member>
         <member name="P:GSF.TimeSeries.IDevice.MeasurementsWithError">
             <summary>
-            Gets or sets the number of measurements recevied while this <see cref="T:GSF.TimeSeries.IDevice"/> was reporting errors.
+            Gets or sets the number of measurements received while this <see cref="T:GSF.TimeSeries.IDevice"/> was reporting errors.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.IDevice.MeasurementsDefined">
@@ -8533,6 +8533,12 @@
             to properly track the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsWithError"/> statistic.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.MarkDeviceTimestamp(System.Int64)">
+            <summary>
+            Marks the latest timestamp of device measurements used to calculate global timestamp statistics.
+            </summary>
+            <param name="ticks">Latest timestamp of device measurements.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update">
             <summary>
             Updates the statistics for the number of measurements received and the number
@@ -8645,6 +8651,16 @@
         <member name="E:GSF.TimeSeries.Statistics.StatisticsEngine.Calculated">
             <summary>
             Event is raised after statistics calculation.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Statistics.StatisticsEngine.SourceRegistered">
+            <summary>
+            Event is raised when a new statistics source is registered.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Statistics.StatisticsEngine.SourceUnregistered">
+            <summary>
+            Event is raised when a statistics source is unregistered.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.#ctor">

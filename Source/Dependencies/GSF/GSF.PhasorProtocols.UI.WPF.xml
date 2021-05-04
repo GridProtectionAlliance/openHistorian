@@ -718,11 +718,6 @@
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.UnsubscribeUnsynchronizedData">
-            <summary>
-            Unsubscribes data from the service.
-            </summary>
-        </member>
         <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.InitializeComponent">
             <summary>
             InitializeComponent
@@ -2230,7 +2225,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.RestartConnectionCycle">
             <summary>
-            Gets or sets a boolean flag indicating if connection to backend windows service needs to be reestablished upon disconnection.
+            Gets or sets a boolean flag indicating if connection to back-end windows service needs to be reestablished upon disconnection.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.IsNewRecord">
