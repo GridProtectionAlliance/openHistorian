@@ -1,26 +1,27 @@
 ﻿@*******************************************************************************************************
-//  Index.cshtml - Gbtc
-//
-//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
-//
-//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
-//  file except in compliance with the License. You may obtain a copy of the License at:
-//
-//      http://opensource.org/licenses/MIT
-//
-//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-//  License for the specific language governing permissions and limitations.
-//
-//  Code Modification History:
-//  ----------------------------------------------------------------------------------------------------
-//  01/15/2016 - J. Ritchie Carroll
-//       Generated original version of source code.
-//
-//*****************************************************************************************************@
+    //  Index.cshtml - Gbtc
+    //
+    //  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+    //
+    //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+    //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+    //  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+    //  file except in compliance with the License. You may obtain a copy of the License at:
+    //
+    //      http://opensource.org/licenses/MIT
+    //
+    //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+    //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+    //  License for the specific language governing permissions and limitations.
+    //
+    //  Code Modification History:
+    //  ----------------------------------------------------------------------------------------------------
+    //  01/15/2016 - J. Ritchie Carroll
+    //       Generated original version of source code.
+    //
+    //*****************************************************************************************************@
 @using System
+@using System.IO
 @using System.Globalization
 @using System.Threading
 @using GSF
@@ -40,6 +41,7 @@
 
     Version assemblyVersionInfo = AssemblyInfo.EntryAssembly.Version;
     string applicationVersion = assemblyVersionInfo.Major + "." + assemblyVersionInfo.Minor + "." + assemblyVersionInfo.Build;
+    string grafanaVersion;
     string databaseType;
     string databaseName;
     string localTimeFormat = Model.Global.DateFormat + " hh:mm:ss.fff";
@@ -80,6 +82,15 @@
         databaseName = "Not Available";
     }
 
+    try
+    {
+        grafanaVersion = File.ReadAllText("Grafana\\VERSION").Trim();
+    }
+    catch
+    {
+        grafanaVersion = null;
+    }
+
     string requiresAdmin = UserIsAdmin() ? "" : " disabled";
     string requiresEditor = UserIsAdminOrEditor() ? "" : " disabled";
     string grafanaInstalled = Model.Global.GrafanaServerInstalled ? "" : " disabled";
@@ -93,7 +104,7 @@
                 font-size: 5.25px;
             }
         }
-        
+
         @@media screen and (min-width: 430px) {
             .performance-statistics {
                 font-size: 7px;
@@ -161,8 +172,14 @@
         }
 
         .badge-fixed {
-            display:inline-block;
-            width: 150px;
+            display: inline-block;
+            width: 175px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .first-column {
+            min-width: 310px;
         }
 
         #userInfoButton {
@@ -247,20 +264,20 @@
 }
 <div class="row">
     <div class="col-lg-4 col-md-4 col-sm-5">
-        <div class="panel panel-default">
+        <div class="panel panel-default first-column">
             <div class="panel-heading">Quick Links</div>
             <div class="panel-body">
                 <div class="btn-group-vertical btn-block">
                     <a href="Devices.cshtml" role="button" class="btn btn-primary">Browse Devices</a>
-                    <a href="AddDevice.cshtml" role="button" class="btn btn-default@(requiresEditor)"@requiresEditor>Add Device / Import Data</a>
+                    <a href="AddDevice.cshtml" role="button" class="btn btn-default@(requiresEditor)" @requiresEditor>Add Device / Import Data</a>
                     <a href="TrendMeasurements.cshtml" role="button" class="btn btn-default">Trend / Export Data</a>
-                    <a href="grafana" role="button" class="btn btn-default@(grafanaInstalled)"@grafanaInstalled><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
+                    <a href="grafana" role="button" class="btn btn-default@(grafanaInstalled)" @grafanaInstalled><img src="/Images/Icons/grafana_icon.png" style="vertical-align: text-bottom"> Grafana Visualizations</a>
                     <a href="GraphMeasurements.cshtml" role="button" class="btn btn-default">Real-time Measurements</a>
-                    <button type="button" class="btn btn-default@(requiresAdmin)" id="restartButton"@requiresAdmin hub-dependent>Restart Service</button>
+                    <button type="button" class="btn btn-default@(requiresAdmin)" id="restartButton" @requiresAdmin hub-dependent>Restart Service</button>
                 </div>
             </div>
         </div>
-        <div class="list-group">
+        <div class="list-group first-column">
             <div class="list-group-item">
                 <h5 class="list-group-item-heading" style="text-align: right"><strong>UTC Time</strong></h5>
                 <p class="list-group-item-text">
@@ -282,17 +299,23 @@
             <div class="list-group-item">
                 <p class="list-group-item-text">
                     <hr class="quarter-break" />
-                    <span class="badge badge-fixed" id="currentUser"><button type="button" class="btn btn-link" id="userInfoButton">@GetCurrentUserID()</button></span> Current User
+                    <span class="badge badge-fixed" id="currentUser"><button type="button" class="btn btn-link" id="userInfoButton" style="margin-left: -5px">@GetCurrentUserID()</button></span> Current User
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="applicationVersion">@applicationVersion</span>App&nbsp;Version
                     <hr class="quarter-break" />
+                    @if (Model.Global.GrafanaServerInstalled && !string.IsNullOrEmpty(grafanaVersion)) {
+                    <text>
+                        <span class="badge badge-fixed" id="grafanaVersion">@(grafanaVersion)</span>Grafana&nbsp;Version
+                        <hr class="quarter-break" />
+                    </text>
+                    }
                     <span class="badge badge-fixed" id="databaseType">DB: @databaseType</span>Config&nbsp;Type
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name
                 </p>
             </div>
         </div>
-        <div class="text-info text-center small"style="margin-top: -15px;">
+        <div class="text-info text-center small" style="margin-top: -15px;">
             Using @(Cipher.SystemAllowsManagedEncryption ? "managed" : "FIPS compliant") security algorithms<br />
             Compiled in @(AssemblyInfo.EntryAssembly.Debuggable ? "debug" : "release") mode<br />
             @ViewBag.Request.RequestUri.ToString()
@@ -308,7 +331,7 @@
         </div>
     </div>
 </div>
-<script>   
+<script>
     // Pop-up window code derived from "JK Pop up image viewer script" - by JavaScriptKit.com
     //     Visit JavaScript Kit (http://javascriptkit.com)
     //     for free JavaScript tutorials and scripts
@@ -325,13 +348,13 @@
         function getPosition() {
             leftPosition = (detectExistence(window.screenLeft)) ? screenLeft + document.body.clientWidth / 2 - width / 2 : detectExistence(window.screenX) ? screenX + innerWidth / 2 - width / 2 : 0;
             topPosition = (detectExistence(window.screenTop)) ? screenTop + document.body.clientHeight / 2 - height / 2 : detectExistence(window.screenY)? screenY + innerHeight / 2 - height / 2 : 0;
-            
+
             if (window.opera) {
                 leftPosition -= screenLeft;
                 topPosition -= screenTop;
             }
         }
-        
+
         getPosition();
 
         const windowAttributes = "width=" + width + ",height=" + height + ",left=" + leftPosition + ",top=" + topPosition + ",directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no";
