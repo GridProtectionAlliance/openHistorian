@@ -55,6 +55,8 @@ namespace ConfigurationSetupUtility.Screens
         private Dictionary<string, object> m_state;
         private ServiceController m_openHistorianServiceController;
         private readonly string m_updateTagNamesExecutable;
+        private readonly string m_selectFieldDatabaseScript;
+        private readonly string m_selectDevDatabaseScript;
         private bool m_runUpdateTagNamesPostMigration;
 
         #endregion
@@ -73,12 +75,18 @@ namespace ConfigurationSetupUtility.Screens
 
             m_updateTagNamesExecutable = FilePath.GetAbsolutePath("UpdateTagNames.exe");
 
-            if (File.Exists(m_updateTagNamesExecutable))
-                return;
+            if (!File.Exists(m_updateTagNamesExecutable))
+            {
+                m_updateTagNamesPrefix.Visibility = Visibility.Collapsed;
+                m_updateTagNames.Visibility = Visibility.Collapsed;
+                m_updateTagNamesSuffix.Visibility = Visibility.Hidden;
+            }
 
-            m_updateTagNamesPrefix.Visibility = Visibility.Collapsed;
-            m_updateTagNames.Visibility = Visibility.Collapsed;
-            m_updateTagNamesSuffix.Visibility = Visibility.Hidden;
+            m_selectFieldDatabaseScript = FilePath.GetAbsolutePath("Grafana\\data\\SelectFieldDatabase.bat");
+            m_selectDevDatabaseScript = FilePath.GetAbsolutePath("Grafana\\data\\SelectDevDatabase.bat");
+
+            if (!File.Exists(m_selectFieldDatabaseScript) && !File.Exists(m_selectDevDatabaseScript))
+                m_targetingButtons.Visibility = Visibility.Collapsed;
         }
 
         #endregion
@@ -973,7 +981,19 @@ namespace ConfigurationSetupUtility.Screens
             }
         }
 
-        private void RunHiddenConsoleApp(string application, string arguments)
+        private void m_targetField_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (RunHiddenConsoleApp(m_selectFieldDatabaseScript, string.Empty))
+                MessageBox.Show("Grafana database successfully set to \"field\" target.", "Target Database Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void m_targetDev_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (RunHiddenConsoleApp(m_selectDevDatabaseScript, string.Empty))
+                MessageBox.Show("Grafana database successfully set to \"dev\" target.", "Target Database Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private bool RunHiddenConsoleApp(string application, string arguments)
         {
             try
             {
@@ -991,11 +1011,15 @@ namespace ConfigurationSetupUtility.Screens
                 Process process = new Process { StartInfo = startInfo };
                 process.Start();
                 process.WaitForExit(10000);
+                
+                return true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to execute \"{application} {arguments}\": {ex.Message}", "Execution Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            return false;
         }
 
         #endregion

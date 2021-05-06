@@ -20,6 +20,10 @@
                     or update later at any time by running<LineBreak/>
                     the UpdateTagNames utility manually.
                 </TextBlock>
+                <StackPanel Name="m_targetingButtons" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 -5 0 15">
+                    <Button Name="m_targetField" Content="Set Field Database" Height="25" Width="110" Margin="5 0 5 0" Click="m_targetField_OnClick" />
+                    <Button Name="m_targetDev" Content="Set Dev Database" Height="25" Width="110" Margin="5 0 5 0" Click="m_targetDev_OnClick" />
+                </StackPanel>
                 <CheckBox Content="Start the openHistorian" Height="18" IsChecked="True" Margin="50,0,0,0" Name="m_serviceStartCheckBox" />
                 <CheckBox Content="Start the openHistorian Manager" Height="18" IsChecked="True" Margin="50,0,0,0"  Name="m_managerStartCheckBox" />
             </StackPanel>
