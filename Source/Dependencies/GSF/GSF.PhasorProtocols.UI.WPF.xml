@@ -703,14 +703,6 @@
             Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.HomeUserControl"/>.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.GetMenuDataItem(System.Collections.ObjectModel.ObservableCollection{GSF.TimeSeries.UI.MenuDataItem},System.String,GSF.TimeSeries.UI.MenuDataItem@)">
-            <summary>
-            Recursively finds menu item to navigate to when a button is clicked on the UI.
-            </summary>
-            <param name="items">Collection of menu items.</param>
-            <param name="stringToMatch">Item to search for in menu items collection.</param>
-            <param name="item">Returns a menu item.</param>
-        </member>
         <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
             <summary>
             Handles ReceivedServiceResponse event.
@@ -774,7 +766,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.CheckBoxAll_Checked(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
-            Hanldes checked event on the select all check box.
+            Handles checked event on the select all check box.
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
