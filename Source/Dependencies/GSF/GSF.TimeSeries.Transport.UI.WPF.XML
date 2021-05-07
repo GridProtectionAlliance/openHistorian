@@ -38,29 +38,9 @@
             Creates an instance of <see cref="T:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl"/>.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl.GetMenuDataItem(System.Collections.ObjectModel.ObservableCollection{GSF.TimeSeries.UI.MenuDataItem},System.String,GSF.TimeSeries.UI.MenuDataItem@)">
-            <summary>
-            Recursively finds menu item to navigate to when a button is clicked on the UI.
-            </summary>
-            <param name="items">Collection of menu items.</param>
-            <param name="stringToMatch">Item to search for in menu items collection.</param>
-            <param name="item">Returns a menu item.</param>
-        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
             <summary>
             Handles ReceivedServiceResponse event.
-            </summary>
-            <param name="sender">Source of the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl.UnsubscribeUnsynchronizedData">
-            <summary>
-            Unsubscribes data from the service.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.UserControls.HomeUserControl.CommonClickHandler(System.Object,System.Windows.RoutedEventArgs)">
-            <summary>
-            Handles click event of the buttons on the screen.
             </summary>
             <param name="sender">Source of the event.</param>
             <param name="e">Event arguments.</param>
