@@ -1965,13 +1965,13 @@
                     const promise = cell.PhasorDefinitions.length > 0 ? phasorHub.deletePhasorsForDevice(cell.ID) : $.Deferred().resolve().promise();
 
                     saveDevicePromises.push(promise.then(function () {
-                        const promises = [];
+                        const voltagePromises = [];
                         const voltageIDMap = [];
 
                         for (let i = 0; i < voltages.length; i++) {
                             const voltage = voltages[i];
 
-                            promises.push(phasorHub.newPhasor().then(function (phasor) {
+                            voltagePromises.push(phasorHub.newPhasor().then(function (phasor) {
                                 phasor.DeviceID = cell.ID;
                                 phasor.Label = voltage.Label();
                                 phasor.Type = "V";
@@ -2016,64 +2016,71 @@
                             }));
                         }
 
-                        for (let i = 0; i < currents.length; i++) {
-                            const current = currents[i];
+                        // In the case of drop and add we make sure to complete all voltage phasor operations
+                        // before beginning current phasor operations so that voltageIDMap will be populated
+                        // with new voltage phasor IDs needed for destination phasor IDs
+                        return $(voltagePromises).whenAll().then(function () {
+                            const currentPromises = [];
 
-                            promises.push(phasorHub.newPhasor().then(function (phasor) {
-                                const associatedVoltage = current.Current.AssociatedVoltage();
-                                const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
-                                let baseKV = 0;
+                            for (let i = 0; i < currents.length; i++) {
+                                const current = currents[i];
 
-                                if (voltage)
-                                    baseKV = voltage.Voltage.NominalVoltage();
+                                currentPromises.push(phasorHub.newPhasor().then(function (phasor) {
+                                    const associatedVoltage = current.Current.AssociatedVoltage();
+                                    const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
+                                    let baseKV = 0;
 
-                                if (!current.Enabled()) {
-                                    if (baseKV === 0)
-                                        baseKV = -1;
-                                    else
-                                        baseKV = Math.abs(baseKV) * -1;
-                                }
+                                    if (voltage)
+                                        baseKV = voltage.Voltage.NominalVoltage();
 
-                                phasor.DeviceID = cell.ID;
-                                phasor.Label = current.Label();
-                                phasor.Type = "I";
-                                phasor.Phase = current.Phase();
-                                phasor.BaseKV = baseKV;
-                                phasor.DestinationPhasorID = voltageIDMap[associatedVoltage];
-                                phasor.SourceIndex = current.SourceIndex;
+                                    if (!current.Enabled()) {
+                                        if (baseKV === 0)
+                                            baseKV = -1;
+                                        else
+                                            baseKV = Math.abs(baseKV) * -1;
+                                    }
 
-                                if (phasor.DestinationPhasorID === undefined)
-                                    phasor.DestinationPhasorID = null;
+                                    phasor.DeviceID = cell.ID;
+                                    phasor.Label = current.Label();
+                                    phasor.Type = "I";
+                                    phasor.Phase = current.Phase();
+                                    phasor.BaseKV = baseKV;
+                                    phasor.DestinationPhasorID = voltageIDMap[associatedVoltage];
+                                    phasor.SourceIndex = current.SourceIndex;
 
-                                return phasorHub.addNewPhasor(phasor).then(function () {
-                                    return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
-                                        return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
-                                    })
-                                    .then(function () {
-                                        const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
+                                    if (phasor.DestinationPhasorID === undefined)
+                                        phasor.DestinationPhasorID = null;
 
-                                        return phasorHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
-                                            current.iphmMeasurement = measurement;
+                                    return phasorHub.addNewPhasor(phasor).then(function () {
+                                        return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
+                                            return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
+                                        })
+                                        .then(function () {
+                                            const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
+
+                                            return phasorHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
+                                                current.iphmMeasurement = measurement;
+                                            });
+                                        })
+                                        .then(function () {
+                                            const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
+
+                                            return phasorHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
+                                                current.iphaMeasurement = measurement;
+                                            });
                                         });
                                     })
-                                    .then(function () {
-                                        const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
-
-                                        return phasorHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
-                                            current.iphaMeasurement = measurement;
-                                        });
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed to save new current phasor: " + error);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to save new current phasor: " + error);
-                                });
-                            })
-                            .fail(function (error) {
-                                showErrorMessage("Failed to create current new phasor: " + error);
-                            }));
-                        }
+                                    showErrorMessage("Failed to create current new phasor: " + error);
+                                }));
+                            }
 
-                        return $(promises).whenAll();
+                            return $(currentPromises).whenAll();
+                        });
                     })
                     .fail(function (error) {
                         showErrorMessage("Failed to delete old phasors: " + error);
