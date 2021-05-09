@@ -28,7 +28,7 @@
     "grunt-systemjs-builder": "^0.2.5",
     "jsdom": "~12.2.0",
     "load-grunt-tasks": "^4.0.0",
-    "lodash": "^4.14.1",
+    "lodash": "^4.17.21",
     "mocha": "^5.2.0",
     "prunk": "~1.2.1",
     "q": "~1.4.1"
