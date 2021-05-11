@@ -58,7 +58,9 @@ namespace WiXFolderGen
             bool removeDirectorySeparatorChar = false,
             bool replaceSpaces = false,
             bool removeSpaces = false,
-            bool removeUnderscores = false)
+            bool removeUnderscores = false,
+            bool dupClearAndTrim = true,
+            bool trackIdentifiers = true)
         {
             if (replaceDot)
                 path = path.Replace('.', '_');
@@ -80,7 +82,8 @@ namespace WiXFolderGen
 
             path = new Regex("[^a-zA-Z0-9_.]").Replace(path, "_");
 
-            path = path.RemoveDuplicates("_").TrimEnd('_').TrimStart('_');
+            if (dupClearAndTrim)
+                path = path.RemoveDuplicates("_").TrimEnd('_').TrimStart('_');
 
             if (removeUnderscores)
                 path = path.Replace("_", "");
@@ -99,7 +102,8 @@ namespace WiXFolderGen
             if (ExistingIdentifiers.Contains(path))
                 path = $"{path}{Generation}";
 
-            NewIdentifiers.Add(path);
+            if (trackIdentifiers)
+                NewIdentifiers.Add(path);
 
             return path;
         }
