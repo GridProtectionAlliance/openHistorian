@@ -225,9 +225,6 @@ namespace openHistorian.Adapters
             HistorianOperationState operationState = new HistorianOperationState { Total = totalValues };
             uint operationHandle = AddNewHistorianOperationState(operationState);
 
-            while (!m_historianOperationStates.TryAdd(operationHandle, operationState))
-                operationHandle = Random.UInt32;
-
             new Thread(() =>
             {
                 operationState.StartTime = DateTime.UtcNow.Ticks;
