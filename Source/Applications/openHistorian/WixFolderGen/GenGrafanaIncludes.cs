@@ -246,13 +246,13 @@ namespace WiXFolderGen
 
         private static string GetComponentID(string fileName)
         {
-            string suffix = FilePath.GetExtension(fileName).Replace('.', '_');
+            string suffix = Program.GetCleanID(FilePath.GetExtension(fileName), "", "", MaxWixIDLength, true, false, true, true);
             return Program.GetCleanID(FilePath.GetDirectoryName(fileName) + FilePath.GetFileNameWithoutExtension(fileName), "", suffix, MaxWixIDLength - suffix.Length, removeSpaces: true, replaceDot: true);
         }
 
         private static string GetFileID(string fileName)
         {
-            string suffix = FilePath.GetExtension(fileName);
+            string suffix = Program.GetCleanID(FilePath.GetExtension(fileName), "", "", MaxWixIDLength, true, false, false, true, true);
             return Program.GetCleanID(FilePath.GetDirectoryName(fileName) + FilePath.GetFileNameWithoutExtension(fileName), "", suffix, MaxWixIDLength - suffix.Length, removeSpaces: true);
         }
     }
