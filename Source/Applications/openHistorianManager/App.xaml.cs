@@ -25,6 +25,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Forms;
@@ -108,7 +109,18 @@ namespace openHistorianManager
 
                     if (!configSettings["KeepCustomConnection"].Value.ParseBoolean())
                     {
-                        string connectionString = configSettings["ConnectionString"].Value;
+                        MethodInfo getRawValueMethod = typeof(CategorizedSettingsElement).GetMethod("GetRawValue", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                        string getRawValue(CategorizedSettingsElement element)
+                        {
+                            if (getRawValueMethod is null)
+                                return element.Value;
+
+                            return getRawValueMethod.Invoke(element, Array.Empty<object>()) as string;
+                        }
+
+                        // Get value from connection string that is still encrypted for proper comparison
+                        string connectionString = getRawValue(configSettings["ConnectionString"]);
                         string dataProviderString = configSettings["DataProviderString"].Value;
                         string nodeID = configSettings["NodeID"].Value;
 
