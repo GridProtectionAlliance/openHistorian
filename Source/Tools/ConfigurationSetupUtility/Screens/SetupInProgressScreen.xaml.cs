@@ -43,6 +43,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
+using System.Xml.Linq;
 using GSF;
 using GSF.Collections;
 using GSF.Communication;
@@ -2082,6 +2083,45 @@ namespace ConfigurationSetupUtility.Screens
             }
 
             configFile.Save(configFileName);
+
+            if (serviceConfigFile)
+                ModifyConfigFile2(configFileName);
+        }
+
+        private static void ModifyConfigFile2(string configFileName)
+        {
+            XDocument configFile = XDocument.Load(configFileName);
+            XElement runtime = configFile.Element("configuration")?.Element("runtime");
+
+            if (!(runtime is null))
+            {
+                void addOrUpdate(string name)
+                {
+                    XElement element = runtime.Element(name);
+
+                    if (element is null)
+                    {
+                        runtime.Add(new XElement(name, new XAttribute("enabled", "true")));
+                    }
+                    else
+                    {
+                        XAttribute enabled = element.Attribute("enabled");
+
+                        if (enabled is null)
+                            element.Add(new XAttribute("enabled", "true"));
+                        else
+                            enabled.Value = "true";
+                    }
+                }
+
+                addOrUpdate("gcAllowVeryLargeObjects");
+                addOrUpdate("gcConcurrent");
+                addOrUpdate("gcServer");
+                addOrUpdate("GCCpuGroup");
+                addOrUpdate("Thread_UseAllCpuGroups");
+
+                configFile.Save(configFileName);
+            }
         }
 
         // Saves the old connection string as an OleDB connection string.
