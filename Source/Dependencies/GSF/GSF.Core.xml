@@ -14672,7 +14672,7 @@
             <param name="aliasName">The alias name for the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
             <param name="valueUnit">The measurement unit for the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
         </member>
-        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single})">
+        <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(System.String,System.String,System.String,System.String,System.String,System.Single,System.Boolean,System.Func{System.Single,System.Single},System.Func{System.Single,System.Boolean})">
             <summary>
             Adds a <see cref="T:GSF.Diagnostics.PerformanceCounter"/> to be monitored.
             </summary>
@@ -14684,6 +14684,7 @@
             <param name="valueDivisor">The divisor to be applied to the statistical values of the <see cref="T:GSF.Diagnostics.PerformanceCounter"/> object.</param>
             <param name="readOnly">Flag that determines if this counter is read-only.</param>
             <param name="sampleAdjuster">Defines a custom sample adjustment function for the counter.</param>
+            <param name="sampleFilter">Defines a custom sample filter function for the counter.</param>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceMonitorBase.AddCounter(GSF.Diagnostics.PerformanceCounter)">
             <summary>
@@ -15000,8 +15001,16 @@
         </member>
         <member name="P:GSF.Diagnostics.PerformanceCounter.SampleAdjuster">
             <summary>
-            Gets or sets an optional custom sample adjustment function.
+            Gets or sets an optional custom sample adjustment function. Can be used to apply linear adjustments to sampled values.
             </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.PerformanceCounter.SampleFilter">
+            <summary>
+            Gets or sets an optional custom sample filter function. Can be used to skip sampled values that are unreasonable.
+            </summary>
+            <remarks>
+            Return <c>true</c> if sample should be filtered; otherwise, <c>false</c>.
+            </remarks>
         </member>
         <member name="M:GSF.Diagnostics.PerformanceCounter.Dispose">
             <summary>
