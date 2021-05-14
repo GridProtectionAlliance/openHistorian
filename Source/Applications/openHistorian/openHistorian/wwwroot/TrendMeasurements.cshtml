@@ -1781,7 +1781,12 @@ const useAjaxVerfication = ""{2}"";
                     .done(function (data) {
                         $.each(data, function(i, trendValue) {
                             const currentValue = $("#currentValue" + trendValue.ID);
-                            currentValue.text(trendValue.Value.toFixed(3));
+
+                            if (isNumeric(trendValue.Value))
+                                currentValue.text(trendValue.Value.toFixed(3));
+                            else
+                                currentValue.text(trendValue.Value);
+
                             currentValue.attr("title", new Date(trendValue.Timestamp).formatDate());
                         });
 
