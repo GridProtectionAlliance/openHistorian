@@ -401,8 +401,8 @@
             <summary>
             Determines whether the given resource is an authentication failure redirect resource.
             </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+            <param name="urlPath">Path to check as an authentication failure redirect resource.</param>
+            <returns><c>true</c> if path is an authentication failure redirect resource; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
             <summary>
@@ -498,8 +498,8 @@
             <summary>
             Determines whether the given resource is an authentication failure redirect resource.
             </summary>
-            <param name="urlPath">Path to check as an anonymous resource.</param>
-            <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+            <param name="urlPath">Path to check as an authentication failure redirect resource.</param>
+            <returns><c>true</c> if path is an authentication failure redirect resource; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAnonymousResource(System.String)">
             <summary>
@@ -1316,7 +1316,7 @@
             <returns>Associated Statistic record, if measurement is a statistic; otherwise, returns <c>null</c>.</returns>
             <remarks>
             For best results, this function should be called after all statistic engine sources have been registered.
-            <paramref name="metadataRecord"/> object expected to contain a "SignalID" and "SignalReference" property.
+            <paramref name="metadataRecord"/> object expected to contain a "signalid" and "signalreference" property.
             </remarks>
         </member>
         <member name="M:GSF.Web.Shared.SharedHub.GetStatisticFormatRecords(System.Collections.Generic.IEnumerable{System.Object})">

@@ -41030,7 +41030,7 @@
             <param name="attributeName">Attribute name to match.</param>
             <returns>Matching sets of <see cref="T:System.Xml.Linq.XElement"/> items and associated attribute values.</returns>
             <remarks>
-            When used in conjuction with the <see cref="M:GSF.Xml.XmlExtensions.Is(System.Collections.Generic.IEnumerable{System.Tuple{System.Xml.Linq.XElement,System.String}},System.String,System.Boolean)"/> extension, allows for expressions like:
+            When used in conjunction with the <see cref="M:GSF.Xml.XmlExtensions.Is(System.Collections.Generic.IEnumerable{System.Tuple{System.Xml.Linq.XElement,System.String}},System.String,System.Boolean)"/> extension, allows for expressions like:
             <code>
             var globals = XDocument.Load(configFile)
                 .Descendants("SettingsGroup")
@@ -41047,7 +41047,7 @@
             <param name="ignoreCase">Flag that determines if attribute value match is case sensitive.</param>
             <returns><see cref="T:System.Xml.Linq.XElement"/> items that match <paramref name="attributeValue"/>.</returns>
             <remarks>
-            When used in conjuction with the <see cref="M:GSF.Xml.XmlExtensions.WhereAttribute(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement},System.String)"/> extension, allows for expressions like:
+            When used in conjunction with the <see cref="M:GSF.Xml.XmlExtensions.WhereAttribute(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement},System.String)"/> extension, allows for expressions like:
             <code>
             var globals = XDocument.Load(configFile)
                 .Descendants("SettingsGroup")
