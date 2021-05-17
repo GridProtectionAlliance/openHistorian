@@ -204,7 +204,7 @@ namespace openHistorian
 
             if (trenDAPControllerEnabled)
             {
-                // Map eDNA Grafana controller
+                // Map TrenDAP controller
                 try
                 {
                     httpConfig.Routes.MapHttpRoute(
@@ -218,8 +218,6 @@ namespace openHistorian
                     Program.Host.LogStatusMessage($"WARNING: Failed to initialize TrenDAP controller routes: {ex.Message}", UpdateType.Warning);
                 }
             }
-
-
 
             // Map custom API controllers
             try
@@ -321,7 +319,7 @@ namespace openHistorian
 
         private void Load_TrenDAPController()
         {
-            // Load external eDNAGrafanaController so route map can find it
+            // Load external TrenDAPController so route map can find it
             try
             {
                 // Wrap class reference in lambda function to force

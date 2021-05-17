@@ -232,6 +232,7 @@ namespace openHistorian
             systemSettings.Add("OSIPIGrafanaControllerEnabled", true, "Defines flag that determines if the OSI-PI Grafana controller is enabled.");
             systemSettings.Add("eDNAGrafanaControllerEnabled", true, "Defines flag that determines if the eDNA Grafana controller is enabled.");
             systemSettings.Add("eDNAMetaData", "*.*", "Comma separated search string for the eDNA metadata search command.");
+            systemSettings.Add("TrenDAPControllerEnabled", true, "Defines flag that determines if the TrenDAP controller is enabled.");
             systemSettings.Add("SystemName", "", "Name of system that will be prefixed to system level tags, when defined. Value should follow tag naming conventions, e.g., no spaces and all upper case.");
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
