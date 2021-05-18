@@ -30,7 +30,6 @@
         <ComponentGroupRef Id="SQLServerScriptComponents" />
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
-        <ComponentRef Id="Sample1344"/>
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
