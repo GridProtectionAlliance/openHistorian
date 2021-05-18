@@ -204,6 +204,8 @@
     </style>
 }
 @{
+    const string UpdateCOMTRADECounters = "/@openHistorian/UpdateCOMTRADECounters.exe";
+
     if (ViewBag.PageControlScripts == null)
     {
         ViewBag.PageControlScripts = new StringBuilder();
@@ -287,8 +289,8 @@ const useAjaxVerfication = ""{2}"";
     <td width="5%" class="text-center valign-middle"><span data-bind="text: SignalType"></span></td>
     <td width="15%" class="text-left valign-middle"><div data-bind="attr: { title: PointTag }"><button type="button" class="btn btn-link btn-sm" data-bind="text: PointTag.truncate(25), click: $parent.viewPageRecord"></button></div></td>
     <td width="5%" class="text-left valign-middle"><span data-bind="attr: { id: 'currentValue' + PointID }"></span></td>
-    <td width="15%" class="text-left valign-middle table-cell-hard-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(SignalReference, 2), attr: { title: SignalReference }"></div></td>
-    <td width="45%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 1.85), attr: { title: Description }"></div></td>
+    <td width="15%" class="text-left valign-middle table-cell-hard-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(SignalReference, 1), attr: { title: SignalReference }"></div></td>
+    <td width="45%" class="text-left table-cell-wrap"><div data-bind="text: $($element.parentElement).truncateToWidth(Description, 1.5), attr: { title: Description }"></div></td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" title="View Measurement Detail..." data-bind="click: $parent.viewPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-list"></span></button>
     </td>
@@ -1556,8 +1558,24 @@ const useAjaxVerfication = ""{2}"";
 
             dataHub.getHistorianOperationState(exportOperationHandle).done(function (state) {
                 if (state.Completed) {
+                    let openCOMTRADEUpdater = "";
+
+                    if (viewModel.fileFormat() >= 0) {
+                        const uriProtocolScheme = "comtrade-update-counter://null?targetExportName=" + encodeURIComponent(state.TargetExportName) + "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) + "&binaryByteCount=" + encodeURIComponent(state.BinaryByteCount);
+
+                        openCOMTRADEUpdater =
+                            "<br/><br/><span style='background: yellow; color: black; font-weight: bold; padding: 5px; border-radius: 5px'>Need to update COMTRADE CFF with end sample count " + state.EndSampleCount +
+                            (viewModel.fileFormat() > 0 ? " / byte count " + state.BinaryByteCount : "") + ", <span style='color: firebrick'>attempting to launch counter update app:</span></span><br/><br/>" +
+                            "<div><p style='text-align: center'>If needed, click <strong>Open UpdateCOMTRADECounters</strong> on dialog. If you no dialog displays, click below:</p></div>" +
+                            "<div style='margin-bottom: -10px'><p style='text-align: center'><button type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='window.open(\"" + uriProtocolScheme + "\", \"_self\")'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
+                            "<small>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Download and Run UpdateCOMTRADECounters Now</a>.</small></p></div>";
+
+                        copyToClipboard(uriProtocolScheme);
+                        window.open(uriProtocolScheme, "_self");
+                    }
+
                     showInfoMessage(String.format(
-                        "Data export complete in {0} averaging {1} minutes of data per second",
+                        "Data export complete in {0} averaging {1} minutes of data per second" + openCOMTRADEUpdater,
                         state.TotalOperationTime,
                         (state.OperationRate / 6000000000).toLocaleString()
                     ), -1);
@@ -2182,6 +2200,32 @@ const useAjaxVerfication = ""{2}"";
         function setTimeToMidnight() {
             viewModel.startTime(moment(viewModel.startMoment()).hours(0).minutes(0).seconds(0).milliseconds(0).format(MomentDateTimeFormat));
             viewModel.endTime(moment(viewModel.endMoment()).hours(0).minutes(0).seconds(0).milliseconds(0).format(MomentDateTimeFormat));
+        }
+
+        function copyToClipboard(text) {
+            if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                const textarea = document.createElement("textarea");
+
+                textarea.textContent = text;
+                textarea.style.position = "fixed";
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                try {
+                    return document.execCommand("copy");
+                }
+                catch (ex) {
+                    console.warn("Copy to clipboard failed.", ex);
+                    return false;
+                }
+                finally {
+                    document.body.removeChild(textarea);
+                }
+            }
+            else {
+                console.warn("Clipboard function unavailable.");
+                return false;
+            }
         }
     </script>
 }

@@ -122,6 +122,21 @@ namespace openHistorian.Adapters
         /// Gets total operation time as an elapsed time string.
         /// </summary>
         public string TotalOperationTime => new Ticks(StopTime - StartTime).ToElapsedTimeString(2);
+
+        /// <summary>
+        /// Gets or sets target export name.
+        /// </summary>
+        public string TargetExportName { get; set; }
+
+        /// <summary>
+        /// Gets or sets end sample count.
+        /// </summary>
+        public long EndSampleCount { get; set; }
+        
+        /// <summary>
+        /// Gets or sets binary byte count.
+        /// </summary>
+        public long BinaryByteCount { get; set; }
     }
 
     /// <summary>

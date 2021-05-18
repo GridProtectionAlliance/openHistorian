@@ -29,6 +29,8 @@ using GSF.Console;
 using GSF.Threading;
 using GSF.TimeSeries;
 
+// ReSharper disable NotAccessedField.Local
+// ReSharper disable LocalizableElement
 namespace openHistorian
 {
     public static class Program

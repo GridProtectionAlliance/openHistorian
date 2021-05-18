@@ -168,11 +168,13 @@ namespace openHistorian
                     }
                 }
 
+                string fileName = requestParameters["FileName"] ?? $"{metadata.TargetDeviceName ?? "Export"}.{(fileFormat < 0 ? "csv" : "cff")}";
+
                 response.Content = new PushStreamContent(async (stream, content, context) =>
                 {
                     try
                     {
-                        await ExportToStreamAsync(fileFormat, metadata, requestParameters, stream, cancellationToken);
+                        await ExportToStreamAsync(fileFormat, fileName, metadata, requestParameters, stream, cancellationToken);
                     }
                     finally
                     {
@@ -186,14 +188,11 @@ namespace openHistorian
                     _ => BinaryContentType  // COMTRADE Binary
                 }));
 
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                {
-                    FileName = requestParameters["FileName"] ?? $"{metadata.TargetDeviceName ?? "Export"}.{(fileFormat < 0 ? "csv" : "cff")}"
-                };
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = fileName };
             }
         }
 
-        private static async Task ExportToStreamAsync(int fileFormat, PointMetadata metadata, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
+        private static async Task ExportToStreamAsync(int fileFormat, string fileName, PointMetadata metadata, NameValueCollection requestParameters, Stream responseStream, CancellationToken cancellationToken)
         {
             // See if operation state for this export can be found
             string connectionID = requestParameters["ConnectionID"];
@@ -213,6 +212,7 @@ namespace openHistorian
                 else
                 {
                     operationState.StartTime = DateTime.UtcNow.Ticks;
+                    operationState.TargetExportName = fileName;
 
                     completeHistorianOperation = () =>
                     {
@@ -324,6 +324,8 @@ namespace openHistorian
         private static Task ReadTask(FileType? fileType, Schema schema, HistorianServer serverInstance, string instanceName, PointMetadata metadata, Dictionary<ulong, int> pointIDIndex, DateTime startTime, DateTime endTime, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, double frameRate, bool missingAsNaN, int timestampSnap, bool alignTimestamps, int toleranceTicks, bool fillMissingTimestamps, string dateTimeFormat, bool[] readComplete, HistorianOperationState operationState, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
+                uint sample = 0U;
+
                 try
                 {
                     using SnapClient connection = SnapClient.Connect(serverInstance.Host);
@@ -359,7 +361,6 @@ namespace openHistorian
                     HistorianKey historianKey = new HistorianKey();
                     HistorianValue historianValue = new HistorianValue();
                     ushort fracSecValue = 0;
-                    uint sample = 0U;
 
                     // Write row values function
                     void bufferValues(DateTime recordTimestamp)
@@ -528,6 +529,9 @@ namespace openHistorian
                 }
                 finally
                 {
+                    if (!(operationState is null) && sample > 0U)
+                        operationState.EndSampleCount = sample - 1U;
+
                     readComplete[0] = true;
                     bufferReady.Set();
                 }
@@ -537,6 +541,8 @@ namespace openHistorian
         private static Task WriteTask(Stream responseStream, byte[] header, BlockAllocatedMemoryStream writeBuffer, ManualResetEventSlim bufferReady, bool[] readComplete, HistorianOperationState operationState, Action completeHistorianOperation, CancellationToken cancellationToken) =>
             Task.Factory.StartNew(() =>
             {
+                long binaryByteCount = 0L;
+
                 try
                 {
                     // Write headers, e.g., CSV header row or CFF schema
@@ -556,6 +562,7 @@ namespace openHistorian
                         }
 
                         responseStream.Write(bytes, 0, bytes.Length);
+                        binaryByteCount += bytes.Length;
                     }
 
                     // Flush stream
@@ -573,6 +580,9 @@ namespace openHistorian
                 }
                 finally
                 {
+                    if (!(operationState is null))
+                        operationState.BinaryByteCount = binaryByteCount;
+
                     completeHistorianOperation?.Invoke();
                 }
             },
