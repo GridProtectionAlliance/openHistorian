@@ -36,31 +36,40 @@ namespace openHistorian
         /// <summary>
         /// The service host instance for the application.
         /// </summary>
-        public static readonly ServiceHost Host = new ServiceHost();
+        public static readonly ServiceHost Host;
 
+        private static readonly Arguments s_args;
         private static readonly Mutex s_singleInstanceMutex;
 
         static Program()
         {
+            s_args = new Arguments(Environment.CommandLine, true);
+
+            if (s_args.Exists("RestoreFiles"))
+            {
+                ServiceHost.RestoreEmbeddedResources();
+                Environment.Exit(0);
+            }
+
+            Host = new ServiceHost();
+
             s_singleInstanceMutex = InterprocessLock.GetNamedMutex(false);
         }
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        private static void Main()
         {
-            Arguments args = new Arguments(Environment.CommandLine, true);
-
         #if !DEBUG
-            if (!args.Exists("NoMutex") && !s_singleInstanceMutex.WaitOne(0, true))
+            if (!s_args.Exists("NoMutex") && !s_singleInstanceMutex.WaitOne(0, true))
                 Environment.Exit(1);
         #endif
 
             bool runAsService;
             bool runAsApplication;
 
-            if (args.Count == 0)
+            if (s_args.Count == 0)
             {
             #if DEBUG
                 runAsService = false;
@@ -72,10 +81,10 @@ namespace openHistorian
             }
             else
             {
-                runAsService = args.Exists("RunAsService");
-                runAsApplication = args.Exists("RunAsApplication");
+                runAsService = s_args.Exists("RunAsService");
+                runAsApplication = s_args.Exists("RunAsApplication");
 
-                if (!runAsService && !runAsApplication && !args.Exists("RunAsConsole"))
+                if (!runAsService && !runAsApplication && !s_args.Exists("RunAsConsole"))
                 {
                     MessageBox.Show("Invalid argument. If specified, argument must be one of: -RunAsService, -RunAsApplication or -RunAsConsole.");
                     Environment.Exit(1);

@@ -269,6 +269,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\..\..\Tools\UpdateCOMTRADECounters\bin\$(Configuration)\UpdateCOMTRADECounters.exe">
+      <Link>UpdateCOMTRADECounters.exe</Link>
+    </EmbeddedResource>
     <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
@@ -315,22 +318,22 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <Content Include="Full Calculations.TagTemplate" />
+    <EmbeddedResource Include="Full Calculations.TagTemplate" />
     <Content Include="Grafana\data\Home.json" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
-    <Content Include="Sample1344.PmuCapture">
+    <EmbeddedResource Include="Sample1344.PmuCapture">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wwwroot\AddSynchrophasorDevice.cshtml" />
     <Content Include="wwwroot\AddDevice.cshtml" />
-    <Content Include="Single Phase Power Calculations.TagTemplate" />
-    <Content Include="Three Phase Power Calculations.TagTemplate" />
+    <EmbeddedResource Include="Single Phase Power Calculations.TagTemplate" />
+    <EmbeddedResource Include="Three Phase Power Calculations.TagTemplate" />
     <Content Include="wwwroot\AddSynchrophasorDeviceDev.cshtml" />
-    <Content Include="Three Phase Power Calculations with Time Sync.TagTemplate" />
+    <EmbeddedResource Include="Three Phase Power Calculations with Time Sync.TagTemplate" />
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <Content Include="wwwroot\DeviceGroups.cshtml" />
@@ -418,13 +421,9 @@
     <PostBuildEvent>CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)Database Scripts" "$(SolutionDir)Data\*.*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Dependencies\GSF\*.*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(SolutionDir)Applications\openHistorian\openHistorianSetup\*.exe*"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)Sample1344.PmuCapture"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)" "$(ProjectDir)*.TagTemplate"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(TargetDir)wwwroot" "$(SolutionDir)Applications\openHistorian\openHistorian\wwwroot\*.*"
 CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "$(TargetDir)*.dll"
-CALL "$(ProjectDir)PostBuildSetup.bat" "$(ProjectDir)bin" "%25SystemRoot%25\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll"
 XCOPY "$(SolutionDir)Data\SerializedSchema.bin" "$(TargetDir)" /Y
-XCOPY "$(ProjectDir)ReportTemplate.db" "$(TargetDir)" /Y
 "$(SolutionDir)Dependencies\GSF\ValidateAssemblyBindings.exe" "$(TargetPath).config"
 </PostBuildEvent>
   </PropertyGroup>

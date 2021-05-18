@@ -134,6 +134,12 @@ namespace ConfigurationSetupUtility.Screens
                         // Validate needed end-point bindings for Grafana interfaces
                         ValidateGrafanaBindings();
 
+                        // Restore embedded resources
+                        RunHiddenConsoleApp("openHistorian.exe", "-RestoreFiles");
+                        
+                        // Register protocol URI scheme for "comtrade-update-counter"
+                        RunHiddenConsoleApp("UpdateCOMTRADECounters.exe", "-RegisterOnly -AllUsers");
+
                         // Make sure needed assembly bindings exist in config file (required for self-hosted web server)
                         RunHiddenConsoleApp("ValidateAssemblyBindings.exe", App.ApplicationConfig);
                         RunHiddenConsoleApp("ValidateAssemblyBindings.exe", App.ManagerConfig);

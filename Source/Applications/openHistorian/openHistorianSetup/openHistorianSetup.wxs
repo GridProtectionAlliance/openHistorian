@@ -31,7 +31,6 @@
         <ComponentGroupRef Id="SQLiteScriptComponents" />
         <ComponentRef Id="makecert"/>
         <ComponentRef Id="Sample1344"/>
-        <ComponentRef Id="TagTemplates"/>
 
         <!-- Web Files -->
         <?include WebFeatures.wxi ?>
@@ -311,19 +310,6 @@
       <!-- Makecert -->
       <Component Id="makecert">
         <File Id="makecert.exe" Name="makecert.exe" Source="$(var.ProjectDir)\makecert.exe" />
-      </Component>
-
-      <!-- Sample Data -->
-      <Component Id="Sample1344">
-        <File Id="Sample1344.PmuCapture" Name="Sample1344.PmuCapture" Source="$(var.openHistorian.ProjectDir)\Sample1344.PmuCapture" />
-      </Component>
-
-      <!-- Included Tag Templates -->
-      <Component Id="TagTemplates" Guid="{EB8CD69A-E9F5-4183-805F-455D2E3AF654}">
-        <File Id="Full_Calculations.TagTemplate" Name="Full Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Full Calculations.TagTemplate" />
-        <File Id="Single_Phase_Power_Calculations.TagTemplate" Name="Single Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Single Phase Power Calculations.TagTemplate" />
-        <File Id="Three_Phase_Power_Calculations.TagTemplate" Name="Three Phase Power Calculations.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Three Phase Power Calculations.TagTemplate" />
-        <File Id="Three_Phase_Power_Calculations_with_Time_Sync.TagTemplate" Name="Three Phase Power Calculations with Time Sync.TagTemplate" Source="$(var.openHistorian.ProjectDir)\Three Phase Power Calculations with Time Sync.TagTemplate" />
       </Component>
 
       <!-- Registry Settings -->
