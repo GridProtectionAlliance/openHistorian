@@ -1566,9 +1566,9 @@ const useAjaxVerfication = ""{2}"";
                         openCOMTRADEUpdater =
                             "<br/><br/><span style='background: yellow; color: black; font-weight: bold; padding: 5px; border-radius: 5px'>Need to update COMTRADE CFF with end sample count " + state.EndSampleCount +
                             (viewModel.fileFormat() > 0 ? " / byte count " + state.BinaryByteCount : "") + ", <span style='color: firebrick'>attempting to launch counter update app:</span></span><br/><br/>" +
-                            "<div><p style='text-align: center'>If needed, click <strong>Open UpdateCOMTRADECounters</strong> on dialog. If you no dialog displays, click below:</p></div>" +
+                            "<div><p style='text-align: center'>Click <strong>Open UpdateCOMTRADECounters</strong> on browser dialog or click button below to launch app:</p></div>" +
                             "<div style='margin-bottom: -10px'><p style='text-align: center'><button type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='window.open(\"" + uriProtocolScheme + "\", \"_self\")'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
-                            "<small>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Download and Run UpdateCOMTRADECounters Now</a>.</small></p></div>";
+                            "<small>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Download and Run UpdateCOMTRADECounters</a>.</small></p></div>";
 
                         copyToClipboard(uriProtocolScheme);
                         window.open(uriProtocolScheme, "_self");
