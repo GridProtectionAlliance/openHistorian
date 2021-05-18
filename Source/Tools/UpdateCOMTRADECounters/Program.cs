@@ -51,13 +51,6 @@ namespace UpdateCOMTRADECounters
         [STAThread]
         static void Main()
         {
-            string commandLine = Environment.CommandLine.ToLowerInvariant();
-
-            RegisterUriScheme(commandLine);
-
-            if (commandLine.Contains("-registeronly"))
-                Environment.Exit(0);
-
             // Hook into assembly resolve event so assemblies can be loaded from embedded resources
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssemblyFromResource;
 
@@ -74,6 +67,13 @@ namespace UpdateCOMTRADECounters
             AppDomain.CurrentDomain.Load("Newtonsoft.Json");
             AppDomain.CurrentDomain.Load("GSF.COMTRADE");
 
+            string commandLine = Environment.CommandLine.ToLowerInvariant();
+
+            RegisterUriScheme(commandLine);
+
+            if (commandLine.Contains("-registeronly"))
+                Environment.Exit(0);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
@@ -84,31 +84,51 @@ namespace UpdateCOMTRADECounters
             try
             {
                 bool targetAllUsers = commandLine.Contains("-allusers");
+                RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
+                bool updateUriScheme;
 
                 using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Classes\\" + UriScheme))
                 using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Classes\\" + UriScheme))
                 {
-                    if (allUsersKey is not null || localUserKey is not null && !targetAllUsers)
-                        return;
+                    updateUriScheme = (allUsersKey is null && (localUserKey is null || targetAllUsers));
                 }
 
-                RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
+                if (updateUriScheme)
+                {
+                    using RegistryKey uriSchemeKey = rootKey.CreateSubKey("SOFTWARE\\Classes\\" + UriScheme);
 
-                using RegistryKey key = rootKey.CreateSubKey("SOFTWARE\\Classes\\" + UriScheme);
+                    if (uriSchemeKey is null)
+                        return;
 
-                if (key is null)
-                    return;
+                    uriSchemeKey.SetValue("", "URL:" + FriendlyName);
+                    uriSchemeKey.SetValue("URL Protocol", "");
 
-                key.SetValue("", "URL:" + FriendlyName);
-                key.SetValue("URL Protocol", "");
+                    string applicationLocation = CurrentAssembly.Location;
 
-                string applicationLocation = CurrentAssembly.Location;
+                    using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
+                    defaultIcon?.SetValue("", applicationLocation + ",1");
 
-                using RegistryKey defaultIcon = key.CreateSubKey("DefaultIcon");
-                defaultIcon?.SetValue("", applicationLocation + ",1");
+                    using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
+                    commandKey?.SetValue("", "\"" + applicationLocation + "\" \"%1\"");
+                }
 
-                using RegistryKey commandKey = key.CreateSubKey(@"shell\open\command");
-                commandKey?.SetValue("", "\"" + applicationLocation + "\" \"%1\"");
+                if (targetAllUsers)
+                {
+                    using RegistryKey chromePolicyKey =
+                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Google\\Chrome", true) ??
+                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Google\\Chrome", true);
+
+                    if (chromePolicyKey is not null)
+                    {
+                        string originPolicies = chromePolicyKey.GetValue("AutoLaunchProtocolsFromOrigins")?.ToString();
+
+                        if (string.IsNullOrEmpty(originPolicies))
+                            originPolicies = "[]";
+
+                        chromePolicyKey.SetValue("AutoLaunchProtocolsFromOrigins",
+                            JsonHelpers.InjectProtocolOrigins(originPolicies, new[] { "*" }, UriScheme));
+                    }
+                }
             }
             catch (Exception ex)
             {
