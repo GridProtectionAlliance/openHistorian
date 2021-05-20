@@ -170,7 +170,7 @@
             <param name="deviceAcronym">Device name acronym to use for the point tag.</param>
             <param name="vendorAcronym">Vendor name acronym to use for the point tag. Can be null.</param>
             <param name="signalTypeAcronym">Acronym of signal type of the point.</param>
-            <param name="phasorLabel">The label of the phasor associated with the point.</param>
+            <param name="label">The label associated with the point, e.g., the phasor or analog label.</param>
             <param name="signalIndex">Signal index of the point, if any.</param>
             <param name="phase">Signal phase of the point, if any.</param>
             <param name="baseKV">Nominal kV of line associated with phasor.</param>
