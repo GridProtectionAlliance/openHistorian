@@ -58,7 +58,7 @@ namespace UpdateCOMTRADECounters
             this.maskedTextBoxBinaryByteCount.ValidatingType = typeof(int);
             this.maskedTextBoxBinaryByteCount.Enter += new System.EventHandler(this.textBox_Enter);
             // 
-            // maskedTextEndSampleCount
+            // maskedTextBoxEndSampleCount
             // 
             this.maskedTextBoxEndSampleCount.Location = new System.Drawing.Point(166, 19);
             this.maskedTextBoxEndSampleCount.Margin = new System.Windows.Forms.Padding(2);
@@ -104,6 +104,7 @@ namespace UpdateCOMTRADECounters
             this.toolTip.SetToolTip(this.buttonOpenSourceCFFLocation, "Select last downloaded COMTRADE CFF...");
             this.buttonOpenSourceCFFLocation.UseVisualStyleBackColor = true;
             this.buttonOpenSourceCFFLocation.Click += new System.EventHandler(this.buttonOpenSourceCFFLocation_Click);
+            this.buttonOpenSourceCFFLocation.MouseEnter += new System.EventHandler(this.showToolTip);
             // 
             // labelSourceCFF
             // 
@@ -165,8 +166,12 @@ namespace UpdateCOMTRADECounters
             // 
             // toolTip
             // 
+            this.toolTip.AutomaticDelay = 5000;
+            this.toolTip.AutoPopDelay = 50000;
             this.toolTip.BackColor = System.Drawing.Color.Wheat;
             this.toolTip.ForeColor = System.Drawing.Color.Black;
+            this.toolTip.InitialDelay = 5000;
+            this.toolTip.ReshowDelay = 10;
             this.toolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
             this.toolTip.ToolTipTitle = "⤊ Action Required:";
             // 
@@ -190,8 +195,10 @@ namespace UpdateCOMTRADECounters
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Update COMTRADE Counters";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.hideToolTip);
             this.Load += new System.EventHandler(this.Main_Load);
-            this.Shown += new System.EventHandler(this.Main_Shown);
+            this.Shown += new System.EventHandler(this.showToolTip);
+            this.Move += new System.EventHandler(this.showToolTip);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

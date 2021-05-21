@@ -49,7 +49,7 @@ namespace UpdateCOMTRADECounters
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             // Hook into assembly resolve event so assemblies can be loaded from embedded resources
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssemblyFromResource;
@@ -81,9 +81,12 @@ namespace UpdateCOMTRADECounters
 
         private static void RegisterUriScheme(string commandLine)
         {
+            bool targetAllUsers = false;
+
             try
             {
-                bool targetAllUsers = commandLine.Contains("-allusers");
+                // -AllUsers flag requires admin elevation
+                targetAllUsers = commandLine.Contains("-allusers");
                 RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
                 bool updateUriScheme;
 
@@ -132,7 +135,7 @@ namespace UpdateCOMTRADECounters
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for current user: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

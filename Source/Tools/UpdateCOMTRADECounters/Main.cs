@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using GSF;
 using GSF.COMTRADE;
 using GSF.Console;
+using GSF.Threading;
 
 #pragma warning disable IDE1006 // Naming Styles
 
@@ -37,11 +38,29 @@ namespace UpdateCOMTRADECounters
 {
     public partial class Main : Form
     {
+        private readonly DelayedSynchronizedOperation m_showToolTip;
         private Control m_focusTarget;
 
         public Main()
         {
             InitializeComponent();
+
+            // Tool tip is being shown any time window is moved, however, this event is called very rapidly,
+            // so we used a delayed synchronized operation to prevent updating tool tip too frequently
+            m_showToolTip = new DelayedSynchronizedOperation(() =>
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    if (!Visible)
+                        return;
+
+                    toolTip.Show(toolTip.GetToolTip(buttonOpenSourceCFFLocation), buttonOpenSourceCFFLocation, -20, 20, 10000);
+                    m_focusTarget?.Focus();
+                }));
+            })
+            {
+                Delay = 10
+            };
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -50,14 +69,9 @@ namespace UpdateCOMTRADECounters
                 m_focusTarget = maskedTextBoxEndSampleCount;
         }
 
-        private void Main_Shown(object sender, EventArgs e)
-        {
-            toolTip.Show(toolTip.GetToolTip(buttonOpenSourceCFFLocation), buttonOpenSourceCFFLocation, -20, 20, 10000);
-            m_focusTarget?.Focus();
-        }
-
         private void buttonOpenSourceCFFLocation_Click(object sender, EventArgs e)
         {
+            hideToolTip(sender, e);
             getCounters(out long endSampleCount, out long binaryByteCount);
 
             if (endSampleCount == 0L)
@@ -109,7 +123,7 @@ namespace UpdateCOMTRADECounters
                 }
 
                 Hide();
-                MessageBox.Show(this, $"COMTRADE counters for \"{sourceCFF}\" successfully updated", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, $"COMTRADE counters for \"{sourceCFF}\" successfully updated with end sample count of {endSampleCount:N0}{(binaryByteCount > 0L ? $" and binary byte count of {binaryByteCount:N0}" : "")}", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Environment.Exit(0);
             }
             catch (Exception ex)
@@ -127,6 +141,12 @@ namespace UpdateCOMTRADECounters
             long.TryParse(maskedTextBoxEndSampleCount.Text, out endSampleCount);
             long.TryParse(maskedTextBoxBinaryByteCount.Text, out binaryByteCount);
         }
+
+        private void showToolTip(object sender, EventArgs e) =>
+            m_showToolTip.TryRunOnce();
+
+        private void hideToolTip(object sender, EventArgs e) =>
+            toolTip.Hide(buttonOpenSourceCFFLocation);
 
         private void textBox_Enter(object sender, EventArgs e)
         {
@@ -154,8 +174,8 @@ namespace UpdateCOMTRADECounters
             return args.Length > 1 && TryParseURL(args[1], true);
         }
 
-        // Fallback on parsing from clipboard, this can be disabled by browser/administrator so it is less reliable,
-        // however, this option can help if URI scheme is not registered, i.e., user downloads app directly
+        // Fall back on parsing from clipboard, this can be disabled by browser/administrator so it is less reliable,
+        // however, this option can help when URI scheme is not registered, i.e., user downloads app directly
         private bool TryParseClipboard() => 
             Clipboard.ContainsText() && TryParseURL(Clipboard.GetText(), false);
 
