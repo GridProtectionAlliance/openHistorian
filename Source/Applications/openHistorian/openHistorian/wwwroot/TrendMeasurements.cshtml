@@ -1,25 +1,25 @@
 ﻿@*******************************************************************************************************
-//  TrendMeasurements.cshtml - Gbtc
-//
-//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
-//
-//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
-//  file except in compliance with the License. You may obtain a copy of the License at:
-//
-//      http://opensource.org/licenses/MIT
-//
-//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-//  License for the specific language governing permissions and limitations.
-//
-//  Code Modification History:
-//  ----------------------------------------------------------------------------------------------------
-//  07/30/2016 - Ritchie Carroll
-//       Generated original version of source code.
-//
-//*****************************************************************************************************@
+    //  TrendMeasurements.cshtml - Gbtc
+    //
+    //  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+    //
+    //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+    //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+    //  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+    //  file except in compliance with the License. You may obtain a copy of the License at:
+    //
+    //      http://opensource.org/licenses/MIT
+    //
+    //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+    //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+    //  License for the specific language governing permissions and limitations.
+    //
+    //  Code Modification History:
+    //  ----------------------------------------------------------------------------------------------------
+    //  07/30/2016 - Ritchie Carroll
+    //       Generated original version of source code.
+    //
+    //*****************************************************************************************************@
 @* ReSharper disable UnknownCssClass *@
 @* ReSharper disable Html.PathError *@
 @* ReSharper disable InlineOutVariableDeclaration *@
@@ -53,17 +53,17 @@
             border-width: 0;
         }
 
-        .tabs-nohdr .ui-tabs-nav {
-            padding: 0;
-            background: transparent;
-            border: none;
-        }
+            .tabs-nohdr .ui-tabs-nav {
+                padding: 0;
+                background: transparent;
+                border: none;
+            }
 
-        .tabs-nohdr .ui-tabs-panel {
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
+            .tabs-nohdr .ui-tabs-panel {
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
 
         /* Collapsable button style */
         .btn-collapsable.btn {
@@ -74,15 +74,15 @@
             height: 18px;
         }
 
-        /* Collapsable button icon when content is shown - arrow down */
-        .btn-collapsable.btn:after {
-            content: "\e114";
-        }
+            /* Collapsable button icon when content is shown - arrow down */
+            .btn-collapsable.btn:after {
+                content: "\e114";
+            }
 
-        /* Collapsable button icon when content is hidden - arrow right */
-        .btn-collapsable.btn.collapsed:after {
-            content: "\e080";
-        }
+            /* Collapsable button icon when content is hidden - arrow right */
+            .btn-collapsable.btn.collapsed:after {
+                content: "\e080";
+            }
 
         #collapseSelectedPoints.btn-collapsable.btn {
             margin-top: 3px;
@@ -92,10 +92,10 @@
             transition: all .75s ease-out;
         }
 
-        #collapseSelectedPoints.btn-collapsable.btn.collapsed {
-            margin-top: 3px;
-            margin-left: -345px;
-        }
+            #collapseSelectedPoints.btn-collapsable.btn.collapsed {
+                margin-top: 3px;
+                margin-left: -345px;
+            }
 
         #collapseTrendSetup.btn-collapsable.btn {
             margin-top: 7px;
@@ -105,9 +105,9 @@
             transition: all .75s ease-out;
         }
 
-        #collapseTrendSetup.btn-collapsable.btn.collapsed {
-            margin-top: -24px;
-        }
+            #collapseTrendSetup.btn-collapsable.btn.collapsed {
+                margin-top: -24px;
+            }
 
         span.fixed-font {
             font-size: small;
@@ -167,24 +167,24 @@
             font-size: smaller;
         }
 
-        #selectAllMessage a {
-            color: #337ab7;
-            text-decoration: none;
-        }
+            #selectAllMessage a {
+                color: #337ab7;
+                text-decoration: none;
+            }
 
-        #selectAllMessage a:active, a:hover, a:focus {
-            color: #23527c;
-            text-decoration: underline;
-            cursor: pointer;
-        }
+                #selectAllMessage a:active, a:hover, a:focus {
+                    color: #23527c;
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
 
         #tabs ul li {
             outline: none;
         }
 
-        #tabs ul li a {
-            outline: none;
-        }
+            #tabs ul li a {
+                outline: none;
+            }
 
         button.set-midnight-time {
             font-size: 13px;
@@ -215,6 +215,9 @@
     StringBuilder pageControlScripts = ViewBag.PageControlScripts;
     HttpRequestMessage request = ViewBag.Request;
     Dictionary<string, string> parameters = request.QueryParameters();
+
+    Uri requestUri = ViewBag.Request.RequestUri;
+    string updateCompleteCallback = requestUri.Scheme + "://" + requestUri.Authority + "/api/Feedback/UpdateCOMTRADECountersComplete?connectionID=";
 
     string showMenu;
     parameters.TryGetValue("ShowMenu", out showMenu);
@@ -1104,6 +1107,7 @@ const useAjaxVerfication = ""{2}"";
 
         @Raw(dataContext.RenderViewModelConfiguration<ActiveMeasurement, DataHub>(ViewBag, "PointTag"))
         const progressRefreshRate = 1000;
+        var uriProtocolScheme = null;
         var exportOperationHandle = 0;
         var lastProgress = 0;
         var plotData = [];
@@ -1546,10 +1550,42 @@ const useAjaxVerfication = ""{2}"";
 
                 if (lastProgress === 0)
                     setTimeout(function() { $("#timeEstimate").show(); }, progressRefreshRate * 2);
-                    
+
                 lastProgress = progress;
             }
         };
+
+        function launchUpdaterApp() {
+            if (!uriProtocolScheme)
+                return;
+
+            const message = $("#downloadAndRunMessage");
+            message.css("font-size", "110%");
+            message.css("font-weight", "bolder");
+            window.open(uriProtocolScheme, "_self");
+        }
+
+        function checkUpdaterComplete(state) {
+            if (!uriProtocolScheme || getActiveTab() !== 2 || !viewModel.dataHubIsConnected()) {
+                hideInfoMessage();
+                uriProtocolScheme = null;
+                return;
+            }
+
+            dataHub.updateCOMTRADECountersIsCompleted($.connection.hub.id).done(function (completed) {
+                if (completed) {
+                    showInfoMessage("COMTRADE CFF successfully updated with end sample count " + state.EndSampleCount + (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : ""), 10000);
+                    uriProtocolScheme = null;
+                }
+                else {
+                    setTimeout(() => checkUpdaterComplete(state), 1000);
+                }
+            })
+            .fail(function () {
+                hideInfoMessage();
+                uriProtocolScheme = null;
+            });
+        }
 
         // Define a function to check data export progress
         function checkProgress() {
@@ -1561,17 +1597,28 @@ const useAjaxVerfication = ""{2}"";
                     let openCOMTRADEUpdater = "";
 
                     if (viewModel.fileFormat() >= 0) {
-                        const uriProtocolScheme = "comtrade-update-counter://null?targetExportName=" + encodeURIComponent(state.TargetExportName) + "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) + "&binaryByteCount=" + encodeURIComponent(state.BinaryByteCount);
+                        const callback = "@updateCompleteCallback" + encodeURIComponent($.connection.hub.id);
+                        uriProtocolScheme = "comtrade-update-counter://null?" +
+                            "targetExportName=" + encodeURIComponent(state.TargetExportName) +
+                            "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) +
+                            "&binaryByteCount=" + encodeURIComponent(state.BinaryByteCount) +
+                            "&callback=" + encodeURIComponent(callback);
 
                         openCOMTRADEUpdater =
                             "<br/><br/><span style='background: yellow; color: black; font-weight: bold; padding: 5px; border-radius: 5px'>Need to update COMTRADE CFF with end sample count " + state.EndSampleCount +
-                            (viewModel.fileFormat() > 0 ? " / byte count " + state.BinaryByteCount : "") + ", <span style='color: firebrick'>attempting to launch counter update app:</span></span><br/><br/>" +
-                            "<div><p style='text-align: center'>Click <strong>Open UpdateCOMTRADECounters</strong> on browser dialog or click button below to launch app:</p></div>" +
-                            "<div style='margin-bottom: -10px'><p style='text-align: center'><button type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='window.open(\"" + uriProtocolScheme + "\", \"_self\")'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
-                            "<small>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Download and Run UpdateCOMTRADECounters</a>.</small></p></div>";
+                            (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : "") + ", <span style='color: firebrick'>attempting to launch counter update app:</span></span><br/><br/>" +
+                            "<div><p style='text-align: center'>Click <strong>Open UpdateCOMTRADECounters</strong> on browser dialog or click button below to launch app, if needed:</p></div>" +
+                            "<div style='margin-bottom: -10px'><p style='text-align: center'><button type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='launchUpdaterApp()'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
+                            "<span id='downloadAndRunMessage' style='font-size: 85%'>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Click to Download and Run UpdateCOMTRADECounters</a>.</span></p></div>";
 
                         copyToClipboard(uriProtocolScheme);
                         window.open(uriProtocolScheme, "_self");
+
+                        // Monitor for application completion
+                        setTimeout(() => checkUpdaterComplete(state), 1000);
+                    }
+                    else {
+                        uriProtocolScheme = null;
                     }
 
                     showInfoMessage(String.format(
@@ -1614,6 +1661,7 @@ const useAjaxVerfication = ""{2}"";
             if (!hubIsConnected)
                 return;
 
+            uriProtocolScheme = null;
             showInfoMessage("Exporting data, please wait...", -1);
             disableUIButtons();
 
@@ -1654,7 +1702,7 @@ const useAjaxVerfication = ""{2}"";
                         progressBar.text("0%");
                         progressBar.css("width", "0");
                         progressBar.removeClass("active");
-                    
+
                         $("#progressLabel").text("");
                         $("#exportingLabel").text("Exporting");
                         $("#progressRate").text("");
@@ -1663,7 +1711,7 @@ const useAjaxVerfication = ""{2}"";
                         $("#timeEstimate").hide();
                         $("#progressIcon").show();
                         $("#cancelDataExport").enable();
-                        $("#exportingDataDialog").modal("show");                    
+                        $("#exportingDataDialog").modal("show");
 
                         $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
                             "?CacheID=" + encodeURIComponent(cacheID) +
@@ -1926,7 +1974,7 @@ const useAjaxVerfication = ""{2}"";
             $("#tabs").enable();
         }
 
-        $(function() {
+        $(function () {
             $("#tabs").tabs({
                 active: 0,
                 activate: function(event, ui) {
@@ -2203,28 +2251,22 @@ const useAjaxVerfication = ""{2}"";
         }
 
         function copyToClipboard(text) {
-            if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-                const textarea = document.createElement("textarea");
+            const textarea = document.createElement("textarea");
 
-                textarea.textContent = text;
-                textarea.style.position = "fixed";
-                document.body.appendChild(textarea);
-                textarea.select();
+            textarea.textContent = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.select();
 
-                try {
-                    return document.execCommand("copy");
-                }
-                catch (ex) {
-                    console.warn("Copy to clipboard failed.", ex);
-                    return false;
-                }
-                finally {
-                    document.body.removeChild(textarea);
-                }
+            try {
+                return document.execCommand("copy");
             }
-            else {
-                console.warn("Clipboard function unavailable.");
+            catch (ex) {
+                console.warn("Copy to clipboard failed.", ex);
                 return false;
+            }
+            finally {
+                document.body.removeChild(textarea);
             }
         }
     </script>

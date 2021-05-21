@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 using GSF;
 using GSF.COMTRADE;
@@ -40,6 +41,7 @@ namespace UpdateCOMTRADECounters
     {
         private readonly DelayedSynchronizedOperation m_showToolTip;
         private Control m_focusTarget;
+        private string m_callback;
 
         public Main()
         {
@@ -123,6 +125,19 @@ namespace UpdateCOMTRADECounters
                 }
 
                 Hide();
+
+                if (!string.IsNullOrEmpty(m_callback))
+                {
+                    try
+                    {
+                        WebRequest.Create(Uri.UnescapeDataString(m_callback)).GetResponseAsync();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
                 MessageBox.Show(this, $"COMTRADE counters for \"{sourceCFF}\" successfully updated with end sample count of {endSampleCount:N0}{(binaryByteCount > 0L ? $" and binary byte count of {binaryByteCount:N0}" : "")}", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Environment.Exit(0);
             }
@@ -210,6 +225,8 @@ namespace UpdateCOMTRADECounters
 
                 if (m_focusTarget is null)
                     m_focusTarget = maskedTextBoxEndSampleCount;
+
+                parameters.TryGetValue("callback", out m_callback);
 
                 return true;
             }

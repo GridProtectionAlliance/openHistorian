@@ -201,7 +201,8 @@ namespace openHistorian
             CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
 
             // Define set of default anonymous web resources for this site
-            const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|^/favicon.ico$";
+            const string AnonymousApiFeedBackExpression = "^/api/Feedback/";
+            const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|" + AnonymousApiFeedBackExpression + "|^/favicon.ico$";
             const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|^/grafana(?!/api/).*$";
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
@@ -238,6 +239,15 @@ namespace openHistorian
             systemSettings.Add("eDNAMetaData", "*.*", "Comma separated search string for the eDNA metadata search command.");
             systemSettings.Add("TrenDAPControllerEnabled", true, "Defines flag that determines if the TrenDAP controller is enabled.");
             systemSettings.Add("SystemName", "", "Name of system that will be prefixed to system level tags, when defined. Value should follow tag naming conventions, e.g., no spaces and all upper case.");
+
+            // Ensure "^/api/Feedback" exists in AnonymousResourceExpression
+            string anonymousResourceExpression = systemSettings["AnonymousResourceExpression"].Value;
+
+            if (!anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousApiFeedBackExpression.ToLowerInvariant()))
+            {
+                systemSettings["AnonymousResourceExpression"].Update($"{AnonymousApiFeedBackExpression}|{anonymousResourceExpression}");
+                ConfigurationFile.Current.Save();
+            }
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 

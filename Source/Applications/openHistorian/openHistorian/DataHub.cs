@@ -1022,6 +1022,14 @@ namespace openHistorian
         public Task<string> GetElapsedTimeString(DateTime startTime, DateTime stopTime) => 
             Task.Factory.StartNew(() => new Ticks(stopTime - startTime).ToElapsedTimeString(2));
 
+        /// <summary>
+        /// Checks if UpdateCOMTRADECounters has been marked as completed for user session.
+        /// </summary>
+        /// <param name="connectionID">SignalR user session connection ID.</param>
+        /// <returns><c>true</c> if completed; otherwise, <c>false</c>.</returns>
+        public bool UpdateCOMTRADECountersIsCompleted(string connectionID) =>
+            FeedbackController.UpdateCOMTRADECountersIsCompleted(connectionID);
+
         #endregion
     }
 }
