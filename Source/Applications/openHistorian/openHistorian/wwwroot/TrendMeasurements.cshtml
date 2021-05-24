@@ -1559,9 +1559,20 @@ const useAjaxVerfication = ""{2}"";
             if (!uriProtocolScheme)
                 return;
 
+            // When user clicks launch button, create emphasis on
+            // download application message since this will often
+            // be primary action when application does not launch
+            const button = $("#launchButton");
             const message = $("#downloadAndRunMessage");
+
+            button.css("margin-bottom", "0px");
             message.css("font-size", "110%");
             message.css("font-weight", "bolder");
+            message.css("color", "black");
+            message.css("background", "lightyellow");
+            message.css("border-radius", "5px");
+            message.css("padding", "5px");
+
             window.open(uriProtocolScheme, "_self");
         }
 
@@ -1598,7 +1609,7 @@ const useAjaxVerfication = ""{2}"";
 
                     if (viewModel.fileFormat() >= 0) {
                         const callback = "@updateCompleteCallback" + encodeURIComponent($.connection.hub.id);
-                        uriProtocolScheme = "comtrade-update-counter://null?" +
+                        uriProtocolScheme = "comtrade-update-counter://open?" +
                             "targetExportName=" + encodeURIComponent(state.TargetExportName) +
                             "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) +
                             "&binaryByteCount=" + encodeURIComponent(state.BinaryByteCount) +
@@ -1608,8 +1619,8 @@ const useAjaxVerfication = ""{2}"";
                             "<br/><br/><span style='background: yellow; color: black; font-weight: bold; padding: 5px; border-radius: 5px'>Need to update COMTRADE CFF with end sample count " + state.EndSampleCount +
                             (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : "") + ", <span style='color: firebrick'>attempting to launch counter update app:</span></span><br/><br/>" +
                             "<div><p style='text-align: center'>Click <strong>Open UpdateCOMTRADECounters</strong> on browser dialog or click button below to launch app, if needed:</p></div>" +
-                            "<div style='margin-bottom: -10px'><p style='text-align: center'><button type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='launchUpdaterApp()'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
-                            "<span id='downloadAndRunMessage' style='font-size: 85%'>App not not launching? <a href='@UpdateCOMTRADECounters' style='font-style: italic'>Click to Download and Run UpdateCOMTRADECounters</a>.</span></p></div>";
+                            "<div style='margin-bottom: -10px'><p style='text-align: center'><button id='launchButton' type='button' class='btn' style='margin-bottom: -10px; background: blue; color: ghostwhite' onclick='launchUpdaterApp()'><strong>Launch UpdateCOMTRADECounters</string></button><br/><br/>" +
+                            "<span id='downloadAndRunMessage' style='font-size: 85%'>&nbsp;App not not launching?&nbsp;<a href='@UpdateCOMTRADECounters' style='font-style: italic'>Click Here to Download and Run</a>&nbsp;&nbsp;</span></p></div>";
 
                         copyToClipboard(uriProtocolScheme);
                         window.open(uriProtocolScheme, "_self");
