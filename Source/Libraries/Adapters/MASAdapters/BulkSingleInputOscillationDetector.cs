@@ -161,45 +161,36 @@ namespace MAS
         {
             get
             {
-                try
+                if (CurrentAdapterIndex > -1)
                 {
-                    if (CurrentAdapterIndex > -1)
+                    MeasurementKey[] operatingMeasurementKeys = m_operatingMeasurementKeys ?? InputMeasurementKeys;
+
+                    // Just pick first input measurement to find associated device ID
+                    MeasurementKey inputMeasurement = operatingMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
+                    DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
+
+                    if (!(record is null))
                     {
-                        MeasurementKey[] operatingMeasurementKeys = m_operatingMeasurementKeys ?? InputMeasurementKeys;
+                        string deviceName = record["Device"].ToString();
 
-                        // Just pick first input measurement to find associated device ID
-                        MeasurementKey inputMeasurement = operatingMeasurementKeys[CurrentAdapterIndex * PerAdapterInputCount];
-                        DataRow record = DataSource.LookupMetadata(inputMeasurement.SignalID, SourceMeasurementTable);
-
-                        if (!(record is null))
+                        if (!string.IsNullOrWhiteSpace(deviceName))
                         {
-                            string deviceName = record["Device"].ToString();
-
-                            if (!string.IsNullOrWhiteSpace(deviceName))
+                            // Query the actual database record ID based on the known runtime ID for this device
+                            using (AdoDataConnection connection = GetConfiguredConnection())
                             {
-                                // Query the actual database record ID based on the known runtime ID for this device
-                                using (AdoDataConnection connection = GetConfiguredConnection())
-                                {
-                                    TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
-                                    Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceName);
-                                    return device.ID;
-                                }
+                                TableOperations<Device> deviceTable = new TableOperations<Device>(connection);
+                                Device device = deviceTable.QueryRecordWhere("Acronym = {0}", deviceName);
+                                return device.ID;
                             }
-
-                            OnProcessException(MessageLevel.Error, new InvalidOperationException($"Device name was blank for signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}"));
                         }
 
-                        OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to find signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}"));
+                        throw new InvalidOperationException($"Device name was blank for signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}");
                     }
 
-                    OnProcessException(MessageLevel.Error, new IndexOutOfRangeException($"Current adapter index {CurrentAdapterIndex:N0} is invalid"));
-                }
-                catch (Exception ex)
-                {
-                    OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to lookup current device ID for adapter {CurrentAdapterIndex:N0}: {ex.Message}", ex));
+                    throw new InvalidOperationException($"Failed to find signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}");
                 }
 
-                return base.CurrentDeviceID;
+                throw new IndexOutOfRangeException($"Current adapter index {CurrentAdapterIndex:N0} is invalid");
             }
         }
 
