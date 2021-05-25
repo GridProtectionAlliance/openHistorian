@@ -90,29 +90,29 @@ namespace UpdateCOMTRADECounters
                 RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
                 bool updateUriScheme;
 
-                using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Classes\\" + UriScheme))
-                using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Classes\\" + UriScheme))
+                using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
+                using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
                 {
                     updateUriScheme = (allUsersKey is null && (localUserKey is null || targetAllUsers));
                 }
 
                 if (updateUriScheme)
                 {
-                    using RegistryKey uriSchemeKey = rootKey.CreateSubKey("SOFTWARE\\Classes\\" + UriScheme);
+                    using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
 
                     if (uriSchemeKey is null)
                         return;
 
-                    uriSchemeKey.SetValue("", "URL:" + FriendlyName);
+                    uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
                     uriSchemeKey.SetValue("URL Protocol", "");
 
                     string applicationLocation = CurrentAssembly.Location;
 
                     using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
-                    defaultIcon?.SetValue("", applicationLocation + ",1");
+                    defaultIcon?.SetValue("", $"{applicationLocation},1");
 
                     using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
-                    commandKey?.SetValue("", "\"" + applicationLocation + "\" \"%1\"");
+                    commandKey?.SetValue("", $"\"{applicationLocation}\" \"%1\"");
                 }
 
                 if (targetAllUsers)
