@@ -185,8 +185,14 @@ namespace MAS
                                     return device.ID;
                                 }
                             }
+
+                            OnProcessException(MessageLevel.Error, new InvalidOperationException($"Device name was blank for signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}"));
                         }
+
+                        OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed to find signal ID \"{inputMeasurement.SignalID}\" for current for adapter {CurrentAdapterIndex:N0}"));
                     }
+
+                    OnProcessException(MessageLevel.Error, new IndexOutOfRangeException($"Current adapter index {CurrentAdapterIndex:N0} is invalid"));
                 }
                 catch (Exception ex)
                 {
