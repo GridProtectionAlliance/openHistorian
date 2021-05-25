@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF;
 using GSF.COMTRADE;
@@ -125,12 +126,15 @@ namespace UpdateCOMTRADECounters
                 }
 
                 Hide();
+                Application.DoEvents();
+
+                Task<WebResponse> responseTask = null;
 
                 if (!string.IsNullOrEmpty(m_callback))
                 {
                     try
                     {
-                        WebRequest.Create(Uri.UnescapeDataString(m_callback)).GetResponseAsync();
+                        responseTask = WebRequest.Create(Uri.UnescapeDataString(m_callback)).GetResponseAsync();
                     }
                     catch
                     {
@@ -139,6 +143,7 @@ namespace UpdateCOMTRADECounters
                 }
 
                 MessageBox.Show(this, $"COMTRADE counters for \"{sourceCFF}\" successfully updated with end sample count of {endSampleCount:N0}{(binaryByteCount > 0L ? $" and binary byte count of {binaryByteCount:N0}" : "")}", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                responseTask?.Wait(5000);
                 Environment.Exit(0);
             }
             catch (Exception ex)
