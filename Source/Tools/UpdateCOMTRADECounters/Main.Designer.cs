@@ -43,6 +43,7 @@ namespace UpdateCOMTRADECounters
             this.labelSelectDownloadedCFF = new System.Windows.Forms.Label();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.timerFlashButton = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,17 +95,21 @@ namespace UpdateCOMTRADECounters
             // 
             // buttonOpenSourceCFFLocation
             // 
-            this.buttonOpenSourceCFFLocation.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonOpenSourceCFFLocation.Location = new System.Drawing.Point(456, 60);
+            this.buttonOpenSourceCFFLocation.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonOpenSourceCFFLocation.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonOpenSourceCFFLocation.Font = new System.Drawing.Font("Lucida Sans", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonOpenSourceCFFLocation.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.buttonOpenSourceCFFLocation.Location = new System.Drawing.Point(456, 61);
+            this.buttonOpenSourceCFFLocation.Margin = new System.Windows.Forms.Padding(0);
             this.buttonOpenSourceCFFLocation.Name = "buttonOpenSourceCFFLocation";
-            this.buttonOpenSourceCFFLocation.Size = new System.Drawing.Size(28, 22);
+            this.buttonOpenSourceCFFLocation.Size = new System.Drawing.Size(28, 20);
             this.buttonOpenSourceCFFLocation.TabIndex = 6;
             this.buttonOpenSourceCFFLocation.Text = "...";
             this.buttonOpenSourceCFFLocation.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.toolTip.SetToolTip(this.buttonOpenSourceCFFLocation, "Select last downloaded COMTRADE CFF...");
-            this.buttonOpenSourceCFFLocation.UseVisualStyleBackColor = true;
+            this.buttonOpenSourceCFFLocation.UseVisualStyleBackColor = false;
             this.buttonOpenSourceCFFLocation.Click += new System.EventHandler(this.buttonOpenSourceCFFLocation_Click);
-            this.buttonOpenSourceCFFLocation.MouseEnter += new System.EventHandler(this.showToolTip);
+            this.buttonOpenSourceCFFLocation.MouseEnter += new System.EventHandler(this.buttonOpenSourceCFFLocation_MouseEnter);
             // 
             // labelSourceCFF
             // 
@@ -175,6 +180,11 @@ namespace UpdateCOMTRADECounters
             this.toolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
             this.toolTip.ToolTipTitle = "⤊ Action Required:";
             // 
+            // timerFlashButton
+            // 
+            this.timerFlashButton.Interval = 350;
+            this.timerFlashButton.Tick += new System.EventHandler(this.timerFlashButton_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,7 +207,7 @@ namespace UpdateCOMTRADECounters
             this.Text = "Update COMTRADE Counters";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.hideToolTip);
             this.Load += new System.EventHandler(this.Main_Load);
-            this.Shown += new System.EventHandler(this.showToolTip);
+            this.Shown += new System.EventHandler(this.Main_Shown);
             this.Move += new System.EventHandler(this.showToolTip);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
@@ -219,6 +229,7 @@ namespace UpdateCOMTRADECounters
         private System.Windows.Forms.Label labelSelectDownloadedCFF;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Timer timerFlashButton;
     }
 }
 

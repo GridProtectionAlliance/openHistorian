@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -40,9 +41,12 @@ namespace UpdateCOMTRADECounters
 {
     public partial class Main : Form
     {
+        private readonly Color m_warningColor = Color.FromArgb(253, 216, 0);
         private readonly DelayedSynchronizedOperation m_showToolTip;
         private Control m_focusTarget;
         private string m_callback;
+        private int m_flashColorIndex;
+        private int m_totalFlashTime;
 
         public Main()
         {
@@ -70,6 +74,18 @@ namespace UpdateCOMTRADECounters
         {
             if (!TryParseCommandLine() && !TryParseClipboard())
                 m_focusTarget = maskedTextBoxEndSampleCount;
+        }
+
+        private void Main_Shown(object sender, EventArgs e)
+        {
+            showToolTip(sender, e);
+            startFlashButton();
+        }
+
+        private void buttonOpenSourceCFFLocation_MouseEnter(object sender, EventArgs e)
+        {
+            showToolTip(sender, e);
+            endFlashButton();
         }
 
         private void buttonOpenSourceCFFLocation_Click(object sender, EventArgs e)
@@ -242,6 +258,31 @@ namespace UpdateCOMTRADECounters
 
                 return false;
             }
+        }
+
+        private void timerFlashButton_Tick(object sender, EventArgs e)
+        {
+            buttonOpenSourceCFFLocation.ForeColor = m_flashColorIndex == 0 ? SystemColors.ControlText : Color.Black;
+            buttonOpenSourceCFFLocation.BackColor = m_flashColorIndex == 0 ? SystemColors.ControlLight : m_warningColor;
+
+            m_flashColorIndex ^= 1;
+            m_totalFlashTime += timerFlashButton.Interval;
+            
+            if (m_totalFlashTime >= 9500)
+                endFlashButton();
+        }
+
+        private void startFlashButton()
+        {
+            buttonOpenSourceCFFLocation.Tag = 1;
+            timerFlashButton.Enabled = true;
+        }
+
+        private void endFlashButton()
+        {
+            timerFlashButton.Enabled = false;
+            buttonOpenSourceCFFLocation.ForeColor = SystemColors.ControlText;
+            buttonOpenSourceCFFLocation.BackColor = SystemColors.Control;
         }
     }
 }

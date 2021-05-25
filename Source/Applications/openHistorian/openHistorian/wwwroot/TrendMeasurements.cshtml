@@ -21,6 +21,7 @@
 //
 //*****************************************************************************************************@
 @* ReSharper disable RedundantUnits *@
+@* ReSharper disable CoercedEqualsUsing *@
 @* ReSharper disable UnknownCssClass *@
 @* ReSharper disable Html.PathError *@
 @* ReSharper disable InlineOutVariableDeclaration *@
@@ -749,7 +750,7 @@ const useAjaxVerfication = ""{2}"";
             if (fileFormat === undefined)
                 fileFormat = -1;
             else
-                fileFormat = getBool(fileFormat);
+                fileFormat = parseInt(fileFormat);
 
             self.tolerance = ko.observable(tolerance);
 
@@ -1609,6 +1610,9 @@ const useAjaxVerfication = ""{2}"";
                     let openCOMTRADEUpdater = "";
 
                     if (viewModel.fileFormat() >= 0) {
+                        if (viewModel.fileFormat() == 0)
+                            state.BinaryByteCount = 0;
+
                         const callback = "@updateCompleteCallback" + encodeURIComponent($.connection.hub.id);
                         uriProtocolScheme = "comtrade-update-counter://open?" +
                             "targetExportName=" + encodeURIComponent(state.TargetExportName) +
