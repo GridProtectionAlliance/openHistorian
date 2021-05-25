@@ -887,6 +887,11 @@
             Default value for <see cref="P:GSF.Web.Security.SessionHandler.SessionMonitorInterval"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.SessionHandler.DefaultSessionExpirationDays">
+            <summary>
+            Default value for a cached session expiration, in days.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.SessionHandler.DefaultAuthenticationToken">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.SessionHandler.AuthenticationToken"/>;
