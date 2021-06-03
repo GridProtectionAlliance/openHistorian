@@ -68,7 +68,7 @@ namespace openHistorian
     /// </summary>
     public class ExportDataHandler : IHostedHttpHandler
     {
-    #region [ Members ]
+        #region [ Members ]
 
         // Nested Types
         private class PointMetadata

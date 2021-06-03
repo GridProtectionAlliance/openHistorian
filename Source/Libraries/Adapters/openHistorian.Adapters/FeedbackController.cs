@@ -44,14 +44,14 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Checks if UpdateCOMTRADECounters has been marked as completed for user session.
         /// </summary>
-        /// <param name="connectionID">SignalR user session connection ID.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if completed; otherwise, <c>false</c>.</returns>
-        public static bool UpdateCOMTRADECountersIsCompleted(string connectionID)
+        public static bool CheckIfUpdateCOMTRADECountersIsCompleted(string operationHandle)
         {
-            if (s_updateCompletedCache.Get(connectionID) is null)
+            if (s_updateCompletedCache.Get(operationHandle) is null)
                 return false;
 
-            s_updateCompletedCache.Remove(connectionID);
+            s_updateCompletedCache.Remove(operationHandle);
             return true;
         }
 
@@ -67,11 +67,11 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Notifies openHistorian that the UpdateCOMTRADECounters application for given session has completed.
         /// </summary>
-        /// <param name="connectionID">SignalR user session connection ID.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         [HttpGet]
-        public HttpResponseMessage UpdateCOMTRADECountersComplete(string connectionID)
+        public HttpResponseMessage SendUpdateCOMTRADECountersCompleteNotification(string operationHandle)
         {
-            s_updateCompletedCache.Add(connectionID, true, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30.0D) });
+            s_updateCompletedCache.Add(operationHandle, true, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30.0D) });
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
     }

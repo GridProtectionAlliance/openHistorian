@@ -55,17 +55,17 @@
             border-width: 0;
         }
 
-            .tabs-nohdr .ui-tabs-nav {
-                padding: 0;
-                background: transparent;
-                border: none;
-            }
+        .tabs-nohdr .ui-tabs-nav {
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
 
-            .tabs-nohdr .ui-tabs-panel {
-                border: none;
-                padding: 0;
-                margin: 0;
-            }
+        .tabs-nohdr .ui-tabs-panel {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
 
         /* Collapsable button style */
         .btn-collapsable.btn {
@@ -76,15 +76,15 @@
             height: 18px;
         }
 
-            /* Collapsable button icon when content is shown - arrow down */
-            .btn-collapsable.btn:after {
-                content: "\e114";
-            }
+        /* Collapsable button icon when content is shown - arrow down */
+        .btn-collapsable.btn:after {
+            content: "\e114";
+        }
 
-            /* Collapsable button icon when content is hidden - arrow right */
-            .btn-collapsable.btn.collapsed:after {
-                content: "\e080";
-            }
+        /* Collapsable button icon when content is hidden - arrow right */
+        .btn-collapsable.btn.collapsed:after {
+            content: "\e080";
+        }
 
         #collapseSelectedPoints.btn-collapsable.btn {
             margin-top: 3px;
@@ -94,10 +94,10 @@
             transition: all .75s ease-out;
         }
 
-            #collapseSelectedPoints.btn-collapsable.btn.collapsed {
-                margin-top: 3px;
-                margin-left: -345px;
-            }
+        #collapseSelectedPoints.btn-collapsable.btn.collapsed {
+            margin-top: 3px;
+            margin-left: -345px;
+        }
 
         #collapseTrendSetup.btn-collapsable.btn {
             margin-top: 7px;
@@ -169,24 +169,24 @@
             font-size: smaller;
         }
 
-            #selectAllMessage a {
-                color: #337ab7;
-                text-decoration: none;
-            }
+        #selectAllMessage a {
+            color: #337ab7;
+            text-decoration: none;
+        }
 
-                #selectAllMessage a:active, a:hover, a:focus {
-                    color: #23527c;
-                    text-decoration: underline;
-                    cursor: pointer;
-                }
+        #selectAllMessage a:active, a:hover, a:focus {
+            color: #23527c;
+            text-decoration: underline;
+            cursor: pointer;
+        }
 
         #tabs ul li {
             outline: none;
         }
 
-            #tabs ul li a {
-                outline: none;
-            }
+        #tabs ul li a {
+            outline: none;
+        }
 
         button.set-midnight-time {
             font-size: 13px;
@@ -208,8 +208,7 @@
 @{
     const string UpdateCOMTRADECounters = "/@openHistorian/UpdateCOMTRADECounters.exe";
 
-    if (ViewBag.PageControlScripts == null)
-    {
+    if (ViewBag.PageControlScripts == null) {
         ViewBag.PageControlScripts = new StringBuilder();
     }
 
@@ -219,13 +218,12 @@
     Dictionary<string, string> parameters = request.QueryParameters();
 
     Uri requestUri = ViewBag.Request.RequestUri;
-    string updateCompleteCallback = requestUri.Scheme + "://" + requestUri.Authority + "/api/Feedback/UpdateCOMTRADECountersComplete?connectionID=";
+    string updateCompleteCallback = requestUri.Scheme + "://" + requestUri.Authority + "/api/Feedback/SendUpdateCOMTRADECountersCompleteNotification?operationHandle=";
 
     string showMenu;
     parameters.TryGetValue("ShowMenu", out showMenu);
 
-    if (string.IsNullOrEmpty(showMenu))
-    {
+    if (string.IsNullOrEmpty(showMenu)) {
         showMenu = "true";
     }
 
@@ -262,15 +260,12 @@
     string useAjaxVerfication = AuthenticationOptions.DefaultAjaxRequestVerificationToken;
     ReadonlyAuthenticationOptions options = ViewBag.AuthenticationOptions;
 
-    if (options != null)
-    {
-        if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken))
-        {
+    if (options != null) {
+        if (!string.IsNullOrWhiteSpace(options.RequestVerificationToken)) {
             verificationHeader = options.RequestVerificationToken;
         }
 
-        if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken))
-        {
+        if (!string.IsNullOrWhiteSpace(options.AjaxRequestVerificationToken)) {
             useAjaxVerfication = options.AjaxRequestVerificationToken;
         }
     }
@@ -278,10 +273,9 @@
     string verificationValue = Html.RequestVerificationHeaderToken();
 
     string constants = string.Format(@"
-const verificationHeader = ""{0}"";
-const verificationValue = ""{1}"";
-const useAjaxVerfication = ""{2}"";
-",
+        const verificationHeader = ""{0}"";
+        const verificationValue = ""{1}"";
+        const useAjaxVerfication = ""{2}"";",
         /* 0 */ verificationHeader.JavaScriptEncode(),
         /* 1 */ verificationValue.JavaScriptEncode(),
         /* 2 */ useAjaxVerfication.JavaScriptEncode()
@@ -1585,7 +1579,7 @@ const useAjaxVerfication = ""{2}"";
                 return;
             }
 
-            dataHub.updateCOMTRADECountersIsCompleted($.connection.hub.id).done(function (completed) {
+            dataHub.checkIfUpdateCOMTRADECountersIsCompleted(state.OperationHandle).done(function (completed) {
                 if (completed) {
                     showInfoMessage("COMTRADE CFF successfully updated with end sample count " + state.EndSampleCount + (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : ""), 10000);
                     uriProtocolScheme = null;
@@ -1613,7 +1607,8 @@ const useAjaxVerfication = ""{2}"";
                         if (viewModel.fileFormat() == 0)
                             state.BinaryByteCount = 0;
 
-                        const callback = "@updateCompleteCallback" + encodeURIComponent($.connection.hub.id);
+                        const callback = "@updateCompleteCallback" + encodeURIComponent(exportOperationHandle);
+
                         uriProtocolScheme = "comtrade-update-counter://open?" +
                             "targetExportName=" + encodeURIComponent(state.TargetExportName) +
                             "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) +
@@ -1642,24 +1637,30 @@ const useAjaxVerfication = ""{2}"";
                         state.TotalOperationTime,
                         (state.OperationRate / 6000000000).toLocaleString()
                     ), -1);
+
                     $("#exportingLabel").text("Complete");
                     $("#progressIcon").hide();
                     $("#cancelDataExport").disable();
+
                     updateProgress(state);
                     setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1500);
                 }
                 else if (state.Failed) {
                     showErrorMessage("Data export failed: " + state.FailedReason);
+
                     $("#exportingLabel").text("Failed");
                     $("#progressIcon").hide();
                     $("#cancelDataExport").disable();
+
                     setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1000);
                 }
                 else if (state.CancellationToken.IsCancelled) {
                     showInfoMessage("Data export cancelled", -1);
+
                     $("#exportingLabel").text("Cancelled");
                     $("#progressIcon").hide();
                     $("#cancelDataExport").disable();
+
                     setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1000);
                 }
                 else {

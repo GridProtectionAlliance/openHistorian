@@ -70,6 +70,11 @@ namespace openHistorian.Adapters
         public CancellationToken CancellationToken { get; } = new CancellationToken();
 
         /// <summary>
+        /// Gets or sets associated operation handle.
+        /// </summary>
+        public uint OperationHandle { get; set; }
+
+        /// <summary>
         /// Gets or sets progress that represents number of completed operations.
         /// </summary>
         public long Progress { get; set; }
@@ -396,6 +401,8 @@ namespace openHistorian.Adapters
 
             while (!m_historianOperationStates.TryAdd(operationHandle, operationState))
                 operationHandle = Random.UInt32;
+
+            operationState.OperationHandle = operationHandle;
 
             return operationHandle;
         }

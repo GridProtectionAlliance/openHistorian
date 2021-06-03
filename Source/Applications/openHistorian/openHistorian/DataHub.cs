@@ -1025,10 +1025,10 @@ namespace openHistorian
         /// <summary>
         /// Checks if UpdateCOMTRADECounters has been marked as completed for user session.
         /// </summary>
-        /// <param name="connectionID">SignalR user session connection ID.</param>
+        /// <param name="operationHandle">Handle to historian operation state.</param>
         /// <returns><c>true</c> if completed; otherwise, <c>false</c>.</returns>
-        public bool UpdateCOMTRADECountersIsCompleted(string connectionID) =>
-            FeedbackController.UpdateCOMTRADECountersIsCompleted(connectionID);
+        public bool CheckIfUpdateCOMTRADECountersIsCompleted(uint operationHandle) =>
+            FeedbackController.CheckIfUpdateCOMTRADECountersIsCompleted(operationHandle.ToString());
 
         #endregion
     }
