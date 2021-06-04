@@ -9841,7 +9841,7 @@
             <remarks>
             Command will only be sent if <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DeviceSupportsCommands"/> is <c>true</c> and <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </remarks>
-            <returns>A <see cref="T:System.Threading.WaitHandle"/>.</returns>
+            <returns>A <see cref="T:System.Threading.WaitHandle"/> for send operation.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SendDeviceCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
@@ -9851,7 +9851,21 @@
             <remarks>
             Command will only be sent if <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DeviceSupportsCommands"/> is <c>true</c> and <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </remarks>
-            <returns>A <see cref="T:System.Threading.WaitHandle"/>.</returns>
+            <returns>A <see cref="T:System.Threading.WaitHandle"/> for send operation.</returns>
+            <remarks>
+            This function will not throw an exception. Any send exceptions will be logged to <see cref="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ParsingException"/> event. Consumer
+            can assume function failed if returned <see cref="T:System.Threading.WaitHandle"/> is <c>null</c>, which will be the case if device does not support
+            commands or no channel is available for publication.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SendDeviceCommand(GSF.PhasorProtocols.ICommandFrame)">
+            <summary>
+            Sends the specified <see cref="T:GSF.PhasorProtocols.ICommandFrame"/> to the remote device.
+            </summary>
+            <param name="commandFrame">Command frame to send.</param>
+            <returns>A <see cref="T:System.Threading.WaitHandle"/> for send operation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="commandFrame"/> is <c>null</c>.</exception>
+            <exception cref="T:System.InvalidOperationException">Device does not support commands - or - No channel open for command publication.</exception>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.Write(System.Byte[],System.Int32,System.Int32)">
             <summary>
