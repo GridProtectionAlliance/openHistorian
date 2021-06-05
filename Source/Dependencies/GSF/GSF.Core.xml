@@ -9521,6 +9521,22 @@
             <param name="fieldDataType">Specific <see cref="T:System.Data.DbType"/> to target for field.</param>
             <param name="targetDatabaseType">Target <see cref="T:GSF.Data.DatabaseType"/> for applying <paramref name="fieldDataType"/>.</param>
         </member>
+        <member name="T:GSF.Data.Model.SettingsCategoryAttribute">
+            <summary>
+            Defines an attribute that will allow a custom settings category for a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SettingsCategoryAttribute.SettingsCategory">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SettingsCategoryAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.SettingsCategoryAttribute"/>.
+            </summary>
+            <param name="settingsCategory">Config file Settings category to use for class.</param>
+        </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
             Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,
