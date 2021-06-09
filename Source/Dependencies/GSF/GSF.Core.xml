@@ -9537,6 +9537,38 @@
             </summary>
             <param name="settingsCategory">Config file Settings category to use for class.</param>
         </member>
+        <member name="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute">
+            <summary>
+            Defines an attribute that will allow a general table name prefix for a modeled table instead of using
+            the config file setting TableNamePrefix.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.Prefix">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/>.
+            </summary>
+            
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/> from the systemSettings section and <paramref name="setting"/> used in the config file.
+            </summary>
+            
+            <param name="setting">Name the setting to use out of the config file systemSettings section.</param>
+        </member>
+        <member name="M:GSF.Data.Model.ConfigFileTableNamePrefixAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/> from the <paramref name="settingsCategory"/> and <paramref name="setting"/> used in the config file.
+            </summary>
+            
+            <param name="settingsCategory">Name the settings category to use out of the config file systemSettings section.</param>
+            <param name="setting">Name the setting to use out of the config file systemSettings section.</param>
+        </member>
         <member name="T:GSF.Data.Model.UseEscapedNameAttribute">
             <summary>
             Defines an attribute that will request use of the escaped name of a modeled identifier, i.e.,
