@@ -62,7 +62,7 @@ namespace openHistorian.Adapters
     /// <summary>
     /// Defines an Adapter that calculates Unbalance Factors.
     /// </summary>
-    [Description("Scheduled Email: Sends an HTML/XML email based on a schedule.")]
+    [Description("Scheduled Email: Sends an HTML/XML email based on a schedule or via a SEND command.")]
     public class ScheduledEmail : FacileActionAdapterBase
     {
         #region [ Members ]
@@ -85,6 +85,7 @@ namespace openHistorian.Adapters
         private readonly Mail m_mailClient;
         private System.Timers.Timer m_timer;
         private bool m_disposed;
+        private DateTime m_lastSent;
 
         #endregion
 
@@ -276,6 +277,18 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets or sets whether the email is send on the schedule.
+        /// </summary>
+        [ConnectionStringParameter,
+        Description("True if the email should be sent based on the Schedule"),
+        DefaultValue(true)]
+        public bool SendSchedule
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets flag that determines if temporal processing is supported.
         /// </summary>
         public override bool SupportsTemporalProcessing => false;
@@ -296,9 +309,13 @@ namespace openHistorian.Adapters
                 status.AppendLine();
                 status.AppendFormat("Template file: {0}".PadLeft(descriptionLength), TemplateFile);
                 status.AppendLine();
-                status.AppendFormat("Scheduled to be sent at: {0}:{1}".PadLeft(descriptionLength+4), Hour,Minute);
+                status.AppendFormat("Scheduled to be sent at: {0}:{1}".PadLeft(descriptionLength + 4), Hour, Minute);
                 status.AppendLine();
-                status.AppendFormat("Scheduled to be sent in: {0} s".PadLeft(descriptionLength+2), ComputeSeconds());
+                status.AppendFormat("Scheduled to be sent in: {0} s".PadLeft(descriptionLength + 2), ComputeSeconds());
+                status.AppendLine();
+                status.AppendFormat("Send Email on Schedule: {0} s".PadLeft(descriptionLength), SendSchedule.ToString());
+                status.AppendLine();
+                status.AppendFormat("Last Email sent: {0} s".PadLeft(descriptionLength), m_lastSent.ToString("yy-dd-MMTHHmmss") );
                 status.AppendLine();
                 if (EmailDatasource == EmailDataSource.File)
                 {
@@ -323,8 +340,10 @@ namespace openHistorian.Adapters
         public override void Initialize()
         {
             ParseConnectionString();
-            // Start Timer for now we just fix it at 30 for testing
             // We do not reset the timer to avoid email flooding at this stage
+            if (!SendSchedule)
+                return;
+
             m_timer = new System.Timers.Timer();
             if (m_timer != null)
             {
@@ -430,13 +449,13 @@ namespace openHistorian.Adapters
         /// <returns>A short one-line summary of the current status of this <see cref="AdapterBase"/>.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return $"Email is scheduled for {Hour}:{Minute}".CenterText(maxLength);
+            return $"Email was last sent {m_lastSent.ToString("yy-dd-MMTHHmmss")}".CenterText(maxLength);
         }
 
         /// <summary>
         /// Sends the  <see cref="ScheduledEmail"/>.
         /// </summary>
-        [AdapterCommand("Sends the Email imidiately.", "Administrator", "Editor")]
+        [AdapterCommand("Sends the Email immediately.", "Administrator", "Editor")]
         public void Send()
         {
             m_sendEmail();
@@ -470,38 +489,39 @@ namespace openHistorian.Adapters
 
             // Prepare Email to be sent.
             try
+            {
+                //Read XLS Template File
+                string template = "";
+                using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
+                    template = reader.ReadToEnd();
+
+                //Read Data
+                string data = "";
+                if (EmailDatasource == EmailDataSource.File)
                 {
-                    //Read XLS Template File
-                    string template = "";
-                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(TemplateFile)))
-                        template = reader.ReadToEnd();
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                        data = reader.ReadToEnd();
+                }
+                if (EmailDatasource == EmailDataSource.DataBase)
+                {
+                    string sqlquery = "";
+                    using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
+                        sqlquery = reader.ReadToEnd();
 
-                    //Read Data
-                    string data = "";
-                    if (EmailDatasource == EmailDataSource.File)
-                    {
-                        using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
-                            data = reader.ReadToEnd();
-                    }
-                    if (EmailDatasource == EmailDataSource.DataBase)
-                    {
-                        string sqlquery = "";
-                        using (StreamReader reader = new StreamReader(FilePath.GetAbsolutePath(DataFile)))
-                            sqlquery = reader.ReadToEnd();
-
-                        sqlquery = string.Format(sqlquery, DateTime.Today.RoundDownToNearestDay());
-                        using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
-                            data = connection.ExecuteScalar<string>(sqlquery);
-                    }
+                    sqlquery = string.Format(sqlquery, DateTime.Today.RoundDownToNearestDay());
+                    using (AdoDataConnection connection = new AdoDataConnection(ReportSettingsCategory))
+                        data = connection.ExecuteScalar<string>(sqlquery);
+                }
 
 
-                    XDocument email = ApplyTemplate(template, data);
+                XDocument email = ApplyTemplate(template, data);
 
-                    OnStatusMessage(MessageLevel.Info, "sending Email.....");
+                OnStatusMessage(MessageLevel.Info, "Sending Email.....");
 
-                    m_mailClient.Body = GetBody(email);
-                    m_mailClient.Send();
-                OnStatusMessage(MessageLevel.Info, "Email Sent Succesfully");
+                m_mailClient.Body = GetBody(email);
+                m_mailClient.Send();
+                OnStatusMessage(MessageLevel.Info, "Email Sent Successfully");
+                m_lastSent = DateTime.UtcNow;
             }
                 catch (Exception ex)
                 {
