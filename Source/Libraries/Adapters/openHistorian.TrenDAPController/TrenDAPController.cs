@@ -57,7 +57,7 @@ namespace openHistorian.TrenDAPController
         #region [ Methods ]
 
         /// <summary>
-        /// Validates that openHistorian Grafana data source is responding as expected.
+        /// Validates that openHistorian TrendAP data source is responding as expected.
         /// </summary>
         [HttpGet]
         public HttpResponseMessage Index()
@@ -203,7 +203,7 @@ namespace openHistorian.TrenDAPController
 
 
         /// <summary>
-        /// Returns specific channel metadata associated with query.
+        /// Returns queried Data.
         /// </summary>
         [HttpPost]
         public HttpResponseMessage Query([FromBody] Post post)
