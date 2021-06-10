@@ -275,6 +275,10 @@ namespace openHistorian.TrenDAPController
                             dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:00:00Z"));
                         else if (post.Aggregate == "1d")
                             dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddT00:00:00Z"));
+                        else if (post.Aggregate == "1s")
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                        else if (post.Aggregate == "*")
+                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
                         else
                             dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-01T00:00:00Z"));
 
