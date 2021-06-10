@@ -145,6 +145,11 @@ namespace openHistorian.TrenDAPController
             /// End time of query results
             /// </summary>
             public DateTime EndTime { get; set; }
+            ///<summary>
+            ///  List of Point IDs to include in query results
+            ///  Note that this will override <see cref="Types"/>, <see cref="Phases"/> and <see cref="Devices"/>
+            ///</summary>
+            public string[]? Tags { get; set; }
 
         }
 
@@ -167,10 +172,7 @@ namespace openHistorian.TrenDAPController
 
         private DataTable GetTable(Post post)
         {
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-
-                string sql = @$"
+            string sql = @$"
                     SELECT * 
                     FROM ActiveMeasurement 
                     WHERE 
@@ -178,6 +180,19 @@ namespace openHistorian.TrenDAPController
                         Phase IN ({string.Join(",", post.Phases.Select(d => "'" + d + "'"))}) AND
                         SignalType IN ({string.Join(",", post.Types.Select(d => "'" + d + "'"))})
                     ";
+
+            if ( post.Tags != null && post.Tags.Length > 0)
+                sql = @$"
+                    SELECT * 
+                    FROM ActiveMeasurement 
+                    WHERE 
+                        ID IN ({string.Join(",", post.Tags.Select(d => "'" + d + "'"))})
+                    ";
+
+                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+
+               
                 return connection.RetrieveData(sql);
             }
         }
