@@ -10961,6 +10961,12 @@
             <see cref="T:GSF.ComponentModel.UpdateValueExpressionAttribute"/> on the model properties.
             </remarks>
         </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.GetTableName">
+            <summary>
+            Gets table name for model applying model attributes <see cref="T:GSF.Data.Model.TableNameAttribute"/>, <see cref="T:GSF.Data.Model.ConfigFileTableNamePrefixAttribute"/>, and <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>
+            </summary>
+            <returns>The table name describe using model attributes</returns>
+        </member>
         <member name="T:GSF.Data.TableType">
             <summary>
             Specifies the type of object in database
