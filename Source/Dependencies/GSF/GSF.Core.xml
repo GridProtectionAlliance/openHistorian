@@ -11992,7 +11992,7 @@
             Gets current UTC date-time in an implementation that is proper for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
         </member>
-        <member name="P:GSF.Data.AdoDataConnection.DefaultIsloationLevel">
+        <member name="P:GSF.Data.AdoDataConnection.DefaultIsolationLevel">
             <summary>
             Gets the default <see cref="T:System.Data.IsolationLevel"/> for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
