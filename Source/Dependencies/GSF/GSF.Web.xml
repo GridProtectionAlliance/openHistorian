@@ -20,22 +20,25 @@
             Creates a new <see cref="T:GSF.Web.Model.ModelController`1"/>
             </summary>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.#ctor(System.Boolean,System.String,System.String)">
+        <member name="M:GSF.Web.Model.ModelController`1.GetNew">
             <summary>
-            Creates a new <see cref="T:GSF.Web.Model.ModelController`1"/>
+            Used to get an empty record
             </summary>
-            <param name="hasParent"> Indicates if the Model has a Parent Model.</param>
-            <param name="parentKey"> The key Associated with the Parent Model.</param>
-            <param name="primaryKeyField"> The Primary Identifier Field for this Model.</param>
+            <returns>An empty record</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.#ctor(System.Boolean,System.String,System.Boolean,System.String)">
+        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String)">
             <summary>
-            Creates a new <see cref="T:GSF.Web.Model.ModelController`1"/>
+            Gets all records from associated table, filtered to parent key ID if provided
             </summary>
-            <param name="hasParent"> Indicates if the Model has a Parent Model.</param>
-            <param name="parentKey"> The key Associated with the Parent Model.</param>
-            <param name="hasUniqueKey"> Indicates if the Model also has a unique Key.</param>
-            <param name="uniqueKey"> The Unique Key Field for this Model.</param>
+            <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> contiaining <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetOne(System.String)">
+            <summary>
+            Gets record from associated table with a primary key matching the id provided
+            </summary>
+            <param name="id">Parent ID to be used if Table has a set Parent Key</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> contiaining <see cref="!:T"/> or <see cref="T:System.Exception"/></returns>
         </member>
         <member name="T:GSF.Web.Model.DataContext">
             <summary>
