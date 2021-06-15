@@ -8279,6 +8279,65 @@
             <param name="fromTable">Source table</param>
             <param name="toTable">Destination table</param>
         </member>
+        <member name="T:GSF.Data.Model.AdditionalFieldSearchAttribute">
+            <summary>
+            Defines an attribute that will allow setting a custom view a modeled table.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.Condition">
+            <summary>
+            Gets the condition used to reduce the number of rows.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.AdditionalFieldTable">
+            <summary>
+            Gets Table name to use for AdditionalFields.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.PrimaryKeyField">
+            <summary>
+            Gets Field name to use for matching <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.ValueField">
+            <summary>
+            Gets Field name to use for matching Values.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.AdditionalFieldSearchAttribute.FieldKeyField">
+            <summary>
+            Gets Field name to use for matching FieldNames.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <param name="additionalFieldsTable">SQL Table containing additional Fields.</param>
+            <param name="primaryKeyCollumn">SQL Column that will be matched to <see cref="T:GSF.Data.Model.PrimaryKeyAttribute"/>.</param>
+            <param name="valueCollumn">SQL Column that will be matched to the Value.</param>
+            <param name="fieldKeyCollumn">SQL Column that will be matched to the Field name.</param>
+        </member>
+        <member name="M:GSF.Data.Model.AdditionalFieldSearchAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.AdditionalFieldSearchAttribute"/>.
+            </summary>
+            <param name="condition">Condition to be true for any row in the additionalFields Table to be used.</param>
+            <remarks>
+            This Assumes the following View is set up:
+            CREATE VIEW AdditionalFieldSearch AS 
+            SELECT
+               AdditionalFieldValue.ParentTableID,
+               AdditionalFieldValue.Value,
+               AdditionalField.ParentTable,
+               AdditionalField.FieldName,
+               FROM
+                   AdditionalField LEFT JOIN
+                   AdditionalFieldValue ON AdditionalFieldValue.AdditionalFieldID = AdditionalField.ID
+            GO
+            </remarks>
+        </member>
         <member name="T:GSF.Data.Model.EncryptDataAttribute">
             <summary>
             Defines an attribute that provides encryption of text field contents for a modeled table.

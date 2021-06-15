@@ -31,14 +31,59 @@
             Gets all records from associated table, filtered to parent key ID if provided
             </summary>
             <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
-            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> contiaining <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
         <member name="M:GSF.Web.Model.ModelController`1.GetOne(System.String)">
             <summary>
             Gets record from associated table with a primary key matching the id provided
             </summary>
-            <param name="id">Parent ID to be used if Table has a set Parent Key</param>
-            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> contiaining <see cref="!:T"/> or <see cref="T:System.Exception"/></returns>
+            <param name="id">ID to be used</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="!:T"/> or <see cref="T:System.Exception"/></returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String,System.Int32)">
+            <summary>
+            Gets a sorted list of <see cref="!:T"/>.
+            </summary>
+            <param name="sort"> the Field to be sorted by.</param>
+            <param name="ascending"> parameter to indicate whether the list is in ascending order.</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String,System.String,System.Int32)">
+            <summary>
+            Gets all records from associated table, filtered to parent key ID if provided, sorted by the provided Field.
+            </summary>
+            <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
+            <param name="sort"> the Field to be sorted by.</param>
+            <param name="ascending"> parameter to indicate whether the list is in ascending order.</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.Post(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Adds a new Record.
+            </summary>
+            <param name="record"> The <see cref="!:T"/> record to be added.</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the added record or <see cref="T:System.Exception"/> </returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.Patch(`0)">
+            <summary>
+            Updates an existing Record.
+            </summary>
+            <param name="record"> The <see cref="!:T"/> record to be updated.</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the updated record or <see cref="T:System.Exception"/> </returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.Delete(`0)">
+            <summary>
+            Deletes an existing Record.
+            </summary>
+            <param name="record"> The <see cref="!:T"/> record to be deleted.</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the number of records deleted or <see cref="T:System.Exception"/> </returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetSearchableList(GSF.Web.Model.ModelController{`0}.PostData)">
+            <summary>
+            Gets all records from associated table, filtered and sorted as defined in <see cref="!:postData"/>.
+            </summary>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
         <member name="T:GSF.Web.Model.DataContext">
             <summary>
