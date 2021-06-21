@@ -62,18 +62,23 @@ namespace openHistorian.Adapters
             public ulong MinTimestamp;
             public ulong MaxTimestamp;
 
-            public void Set(float value, ulong timestamp)
+            public ulong MinFlags;
+            public ulong MaxFlags;
+
+            public void Set(float value, ulong timestamp, ulong flags)
             {
                 if (value < Min)
                 {
                     Min = value;
                     MinTimestamp = timestamp;
+                    MinFlags = flags;
                 }
 
                 if (value > Max)
                 {
                     Max = value;
                     MaxTimestamp = timestamp;
+                    MaxFlags = flags;
                 }
             }
 
@@ -82,6 +87,7 @@ namespace openHistorian.Adapters
                 Min = float.MaxValue;
                 Max = float.MinValue;
                 MinTimestamp = MaxTimestamp = 0UL;
+                MinFlags = MaxFlags = 0UL;
             }
 
             public static readonly Peak Default = new Peak();
@@ -176,7 +182,7 @@ namespace openHistorian.Adapters
                             if (includePeaks)
                             {
                                 peak = peaks.GetOrAdd(pointID, _ => new Peak());
-                                peak.Set(pointValue, timestamp);
+                                peak.Set(pointValue, timestamp, value.Value3);
                             }
 
                             if (resolutionSpan > 0UL && timestamp - lastTimes.GetOrAdd(pointID, 0UL) < resolutionSpan)
@@ -184,7 +190,6 @@ namespace openHistorian.Adapters
 
                             // New value is ready for publication
                             string target = targetMap[pointID];
-                            MeasurementStateFlags flags = (MeasurementStateFlags)value.Value3;
 
                             if (includePeaks)
                             {
@@ -195,7 +200,7 @@ namespace openHistorian.Adapters
                                         Target = target,
                                         Value = peak.Min,
                                         Time = (peak.MinTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                        Flags = flags
+                                        Flags = (MeasurementStateFlags)peak.MinFlags
                                     };
                                 }
 
@@ -206,7 +211,7 @@ namespace openHistorian.Adapters
                                         Target = target,
                                         Value = peak.Max,
                                         Time = (peak.MaxTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                        Flags = flags
+                                        Flags = (MeasurementStateFlags)peak.MaxFlags
                                     };
                                 }
 
@@ -219,7 +224,7 @@ namespace openHistorian.Adapters
                                     Target = target,
                                     Value = pointValue,
                                     Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                    Flags = flags
+                                    Flags = (MeasurementStateFlags)value.Value3
                                 };
                             }
 
