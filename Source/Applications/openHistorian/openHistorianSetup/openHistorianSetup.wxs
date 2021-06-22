@@ -152,6 +152,11 @@
     <Property Id="REGSERVICEACCOUNT">
       <RegistrySearch Id="ServiceAccountRegSearch" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\[SERVICENAME]" Name="ObjectName" Type="raw" />
     </Property>
+    <Property Id="REGSERVICESTARTVALUE">
+      <RegistrySearch Id="ServiceStartRegSearch" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\[SERVICENAME]" Name="Start" Type="raw" />
+    </Property>
+    <SetProperty Action="SetServiceStartDefault" Id="SERVICESTART" After="AppSearch" Value="#2" Sequence="first"><![CDATA[NOT REGSERVICESTARTVALUE]]></SetProperty>
+    <SetProperty Action="SetServiceStartRegistry" Id="SERVICESTART" After="AppSearch" Value="[REGSERVICESTARTVALUE]" Sequence="first"><![CDATA[REGSERVICESTARTVALUE]]></SetProperty>
     <SetProperty Action="SetServiceAccountDefault" Id="SERVICEACCOUNT" After="AppSearch" Value="NT SERVICE\[SERVICENAME]" Sequence="first"><![CDATA[NOT REGSERVICEACCOUNT]]></SetProperty>
     <SetProperty Action="SetServiceAccountRegistry" Id="SERVICEACCOUNT" After="AppSearch" Value="[REGSERVICEACCOUNT]" Sequence="first"><![CDATA[REGSERVICEACCOUNT]]></SetProperty>
     <SetProperty Id="PROCESSSTARTINFO" Value="FileName={[#ConfigurationSetupUtility.exe]};Arguments=-install;UseShellExecute=True;Verb=runas" After="ExecuteAction" Sequence="ui" />
@@ -194,6 +199,8 @@
       <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE</Custom>
       <Custom Action="NetFxExecuteNativeImageCommitInstall" After="NetFxExecuteNativeImageUninstall">0</Custom>
       <Custom Action="NetFxExecuteNativeImageInstall" After="NetFxExecuteNativeImageCommitInstall" />
+      <!-- Set write registry values sequence after service install but before service start to restore original service start mode -->
+      <WriteRegistryValues Sequence="5850" />
     </InstallExecuteSequence>
   </Product>
 
@@ -319,6 +326,9 @@
             <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.Revision" Name="Revision" Value="[ProductVersion]" Type="string" />
             <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.TargetBitSize" Name="TargetBitSize" Value="64bit" Type="string" />
           </RegistryKey>
+        </RegistryKey>
+        <RegistryKey Id="REG_ServiceParams" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\[SERVICENAME]" ForceCreateOnInstall="yes">
+          <RegistryValue Id="REG_ServiceParams.Start" Name="Start" Value="[SERVICESTART]" Type="string" />
         </RegistryKey>
       </Component>
 
