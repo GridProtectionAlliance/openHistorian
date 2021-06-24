@@ -3764,6 +3764,46 @@
             Derived classes are expected call <see cref="M:GSF.TimeSeries.Adapters.FacileActionAdapterBase.OnNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})"/> for any new measurements that may get created.
             </remarks>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultRespectInputDemands">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.RespectInputDemands"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultRespectOutputDemands">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.RespectOutputDemands"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultFramesPerSecond">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.FramesPerSecond"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultLagTime">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.LagTime"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultLeadTime">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.LeadTime"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultTrackLatestMeasurements">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.TrackLatestMeasurements"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultUseLocalClockAsRealTime">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DefaultFallBackOnLocalClock">
+            <summary>
+            Default value for the <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.FallBackOnLocalClock"/> property.
+            </summary>
+        </member>
         <member name="E:GSF.TimeSeries.Adapters.FacileActionAdapterBase.NewMeasurements">
             <summary>
             Provides new measurements from action adapter.
@@ -3897,6 +3937,14 @@
             Use your local system clock as real time only if the time is locally GPS-synchronized,
             or if the measurement values being sorted were not measured relative to a GPS-synchronized clock.
             Turn this off if the class is intended to process historical data.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.FallBackOnLocalClock">
+            <summary>
+            Gest or sets flag that determines whether to fall back on local clock time as real time when time is unreasonable.
+            </summary>
+            <remarks>
+            This property is only applicable when <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> is <c>false</c>.
             </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.RealTime">
