@@ -8406,6 +8406,22 @@
             </summary>
             <param name="roles">Comma separated string of roles allowed for DELETE functions.</param>
         </member>
+        <member name="T:GSF.Data.Model.ReturnLimitAttribute">
+            <summary>
+            Defines an attribute that will allows a top number of results to be returned when queried
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ReturnLimitAttribute.Limit">
+            <summary>
+            Gets field name to use for property.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ReturnLimitAttribute.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ReturnLimitAttribute"/>.
+            </summary>
+            <param name="limit">Number of top records to return.</param>
+        </member>
         <member name="T:GSF.Data.Model.ViewOnlyAttribute">
             <summary>
             Defines an attribute that will allow setting View only functions for a modeled table.
