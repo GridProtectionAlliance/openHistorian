@@ -1,6 +1,8 @@
 <Include>
 <Directory Id="WWWROOTFOLDER" Name="wwwroot">
-  <Directory Id="CONTENTFOLDER" Name="Content" />
+  <Directory Id="CONTENTFOLDER" Name="Content">
+    <Directory Id="CONTENTFONTSFOLDER" Name="fonts" />
+  </Directory>
   <Directory Id="IMAGESFOLDER" Name="Images">
     <Directory Id="IMAGESICONSFOLDER" Name="Icons" />
   </Directory>

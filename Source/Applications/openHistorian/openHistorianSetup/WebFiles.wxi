@@ -126,6 +126,20 @@
     <File Id="Content_Site.css" Name="Site.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\Site.css" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_fonts_Components" Directory="CONTENTFONTSFOLDER">
+  <Component Id="Content_fonts_jsglyph_eot">
+    <File Id="Content_fonts_jsglyph.eot" Name="jsglyph.eot" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\fonts\jsglyph.eot" />
+  </Component>
+  <Component Id="Content_fonts_jsglyph_svg">
+    <File Id="Content_fonts_jsglyph.svg" Name="jsglyph.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\fonts\jsglyph.svg" />
+  </Component>
+  <Component Id="Content_fonts_jsglyph_ttf">
+    <File Id="Content_fonts_jsglyph.ttf" Name="jsglyph.ttf" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\fonts\jsglyph.ttf" />
+  </Component>
+  <Component Id="Content_fonts_jsglyph_woff">
+    <File Id="Content_fonts_jsglyph.woff" Name="jsglyph.woff" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\fonts\jsglyph.woff" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_Components" Directory="IMAGESFOLDER">
   <Component Id="Images_COMTRADEImporter_png">
     <File Id="Images_COMTRADEImporter.png" Name="COMTRADEImporter.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\COMTRADEImporter.png" />

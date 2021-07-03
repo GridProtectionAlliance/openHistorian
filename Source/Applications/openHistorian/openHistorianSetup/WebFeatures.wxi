@@ -2,6 +2,7 @@
 <Feature Id="WebFilesFeature" Title="Web Files" Description="Web Files">
   <ComponentGroupRef Id="wwwroot_Components" />
   <ComponentGroupRef Id="wwwroot_Content_Components" />
+  <ComponentGroupRef Id="wwwroot_Content_fonts_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Icons_Components" />
   <ComponentGroupRef Id="wwwroot_Panels_Components" />

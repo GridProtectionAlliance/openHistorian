@@ -275,6 +275,7 @@
     <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
+    <Content Include="wwwroot\Content\fonts\jsglyph.svg" />
     <Content Include="wwwroot\Content\jquery.jspanel.css" />
     <Content Include="wwwroot\Images\COMTRADEImporter.png" />
     <Content Include="wwwroot\Images\Icons\openHistorian.png" />
@@ -339,6 +340,9 @@
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <Content Include="wwwroot\DeviceGroups.cshtml" />
+    <Content Include="wwwroot\Content\fonts\jsglyph.eot" />
+    <Content Include="wwwroot\Content\fonts\jsglyph.ttf" />
+    <Content Include="wwwroot\Content\fonts\jsglyph.woff" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <Content Include="wwwroot\IaonGraph.cshtml" />
