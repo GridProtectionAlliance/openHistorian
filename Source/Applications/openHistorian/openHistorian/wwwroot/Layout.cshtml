@@ -135,6 +135,8 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link href="@Resources.Root/Shared/Content/bootstrap.css" rel="stylesheet">
     <link href="@Model.Global.BootstrapTheme" rel="stylesheet">
+    <link href="@Resources.Root/Shared/Content/jquery-ui.css" rel="stylesheet">
+    <link href="Content/jquery.jspanel.css" rel="stylesheet">
     <link href="Content/Site.css" rel="stylesheet">
     @Raw(Resources.HeaderIcons)
     @RenderSection("StyleSheets", false)
@@ -337,8 +339,9 @@ else {
     <script src="@Resources.Root/Shared/Scripts/jquery.signalR.js"></script>
     <script src="@Resources.Root/Shared/Scripts/js.cookie.js"></script>
     <script src="@Resources.Root/Shared/Scripts/gsf.web.client.js"></script>
+    <script src="Scripts/jquery.jspanel.js"></script>
     <script src="signalr/hubs"></script>
-    <script src="Scripts/Site.js"></script>
+    <script src="Scripts/Site.js?ver=2"></script>
 
     @Raw(ViewBag.PageControlScripts.ToString())
     @RenderSection("Scripts", false)

@@ -1361,7 +1361,7 @@
                 self.configFrameDetails("Analyzing...");
 
                 phasorHub.extractConfigurationFrame(deviceID).done(self.loadConfigFrame).fail(function (error) {
-                    showErrorMessage(String.format("Failed to extract config file from existing device: {0}", error));
+                    showErrorMessage(String.format("Failed to extract config file from existing device: {0}", error), null, true);
 
                     self.configFrameDetails("Unavailable");
                     $("[id=voltageRow]").css("visibility", "visible");
@@ -1396,7 +1396,7 @@
                         serviceHub.sendCommand("connect " + deviceID);
                 })
                 .fail(function (error) {
-                    showErrorMessage(String.format("Failed to analyze config file: {0}", error));
+                    showErrorMessage(String.format("Failed to analyze config file: {0}", error), null, true);
 
                     self.configFrameDetails("Unavailable");
                     $("[id=voltageRow]").css("visibility", "visible");
@@ -1761,7 +1761,7 @@
 
                 reader.onloadend = function () {
                     if (reader.error && reader.error.message)
-                        showErrorMessage("Failed to load configuration: " + reader.error.message);
+                        showErrorMessage("Failed to load configuration: " + reader.error.message, null, true);
                 };
 
                 reader.readAsText(fileBlob);
@@ -3161,7 +3161,7 @@
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to load " + templateType + " tag template: " + error);
+                showErrorMessage("Failed to load " + templateType + " tag template: " + error, null, true);
             });
         }
 
@@ -3184,7 +3184,7 @@
 
                     // Chain multiple devices saves behind one another...
                     deviceSaveChain = deviceSaveChain.then(function () {
-                        showInfoMessage(String.format("Saving \"{0}\" device {1} / {2} please wait...", cell.IDLabel(), index + 1, cellCount), -1);
+                        showInfoMessage(String.format("Saving \"{0}\" device {1} / {2} please wait...", cell.IDLabel(), index + 1, cellCount), -1, true);
 
                         // Query existing child device record - function will create a new blank device record if one does not exist
                         return phasorHub.queryDeviceByID(cell.ID).then(function (device) {
@@ -3230,11 +3230,11 @@
                                             });
                                         })
                                         .fail(function (error) {
-                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error, null, true);
                                         });
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error, null, true);
                                     });
                                 }
                                 else {
@@ -3248,13 +3248,13 @@
                                         });
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error, null, true);
                                     });
                                 }
                             }
                         })
                         .fail(function (error) {
-                            showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                            showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error, null, true);
                         });
                     });
                 }
@@ -3278,7 +3278,7 @@
                 return $.Deferred().resolve().promise();
             }
 
-            showInfoMessage("Saving device connection, please wait...", -1);
+            showInfoMessage("Saving device connection, please wait...", -1, true);
             disableUIButtons();
 
             // Query existing device record - function will create a new blank device record if one does not exist
@@ -3342,12 +3342,12 @@
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error, null, true);
                             enableUIButtons();
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error, null, true);
                         enableUIButtons();
                     });
                 }
@@ -3366,13 +3366,13 @@
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error, null, true);
                         enableUIButtons();
                     });
                 }
             })
             .fail(function (error) {
-                showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error, null, true);
                 enableUIButtons();
             });
         }
@@ -3389,7 +3389,7 @@
                 viewModel.latitude(device.Latitude);
             })
             .fail(function (error) {
-                showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error));
+                showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error), null, true);
             });
         }
 
@@ -3537,13 +3537,13 @@
             function encodeInfoMessage(message, timeout) {
                 // Html encode message
                 const encodedMessage = $("<div />").text(message).html();
-                showInfoMessage(encodedMessage, timeout);
+                showInfoMessage(encodedMessage, timeout, true);
             }
 
             function encodeErrorMessage(message, timeout) {
                 // Html encode message
                 const encodedMessage = $("<div />").text(message).html();
-                showErrorMessage(encodedMessage, timeout);
+                showErrorMessage(encodedMessage, timeout, true);
             }
 
             // Register info and error message handlers for each hub client

@@ -32,55 +32,190 @@ var serviceHub, serviceHubClient;
 var hubIsConnecting = false;
 var hubIsConnected = false;
 
-function hideErrorMessage() {
-    const wasVisible = $("#error-msg-block").is(":visible");
+const defaultInfoMessageTimeout = 2000;
+const defaultErrorMessageTimeout = 6000;
+const defaultHighEmphasisInfoMessageTimeout = 4000;
+const defaultHighEmphasisErrorMessageTimeout = -1;
 
-    $("#error-msg-block").hide();
+const messagePrefix = "<div><p>";
+const messageSuffix = "</p></div><div><a href=\"#\" class=\"close\" aria-label=\"close\">×</a></div>";
 
-    // Raise "messageVisibiltyChanged" event
-    if (wasVisible)
-        $(window).trigger("messageVisibiltyChanged");    
+const messagePanel = {
+    template: jsPanel.tplContentOnly,
+    paneltype: "hint",
+    position: `right-top -5 ${Math.ceil($("#menuBar").height()) + 5} DOWN`,
+    border: "2px solid",
+    contentSize: "350 auto",
+    show: "animated slideInUp",
+    callback: function (panel) {
+        this.content.css({ display: "flex" });
+
+        $("div", this.content).eq(0).css({
+            fontSize: "16px",
+            textAlign: "center",
+            width: "100%"
+        });
+
+        $("p", this.content).eq(0).css({
+            margin: "auto",
+            padding: "4px 4px"
+        });
+
+        $("div", this.content).eq(1).css({
+            width: "5px",
+            padding: "0 4px 0 12px"
+        });
+    }
+};
+
+function repositionPanels() {
+    let index = Math.ceil($("#menuBar").height()) + 5;
+
+    $(jsPanel.activePanels.list).each(function () {
+        const panel = jsPanel.activePanels.getPanel(this);
+        panel.reposition(`right-top -25 ${index}`);
+        index += panel.height() + 10;
+    });
 }
 
-function hideInfoMessage() {
-    const wasVisible = $("#info-msg-block").is(":visible");
+$(window).on("resize", repositionPanels);
 
-    $("#info-msg-block").hide();
+function hideErrorMessage(options) {
+    if (!options)
+        options = { closeHeaderPanel: true, closeFloatingPanels: true };
 
-    // Raise "messageVisibiltyChanged" event
-    if (wasVisible)
-        $(window).trigger("messageVisibiltyChanged");
+    if (options.closeHeaderPanel) {
+        const wasVisible = $("#error-msg-block").is(":visible");
+
+        $("#error-msg-block").hide();
+
+        // Raise "messageVisibiltyChanged" event
+        if (wasVisible)
+            $(window).trigger("messageVisibiltyChanged");
+    }
+
+    if (options.closeFloatingPanels) {
+        const activePanels = jsPanel.activePanels;
+
+        $(activePanels.list).each(function () {
+            const panel = activePanels.getPanel(this);
+
+            if (panel.isErrorPanel)
+                panel.close();
+        });
+    }
 }
 
-function showErrorMessage(message, timeout) {
-    const wasVisible = $("#error-msg-block").is(":visible");
+function hideInfoMessage(options) {
+    if (!options)
+        options = { closeHeaderPanel: true, closeFloatingPanels: true };
 
-    $("#error-msg-text").html(message);
-    $("#error-msg-block").show();
+    if (options.closeHeaderPanel) {
+        const wasVisible = $("#info-msg-block").is(":visible");
 
-    if (timeout !== undefined && timeout > 0)
-        setTimeout(hideErrorMessage, timeout);
+        $("#info-msg-block").hide();
 
-    // Raise "messageVisibiltyChanged" event
-    if (!wasVisible)
-        $(window).trigger("messageVisibiltyChanged");
+        // Raise "messageVisibiltyChanged" event
+        if (wasVisible)
+            $(window).trigger("messageVisibiltyChanged");
+    }
+
+    if (options.closeFloatingPanels) {
+        const activePanels = jsPanel.activePanels;
+
+        $(activePanels.list).each(function () {
+            const panel = activePanels.getPanel(this);
+
+            if (panel.isInfoPanel)
+                panel.close();
+        });
+    }
 }
 
-function showInfoMessage(message, timeout) {
-    const wasVisible = $("#info-msg-block").is(":visible");
+function showErrorMessage(message, timeout, highEmphasis) {
+    if (highEmphasis) {
+        // Show high-emphasis messages in header block
+        const wasVisible = $("#error-msg-block").is(":visible");
 
-    $("#info-msg-text").html(message);
-    $("#info-msg-block").show();
+        $("#error-msg-text").html(message);
+        $("#error-msg-block").show();
 
-    if (timeout === undefined)
-        timeout = 3000;
+        if (timeout === undefined || timeout === null)
+            timeout = defaultHighEmphasisErrorMessageTimeout;
 
-    if (timeout > 0)
-        setTimeout(hideInfoMessage, timeout);
+        if (timeout > 0)
+            setTimeout(() => hideErrorMessage({ closeHeaderPanel: true }), timeout);
 
-    // Raise "messageVisibiltyChanged" event
-    if (!wasVisible)
-        $(window).trigger("messageVisibiltyChanged");
+        // Raise "messageVisibiltyChanged" event
+        if (!wasVisible)
+            $(window).trigger("messageVisibiltyChanged");
+    }
+    else {
+        if (timeout === undefined || timeout === null)
+            timeout = defaultErrorMessageTimeout;
+
+        const errorPanel = $.jsPanel($.extend({}, messagePanel, {
+            autoclose: timeout,
+            theme: "red filledlight",
+            content: `${messagePrefix}${message}${messageSuffix}`
+        }));
+
+        errorPanel.css("backgroundColor", errorPanel.content.css("backgroundColor"));
+
+        const panelID = errorPanel.attr("id");
+        const dismissPanelID = `dismissPanel-${panelID}`;
+
+        errorPanel.isErrorPanel = true;
+        errorPanel.content.find("a:first").attr("id", dismissPanelID);
+
+        $(`#${dismissPanelID}`).click(() => {
+            errorPanel.close();
+            repositionPanels();
+        });
+    }
+}
+
+function showInfoMessage(message, timeout, highEmphasis) {
+    if (highEmphasis) {
+        // Show high-emphasis messages in header block
+        const wasVisible = $("#info-msg-block").is(":visible");
+
+        $("#info-msg-text").html(message);
+        $("#info-msg-block").show();
+
+        if (timeout === undefined || timeout === null)
+            timeout = defaultHighEmphasisInfoMessageTimeout;
+
+        if (timeout > 0)
+            setTimeout(() => hideInfoMessage({ closeHeaderPanel: true }), timeout);
+
+        // Raise "messageVisibiltyChanged" event
+        if (!wasVisible)
+            $(window).trigger("messageVisibiltyChanged");
+    }
+    else {
+        if (timeout === undefined || timeout === null)
+            timeout = defaultInfoMessageTimeout;
+
+        const infoPanel = $.jsPanel($.extend({}, messagePanel, {
+            autoclose: timeout,
+            theme: "green filledlight",
+            content: `${messagePrefix}${message}${messageSuffix}`
+        }));
+
+        infoPanel.css("backgroundColor", infoPanel.content.css("backgroundColor"));
+
+        const panelID = infoPanel.attr("id");
+        const dismissPanelID = `dismissPanel-${panelID}`;
+
+        infoPanel.isInfoPanel = true;
+        infoPanel.content.find("a:first").attr("id", dismissPanelID);
+
+        $(`#${dismissPanelID}`).click(() => {
+            infoPanel.close();
+            repositionPanels();
+        });
+    }
 }
 
 function calculateRemainingBodyHeight() {
@@ -179,8 +314,13 @@ $(function () {
         }
     });
 
-    $("#dismissInfoMsg").click(hideInfoMessage);
-    $("#dismissErrorMsg").click(hideErrorMessage);
+    $("#dismissInfoMsg").click(() => hideInfoMessage({ closeHeaderPanel: true }));
+    $("#dismissErrorMsg").click(() => hideErrorMessage({ closeHeaderPanel: true }));
+
+    // Prevent clicking on disabled anchors
+    $("body").on("click", "a.disabled", function (event) {
+        event.preventDefault();
+    });
 
     // Set initial state of hub dependent controls
     updateHubDependentControlState(false);
@@ -197,7 +337,7 @@ $(function () {
 
     $.connection.hub.reconnecting(function() {
         hubIsConnecting = true;
-        showInfoMessage("Attempting to reconnect to service&nbsp;&nbsp;<span class='glyphicon glyphicon-refresh glyphicon-spin'></span>", -1);
+        showInfoMessage("Attempting to reconnect to service&nbsp;&nbsp;<span class='glyphicon glyphicon-refresh glyphicon-spin'></span>", -1, true);
 
         // Disable hub dependent controls
         updateHubDependentControlState(false);
@@ -214,7 +354,7 @@ $(function () {
         hubIsConnected = false;
 
         if (hubIsConnecting)
-            showErrorMessage("Disconnected from server");
+            showErrorMessage("Disconnected from server", -1, true);
 
         // Disable hub dependent controls
         updateHubDependentControlState(false);
@@ -229,13 +369,13 @@ $(function () {
     function encodeInfoMessage(message, timeout) {
         // Html encode message
         const encodedMessage = $("<div />").text(message).html();
-        showInfoMessage(encodedMessage, timeout);
+        showInfoMessage(encodedMessage, timeout, true);
     }
 
     function encodeErrorMessage(message, timeout) {
         // Html encode message
         const encodedMessage = $("<div />").text(message).html();
-        showErrorMessage(encodedMessage, timeout);
+        showErrorMessage(encodedMessage, timeout, true);
     }
 
     // Register info and error message handlers for each hub client

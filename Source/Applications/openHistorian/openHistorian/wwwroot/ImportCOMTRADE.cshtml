@@ -609,7 +609,7 @@
                             });
                     })
                     .fail(function(error) {
-                        showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error));
+                        showErrorMessage(String.format("Failed to analyze COMTRADE configuration \"{0}\": {1}", self.configFile(), error), null, true);
 
                         self.channelCount("0");
                         $("[id=measurementRow]").css("visibility", "visible");
@@ -646,7 +646,7 @@
                         self.loadMeasurements(observableMeasurements);
                     })
                     .fail(function(error) {
-                        showErrorMessage("Failed to load device measurements: " + error);
+                        showErrorMessage("Failed to load device measurements: " + error, null, true);
 
                         self.channelCount("0");
                         $("[id=measurementRow]").css("visibility", "visible");
@@ -797,7 +797,7 @@
                                     state.Progress.toLocaleString(),
                                     state.TotalOperationTime,
                                     state.OperationRate.toLocaleString()
-                                ), -1);
+                                ), -1, true);
                             $("#loadingLabel").text("Complete");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
@@ -805,14 +805,14 @@
                             setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1500);
                         }
                         else if (state.Failed) {
-                            showErrorMessage("COMTRADE data load failed: " + state.FailedReason);
+                            showErrorMessage("COMTRADE data load failed: " + state.FailedReason, null, true);
                             $("#loadingLabel").text("Failed");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
                             setTimeout(function() { $("#loadingDataDialog").modal("hide"); }, 1000);
                         }
                         else if (state.CancellationToken.IsCancelled) {
-                            showInfoMessage("COMTRADE data load cancelled", -1);
+                            showInfoMessage("COMTRADE data load cancelled", -1, true);
                             $("#loadingLabel").text("Cancelled");
                             $("#progressIcon").hide();
                             $("#cancelDataLoad").disable();
@@ -825,7 +825,7 @@
                     })
                     .fail(function(error) {
                         $("#loadingDataDialog").modal("hide");
-                        showErrorMessage("Failed while checking COMTRADE data load status: " + error);
+                        showErrorMessage("Failed while checking COMTRADE data load status: " + error, null, true);
                     });
             };
 
@@ -854,13 +854,13 @@
                     setTimeout(checkProgress, progressRefreshRate);
                 })
                 .fail(function(error) {
-                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.deviceAcronym() + ": " + error);
+                    showErrorMessage("Failed while loading COMTRADE data for device " + viewModel.deviceAcronym() + ": " + error, null, true);
                     enableUIButtons();
                 });                    
         }
 
         function saveDeviceMeasurements(id) {
-            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()) -1);
+            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()) -1, true);
 
             // Loop through and add measurements
             const observableMeasurements = viewModel.measurements();
@@ -880,7 +880,7 @@
                     updatePromises.push(dataHub.addNewOrUpdateMeasurement(measurement)
                         .done(function() {
                             if (++processed % 100 === 0)
-                                showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1);
+                                showInfoMessage("Saving device measurements - " + processed + " processed so far, please wait...", -1, true);
 
                             if (measurement.PointID === 0) {
                                 queryPromises.push(dataHub.queryMeasurementByPointTag(measurement.PointTag)
@@ -891,13 +891,13 @@
                             }
                         })
                         .fail(function(error) {
-                            showErrorMessage("Save failed for device measurement " + measurement.PointTag + ": " + error);
+                            showErrorMessage("Save failed for device measurement " + measurement.PointTag + ": " + error, null, true);
                         }));
                 }
             }
 
             $(updatePromises).whenAll().done(function() {
-                showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...");
+                showInfoMessage("Metadata updates complete for device " + viewModel.deviceAcronym() + ", beginning data load...", null, true);
                 loadCOMTRADEData(id);
 
                 // Intialize device after save
@@ -912,7 +912,7 @@
 
         function saveDeviceConnection() {
             if (hubIsConnected) {
-                showInfoMessage("Saving device connection, please wait...", -1);                
+                showInfoMessage("Saving device connection, please wait...", -1, true);                
                 disableUIButtons();
 
                 // Query existing device record for specified acronym - function will create a new blank device record if one does not exist
@@ -949,12 +949,12 @@
                                             saveDeviceMeasurements(deviceID);
                                         })
                                         .fail(function(error) {
-                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error);
+                                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error, null, true);
                                             enableUIButtons();
                                         });
                                 })
                                 .fail(function(error) {
-                                    showErrorMessage("Save failed for new device " + device.Acronym + ": " + error);
+                                    showErrorMessage("Save failed for new device " + device.Acronym + ": " + error, null, true);
                                     enableUIButtons();
                                 });
                         }
@@ -967,13 +967,13 @@
                                     saveDeviceMeasurements(deviceID);
                                 })
                                 .fail(function(error) {
-                                    showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error);
+                                    showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error, null, true);
                                     enableUIButtons();
                                 });
                         }
                     })
                     .fail(function(error) {
-                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error);
+                        showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error, null, true);
                         enableUIButtons();
                     });
             } else {
@@ -1203,7 +1203,7 @@
                 if (writeOperationHandle > 0) {
                     writeOperationHandle = 0;
                     $("#loadingDataDialog").modal("hide");
-                    showInfoMessage("Data connection lost, COMTRADE data load cancelled...");
+                    showInfoMessage("Data connection lost, COMTRADE data load cancelled...", null, true);
                 }
             });
 
@@ -1255,9 +1255,9 @@
                 dataHub.cancelHistorianOperation(writeOperationHandle)
                     .done(function(success) {
                         if (success)
-                            showInfoMessage("Request to cancel COMTRADE data load initiated...");
+                            showInfoMessage("Request to cancel COMTRADE data load initiated...", null, true);
                         else
-                            showInfoMessage("Request to cancel COMTRADE data load did not succeed: operation has already completed or handle " + writeOperationHandle + " is invalid");
+                            showInfoMessage("Request to cancel COMTRADE data load did not succeed: operation has already completed or handle " + writeOperationHandle + " is invalid", null, true);
                     })
                     .fail(function(error) {
                         showErrorMessage("Failed to cancel COMTRADE data load: " + error);

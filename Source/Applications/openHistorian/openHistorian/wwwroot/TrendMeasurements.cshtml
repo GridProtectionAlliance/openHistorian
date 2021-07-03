@@ -799,7 +799,7 @@
                 Cookies.set("tolerance", val.toString(), { expires: 365 });
 
                 if (val) {
-                    showInfoMessage('WARNING: Exporting data with the "Round to Frame Rate Timestamps" option will result in an export with generated timestamps.', 10000);
+                    showInfoMessage("WARNING: Exporting data with the \"Round to Frame Rate Timestamps\" option will result in an export with generated timestamps.", 10000);
                 }
             });
 
@@ -1002,7 +1002,7 @@
 
                 reader.onloadend = function() {
                     if (reader.error && reader.error.message)
-                        showErrorMessage("Failed to load point selections: " + reader.error.message);
+                        showErrorMessage("Failed to load point selections: " + reader.error.message, null, true);
                 };
 
                 reader.readAsText(fileBlob);
@@ -1581,7 +1581,7 @@
 
             dataHub.checkIfUpdateCOMTRADECountersIsCompleted(state.OperationHandle).done(function (completed) {
                 if (completed) {
-                    showInfoMessage("COMTRADE CFF successfully updated with end sample count " + state.EndSampleCount + (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : ""), 10000);
+                    showInfoMessage("COMTRADE CFF successfully updated with end sample count " + state.EndSampleCount + (viewModel.fileFormat() > 0 ? " and binary byte count " + state.BinaryByteCount : ""), 10000, true);
                     uriProtocolScheme = null;
                 }
                 else {
@@ -1636,7 +1636,7 @@
                         "Data export complete in {0} averaging {1} minutes of data per second" + openCOMTRADEUpdater,
                         state.TotalOperationTime,
                         (state.OperationRate / 6000000000).toLocaleString()
-                    ), -1);
+                    ), -1, true);
 
                     $("#exportingLabel").text("Complete");
                     $("#progressIcon").hide();
@@ -1646,7 +1646,7 @@
                     setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1500);
                 }
                 else if (state.Failed) {
-                    showErrorMessage("Data export failed: " + state.FailedReason);
+                    showErrorMessage("Data export failed: " + state.FailedReason, null, true);
 
                     $("#exportingLabel").text("Failed");
                     $("#progressIcon").hide();
@@ -1655,7 +1655,7 @@
                     setTimeout(function () { $("#exportingDataDialog").modal("hide"); }, 1000);
                 }
                 else if (state.CancellationToken.IsCancelled) {
-                    showInfoMessage("Data export cancelled", -1);
+                    showInfoMessage("Data export cancelled", -1, true);
 
                     $("#exportingLabel").text("Cancelled");
                     $("#progressIcon").hide();
@@ -1679,7 +1679,7 @@
                 return;
 
             uriProtocolScheme = null;
-            showInfoMessage("Exporting data, please wait...", -1);
+            showInfoMessage("Exporting data, please wait...", -1, true);
             disableUIButtons();
 
             const startTime = adjustSubsecondDigits(viewModel.startTime());
@@ -2062,7 +2062,7 @@
                         showInfoMessage("Request to cancel data export did not succeed: operation has already completed or handle " + exportOperationHandle + " is invalid");
                 })
                 .fail(function (error) {
-                    showErrorMessage("Failed to cancel data export: " + error);
+                    showErrorMessage("Failed to cancel data export: " + error, null, true);
                     $("#cancelDataExport").enable();
                 });
             });
@@ -2222,7 +2222,7 @@
             if (exportOperationHandle > 0) {
                 exportOperationHandle = 0;
                 $("#exportingDataDialog").modal("hide");
-                showInfoMessage("Data connection lost, data export cancelled...");
+                showInfoMessage("Data connection lost, data export canceled...", -1, true);
             }
         });
 

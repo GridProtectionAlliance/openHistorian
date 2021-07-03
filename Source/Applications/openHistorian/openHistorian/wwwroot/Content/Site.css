@@ -14,6 +14,49 @@ body {
     white-space: nowrap;
 }
 
+a.disabled {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+input.disabled {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+button.disabled {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+span.checkbox.disabled label {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+span.checkbox.disabled label input[type='checkbox'] {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+div.checkbox.disabled label {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+div.checkbox.disabled label input[type='checkbox'] {
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
+#info-msg-block {
+    margin-top: 10px;
+}
+
+#error-msg-block {
+    margin-top: 10px;
+}
+
 /* Define read-only style for disabled div areas */
 div.readonly {
     background-color: #eee;
@@ -59,7 +102,7 @@ div.readonly:focus {
     padding-right: 30px;
 }
 
-.right-inner-addon i {
+.right-inner-addon i, .right-inner-addon button {
     position: absolute;
     right: 0px;
     padding: 10px 12px;

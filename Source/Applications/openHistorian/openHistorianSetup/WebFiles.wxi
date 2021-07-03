@@ -116,6 +116,9 @@
   <Component Id="Content_bootstrap_theme_min_css">
     <File Id="Content_bootstrap_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.min.css" />
   </Component>
+  <Component Id="Content_jquery_jspanel_css">
+    <File Id="Content_jquery.jspanel.css" Name="jquery.jspanel.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery.jspanel.css" />
+  </Component>
   <Component Id="Content_Popup_css">
     <File Id="Content_Popup.css" Name="Popup.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\Popup.css" />
   </Component>
@@ -198,6 +201,9 @@
   </Component>
   <Component Id="Scripts_force_graph_js">
     <File Id="Scripts_force_graph.js" Name="force-graph.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\force-graph.js" />
+  </Component>
+  <Component Id="Scripts_jquery_jspanel_js">
+    <File Id="Scripts_jquery.jspanel.js" Name="jquery.jspanel.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.jspanel.js" />
   </Component>
   <Component Id="Scripts_Site_js">
     <File Id="Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\Site.js" />

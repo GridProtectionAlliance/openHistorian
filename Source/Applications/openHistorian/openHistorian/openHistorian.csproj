@@ -275,6 +275,7 @@
     <Content Include="Grafana\Readme.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
+    <Content Include="wwwroot\Content\jquery.jspanel.css" />
     <Content Include="wwwroot\Images\COMTRADEImporter.png" />
     <Content Include="wwwroot\Images\Icons\openHistorian.png" />
     <Content Include="wwwroot\Images\Icons\openHistorianWebManager.ico" />
@@ -309,6 +310,7 @@
     <Content Include="wwwroot\Images\openHistorian.png" />
     <Content Include="wwwroot\Images\openHistorianBanner.png" />
     <Content Include="wwwroot\Scripts\force-graph.js" />
+    <Content Include="wwwroot\Scripts\jquery.jspanel.js" />
     <Content Include="wwwroot\Scripts\Site.js" />
     <None Include="App.config">
       <SubType>Designer</SubType>

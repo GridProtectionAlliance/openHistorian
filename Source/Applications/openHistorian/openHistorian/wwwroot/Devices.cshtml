@@ -131,13 +131,13 @@
             function encodeInfoMessage(message, timeout) {
                 // Html encode message
                 const encodedMessage = $("<div />").text(message).html();
-                showInfoMessage(encodedMessage, timeout);
+                showInfoMessage(encodedMessage, timeout, true);
             }
 
             function encodeErrorMessage(message, timeout) {
                 // Html encode message
                 const encodedMessage = $("<div />").text(message).html();
-                showErrorMessage(encodedMessage, timeout);
+                showErrorMessage(encodedMessage, timeout, true);
             }
 
             // Register info and error message handlers for hub client
