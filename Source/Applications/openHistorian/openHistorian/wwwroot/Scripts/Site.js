@@ -231,7 +231,7 @@ function hubConnected() {
     hideErrorMessage();
 
     if (hubIsConnecting)
-        showInfoMessage("Reconnected to service.");
+        showInfoMessage("Reconnected to service.", null, true);
 
     hubIsConnecting = false;
     hubIsConnected = true;
