@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 13 AS VersionNumber
+SELECT 14 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -3114,6 +3114,7 @@ CREATE TABLE AlarmState(
     ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     State VARCHAR(50) NULL,
     Color VARCHAR(50) NULL,
+    RecommendedAction VARCHAR(500) NULL
 )
 GO
 

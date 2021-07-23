@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 13 AS VersionNumber
+SELECT 14 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -2761,6 +2761,7 @@ END;
 CREATE TABLE AlarmState(
     ID NUMBER NOT NULL,
     State varchar(50) NULL,
+    RecommendedAction varchar(500) NULL,
     Color varchar(50) NULL,
 );
 

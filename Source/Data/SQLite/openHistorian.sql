@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 13 AS VersionNumber;
+SELECT 14 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -1733,7 +1733,8 @@ BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SE
 CREATE TABLE AlarmState(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     State VARCHAR(50) NULL,
-    Color VARCHAR(50) NULL
+    Color VARCHAR(50) NULL,
+    RecommendedAction VARCHAR(500) NULL
 );
 
 CREATE TABLE AlarmDevice(

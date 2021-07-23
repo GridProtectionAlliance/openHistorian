@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 13 AS VersionNumber;
+SELECT 14 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -1874,6 +1874,7 @@ EXECUTE PROCEDURE SignalType_UpdateTrackerFn();
 CREATE TABLE AlarmState(
     ID SERIAL NOT NULL PRIMARY KEY,
     State varchar(50) NULL,
+    RecommendedAction varchar(500) NULL,
     Color varchar(50) NULL
 );
 

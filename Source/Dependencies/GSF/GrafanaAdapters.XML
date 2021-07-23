@@ -535,6 +535,11 @@
             Description of the <see cref="T:GrafanaAdapters.AlarmState"/>.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.AlarmState.RecommendedAction">
+            <summary>
+            Recommended Action for the User if a <see cref="T:GrafanaAdapters.AlarmDevice"/> is in this <see cref="T:GrafanaAdapters.AlarmState"/>
+            </summary>
+        </member>
         <member name="P:GrafanaAdapters.AlarmState.Color">
             <summary>
             Color associated with the <see cref="T:GrafanaAdapters.AlarmState"/>.
