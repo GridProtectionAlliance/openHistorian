@@ -27,6 +27,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -39,6 +40,7 @@ using GSF.Reflection;
 using GSF.TimeSeries.UI;
 using GSF.TimeSeries.UI.DataModels;
 using openHistorianManager.Properties;
+using Button = System.Windows.Controls.Button;
 
 namespace openHistorianManager
 {
@@ -123,12 +125,9 @@ namespace openHistorianManager
                         KeyValuePair<Guid, string> currentNode = (KeyValuePair<Guid, string>)ComboboxNode.SelectedItem;
 
                         ComboboxNode.ItemsSource = Node.GetLookupList(null);
+
                         if (ComboboxNode.Items.Count > 0)
-                        {
                             ComboboxNode.SelectedItem = currentNode;
-                            if (ComboboxNode.SelectedItem is null)
-                                ComboboxNode.SelectedIndex = 0;
-                        }
                     }
                 });
             }
@@ -206,6 +205,42 @@ namespace openHistorianManager
             {
                 // Do Nothing. Just let it shut down gracefully without crashing.
             }
+        }
+
+        private void UserControlPanel_LayoutUpdated(object sender, EventArgs e)
+        {
+            // Look for concentrator output streams button
+            Button button = FindButton(UserControlPanel, "Concentrator Output Streams");
+
+            if (button is null)
+                return;
+
+            // Reassign button functionality
+            RemoveClickEvents(button);
+            button.Content = "Data Extractor";
+            button.Click += DataExtractorButton_Click;
+        }
+
+        private void DataExtractorButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("GEPDataExtractor.exe");
+        }
+
+        private void RemoveClickEvents(Button button)
+        {
+            FieldInfo field = typeof(Control).GetField("EventClick", BindingFlags.Static | BindingFlags.NonPublic);
+
+            if (field is null)
+                return;
+
+            object value =  field.GetValue(button);
+            PropertyInfo property = button.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (property is null)
+                return;
+
+            EventHandlerList list = (EventHandlerList)property.GetValue(button, null);
+            list.RemoveHandler(value, list[value]);
         }
 
         /// <summary>
@@ -316,6 +351,45 @@ namespace openHistorianManager
                     MessageBox.Show("Failed to launch local help file." + Environment.NewLine + ex.Message, "openHistorian Manager Help", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        public static Button FindButton(DependencyObject parent, string buttonLabel)
+        {
+            if (parent is null)
+                return null;
+
+            Button foundButton = null;
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+            for (int i = 0; i < childrenCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is Button button)
+                {
+                    if (string.IsNullOrEmpty(buttonLabel))
+                    {
+                        foundButton = button;
+                        break;
+                    }
+                    
+                    if (button.Content?.ToString() == buttonLabel)
+                    {
+                        foundButton = button;
+                        break;
+                    }
+                }
+                else
+                {
+                    // recursively drill down the tree
+                    foundButton = FindButton(child, buttonLabel);
+
+                    if (!(foundButton is null))
+                        break;
+                }
+            }
+
+            return foundButton;
         }
 
         #endregion

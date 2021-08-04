@@ -136,7 +136,7 @@
             <GroupBox x:Name="UserControlGroupBox" Margin="2,-5,2,2" MinHeight="675" FontSize="12">
                 <Border Padding="2" BorderThickness="1" Background="{StaticResource MenuBackgroundBrush}" CornerRadius="5">
                     <StackPanel Name="UserControlParentPanel">
-                        <StackPanel Name="UserControlPanel" Width="{Binding ElementName=UserControlParentPanel, Path=ActualWidth}" />
+                        <StackPanel Name="UserControlPanel" Width="{Binding ElementName=UserControlParentPanel, Path=ActualWidth}" LayoutUpdated="UserControlPanel_LayoutUpdated" />
                     </StackPanel>
                 </Border>
             </GroupBox>
