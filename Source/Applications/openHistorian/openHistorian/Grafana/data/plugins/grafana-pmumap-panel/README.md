@@ -1,9 +1,10 @@
 ﻿<div style="height:100px;">
 <img align="left"  style="height:100px" src="./img/GPA.png" alt="Grid Protection Alliance">
 </div>
+
 # Overview
 
-This plugin is a Grana panel that shows Synchrophasor Data on a map.
+This plugin is a Grafana panel that shows Synchrophasor Data on a map.
 For this Panel to work the openHistorian Data Source plugin has to be installed and set-up and the openHistorian has to be installed.
 This panel also supports a variety of different overlay and background maps.
 
