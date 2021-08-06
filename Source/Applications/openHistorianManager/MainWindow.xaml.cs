@@ -223,7 +223,7 @@ namespace openHistorianManager
 
         private void DataExtractorButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("GEPDataExtractor.exe");
+            Process.Start("GEPDataExtractor.exe", "-showLinkLabel");
         }
 
         private void RemoveClickEvents(Button button)
