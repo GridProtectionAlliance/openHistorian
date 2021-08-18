@@ -660,6 +660,13 @@ namespace openHistorian
                     headers.Append(',');
                     headers.Append(string.Join(",", metadata.Measurements.Select(measurement => $"\"[{measurement.PointID}] {measurement.PointTag}\"")));
                 }
+                //Add row with Description
+                headers.Append(Environment.NewLine);
+                if (metadata.Measurements.Length > 0)
+                {
+                    headers.Append(',');
+                    headers.Append(string.Join(",", metadata.Measurements.Select(measurement => $"\"{measurement.Description}\"")));
+                }
 
                 for (int i = 0; i < metadata.PointIDs.Length; i++)
                     pointIDIndex.Add(metadata.PointIDs[i], i);
