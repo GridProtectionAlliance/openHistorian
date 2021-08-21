@@ -36800,6 +36800,43 @@
             </summary>
             <returns>The GNU diff string</returns>
         </member>
+        <member name="T:GSF.Threading.ManagedCancellationTokenSource">
+            <summary>
+            Implements a reference counter for <see cref="T:System.Threading.CancellationTokenSource"/> to
+            provide thread safety around <see cref="M:System.Threading.CancellationTokenSource.Dispose"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor(System.Func{System.Threading.CancellationTokenSource})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+            <param name="cancellationTokenSourceFactory">Factory function for instantiating the underlying <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.#ctor(System.Threading.CancellationTokenSource)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.ManagedCancellationTokenSource"/> class.
+            </summary>
+            <param name="underlyingTokenSource">The <see cref="T:System.Threading.CancellationTokenSource"/> to be managed.</param>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.RetrieveToken(System.Threading.CancellationToken@)">
+            <summary>
+            Retrieves the <see cref="T:System.Threading.CancellationToken"/> used to
+            check the state of cancellation.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A disposable object used to control the lifetime of the <paramref name="cancellationToken"/>.</returns>
+        </member>
+        <member name="M:GSF.Threading.ManagedCancellationTokenSource.Dispose">
+            <summary>
+            Cancels the underlying <see cref="T:System.Threading.CancellationTokenSource"/>
+            and schedules it for disposal.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.WaitHandleExtensions">
             <summary>
             Defines extension functions related to manipulation wait handle objects.
