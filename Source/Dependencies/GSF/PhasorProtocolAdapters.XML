@@ -1258,7 +1258,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.TotalFrames">
             <summary>
-            Gets the the total number of frames that have been received by the current mapper connection.
+            Gets the total number of frames that have been received by the current mapper connection.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.MissingFrames">
@@ -1268,7 +1268,7 @@
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.CRCErrors">
             <summary>
-            Gets the total number of CRC errors that have been encountered by the the current mapper connection.
+            Gets the total number of CRC errors that have been encountered by the current mapper connection.
             </summary>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.OutOfOrderFrames">
