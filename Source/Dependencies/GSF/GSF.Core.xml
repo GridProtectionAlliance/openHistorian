@@ -8338,6 +8338,29 @@
             GO
             </remarks>
         </member>
+        <member name="T:GSF.Data.Model.ClaimAttribute">
+            <summary>
+            Defines an attribute that will allow setting claims for function roles for a modeled table in GSF.Web.Model.ModelController.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ClaimAttribute.Claim">
+            <summary>
+            Gets Claim to use for property.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ClaimAttribute.Verb">
+            <summary>
+            Get Verb to use for property
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ClaimAttribute.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ClaimAttribute"/> for use in GSF.Web.Model.ModelController"/>.
+            </summary>
+            <param name="verb">HTTP verbs of GET, POST, PATCH, or DELETE.</param>
+            <param name="type">Type of claim, use specific <see cref="T:System.Security.Claims.ClaimTypes"/> .</param>
+            <param name="value">value of the claim.</param>
+        </member>
         <member name="T:GSF.Data.Model.EncryptDataAttribute">
             <summary>
             Defines an attribute that provides encryption of text field contents for a modeled table.
