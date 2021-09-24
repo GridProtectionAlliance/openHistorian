@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.PQDS</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.PQDS.DataSeries">
+            <summary>
+            Represents a channel in a PQDS File.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.DataSeries.Series">
+            <summary>
+            A collection of DataPoints.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.DataSeries.Label">
+            <summary>
+            Label of the <see cref="T:GSF.PQDS.DataSeries"/>
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.DataSeries.Length">
+            <summary>
+            length <see cref="T:GSF.PQDS.DataSeries"/> in number of points
+            </summary>
+        </member>
+        <member name="M:GSF.PQDS.DataSeries.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.PQDS.DataSeries"/>.
+            </summary>
+            <param name="label">Label of the DataSeries</param>
+        </member>
+        <member name="T:GSF.PQDS.DataPoint">
+            <summary>
+            Represents a single Point in the <see cref="T:GSF.PQDS.DataSeries"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.DataPoint.Time">
+            <summary>
+            Timestamp of the point.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.DataPoint.Value">
+            <summary>
+            Value of the point.
+            </summary>
+        </member>
+        <member name="T:GSF.PQDS.PQDSMetaDataType">
+            <summary>
+            PQDS metadata tag Datatypes according to PQDS spec.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.PQDSMetaDataType.Enumeration">
+            <summary>
+            Enumeration data type
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.PQDSMetaDataType.Numeric">
+            <summary>
+            Numeric data type
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.PQDSMetaDataType.AlphaNumeric">
+            <summary>
+            AlphaNumeric data type
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.PQDSMetaDataType.Text">
+            <summary>
+            Text data type
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.PQDSMetaDataType.Binary">
+            <summary>
+            Binary data type
+            </summary>
+        </member>
+        <member name="T:GSF.PQDS.MetaDataTag">
+            <summary>
+            Abstract Class of MetaData Tags for a <see cref="T:GSF.PQDS.PQDSFile"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.MetaDataTag.m_key">
+            <summary>
+            Meta data key value of row
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.MetaDataTag.m_unit">
+            <summary>
+            Meta data unit value of row
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.MetaDataTag.m_rawValue">
+            <summary>
+            Meta data raw value of row
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.MetaDataTag.m_expectedDataType">
+            <summary>
+            Meta data expected data type of row
+            </summary>
+        </member>
+        <member name="F:GSF.PQDS.MetaDataTag.m_note">
+            <summary>
+            Meta data note value of row
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.MetaDataTag.Key">
+            <summary>
+            the Metadata Tag key.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.MetaDataTag.Unit">
+            <summary>
+            the Metadata Tag unit.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.MetaDataTag.RawValue">
+            <summary>
+            the Metadata Tag raw value without typing.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag.Write">
+            <summary>
+            Converst the Metadata tag into a line of a PQDS file
+            </summary>
+            <returns>The metadataTag as a String</returns>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag.Type">
+            <summary>
+            Returns the PQDS datatype <see cref="T:GSF.PQDS.PQDSMetaDataType"/>
+            </summary>
+            <returns>The PQDS Datatype </returns>
+        </member>
+        <member name="T:GSF.PQDS.MetaDataTag`1">
+            <summary>
+            Class of MetaData Tags for a <see cref="T:GSF.PQDS.PQDSFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.MetaDataTag`1.Value">
+            <summary>
+            Value of the MetadataTag.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag`1.#ctor(System.String,`0)">
+            <summary>
+            Creates a <see cref="T:GSF.PQDS.MetaDataTag"/>.
+            </summary>
+            <param name="key"> key of the MetadataTag</param>
+            <param name="value"> Value of the MetadataTag</param>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag`1.#ctor(System.String,`0,GSF.PQDS.PQDSMetaDataType,System.String,System.String)">
+            <summary>
+            Creates a custom <see cref="T:GSF.PQDS.MetaDataTag"/>.
+            </summary>
+            <param name="key"> key of the MetadataTag</param>
+            <param name="value"> Value of the MetadataTag</param>
+            <param name="valueType"> The <see cref="T:GSF.PQDS.PQDSMetaDataType"/> of the metadata tag</param>
+            <param name="unit"> The unit of the metadata tag </param>
+            <param name="description"> a describtion of the metadata tag</param>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag`1.Write">
+            <summary>
+            Converst the Metadata tag into a line of a PQDS file
+            </summary>
+            <returns>The metadataTag as a String</returns>
+        </member>
+        <member name="M:GSF.PQDS.MetaDataTag`1.Type">
+            <summary>
+            Returns the PQDS datatype <see cref="T:GSF.PQDS.PQDSMetaDataType"/>
+            </summary>
+            <returns>The PQDS Datatype </returns>
+        </member>
+        <member name="T:GSF.PQDS.PQDSFile">
+            <summary>
+            Class that represents a PQDS file.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.#ctor(System.Collections.Generic.List{GSF.PQDS.MetaDataTag},System.Collections.Generic.List{GSF.PQDS.DataSeries},System.DateTime)">
+            <summary>
+            Creates a new PQDS file.
+            </summary>
+            <param name="dataSeries"> Measurment data to be included as <see cref="T:GSF.PQDS.DataSeries"/></param>
+            <param name="initialTimeStamp"> Timestamp used as the beginning of the PQDS file </param>
+            <param name="metaData"> List of MetaData to be included in the PQDS file as <see cref="T:GSF.PQDS.MetaDataTag`1"/> </param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.#ctor">
+            <summary>
+            Creates a new PQDS file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.PQDSFile.MetaData">
+            <summary>
+            List of included Metadata tags.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDS.PQDSFile.Data">
+            <summary>
+            List of data included in PQDS file as <see cref="T:GSF.PQDS.DataSeries"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.WriteToStream(System.IO.StreamWriter,System.IProgress{System.Double})">
+            <summary>
+            Writes the content to a .csv file.
+            </summary>
+            <param name="stream"> The <see cref="T:System.IO.StreamWriter"/> to write the data to. </param>
+            <param name="progress"> <see cref="T:System.IProgress`1"/> Progress Token</param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.WriteToFile(System.String,System.IProgress{System.Double})">
+            <summary>
+            Writes the content to a .csv file.
+            </summary>
+            <param name="file"> file name </param>
+            <param name="progress"> <see cref="T:System.IProgress`1"/> Progress Token</param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.WriteToFile(System.String)">
+            <summary>
+            Writes the content to a .csv file.
+            </summary>
+            <param name="file"> file name </param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.WriteToStream(System.IO.StreamWriter)">
+            <summary>
+            Writes the content to an output Stream.
+            </summary>
+            <param name="stream"> The <see cref="T:System.IO.StreamWriter"/> to write the data to. </param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.ReadFromFile(System.String)">
+            <summary>
+            Reads the content from a PQDS File.
+            </summary>
+            <param name="filename"> file name</param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.ReadFromFile(System.String,System.IProgress{System.Double})">
+            <summary>
+            Reads the content from a PQDS File.
+            </summary>
+            <param name="filename"> file name</param>
+            <param name="progress"> <see cref="T:System.IProgress`1"/> Progress Token </param>
+        </member>
+    </members>
+</doc>
