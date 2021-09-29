@@ -40,6 +40,11 @@
             Timestamp of the point.
             </summary>
         </member>
+        <member name="F:GSF.PQDS.DataPoint.Milliseconds">
+            <summary>
+            Milliseconds from Inception.
+            </summary>
+        </member>
         <member name="F:GSF.PQDS.DataPoint.Value">
             <summary>
             Value of the point.
@@ -237,6 +242,13 @@
             </summary>
             <param name="filename"> file name</param>
             <param name="progress"> <see cref="T:System.IProgress`1"/> Progress Token </param>
+        </member>
+        <member name="M:GSF.PQDS.PQDSFile.Read(System.String)">
+            <summary>
+            Reads PQDS file from file path and returns <see cref="T:GSF.PQDS.PQDSFile"/> object.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <returns>New <see cref="T:GSF.PQDS.PQDSFile"/> using file contents</returns>
         </member>
     </members>
 </doc>
