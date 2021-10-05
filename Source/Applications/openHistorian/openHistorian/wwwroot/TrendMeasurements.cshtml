@@ -1696,10 +1696,10 @@
 
                 let adjustedFrameRate = viewModel.frameRate();
 
-                if (viewModel.frameBase() === 1)
+                if (viewModel.frameBase() == 1)
                     adjustedFrameRate = adjustedFrameRate / 60.0;
 
-                if (viewModel.frameBase() === 2)
+                if (viewModel.frameBase() == 2)
                     adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
 
                 let tolerance = 0.5;
