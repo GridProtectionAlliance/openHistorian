@@ -2799,9 +2799,53 @@
             <returns>The new data source record, or null if the physical record does not define a data source record.</returns>
         </member>
         <member name="T:GSF.PQDIF.Logical.LogicalParser">
-            <summary>
-            Represents a parser which parses the logical structure of a PQDIF file.
-            </summary>
+             <summary>
+             Represents a parser which parses the logical structure of a PQDIF file.
+             </summary>
+             <remarks>
+             <para>
+             This class makes the data from PQD files readily available to applications and defines several
+             redundant properties throughout the logical hierarchy of the PQDIF file to also facilitate
+             the association of definitions with instances within the logical structure. The following
+             list enumerates some of the more useful associations within the hierarchy.
+             </para>
+            
+             <list type="bullet">
+             <item><see cref="P:GSF.PQDIF.Logical.ObservationRecord.DataSource"/></item>
+             <item><see cref="P:GSF.PQDIF.Logical.ObservationRecord.Settings"/></item>
+             <item><see cref="P:GSF.PQDIF.Logical.SeriesDefinition.ChannelDefinition"/></item>
+             <item><see cref="P:GSF.PQDIF.Logical.ChannelInstance.Definition"/></item>
+             <item><see cref="P:GSF.PQDIF.Logical.SeriesInstance.Definition"/></item>
+             </list>
+            
+             <para>
+             Usage consists of iterating through observations (<see cref="T:GSF.PQDIF.Logical.ObservationRecord"/>) to
+             examine each of the the measurements recorded in the file. As was noted in the list above,
+             the data source (<see cref="T:GSF.PQDIF.Logical.DataSourceRecord"/>) and settings for the monitor
+             (<see cref="T:GSF.PQDIF.Logical.MonitorSettingsRecord"/>) associated with each observation is exposed as a
+             property on the observation record. Note that the same data source and monitor settings
+             records may be referenced by multiple observation records in the file.
+             </para>
+            
+             <para>
+             The following example demonstrates how to read all observation records from a PQDIF file
+             using the logical parser.
+             </para>
+            
+             <code><![CDATA[
+             ContainerRecord containerRecord;
+             List<ObservationRecord> observationRecords = new List<ObservationRecord>();
+             string fileName = args[0];
+            
+             using (LogicalParser parser = new LogicalParser(fileName))
+             {
+                 containerRecord = parser.ContainerRecord;
+            
+                 while (parser.HasNextObservationRecord())
+                     observationRecords.Add(parser.NextObservationRecord());
+             }
+             ]]></code>
+             </remarks>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.#ctor(System.String)">
             <summary>
@@ -4007,9 +4051,37 @@
             </summary>
         </member>
         <member name="T:GSF.PQDIF.Physical.PhysicalParser">
-            <summary>
-            Represents a parser which parses the physical structure of a PQDIF file.
-            </summary>
+             <summary>
+             Represents a parser which parses the physical structure of a PQDIF file.
+             </summary>
+             <remarks>
+             <para>
+             This class is used internally by the <see cref="T:GSF.PQDIF.Logical.LogicalParser"/> to read the
+             physical structure of the PQDIF file. If your goal is to read data from a PQD file into
+             an application, you probably do not want to instantiate the physical parser directly.
+             Instead, the logical parser will apply the rules governing the logical structure of the PQDIF
+             file to make the data more readily usable by an application that will be processing that data.
+             </para>
+            
+             <para>
+             The following example of usage was adapted from the PQDIFDump utility, which represents a
+             bare minimum level of effort to read an uncompressed PQDIF file and display its contents
+             in a console application.
+             </para>
+            
+             <code>
+             string fileName = args[0];
+             PhysicalParser parser = new PhysicalParser(fileName);
+             parser.Open();
+            
+             while (parser.HasNextRecord())
+             {
+                 Record record = parser.NextRecord();
+                 Console.WriteLine(record);
+                 Console.WriteLine();
+             }
+             </code>
+             </remarks>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.#ctor(System.String)">
             <summary>
