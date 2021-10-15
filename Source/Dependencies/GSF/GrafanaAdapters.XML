@@ -340,6 +340,11 @@
             Defines flag that determines if empty series are produced.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.DataSourceValueGroup.refId">
+            <summary>
+            Defines a refID for a specific Grafana Query.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.DeviceAlarmStateAdapter">
             <summary>
             Represents an adapter that will monitor and report device alarm states.
@@ -1763,6 +1768,11 @@
         <member name="F:GrafanaAdapters.TimeSeriesValues.longitude">
             <summary>
             Defines a Grafana time-series underlying point tag longitude.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.TimeSeriesValues.refId">
+            <summary>
+            Defines a Grafana time-series refId to reffernece a specific query.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.dropEmptySeries">
