@@ -263,6 +263,11 @@
             Gets or sets whether or not this adapter should automatically remove PI tags that no longer exist locally in metadata.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.SyncAlternateTagOnly">
+            <summary>
+            Gets or sets flag that determines if tag synchronization should only use alternate tag fields.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagNamePrefixRemoveCount">
             <summary>
             Gets or sets the number of tag name prefixes, e.g., "SOURCE!", applied by subscriptions to remove from PI tag names.
