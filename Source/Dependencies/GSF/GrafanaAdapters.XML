@@ -179,6 +179,14 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
+        <member name="M:GrafanaAdapters.AnnotationExtensions.SplitAlias(System.String,System.String@)">
+            <summary>
+            Splits any defined alias from a point tag expression.
+            </summary>
+            <param name="tagExpression">Source point tag expression that can contain an alias.</param>
+            <param name="alias">Alias, if defined.</param>
+            <returns>Point tag name without any alias.</returns>
+        </member>
         <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up metadata record from point tag.
@@ -1023,6 +1031,20 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Modulo">
+            <summary>
+            Returns a series of values that represent each of the values in the source series modulo by N.
+            N is a floating point value representing a divisive factor to be applied to each value the source series.
+            N can either be constant value or a named target available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>Modulo(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Mod(2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Modulo, Modulus, Mod<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
         <member name="F:GrafanaAdapters.SeriesFunction.Round">
             <summary>
             Returns a series of values that represent the rounded value, with N fractional digits, of each of the values in the source series.
@@ -1371,6 +1393,22 @@
             Returns: Series of values.<br/>
             Example: <c>Label('AvgFreq', SetAvg(FILTER TOP 20 ActiveMeasurements WHERE SignalType='FREQ'))</c><br/>
             Variants: Label, Name<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.SeriesFunction.Evaluate">
+            <summary>
+            Evaluates an expression over a slice of values in one or more series. The `evalExpression` parameter must always be expressed in braces, e.g., `{ expression }`;
+            expressions are strongly typed, but not case sensitive. Expressions are expected to return a value that can be evaluated as a floating-point number. Target tag
+            names are used as variables in the expression. The Evaluate function is always evaluated as a slice, any specified group operation prefix will be ignored.
+            Default .NET system types available to expressions are <see cref="T:System.Math"/> and <see cref="T:System.DateTime"/>. Use the "Imports" command to define more
+            types for expressions.
+            </summary>
+            <remarks>
+            Signature: <c>Evaluate(sliceTolerance, evalExpression, filterExpression)</c><br/>
+            Returns: Single value per slice.<br/>
+            Example: <c>eval(0.0333, {A * Cos(B * PI / 180)}, A=GPA_SHELBY-PA1:VH; B=GPA_SHELBY-PM1:V)</c><br/>
+            Variants: Evaluate, Eval<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
@@ -1804,6 +1842,11 @@
             This structure is serialized and returned to Grafana via JSON.
             It needs to match QueryResultMeta in Grafana to avoid Grafana removing any MetaData
             </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.MetaData.custom">
+            <summary>
+            Defines custom historian metadata.
+            </summary>
         </member>
         <member name="T:GrafanaAdapters.HistorianMetaData">
             <summary>
