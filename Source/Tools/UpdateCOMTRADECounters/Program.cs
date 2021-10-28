@@ -135,7 +135,8 @@ namespace UpdateCOMTRADECounters
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!commandLine.Contains("-silent"))
+                    MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
