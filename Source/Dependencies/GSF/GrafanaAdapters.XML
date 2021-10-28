@@ -1407,7 +1407,7 @@
             <remarks>
             Signature: <c>Evaluate(sliceTolerance, evalExpression, filterExpression)</c><br/>
             Returns: Single value per slice.<br/>
-            Example: <c>eval(0.0333, {A * Cos(B * PI / 180)}, A=GPA_SHELBY-PA1:VH; B=GPA_SHELBY-PM1:V)</c><br/>
+            Example: <c>eval(0.0333, {R * Sin(T * PI / 180)}, T=GPA_SHELBY-PA1:VH; R=GPA_SHELBY-PM1:V)</c><br/>
             Variants: Evaluate, Eval<br/>
             Execution: Deferred enumeration.
             </remarks>
