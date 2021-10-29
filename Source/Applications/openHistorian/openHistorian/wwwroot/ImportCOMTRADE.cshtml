@@ -860,7 +860,7 @@
         }
 
         function saveDeviceMeasurements(id) {
-            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()) -1, true);
+            showInfoMessage(String.format("Saving device \"{0}\" measurements, please wait...", viewModel.deviceAcronym()), -1, true);
 
             // Loop through and add measurements
             const observableMeasurements = viewModel.measurements();
