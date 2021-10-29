@@ -117,20 +117,34 @@ namespace UpdateCOMTRADECounters
 
                 if (targetAllUsers)
                 {
-                    using RegistryKey chromePolicyKey =
-                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Google\\Chrome", true) ??
-                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Google\\Chrome", true);
-
-                    if (chromePolicyKey is not null)
+                    void applyAutoLaunchPolicy(RegistryKey policyKey)
                     {
-                        string originPolicies = chromePolicyKey.GetValue("AutoLaunchProtocolsFromOrigins")?.ToString();
+                        if (policyKey is null)
+                            return;
+
+                        string originPolicies = policyKey.GetValue("AutoLaunchProtocolsFromOrigins")?.ToString();
 
                         if (string.IsNullOrEmpty(originPolicies))
                             originPolicies = "[]";
 
-                        chromePolicyKey.SetValue("AutoLaunchProtocolsFromOrigins",
+                        policyKey.SetValue("AutoLaunchProtocolsFromOrigins",
                             JsonHelpers.InjectProtocolOrigins(originPolicies, new[] { "*" }, UriScheme));
                     }
+
+                    // Apply Chrome policy
+                    applyAutoLaunchPolicy(
+                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Google\\Chrome", true) ??
+                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Google\\Chrome", true));
+
+                    // Apply Edge policy
+                    applyAutoLaunchPolicy(
+                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true) ??
+                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true));
+
+                    // Apply Firefox policy
+                    applyAutoLaunchPolicy(
+                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true) ??
+                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true));
                 }
             }
             catch (Exception ex)
