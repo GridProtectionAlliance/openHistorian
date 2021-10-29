@@ -74,6 +74,17 @@ namespace UpdateCOMTRADECounters
         {
             if (!TryParseCommandLine() && !TryParseClipboard())
                 m_focusTarget = maskedTextBoxEndSampleCount;
+
+            // If user has a "save-as" dialog enabled for downloads in browser, the browser will already be downloading file before user selects a path and file name for download destination.
+            // For small exports, this means the export may be completed before the user even selects the download file name. This application automatically runs when the download is complete.
+            // It can be confusing to see this application which also is requesting the downloaded file name before the user has even had a chance to select one and there is currently no way
+            // to get an event from the browser about save dialog selection being complete - the best we can do is locate this tool at an offset to center.
+            Location = new(Location.X + Width / 2, Location.Y + Height / 2);
+            
+            // Force window to top of stack
+            WindowState = FormWindowState.Minimized;
+            Show();
+            WindowState = FormWindowState.Normal;
         }
 
         private void Main_Shown(object sender, EventArgs e)
