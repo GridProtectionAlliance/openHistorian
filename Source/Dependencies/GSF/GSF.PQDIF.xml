@@ -459,9 +459,9 @@
         </member>
         <member name="T:GSF.PQDIF.Logical.ChannelInstance">
             <summary>
-            Represents a channel instance in a PQDIF file. A channel instance
-            resides in an <see cref="P:GSF.PQDIF.Logical.ChannelInstance.ObservationRecord"/>, and is defined by
-            a <see cref="T:GSF.PQDIF.Logical.ChannelDefinition"/> inside the observation record's
+            Represents a channel instance in a PQDIF file. See IEEE 11593-2019 section 5.4.3
+            for details. A channel instance resides in an <see cref="P:GSF.PQDIF.Logical.ChannelInstance.ObservationRecord"/>, and 
+            is defined by a <see cref="T:GSF.PQDIF.Logical.ChannelDefinition"/> inside the observation record's
             <see cref="T:GSF.PQDIF.Logical.DataSourceRecord"/>.
             </summary>
         </member>
@@ -2851,7 +2851,7 @@
             <summary>
             Creates a new instance of the <see cref="T:GSF.PQDIF.Logical.LogicalParser"/> class.
             </summary>
-            <param name="fileName">Name of the PQDIF file to be parsed.</param>
+            <param name="filePath">Path to the PQDIF file to be parsed.</param>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.#ctor(System.IO.Stream,System.Boolean)">
             <summary>
@@ -2864,7 +2864,13 @@
         </member>
         <member name="P:GSF.PQDIF.Logical.LogicalParser.FileName">
             <summary>
-            Gets or sets the file name of the PQDIF file to be parsed.
+            Gets or sets the file path (not just the name) of the PQDIF file to be parsed.
+            Obsolete in favor of <see cref="P:GSF.PQDIF.Logical.LogicalParser.FilePath"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.LogicalParser.FilePath">
+            <summary>
+            Gets or sets the file path of the PQDIF file to be parsed.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord">
@@ -2883,7 +2889,7 @@
             <summary>
             Opens the parser and parses the <see cref="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord"/>.
             </summary>
-            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Logical.LogicalParser.FileName"/> has not been defined.</exception>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Logical.LogicalParser.FilePath"/> has not been defined.</exception>
             <exception cref="T:System.NotSupportedException">An unsupported compression mode was defined in the PQDIF file.</exception>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.Open(System.IO.Stream,System.Boolean)">
@@ -3116,8 +3122,21 @@
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.StartTime">
             <summary>
-            Gets the starting time of the data in the observation record.
+            Gets the starting time of the data in the observation record. This time should
+            be used as the base time for all relative seconds recorded in the series instances.
             </summary>
+            <remarks>
+            The <see cref="T:GSF.PQDIF.Logical.ObservationRecord"/> contains two timestamp fields: <see cref="P:GSF.PQDIF.Logical.ObservationRecord.StartTime"/> and
+            <see cref="P:GSF.PQDIF.Logical.ObservationRecord.TimeTriggered"/>. The StartTime is a required part of any Observation, whereas the 
+            <see cref="P:GSF.PQDIF.Logical.ObservationRecord.TimeTriggered"/> is optional. 
+            
+            The <see cref="P:GSF.PQDIF.Logical.ObservationRecord.StartTime"/> does not have to be the same as the trigger time and can therefore 
+            be chosen more or less arbitrarily. For instance, you can choose to record the 
+            <see cref="P:GSF.PQDIF.Logical.ObservationRecord.StartTime"/> as the timestamp of the first data point in the observation or the top 
+            of an interval in which the data was captured. The trigger time field is more well defined, 
+            essentially always representing the point in time at which the data source decided to capture 
+            some data in the PQDIF file.
+            </remarks>
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.TriggerMethod">
             <summary>
@@ -3126,7 +3145,8 @@
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.TimeTriggered">
             <summary>
-            Gets the time the observation was triggered.
+            Gets the time the observation was triggered. For more information regarding recording
+            time in PQD files, see <see cref="P:GSF.PQDIF.Logical.ObservationRecord.StartTime"/>.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.DisturbanceCategoryID">
@@ -4087,7 +4107,7 @@
             <summary>
             Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.PhysicalParser"/> class.
             </summary>
-            <param name="fileName">Name of the PQDIF file to be parsed.</param>
+            <param name="filePath">Path to the PQDIF file to be parsed.</param>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.#ctor(System.IO.Stream,System.Boolean)">
             <summary>
@@ -4100,7 +4120,13 @@
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.FileName">
             <summary>
-            Gets or sets the file name of the PQDIF file to be parsed.
+            Gets or sets the file path (not just the name) of the PQDIF file to be parsed.
+            Obsolete in favor of <see cref="P:GSF.PQDIF.Physical.PhysicalParser.FilePath"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.PhysicalParser.FilePath">
+            <summary>
+            Gets or sets the file path of the PQDIF file to be parsed.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.ExceptionList">
@@ -4136,7 +4162,7 @@
             <summary>
             Opens the PQDIF file.
             </summary>
-            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Physical.PhysicalParser.FileName"/> has not been defined.</exception>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Physical.PhysicalParser.FilePath"/> has not been defined.</exception>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.Open(System.IO.Stream,System.Boolean)">
             <summary>

@@ -1754,12 +1754,20 @@
             without calling the rest of the middle-ware pipeline.
             </returns>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,GSF.Security.SecurityPrincipal@)">
+        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCode(System.Boolean)">
+            <summary>
+            Applies authentication for requests using OpenID Connect authentication.
+            </summary>
+            <param name="useAlternateSecurityProvider"> Indicates whether the alternate <see cref="T:GSF.Security.ISecurityProvider"/> should be used</param>
+            <returns> The <see cref="T:GSF.Security.SecurityPrincipal"/>. </returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.TryGetPrincipal(System.Guid,System.Boolean,GSF.Security.SecurityPrincipal@)">
             <summary>
             Attempt to get current security principal for specified <paramref name="sessionID"/>.
             </summary>
             <param name="sessionID">Session ID to user.</param>
             <param name="securityPrincipal">Principal of user with specified <paramref name="sessionID"/>, if found.</param>
+            <param name="useAlternate">Indicate when to useSecurity Principles from alternate SecurityProvider</param>
             <returns><c>true</c> if principal was found for specified <paramref name="sessionID"/>; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.AuthenticationHandler.ClearAuthorizationCache(System.Guid)">
@@ -1825,6 +1833,11 @@
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression"/>.
             </summary>
         </member>
+        <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultAlternateSecurityProviderResourceExpression">
+            <summary>
+            Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.AlternateSecurityProviderResourceExpression"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.AuthenticationOptions.DefaultLoginPage">
             <summary>
             Default value for <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>.
@@ -1859,6 +1872,12 @@
             <summary>
             Gets or sets the expression that will match paths for the resources on the web server
             that should redirect to the <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/> when authentication fails.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.AuthenticationOptions.AlternateSecurityProviderResourceExpression">
+            <summary>
+            Gets or sets the expression that will match paths for the resources on the web server
+            that should user the Alternate SecurityProvider.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.AuthenticationOptions.AnonymousResourceExpression">
@@ -1950,6 +1969,13 @@
             <param name="urlPath">Path to check as an authentication failure redirect resource.</param>
             <returns><c>true</c> if path is an authentication failure redirect resource; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptions.IsAlternateSecurityProviderResource(System.String)">
+            <summary>
+            Determines whether the given resource is a alternate securtityProvider resource.
+            </summary>
+            <param name="urlPath">Path to check as an alternate securtityProvider resource.</param>
+            <returns><c>true</c> if path is an alternate securtityProvider resource; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Web.Security.AuthenticationOptions.IsAnonymousResource(System.String)">
             <summary>
             Determines whether the given resource is an anonymous resource.
@@ -1982,6 +2008,12 @@
             <summary>
             Gets the expression that will match paths for the resources on the web server
             that can be provided without checking credentials.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AlternateSecurityProviderResourceExpression">
+            <summary>
+            Gets the expression that will match paths for the resources on the web server
+            that should use the alternate SecurityProvider.
             </summary>
         </member>
         <member name="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthenticationToken">
@@ -2053,6 +2085,13 @@
             </summary>
             <param name="urlPath">Path to check as an anonymous resource.</param>
             <returns><c>true</c> if path is an anonymous resource; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.ReadonlyAuthenticationOptions.IsAlternateSecurityProviderResource(System.String)">
+            <summary>
+            Determines whether the given resource is using the alternate SecuityProvider.
+            </summary>
+            <param name="urlPath">Path to check as an alternative SecurityProvider resource.</param>
+            <returns><c>true</c> if path is an alternate Security Provider resource; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>

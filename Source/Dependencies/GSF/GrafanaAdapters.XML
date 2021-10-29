@@ -514,8 +514,7 @@
         </member>
         <member name="T:GrafanaAdapters.DeviceGroup">
             <summary>
-            Represents a Group of Devices
-            Also modeled as a seperate virtual Device with connection string
+            Represents a group of devices modeled as a separate virtual Device with connection string.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.DeviceGroup.ID">
@@ -525,12 +524,12 @@
         </member>
         <member name="P:GrafanaAdapters.DeviceGroup.Name">
             <summary>
-            name of the Device.
+            Name of the Device.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.DeviceGroup.Devices">
             <summary>
-            List of attached DeviceIds
+            List of attached Device IDs.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.AlarmState">
@@ -585,7 +584,7 @@
         </member>
         <member name="P:GrafanaAdapters.AlarmDevice.DisplayData">
             <summary>
-            String to Diplay on the Grafana Alarm Dashboard.
+            String to display on the Grafana Alarm Dashboard.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.AlarmDeviceStateView">
@@ -1798,19 +1797,9 @@
             Defines a Grafana time-series underlying point tag.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.TimeSeriesValues.latitude">
-            <summary>
-            Defines a Grafana time-series underlying point tag latitude.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.TimeSeriesValues.longitude">
-            <summary>
-            Defines a Grafana time-series underlying point tag longitude.
-            </summary>
-        </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.refId">
             <summary>
-            Defines a Grafana time-series refId to reffernece a specific query.
+            Defines a Grafana time-series refId to reference a specific query.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.TimeSeriesValues.meta">
