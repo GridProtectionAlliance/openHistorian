@@ -149,7 +149,7 @@ namespace openHistorian.TrenDAPController
             ///  List of Point IDs to include in query results
             ///  Note that this will override <see cref="Types"/>, <see cref="Phases"/> and <see cref="Devices"/>
             ///</summary>
-            public string[]? Tags { get; set; }
+            public string[] Tags { get; set; }
 
         }
 
@@ -181,7 +181,7 @@ namespace openHistorian.TrenDAPController
                         SignalType IN ({string.Join(",", post.Types.Select(d => "'" + d + "'"))})
                     ";
 
-            if ( post.Tags != null && post.Tags.Length > 0)
+            if (post.Tags != null && post.Tags.Length > 0)
                 sql = @$"
                     SELECT * 
                     FROM ActiveMeasurement 
@@ -189,15 +189,16 @@ namespace openHistorian.TrenDAPController
                         ID IN ({string.Join(",", post.Tags.Select(d => "'" + d + "'"))})
                     ";
 
-                using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
 
-               
+
                 return connection.RetrieveData(sql);
             }
         }
 
-        public class HistorianPoint { 
+        public class HistorianPoint
+        {
             public ulong PointID { get; set; }
             public float Value { get; set; }
             public DateTime Time { get; set; }
@@ -224,11 +225,14 @@ namespace openHistorian.TrenDAPController
         public HttpResponseMessage Query([FromBody] Post post)
         {
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
-
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DataTable measurements = GetTable(post);
-            if (post.Instance == "None") return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            
+            if (post.Instance == "None")
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            
             SnapServer server = GetAdapterInstance(post.Instance)?.Server?.Host;
+
             if (server == null)
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
@@ -238,15 +242,15 @@ namespace openHistorian.TrenDAPController
                 if (database == null)
                     return new HttpResponseMessage(HttpStatusCode.BadRequest);
 
-                var timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(post.StartTime, post.EndTime);
-                var pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurements.Select().Select(row => ulong.Parse(row["ID"].ToString().Split(':')[1])));
+                SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(post.StartTime, post.EndTime);
+                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(measurements.Select().Select(row => ulong.Parse(row["ID"].ToString().Split(':')[1])));
 
                 using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
                 {
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
-                    List<HistorianPoint> points = new List<HistorianPoint>();
                     Dictionary<Tuple<ulong, string>, HistorianAggregatePoint> dict = new Dictionary<Tuple<ulong, string>, HistorianAggregatePoint>();
+                    //List<HistorianPoint> points = new List<HistorianPoint>();
 
                     while (stream.Read(key, value))
                     {
@@ -268,32 +272,30 @@ namespace openHistorian.TrenDAPController
                         if (((ulong)(post.Weeks / Math.Pow(2, week)) & 1) == 0) continue;
                         if (((ulong)(post.Months / Math.Pow(2, timeStamp.Month - 1)) & 1) == 0) continue;
 
-                        Tuple<ulong, string> dictKey;
-                        if (post.Aggregate == "1m")
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:00Z"));
-                        else if (post.Aggregate == "1h")
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:00:00Z"));
-                        else if (post.Aggregate == "1d")
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddT00:00:00Z"));
-                        else if (post.Aggregate == "1s")
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-                        else if (post.Aggregate == "*")
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
-                        else
-                            dictKey = new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-01T00:00:00Z"));
+                        Tuple<ulong, string> dictKey = post.Aggregate switch
+                        {
+                            "1m" => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:00Z")),
+                            "1h" => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:00:00Z")),
+                            "1d" => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddT00:00:00Z")),
+                            "1s" => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ssZ")),
+                            "*"  => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")),
+                            _    => new Tuple<ulong, string>(pointID, timeStamp.ToString("yyyy-MM-01T00:00:00Z"))
+                        };
 
-
-                        if (dict.ContainsKey(dictKey)){
+                        if (dict.ContainsKey(dictKey))
+                        {
                             HistorianAggregatePoint point = dict[dictKey];
                             point.Maximum = point.Maximum < pointValue ? pointValue : point.Maximum;
                             point.Minimum = point.Minimum > pointValue ? pointValue : point.Minimum;
                             point.Average = point.Average * point.Count + pointValue;
-                            point.QualityFlags = point.QualityFlags | value.Value3;
+                            point.QualityFlags |= value.Value3;
                             point.Count += 1;
-                            point.Average = point.Average / point.Count;
+                            point.Average /= point.Count;
+                            
                             dict[dictKey] = point;
                         }
-                        else {
+                        else
+                        {
                             HistorianAggregatePoint point = new HistorianAggregatePoint()
                             {
                                 Tag = $"{post.Instance}:{pointID}",
@@ -304,6 +306,7 @@ namespace openHistorian.TrenDAPController
                                 Count = 1,
                                 QualityFlags = value.Value3
                             };
+
                             dict.Add(dictKey, point);
                         }
                     }
@@ -314,7 +317,7 @@ namespace openHistorian.TrenDAPController
                     response.StatusCode = HttpStatusCode.OK;
                     response.Content = new StringContent(JsonConvert.SerializeObject(results));
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                
+
                     return response;
                 }
             }
