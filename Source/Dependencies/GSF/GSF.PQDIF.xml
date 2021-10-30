@@ -459,7 +459,7 @@
         </member>
         <member name="T:GSF.PQDIF.Logical.ChannelInstance">
             <summary>
-            Represents a channel instance in a PQDIF file. See IEEE 11593-2019 section 5.4.3
+            Represents a channel instance in a PQDIF file. See IEEE 1159.3-2019 section 5.4.3
             for details. A channel instance resides in an <see cref="P:GSF.PQDIF.Logical.ChannelInstance.ObservationRecord"/>, and 
             is defined by a <see cref="T:GSF.PQDIF.Logical.ChannelDefinition"/> inside the observation record's
             <see cref="T:GSF.PQDIF.Logical.DataSourceRecord"/>.
@@ -2839,6 +2839,7 @@
             
              using (LogicalParser parser = new LogicalParser(fileName))
              {
+                 parser.Open();
                  containerRecord = parser.ContainerRecord;
             
                  while (parser.HasNextObservationRecord())
@@ -4091,14 +4092,17 @@
             
              <code>
              string fileName = args[0];
-             PhysicalParser parser = new PhysicalParser(fileName);
-             parser.Open();
             
-             while (parser.HasNextRecord())
+             using (PhysicalParser parser = new PhysicalParser(fileName))
              {
-                 Record record = parser.NextRecord();
-                 Console.WriteLine(record);
-                 Console.WriteLine();
+                 parser.Open();
+            
+                 while (parser.HasNextRecord())
+                 {
+                     Record record = parser.NextRecord();
+                     Console.WriteLine(record);
+                     Console.WriteLine();
+                 }
              }
              </code>
              </remarks>
