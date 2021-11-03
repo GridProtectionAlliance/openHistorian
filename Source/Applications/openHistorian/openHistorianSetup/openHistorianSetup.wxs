@@ -86,6 +86,9 @@
         <Feature Id="CreateOutputStreamFeature" Title="Create Output Stream Tool">
           <ComponentRef Id="CreateOutputStream"/>
         </Feature>
+        <Feature Id="UpdateCOMTRADECountersFeature" Title="Update COMTRADE Counters Utility">
+          <ComponentRef Id="UpdateCOMTRADECounters"/>
+        </Feature>
         <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility">
           <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
         </Feature>
@@ -515,6 +518,12 @@
           <netfx:NativeImage Id="ngen_CreateOutputStream.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
         <Shortcut Id="CreateOutputStreamUtilitiesShortcut" Name="CreateOutputStream" Target="[#CreateOutputStream.exe]" Description="Used to create an output stream from a CSV file." WorkingDirectory="INSTALLFOLDER" Directory="UTILITIESFOLDER" Advertise="no" />
+      </Component>
+
+      <Component Id="UpdateCOMTRADECounters">
+        <File Id="UpdateCOMTRADECounters.exe" Name="UpdateCOMTRADECounters.exe" Source="$(var.UpdateCOMTRADECounters.TargetPath)">
+          <netfx:NativeImage Id="ngen_UpdateCOMTRADECounters.exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
       </Component>
     </ComponentGroup>
     
