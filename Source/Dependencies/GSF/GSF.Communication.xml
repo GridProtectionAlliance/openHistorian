@@ -1221,6 +1221,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.FileClient.FileAccessMode"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Communication.FileClient.DefaultDisconnectAtEOF">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.Communication.FileClient.DisconnectAtEOF"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Communication.FileClient.DefaultConnectionString">
             <summary>
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
@@ -1286,6 +1291,11 @@
             Gets or sets the <see cref="T:System.IO.FileAccess"/> value to be used when opening the file.
             </summary>
             <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.Communication.FileClient.FileAccessMode"/> is set to <see cref="F:System.IO.FileAccess.ReadWrite"/> when <see cref="P:GSF.Communication.FileClient.AutoRepeat"/> is enabled.</exception>
+        </member>
+        <member name="P:GSF.Communication.FileClient.DisconnectAtEOF">
+            <summary>
+            Gets or sets flag that determines if client should disconnect when end of file has been reached.
+            </summary>
         </member>
         <member name="P:GSF.Communication.FileClient.Client">
             <summary>

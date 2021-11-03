@@ -9604,6 +9604,14 @@
             This is only applicable when connection is made to a file for replay purposes.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.DisconnectAtEOF">
+            <summary>
+            Gets or sets flag that determines if client should disconnect when end of file has been reached.
+            </summary>
+            <remarks>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConfigurationFrame">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> used for parsing <see cref="T:GSF.PhasorProtocols.IDataFrame"/>'s encountered in the data stream from a device.
