@@ -85,6 +85,36 @@
             <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetAuthCheck">
+            <summary>
+            Check if current User is authorized for GET Requests
+            </summary>
+            <returns>True if User is authorized for GET requests</returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.PostAuthCheck">
+            <summary>
+            Check if current User is authorized for POST Requests
+            </summary>
+            <returns>True if User is authorized for POST requests</returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.PatchAuthCheck">
+            <summary>
+            Check if current User is authorized for PATCH Requests
+            </summary>
+            <returns>True if User is authorized for PATCH requests</returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.DeleteAuthCheck">
+            <summary>
+            Check if current User is authorized for DELETE Requests
+            </summary>
+            <returns>True if User is authorized for DELETE requests</returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetSearchResults(GSF.Web.Model.ModelController{`0}.PostData)">
+            <summary>
+            Gets the <see cref="T:System.Data.DataTable"/> with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`1.PostData"/>. 
+            </summary>
+            <returns>A <see cref="T:System.Data.DataTable"/>.</returns>
+        </member>
         <member name="T:GSF.Web.Model.DataContext">
             <summary>
             Defines a data context for Razor views.
