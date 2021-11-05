@@ -410,7 +410,13 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:GSF.Security.AdoSecurityProvider.GetUserRoles(System.String)" -->
+        <member name="M:GSF.Security.AdoSecurityProvider.GetUserRoles(System.String)">
+            <summary>
+            Gets a list of Roles for this user for a specified ApplicationId.
+            </summary>
+            <param name="applicationId">The applicationId for the roles to be returned.</param>
+            <returns>The roles that the specified user has.</returns>
+        </member>
         <member name="E:GSF.Security.AdoSecurityProvider.SecurityContextRefreshed">
             <summary>
             Raised when the security context is refreshed.
@@ -1581,7 +1587,13 @@
             <param name="referrer"> The Referrer as specified in the request header </param>
             <returns> The URI to be redirected to</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:GSF.Security.SecurityProviderBase.GetUserRoles(System.String)" -->
+        <member name="M:GSF.Security.SecurityProviderBase.GetUserRoles(System.String)">
+            <summary>
+            Gets a list of Roles for this user for a specified ApplicationId.
+            </summary>
+            <param name="applicationId">The applicationId for the roles to be returned.</param>
+            <returns>The roles that the specified user has.</returns>
+        </member>
         <member name="T:GSF.Security.SecurityIdentity">
             <summary>
             A class that implements <see cref="T:System.Security.Principal.IIdentity"/> interface to facilitate custom role-based security.
