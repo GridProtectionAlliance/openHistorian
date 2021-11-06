@@ -247,6 +247,8 @@
   <ItemGroup>
     <Content Include="AdapterExplorer.exe" />
     <Content Include="AdapterExplorer.exe.config" />
+    <Content Include="APPPDCImporter.exe" />
+    <Content Include="APPPDCImporter.exe.config" />
     <Content Include="BulkCalculationState.exe" />
     <Content Include="BulkCalculationState.exe.config" />
     <Content Include="ConfigCrypter.exe" />
@@ -285,10 +287,14 @@
     <Content Include="README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="RestoreBitmap.ps1" />
+    <Content Include="SELPDCImporter.exe" />
+    <Content Include="SELPDCImporter.exe.config" />
     <Content Include="StatHistorianReportGenerator.exe" />
     <Content Include="StatHistorianReportGenerator.exe.config" />
     <Content Include="UpdateTagNames.exe" />
     <Content Include="UpdateTagNames.exe.config" />
+    <Content Include="VersionBitmap.ps1" />
     <Content Include="WebFeatures.wxi" />
     <Content Include="WebFiles.wxi" />
     <Content Include="WebFolders.wxi" />

@@ -145,6 +145,8 @@
     <Icon Id="ArchiveUpgradeUtility.ico.exe" SourceFile="$(var.MigrationUtility.TargetPath)" />
     <Icon Id="ArchiveComparisonUtility.ico.exe" SourceFile="$(var.ComparisonUtility.TargetPath)" />
     <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
+    <Icon Id="APPPDCImporter.ico.exe" SourceFile="$(var.ProjectDir)\APPPDCImporter.exe"/>
+    <Icon Id="SELPDCImporter.ico.exe" SourceFile="$(var.ProjectDir)\SELPDCImporter.exe"/>
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
@@ -395,6 +397,24 @@
       </Component>
       <Component Id="BulkCalculationStateConfig">
         <File Id="BulkCalculationState.exe.config" Name="BulkCalculationState.exe.config" Source="$(var.ProjectDir)\BulkCalculationState.exe.config" />
+      </Component>
+      <Component Id="APPPDCImporter">
+        <File Id="APPPDCImporter.exe" Name="APPPDCImporter.exe" Source="$(var.ProjectDir)\APPPDCImporter.exe">
+          <netfx:NativeImage Id="ngen_APPPDCImporter.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+        <Shortcut Id="APPPDCImporterStartMenuShortcut" Name="APP-601 PDC Importer" Icon="APPPDCImporter.ico.exe" Description="Tool used to directly import APP-601 PDC output from an INF configuration." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="APPPDCImporterConfig">
+        <File Id="APPPDCImporter.exe.config" Name="APPPDCImporter.exe.config" Source="$(var.ProjectDir)\APPPDCImporter.exe.config" />
+      </Component>
+      <Component Id="SELPDCImporter">
+        <File Id="SELPDCImporter.exe" Name="SELPDCImporter.exe" Source="$(var.ProjectDir)\SELPDCImporter.exe">
+          <netfx:NativeImage Id="ngen_SELPDCImporter.exe" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+        <Shortcut Id="SELPDCImporterStartMenuShortcut" Name="SEL 3373,3573 PDC Importer" Icon="SELPDCImporter.ico.exe" Description="Tool used to directly import SEL 3373 or 3573 PDC output from an XML configuration." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="SELPDCImporterConfig">
+        <File Id="SELPDCImporter.exe.config" Name="SELPDCImporter.exe.config" Source="$(var.ProjectDir)\SELPDCImporter.exe.config" />
       </Component>
       <Component Id="Reports">
         <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll">
