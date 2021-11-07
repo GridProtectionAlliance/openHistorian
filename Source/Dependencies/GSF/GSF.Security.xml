@@ -1151,7 +1151,13 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:GSF.Security.LdapSecurityProvider.GetUserRoles(System.String)" -->
+        <member name="M:GSF.Security.LdapSecurityProvider.GetUserRoles(System.String)">
+            <summary>
+            Gets a list of Roles for this user for a specified ApplicationId.
+            </summary>
+            <param name="applicationId">The applicationId for the roles to be returned.</param>
+            <returns>The roles that the specified user has.</returns>
+        </member>
         <member name="T:GSF.Security.RestrictAccessAttribute">
             <summary>
             Represents an <see cref="T:System.Attribute"/> that can be used restrict access to a class when using role-based security.
@@ -1312,7 +1318,13 @@
             <param name="referrer"> The Referrer as specified in the request header </param>
             <returns> The URI to be redirected to</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:GSF.Security.ISecurityProvider.GetUserRoles(System.String)" -->
+        <member name="M:GSF.Security.ISecurityProvider.GetUserRoles(System.String)">
+            <summary>
+            Gets a list of Roles for this user for a specified ApplicationId.
+            </summary>
+            <param name="applicationId">The applicationId for the roles to be returned.</param>
+            <returns>The roles that the specified user has.</returns>
+        </member>
         <member name="T:GSF.Security.NamespaceDoc">
             <summary>
             Contains fundamental classes that define the security framework for role-based security.
@@ -1722,6 +1734,12 @@
             Number of milliseconds between calls to monitor the cache.
             </summary>
         </member>
+        <member name="M:GSF.Security.SecurityProviderCache.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Security.SecurityProviderCache"/>.
+            </summary>
+            <param name="settingsCategory">Settings category.</param>
+        </member>
         <member name="M:GSF.Security.SecurityProviderCache.CreateProvider(System.String,System.Security.Principal.IPrincipal,System.Boolean)">
             <summary>
             Creates a new provider from data cached by the <see cref="T:GSF.Security.SecurityProviderCache"/>.
@@ -1823,6 +1841,7 @@
             Creates a new <see cref="T:GSF.Security.ISecurityProvider"/> based on the settings in the config file.
             </summary>
             <param name="userData">Object that contains data about the user to be used by the security provider.</param>
+            <param name="settingsCategory">The category used to store configuration settings for the provider.</param>
             <returns>An object that implements <see cref="T:GSF.Security.ISecurityProvider"/>.</returns>
         </member>
         <member name="M:GSF.Security.SecurityProviderUtility.IsResourceSecurable(System.String)">
