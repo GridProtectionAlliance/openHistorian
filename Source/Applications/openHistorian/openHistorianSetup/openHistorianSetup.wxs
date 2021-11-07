@@ -145,8 +145,6 @@
     <Icon Id="ArchiveUpgradeUtility.ico.exe" SourceFile="$(var.MigrationUtility.TargetPath)" />
     <Icon Id="ArchiveComparisonUtility.ico.exe" SourceFile="$(var.ComparisonUtility.TargetPath)" />
     <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
-    <Icon Id="APPPDCImporter.ico.exe" SourceFile="$(var.ProjectDir)\APPPDCImporter.exe"/>
-    <Icon Id="SELPDCImporter.ico.exe" SourceFile="$(var.ProjectDir)\SELPDCImporter.exe"/>
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
