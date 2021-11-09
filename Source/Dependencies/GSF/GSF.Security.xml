@@ -26,6 +26,7 @@
                   <add name="AuthorizationEndpoint" value="user" description="Defines the Endpoint to redirect the user for Authorization." encrypted="false" />
                   <add name="RedirectURI" value="https://localhost:8986/" description="Defines the URI the User get's redirected to after signing in." encrypted="false" />
                   <add name="ClientSecret" value="sssss-ssssss-sssss" description="Defines the Client Secret to encrypt User Information." encrypted="false" />
+                  <add name="SelfVerifiedNonce="aefgdfhf" description="Defines the Client Secret to encrypt User Information." encrypted="false" />
                   <add name="TokenEndpoint" value="user" description="Defines the Endpoint to get the User Token from." encrypted="false" />
                 </securityProvider>
               </categorizedSettings>
@@ -77,6 +78,11 @@
         <member name="P:GSF.Security.OIDCSecurityProvider.Scope">
             <summary>
             The Scope used to obtain UserInformation from the Authorization Server
+            </summary>
+        </member>
+        <member name="P:GSF.Security.OIDCSecurityProvider.SelfVerifiedNonce">
+            <summary>
+            A Nonce that has been verified manually and never expires. This is used for allowing Server-server logons.
             </summary>
         </member>
         <member name="P:GSF.Security.OIDCSecurityProvider.AuthorizationEndpoint">
