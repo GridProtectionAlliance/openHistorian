@@ -819,6 +819,11 @@
             is defined the flag will be <c>false</c>.
             </remarks>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ReplaceWithSpaceChar">
+            <summary>
+            Gets or sets character that will be replaced with a space in output labels.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorDataConcentratorBase.ActiveConnections">
             <summary>
             Gets the total number of active socket connections.
