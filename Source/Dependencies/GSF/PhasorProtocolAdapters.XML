@@ -1560,7 +1560,7 @@
         </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.DeviceCommandHandler(System.Guid,System.String,System.Byte[],System.Int32)">
             <summary>
-            Handles incoming commands from devices connected over the command channel.
+            Handles incoming commands from devices connected over the command channel. This is used by data-forwarding feature,
             </summary>
             <param name="clientID">Guid of client that sent the command.</param>
             <param name="connectionID">Remote client connection identification (i.e., IP:Port).</param>
