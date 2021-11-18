@@ -1876,6 +1876,12 @@ namespace ConfigurationSetupUtility.Screens
                             m_state["selectedNodeId"] = child.Attributes["value"].Value;
                         }
                     }
+                    else if (child.Attributes["name"].Value == "MaxThreadPoolWorkerThreads" || child.Attributes["name"].Value == "MaxThreadPoolIOPortThreads")
+                    {
+                        // Change default max thread pool size from 2038 to 100 - this reduces context switch issues on larger machines
+                        if (!int.TryParse(child.Attributes["value"].Value, out int value) || value <= 0 || value == 2048)
+                            child.Attributes["value"].Value = "100";
+                    }
                 }
             }
 
