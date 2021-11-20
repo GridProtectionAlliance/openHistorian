@@ -44,7 +44,7 @@ FROM dual;
 CREATE TABLE ErrorLog(
     ID NUMBER NOT NULL,
     Source VARCHAR2(200) NOT NULL,
-    Type VARCHAR2(4000),
+    Type VARCHAR2(4000) NULL,
     Message VARCHAR2(4000) NOT NULL,
     Detail VARCHAR2(4000) NULL,
     CreatedOn DATE NOT NULL
@@ -86,13 +86,16 @@ CREATE TABLE AuditLog(
     PrimaryKeyColumn VARCHAR2(200) NOT NULL,
     PrimaryKeyValue VARCHAR2(4000) NOT NULL,
     ColumnName VARCHAR2(200) NOT NULL,
-    OriginalValue VARCHAR2(4000),
-    NewValue VARCHAR2(4000),
+    OriginalValue VARCHAR2(4000) NULL,
+    NewValue VARCHAR2(4000) NULL,
     Deleted NUMBER DEFAULT 0 NOT NULL,
     UpdatedBy VARCHAR2(200) NOT NULL,
-    UpdatedOn DATE NOT NULL,
-    PRIMARY KEY (ID)
+    UpdatedOn DATE NOT NULL
 );
+
+CREATE UNIQUE INDEX IX_AuditLog_ID ON AuditLog (ID ASC) TABLESPACE openHistorian_INDEX;
+
+ALTER TABLE AuditLog ADD CONSTRAINT PK_AuditLog PRIMARY KEY (ID);
 
 CREATE SEQUENCE SEQ_AuditLog START WITH 1 INCREMENT BY 1;
 
@@ -103,8 +106,6 @@ END;
 
 CREATE TABLE Company(
     ID NUMBER NOT NULL,
-    COMPANYPARENTID  NUMBER,
-    REGIONID         NUMBER,
     Acronym VARCHAR2(200) NOT NULL,
     MapAcronym VARCHAR2(10) NOT NULL,
     Name VARCHAR2(200) NOT NULL,
@@ -128,10 +129,10 @@ END;
 /
 
 CREATE TABLE TrackedChange(
-    ID NUMBER NOT NULL,
-    TableName VARCHAR(200) NOT NULL,
-    PrimaryKeyColumn VARCHAR(200) NOT NULL,
-    PrimaryKeyValue VARCHAR(4000) NULL
+    ID NUMBER(19, 0) NOT NULL,
+    TableName VARCHAR2(200) NOT NULL,
+    PrimaryKeyColumn VARCHAR2(200) NOT NULL,
+    PrimaryKeyValue VARCHAR2(4000) NULL
 );
 
 CREATE UNIQUE INDEX IX_TrackedChange_ID ON TrackedChange (ID ASC) TABLESPACE openHistorian_INDEX;
@@ -205,7 +206,7 @@ CREATE TABLE SignalType(
     Acronym VARCHAR2(4) NOT NULL,
     Suffix VARCHAR2(2) NOT NULL,
     Abbreviation VARCHAR2(2) NOT NULL,
-    LongAcronym VARCHAR(200) DEFAULT 'Undefined' NOT NULL,
+    LongAcronym VARCHAR2(200) DEFAULT 'Undefined' NOT NULL,
     Source VARCHAR2(10) NOT NULL,
     EngineeringUnits VARCHAR2(10) NULL
 );
@@ -223,8 +224,8 @@ END;
 
 CREATE TABLE Interconnection(
     ID NUMBER NOT NULL,
-    Acronym VARCHAR2(200) NOT NULL,
-    Name VARCHAR2(200) NOT NULL,
+    Acronym VARCHAR2(50) NOT NULL,
+    Name VARCHAR2(100) NOT NULL,
     LoadOrder NUMBER DEFAULT 0 NULL
 );
 
@@ -240,7 +241,7 @@ END;
 /
 
 CREATE TABLE Node(
-    ID VARCHAR2(36) NULL,
+    ID VARCHAR2(36) NOT NULL,
     Name VARCHAR2(200) NOT NULL,
     CompanyID NUMBER NULL,
     Longitude NUMBER(9, 6) NULL,
@@ -249,7 +250,7 @@ CREATE TABLE Node(
     ImagePath VARCHAR2(4000) NULL,
     Settings VARCHAR2(4000) NULL,
     MenuType VARCHAR2(200) DEFAULT 'File' NOT NULL,
-    MenuData VARCHAR2(4000) NOT NULL,
+    MenuData VARCHAR2(4000) DEFAULT 'Menu.xml' NOT NULL,
     Master NUMBER DEFAULT 0 NOT NULL,
     LoadOrder NUMBER DEFAULT 0 NOT NULL,
     Enabled NUMBER DEFAULT 0 NOT NULL,
@@ -310,7 +311,7 @@ CREATE TABLE Device(
     NodeID VARCHAR2(36) NOT NULL,
     ID NUMBER NOT NULL,
     ParentID NUMBER NULL,
-    UniqueID VARCHAR2(36) NULL,
+    UniqueID VARCHAR2(36) NOT NULL,
     Acronym VARCHAR2(200) NOT NULL,
     Name VARCHAR2(200) NULL,
     OriginalSource VARCHAR2(200) NULL,
@@ -326,7 +327,7 @@ CREATE TABLE Device(
     ConnectionString VARCHAR2(4000) NULL,
     TimeZone VARCHAR2(200) NULL,
     FramesPerSecond NUMBER DEFAULT 30 NULL,
-    TimeAdjustmentTicks NUMBER(19,0) DEFAULT 0 NOT NULL,
+    TimeAdjustmentTicks NUMBER(19, 0) DEFAULT 0 NOT NULL,
     DataLossInterval NUMBER DEFAULT 5 NOT NULL,
     AllowedParsingExceptions NUMBER DEFAULT 10 NOT NULL,
     ParsingExceptionWindow NUMBER DEFAULT 5 NOT NULL,
@@ -413,8 +414,8 @@ CREATE TABLE OutputStreamDevicePhasor(
     OutputStreamDeviceID NUMBER NOT NULL,
     ID NUMBER NOT NULL,
     Label VARCHAR2(200) NOT NULL,
-    Type VARCHAR2(1) DEFAULT 'V' NOT NULL,
-    Phase VARCHAR2(1) DEFAULT '+' NOT NULL,
+    Type CHAR(1) DEFAULT 'V' NOT NULL,
+    Phase CHAR(1) DEFAULT '+' NOT NULL,
     ScalingValue NUMBER DEFAULT 0 NOT NULL,
     LoadOrder NUMBER DEFAULT 0 NOT NULL,
     CreatedOn DATE NOT NULL,
@@ -461,8 +462,8 @@ END;
 /
 
 CREATE TABLE Measurement(
-    PointID NUMBER NOT NULL,
-    SignalID VARCHAR2(36) NULL,
+    PointID NUMBER(19, 0) NOT NULL,
+    SignalID VARCHAR2(36) NOT NULL,
     HistorianID NUMBER NULL,
     DeviceID NUMBER NULL,
     PointTag VARCHAR2(200) NOT NULL,
@@ -473,8 +474,8 @@ CREATE TABLE Measurement(
     Adder NUMBER DEFAULT 0.0 NOT NULL,
     Multiplier NUMBER DEFAULT 1.0 NOT NULL,
     Description VARCHAR2(4000) NULL,
-    Subscribed NUMBER DEFAULT 0 NOT NULL,
     Internal NUMBER DEFAULT 1 NOT NULL,
+    Subscribed NUMBER DEFAULT 0 NOT NULL,
     Enabled NUMBER DEFAULT 0 NOT NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
@@ -502,17 +503,17 @@ CREATE TABLE ImportedMeasurement(
     SourceNodeID VARCHAR2(36) NULL,
     SignalID VARCHAR2(36) NULL,
     Source VARCHAR2(200) NOT NULL,
-    PointID NUMBER NOT NULL,
+    PointID NUMBER(19, 0) NOT NULL,
     PointTag VARCHAR2(200) NOT NULL,
     AlternateTag VARCHAR2(200) NULL,
     SignalTypeAcronym VARCHAR2(4) NULL,
-    SignalReference VARCHAR2(4000) NOT NULL,
+    SignalReference VARCHAR2(200) NOT NULL,
     FramesPerSecond NUMBER NULL,
     ProtocolAcronym VARCHAR2(200) NULL,
     ProtocolType VARCHAR2(200) DEFAULT 'Frame' NOT NULL,
     PhasorID NUMBER NULL,
-    PhasorType VARCHAR2(1) NULL,
-    Phase VARCHAR2(1) NULL,
+    PhasorType CHAR(1) NULL,
+    Phase CHAR(1) NULL,
     Adder NUMBER DEFAULT 0.0 NOT NULL,
     Multiplier NUMBER DEFAULT 1.0 NOT NULL,
     CompanyAcronym VARCHAR2(200) NULL,
@@ -557,7 +558,7 @@ CREATE TABLE OutputStreamMeasurement(
     AdapterID NUMBER NOT NULL,
     ID NUMBER NOT NULL,
     HistorianID NUMBER NULL,
-    PointID NUMBER NOT NULL,
+    PointID NUMBER(19, 0) NOT NULL,
     SignalReference VARCHAR2(200) NOT NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
@@ -611,8 +612,8 @@ CREATE TABLE Phasor(
     ID NUMBER NOT NULL,
     DeviceID NUMBER NOT NULL,
     Label VARCHAR2(200) NOT NULL,
-    Type VARCHAR2(1) DEFAULT 'V' NOT NULL,
-    Phase VARCHAR2(1) DEFAULT '+' NOT NULL,
+    Type CHAR(1) DEFAULT 'V' NOT NULL,
+    Phase CHAR(1) DEFAULT '+' NOT NULL,
     DestinationPhasorID NUMBER NULL,
     SourceIndex NUMBER DEFAULT 0 NOT NULL,
     BaseKV NUMBER DEFAULT 0 NOT NULL,
@@ -881,6 +882,8 @@ CREATE TABLE Alarm(
 
 CREATE UNIQUE INDEX IX_Alarm_ID ON Alarm (ID ASC) TABLESPACE openHistorian_INDEX;
 
+CREATE INDEX IX_Alarm_TagName ON Alarm (TagName ASC) TABLESPACE GSFShema_INDEX;
+
 ALTER TABLE Alarm ADD CONSTRAINT PK_Alarm PRIMARY KEY (ID);
 
 CREATE SEQUENCE SEQ_Alarm START WITH 1 INCREMENT BY 1;
@@ -895,12 +898,16 @@ CREATE TABLE AlarmLog(
     SignalID VARCHAR2(36) NOT NULL,
     PreviousState NUMBER NULL,
     NewState NUMBER NULL,
-    Ticks NUMBER NOT NULL,
+    Ticks NUMBER(19, 0) NOT NULL,
     Timestamp TIMESTAMP NOT NULL,
     Value NUMBER NOT NULL
 );
 
 CREATE UNIQUE INDEX IX_AlarmLog_ID ON AlarmLog (ID ASC) TABLESPACE openHistorian_INDEX;
+CREATE INDEX IX_AlarmLog_SignalID ON AlarmLog (SignalID ASC) TABLESPACE openHistorian_INDEX;
+CREATE INDEX IX_AlarmLog_PreviousState ON AlarmLog (PreviousState ASC) TABLESPACE openHistorian_INDEX;
+CREATE INDEX IX_AlarmLog_NewState ON AlarmLog (NewState ASC) TABLESPACE openHistorian_INDEX;
+CREATE INDEX IX_AlarmLog_Timestamp ON AlarmLog (Timestamp ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE AlarmLog ADD CONSTRAINT PK_AlarmLog PRIMARY KEY (ID);
 
@@ -941,7 +948,6 @@ CREATE TABLE AccessLog (
     ID NUMBER NOT NULL,
     UserName VARCHAR2(200) NOT NULL,
     AccessGranted NUMBER NOT NULL,
-    "COMMENT" VARCHAR2(4000),
     CreatedOn DATE NOT NULL
 );
 
@@ -959,15 +965,15 @@ END;
 CREATE TABLE UserAccount (
     ID VARCHAR2(36) NOT NULL,
     Name VARCHAR2(200) NOT NULL,
-    Password VARCHAR2(200) DEFAULT NULL,
-    FirstName VARCHAR2(200) DEFAULT NULL,
-    LastName VARCHAR2(200) DEFAULT NULL,
+    Password VARCHAR2(200) NULL,
+    FirstName VARCHAR2(200) NULL,
+    LastName VARCHAR2(200) NULL,
     DefaultNodeID VARCHAR2(36) NOT NULL,
-    Phone VARCHAR2(200) DEFAULT NULL,
-    Email VARCHAR2(200) DEFAULT NULL,
+    Phone VARCHAR2(200) NULL,
+    Email VARCHAR2(200) NULL,
     LockedOut NUMBER DEFAULT 0 NOT NULL,
     UseADAuthentication NUMBER DEFAULT 1 NOT NULL,
-    ChangePasswordOn DATE DEFAULT NULL,
+    ChangePasswordOn DATE NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
     UpdatedOn DATE NOT NULL,
@@ -983,7 +989,7 @@ ALTER TABLE UserAccount ADD CONSTRAINT PK_UserAccount PRIMARY KEY (ID);
 CREATE TABLE SecurityGroup (
     ID VARCHAR2(36) NOT NULL,
     Name VARCHAR2(200) NOT NULL,
-    Description VARCHAR2(4000),
+    Description VARCHAR2(4000) NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
     UpdatedOn DATE NOT NULL,
@@ -999,7 +1005,7 @@ ALTER TABLE SecurityGroup ADD CONSTRAINT PK_SecurityGroup PRIMARY KEY (ID);
 CREATE TABLE ApplicationRole (
     ID VARCHAR2(36) NOT NULL,
     Name VARCHAR2(200) NOT NULL,
-    Description VARCHAR2(4000),
+    Description VARCHAR2(4000) NULL,
     NodeID VARCHAR2(36) NOT NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
@@ -1015,7 +1021,7 @@ ALTER TABLE ApplicationRole ADD CONSTRAINT PK_ApplicationRole PRIMARY KEY (ID);
 
 CREATE TABLE ApplicationRoleSecurityGroup (
     ApplicationRoleID VARCHAR2(36) NOT NULL,
-    SecurityGroupID VARCHAR2(36) NOT NULL  
+    SecurityGroupID VARCHAR2(36) NOT NULL
 );
 
 CREATE TABLE ApplicationRoleUserAccount (
@@ -1025,7 +1031,7 @@ CREATE TABLE ApplicationRoleUserAccount (
 
 CREATE TABLE SecurityGroupUserAccount (
     SecurityGroupID VARCHAR2(36) NOT NULL,
-    UserAccountID VARCHAR2(36) NOT NULL  
+    UserAccountID VARCHAR2(36) NOT NULL
 );
 
 CREATE TABLE Subscriber (
@@ -1775,7 +1781,7 @@ UNION
 SELECT 'OutputStreamMeasurement' AS Name FROM dual;
 
 CREATE PACKAGE guid_state AS
-    last_new_guid VARCHAR(36);
+    last_new_guid VARCHAR2(36);
 END;
 /
 
@@ -2760,10 +2766,12 @@ END;
 -- **************************
 CREATE TABLE AlarmState(
     ID NUMBER NOT NULL,
-    State varchar(50) NULL,
-    RecommendedAction varchar(500) NULL,
-    Color varchar(50) NULL,
+    State VARCHAR2(50) NULL,
+    Color VARCHAR2(50) NULL,
+    RecommendedAction VARCHAR2(500) NULL
 );
+
+CREATE UNIQUE INDEX IX_AlarmState_ID ON AlarmState (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE AlarmState ADD CONSTRAINT PK_AlarmState PRIMARY KEY (ID);
 
@@ -2772,14 +2780,17 @@ CREATE SEQUENCE SEQ_AlarmState START WITH 1 INCREMENT BY 1;
 CREATE TRIGGER AI_AlarmState BEFORE INSERT ON AlarmState
     FOR EACH ROW BEGIN SELECT SEQ_AlarmState.nextval INTO :NEW.ID FROM dual;
 END;
+/
 
 CREATE TABLE AlarmDevice(
-    ID NUMBER IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    ID NUMBER NOT NULL,
     DeviceID NUMBER NULL,
     StateID NUMBER NULL,
-    TimeStamp datetime NULL,
-    DisplayData varchar(10) NULL
+    TimeStamp DATE NULL,
+    DisplayData VARCHAR2(10) NULL
 );
+
+CREATE UNIQUE INDEX IX_AlarmDevice_ID ON AlarmDevice (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE AlarmDevice ADD CONSTRAINT PK_AlarmDevice PRIMARY KEY (ID);
 ALTER TABLE AlarmDevice ADD CONSTRAINT FK_AlarmDevice_Device FOREIGN KEY(DeviceID) REFERENCES Device(ID) ON DELETE CASCADE;
@@ -2790,6 +2801,7 @@ CREATE SEQUENCE SEQ_AlarmDevice START WITH 1 INCREMENT BY 1;
 CREATE TRIGGER AI_AlarmDevice BEFORE INSERT ON AlarmDevice
     FOR EACH ROW BEGIN SELECT SEQ_AlarmDevice.nextval INTO :NEW.ID FROM dual;
 END;
+/
 
 CREATE VIEW AlarmDeviceStateView AS
 SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDevice.DisplayData, Device.ID AS DeviceID

@@ -28,6 +28,7 @@
                   <add name="ClientSecret" value="sssss-ssssss-sssss" description="Defines the Client Secret to encrypt User Information." encrypted="false" />
                   <add name="SelfVerifiedNonce="aefgdfhf" description="Defines the Client Secret to encrypt User Information." encrypted="false" />
                   <add name="TokenEndpoint" value="user" description="Defines the Endpoint to get the User Token from." encrypted="false" />
+                  <add name="ShowDetailedError" value="true" description="Indicates if the Login Page should display detailed Debuging Information when OAuth Fails." encrypted="false" />
                 </securityProvider>
               </categorizedSettings>
             </configuration>
@@ -119,6 +120,11 @@
         <member name="P:GSF.Security.OIDCSecurityProvider.RequestedRedirect">
             <summary>
             Gets the URI that user will be redirected to if <see cref="P:GSF.Security.OIDCSecurityProvider.IsRedirectRequested"/> is set.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.OIDCSecurityProvider.ShowDetailedError">
+            <summary>
+            Indicates if the Login Page should display detailed Debugging Information when OAuth Fails.
             </summary>
         </member>
         <member name="M:GSF.Security.OIDCSecurityProvider.LoadSettings">
