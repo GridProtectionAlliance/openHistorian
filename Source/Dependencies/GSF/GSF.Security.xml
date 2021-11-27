@@ -4,6 +4,21 @@
         <name>GSF.Security</name>
     </assembly>
     <members>
+        <member name="T:GSF.Security.TokenResponse">
+            <summary>
+            Defines a JSON token response for the <see cref="T:GSF.Security.OIDCSecurityProvider"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.TokenResponse.access_token">
+            <summary>
+            Access token.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.TokenResponse.id_token">
+            <summary>
+            ID token.
+            </summary>
+        </member>
         <member name="T:GSF.Security.OIDCSecurityProvider">
             <summary>
             Represents an <see cref="T:GSF.Security.ISecurityProvider"/> that uses openID Connect
@@ -47,14 +62,10 @@
             </summary>
             <param name="username">Name that uniquely identifies the user.</param>
         </member>
-        <member name="M:GSF.Security.OIDCSecurityProvider.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="P:GSF.Security.OIDCSecurityProvider.UserData">
             <summary>
-            Initializes a new instance of the <see cref="T:GSF.Security.AdoSecurityProvider"/> class.
+            Gets the <see cref="T:GSF.Security.OIDCUserData"/> object containing information about the user.
             </summary>
-            <param name="username">Name that uniquely identifies the user.</param>
-            <param name="canRefreshData">true if the security provider can refresh <see cref="T:GSF.Security.UserData"/> from the backend data store, otherwise false.</param>
-            <param name="canResetPassword">true if the security provider can reset user password, otherwise false.</param>
-            <param name="canChangePassword">true if the security provider can change user password, otherwise false.</param>
         </member>
         <member name="P:GSF.Security.OIDCSecurityProvider.LastException">
             <summary>
@@ -133,6 +144,12 @@
             </summary>
             <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.Security.SecurityProviderBase.SettingsCategory"/> has a value of null or empty string.</exception>
         </member>
+        <member name="M:GSF.Security.OIDCSecurityProvider.RefreshData">
+            <summary>
+            Not implemented by <see cref="T:GSF.Security.OIDCSecurityProvider"/>; always returns <c>false</c>.
+            </summary>
+            <returns>true if <see cref="P:GSF.Security.SecurityProviderBase.UserData"/> is refreshed, otherwise false.</returns>
+        </member>
         <member name="M:GSF.Security.OIDCSecurityProvider.Authenticate">
             <summary>
             Authenticates the user.
@@ -169,29 +186,30 @@
             <param name="referrer"> The Referrer as specified in the request header </param>
             <returns> The URI to be redirected to</returns>
         </member>
-        <member name="M:GSF.Security.OIDCSecurityProvider.RefreshData">
-            <summary>
-            Not implemented
-            </summary>
-        </member>
         <member name="M:GSF.Security.OIDCSecurityProvider.ResetPassword(System.String)">
             <summary>
-            Not implemented
+            Not implemented by <see cref="T:GSF.Security.OIDCSecurityProvider"/>; always returns <c>false</c>.
             </summary>
+            <param name="securityAnswer">Answer to the user's security question.</param>
+            <returns>true if the password is reset, otherwise false.</returns>
+            <remarks></remarks>
         </member>
         <member name="M:GSF.Security.OIDCSecurityProvider.ChangePassword(System.String,System.String)">
             <summary>
-            Not implemented
+            Not implemented by <see cref="T:GSF.Security.OIDCSecurityProvider"/>; always returns <c>false</c>.
+            </summary>
+            <param name="oldPassword">User's current password.</param>
+            <param name="newPassword">User's new password.</param>
+            <returns>true if the password is changed, otherwise false.</returns>
+        </member>
+        <member name="P:GSF.Security.OIDCSecurityProvider.CanRefreshData">
+            <summary>
+            Not implemented by <see cref="T:GSF.Security.OIDCSecurityProvider"/>; always returns <c>false</c>.
             </summary>
         </member>
-        <member name="E:GSF.Security.OIDCSecurityProvider.SecurityContextRefreshed">
+        <member name="M:GSF.Security.OIDCSecurityProvider.RequestToken(System.String)">
             <summary>
-            Raised when the security context is refreshed.
-            </summary>
-        </member>
-        <member name="F:GSF.Security.OIDCSecurityProvider.DefaultNodeID">
-            <summary>
-            Gets current default Node ID for security.
+            Obtains the Token from the OIDC Server using a code.
             </summary>
         </member>
         <member name="T:GSF.Security.AdoSecurityProvider">
@@ -879,6 +897,32 @@
         <member name="P:GSF.Security.Model.UserAccount.AccountName">
             <summary>
             User account name, converted from security ID as needed.
+            </summary>
+        </member>
+        <member name="T:GSF.Security.OIDCUserData">
+            <summary>
+            Defines <see cref="T:GSF.Security.UserData"/> for the <see cref="T:GSF.Security.OIDCSecurityProvider"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.OIDCUserData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Security.OIDCUserData"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.OIDCUserData.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Security.OIDCUserData"/> class.
+            </summary>
+            <param name="username">User's logon name.</param>
+        </member>
+        <member name="P:GSF.Security.OIDCUserData.Nonce">
+            <summary>
+            Gets or sets OIDC Nonce value associated with this user.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.OIDCUserData.Token">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Security.TokenResponse"/> associated with this user.
             </summary>
         </member>
         <member name="T:GSF.Security.UserRoleCache">
