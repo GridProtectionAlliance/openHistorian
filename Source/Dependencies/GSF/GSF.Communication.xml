@@ -1231,6 +1231,11 @@
             Specifies the default value for the <see cref="P:GSF.Communication.ClientBase.ConnectionString"/> property.
             </summary>
         </member>
+        <member name="E:GSF.Communication.FileClient.EndOfFile">
+            <summary>
+            Occurs when the end of a file has been reached.
+            </summary>
+        </member>
         <member name="M:GSF.Communication.FileClient.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Communication.FileClient"/> class.
@@ -1397,6 +1402,11 @@
             Raises the <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.
             </summary>
             <param name="ex">Exception to send to <see cref="E:GSF.Communication.ClientBase.ConnectionException"/> event.</param>
+        </member>
+        <member name="M:GSF.Communication.FileClient.OnEndOfFile">
+            <summary>
+            Raises the <see cref="E:GSF.Communication.FileClient.EndOfFile"/> event.
+            </summary>
         </member>
         <member name="T:GSF.Communication.ClientState">
             <summary>

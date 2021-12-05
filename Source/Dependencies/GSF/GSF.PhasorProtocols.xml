@@ -2948,7 +2948,7 @@
             Gets or sets time offset of F-NET device in <see cref="T:GSF.Ticks"/>.
             </summary>
             <remarks>
-            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this this artificial delay.
+            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this artificial delay.
             Note that the parameter value is in ticks to allow a very high-resolution offset;  1 second = 10,000,000 ticks.
             </remarks>
         </member>
@@ -3048,7 +3048,7 @@
             Gets or sets the time offset of F-NET device in <see cref="T:GSF.Ticks"/>.
             </summary>
             <remarks>
-            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this this artificial delay.
+            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this artificial delay.
             Note that the parameter value is in ticks to allow a very high-resolution offset;  1 second = 10,000,000 ticks.
             </remarks>
         </member>
@@ -3115,7 +3115,7 @@
             Gets or sets time offset of the F-NET device in <see cref="T:GSF.Ticks"/>.
             </summary>
             <remarks>
-            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this this artificial delay.
+            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this artificial delay.
             Note that the parameter value is in ticks to allow a very high-resolution offset;  1 second = 10,000,000 ticks.
             </remarks>
         </member>
@@ -3184,7 +3184,7 @@
             </summary>
             <remarks>
             F-NET defines synchronization validity as a derived value based on the number of available satellites, i.e.,
-            synchronization is valid if number of visible sattellites is greater than zero.
+            synchronization is valid if number of visible satellites is greater than zero.
             </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.FNET.DataCell.DataSortingType">
@@ -3419,7 +3419,7 @@
             Gets or sets time offset of F-NET device in <see cref="T:GSF.Ticks"/>.
             </summary>
             <remarks>
-            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this this artificial delay.
+            F-NET devices normally report time in 11 seconds past real-time, this property defines the offset for this artificial delay.
             Note that the parameter value is in ticks to allow a very high-resolution offset;  1 second = 10000000 ticks.
             </remarks>
         </member>
@@ -3643,6 +3643,15 @@
             parsed correctly.
             </remarks>
             <typeparam name="TFrameIdentifier">Frame type identifier used to distinguish frames.</typeparam>
+        </member>
+        <member name="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedChannelFrame">
+            <summary>
+            Occurs when any <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> that was received.
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the flag to determine if frame publication should continue.
+            </remarks>
         </member>
         <member name="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedConfigurationFrame">
             <summary>
@@ -5082,7 +5091,7 @@
             Defines function signature for creating new <see cref="T:GSF.PhasorProtocols.IChannelValue`1"/> objects.
             </summary>
             <param name="parent">Reference to parent <see cref="T:GSF.PhasorProtocols.IDataCell"/>.</param>
-            <param name="definition">Refrence to associated <see cref="T:GSF.PhasorProtocols.IChannelDefinition"/> object.</param>
+            <param name="definition">Reference to associated <see cref="T:GSF.PhasorProtocols.IChannelDefinition"/> object.</param>
             <param name="buffer">Binary image to parse <see cref="T:GSF.PhasorProtocols.IChannelValue`1"/> from.</param>
             <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
             <param name="parsedLength">Returns the total number of bytes parsed from <paramref name="buffer"/>.</param>
@@ -8350,6 +8359,15 @@
             This interface allows protocol specific frame parsers to be handled abstractly by the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </remarks>
         </member>
+        <member name="E:GSF.PhasorProtocols.IFrameParser.ReceivedChannelFrame">
+            <summary>
+            Occurs when any <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> that was received.
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the flag to determine if frame publication should continue.
+            </remarks>
+        </member>
         <member name="E:GSF.PhasorProtocols.IFrameParser.ReceivedCommandFrame">
             <summary>
             Occurs when a <see cref="T:GSF.PhasorProtocols.ICommandFrame"/> has been received.
@@ -9308,6 +9326,15 @@
             <summary>
             Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.KeepCommandChannelOpen"/> property.
             </summary>
+        </member>
+        <member name="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ReceivedChannelFrame">
+            <summary>
+            Occurs when any <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> that was received.
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the flag to determine if frame publication should continue.
+            </remarks>
         </member>
         <member name="E:GSF.PhasorProtocols.MultiProtocolFrameParser.ReceivedCommandFrame">
             <summary>
@@ -10905,7 +10932,7 @@
         </member>
         <member name="F:GSF.PhasorProtocols.IEC61850_90_5.SessionType.Tunnelled">
             <summary>
-            Tunnelled values.
+            Tunneled values.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.IEC61850_90_5.SessionType.Goose">
@@ -11090,7 +11117,7 @@
         </member>
         <member name="F:GSF.PhasorProtocols.IEC61850_90_5.FormatFlags.UnusedMask">
             <summary>
-            Unsed format bits mask.
+            Unused format bits mask.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.IEC61850_90_5.FormatFlags.NoFlags">
@@ -13325,7 +13352,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.BPAPDCstream.CommonFrameHeader.RoughTimestamp">
             <summary>
-            Gets rough timestamp, accuarate to the second, that can be used until configuration frame arrives.
+            Gets rough timestamp, accurate to the second, that can be used until configuration frame arrives.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.BPAPDCstream.CommonFrameHeader.RowFlags">
@@ -16512,7 +16539,7 @@
             <param name="buffer">Buffer image on which to append checksum.</param>
             <param name="startIndex">Index into <paramref name="buffer"/> where checksum should be appended.</param>
             <remarks>
-            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accomodate
+            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accommodate
             2-byte checksum representation. We override this method since checksum in Macrodyne is a single byte.
             </remarks>
         </member>
@@ -16941,25 +16968,25 @@
             <summary>
             Send reference phasor.
             </summary>
-            <remarks>Command must be followed by phasor and xor checksum <see cref="T:System.Byte"/>.</remarks>
+            <remarks>Command must be followed by phasor and XOR checksum <see cref="T:System.Byte"/>.</remarks>
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DataInputCommand.SendWordData">
             <summary>
             Send word data.
             </summary>
-            <remarks>Command must be followed by big-endian <see cref="T:System.UInt16"/> and xor checksum <see cref="T:System.Byte"/></remarks>
+            <remarks>Command must be followed by big-endian <see cref="T:System.UInt16"/> and XOR checksum <see cref="T:System.Byte"/></remarks>
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DataInputCommand.SendUnitIDData">
             <summary>
             Send unit ID data.
             </summary>
-            <remarks>Command must be followed by 8 ASCII bytes of data and xor checksum <see cref="T:System.Byte"/></remarks>
+            <remarks>Command must be followed by 8 ASCII bytes of data and XOR checksum <see cref="T:System.Byte"/></remarks>
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DataInputCommand.SendByteData">
             <summary>
             Send byte data.
             </summary>
-            <remarks>Command must be followed by <see cref="T:System.Byte"/> data and xor checksum <see cref="T:System.Byte"/>.</remarks>
+            <remarks>Command must be followed by <see cref="T:System.Byte"/> data and XOR checksum <see cref="T:System.Byte"/>.</remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.Macrodyne.DeviceCommand">
             <summary>
@@ -17344,7 +17371,7 @@
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DeviceCommand.SetRawPreTriggerValue">
             <summary>
-            Set Raw data pretrigger to the value in the word buffer.
+            Set raw data pre-trigger to the value in the word buffer.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DeviceCommand.StartDebugMode">
@@ -17529,7 +17556,7 @@
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DeviceCommand.RequestCurrentRawTablePreTrigger">
             <summary>
-            Request current raw table pretrigger (22 response bytes).
+            Request current raw table pre-trigger (22 response bytes).
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.Macrodyne.DeviceCommand.Undefined">
@@ -18077,7 +18104,7 @@
             <param name="buffer">Buffer image on which to append checksum.</param>
             <param name="startIndex">Index into <paramref name="buffer"/> where checksum should be appended.</param>
             <remarks>
-            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accomodate
+            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accommodate
             2-byte checksum representation. We override this method since checksum in Macrodyne is a single byte.
             </remarks>
         </member>
@@ -18347,7 +18374,7 @@
             <param name="buffer">Buffer image on which to append checksum.</param>
             <param name="startIndex">Index into <paramref name="buffer"/> where checksum should be appended.</param>
             <remarks>
-            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accomodate
+            Default implementation encodes checksum in big-endian order and expects buffer size large enough to accommodate
             2-byte checksum representation. We override this method since checksum in Macrodyne is a single byte.
             </remarks>
         </member>
