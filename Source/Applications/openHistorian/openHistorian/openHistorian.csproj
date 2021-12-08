@@ -352,6 +352,7 @@
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\ModbusConfig.cshtml" />
     <Content Include="wwwroot\Logout.cshtml" />
+    <Content Include="wwwroot\OscEvents.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\SelectGroupDevices.cshtml" />
     <None Include="wwwroot\SelectTheme.cshtml" />
