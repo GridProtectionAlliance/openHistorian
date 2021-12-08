@@ -559,6 +559,49 @@ namespace openHistorian
 
         #endregion
 
+        #region [ OscEvents Table Operations ]
+
+        [RecordOperation(typeof(OscEvents), RecordOperation.QueryRecordCount)]
+        public int QueryOscEventsCount(string filterText)
+        {
+            return DataContext.Table<OscEvents>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(OscEvents), RecordOperation.QueryRecords)]
+        public IEnumerable<OscEvents> QueryOscEvents(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<OscEvents>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(OscEvents), RecordOperation.DeleteRecord)]
+        public void DeleteOscEvents(int id)
+        {
+            DataContext.Table<OscEvents>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(OscEvents), RecordOperation.CreateNewRecord)]
+        public OscEvents NewOscEvents()
+        {
+            return DataContext.Table<OscEvents>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(OscEvents), RecordOperation.AddNewRecord)]
+        public void AddNewOscEvents(OscEvents oscEvents)
+        {
+            DataContext.Table<OscEvents>().AddNewRecord(oscEvents);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(OscEvents), RecordOperation.UpdateRecord)]
+        public void UpdateOscEvents(OscEvents oscEvents)
+        {
+            DataContext.Table<OscEvents>().UpdateRecord(oscEvents);
+        }
+
+        #endregion
+
         #region [ Historian Table Operations ]
 
         [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
