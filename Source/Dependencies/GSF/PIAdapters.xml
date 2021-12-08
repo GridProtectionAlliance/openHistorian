@@ -208,21 +208,6 @@
             Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
             </summary>
         </member>
-        <member name="F:PIAdapters.PIOutputAdapter.DefaultEnableTimeReasonabilityCheck">
-            <summary>
-            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.EnableTimeReasonabilityCheck"/>.
-            </summary>
-        </member>
-        <member name="F:PIAdapters.PIOutputAdapter.DefaultPastTimeReasonabilityLimit">
-            <summary>
-            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.PastTimeReasonabilityLimit"/>.
-            </summary>
-        </member>
-        <member name="F:PIAdapters.PIOutputAdapter.DefaultFutureTimeReasonabilityLimit">
-            <summary>
-            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.FutureTimeReasonabilityLimit"/>.
-            </summary>
-        </member>
         <member name="M:PIAdapters.PIOutputAdapter.#ctor">
             <summary>
             Creates a new <see cref="T:PIAdapters.PIOutputAdapter"/>
