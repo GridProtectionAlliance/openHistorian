@@ -208,6 +208,21 @@
             Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
             </summary>
         </member>
+        <member name="F:PIAdapters.PIOutputAdapter.DefaultEnableTimeReasonabilityCheck">
+            <summary>
+            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.EnableTimeReasonabilityCheck"/>.
+            </summary>
+        </member>
+        <member name="F:PIAdapters.PIOutputAdapter.DefaultPastTimeReasonabilityLimit">
+            <summary>
+            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.PastTimeReasonabilityLimit"/>.
+            </summary>
+        </member>
+        <member name="F:PIAdapters.PIOutputAdapter.DefaultFutureTimeReasonabilityLimit">
+            <summary>
+            Defines the default value for <see cref="P:PIAdapters.PIOutputAdapter.FutureTimeReasonabilityLimit"/>.
+            </summary>
+        </member>
         <member name="M:PIAdapters.PIOutputAdapter.#ctor">
             <summary>
             Creates a new <see cref="T:PIAdapters.PIOutputAdapter"/>
@@ -301,6 +316,21 @@
         <member name="P:PIAdapters.PIOutputAdapter.MaximumPointResolution">
             <summary>
             Gets or sets the maximum time resolution, in seconds, for data points being archived, e.g., a value 1.0 would mean that data would be archived no more than once per second. A zero value indicates that all data should be archived.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.EnableTimeReasonabilityCheck">
+            <summary>
+            Gets or sets flag that indicates if incoming timestamps to the historian should be validated for reasonability.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.PastTimeReasonabilityLimit">
+            <summary>
+            Gets or sets the maximum number of seconds that a past timestamp, as compared to local clock, will be considered valid.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.FutureTimeReasonabilityLimit">
+            <summary>
+            Gets or sets the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.Status">
