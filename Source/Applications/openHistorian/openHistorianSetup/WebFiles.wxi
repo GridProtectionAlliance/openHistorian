@@ -48,6 +48,9 @@
   <Component Id="ModbusConfig_cshtml">
     <File Id="ModbusConfig.cshtml" Name="ModbusConfig.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ModbusConfig.cshtml" />
   </Component>
+  <Component Id="OscEvents_cshtml">
+    <File Id="OscEvents.cshtml" Name="OscEvents.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\OscEvents.cshtml" />
+  </Component>
   <Component Id="RemoteConsole_cshtml">
     <File Id="RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\RemoteConsole.cshtml" />
   </Component>
