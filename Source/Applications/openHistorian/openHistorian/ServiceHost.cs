@@ -278,6 +278,18 @@ namespace openHistorian
             Model.Global.DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30);
             Model.Global.SystemName = systemSettings["SystemName"].Value;
 
+            try
+            {
+                // Attempt to check if table exists using a method that should work across database types
+                using AdoDataConnection connection = new AdoDataConnection("systemSettings");
+                Model.Global.HasOscEvents = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM OscEvents") >= 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                Model.Global.HasOscEvents = false;
+            }
+
             // Register a symbolic reference to global settings for use by default value expressions
             ValueExpressionParser.DefaultTypeRegistry.RegisterSymbol("Global", Model.Global);
 
@@ -336,6 +348,7 @@ namespace openHistorian
                         webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                         webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
                         webServer.PagedViewModelTypes.TryAdd("DeviceGroups.cshtml", new Tuple<Type, Type>(typeof(DeviceGroup), typeof(DataHub)));
+                        webServer.PagedViewModelTypes.TryAdd("OscEvents.cshtml", new Tuple<Type, Type>(typeof(OscEvents), typeof(DataHub)));
                     }
                     catch (Exception ex)
                     {

@@ -76,5 +76,7 @@ namespace openHistorian
         public int DefaultCalculationFramesPerSecond { get; set; }
 
         public string SystemName { get; set; }
+
+        public bool HasOscEvents { get; set; }
     }
 }
