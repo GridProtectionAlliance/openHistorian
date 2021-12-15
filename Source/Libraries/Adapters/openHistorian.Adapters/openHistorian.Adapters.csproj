@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <LangVersion>8</LangVersion>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -139,6 +139,7 @@
     <Compile Include="Model\IIaonAdapter.cs" />
     <Compile Include="Model\OscEvents.cs" />
     <Compile Include="Model\Runtime.cs" />
+    <Compile Include="OscEventLogger.cs" />
     <Compile Include="ReportOperationsHubClient.cs" />
     <Compile Include="ReportOperations.cs" />
     <Compile Include="HistorianOperationsHubClient.cs" />

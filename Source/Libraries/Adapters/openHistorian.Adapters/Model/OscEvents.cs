@@ -13,6 +13,8 @@ namespace openHistorian.Model
         [PrimaryKey(true)]
         public int ID { get; set; }
 
+        public int? ParentID { get; set; }
+
         [Label("Oscillation Source")]
         [Required]
         [StringLength(200)]
@@ -25,11 +27,21 @@ namespace openHistorian.Model
         [Label("Stop Time")]
         public DateTime? StopTime { get; set; }
 
-        [StringLength(200)]
-        public string Frequency { get; set; }
+        public double? FrequencyBand1 { get; set; }
+        
+        public double? FrequencyBand2 { get; set; }
+        
+        public double? FrequencyBand3 { get; set; }
+        
+        public double? FrequencyBand4 { get; set; }
 
-        [StringLength(200)]
-        public string Magnitude { get; set; }
+        public double? MagnitudeBand1 { get; set; }
+        
+        public double? MagnitudeBand2 { get; set; }
+        
+        public double? MagnitudeBand3 { get; set; }
+        
+        public double? MagnitudeBand4 { get; set; }
 
         [Searchable]
         public string Notes { get; set; }

@@ -189,6 +189,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Server", "SQL Server", 
 		Data\SQL Server\AuditLog.sql = Data\SQL Server\AuditLog.sql
 		Data\SQL Server\InitialDataSet.sql = Data\SQL Server\InitialDataSet.sql
 		Data\SQL Server\openHistorian.sql = Data\SQL Server\openHistorian.sql
+		Data\SQL Server\OscEvents.sql = Data\SQL Server\OscEvents.sql
 		Data\SQL Server\SampleDataSet.sql = Data\SQL Server\SampleDataSet.sql
 	EndProjectSection
 EndProject

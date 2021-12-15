@@ -562,15 +562,34 @@ namespace openHistorian
         #region [ OscEvents Table Operations ]
 
         [RecordOperation(typeof(OscEvents), RecordOperation.QueryRecordCount)]
-        public int QueryOscEventsCount(string filterText)
+        public int QueryOscEventsCount(int parentID, string filterText)
         {
-            return DataContext.Table<OscEvents>().QueryRecordCount(filterText);
+            TableOperations<OscEvents> oscEventsTable = DataContext.Table<OscEvents>();
+
+            RecordRestriction restriction = (parentID > 0 ?
+                new RecordRestriction("ParentID = {0}", parentID) : 
+                new RecordRestriction("ParentID IS NULL")) +
+                oscEventsTable.GetSearchRestriction(filterText);
+
+            return DataContext.Table<OscEvents>().QueryRecordCount(restriction);
         }
 
         [RecordOperation(typeof(OscEvents), RecordOperation.QueryRecords)]
-        public IEnumerable<OscEvents> QueryOscEvents(string sortField, bool ascending, int page, int pageSize, string filterText)
+        public IEnumerable<OscEvents> QueryOscEvents(int parentID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<OscEvents>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+            TableOperations<OscEvents> oscEventsTable = DataContext.Table<OscEvents>();
+
+            RecordRestriction restriction = (parentID > 0 ?
+                new RecordRestriction("ParentID = {0}", parentID) :
+                new RecordRestriction("ParentID IS NULL")) +
+                oscEventsTable.GetSearchRestriction(filterText);
+
+            return DataContext.Table<OscEvents>().QueryRecords(sortField, ascending, page, pageSize, restriction);
+        }
+
+        public int QueryAssociatedEventCount(int parentID)
+        {
+            return DataContext.Table<OscEvents>().QueryRecordCountWhere("ParentID = {0}", parentID);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]

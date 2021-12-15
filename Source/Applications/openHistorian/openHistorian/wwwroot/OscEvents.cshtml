@@ -20,6 +20,10 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Net.Http
+@using System.Text
+@using GSF.Data.Model
+@using GSF.Web
 @using GSF.Web.Model
 @using openHistorian
 @using openHistorian.Model
@@ -33,31 +37,63 @@
 }
 @{
     DataContext dataContext = ViewBag.DataContext;
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string parameter;
+    int parentID;
+
+    if (!parameters.TryGetValue("parentID", out parameter) || !int.TryParse(parameter, out parentID)) {
+        parentID = 0;
+    }
+
+    string parentSource = "N/A";
+
+    if (parentID == 0) {
+        parameters.TryGetValue("source", out parentSource);
+    } else {
+        TableOperations<OscEvents> oscEvents = dataContext.Table<OscEvents>();
+        OscEvents parentRecord = oscEvents.QueryRecordWhere("ID = {0}", parentID);
+
+        if (parentRecord != null) {
+            parentSource = parentRecord.Source;
+        }
+    }
 
     Layout = "Layout.cshtml";
-    ViewBag.Title = "Oscillation Events";
+    ViewBag.Title = "Oscillation " + (parentID == 0 ? "Source" : "Other") + " Events";
     ViewBag.ShowSearchFilter = true;
 
     ViewBag.HeaderColumns = new[]
     {   //    { "Field", "Label", "Classes" }
-        new[] { "Source", "Source", "text-left" },
+        new[] { "Source", parentID == 0 ? "Source Locations" : "Other Location", "text-left" },
         new[] { "StartTime", "Start Time", "text-left" },
         new[] { "StopTime", "Stop Time", "text-left" },
-        new[] { "Frequency", "Frequency", "text-left" },
-        new[] { "Magnitude", "Magnitude", "text-left" }
+        new[] { null, "Frequency", "text-left" },
+        new[] { null, "Energy", "text-left" },
+        new[] { null, parentID == 0 ? "Other Locations" : "Source Location", "text-center" }
     };
 
-    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.BodyRows = BodyRows(parentID, parentSource).ToString();
     ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
-
 }
-@helper BodyRows()
+@helper BodyRows(int parentID, string parentSource)
 {
-    <td width="25%" class="text-left valign-middle"><button type="button" class="btn btn-link btn-xs" data-bind="text: Source, click: downloadDetails.bind($data)"></button></td>
-    <td width="15%" class="text-left valign-middle" data-bind="text: StartTime"></td>
-    <td width="15%" class="text-left valign-middle" data-bind="text: StopTime"></td>
-    <td width="20%" class="text-left valign-middle" data-bind="text: Frequency"></td>
-    <td width="20%" class="text-left valign-middle" data-bind="text: Magnitude"></td>
+    <td width="20%" class="text-left valign-middle"><button type="button" class="btn btn-link btn-xs" data-bind="text: Source, click: downloadDetails.bind($data)"></button></td>
+    <td width="20%" class="text-left valign-middle" data-bind="text: StartTime"></td>
+    <td width="20%" class="text-left valign-middle" data-bind="text: StopTime"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="text: frequency($data)"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="text: magnitude($data)"></td>
+    <td width="9%" class="text-center valign-middle">
+        <button type="button" class="btn btn-link btn-xs" data-bind="click: openAssociated.bind($data)" hub-dependent>
+        @if (parentID == 0) {
+            <span class="badge" data-bind="html: getAssociatedCount(ID), attr: {id: 'associatedCount' + ID}">0 events</span>
+        }
+        else {
+            @parentSource
+        }
+        </button>
+    </td>
     <td width="5%" class="text-center valign-middle" nowrap>
         <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-paperclip"></span></button>
         <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
@@ -65,28 +101,107 @@
 }
 @helper AddNewEditDialog(DataContext dataContext)
 {
-    @Raw(dataContext.AddInputField<OscEvents>("Source"))
-    @Raw(dataContext.AddInputField<OscEvents>("StartTime", "datetime"))
-    @Raw(dataContext.AddInputField<OscEvents>("StopTime", "datetime"))
-    @Raw(dataContext.AddInputField<OscEvents>("Frequency"))
-    @Raw(dataContext.AddInputField<OscEvents>("Magnitude"))
-    @Raw(dataContext.AddTextAreaField<OscEvents>("Notes", 4, initialFocus: true))
+    <div class="col-md-6">
+        @Raw(dataContext.AddInputField<OscEvents>("Source"))
+        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand1"))
+        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand1"))
+        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand2"))
+        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand2"))
+        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand3"))
+        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand3"))
+    </div>
+    <div class="col-md-6">
+        @Raw(dataContext.AddInputField<OscEvents>("StartTime", "datetime"))
+        @Raw(dataContext.AddInputField<OscEvents>("StopTime", "datetime"))
+        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand4"))
+        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand4"))
+        @Raw(dataContext.AddTextAreaField<OscEvents>("Notes", 8, initialFocus: true))
+    </div>
 }
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 @section Scripts {
     <script>
-        @Raw(dataContext.RenderViewModelConfiguration<OscEvents, DataHub>(ViewBag, "StartTime"))
+        @Raw(dataContext.RenderViewModelConfiguration<OscEvents, DataHub>(ViewBag, "StartTime", null, parentID))
+
+        @if (parentID == 0 && !string.IsNullOrWhiteSpace(parentSource)) {
+        <text>
+            $(function() {
+                $("#searchFilter").val("@parentSource");
+                $("#searchFilter").keyup();
+            });
+        </text>
+        }
+
+        function frequency(record) {
+            const details = [];
+
+            if (record.FrequencyBand1)
+                details.push(`${record.FrequencyBand1} (Band1)`);
+
+            if (record.FrequencyBand2)
+                details.push(`${record.FrequencyBand2} (Band2)`);
+
+            if (record.FrequencyBand3)
+                details.push(`${record.FrequencyBand3} (Band3)`);
+
+            if (record.FrequencyBand4)
+                details.push(`${record.FrequencyBand4} (Band4)`);
+
+            return details.join(", ");
+        }
+
+        function magnitude(record) {
+            const details = [];
+
+            if (record.MagnitudeBand1)
+                details.push(`${record.MagnitudeBand1} (Band1)`);
+
+            if (record.MagnitudeBand2)
+                details.push(`${record.MagnitudeBand2} (Band2)`);
+
+            if (record.MagnitudeBand3)
+                details.push(`${record.MagnitudeBand3} (Band3)`);
+
+            if (record.MagnitudeBand4)
+                details.push(`${record.MagnitudeBand4} (Band4)`);
+
+            return details.join(", ");
+        }
+
+        function getAssociatedCount(eventID) {
+            if (viewModel.dataHubIsConnected()) {
+                dataHub.queryAssociatedEventCount(eventID).done(function (count) {
+                    $("#associatedCount" + eventID).html(`&nbsp;${count}&nbsp;others&nbsp;`);
+                });
+            }
+
+            return "&nbsp;0&nbsp;others&nbsp;";
+        }
+
+        function openAssociated(record) {
+            if (@parentID === 0) {
+                location.href = `OscEvents.cshtml?parentID=${record.ID}`;
+            } else {
+                location.href = `OscEvents.cshtml?source=${encodeURIComponent("@parentSource")}`;
+            }
+        }
 
         function downloadDetails(record) {
             var details = "Oscillation Event Report\r\n";
             details += "------------------------\r\n";
             details += `Source: ${record.Source}\r\n`;
-            details += `Duration: ${record.StartTime} to ${record.StopTime}\r\n`;
-            details += `Frequency: ${record.Frequency}\r\n`;
-            details += `Magnitude: ${record.Magnitude}\r\n`;
+            details += `Duration: ${record.StartTime} to ${record.StopTime}\r\n\r\n`;
+            details += `Frequency Band1: ${record.FrequencyBand1}\r\n`;
+            details += `Magnitude Band1: ${record.MagnitudeBand1}\r\n\r\n`;
+            details += `Frequency Band2: ${record.FrequencyBand2}\r\n`;
+            details += `Magnitude Band2: ${record.MagnitudeBand2}\r\n\r\n`;
+            details += `Frequency Band3: ${record.FrequencyBand3}\r\n`;
+            details += `Magnitude Band3: ${record.MagnitudeBand3}\r\n\r\n`;
+            details += `Frequency Band4: ${record.FrequencyBand4}\r\n`;
+            details += `Magnitude Band4: ${record.MagnitudeBand4}\r\n\r\n`;
             details += `Notes: ${record.Notes}\r\n`;
 
-            downloadString(details, "text/plain", `EventReport_${record.Source}.txt`)
+            downloadString(details, "text/plain", `EventReport_${record.Source}.txt`);
         }
 
         function downloadString(text, fileType, fileName) {
