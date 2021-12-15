@@ -28,6 +28,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -136,6 +137,8 @@ namespace openHistorian.Adapters
             {
                 Debug.Assert(inputs.MeasurementKeys.Length == measurements.Length);
 
+                m_parent.m_totalAlarmTests++;
+
                 AlarmDetails alarm = TryGetAlarmDetails(inputs);
 
                 // Check for summary alarm value
@@ -168,6 +171,8 @@ namespace openHistorian.Adapters
                 AlarmDetails alarm = m_alarms.GetOrAdd(inputs, _ => new AlarmDetails(inputs));
                 alarm.StartTime = DateTime.UtcNow;
 
+                m_parent.OnStatusMessage(MessageLevel.Info, $"New oscillation event detected for \"{inputs.Source}\" at {alarm.StartTime:yyyy-MM-dd HH:mm:ss.fff}.");
+
                 // Write new event record
                 using AdoDataConnection connection = new("systemSettings");
                 TableOperations<OscEvents> oscEventsTable = new(connection);
@@ -186,18 +191,21 @@ namespace openHistorian.Adapters
                     m_parent.OnStatusMessage(MessageLevel.Warning, $"Failed to lookup newly added oscillation event record for \"{inputs.Source}\" at {alarm.StartTime:yyyy-MM-dd HH:mm:ss.fff} - event log updates may fail.");
                 else
                     alarm.OscEventsID = oscEvents.ID;
+
+                m_parent.m_totalDetectedEvents++;
             }
 
             private void MarkAlarmStopped(AlarmDetails alarm)
             {
                 alarm.StopTime = DateTime.UtcNow;
 
+                m_parent.OnStatusMessage(MessageLevel.Info, $"End of oscillation event detected for \"{alarm.Inputs.Source}\" at {alarm.StopTime:yyyy-MM-dd HH:mm:ss.fff}.");
+
                 // Update event record
                 using AdoDataConnection connection = new("systemSettings");
                 TableOperations<OscEvents> oscEventsTable = new(connection);
                 OscEvents oscEvents = oscEventsTable.QueryRecordWhere("ID = {0}", alarm.OscEventsID);
 
-                alarm.StopTime = DateTime.UtcNow;
                 oscEvents.StopTime = alarm.StopTime;
 
                 if (!double.IsNaN(alarm.MaxMagnitude[0]))
@@ -235,6 +243,7 @@ namespace openHistorian.Adapters
                     alarm.MaxMagnitude[0] = Max(alarm.MaxMagnitude[0], measurements[(int)OscOutputs.Band1Energy].AdjustedValue);
                     alarm.DominantFrequencySum[0] = Sum(alarm.DominantFrequencySum[0], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[0] = Inc(alarm.DominantFrequencyCount[0]);
+                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 1 alarm statistics");
                 }
 
                 if (measurements[(int)OscOutputs.Band2Alarm].AdjustedValue != 0.0D)
@@ -242,6 +251,7 @@ namespace openHistorian.Adapters
                     alarm.MaxMagnitude[1] = Max(alarm.MaxMagnitude[1], measurements[(int)OscOutputs.Band2Energy].AdjustedValue);
                     alarm.DominantFrequencySum[1] = Sum(alarm.DominantFrequencySum[1], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[1] = Inc(alarm.DominantFrequencyCount[1]);
+                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 2 alarm statistics");
                 }
 
                 if (measurements[(int)OscOutputs.Band3Alarm].AdjustedValue != 0.0D)
@@ -249,6 +259,7 @@ namespace openHistorian.Adapters
                     alarm.MaxMagnitude[2] = Max(alarm.MaxMagnitude[2], measurements[(int)OscOutputs.Band3Energy].AdjustedValue);
                     alarm.DominantFrequencySum[2] = Sum(alarm.DominantFrequencySum[2], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[2] = Inc(alarm.DominantFrequencyCount[2]);
+                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 3 alarm statistics");
                 }
 
                 if (measurements[(int)OscOutputs.Band4Alarm].AdjustedValue != 0.0D)
@@ -256,6 +267,7 @@ namespace openHistorian.Adapters
                     alarm.MaxMagnitude[3] = Max(alarm.MaxMagnitude[3], measurements[(int)OscOutputs.Band4Energy].AdjustedValue);
                     alarm.DominantFrequencySum[3] = Sum(alarm.DominantFrequencySum[3], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[3] = Inc(alarm.DominantFrequencyCount[3]);
+                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 4 alarm statistics");
                 }
             }
 
@@ -295,6 +307,8 @@ namespace openHistorian.Adapters
 
                 // Clear alarms
                 m_alarms.Clear();
+
+                m_parent.m_totalCompletedEvents++;
             }
 
             private static double Max(double v1, double v2) =>
@@ -311,11 +325,15 @@ namespace openHistorian.Adapters
         private const int DefaultFramesPerSecond = 1;
         private const double DefaultLagTime = 1.5D;
         private const double DefaultLeadTime = 5.0D;
+        private const bool DefaultEnableDebugMessages = false;
 
         // Fields
         private readonly AlarmSummary m_alarmSummary;
         private readonly ShortSynchronizedOperation m_updateAlarmInputs;
         private Dictionary<string, AlarmInputs> m_alarmInputs;
+        private long m_totalAlarmTests;
+        private long m_totalDetectedEvents;
+        private long m_totalCompletedEvents;
 
         #endregion
 
@@ -379,6 +397,7 @@ namespace openHistorian.Adapters
             get => base.FramesPerSecond;
             set => base.FramesPerSecond = value;
         }
+
         /// <summary>
         /// Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
         /// </summary>
@@ -416,9 +435,38 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
+        /// Gets or sets the flag that enables verbose debug messages.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Defines the flag that enables verbose debug messages.")]
+        [DefaultValue(DefaultEnableDebugMessages)]
+        public bool EnableDebugMessages { get; set; } = DefaultEnableDebugMessages;
+
+        /// <summary>
         /// Gets the flag indicating if this adapter supports temporal processing.
         /// </summary>
         public override bool SupportsTemporalProcessing => false;
+
+        /// <summary>
+        /// Returns the detailed status of this <see cref="OscEventLogger"/>.
+        /// </summary>
+        public override string Status
+        {
+            get
+            {
+                StringBuilder status = new();
+
+                status.Append(base.Status);
+
+                //                  012345678901234567890123456
+                status.AppendLine($"         Total Alarm Tests: {m_totalAlarmTests:N0}");
+                status.AppendLine($"     Total Detected Events: {m_totalDetectedEvents:N0}");
+                status.AppendLine($"    Total Completed Events: {m_totalCompletedEvents:N0}");
+                status.AppendLine($"    Verbose Debug Messages: {(EnableDebugMessages ? "Enabled" : "Disabled")}");
+
+                return status.ToString();
+            }
+        }
 
         #endregion
 
@@ -454,23 +502,32 @@ namespace openHistorian.Adapters
             Dictionary<string, AlarmInputs> alarmInputs = new(StringComparer.OrdinalIgnoreCase);
             string[] pointTags = InputMeasurementKeys.Select(key => key.SignalID).Select(LookupPointTag).ToArray();
 
+            DebugMessage($"Loaded {pointTags.Length:N0} configured points to monitor for oscillation alarms");
+
             for (int i = 0; i < pointTags.Length; i++)
             {
                 string pointTag = pointTags[i];
                 string source = RemoveSuffix(pointTag);
-                AlarmInputs inputs = alarmInputs.GetOrAdd(source, _ => new AlarmInputs(source));
+                AlarmInputs inputs = alarmInputs.GetOrAdd(source, _ =>
+                {
+                    DebugMessage($"Created new alarm oscillation group for \"{source}\"");
+                    return new AlarmInputs(source);
+                });
 
                 for (int j = 0; j < s_oscOutputNames.Length; j++)
                 {
                     string outputName = s_oscOutputNames[j];
-
-                    if (!pointTag.EndsWith(outputName))
+                    
+                    if (!pointTag.EndsWith(outputName, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     inputs.MeasurementKeys[j] = InputMeasurementKeys[i].Metadata.Key;
+                    DebugMessage($"Added \"{outputName}\" tag to alarm oscillation group \"{source}\", count = {inputs.MeasurementKeys.Count(key => key is not null):N0}");
                     break;
                 }
             }
+
+            DebugMessage($"Established {alarmInputs.Count:N0} alarm alarm oscillation groups");
 
             foreach (KeyValuePair<string, AlarmInputs> kvp in alarmInputs.ToArray())
             {
@@ -528,7 +585,7 @@ namespace openHistorian.Adapters
 
                 if (!foundAll)
                 {
-                    OnStatusMessage(MessageLevel.Warning, $"Failed to find all MAS outputs for \"{inputs.Source}\" - event log updates may fail.");
+                    OnStatusMessage(MessageLevel.Warning, $"Failed to find all oscillation outputs for \"{inputs.Source}\" - event log updates may fail.");
                     continue;
                 }
 
@@ -541,13 +598,23 @@ namespace openHistorian.Adapters
             DataRow record = DataSource.LookupMetadata(signalID);
             string pointTag = null;
 
+            // Try alternate tag first, it has a better format
             if (record is not null)
+                pointTag = record["AlternateTag"].ToString();
+
+            if (string.IsNullOrWhiteSpace(pointTag) && record is not null)
                 pointTag = record["PointTag"].ToString();
 
             if (string.IsNullOrWhiteSpace(pointTag))
                 pointTag = signalID.ToString();
 
             return pointTag.ToUpper();
+        }
+
+        private void DebugMessage(string message)
+        {
+            if (EnableDebugMessages)
+                OnStatusMessage(MessageLevel.Debug, message);
         }
 
         #endregion
