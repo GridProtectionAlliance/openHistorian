@@ -1344,6 +1344,9 @@
       <Component Id="SQLServerSampleDataSet">
         <File Id="SQLServerSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\SQL Server\SampleDataSet.sql" />
       </Component>
+      <Component Id="SQLServerOscEvents">
+        <File Id="SQLServerOscEvents.sql" Name="OscEvents.sql" Source="$(var.SolutionDir)\Data\SQL Server\OscEvents.sql" />
+      </Component>    
     </ComponentGroup>
 
     <!-- SQLite Scripts -->
