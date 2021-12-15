@@ -123,7 +123,7 @@ namespace openHistorian.Adapters
                 m_parent = parent ?? throw new ArgumentNullException(nameof(parent));
             }
 
-            private AlarmDetails FirstAlarm => m_alarms.Values.First();
+            private AlarmDetails FirstAlarm => m_alarms.Values.FirstOrDefault();
 
             private bool AllAlarmsStopped => m_alarms.Values.All(alarm => alarm.IsStopped);
 
