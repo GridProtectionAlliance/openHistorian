@@ -249,7 +249,7 @@ namespace openHistorian.Adapters
                 if (measurements[(int)OscOutputs.Band2Alarm].AdjustedValue != 0.0D)
                 {
                     alarm.MaxMagnitude[1] = Max(alarm.MaxMagnitude[1], measurements[(int)OscOutputs.Band2Energy].AdjustedValue);
-                    alarm.DominantFrequencySum[1] = Sum(alarm.DominantFrequencySum[1], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
+                    alarm.DominantFrequencySum[1] = Sum(alarm.DominantFrequencySum[1], measurements[(int)OscOutputs.Band2DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[1] = Inc(alarm.DominantFrequencyCount[1]);
                     m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 2 alarm statistics");
                 }
@@ -257,7 +257,7 @@ namespace openHistorian.Adapters
                 if (measurements[(int)OscOutputs.Band3Alarm].AdjustedValue != 0.0D)
                 {
                     alarm.MaxMagnitude[2] = Max(alarm.MaxMagnitude[2], measurements[(int)OscOutputs.Band3Energy].AdjustedValue);
-                    alarm.DominantFrequencySum[2] = Sum(alarm.DominantFrequencySum[2], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
+                    alarm.DominantFrequencySum[2] = Sum(alarm.DominantFrequencySum[2], measurements[(int)OscOutputs.Band3DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[2] = Inc(alarm.DominantFrequencyCount[2]);
                     m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 3 alarm statistics");
                 }
@@ -265,7 +265,7 @@ namespace openHistorian.Adapters
                 if (measurements[(int)OscOutputs.Band4Alarm].AdjustedValue != 0.0D)
                 {
                     alarm.MaxMagnitude[3] = Max(alarm.MaxMagnitude[3], measurements[(int)OscOutputs.Band4Energy].AdjustedValue);
-                    alarm.DominantFrequencySum[3] = Sum(alarm.DominantFrequencySum[3], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
+                    alarm.DominantFrequencySum[3] = Sum(alarm.DominantFrequencySum[3], measurements[(int)OscOutputs.Band4DominantFrequency].AdjustedValue);
                     alarm.DominantFrequencyCount[3] = Inc(alarm.DominantFrequencyCount[3]);
                     m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 4 alarm statistics");
                 }
@@ -292,7 +292,7 @@ namespace openHistorian.Adapters
                             {
                                 int associatedCount = m_alarms.Count - 1;
                                 oscEvents.ParentID = initiatingEvent.OscEventsID;
-                                oscEvents.Notes = $"There {(associatedCount == 0 ? "was" : "were")} {associatedCount:N0} other location{(associatedCount == 0 ? "" : "s")} that detected event";
+                                oscEvents.Notes = $"There {(associatedCount == 1 ? "was" : "were")} {associatedCount:N0} other location{(associatedCount == 1 ? "" : "s")} that detected event";
                             }
                             else
                             {
