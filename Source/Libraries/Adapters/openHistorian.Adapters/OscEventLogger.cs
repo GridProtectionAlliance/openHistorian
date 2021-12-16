@@ -384,7 +384,9 @@ namespace openHistorian.Adapters
             set => base.OutputMeasurements = value;
         }
 
-        /// <summary>Gets or sets the number of frames per second.</summary>
+        /// <summary>
+        /// Gets or sets the number of frames per second.
+        /// </summary>
         /// <remarks>
         /// Valid frame rates for a <see cref="T:GSF.TimeSeries.ConcentratorBase" /> are greater than 0 frames per second.
         /// </remarks>
@@ -551,11 +553,6 @@ namespace openHistorian.Adapters
         /// </summary>
         /// <param name="frame"><see cref="IFrame" /> of measurements with the same timestamp that arrived within <see cref="ConcentratorBase.LagTime" /> that are ready for processing.</param>
         /// <param name="index">Index of <see cref="IFrame" /> within a second ranging from zero to <c><see cref="ConcentratorBase.FramesPerSecond" /> - 1</c>.</param>
-        /// <remarks>
-        /// If user implemented publication function consistently exceeds available publishing time (i.e., <c>1 / <see cref="ConcentratorBase.FramesPerSecond" /></c> seconds),
-        /// concentration will fall behind. A small amount of this time is required by the <see cref="ConcentratorBase" /> for processing overhead, so actual total time
-        /// available for user function process will always be slightly less than <c>1 / <see cref="ConcentratorBase.FramesPerSecond" /></c> seconds.
-        /// </remarks>
         protected override void PublishFrame(IFrame frame, int index)
         {
             Dictionary<string, AlarmInputs> alarmInputs;
