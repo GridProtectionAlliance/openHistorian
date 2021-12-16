@@ -184,7 +184,7 @@ namespace openHistorian.Adapters
 
                 oscEventsTable.AddNewRecord(oscEvents);
 
-                // Query newly added record get auto-inc identity
+                // Query newly added record to get auto-inc identity
                 oscEvents = oscEventsTable.QueryRecordWhere("Source = {0} AND StartTime = {1}", inputs.Source, alarm.StartTime);
 
                 if (oscEvents is null)
@@ -273,8 +273,7 @@ namespace openHistorian.Adapters
 
             private void IdentifyInitiatingEvent()
             {
-                // Write alarm summary record
-                if (m_alarms.Count > 0)
+                if (m_alarms.Count > 1)
                 {
                     AlarmDetails initiatingEvent = m_alarms.Values.MaxBy(alarm => Max(Max(Max(alarm.MaxMagnitude[0], alarm.MaxMagnitude[1]), alarm.MaxMagnitude[2]), alarm.MaxMagnitude[3]));
 
