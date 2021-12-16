@@ -35,13 +35,29 @@ namespace openHistorian.Model
         
         public double? FrequencyBand4 { get; set; }
 
-        public double? MagnitudeBand1 { get; set; }
+        public double? TriggeringMagnitudeBand1 { get; set; }
         
-        public double? MagnitudeBand2 { get; set; }
+        public double? TriggeringMagnitudeBand2 { get; set; }
         
-        public double? MagnitudeBand3 { get; set; }
+        public double? TriggeringMagnitudeBand3 { get; set; }
         
-        public double? MagnitudeBand4 { get; set; }
+        public double? TriggeringMagnitudeBand4 { get; set; }
+
+        public double? MaximumMagnitudeBand1 { get; set; }
+
+        public double? MaximumMagnitudeBand2 { get; set; }
+
+        public double? MaximumMagnitudeBand3 { get; set; }
+
+        public double? MaximumMagnitudeBand4 { get; set; }
+
+        public double? AverageMagnitudeBand1 { get; set; }
+
+        public double? AverageMagnitudeBand2 { get; set; }
+
+        public double? AverageMagnitudeBand3 { get; set; }
+
+        public double? AverageMagnitudeBand4 { get; set; }
 
         [Searchable]
         public string Notes { get; set; }

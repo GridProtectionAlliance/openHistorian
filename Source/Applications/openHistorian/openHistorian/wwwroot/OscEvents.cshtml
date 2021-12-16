@@ -104,17 +104,17 @@
     <div class="col-md-6">
         @Raw(dataContext.AddInputField<OscEvents>("Source"))
         @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand1"))
-        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand1"))
+        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand1"))
         @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand2"))
-        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand2"))
+        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand2"))
         @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand3"))
-        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand3"))
+        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand3"))
     </div>
     <div class="col-md-6">
         @Raw(dataContext.AddInputField<OscEvents>("StartTime", "datetime"))
         @Raw(dataContext.AddInputField<OscEvents>("StopTime", "datetime"))
         @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand4"))
-        @Raw(dataContext.AddInputField<OscEvents>("MagnitudeBand4"))
+        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand4"))
         @Raw(dataContext.AddTextAreaField<OscEvents>("Notes", 8, initialFocus: true))
     </div>
 }
@@ -154,16 +154,16 @@
             const details = [];
 
             if (record.MagnitudeBand1)
-                details.push(`${record.MagnitudeBand1.toFixed(4)} (Band1)`);
+                details.push(`${record.AverageMagnitudeBand1.toFixed(1)} (Band1)`);
 
             if (record.MagnitudeBand2)
-                details.push(`${record.MagnitudeBand2.toFixed(4)} (Band2)`);
+                details.push(`${record.AverageMagnitudeBand2.toFixed(1)} (Band2)`);
 
             if (record.MagnitudeBand3)
-                details.push(`${record.MagnitudeBand3.toFixed(4)} (Band3)`);
+                details.push(`${record.AverageMagnitudeBand3.toFixed(1)} (Band3)`);
 
             if (record.MagnitudeBand4)
-                details.push(`${record.MagnitudeBand4.toFixed(4)} (Band4)`);
+                details.push(`${record.AverageMagnitudeBand4.toFixed(1)} (Band4)`);
 
             return details.join(", ");
         }
@@ -191,14 +191,27 @@
             details += "------------------------\r\n";
             details += `Source: ${record.Source}\r\n`;
             details += `Duration: ${record.StartTime} to ${record.StopTime}\r\n\r\n`;
-            details += `Frequency Band1: ${record.FrequencyBand1}\r\n`;
-            details += `Magnitude Band1: ${record.MagnitudeBand1}\r\n\r\n`;
-            details += `Frequency Band2: ${record.FrequencyBand2}\r\n`;
-            details += `Magnitude Band2: ${record.MagnitudeBand2}\r\n\r\n`;
-            details += `Frequency Band3: ${record.FrequencyBand3}\r\n`;
-            details += `Magnitude Band3: ${record.MagnitudeBand3}\r\n\r\n`;
-            details += `Frequency Band4: ${record.FrequencyBand4}\r\n`;
-            details += `Magnitude Band4: ${record.MagnitudeBand4}\r\n\r\n`;
+
+            details += `Band1 Frequency: ${record.FrequencyBand1.toFixed(4)}\r\n`;
+            details += `Band1 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand1.toFixed(1)}\r\n`;
+            details += `Band1 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand1.toFixed(1)}\r\n`;
+            details += `Band1 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand1.toFixed(1)}\r\n\r\n`;
+
+            details += `Band2 Frequency: ${record.FrequencyBand2.toFixed(4)}\r\n`;
+            details += `Band2 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand2.toFixed(1)}\r\n`;
+            details += `Band2 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand2.toFixed(1)}\r\n`;
+            details += `Band2 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand2.toFixed(1)}\r\n\r\n`;
+
+            details += `Band3 Frequency: ${record.FrequencyBand3.toFixed(4)}\r\n`;
+            details += `Band3 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand3.toFixed(1)}\r\n`;
+            details += `Band3 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand3.toFixed(1)}\r\n`;
+            details += `Band3 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand3.toFixed(1)}\r\n\r\n`;
+
+            details += `Band4 Frequency: ${record.FrequencyBand4.toFixed(4)}\r\n`;
+            details += `Band4 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand4.toFixed(1)}\r\n`;
+            details += `Band4 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand4.toFixed(1)}\r\n`;
+            details += `Band4 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand4.toFixed(1)}\r\n\r\n`;
+
             details += `Notes: ${record.Notes}\r\n`;
 
             downloadString(details, "text/plain", `EventReport_${record.Source}.txt`);
