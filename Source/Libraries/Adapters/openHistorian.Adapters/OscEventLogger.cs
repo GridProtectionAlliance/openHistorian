@@ -290,7 +290,7 @@ namespace openHistorian.Adapters
                             if (ReferenceEquals(alarm, initiatingEvent))
                             {
                                 int associatedCount = m_alarms.Count - 1;
-                                oscEvents.ParentID = initiatingEvent.OscEventsID;
+                                oscEvents.ParentID = null; // Null parentID represents initiating event record
                                 oscEvents.Notes = $"There {(associatedCount == 1 ? "was" : "were")} {associatedCount:N0} other location{(associatedCount == 1 ? "" : "s")} that detected event";
                             }
                             else
