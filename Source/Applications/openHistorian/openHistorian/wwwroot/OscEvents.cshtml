@@ -136,16 +136,16 @@
             const details = [];
 
             if (record.FrequencyBand1)
-                details.push(`${record.FrequencyBand1} (Band1)`);
+                details.push(`${record.FrequencyBand1.toFixed(4)} (Band1)`);
 
             if (record.FrequencyBand2)
-                details.push(`${record.FrequencyBand2} (Band2)`);
+                details.push(`${record.FrequencyBand2.toFixed(4)} (Band2)`);
 
             if (record.FrequencyBand3)
-                details.push(`${record.FrequencyBand3} (Band3)`);
+                details.push(`${record.FrequencyBand3.toFixed(4)} (Band3)`);
 
             if (record.FrequencyBand4)
-                details.push(`${record.FrequencyBand4} (Band4)`);
+                details.push(`${record.FrequencyBand4.toFixed(4)} (Band4)`);
 
             return details.join(", ");
         }
@@ -154,16 +154,16 @@
             const details = [];
 
             if (record.MagnitudeBand1)
-                details.push(`${record.MagnitudeBand1} (Band1)`);
+                details.push(`${record.MagnitudeBand1.toFixed(4)} (Band1)`);
 
             if (record.MagnitudeBand2)
-                details.push(`${record.MagnitudeBand2} (Band2)`);
+                details.push(`${record.MagnitudeBand2.toFixed(4)} (Band2)`);
 
             if (record.MagnitudeBand3)
-                details.push(`${record.MagnitudeBand3} (Band3)`);
+                details.push(`${record.MagnitudeBand3.toFixed(4)} (Band3)`);
 
             if (record.MagnitudeBand4)
-                details.push(`${record.MagnitudeBand4} (Band4)`);
+                details.push(`${record.MagnitudeBand4.toFixed(4)} (Band4)`);
 
             return details.join(", ");
         }
