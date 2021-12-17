@@ -78,5 +78,7 @@ namespace openHistorian
         public string SystemName { get; set; }
 
         public bool HasOscEvents { get; set; }
+
+        public string OscDashboard { get; set; }
     }
 }

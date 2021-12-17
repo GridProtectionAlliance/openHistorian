@@ -25,6 +25,7 @@
 @using GSF.Data.Model
 @using GSF.Web
 @using GSF.Web.Model
+@using GSF.Web.Shared
 @using openHistorian
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
@@ -82,8 +83,8 @@
     <td width="20%" class="text-left valign-middle"><button type="button" class="btn btn-link btn-xs" data-bind="text: Source, click: downloadDetails.bind($data)"></button></td>
     <td width="20%" class="text-left valign-middle" data-bind="text: StartTime"></td>
     <td width="20%" class="text-left valign-middle" data-bind="text: StopTime"></td>
-    <td width="12%" class="text-left valign-middle" data-bind="text: frequency($data)"></td>
-    <td width="12%" class="text-left valign-middle" data-bind="text: magnitude($data)"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="html: frequency($data)"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="html: magnitude($data)"></td>
     <td width="9%" class="text-center valign-middle">
         <button type="button" class="btn btn-link btn-xs" data-bind="click: openAssociated.bind($data)" hub-dependent>
         @if (parentID == 0) {
@@ -95,33 +96,69 @@
         </button>
     </td>
     <td width="5%" class="text-center valign-middle" nowrap>
-        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-paperclip"></span></button>
-        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected"><span class="glyphicon glyphicon-remove"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: viewDashboard.bind($data), enable: $parent.dataHubIsConnected" title="View in Grafana"><span class="glyphicon glyphicon-dashboard"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected" title="Edit Notes..."><span class="glyphicon glyphicon-paperclip"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected" title="Delete Record"><span class="glyphicon glyphicon-remove"></span></button>
     </td>
 }
 @helper AddNewEditDialog(DataContext dataContext)
 {
-    <div class="col-md-6">
-        @Raw(dataContext.AddInputField<OscEvents>("Source"))
-        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand1"))
-        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand1"))
-        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand2"))
-        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand2"))
-        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand3"))
-        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand3"))
+    <div class="row">
+        <div class="col-md-6">
+            @Raw(dataContext.AddInputField<OscEvents>("Source"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("StartTime", "datetime"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("StopTime", "datetime"))
+        </div>
     </div>
-    <div class="col-md-6">
-        @Raw(dataContext.AddInputField<OscEvents>("StartTime", "datetime"))
-        @Raw(dataContext.AddInputField<OscEvents>("StopTime", "datetime"))
-        @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand4"))
-        @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand4"))
-        @Raw(dataContext.AddTextAreaField<OscEvents>("Notes", 8, initialFocus: true))
+    <div class="row">
+        <hr style="margin:0 15px 15px 15px; border-top: 2px solid #ddd"/>
     </div>
+    <div class="row">
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand1"))
+            @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand2"))
+            @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand3"))
+            @Raw(dataContext.AddInputField<OscEvents>("FrequencyBand4"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("MaximumMagnitudeBand1"))
+            @Raw(dataContext.AddInputField<OscEvents>("MaximumMagnitudeBand2"))
+            @Raw(dataContext.AddInputField<OscEvents>("MaximumMagnitudeBand3"))
+            @Raw(dataContext.AddInputField<OscEvents>("MaximumMagnitudeBand4"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand1"))
+            @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand2"))
+            @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand3"))
+            @Raw(dataContext.AddInputField<OscEvents>("AverageMagnitudeBand4"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<OscEvents>("TriggeringMagnitudeBand1"))
+            @Raw(dataContext.AddInputField<OscEvents>("TriggeringMagnitudeBand2"))
+            @Raw(dataContext.AddInputField<OscEvents>("TriggeringMagnitudeBand3"))
+            @Raw(dataContext.AddInputField<OscEvents>("TriggeringMagnitudeBand4"))
+        </div>
+    </div>
+    <div class="row">
+        <hr style="margin:0 15px 15px 15px; border-top: 2px solid #ddd"/>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            @Raw(dataContext.AddTextAreaField<OscEvents>("Notes", 8, initialFocus: true))
+        </div>
+    </div>
+
 }
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 @section Scripts {
-    <script>
-        @Raw(dataContext.RenderViewModelConfiguration<OscEvents, DataHub>(ViewBag, "StartTime", null, parentID))
+    <script src="@Resources.Root/Shared/Scripts/moment.js"></script>
+
+    <script>    
+        @Raw(dataContext.RenderViewModelConfiguration<OscEvents, DataHub>(ViewBag, "-StartTime", null, parentID))
 
         @if (parentID == 0 && !string.IsNullOrWhiteSpace(parentSource)) {
         <text>
@@ -147,25 +184,25 @@
             if (record.FrequencyBand4)
                 details.push(`${record.FrequencyBand4.toFixed(4)} (Band4)`);
 
-            return details.join(", ");
+            return details.join("<br/>");
         }
 
         function magnitude(record) {
             const details = [];
 
-            if (record.MagnitudeBand1)
+            if (record.AverageMagnitudeBand1)
                 details.push(`${record.AverageMagnitudeBand1.toFixed(1)} (Band1)`);
 
-            if (record.MagnitudeBand2)
+            if (record.AverageMagnitudeBand2)
                 details.push(`${record.AverageMagnitudeBand2.toFixed(1)} (Band2)`);
 
-            if (record.MagnitudeBand3)
+            if (record.AverageMagnitudeBand3)
                 details.push(`${record.AverageMagnitudeBand3.toFixed(1)} (Band3)`);
 
-            if (record.MagnitudeBand4)
+            if (record.AverageMagnitudeBand4)
                 details.push(`${record.AverageMagnitudeBand4.toFixed(1)} (Band4)`);
 
-            return details.join(", ");
+            return details.join("<br/>");
         }
 
         function getAssociatedCount(eventID) {
@@ -186,31 +223,42 @@
             }
         }
 
+        function viewDashboard(record) {
+            window.open(`@Model.Global.OscDashboard&var-Source=${encodeURIComponent(record.Source)}&from=${moment.utc(record.StartTime, "YYYY-MM-DDTHH:mm:ssZ").valueOf()}&to=${moment.utc(record.StopTime, "YYYY-MM-DDTHH:mm:ssZ").valueOf()}`, '_blank');
+        }
+
+        function fixed(value, length, band) {
+            if (value)
+                return value.toFixed(length);
+
+            return "(no event in Band" + band + ")";
+        }
+
         function downloadDetails(record) {
             var details = "Oscillation Event Report\r\n";
             details += "------------------------\r\n";
             details += `Source: ${record.Source}\r\n`;
             details += `Duration: ${record.StartTime} to ${record.StopTime}\r\n\r\n`;
 
-            details += `Band1 Frequency: ${record.FrequencyBand1.toFixed(4)}\r\n`;
-            details += `Band1 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand1.toFixed(1)}\r\n`;
-            details += `Band1 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand1.toFixed(1)}\r\n`;
-            details += `Band1 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand1.toFixed(1)}\r\n\r\n`;
+            details += `Band1 Frequency: ${fixed(record.FrequencyBand1, 4, 1)}\r\n`;
+            details += `Band1 Triggering MW Swing Peak-to-Peak: ${fixed(record.TriggeringMagnitudeBand1, 1, 1)}\r\n`;
+            details += `Band1 Maximum MW Swing Peak-to-Peak: ${fixed(record.MaximumMagnitudeBand1, 1, 1)}\r\n`;
+            details += `Band1 Average MW Swing Peak-to-Peak: ${fixed(record.AverageMagnitudeBand1, 1, 1)}\r\n\r\n`;
 
-            details += `Band2 Frequency: ${record.FrequencyBand2.toFixed(4)}\r\n`;
-            details += `Band2 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand2.toFixed(1)}\r\n`;
-            details += `Band2 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand2.toFixed(1)}\r\n`;
-            details += `Band2 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand2.toFixed(1)}\r\n\r\n`;
+            details += `Band2 Frequency: ${fixed(record.FrequencyBand2, 4, 2)}\r\n`;
+            details += `Band2 Triggering MW Swing Peak-to-Peak: ${fixed(record.TriggeringMagnitudeBand2, 1, 2)}\r\n`;
+            details += `Band2 Maximum MW Swing Peak-to-Peak: ${fixed(record.MaximumMagnitudeBand2, 1, 2)}\r\n`;
+            details += `Band2 Average MW Swing Peak-to-Peak: ${fixed(record.AverageMagnitudeBand2, 1, 2)}\r\n\r\n`;
 
-            details += `Band3 Frequency: ${record.FrequencyBand3.toFixed(4)}\r\n`;
-            details += `Band3 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand3.toFixed(1)}\r\n`;
-            details += `Band3 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand3.toFixed(1)}\r\n`;
-            details += `Band3 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand3.toFixed(1)}\r\n\r\n`;
+            details += `Band3 Frequency: ${fixed(record.FrequencyBand3, 4, 3)}\r\n`;
+            details += `Band3 Triggering MW Swing Peak-to-Peak: ${fixed(record.TriggeringMagnitudeBand3, 1, 3)}\r\n`;
+            details += `Band3 Maximum MW Swing Peak-to-Peak: ${fixed(record.MaximumMagnitudeBand3, 1, 3)}\r\n`;
+            details += `Band3 Average MW Swing Peak-to-Peak: ${fixed(record.AverageMagnitudeBand3, 1, 3)}\r\n\r\n`;
 
-            details += `Band4 Frequency: ${record.FrequencyBand4.toFixed(4)}\r\n`;
-            details += `Band4 Triggering MW Swing Peak-to-Peak: ${record.TriggeringMagnitudeBand4.toFixed(1)}\r\n`;
-            details += `Band4 Maximum MW Swing Peak-to-Peak: ${record.MaximumMagnitudeBand4.toFixed(1)}\r\n`;
-            details += `Band4 Average MW Swing Peak-to-Peak: ${record.AverageMagnitudeBand4.toFixed(1)}\r\n\r\n`;
+            details += `Band4 Frequency: ${fixed(record.FrequencyBand4, 4, 4)}\r\n`;
+            details += `Band4 Triggering MW Swing Peak-to-Peak: ${fixed(record.TriggeringMagnitudeBand4, 1, 4)}\r\n`;
+            details += `Band4 Maximum MW Swing Peak-to-Peak: ${fixed(record.MaximumMagnitudeBand4, 1, 4)}\r\n`;
+            details += `Band4 Average MW Swing Peak-to-Peak: ${fixed(record.AverageMagnitudeBand4, 1, 4)}\r\n\r\n`;
 
             details += `Notes: ${record.Notes}\r\n`;
 

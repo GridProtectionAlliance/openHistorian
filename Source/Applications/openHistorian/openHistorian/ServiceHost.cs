@@ -239,6 +239,7 @@ namespace openHistorian
             systemSettings.Add("eDNAMetaData", "*.*", "Comma separated search string for the eDNA metadata search command.");
             systemSettings.Add("TrenDAPControllerEnabled", true, "Defines flag that determines if the TrenDAP controller is enabled.");
             systemSettings.Add("SystemName", "", "Name of system that will be prefixed to system level tags, when defined. Value should follow tag naming conventions, e.g., no spaces and all upper case.");
+            systemSettings.Add("OscDashboard", "/grafana/d/eL8vgPHGi/mas-band-energy-detail?orgId=1", "URL of associated oscillation dashboard");
 
             // Ensure "^/api/Feedback" exists in AnonymousResourceExpression
             string anonymousResourceExpression = systemSettings["AnonymousResourceExpression"].Value;
@@ -277,6 +278,7 @@ namespace openHistorian
             Model.Global.DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0);
             Model.Global.DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30);
             Model.Global.SystemName = systemSettings["SystemName"].Value;
+            Model.Global.OscDashboard = systemSettings["OscDashboard"].Value;
 
             try
             {
