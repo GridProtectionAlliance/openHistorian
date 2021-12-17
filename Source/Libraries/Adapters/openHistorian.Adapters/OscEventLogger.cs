@@ -93,6 +93,7 @@ namespace openHistorian.Adapters
             public DateTime StartTime;
             public DateTime StopTime;
             public int OscEventsID;
+            public readonly double[] MagnitudeTrigger;      // One for each band, 0-3
             public readonly double[] MagnitudeMax;          // One for each band, 0-3
             public readonly double[] MagnitudeSum;          // One for each band, 0-3
             public readonly int[] MagnitudeCount;           // One for each band, 0-3
@@ -105,6 +106,7 @@ namespace openHistorian.Adapters
                 StartTime = DateTime.MinValue;
                 StopTime = DateTime.MinValue;
                 OscEventsID = 0;
+                MagnitudeTrigger = new[] { double.NaN, double.NaN, double.NaN, double.NaN };
                 MagnitudeMax = new[] { double.NaN, double.NaN, double.NaN, double.NaN };
                 MagnitudeSum = new[] { double.NaN, double.NaN, double.NaN, double.NaN };
                 MagnitudeCount = new[] { -1, -1, -1, -1 };
@@ -130,6 +132,8 @@ namespace openHistorian.Adapters
             private AlarmDetails FirstAlarm => m_alarms.Values.FirstOrDefault();
 
             private bool AllAlarmsStopped => m_alarms.Values.All(alarm => alarm.IsStopped);
+
+            public int TotalActiveAlarms => m_alarms.Count;
 
             private AlarmDetails TryGetAlarmDetails(AlarmInputs inputs)
             {
@@ -159,15 +163,15 @@ namespace openHistorian.Adapters
                 }
                 else
                 {
-                    // Alarm is triggered, check for continued or started state
-                    if (alarm is null)
-                        MarkAlarmStarted(inputs, measurements);
-                    else if (alarm.IsStarted)
-                        UpdateStats(alarm, measurements);
+                    // Alarm is triggered, check if this is a new alarm
+                    alarm ??= MarkAlarmStarted(inputs);
+
+                    // Update alarm stats
+                    UpdateStats(alarm, measurements);
                 }
             }
 
-            private void MarkAlarmStarted(AlarmInputs inputs, IMeasurement[] measurements)
+            private AlarmDetails MarkAlarmStarted(AlarmInputs inputs)
             {
                 // Initially, just mark first alarm as parent
                 int? parentID = FirstAlarm?.OscEventsID;
@@ -186,18 +190,6 @@ namespace openHistorian.Adapters
                 oscEvents.Source = inputs.Source;
                 oscEvents.StartTime = alarm.StartTime;
 
-                if (measurements[(int)OscOutputs.Band1Alarm].AdjustedValue != 0.0D)
-                    oscEvents.TriggeringMagnitudeBand1 = measurements[(int)OscOutputs.Band1Energy].AdjustedValue;
-
-                if (measurements[(int)OscOutputs.Band2Alarm].AdjustedValue != 0.0D)
-                    oscEvents.TriggeringMagnitudeBand2 = measurements[(int)OscOutputs.Band2Energy].AdjustedValue;
-
-                if (measurements[(int)OscOutputs.Band3Alarm].AdjustedValue != 0.0D)
-                    oscEvents.TriggeringMagnitudeBand3 = measurements[(int)OscOutputs.Band3Energy].AdjustedValue;
-
-                if (measurements[(int)OscOutputs.Band4Alarm].AdjustedValue != 0.0D)
-                    oscEvents.TriggeringMagnitudeBand4 = measurements[(int)OscOutputs.Band4Energy].AdjustedValue;
-
                 oscEventsTable.AddNewRecord(oscEvents);
 
                 // Query newly added record to get auto-inc identity
@@ -208,9 +200,7 @@ namespace openHistorian.Adapters
                 else
                     alarm.OscEventsID = oscEvents.ID;
 
-                UpdateStats(alarm, measurements);
-
-                m_parent.m_totalDetectedEvents++;
+                return alarm;
             }
 
             private void MarkAlarmStopped(AlarmDetails alarm)
@@ -226,97 +216,122 @@ namespace openHistorian.Adapters
 
                 oscEvents.StopTime = alarm.StopTime;
 
-                if (!double.IsNaN(alarm.MagnitudeMax[0]))
-                    oscEvents.MaximumMagnitudeBand1 = alarm.MagnitudeMax[0];
+                if (!double.IsNaN(alarm.MagnitudeMax[Band1]))
+                    oscEvents.MaximumMagnitudeBand1 = alarm.MagnitudeMax[Band1];
 
-                if (!double.IsNaN(alarm.MagnitudeSum[0]) && alarm.MagnitudeCount[0] > 0)
-                    oscEvents.AverageMagnitudeBand1 = alarm.MagnitudeSum[0] / alarm.MagnitudeCount[0];
+                if (!double.IsNaN(alarm.MagnitudeSum[Band1]) && alarm.MagnitudeCount[Band1] > 0)
+                    oscEvents.AverageMagnitudeBand1 = alarm.MagnitudeSum[Band1] / alarm.MagnitudeCount[Band1];
 
-                if (!double.IsNaN(alarm.DominantFrequencySum[0]) && alarm.DominantFrequencyCount[0] > 0)
-                    oscEvents.FrequencyBand1 = alarm.DominantFrequencySum[0] / alarm.DominantFrequencyCount[0];
+                if (!double.IsNaN(alarm.DominantFrequencySum[Band1]) && alarm.DominantFrequencyCount[Band1] > 0)
+                    oscEvents.FrequencyBand1 = alarm.DominantFrequencySum[Band1] / alarm.DominantFrequencyCount[Band1];
 
-                if (!double.IsNaN(alarm.MagnitudeMax[1]))
-                    oscEvents.MaximumMagnitudeBand2 = alarm.MagnitudeMax[1];
+                if (!double.IsNaN(alarm.MagnitudeMax[Band2]))
+                    oscEvents.MaximumMagnitudeBand2 = alarm.MagnitudeMax[Band2];
 
-                if (!double.IsNaN(alarm.MagnitudeSum[1]) && alarm.MagnitudeCount[1] > 0)
-                    oscEvents.AverageMagnitudeBand2 = alarm.MagnitudeSum[1] / alarm.MagnitudeCount[1];
+                if (!double.IsNaN(alarm.MagnitudeSum[Band2]) && alarm.MagnitudeCount[Band2] > 0)
+                    oscEvents.AverageMagnitudeBand2 = alarm.MagnitudeSum[Band2] / alarm.MagnitudeCount[Band2];
 
-                if (!double.IsNaN(alarm.DominantFrequencySum[1]) && alarm.DominantFrequencyCount[1] > 0)
-                    oscEvents.FrequencyBand2 = alarm.DominantFrequencySum[1] / alarm.DominantFrequencyCount[1];
+                if (!double.IsNaN(alarm.DominantFrequencySum[Band2]) && alarm.DominantFrequencyCount[Band2] > 0)
+                    oscEvents.FrequencyBand2 = alarm.DominantFrequencySum[Band2] / alarm.DominantFrequencyCount[Band2];
 
-                if (!double.IsNaN(alarm.MagnitudeMax[2]))
-                    oscEvents.MaximumMagnitudeBand3 = alarm.MagnitudeMax[2];
+                if (!double.IsNaN(alarm.MagnitudeMax[Band3]))
+                    oscEvents.MaximumMagnitudeBand3 = alarm.MagnitudeMax[Band3];
 
-                if (!double.IsNaN(alarm.MagnitudeSum[2]) && alarm.MagnitudeCount[2] > 0)
-                    oscEvents.AverageMagnitudeBand3 = alarm.MagnitudeSum[2] / alarm.MagnitudeCount[2];
+                if (!double.IsNaN(alarm.MagnitudeSum[Band3]) && alarm.MagnitudeCount[Band3] > 0)
+                    oscEvents.AverageMagnitudeBand3 = alarm.MagnitudeSum[Band3] / alarm.MagnitudeCount[Band3];
 
-                if (!double.IsNaN(alarm.DominantFrequencySum[2]) && alarm.DominantFrequencyCount[2] > 0)
-                    oscEvents.FrequencyBand3 = alarm.DominantFrequencySum[2] / alarm.DominantFrequencyCount[2];
+                if (!double.IsNaN(alarm.DominantFrequencySum[Band3]) && alarm.DominantFrequencyCount[Band3] > 0)
+                    oscEvents.FrequencyBand3 = alarm.DominantFrequencySum[Band3] / alarm.DominantFrequencyCount[Band3];
 
-                if (!double.IsNaN(alarm.MagnitudeMax[3]))
-                    oscEvents.MaximumMagnitudeBand4 = alarm.MagnitudeMax[3];
+                if (!double.IsNaN(alarm.MagnitudeMax[Band4]))
+                    oscEvents.MaximumMagnitudeBand4 = alarm.MagnitudeMax[Band4];
 
-                if (!double.IsNaN(alarm.MagnitudeSum[3]) && alarm.MagnitudeCount[3] > 0)
-                    oscEvents.AverageMagnitudeBand4 = alarm.MagnitudeSum[3] / alarm.MagnitudeCount[3];
+                if (!double.IsNaN(alarm.MagnitudeSum[Band4]) && alarm.MagnitudeCount[Band4] > 0)
+                    oscEvents.AverageMagnitudeBand4 = alarm.MagnitudeSum[Band4] / alarm.MagnitudeCount[Band4];
 
-                if (!double.IsNaN(alarm.DominantFrequencySum[3]) && alarm.DominantFrequencyCount[3] > 0)
-                    oscEvents.FrequencyBand4 = alarm.DominantFrequencySum[3] / alarm.DominantFrequencyCount[3];
+                if (!double.IsNaN(alarm.DominantFrequencySum[Band4]) && alarm.DominantFrequencyCount[Band4] > 0)
+                    oscEvents.FrequencyBand4 = alarm.DominantFrequencySum[Band4] / alarm.DominantFrequencyCount[Band4];
 
                 oscEventsTable.UpdateRecord(oscEvents);
             }
 
             private void UpdateStats(AlarmDetails alarm, IMeasurement[] measurements)
             {
+                double bandEnergy;
+                bool updatedTriggeringMagnitude = false;
+
                 // Maintain updated event stats
-                if (measurements[(int)OscOutputs.Band1Alarm].AdjustedValue != 0.0D)
+                void updateAlarmedBandStats(int band)
                 {
-                    alarm.MagnitudeMax[0] = Max(alarm.MagnitudeMax[0], measurements[(int)OscOutputs.Band1Energy].AdjustedValue);
-                    alarm.MagnitudeSum[0] = Sum(alarm.MagnitudeSum[0], measurements[(int)OscOutputs.Band1Energy].AdjustedValue);
-                    alarm.MagnitudeCount[0] = Inc(alarm.MagnitudeCount[0]);
-                    alarm.DominantFrequencySum[0] = Sum(alarm.DominantFrequencySum[0], measurements[(int)OscOutputs.Band1DominantFrequency].AdjustedValue);
-                    alarm.DominantFrequencyCount[0] = Inc(alarm.DominantFrequencyCount[0]);
-                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 1 alarm statistics");
+                    if (measurements[BandAlarm(band)].AdjustedValue == 0.0D)
+                        return;
+
+                    bandEnergy = measurements[BandEnergy(band)].AdjustedValue;
+
+                    alarm.MagnitudeMax[band] = Max(alarm.MagnitudeMax[band], bandEnergy);
+                    alarm.MagnitudeSum[band] = Sum(alarm.MagnitudeSum[band], bandEnergy);
+                    alarm.MagnitudeCount[band] = Inc(alarm.MagnitudeCount[band]);
+                    alarm.DominantFrequencySum[band] = Sum(alarm.DominantFrequencySum[band], measurements[BandDominantFrequency(band)].AdjustedValue);
+                    alarm.DominantFrequencyCount[band] = Inc(alarm.DominantFrequencyCount[band]);
+
+                    if (double.IsNaN(alarm.MagnitudeTrigger[band]))
+                    {
+                        alarm.MagnitudeTrigger[band] = bandEnergy;
+                        updatedTriggeringMagnitude = true;
+                    }
+
+                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band {band} alarm statistics");
                 }
 
-                if (measurements[(int)OscOutputs.Band2Alarm].AdjustedValue != 0.0D)
+                updateAlarmedBandStats(Band1);
+                updateAlarmedBandStats(Band2);
+                updateAlarmedBandStats(Band3);
+                updateAlarmedBandStats(Band4);
+
+                if (!updatedTriggeringMagnitude)
+                    return;
+
+                // Update triggering energy in event record
+                using AdoDataConnection connection = new("systemSettings");
+                TableOperations<OscEvents> oscEventsTable = new(connection);
+                OscEvents oscEvents = oscEventsTable.QueryRecordWhere("ID = {0}", alarm.OscEventsID);
+
+                if (oscEvents.TriggeringMagnitudeBand1 is null && measurements[BandAlarm(Band1)].AdjustedValue != 0.0D && !double.IsNaN(alarm.MagnitudeTrigger[Band1]))
                 {
-                    alarm.MagnitudeMax[1] = Max(alarm.MagnitudeMax[1], measurements[(int)OscOutputs.Band2Energy].AdjustedValue);
-                    alarm.MagnitudeSum[1] = Sum(alarm.MagnitudeSum[1], measurements[(int)OscOutputs.Band2Energy].AdjustedValue);
-                    alarm.MagnitudeCount[1] = Inc(alarm.MagnitudeCount[1]);
-                    alarm.DominantFrequencySum[1] = Sum(alarm.DominantFrequencySum[1], measurements[(int)OscOutputs.Band2DominantFrequency].AdjustedValue);
-                    alarm.DominantFrequencyCount[1] = Inc(alarm.DominantFrequencyCount[1]);
-                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 2 alarm statistics");
+                    oscEvents.TriggeringMagnitudeBand1 = alarm.MagnitudeTrigger[Band1];
+                    m_parent.m_totalDetectedEvents++;
                 }
 
-                if (measurements[(int)OscOutputs.Band3Alarm].AdjustedValue != 0.0D)
+                if (oscEvents.TriggeringMagnitudeBand2 is null && measurements[BandAlarm(Band2)].AdjustedValue != 0.0D && !double.IsNaN(alarm.MagnitudeTrigger[Band2]))
                 {
-                    alarm.MagnitudeMax[2] = Max(alarm.MagnitudeMax[2], measurements[(int)OscOutputs.Band3Energy].AdjustedValue);
-                    alarm.MagnitudeSum[2] = Sum(alarm.MagnitudeSum[2], measurements[(int)OscOutputs.Band3Energy].AdjustedValue);
-                    alarm.MagnitudeCount[2] = Inc(alarm.MagnitudeCount[2]);
-                    alarm.DominantFrequencySum[2] = Sum(alarm.DominantFrequencySum[2], measurements[(int)OscOutputs.Band3DominantFrequency].AdjustedValue);
-                    alarm.DominantFrequencyCount[2] = Inc(alarm.DominantFrequencyCount[2]);
-                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 3 alarm statistics");
+                    oscEvents.TriggeringMagnitudeBand2 = alarm.MagnitudeTrigger[Band2];
+                    m_parent.m_totalDetectedEvents++;
                 }
 
-                if (measurements[(int)OscOutputs.Band4Alarm].AdjustedValue != 0.0D)
+                if (oscEvents.TriggeringMagnitudeBand3 is null && measurements[BandAlarm(Band3)].AdjustedValue != 0.0D && !double.IsNaN(alarm.MagnitudeTrigger[Band3]))
                 {
-                    alarm.MagnitudeMax[3] = Max(alarm.MagnitudeMax[3], measurements[(int)OscOutputs.Band4Energy].AdjustedValue);
-                    alarm.MagnitudeSum[3] = Sum(alarm.MagnitudeSum[3], measurements[(int)OscOutputs.Band4Energy].AdjustedValue);
-                    alarm.MagnitudeCount[3] = Inc(alarm.MagnitudeCount[3]);
-                    alarm.DominantFrequencySum[3] = Sum(alarm.DominantFrequencySum[3], measurements[(int)OscOutputs.Band4DominantFrequency].AdjustedValue);
-                    alarm.DominantFrequencyCount[3] = Inc(alarm.DominantFrequencyCount[3]);
-                    m_parent.DebugMessage($"Updated \"{alarm.Inputs.Source}\" band 4 alarm statistics");
+                    oscEvents.TriggeringMagnitudeBand3 = alarm.MagnitudeTrigger[Band3];
+                    m_parent.m_totalDetectedEvents++;
                 }
+
+                if (oscEvents.TriggeringMagnitudeBand4 is null && measurements[BandAlarm(Band4)].AdjustedValue != 0.0D && !double.IsNaN(alarm.MagnitudeTrigger[Band4]))
+                {
+                    oscEvents.TriggeringMagnitudeBand4 = alarm.MagnitudeTrigger[Band4];
+                    m_parent.m_totalDetectedEvents++;
+                }
+
+                oscEventsTable.UpdateRecord(oscEvents);
             }
 
             private void IdentifyInitiatingEvent()
             {
                 if (m_alarms.Count > 1)
                 {
-                    AlarmDetails initiatingEvent = m_alarms.Values.MaxBy(alarm => Max(Max(Max(alarm.MagnitudeMax[0], alarm.MagnitudeMax[1]), alarm.MagnitudeMax[2]), alarm.MagnitudeMax[3]));
+                    AlarmDetails initiatingEvent = m_alarms.Values.MaxBy(alarm => Max(Max(Max(alarm.MagnitudeMax[Band1], alarm.MagnitudeMax[Band2]), alarm.MagnitudeMax[Band3]), alarm.MagnitudeMax[Band4]));
 
-                    if (initiatingEvent is not null && !ReferenceEquals(initiatingEvent, FirstAlarm))
+                    if (initiatingEvent is not null)
                     {
+                        bool updateParent = !ReferenceEquals(initiatingEvent, FirstAlarm);
                         StringBuilder otherEvents = new();
 
                         foreach (AlarmDetails alarm in m_alarms.Values)
@@ -330,7 +345,6 @@ namespace openHistorian.Adapters
                         using AdoDataConnection connection = new("systemSettings");
                         TableOperations<OscEvents> oscEventsTable = new(connection);
 
-                        // Update parent ID of associated records to properly identify initiating event
                         foreach (AlarmDetails alarm in m_alarms.Values)
                         {
                             OscEvents oscEvents = oscEventsTable.QueryRecordWhere("ID = {0}", alarm.OscEventsID);
@@ -338,13 +352,17 @@ namespace openHistorian.Adapters
                             if (ReferenceEquals(alarm, initiatingEvent))
                             {
                                 int associatedCount = m_alarms.Count - 1;
-                                oscEvents.ParentID = null; // Null parentID represents initiating event record
                                 oscEvents.Notes = $"There {(associatedCount == 1 ? "was" : "were")} {associatedCount:N0} other location{(associatedCount == 1 ? "" : "s")} that detected event:{Environment.NewLine}{otherEvents}";
+
+                                if (updateParent)
+                                    oscEvents.ParentID = null; // Null parent ID represents initiating event record
                             }
                             else
                             {
-                                oscEvents.ParentID = initiatingEvent.OscEventsID;
                                 oscEvents.Notes = $"\"{initiatingEvent.Inputs.Source}\" was identified as the source of the event";
+
+                                if (updateParent)
+                                    oscEvents.ParentID = initiatingEvent.OscEventsID;
                             }
 
                             oscEventsTable.UpdateRecord(oscEvents);
@@ -373,6 +391,11 @@ namespace openHistorian.Adapters
         private const double DefaultLagTime = 1.5D;
         private const double DefaultLeadTime = 5.0D;
         private const bool DefaultEnableDebugMessages = false;
+
+        private const int Band1 = 0;
+        private const int Band2 = 1;
+        private const int Band3 = 2;
+        private const int Band4 = 3;
 
         // Fields
         private readonly AlarmSummary m_alarmSummary;
@@ -511,6 +534,8 @@ namespace openHistorian.Adapters
                 status.AppendLine($"         Total Alarm Tests: {m_totalAlarmTests:N0}");
                 status.AppendLine($"     Total Detected Events: {m_totalDetectedEvents:N0}");
                 status.AppendLine($"    Total Completed Events: {m_totalCompletedEvents:N0}");
+                status.AppendLine($"  Total Alarm Input Groups: {m_alarmInputs?.Count ?? 0:N0}");
+                status.AppendLine($"       Total Active Alarms: {m_alarmSummary.TotalActiveAlarms:N0}");
                 status.AppendLine($"    Verbose Debug Messages: {(EnableDebugMessages ? "Enabled" : "Disabled")}");
 
                 return status.ToString();
@@ -674,6 +699,33 @@ namespace openHistorian.Adapters
             int lastDashIndex = pointTag.LastIndexOf("-", StringComparison.Ordinal);
             return (lastDashIndex > 0 ? pointTag.Substring(0, lastDashIndex) : pointTag).Trim();
         }
+
+        private static int BandEnergy(int band) => (int)(band switch
+        {
+            Band1 => OscOutputs.Band1Energy,
+            Band2 => OscOutputs.Band2Energy,
+            Band3 => OscOutputs.Band3Energy,
+            Band4 => OscOutputs.Band4Energy,
+            _ => throw new ArgumentOutOfRangeException(nameof(band))
+        });
+
+        private static int BandDominantFrequency(int band) => (int)(band switch
+        {
+            Band1 => OscOutputs.Band1DominantFrequency,
+            Band2 => OscOutputs.Band2DominantFrequency,
+            Band3 => OscOutputs.Band3DominantFrequency,
+            Band4 => OscOutputs.Band4DominantFrequency,
+            _ => throw new ArgumentOutOfRangeException(nameof(band))
+        });
+
+        private static int BandAlarm(int band) => (int)(band switch
+        {
+            Band1 => OscOutputs.Band1Alarm,
+            Band2 => OscOutputs.Band2Alarm,
+            Band3 => OscOutputs.Band3Alarm,
+            Band4 => OscOutputs.Band4Alarm,
+            _ => throw new ArgumentOutOfRangeException(nameof(band))
+        });
 
         #endregion
     }
