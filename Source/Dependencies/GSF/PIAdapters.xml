@@ -293,6 +293,11 @@
             Gets or sets flag that determines if defined point compression will be used during archiving.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.UpdateExistingTagCompressionState">
+            <summary>
+            Gets or sets the flag that determines if the compression enabled state, per UseCompression flag, should be adjusted for existing tags.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
             <summary>
             Gets or sets the filename to be used for tag map cache.
