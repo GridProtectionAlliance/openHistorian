@@ -85,6 +85,14 @@
             <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetSearchableList(GSF.Web.Model.ModelController{`0}.PostData,System.String)">
+            <summary>
+            Gets all records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
+            </summary>
+            <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
         <member name="M:GSF.Web.Model.ModelController`1.GetAuthCheck">
             <summary>
             Check if current User is authorized for GET Requests
