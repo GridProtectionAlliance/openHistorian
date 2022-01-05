@@ -2525,7 +2525,7 @@
             This value is read-only for <see cref="T:GSF.PhasorProtocols.DataFrameBase"/>; assigning a value will throw an exception. Value returned
             is the <see cref="P:GSF.PhasorProtocols.IChannelFrame.IDCode"/> of the associated <see cref="P:GSF.PhasorProtocols.DataFrameBase.ConfigurationFrame"/>.
             </remarks>
-            <exception cref="T:System.NotSupportedException">IDCode of a data frame is read-only, change IDCode is associated configuration frame instead.</exception>
+            <exception cref="T:System.NotSupportedException">IDCode of a data frame is read-only, change IDCode in associated configuration frame instead.</exception>
         </member>
         <member name="M:GSF.PhasorProtocols.DataFrameBase.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
