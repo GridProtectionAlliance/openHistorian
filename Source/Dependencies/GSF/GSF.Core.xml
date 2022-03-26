@@ -46214,9 +46214,6 @@
             </summary>
             <param name="attributeType">Type of the attribute to get.</param>
             <returns>The requested assembly attribute if it exists; otherwise null.</returns>
-            <remarks>
-            This method always returns <c>null</c> under Mono deployments.
-            </remarks>
         </member>
         <member name="M:GSF.Reflection.AssemblyInfo.GetEmbeddedResource(System.String)">
             <summary>

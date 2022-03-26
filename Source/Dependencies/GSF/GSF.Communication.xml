@@ -2748,9 +2748,6 @@
             <summary>
             Gets or sets the needed number of bytes in the internal input buffer before a <see cref="M:GSF.Communication.ClientBase.OnReceiveDataComplete(System.Byte[],System.Int32)"/> event occurs.
             </summary>
-            <remarks>
-            This option is ignored under Mono deployments.
-            </remarks>
         </member>
         <member name="P:GSF.Communication.SerialClient.Status">
             <summary>
