@@ -1302,6 +1302,11 @@
             Gets or sets flag that determines if client should disconnect when end of file has been reached.
             </summary>
         </member>
+        <member name="P:GSF.Communication.FileClient.AtEOF">
+            <summary>
+            Gets flags that determines if <see cref="T:GSF.Communication.FileClient"/> is positioned at the end of file.
+            </summary>
+        </member>
         <member name="P:GSF.Communication.FileClient.Client">
             <summary>
             Gets the <see cref="T:System.IO.FileStream"/> object for the <see cref="T:GSF.Communication.FileClient"/>.
