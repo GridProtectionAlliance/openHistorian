@@ -601,7 +601,7 @@ namespace openHistorian.Adapters
                 }
             }
 
-            DebugMessage($"Established {alarmInputs.Count:N0} alarm alarm oscillation groups");
+            DebugMessage($"Established {alarmInputs.Count:N0} alarm oscillation groups");
 
             foreach (KeyValuePair<string, AlarmInputs> kvp in alarmInputs.ToArray())
             {
