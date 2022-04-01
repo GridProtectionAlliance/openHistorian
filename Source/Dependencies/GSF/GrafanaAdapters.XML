@@ -626,6 +626,9 @@
             <summary>
             Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
             </summary>
+            <summary>
+            Represents a REST based API for a simple JSON based Grafana data source for the openHistorian 1.0.
+            </summary>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.#ctor">
             <summary>
@@ -1440,6 +1443,9 @@
             <summary>
             Defines needed API calls for a Grafana data source.
             </summary>
+            <summary>
+            Defines needed API calls for a Grafana data source.
+            </summary>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.TestDataSource">
             <summary>
@@ -1455,6 +1461,18 @@
         <member name="M:GrafanaAdapters.IGrafanaDataService.GetAlarmState(GrafanaAdapters.QueryRequest)">
             <summary>
             Queries openPDC alarm states as a Grafana data source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetDeviceAlarms(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian Device alarm states.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetDeviceGroups(GrafanaAdapters.QueryRequest)">
+            <summary>
+            Queries openHistorian Device Groups.
             </summary>
             <param name="request">Query request.</param>
         </member>
@@ -1493,6 +1511,13 @@
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetLocationData(GrafanaAdapters.LocationRequest)">
+            <summary>
+            Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+            </summary>
+            <param name="request"> Query request.</param>
+            <returns>JSON serialized location metadata for specified targets.</returns>
         </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.TagKeys(GrafanaAdapters.TagKeysRequest)">
             <summary>
