@@ -31346,6 +31346,72 @@
             <param name="regressionInterval">Time span over which to calculate slope.</param>
             <param name="estimatedRefreshInterval">Estimated data points per second.</param>
         </member>
+        <member name="T:GSF.NumericalAnalysis.Spline">
+            <summary>
+            One piece of a piecewise polynomial function.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.Spline.XValue">
+            <summary>
+            The starting value for the dependent
+            variable at which the spline was computed.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.Spline.Coefficients">
+            <summary>
+            The coefficients of each term in the polynomial.
+            </summary>
+            <remarks>
+            <para>The array index matches the exponent to which the x-value is raised.</para>
+            
+            <code>term[i] = Coefficients[i] * Math.Pow(x - XValue, i);</code>
+            </remarks>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Spline.#ctor(System.Double,System.Double[])">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.NumericalAnalysis.Spline"/> class.
+            </summary>
+            <param name="xValue">The starting value for the dependent variable at which the spline was computed.</param>
+            <param name="coefficients">The coefficients of each term in the polynomial.</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.Spline.CalculateY(System.Double)">
+            <summary>
+            Calculates the y-value of the polynomial at the given x-value.
+            </summary>
+            <param name="x">The x-value at which the polynomial should be used to calculate a y-value.</param>
+            <returns>The y-value of the polynomial at the given x-value.</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.SplineFit">
+            <summary>
+            A collection of splines computed through spline interpolation.
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.SplineFit.Splines">
+            <summary>
+            The collection of splines used to interpolate a curve.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.#ctor(GSF.NumericalAnalysis.Spline[])">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.NumericalAnalysis.SplineFit"/> class.
+            </summary>
+            <param name="splines">The collection of splines.</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.CalculateY(System.Double)">
+            <summary>
+            Calculates the interpolated y-value at the given x-value using the appropriate spline.
+            </summary>
+            <param name="x">The x-value from which to calculate the interpolated y-value.</param>
+            <returns>The interpolated y-value at the given x-value.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.SplineFit.ComputeCubicSplines(System.Collections.Generic.IList{System.Double},System.Collections.Generic.IList{System.Double})">
+            <summary>
+            Computes a cubic spline for interpolating values from the given data set.
+            </summary>
+            <param name="xValues">The x-values of each sampled data point.</param>
+            <param name="yValues">The y-values of each sampled data point.</param>
+            <returns>A <see cref="T:GSF.NumericalAnalysis.SplineFit"/> representing the collection of splines to be used for interpolation.</returns>
+        </member>
         <member name="T:GSF.NumericalAnalysis.SineWave">
             <summary>
             Represents a sine wave of the form <c>y=A*sin(ω*t+Φ)+δ</c>.
