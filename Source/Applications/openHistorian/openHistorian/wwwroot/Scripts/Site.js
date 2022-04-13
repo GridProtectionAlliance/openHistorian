@@ -43,7 +43,7 @@ const messageSuffix = "</p></div><div><a href=\"#\" class=\"close\" aria-label=\
 const messagePanel = {
     template: jsPanel.tplContentOnly,
     paneltype: "hint",
-    position: `right-top -5 ${Math.ceil($("#menuBar").height()) + 5} DOWN`,
+    position: 'right-top -5 ${Math.ceil($("#menuBar").height()) + 5} DOWN',
     border: "2px solid",
     contentSize: "350 auto",
     show: "animated slideInUp",
@@ -73,7 +73,7 @@ function repositionPanels() {
 
     $(jsPanel.activePanels.list).each(function () {
         const panel = jsPanel.activePanels.getPanel(this);
-        panel.reposition(`right-top -25 ${index}`);
+        panel.reposition('right-top -25 ${index}');
         index += panel.height() + 10;
     });
 }
@@ -144,7 +144,11 @@ function showErrorMessage(message, timeout, highEmphasis) {
             timeout = defaultHighEmphasisErrorMessageTimeout;
 
         if (timeout > 0)
-            setTimeout(() => hideErrorMessage({ closeHeaderPanel: true }), timeout);
+            setTimeout(function () {
+				return hideErrorMessage({
+					closeHeaderPanel: true
+				});
+			}, timeout);
 
         // Raise "messageVisibiltyChanged" event
         if (!wasVisible)
@@ -157,21 +161,21 @@ function showErrorMessage(message, timeout, highEmphasis) {
         const errorPanel = $.jsPanel($.extend({}, messagePanel, {
             autoclose: timeout,
             theme: "red filledlight",
-            content: `${messagePrefix}${message}${messageSuffix}`
+            content: '${messagePrefix}${message}${messageSuffix}'
         }));
 
         errorPanel.css("backgroundColor", errorPanel.content.css("backgroundColor"));
 
         const panelID = errorPanel.attr("id");
-        const dismissPanelID = `dismissPanel-${panelID}`;
+        const dismissPanelID = 'dismissPanel-${panelID}';
 
         errorPanel.isErrorPanel = true;
         errorPanel.content.find("a:first").attr("id", dismissPanelID);
 
-        $(`#${dismissPanelID}`).click(() => {
-            errorPanel.close();
-            repositionPanels();
-        });
+		$('#${dismissPanelID}').click(function () {
+			errorPanel.close();
+			repositionPanels();
+		});
     }
 }
 
@@ -187,7 +191,16 @@ function showInfoMessage(message, timeout, highEmphasis) {
             timeout = defaultHighEmphasisInfoMessageTimeout;
 
         if (timeout > 0)
-            setTimeout(() => hideInfoMessage({ closeHeaderPanel: true }), timeout);
+            setTimeout(function () {
+				return hideInfoMessage({
+					closeHeaderPanel: true
+				});
+			}, timeout);
+			setTimeout(function () {
+				return hideInfoMessage({
+					closeHeaderPanel: true
+				});
+			}, timeout);
 
         // Raise "messageVisibiltyChanged" event
         if (!wasVisible)
@@ -200,21 +213,21 @@ function showInfoMessage(message, timeout, highEmphasis) {
         const infoPanel = $.jsPanel($.extend({}, messagePanel, {
             autoclose: timeout,
             theme: "green filledlight",
-            content: `${messagePrefix}${message}${messageSuffix}`
+            content: '${messagePrefix}${message}${messageSuffix}'
         }));
 
         infoPanel.css("backgroundColor", infoPanel.content.css("backgroundColor"));
 
         const panelID = infoPanel.attr("id");
-        const dismissPanelID = `dismissPanel-${panelID}`;
+        const dismissPanelID = 'dismissPanel-${panelID}';
 
         infoPanel.isInfoPanel = true;
         infoPanel.content.find("a:first").attr("id", dismissPanelID);
 
-        $(`#${dismissPanelID}`).click(() => {
-            infoPanel.close();
-            repositionPanels();
-        });
+		$('#${dismissPanelID}').click(function () {
+			infoPanel.close();
+			repositionPanels();
+		});
     }
 }
 
@@ -314,8 +327,17 @@ $(function () {
         }
     });
 
-    $("#dismissInfoMsg").click(() => hideInfoMessage({ closeHeaderPanel: true }));
-    $("#dismissErrorMsg").click(() => hideErrorMessage({ closeHeaderPanel: true }));
+    $("#dismissInfoMsg").click(function () {
+		return hideInfoMessage({
+			closeHeaderPanel: true
+		});
+	});
+	
+    $("#dismissErrorMsg").click(function () {
+		return hideErrorMessage({
+			closeHeaderPanel: true
+		});
+	});
 
     // Prevent clicking on disabled anchors
     $("body").on("click", "a.disabled", function (event) {
