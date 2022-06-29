@@ -75,6 +75,8 @@ namespace openHistorian.Adapters
             public readonly string Source;
             public readonly MeasurementKey[] MeasurementKeys; // One per each OscOutputs
 
+            public bool InputsNotFoundWarningDisplayed;
+
             public AlarmInputs(string source)
             {
                 if (string.IsNullOrWhiteSpace(source))
@@ -652,9 +654,10 @@ namespace openHistorian.Adapters
                     measurements[i] = measurement;
                 }
 
-                if (!foundAll)
+                if (!foundAll && !inputs.InputsNotFoundWarningDisplayed)
                 {
                     OnStatusMessage(MessageLevel.Warning, $"Failed to find all oscillation outputs for \"{inputs.Source}\" - event log updates may fail.");
+                    inputs.InputsNotFoundWarningDisplayed = true;
                     continue;
                 }
 
