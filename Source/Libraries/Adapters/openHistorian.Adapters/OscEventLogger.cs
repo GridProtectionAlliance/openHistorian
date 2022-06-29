@@ -654,14 +654,15 @@ namespace openHistorian.Adapters
                     measurements[i] = measurement;
                 }
 
-                if (!foundAll && !inputs.InputsNotFoundWarningDisplayed)
+                if (foundAll)
+                {
+                    m_alarmSummary.CheckAlarmState(inputs, measurements);
+                }
+                else if (!inputs.InputsNotFoundWarningDisplayed)
                 {
                     OnStatusMessage(MessageLevel.Warning, $"Failed to find all oscillation outputs for \"{inputs.Source}\" - event log updates may fail.");
                     inputs.InputsNotFoundWarningDisplayed = true;
-                    continue;
                 }
-
-                m_alarmSummary.CheckAlarmState(inputs, measurements);
             }
         }
 
