@@ -41850,14 +41850,25 @@
             Represents a radix value codec for conversion of base-10 integer values to and from other base values.
             </summary>
             <remarks>
-            The primary use case of this class is to provide compact string encodings of integer values.
-            The encodings produced by this class do not manage arbitrary sized bytes arrays, nor do they
-            include padding - as a result, encodings are not intended to comply with RFC 3548.
+            The primary use case of this class is to provide compact string-based encodings of integer values.
+            This works much like base-64 encoding but with variable base sizes and an integer source data focus.
+            The encoded base value strings are not intended to provide compression, radix value encodings of
+            integers will almost always have a byte-size that is greater than native bytes that make up integer.
+            The encodings produced by this class do not manage arbitrary sized bytes arrays, nor do they include
+            padding - as a result, encodings are not intended to comply with RFC 3548.
             </remarks>
         </member>
         <member name="F:GSF.RadixCodec.Digits">
             <summary>
             Defines the available digits for a radix value codec.
+            </summary>
+            <remarks>
+            Characters must be unique. Length determines radix, i.e., target base value.
+            </remarks>
+        </member>
+        <member name="P:GSF.RadixCodec.Radix">
+            <summary>
+            Gets the radix, i.e., target base value, for this <see cref="T:GSF.RadixCodec"/>.
             </summary>
         </member>
         <member name="M:GSF.RadixCodec.#ctor(System.String,System.Boolean)">
@@ -41865,7 +41876,10 @@
             Creates a new <see cref="T:GSF.RadixCodec"/>.
             </summary>
             <param name="digits">Digits to use for radix values.</param>
-            <param name="caseSensitive">Determines if alphabetic radix characters are case sensitive.</param>
+            <param name="caseSensitive">Determines if alphabetic radix <paramref name="digits"/> are case sensitive.</param>
+            <remarks>
+            Length of <paramref name="digits"/> will be radix, i.e., target base value.
+            </remarks>
         </member>
         <member name="M:GSF.RadixCodec.Encode(System.Int16)">
             <summary>
@@ -42011,7 +42025,7 @@
             <exception cref="T:System.OverflowException">Decoded radix value overflowed integer type.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Only integer types Int16, UInt16, Int24, UInt24, Int32, UInt32, Int64 and UInt64 are supported.</exception>
         </member>
-        <member name="F:GSF.RadixCodec.Radix2">
+        <member name="P:GSF.RadixCodec.Radix2">
             <summary>
             Gets a radix-2 value (binary) encoding.
             </summary>
@@ -42022,9 +42036,9 @@
             long.MaxValue encodes to "111111111111111111111111111111111111111111111111111111111111111", 63 characters
             long.MinValue encodes to "-1000000000000000000000000000000000000000000000000000000000000000", 65 characters
             ulong.MaxValue encodes to "1111111111111111111111111111111111111111111111111111111111111111", 64 characters
-            </remarks>                                                            12
+            </remarks>                                                  12
         </member>
-        <member name="F:GSF.RadixCodec.Radix8">
+        <member name="P:GSF.RadixCodec.Radix8">
             <summary>
             Gets a radix-8 value (octal) encoding.
             </summary>
@@ -42035,9 +42049,9 @@
             long.MaxValue encodes to "777777777777777777777", 21 characters
             long.MinValue encodes to "-1000000000000000000000", 23 characters
             ulong.MaxValue encodes to "1777777777777777777777", 22 characters
-            </remarks>                                                            12345678
+            </remarks>                                                  12345678
         </member>
-        <member name="F:GSF.RadixCodec.Radix16">
+        <member name="P:GSF.RadixCodec.Radix16">
             <summary>
             Gets a radix-16 value (hex) encoding.
             </summary>
@@ -42048,9 +42062,9 @@
             long.MaxValue encodes to "7FFFFFFFFFFFFFFF", 16 characters
             long.MinValue encodes to "-8000000000000000", 17 characters
             ulong.MaxValue encodes to "FFFFFFFFFFFFFFFF", 16 characters
-            </remarks>                                                               1234567890123456
+            </remarks>                                                    1234567890123456
         </member>
-        <member name="F:GSF.RadixCodec.Radix32">
+        <member name="P:GSF.RadixCodec.Radix32">
             <summary>
             Gets a radix-32 value encoding.
             </summary>
@@ -42061,22 +42075,22 @@
             long.MaxValue encodes to "7VVVVVVVVVVVV", 13 characters
             long.MinValue encodes to "-8000000000000", 14 characters
             ulong.MaxValue encodes to "FVVVVVVVVVVVV", 13 characters
-            </remarks>                                                               12345678901234567890123456789012
+            </remarks>                                                    12345678901234567890123456789012
         </member>
-        <member name="F:GSF.RadixCodec.Radix36">
+        <member name="P:GSF.RadixCodec.Radix36">
             <summary>
             Gets a radix-36 value encoding.
             </summary>
             <remarks>
-            int.MaxValue encodes to "ZIK0ZJ", 6 characters -- ideal int size with reduced digit set
+            int.MaxValue encodes to "ZIK0ZJ", 6 characters -- ideal 32-bit integer size for minimal case insensitive digit set
             int.MinValue encodes to "-ZIK0ZK", 7 characters
             uint.MaxValue encodes to "1Z141Z3", 7 characters
             long.MaxValue encodes to "1Y2P0IJ32E8E7", 13 characters
             long.MinValue encodes to "-1Y2P0IJ32E8E8", 14 characters
             ulong.MaxValue encodes to "3W5E11264SGSF", 13 characters
-            </remarks>                                                               123456789012345678901234567890123456
+            </remarks>                                                    123456789012345678901234567890123456
         </member>
-        <member name="F:GSF.RadixCodec.Radix64">
+        <member name="P:GSF.RadixCodec.Radix64">
             <summary>
             Gets a radix-64 value encoding.
             </summary>
@@ -42087,20 +42101,59 @@
             long.MaxValue encodes to "7//////////", 11 characters
             long.MinValue encodes to "-80000000000", 12 characters
             ulong.MaxValue encodes to "F//////////", 11 characters
-            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234
+            </remarks>                                                    1234567890123456789012345678901234567890123456789012345678901234
         </member>
-        <member name="F:GSF.RadixCodec.Radix86">
+        <member name="P:GSF.RadixCodec.Radix64B">
+            <summary>
+            Gets a radix-64 value encoding with the standard Base64 character sequence (results are unpadded).
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "B/////", 6 characters
+            int.MinValue encodes to "-CAAAAA", 7 characters
+            uint.MaxValue encodes to "D/////", 6 characters
+            long.MaxValue encodes to "H//////////", 11 characters
+            long.MinValue encodes to "-IAAAAAAAAAA", 12 characters
+            ulong.MaxValue encodes to "P//////////", 11 characters
+            </remarks>                                                      1234567890123456789012345678901234567890123456789012345678901234
+        </member>
+        <member name="P:GSF.RadixCodec.Radix86">
             <summary>
             Gets a radix-86 value encoding.
             </summary>
             <remarks>
-            int.MaxValue encodes to "$S2Jx", 5 characters -- base 86 reduces int size to 5
-            int.MinValue encodes to "-$S2Jy", 6 characters
+            int.MaxValue encodes to "$S2Jx", 5 characters
+            int.MinValue encodes to "-$S2Jy", 6 characters -- base 86 reduces 32-bit integer sizes to a maximum of 6 characters
             uint.MaxValue encodes to "1qu4dh", 6 characters
             long.MaxValue encodes to "1X2qL^UmlIt", 11 characters
             long.MinValue encodes to "-1X2qL^UmlIu", 12 characters
             ulong.MaxValue encodes to "2&amp;5Sh]zLIbZ", 11 characters
-            </remarks>                                                               1234567890123456789012345678901234567890123456789012345678901234567890123456
+            </remarks>                                                    1234567890123456789012345678901234567890123456789012345678901234567890123456
+        </member>
+        <member name="P:GSF.RadixCodec.Radix256">
+            <summary>
+            Gets a radix-256 value encoding.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "Āƀƀƀ", 4 characters
+            int.MinValue encodes to "-ā000", 5 characters -- base 256 reduces 32-bit integer sizes to a maximum of 5 characters
+            uint.MaxValue encodes to "ƀƀƀƀ", 4 characters -- base 256 reduces 32-bit unsigned integer sizes to a maximum of 4 characters
+            long.MaxValue encodes to "Āƀƀƀƀƀƀƀ", 8 characters
+            long.MinValue encodes to "-ā0000000", 9 characters
+            ulong.MaxValue encodes to "ƀƀƀƀƀƀƀƀ", 8 characters
+            </remarks>
+        </member>
+        <member name="P:GSF.RadixCodec.Radix65535">
+            <summary>
+            Gets a radix-65535 value encoding. This is the largest supported radix.
+            </summary>
+            <remarks>
+            int.MaxValue encodes to "魴魳", 2 characters
+            int.MinValue encodes to "-魴魴", 3 characters -- base 65535 reduces 32-bit integer sizes to a maximum of 3 characters (not 3 bytes)
+            uint.MaxValue encodes to "120", 3 characters
+            long.MaxValue encodes to "魵魶魵魳", 4 characters
+            long.MinValue encodes to "-魵魶魵魴", 5 characters
+            ulong.MaxValue encodes to "14640", 5 characters
+            </remarks>
         </member>
         <member name="T:GSF.BigEndian">
             <summary>
