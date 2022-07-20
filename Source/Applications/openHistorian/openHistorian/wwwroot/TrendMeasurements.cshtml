@@ -709,17 +709,17 @@
             if (trendSeriesLimitValue === undefined)
                 trendSeriesLimitValue = "500";
 
-            var timesStampSnap = Cookies.get("timesStampSnap");
+            var timestampSnap = Cookies.get("timestampSnap");
             var alignTimestamps = Cookies.get("alignTimestamps");
             var missingAsNaN = Cookies.get("missingAsNaN");
             var fillMissingTimestamps = Cookies.get("fillMissingTimestamps");
             var tolerance = Cookies.get("tolerance");
             var fileFormat = Cookies.get("fileFormat");
 
-            if (timesStampSnap === undefined)
-                timesStampSnap = 0;
+            if (timestampSnap === undefined)
+                timestampSnap = 0;
             else
-                timesStampSnap = parseInt(timesStampSnap);
+                timestampSnap = parseInt(timestampSnap);
 
             if (alignTimestamps === undefined)
                 alignTimestamps = true;
@@ -777,7 +777,7 @@
             self.fileFormat = ko.observable(fileFormat);
             self.frameRate = ko.observable(30);
             self.frameBase = ko.observable(0);
-            self.timesStampSnap = ko.observable(timesStampSnap);
+            self.timestampSnap = ko.observable(timestampSnap);
 
             self.missingAsNaN = ko.observable(missingAsNaN);
             self.fillMissingTimestamps = ko.observable(fillMissingTimestamps);
@@ -791,8 +791,8 @@
                 Cookies.set("missingAsNaN", val.toString(), { expires: 365 });
             });
 
-            self.timesStampSnap.subscribe(function(val) {
-                Cookies.set("timesStampSnap", val.toString(), { expires: 365 });
+            self.timestampSnap.subscribe(function(val) {
+                Cookies.set("timestampSnap", val.toString(), { expires: 365 });
             });
 
             self.tolerance.subscribe(function(val) {
@@ -1739,7 +1739,7 @@
                             "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
                             "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
                             "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
-                            "&TimestampSnap=" + encodeURIComponent(viewModel.timesStampSnap()) +
+                            "&TimestampSnap=" + encodeURIComponent(viewModel.timestampSnap()) +
                             "&Tolerance=" + encodeURIComponent(tolerance) +
                             "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()) +
                             "&ConnectionID=" + encodeURIComponent($.connection.hub.id) +
@@ -2457,7 +2457,7 @@
                             <hr class="quarter-break" />
                             <div class="form-group form-group-sm">
                                 <label for="exportTSSnap" data-bind="css: { 'disabled': !alignTimestamps()}">First Timestamp Based On:</label>
-                                <select class="form-control" id="exportTSSnap" data-bind="value: timesStampSnap, enable: alignTimestamps()">
+                                <select class="form-control" id="exportTSSnap" data-bind="value: timestampSnap, enable: alignTimestamps()">
                                     <option value="0" selected>frame rate starting at top of second</option>
                                     <option value="1">first available measurement</option>
                                     <option value="2">exact start time</option>
