@@ -26435,6 +26435,76 @@
             architectures.
             </remarks>
         </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.SByte)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Byte)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int16)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt16)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(GSF.Int24)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(GSF.UInt24)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int32)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt32)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.Int64)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BitExtensions.ToBinaryString(System.UInt64)">
+            <summary>
+            Encodes <paramref name="value"/> as binary, i.e., a string of bit values (0 or 1).
+            </summary>
+            <param name="value">Integer value to encode.</param>
+            <returns>Binary encoding of <paramref name="value"/>.</returns>
+        </member>
         <member name="T:GSF.BitwiseCast">
             <summary>Defines specialized bitwise integer data type conversion functions</summary>
             <remarks>
@@ -41850,12 +41920,19 @@
             Represents a radix value codec for conversion of base-10 integer values to and from other base values.
             </summary>
             <remarks>
-            The primary use case of this class is to provide compact string-based encodings of integer values.
-            This works much like base-64 encoding but with variable base sizes and an integer source data focus.
-            The encoded base value strings are not intended to provide compression, radix value encodings of
-            integers will almost always have a byte-size that is greater than native bytes that make up integer.
-            The encodings produced by this class do not manage arbitrary sized bytes arrays, nor do they include
-            padding - as a result, encodings are not intended to comply with RFC 3548.
+            <para>
+            The primary use case of this class is to provide compact string-based encodings of integer values, e.g.,
+            storing an unsigned 32-bit integer value in a string-based database field that only holds 6 characters;
+            the maximum <see cref="T:System.UInt32"/> value of 4294967295 requires 10 characters of storage as a string.
+            </para>
+            <para>
+            </para>
+            The codec algorithm for <see cref="T:GSF.RadixCodec"/> works much like base-64 encoding but with variable base
+            sizes and an integer source data focus, not a byte-array. The encoded base value strings are not intended
+            to provide binary compression, many of the radix value encodings of integers produced by this class will
+            have a byte-size that is greater than native bytes that make up integer. Since the encodings produced by
+            this class do not manage arbitrary sized bytes arrays nor do they include padding, the encodings are not
+            intended to comply with RFC 3548.
             </remarks>
         </member>
         <member name="F:GSF.RadixCodec.Digits">
