@@ -157,7 +157,7 @@ namespace openHistorian
                     if (header is not null)
                     {
                         string fileName = requestParameters["FileName"] ?? header.FileName ?? "Export.cfg";
-                        response.Content = new StringContent(header.FileImage, Encoding.UTF8, "text/plain");
+                        response.Content = new StringContent(header.FileImage, Encoding.UTF8, TextContentType);
                         response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = fileName };
                     }
                 }
