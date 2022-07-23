@@ -715,6 +715,7 @@
             var fillMissingTimestamps = Cookies.get("fillMissingTimestamps");
             var tolerance = Cookies.get("tolerance");
             var fileFormat = Cookies.get("fileFormat");
+            var useCFF = Cookies.get("useCFF");
 
             if (timestampSnap === undefined)
                 timestampSnap = 0;
@@ -746,6 +747,11 @@
             else
                 fileFormat = parseInt(fileFormat);
 
+            if (useCFF === undefined)
+                useCFF = false;
+            else
+                useCFF = getBool(useCFF);
+
             self.tolerance = ko.observable(tolerance);
 
             var autoEstimateResolutionValue = Cookies.get("autoEstimateResolution");
@@ -775,6 +781,7 @@
             self.trendResolution = ko.observable(Resolution.EverySecond);
             self.elapsedTime = ko.observable("");
             self.fileFormat = ko.observable(fileFormat);
+            self.useCFF = ko.observable(useCFF);
             self.frameRate = ko.observable(30);
             self.frameBase = ko.observable(0);
             self.timestampSnap = ko.observable(timestampSnap);
@@ -805,6 +812,10 @@
 
             self.fileFormat.subscribe(function(val) {
                 Cookies.set("fileFormat", val.toString(), { expires: 365 });
+            });
+
+            self.useCFF.subscribe(function(val) {
+                Cookies.set("useCFF", val.toString(), { expires: 365 });
             });
 
             self.instanceName = ko.pureComputed({
@@ -1105,6 +1116,7 @@
         const progressRefreshRate = 1000;
         var uriProtocolScheme = null;
         var exportOperationHandle = 0;
+        var headerCacheID = "";
         var lastProgress = 0;
         var plotData = [];
         var trendQueue = [];
@@ -1603,12 +1615,13 @@
                 if (state.Completed) {
                     let openCOMTRADEUpdater = "";
 
-                    if (viewModel.fileFormat() >= 0) {
+                    if (viewModel.fileFormat() > -1 && viewModel.useCFF()) {
                         if (viewModel.fileFormat() == 0)
                             state.BinaryByteCount = 0;
 
                         const callback = "@updateCompleteCallback" + encodeURIComponent(exportOperationHandle);
 
+                        // Update COMTRADE .CFF header counts
                         uriProtocolScheme = "comtrade-update-counter://open?" +
                             "targetExportName=" + encodeURIComponent(state.TargetExportName) +
                             "&endSampleCount=" + encodeURIComponent(state.EndSampleCount) +
@@ -1630,6 +1643,17 @@
                     }
                     else {
                         uriProtocolScheme = null;
+
+                        if (viewModel.fileFormat() > -1 && !viewModel.useCFF())
+                        {
+                            // Export COMTRADE .CFG header file
+                            $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
+                                "?ExportCachedHeader=true" +
+                                "&HeaderCacheID=" + encodeURIComponent(headerCacheID)
+                            );
+
+                            $("#exportDataLink")[0].click();
+                        }
                     }
 
                     showInfoMessage(String.format(
@@ -1685,80 +1709,90 @@
             const startTime = adjustSubsecondDigits(viewModel.startTime());
             const endTime = adjustSubsecondDigits(viewModel.endTime());
 
-            dataHub.beginDataExport(startTime, endTime).done(function (operationHandle) {
-                // Track export operation handle so data export can be monitored or cancelled
-                exportOperationHandle = operationHandle;
+            dataHub.generateCacheID().done(function (cacheID) {
+                headerCacheID = cacheID;
 
-                const selectedPointIDs = viewModel.getSelectedPointIDs();
+                dataHub.beginDataExport(startTime, endTime).done(function (operationHandle) {
+                    // Track export operation handle so data export can be monitored or cancelled
+                    exportOperationHandle = operationHandle;
 
-                if (selectedPointIDs.length === 0)
-                    return;
+                    const selectedPointIDs = viewModel.getSelectedPointIDs();
 
-                let adjustedFrameRate = viewModel.frameRate();
+                    if (selectedPointIDs.length === 0)
+                        return;
 
-                if (viewModel.frameBase() == 1)
-                    adjustedFrameRate = adjustedFrameRate / 60.0;
+                    let adjustedFrameRate = viewModel.frameRate();
 
-                if (viewModel.frameBase() == 2)
-                    adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
+                    if (viewModel.frameBase() == 1)
+                        adjustedFrameRate = adjustedFrameRate / 60.0;
 
-                let tolerance = 0.5;
+                    if (viewModel.frameBase() == 2)
+                        adjustedFrameRate = adjustedFrameRate / (60.0 * 60.0);
 
-                if (viewModel.tolerance())
-                    tolerance = 500 / adjustedFrameRate;
+                    let tolerance = 0.5;
 
-                $.ajax({
-                    cache: false,
-                    url: "ExportDataHandler.ashx",
-                    method: "post",
-                    data: selectedPointIDs.join(),
-                    dataType: "text",
-                    success: function (cacheID) {
-                        const progressBar = $("#progressBar");
+                    if (viewModel.tolerance())
+                        tolerance = 500 / adjustedFrameRate;
 
-                        progressBar.text("0%");
-                        progressBar.css("width", "0");
-                        progressBar.removeClass("active");
+                    $.ajax({
+                        cache: false,
+                        url: "ExportDataHandler.ashx",
+                        method: "post",
+                        data: selectedPointIDs.join(),
+                        dataType: "text",
+                        success: function (pointCacheID) {
+                            const progressBar = $("#progressBar");
 
-                        $("#progressLabel").text("");
-                        $("#exportingLabel").text("Exporting");
-                        $("#progressRate").text("");
-                        $("#remainingTime").text("");
-                        $("#totalTime").text("");
-                        $("#timeEstimate").hide();
-                        $("#progressIcon").show();
-                        $("#cancelDataExport").enable();
-                        $("#exportingDataDialog").modal("show");
+                            progressBar.text("0%");
+                            progressBar.css("width", "0");
+                            progressBar.removeClass("active");
 
-                        $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
-                            "?CacheID=" + encodeURIComponent(cacheID) +
-                            "&StartTime=" + encodeURIComponent(startTime) +
-                            "&EndTime=" + encodeURIComponent(endTime) +
-                            "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
-                            "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
-                            "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
-                            "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
-                            "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
-                            "&TimestampSnap=" + encodeURIComponent(viewModel.timestampSnap()) +
-                            "&Tolerance=" + encodeURIComponent(tolerance) +
-                            "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()) +
-                            "&ConnectionID=" + encodeURIComponent($.connection.hub.id) +
-                            "&OperationHandle=" + encodeURIComponent(exportOperationHandle)
-                        );
+                            $("#progressLabel").text("");
+                            $("#exportingLabel").text("Exporting");
+                            $("#progressRate").text("");
+                            $("#remainingTime").text("");
+                            $("#totalTime").text("");
+                            $("#timeEstimate").hide();
+                            $("#progressIcon").show();
+                            $("#cancelDataExport").enable();
+                            $("#exportingDataDialog").modal("show");
 
-                        $("#exportDataLink")[0].click();
+                            $("#exportDataLink").attr("href", "ExportDataHandler.ashx" +
+                                "?CacheID=" + encodeURIComponent(pointCacheID) +
+                                "&StartTime=" + encodeURIComponent(startTime) +
+                                "&EndTime=" + encodeURIComponent(endTime) +
+                                "&FrameRate=" + encodeURIComponent(adjustedFrameRate) +
+                                "&AlignTimestamps=" + encodeURIComponent(viewModel.alignTimestamps()) +
+                                "&MissingAsNaN=" + encodeURIComponent(viewModel.missingAsNaN()) +
+                                "&FillMissingTimestamps=" + encodeURIComponent(viewModel.fillMissingTimestamps()) +
+                                "&InstanceName=" + encodeURIComponent(viewModel.instanceName()) +
+                                "&TimestampSnap=" + encodeURIComponent(viewModel.timestampSnap()) +
+                                "&Tolerance=" + encodeURIComponent(tolerance) +
+                                "&FileFormat=" + encodeURIComponent(viewModel.fileFormat()) +
+                                "&UseCFF=" + encodeURIComponent(viewModel.useCFF()) +
+                                "&HeaderCacheID=" + encodeURIComponent(headerCacheID) +
+                                "&ConnectionID=" + encodeURIComponent($.connection.hub.id) +
+                                "&OperationHandle=" + encodeURIComponent(exportOperationHandle)
+                            );
 
-                        // Start checking operation progress
-                        lastProgress = 0;
-                        setTimeout(checkProgress, progressRefreshRate);
-                    },
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader(verificationHeader, verificationValue);
-                        xhr.setRequestHeader(useAjaxVerfication, "true");
-                    }
+                            $("#exportDataLink")[0].click();
+
+                            // Start checking operation progress
+                            lastProgress = 0;
+                            setTimeout(checkProgress, progressRefreshRate);
+                        },
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader(verificationHeader, verificationValue);
+                            xhr.setRequestHeader(useAjaxVerfication, "true");
+                        }
+                    });
+                })
+                .fail(function(error) {
+                    showErrorMessage(error);
+                    enableUIButtons();
                 });
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 showErrorMessage(error);
                 enableUIButtons();
             });
@@ -2436,10 +2470,10 @@
                                 <label for="exportFileFormat">File Format:</label>
                                 <select class="form-control" id="exportFileFormat" data-bind="value: fileFormat">
                                     <option value="-1" selected>Comma Separated Values (CSV)</option>
-                                    <option value="0">COMTRADE ASCII (CFF)</option>
-                                    <option value="1">COMTRADE Binary UInt16 (CFF)</option>
-                                    <option value="2">COMTRADE Binary UInt32 (CFF)</option>
-                                    <option value="3">COMTRADE Binary Float32 (CFF)</option>
+                                    <option value="0">COMTRADE ASCII</option>
+                                    <option value="1">COMTRADE Binary UInt16</option>
+                                    <option value="2">COMTRADE Binary UInt32</option>
+                                    <option value="3">COMTRADE Binary Float32</option>
                                 </select>
                                 &nbsp;&nbsp;
                             </div>
@@ -2453,6 +2487,12 @@
                                     <option value="1">frames per minute</option>
                                     <option value="2">frames per hour</option>
                                 </select>
+                            </div>
+                            <hr class="quarter-break" data-bind="visible: fileFormat() > -1" />
+                            <div class="form-group form-group-sm" data-bind="visible: fileFormat() > -1">
+                                <div class="checkbox">
+                                    <label for="useCFF"><input type="checkbox" id="useCFF" data-bind="checked: useCFF, enable: fileFormat() > -1"> <strong>Use&nbsp;Combined&nbsp;File&nbsp;Format&nbsp;(CFF) for&nbsp;COMTRADE&nbsp;export</strong></label>
+                                </div>
                             </div>
                             <hr class="quarter-break" />
                             <div class="form-group form-group-sm">

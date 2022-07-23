@@ -929,6 +929,9 @@ namespace openHistorian
 
         #region [ Data Export Operations ]
 
+        public string GenerateCacheID() =>
+            Guid.NewGuid().ToString();
+
         public uint BeginDataExport(string startTime, string endTime)
         {
             long startTicks, endTicks;
