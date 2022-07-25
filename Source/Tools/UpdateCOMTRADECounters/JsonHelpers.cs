@@ -39,22 +39,28 @@ namespace UpdateCOMTRADECounters
             public string protocol { get; set; }
         }
 
+        private class ExemptDomainFilesTypes
+        {
+            public string file_extension { get; set; }
+            public IList<string> domains { get; set; }  
+        }
+
         public static string InjectProtocolOrigins(string protocolOriginsJson, string[] allowedOrigins, string protocol)
         {
             List<ProtocolOrigins> protocolOrigins = JsonConvert.DeserializeObject<List<ProtocolOrigins>>(protocolOriginsJson);
             bool foundProtocol = false;
 
-            foreach (ProtocolOrigins current in protocolOrigins)
+            foreach (ProtocolOrigins current in protocolOrigins!)
             {
-                if (string.Equals(current.protocol, protocol, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (current.allowed_origins.ToArray().CompareTo(allowedOrigins) == 0)
-                        return protocolOriginsJson;
+                if (!string.Equals(current.protocol, protocol, StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-                    current.allowed_origins = allowedOrigins.ToList();
-                    foundProtocol = true;
-                    break;
-                }
+                if (current.allowed_origins.ToArray().CompareTo(allowedOrigins) == 0)
+                    return protocolOriginsJson;
+
+                current.allowed_origins = allowedOrigins.ToList();
+                foundProtocol = true;
+                break;
             }
 
             if (!foundProtocol)
@@ -67,6 +73,36 @@ namespace UpdateCOMTRADECounters
             }
 
             return JsonConvert.SerializeObject(protocolOrigins, Formatting.None);
+        }
+
+        public static string InjectExemptDomainFilesTypes(string exemptDomainFilesTypesJson, string fileExtension, string[] domains)
+        {
+            List<ExemptDomainFilesTypes> exemptDomainFilesTypes = JsonConvert.DeserializeObject<List<ExemptDomainFilesTypes>>(exemptDomainFilesTypesJson);
+            bool foundFileExtension = false;
+
+            foreach (ExemptDomainFilesTypes current in exemptDomainFilesTypes!)
+            {
+                if (!string.Equals(current.file_extension, fileExtension, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (current.domains.ToArray().CompareTo(domains) == 0)
+                    return exemptDomainFilesTypesJson;
+
+                current.domains = domains.ToList();
+                foundFileExtension = true;
+                break;
+            }
+
+            if (!foundFileExtension)
+            {
+                exemptDomainFilesTypes.Add(new ExemptDomainFilesTypes
+                {
+                    file_extension = fileExtension,
+                    domains = domains
+                });
+            }
+
+            return JsonConvert.SerializeObject(exemptDomainFilesTypes, Formatting.None);
         }
     }
 }

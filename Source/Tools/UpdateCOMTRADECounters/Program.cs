@@ -117,32 +117,59 @@ namespace UpdateCOMTRADECounters
 
                 if (targetAllUsers)
                 {
-                    void applyAutoLaunchPolicy(RegistryKey policyKey)
+                    void applyAutoLaunchProtocolPolicy(RegistryKey policyKey, string protocol)
                     {
-                        if (policyKey is null)
-                            return;
-
                         string originPolicies = policyKey.GetValue("AutoLaunchProtocolsFromOrigins")?.ToString();
 
                         if (string.IsNullOrEmpty(originPolicies))
                             originPolicies = "[]";
 
                         policyKey.SetValue("AutoLaunchProtocolsFromOrigins",
-                            JsonHelpers.InjectProtocolOrigins(originPolicies, new[] { "*" }, UriScheme));
+                            JsonHelpers.InjectProtocolOrigins(originPolicies, new[] { "*" }, protocol));
+                    }
+
+
+                    void applyFileTypeWarningExemptionPolicy(RegistryKey policyKey, string fileType)
+                    {
+                        void applyExemptionPolicy(string keyName)
+                        {
+                            string filesTypeDomainExceptions = policyKey.GetValue(keyName)?.ToString();
+
+                            if (string.IsNullOrEmpty(filesTypeDomainExceptions))
+                                filesTypeDomainExceptions = "[]";
+
+                            policyKey.SetValue(keyName,
+                                JsonHelpers.InjectExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, new[] { "*" }));
+                        }
+
+                        // Apply policy to old key name (deprecated)
+                        applyExemptionPolicy("ExemptDomainFileTypePairsFromFileTypeDownloadWarnings");
+
+                        // Apply policy to new key name
+                        applyExemptionPolicy("ExemptFileTypeDownloadWarnings");
+                    }
+
+                    void applyPolicies(RegistryKey policyKey)
+                    {
+                        if (policyKey is null)
+                            return;
+
+                        applyAutoLaunchProtocolPolicy(policyKey, UriScheme);
+                        applyFileTypeWarningExemptionPolicy(policyKey, "cfg");
                     }
 
                     // Apply Chrome policy
-                    applyAutoLaunchPolicy(
+                    applyPolicies(
                         Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Google\\Chrome", true) ??
                         Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Google\\Chrome", true));
 
                     // Apply Edge policy
-                    applyAutoLaunchPolicy(
+                    applyPolicies(
                         Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true) ??
                         Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true));
 
                     // Apply Firefox policy
-                    applyAutoLaunchPolicy(
+                    applyPolicies(
                         Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true) ??
                         Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true));
                 }
