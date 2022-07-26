@@ -21,7 +21,9 @@
 //
 //******************************************************************************************************
 
+using GSF.Reflection;
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace UpdateCOMTRADECounters
@@ -48,6 +50,12 @@ namespace UpdateCOMTRADECounters
                 // Fall-back on user's "Documents" folder
                 return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             }
+        }
+
+        public static string GetApplicationDataFolder()
+        {
+            string rootFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(rootFolder, AssemblyInfo.EntryAssembly.Company, AssemblyInfo.EntryAssembly.Name);    
         }
     }
 }

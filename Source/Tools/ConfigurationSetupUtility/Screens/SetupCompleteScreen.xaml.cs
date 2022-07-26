@@ -138,7 +138,7 @@ namespace ConfigurationSetupUtility.Screens
                         RunHiddenConsoleApp("openHistorian.exe", "-RestoreFiles");
                         
                         // Register protocol URI scheme for "comtrade-update-counter" for local machine use
-                        RunHiddenConsoleApp("UpdateCOMTRADECounters.exe", "-RegisterOnly -AllUsers -Silent");
+                        RunHiddenConsoleApp("UpdateCOMTRADECounters.exe", "-RegisterOnly -AllUsers -ForceUpdate -Silent");
 
                         // Make sure needed assembly bindings exist in config file (required for self-hosted web server)
                         RunHiddenConsoleApp("ValidateAssemblyBindings.exe", App.ApplicationConfig);

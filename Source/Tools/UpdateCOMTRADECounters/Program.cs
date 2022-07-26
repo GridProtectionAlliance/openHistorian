@@ -24,19 +24,29 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using GSF;
+using GSF.Console;
 using Microsoft.Win32;
 
 // ReSharper disable LocalizableElement
 namespace UpdateCOMTRADECounters
 {
     // This application loads needed dependencies from embedded resources so
-    // app will run from a single downloaded standalone executable
+    // application will run from a single downloaded standalone executable
     internal static class Program
     {
         private const string UriScheme = "comtrade-update-counter";
         private const string FriendlyName = "COMTRADE Update Counter";
+        private const string ChromePolicies = "SOFTWARE\\Policies\\Google\\Chrome";
+        private const string EdgePolicies = "SOFTWARE\\Policies\\Microsoft\\Edge";
+        private const string FirefoxPolicies = "SOFTWARE\\Policies\\Mozilla\\Firefox";
+        private const string AutoLaunchProtocolPolicy = "AutoLaunchProtocolsFromOrigins";
+        private const string ExemptFileTypeWarningPolicyOld = "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings";
+        private const string ExemptFileTypeWarningPolicy = "ExemptFileTypeDownloadWarnings";
 
         private static Assembly s_currentAssembly;
         private static Dictionary<string, Assembly> s_assemblyCache;
@@ -71,7 +81,7 @@ namespace UpdateCOMTRADECounters
 
             RegisterUriScheme(commandLine);
 
-            if (commandLine.Contains("-registeronly"))
+            if (commandLine.Contains("-registeronly") || commandLine.Contains("-forceupdate"))
                 Environment.Exit(0);
 
             Application.EnableVisualStyles();
@@ -82,102 +92,281 @@ namespace UpdateCOMTRADECounters
         private static void RegisterUriScheme(string commandLine)
         {
             bool targetAllUsers = false;
+            bool silent = commandLine.Contains("-silent");
 
             try
             {
                 // -AllUsers flag requires admin elevation
                 targetAllUsers = commandLine.Contains("-allusers");
-                RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
-                bool updateUriScheme;
+                bool unregister = commandLine.Contains("-unregister");
+                bool forceUpdate = commandLine.Contains("-forceupdate");
 
-                using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
-                using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
+                if (unregister || forceUpdate)
                 {
-                    updateUriScheme = (allUsersKey is null && (localUserKey is null || targetAllUsers));
+                    if (targetAllUsers)
+                        DeleteRegistration(Registry.LocalMachine, silent);
+
+                    DeleteRegistration(Registry.CurrentUser, silent);
+
+                    if (unregister)
+                        Environment.Exit(0);
                 }
 
-                if (updateUriScheme)
+                RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
+                string applicationFolder = ShellHelpers.GetApplicationDataFolder();
+                string applicationFilePath = Path.Combine(applicationFolder, $"{nameof(UpdateCOMTRADECounters)}.exe");
+
+                if (forceUpdate)
                 {
-                    using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
-
-                    if (uriSchemeKey is null)
-                        return;
-
-                    uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
-                    uriSchemeKey.SetValue("URL Protocol", "");
-
-                    string applicationLocation = CurrentAssembly.Location;
-
-                    using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
-                    defaultIcon?.SetValue("", $"{applicationLocation},1");
-
-                    using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
-                    commandKey?.SetValue("", $"\"{applicationLocation}\" \"%1\"");
+                    try
+                    {
+                        File.Delete(applicationFilePath);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
 
                 if (targetAllUsers)
                 {
-                    void applyAutoLaunchProtocolPolicy(RegistryKey policyKey, string protocol)
+                    applicationFilePath = CurrentAssembly.Location;
+                }
+                else
+                {
+                    try
                     {
-                        string originPolicies = policyKey.GetValue("AutoLaunchProtocolsFromOrigins")?.ToString();
+                        // Make sure target application folder exists
+                        if (!Directory.Exists(applicationFolder))
+                            Directory.CreateDirectory(applicationFolder);
 
-                        if (string.IsNullOrEmpty(originPolicies))
-                            originPolicies = "[]";
-
-                        policyKey.SetValue("AutoLaunchProtocolsFromOrigins",
-                            JsonHelpers.InjectProtocolOrigins(originPolicies, new[] { "*" }, protocol));
+                        // Copy executable to application data folder as primary install location
+                        if (!File.Exists(applicationFilePath))
+                            File.Copy(CurrentAssembly.Location, applicationFilePath);
                     }
-
-
-                    void applyFileTypeWarningExemptionPolicy(RegistryKey policyKey, string fileType)
+                    catch
                     {
-                        void applyExemptionPolicy(string keyName)
-                        {
-                            string filesTypeDomainExceptions = policyKey.GetValue(keyName)?.ToString();
-
-                            if (string.IsNullOrEmpty(filesTypeDomainExceptions))
-                                filesTypeDomainExceptions = "[]";
-
-                            policyKey.SetValue(keyName,
-                                JsonHelpers.InjectExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, new[] { "*" }));
-                        }
-
-                        // Apply policy to old key name (deprecated)
-                        applyExemptionPolicy("ExemptDomainFileTypePairsFromFileTypeDownloadWarnings");
-
-                        // Apply policy to new key name
-                        applyExemptionPolicy("ExemptFileTypeDownloadWarnings");
+                        applicationFilePath = CurrentAssembly.Location;
                     }
+                }
 
-                    void applyPolicies(RegistryKey policyKey)
+                using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
+                using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
+                {
+                    if (allUsersKey is null && (localUserKey is null || targetAllUsers))
                     {
-                        if (policyKey is null)
+                        using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
+
+                        if (uriSchemeKey is null)
                             return;
 
-                        applyAutoLaunchProtocolPolicy(policyKey, UriScheme);
-                        applyFileTypeWarningExemptionPolicy(policyKey, "cfg");
+                        uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
+                        uriSchemeKey.SetValue("URL Protocol", "");
+
+                        using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
+                        defaultIcon?.SetValue("", $"{applicationFilePath},1");
+
+                        using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
+                        commandKey?.SetValue("", $"\"{applicationFilePath}\" \"%1\"");
                     }
+                }
 
-                    // Apply Chrome policy
-                    applyPolicies(
-                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Google\\Chrome", true) ??
-                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Google\\Chrome", true));
+                if (targetAllUsers)
+                {
+                    RegisterBrowserPolicies(Registry.LocalMachine);
+                }
+                else
+                {
+                    using RegistryKey chromeKeyAllUsers = Registry.LocalMachine.OpenSubKey(ChromePolicies);
+                    using RegistryKey edgeKeyAllUsers = Registry.LocalMachine.OpenSubKey(EdgePolicies);
+                    using RegistryKey firefoxKeyAllUsers = Registry.LocalMachine.OpenSubKey(FirefoxPolicies);
+                    using RegistryKey chromeKeyLocalUser = Registry.CurrentUser.OpenSubKey(ChromePolicies);
+                    using RegistryKey edgeKeyLocalUser = Registry.CurrentUser.OpenSubKey(EdgePolicies);
+                    using RegistryKey firefoxKeyLocalUser = Registry.CurrentUser.OpenSubKey(FirefoxPolicies);
 
-                    // Apply Edge policy
-                    applyPolicies(
-                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true) ??
-                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Edge", true));
-
-                    // Apply Firefox policy
-                    applyPolicies(
-                        Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true) ??
-                        Registry.LocalMachine.OpenSubKey("SOFTWARE\\Policies\\Mozilla\\Firefox", true));
+                    if ((chromeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                         edgeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                         firefoxKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null) &&
+                        (chromeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                         edgeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                         firefoxKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null))
+                    {
+                        RegisterBrowserPolicies(Registry.CurrentUser);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                if (!commandLine.Contains("-silent"))
+                if (!silent)
                     MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void DeleteRegistration(RegistryKey keyRoot, bool silent)
+        {
+            try
+            {
+                DeleteRegistryKey(keyRoot, $"SOFTWARE\\Classes\\{UriScheme}");
+                DeleteRegistryKey(keyRoot, ChromePolicies);
+                DeleteRegistryKey(keyRoot, EdgePolicies);
+                DeleteRegistryKey(keyRoot, FirefoxPolicies);
+            }
+            catch (Exception ex)
+            {
+                if (!silent)
+                    MessageBox.Show($"Failed to unregister URI scheme \"{UriScheme}\" for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void DeleteRegistryKey(RegistryKey key, string name)
+        {
+            RegistryKey subKey = key.OpenSubKey(name, true);
+
+            if (subKey is null)
+                return;
+
+            string[] keyNames = subKey.GetSubKeyNames();
+            
+            foreach (string keyName in keyNames)
+                DeleteRegistryKey(subKey, keyName);
+
+            key.DeleteSubKey(name);
+        }
+
+        private static void RegisterBrowserPolicies(RegistryKey keyRoot)
+        {
+            void applyAutoLaunchProtocolPolicy(RegistryKey policyKey, string allowedOrigin, string protocol)
+            {
+                string originPolicies = policyKey.GetValue(AutoLaunchProtocolPolicy)?.ToString();
+
+                if (string.IsNullOrEmpty(originPolicies))
+                    originPolicies = "[]";
+
+                policyKey.SetValue(AutoLaunchProtocolPolicy,
+                    JsonHelpers.InjectProtocolOrigins(originPolicies, allowedOrigin, protocol));
+            }
+
+
+            void applyFileTypeWarningExemptionPolicy(RegistryKey policyKey, string fileType, string domain)
+            {
+                void applyExemptionPolicy(string keyName)
+                {
+                    string filesTypeDomainExceptions = policyKey.GetValue(keyName)?.ToString();
+
+                    if (string.IsNullOrEmpty(filesTypeDomainExceptions))
+                        filesTypeDomainExceptions = "[]";
+
+                    policyKey.SetValue(keyName,
+                        JsonHelpers.InjectExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, domain));
+                }
+
+                // Apply policy to old key name (deprecated)
+                applyExemptionPolicy(ExemptFileTypeWarningPolicyOld);
+
+                // Apply policy to new key name
+                applyExemptionPolicy(ExemptFileTypeWarningPolicy);
+            }
+
+            void applyPolicies(RegistryKey policyKey)
+            {
+                if (policyKey is null)
+                    return;
+
+                string targetUri = $"*:{GetTargetWebPort()}";
+
+                applyAutoLaunchProtocolPolicy(policyKey, targetUri, UriScheme);
+                applyFileTypeWarningExemptionPolicy(policyKey, "cfg", targetUri);
+            }
+
+            // Apply Chrome policy
+            applyPolicies(
+                keyRoot.CreateSubKey(ChromePolicies, true) ??
+                keyRoot.OpenSubKey(ChromePolicies, true));
+
+            // Apply Edge policy
+            applyPolicies(
+                keyRoot.CreateSubKey(EdgePolicies, true) ??
+                keyRoot.OpenSubKey(EdgePolicies, true));
+
+            // Apply Firefox policy
+            applyPolicies(
+                keyRoot.CreateSubKey(FirefoxPolicies, true) ??
+                keyRoot.OpenSubKey(FirefoxPolicies, true));
+        }
+
+        private static int GetTargetWebPort()
+        {
+            const string SourceApp = "openHistorian";
+            const int DefaultPort = 8180;
+
+            try
+            {
+                bool tryParseUrl(string url, out string callback)
+                {
+                    callback = null;
+
+                    try
+                    {
+                        string query = new Uri(url).Query;
+
+                        while (query.Length > 1 && query[0] == '?')
+                            query = query.Length == 1 ? string.Empty : query.Substring(1);
+
+                        if (string.IsNullOrEmpty(query))
+                            return false;
+
+                        Dictionary<string, string> parameters = query.ParseKeyValuePairs('&');
+
+                        parameters.TryGetValue("callback", out callback);
+
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+
+                bool tryParseCommandLine(out string callback)
+                {
+                    callback = null;
+                    string[] args = Arguments.ToArgs(Environment.CommandLine);
+                    return args.Length > 1 && tryParseUrl(args[1], out callback);
+                }
+
+                bool tryParseClipboard(out string callback)
+                {
+                    callback = null;
+                    return Clipboard.ContainsText() && tryParseUrl(Clipboard.GetText(), out callback);
+                }
+
+                // Check for callback parameter in protocol URL first - best option for typical use case
+                if (!tryParseCommandLine(out string hostUrl) && !tryParseClipboard(out hostUrl))
+                {
+                    // Fall back on looking for openHistorian installation - useful during installation
+                    string configFile = Registry.GetValue($"HKEY_LOCAL_MACHINE\\Software\\Grid Protection Alliance\\{SourceApp}", "InstallPath", $"C:\\Program Files\\{SourceApp}\\") as string;
+
+                    // Return default value if config file cannot be found
+                    if (string.IsNullOrEmpty(configFile) || !File.Exists(configFile))
+                        return DefaultPort;
+
+                    // Load web host URL that includes listening port from target config file
+                    XDocument serviceConfig = XDocument.Load(configFile);
+
+                    hostUrl = serviceConfig
+                        .Descendants("systemSettings")
+                        .SelectMany(systemSettings => systemSettings.Elements("add"))
+                        .Where(element => "WebHostURL".Equals((string)element.Attribute("name"), StringComparison.Ordinal))
+                        .Select(element => (string)element.Attribute("value"))
+                        .FirstOrDefault();
+                }
+
+                return string.IsNullOrEmpty(hostUrl) ? DefaultPort : 
+                    new Uri(hostUrl.Replace("//+:", "//localhost:")).Port;
+            }
+            catch
+            {
+                return DefaultPort;
             }
         }
 
@@ -202,6 +391,8 @@ namespace UpdateCOMTRADECounters
                     break;
 
                 byte[] buffer = new byte[resourceStream.Length];
+
+                // ReSharper disable once MustUseReturnValue
                 resourceStream.Read(buffer, 0, (int)resourceStream.Length);
                 resourceStream.Close();
 

@@ -255,8 +255,7 @@ namespace UpdateCOMTRADECounters
                     m_focusTarget = textBoxSourceCFF;
                 }
 
-                if (m_focusTarget is null)
-                    m_focusTarget = maskedTextBoxEndSampleCount;
+                m_focusTarget ??= maskedTextBoxEndSampleCount;
 
                 parameters.TryGetValue("callback", out m_callback);
 

@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using GSF.Collections;
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 // ReSharper disable ClassNeverInstantiated.Local
 namespace UpdateCOMTRADECounters
@@ -45,7 +45,7 @@ namespace UpdateCOMTRADECounters
             public IList<string> domains { get; set; }  
         }
 
-        public static string InjectProtocolOrigins(string protocolOriginsJson, string[] allowedOrigins, string protocol)
+        public static string InjectProtocolOrigins(string protocolOriginsJson, string targetAllowedOrigin, string protocol)
         {
             List<ProtocolOrigins> protocolOrigins = JsonConvert.DeserializeObject<List<ProtocolOrigins>>(protocolOriginsJson);
             bool foundProtocol = false;
@@ -55,11 +55,20 @@ namespace UpdateCOMTRADECounters
                 if (!string.Equals(current.protocol, protocol, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                if (current.allowed_origins.ToArray().CompareTo(allowedOrigins) == 0)
-                    return protocolOriginsJson;
-
-                current.allowed_origins = allowedOrigins.ToList();
                 foundProtocol = true;
+
+                // Disallow single wildcard without port
+                if (current.allowed_origins.Count == 1 && current.allowed_origins[0] == "*")
+                {
+                    current.allowed_origins[0] = targetAllowedOrigin;
+                }
+                else
+                {
+                    if (current.allowed_origins.Any(allowedOrigin => string.Equals(allowedOrigin, targetAllowedOrigin, StringComparison.OrdinalIgnoreCase)))
+                        return protocolOriginsJson;
+
+                    current.allowed_origins.Add(targetAllowedOrigin);
+                }
                 break;
             }
 
@@ -67,7 +76,7 @@ namespace UpdateCOMTRADECounters
             {
                 protocolOrigins.Add(new ProtocolOrigins
                 {
-                    allowed_origins = allowedOrigins.ToList(),
+                    allowed_origins = new[] { targetAllowedOrigin },
                     protocol = protocol
                 });
             }
@@ -75,7 +84,7 @@ namespace UpdateCOMTRADECounters
             return JsonConvert.SerializeObject(protocolOrigins, Formatting.None);
         }
 
-        public static string InjectExemptDomainFilesTypes(string exemptDomainFilesTypesJson, string fileExtension, string[] domains)
+        public static string InjectExemptDomainFilesTypes(string exemptDomainFilesTypesJson, string fileExtension, string targetDomain)
         {
             List<ExemptDomainFilesTypes> exemptDomainFilesTypes = JsonConvert.DeserializeObject<List<ExemptDomainFilesTypes>>(exemptDomainFilesTypesJson);
             bool foundFileExtension = false;
@@ -85,11 +94,20 @@ namespace UpdateCOMTRADECounters
                 if (!string.Equals(current.file_extension, fileExtension, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                if (current.domains.ToArray().CompareTo(domains) == 0)
-                    return exemptDomainFilesTypesJson;
-
-                current.domains = domains.ToList();
                 foundFileExtension = true;
+
+                // Disallow single wildcard without port
+                if (current.domains.Count == 1 && current.domains[0] == "*")
+                {
+                    current.domains[0] = targetDomain;
+                }
+                else
+                {
+                    if (current.domains.Any(domain => string.Equals(domain, targetDomain, StringComparison.OrdinalIgnoreCase)))
+                        return exemptDomainFilesTypesJson;
+
+                    current.domains.Add(targetDomain);
+                }
                 break;
             }
 
@@ -98,7 +116,7 @@ namespace UpdateCOMTRADECounters
                 exemptDomainFilesTypes.Add(new ExemptDomainFilesTypes
                 {
                     file_extension = fileExtension,
-                    domains = domains
+                    domains = new[] { targetDomain }
                 });
             }
 
