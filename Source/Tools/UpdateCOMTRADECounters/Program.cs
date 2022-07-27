@@ -89,7 +89,7 @@ namespace UpdateCOMTRADECounters
 
             RegisterUriScheme(commandLine);
 
-            if (commandLine.Contains("-registeronly") || commandLine.Contains("-install"))
+            if (commandLine.Contains("-registeronly") || commandLine.Contains("-install") || commandLine.Contains("-showsetup"))
                 Environment.Exit(0);
 
             Application.Run(new Main());
@@ -110,6 +110,7 @@ namespace UpdateCOMTRADECounters
 
                 bool unregister = commandLine.Contains("-unregister");
                 bool forceUpdate = commandLine.Contains("-forceupdate");
+                bool showSetupDialog = commandLine.Contains("-showsetup");
 
                 string allUsersApplicationFolder = ShellHelpers.GetCommonApplicationDataFolder();
                 string allUsersApplicationFilePath = Path.Combine(allUsersApplicationFolder, TargetExeFileName);
@@ -153,10 +154,10 @@ namespace UpdateCOMTRADECounters
                 using RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
                 using RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
 
-                if ((File.Exists(allUsersApplicationFilePath) && allUsersKey is not null || File.Exists(localUserApplicationFilePath) && localUserKey is not null) && !forceUpdate)
+                if ((File.Exists(allUsersApplicationFilePath) && allUsersKey is not null || File.Exists(localUserApplicationFilePath) && localUserKey is not null) && !forceUpdate && !showSetupDialog)
                     return;
 
-                if (!commandLine.Contains("-registeronly") && !commandLine.Contains("-install"))
+                if (!commandLine.Contains("-registeronly") && !commandLine.Contains("-install") || showSetupDialog)
                 {
                     // Show install dialog when tool is not properly registered or installed
                     Application.Run(new Install());
@@ -376,7 +377,8 @@ namespace UpdateCOMTRADECounters
 
                         Dictionary<string, string> parameters = query.ParseKeyValuePairs('&');
 
-                        parameters.TryGetValue("callback", out callback);
+                        if (parameters.TryGetValue("callback", out callback))
+                            callback = Uri.UnescapeDataString(callback);
 
                         return true;
                     }
@@ -386,6 +388,12 @@ namespace UpdateCOMTRADECounters
                     }
                 }
 
+                bool tryParseClipboard(out string callback)
+                {
+                    callback = null;
+                    return Clipboard.ContainsText() && tryParseUrl(Clipboard.GetText(), out callback);
+                }
+
                 bool tryParseCommandLine(out string callback)
                 {
                     callback = null;
@@ -393,14 +401,8 @@ namespace UpdateCOMTRADECounters
                     return args.Length > 1 && tryParseUrl(args[1], out callback);
                 }
 
-                bool tryParseClipboard(out string callback)
-                {
-                    callback = null;
-                    return Clipboard.ContainsText() && tryParseUrl(Clipboard.GetText(), out callback);
-                }
-
                 // Check for callback parameter in protocol URL first - best option for typical use case
-                if (!tryParseCommandLine(out string hostUrl) && !tryParseClipboard(out hostUrl))
+                if (!tryParseClipboard(out string hostUrl) && !tryParseCommandLine(out hostUrl))
                 {
                     // Fall back on looking for openHistorian installation - useful during installation
                     string configFile = Registry.GetValue($"HKEY_LOCAL_MACHINE\\Software\\Grid Protection Alliance\\{SourceApp}", "InstallPath", $"C:\\Program Files\\{SourceApp}\\") as string;

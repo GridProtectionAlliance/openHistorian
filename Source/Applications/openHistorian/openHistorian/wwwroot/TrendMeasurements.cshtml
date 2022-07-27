@@ -1584,6 +1584,26 @@
             window.open(uriProtocolScheme, "_self");
         }
 
+        function showUpdaterAppSettings() {
+            const callback = "@updateCompleteCallback" + encodeURIComponent(-1);
+            const openSetupDialog = "comtrade-update-counter://open?" +
+                "options=" + encodeURIComponent("-ShowSetup") +
+                "&callback=" + encodeURIComponent(callback);
+
+            copyToClipboard(openSetupDialog);
+            window.open(openSetupDialog, "_self");
+        }
+
+        function downloadUpdater() {
+            const callback = "@updateCompleteCallback" + encodeURIComponent(-1);
+            const options = "comtrade-update-counter://open?" +
+                "callback=" + encodeURIComponent(callback);
+
+            // Include callback on clipboard for proper port detection
+            copyToClipboard(options);
+            window.open("@UpdateCOMTRADECounters", "_self");
+        }
+
         function checkUpdaterComplete(state) {
             if (!uriProtocolScheme || getActiveTab() !== 2 || !viewModel.dataHubIsConnected()) {
                 hideInfoMessage();
@@ -2547,6 +2567,12 @@
                                     </td>
                                 </tr>
                             </table>
+                        </div>
+                        <hr class="thick-spacer">
+                        <div class="small text-muted">
+                            <a style="color: #487ca9" href="javascript:showUpdaterAppSettings()">Click here to change UpdateCOMTRADECounters application settings.</a>
+                            Application settings screen not launching?&nbsp;<a href="javascript:downloadUpdater()" style="color: #487ca9 ">Click here to download and run.</a><br />
+                            Note that it may be necessary to restart browser to apply any policy changes.<br />
                         </div>
                         <hr class="thick-spacer">
                         <button class="btn btn-primary pull-right" id="exportData">Export</button>

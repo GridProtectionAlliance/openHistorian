@@ -95,13 +95,13 @@ namespace UpdateCOMTRADECounters
                     m_installed = true;
                     MessageBox.Show(this, $"Successfully installed {Program.FriendlyName}.", "Installation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+
+                Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(this, $"Failed to install {Program.FriendlyName}: {ex.Message}", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            Close();
         }
     }
 }
