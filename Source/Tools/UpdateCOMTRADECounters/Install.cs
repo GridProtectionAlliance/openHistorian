@@ -32,6 +32,9 @@ namespace UpdateCOMTRADECounters
                 radioButtonInstallAllUsers.Checked = false;
                 radioButtonInstallAllUsers.Enabled = false;
                 radioButtonInstallOnlyMe.Checked = true;
+                checkBoxAllowAutoLaunch.Checked = false;
+                checkBoxAllowCfgDownload.Checked = false;
+                groupBoxBrowserPolcies.Enabled = false;
                 buttonInstall.Visible = false;
                 buttonInstallNoAdmin.Visible = true;
             }
@@ -40,6 +43,26 @@ namespace UpdateCOMTRADECounters
                 radioButtonInstallAllUsers.Enabled = true;
                 radioButtonInstallAllUsers.Checked = true;
                 radioButtonInstallOnlyMe.Checked = false;
+                groupBoxBrowserPolcies.Enabled = true;
+                checkBoxAllowAutoLaunch.Checked = true;
+                checkBoxAllowCfgDownload.Checked = true;
+                buttonInstallNoAdmin.Visible = false;
+                buttonInstall.Visible = true;
+            }
+        }
+
+        private void checkBoxBrowserPolicy_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!groupBoxBrowserPolcies.Enabled)
+                return;
+
+            if (radioButtonInstallOnlyMe.Checked && !checkBoxAllowAutoLaunch.Checked && !checkBoxAllowCfgDownload.Checked)
+            {
+                buttonInstall.Visible = false;
+                buttonInstallNoAdmin.Visible = true;
+            }
+            else
+            {
                 buttonInstallNoAdmin.Visible = false;
                 buttonInstall.Visible = true;
             }
@@ -51,23 +74,24 @@ namespace UpdateCOMTRADECounters
             
             ProcessStartInfo startInfo = new(currentExeFilePath)
             {
-                Arguments = radioButtonInstallOnlyMe.Checked ?
-                    "-Install -ForceUpdate" :
-                    "-Install -AllUsers -ForceUpdate",
-                Verb = checkBoxNoAdminRights.Checked ? "" : "runas"
+                Arguments = "-Install -ForceUpdate" +
+                    (radioButtonInstallOnlyMe.Checked ? "" : " -AllUsers") +
+                    (checkBoxAllowAutoLaunch.Checked ? "" : " -NoAutoLaunch") +
+                    (checkBoxAllowCfgDownload.Checked ? "" : " -NoCfgExemption"),
+                Verb = buttonInstallNoAdmin.Visible ? "" : "runas" // Launch as admin
             };
             
             using Process process = Process.Start(startInfo);
             
             if (process is null)
             {
-                MessageBox.Show($"Failed to install {Program.FriendlyName}, could not start \"{currentExeFilePath}\".", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $"Failed to install {Program.FriendlyName}, could not start \"{currentExeFilePath}\".", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 process.WaitForExit();
                 m_installed = true;
-                MessageBox.Show($"Successfully installed {Program.FriendlyName}.", "Installation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, $"Successfully installed {Program.FriendlyName}.", "Installation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             Close();

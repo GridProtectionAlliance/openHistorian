@@ -55,7 +55,7 @@ namespace UpdateCOMTRADECounters
 
         private static Assembly s_currentAssembly;
         private static Dictionary<string, Assembly> s_assemblyCache;
-        
+
         public static Assembly CurrentAssembly => s_currentAssembly ??= typeof(Program).Assembly;
 
         private static Dictionary<string, Assembly> AssemblyCache => s_assemblyCache ??= new Dictionary<string, Assembly>();
@@ -97,13 +97,12 @@ namespace UpdateCOMTRADECounters
 
         private static void RegisterUriScheme(string commandLine)
         {
-            bool targetAllUsers = false;
             bool silent = commandLine.Contains("-silent");
-            bool elevated = UserAccountControl.IsCurrentProcessElevated || UserAccountControl.IsUserAdmin;
 
             try
             {
-                targetAllUsers = commandLine.Contains("-allusers");
+                bool elevated = UserAccountControl.IsCurrentProcessElevated || (!UserAccountControl.IsUacEnabled && UserAccountControl.IsUserAdmin);
+                bool targetAllUsers = commandLine.Contains("-allusers");
 
                 // -AllUsers flag requires admin elevation
                 if (targetAllUsers && !elevated)
@@ -150,96 +149,109 @@ namespace UpdateCOMTRADECounters
                         Environment.Exit(0);
                 }
 
+                // Check if tool is properly registered and installed
                 using RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
                 using RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
 
-                if (((!File.Exists(allUsersApplicationFilePath) || allUsersKey is null) && (!File.Exists(localUserApplicationFilePath) || localUserKey is null)) || forceUpdate)
+                if ((File.Exists(allUsersApplicationFilePath) && allUsersKey is not null || File.Exists(localUserApplicationFilePath) && localUserKey is not null) && !forceUpdate)
+                    return;
+
+                if (!commandLine.Contains("-registeronly") && !commandLine.Contains("-install"))
                 {
-                    if (!commandLine.Contains("-registeronly") && !commandLine.Contains("-install"))
+                    // Show install dialog when tool is not properly registered or installed
+                    Application.Run(new Install());
+                    return;
+                }
+
+                // Handle URI protocol registration
+                try
+                {
+                    string currentExeFilePath = Process.GetCurrentProcess().MainModule?.FileName ?? CurrentAssembly.Location;
+                    string targetApplicationFilePath = targetAllUsers ? allUsersApplicationFilePath : localUserApplicationFilePath;
+                    string targetApplicationFolder = targetAllUsers ? allUsersApplicationFolder : localUserApplicationFolder;
+
+                    try
                     {
-                        // Show install dialog if tool is not properly registered or installed
-                        Application.Run(new Install());
+                        // Make sure target application folder exists
+                        if (!Directory.Exists(targetApplicationFolder))
+                            Directory.CreateDirectory(targetApplicationFolder);
+
+                        // Copy executable to application data folder as primary install location
+                        if (!File.Exists(targetApplicationFilePath))
+                            File.Copy(currentExeFilePath, targetApplicationFilePath);
                     }
-                    else
+                    catch
                     {
-                        string currentExeFilePath = Process.GetCurrentProcess().MainModule?.FileName ?? CurrentAssembly.Location;
-                        string targetApplicationFilePath = targetAllUsers ? allUsersApplicationFilePath : localUserApplicationFilePath;
-                        string targetApplicationFolder = targetAllUsers ? allUsersApplicationFolder : localUserApplicationFolder;
+                        targetApplicationFilePath = currentExeFilePath;
+                    }
 
-                        try
+                    if (allUsersKey is null && (localUserKey is null || targetAllUsers))
+                    {
+                        RegistryKey rootKey = targetAllUsers ?
+                            Registry.LocalMachine :
+                            Registry.CurrentUser;
+
+                        using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
+
+                        if (uriSchemeKey is null)
+                            return;
+
+                        uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
+                        uriSchemeKey.SetValue("URL Protocol", "");
+
+                        using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
+                        defaultIcon?.SetValue("", $"{targetApplicationFilePath},1");
+
+                        using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
+                        commandKey?.SetValue("", $"\"{targetApplicationFilePath}\" \"%1\"");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!silent)
+                        MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                if (commandLine.Contains("-nopolicies"))
+                    return;
+
+                // Handle browser policy registration
+                try
+                {
+                    if (targetAllUsers)
+                    {
+                        RegisterBrowserPolicies(Registry.LocalMachine, commandLine);
+                    }
+                    else if (elevated)
+                    {
+                        using RegistryKey chromeKeyAllUsers = Registry.LocalMachine.OpenSubKey(ChromePolicies);
+                        using RegistryKey edgeKeyAllUsers = Registry.LocalMachine.OpenSubKey(EdgePolicies);
+                        using RegistryKey firefoxKeyAllUsers = Registry.LocalMachine.OpenSubKey(FirefoxPolicies);
+                        using RegistryKey chromeKeyLocalUser = Registry.CurrentUser.OpenSubKey(ChromePolicies);
+                        using RegistryKey edgeKeyLocalUser = Registry.CurrentUser.OpenSubKey(EdgePolicies);
+                        using RegistryKey firefoxKeyLocalUser = Registry.CurrentUser.OpenSubKey(FirefoxPolicies);
+
+                        if ((chromeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                             edgeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                             firefoxKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null) &&
+                            (chromeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                             edgeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
+                             firefoxKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null))
                         {
-                            // Make sure target application folder exists
-                            if (!Directory.Exists(targetApplicationFolder))
-                                Directory.CreateDirectory(targetApplicationFolder);
-
-                            // Copy executable to application data folder as primary install location
-                            if (!File.Exists(targetApplicationFilePath))
-                                File.Copy(currentExeFilePath, targetApplicationFilePath);
-                        }
-                        catch
-                        {
-                            targetApplicationFilePath = currentExeFilePath;
-                        }
-
-                        if (allUsersKey is null && (localUserKey is null || targetAllUsers))
-                        {
-                            RegistryKey rootKey = targetAllUsers ? 
-                                Registry.LocalMachine : 
-                                Registry.CurrentUser;
-
-                            using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
-
-                            if (uriSchemeKey is null)
-                                return;
-
-                            uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
-                            uriSchemeKey.SetValue("URL Protocol", "");
-
-                            using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
-                            defaultIcon?.SetValue("", $"{targetApplicationFilePath},1");
-
-                            using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
-                            commandKey?.SetValue("", $"\"{targetApplicationFilePath}\" \"%1\"");
+                            RegisterBrowserPolicies(Registry.CurrentUser, commandLine);
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    if (!silent)
+                        MessageBox.Show($"Failed to register browser policies for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "Browser Policy Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
                 if (!silent)
-                    MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            try
-            {
-                if (targetAllUsers)
-                {
-                    RegisterBrowserPolicies(Registry.LocalMachine);
-                }
-                else if (elevated)
-                {
-                    using RegistryKey chromeKeyAllUsers = Registry.LocalMachine.OpenSubKey(ChromePolicies);
-                    using RegistryKey edgeKeyAllUsers = Registry.LocalMachine.OpenSubKey(EdgePolicies);
-                    using RegistryKey firefoxKeyAllUsers = Registry.LocalMachine.OpenSubKey(FirefoxPolicies);
-                    using RegistryKey chromeKeyLocalUser = Registry.CurrentUser.OpenSubKey(ChromePolicies);
-                    using RegistryKey edgeKeyLocalUser = Registry.CurrentUser.OpenSubKey(EdgePolicies);
-                    using RegistryKey firefoxKeyLocalUser = Registry.CurrentUser.OpenSubKey(FirefoxPolicies);
-
-                    if ((chromeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                         edgeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                         firefoxKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null) &&
-                        (chromeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                         edgeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                         firefoxKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null))
-                    {
-                        RegisterBrowserPolicies(Registry.CurrentUser);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!silent)
-                    MessageBox.Show($"Failed to register browser policies for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "Browser Policy Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Failed during URI scheme registration setup: {ex.Message}", "URI Scheme Registration Setup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -258,7 +270,7 @@ namespace UpdateCOMTRADECounters
             catch (Exception ex)
             {
                 if (!silent)
-                    MessageBox.Show($"Failed to unregister URI scheme \"{UriScheme}\" for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Failed to unregister URI scheme \"{UriScheme}\" for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Removal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -270,14 +282,14 @@ namespace UpdateCOMTRADECounters
                 return;
 
             string[] keyNames = subKey.GetSubKeyNames();
-            
+
             foreach (string keyName in keyNames)
                 DeleteRegistryKey(subKey, keyName);
 
             key.DeleteSubKey(name);
         }
 
-        private static void RegisterBrowserPolicies(RegistryKey keyRoot)
+        private static void RegisterBrowserPolicies(RegistryKey keyRoot, string commandLine)
         {
             void applyAutoLaunchProtocolPolicy(RegistryKey policyKey, string allowedOrigin, string protocol)
             {
@@ -318,8 +330,11 @@ namespace UpdateCOMTRADECounters
 
                 string targetUri = $"*:{GetTargetWebPort()}";
 
-                applyAutoLaunchProtocolPolicy(policyKey, targetUri, UriScheme);
-                applyFileTypeWarningExemptionPolicy(policyKey, "cfg", targetUri);
+                if (!commandLine.Contains("-noautolaunch"))
+                    applyAutoLaunchProtocolPolicy(policyKey, targetUri, UriScheme);
+
+                if (!commandLine.Contains("-nocfgexemption"))
+                    applyFileTypeWarningExemptionPolicy(policyKey, "cfg", targetUri);
             }
 
             // Apply Chrome policy
@@ -405,7 +420,7 @@ namespace UpdateCOMTRADECounters
                         .FirstOrDefault();
                 }
 
-                return string.IsNullOrEmpty(hostUrl) ? DefaultPort : 
+                return string.IsNullOrEmpty(hostUrl) ? DefaultPort :
                     new Uri(hostUrl.Replace("//+:", "//localhost:")).Port;
             }
             catch

@@ -121,7 +121,7 @@
   <data name="pictureBoxLogo.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vQAADr0BR/uQrQAA/7JJREFUeF7s3QV4k+f6P3Dq7u7umkoaT+ruQnF3pjB8QHFpG2txp+4tpcUdihTd
+        vAAADrwBlbxySQAA/7JJREFUeF7s3QV4k+f6P3Dq7u7umkoaT+ruQnF3pjB8QHFpG2txp+4tpcUdihTd
         GFO2M2ODjSGFUkme//fNwn47O+z8t50JbL2v63MlLe3blPb+PvfzRjpooAZqoAZqoAZqoAZqoAZqoAZq
         oAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZq
         oAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZq
@@ -8960,7 +8960,7 @@
   <data name="buttonInstall.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vwAADr8BOAVTJAAAAmxJREFUSEvNlMtLlFEYh9VVtAgSF7UKNy1q0UqSEisNu0ltKqjUAhEjikbTMnNS
+        vAAADrwBlbxySQAAAmxJREFUSEvNlMtLlFEYh9VVtAgSF7UKNy1q0UqSEisNu0ltKqjUAhEjikbTMnNS
         wqhMNIvI+2iTaaXOOM79m4ujzqjjhRljZjJvaAqWmFFBYMrTF3x/wjfRAy8Hzvs+cDj8zokIF1qtPtJg
         sCTodMa90ta/w2KxxQgOt65BM8L8ZA0Ou76ttfXdFqkdPoLBUPTEhwmFdyzwpdszw4M3Y/BVyc+5Yobd
         rxf1elN29Yva8Bxkdv6z0O+bW9cPTOMOLtHtnaOs3Qcrj2ChEGbzWAncJ+St/23Ua59Imnz0js6uVHYH
@@ -8973,6 +8973,9 @@
         cQYGR8qlkfBTWVEZZbc7FcODlimD3RNwOl0Xpdb/RkTEH94ammt1y3QiAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="toolTipMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAkAEBAAAAEAIABoBAAAlgAAABgYAAABACAAiAkAAP4EAAAgIAAAAQAgAKgQAACGDgAAMDAAAAEA
