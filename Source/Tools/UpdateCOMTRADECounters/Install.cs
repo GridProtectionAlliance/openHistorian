@@ -80,18 +80,25 @@ namespace UpdateCOMTRADECounters
                     (checkBoxAllowCfgDownload.Checked ? "" : " -NoCfgExemption"),
                 Verb = buttonInstallNoAdmin.Visible ? "" : "runas" // Launch as admin
             };
-            
-            using Process process = Process.Start(startInfo);
-            
-            if (process is null)
+
+            try
             {
-                MessageBox.Show(this, $"Failed to install {Program.FriendlyName}, could not start \"{currentExeFilePath}\".", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                using Process process = Process.Start(startInfo);
+            
+                if (process is null)
+                {
+                    MessageBox.Show(this, $"Failed to install {Program.FriendlyName}, could not start \"{currentExeFilePath}\".", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    process.WaitForExit();
+                    m_installed = true;
+                    MessageBox.Show(this, $"Successfully installed {Program.FriendlyName}.", "Installation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                process.WaitForExit();
-                m_installed = true;
-                MessageBox.Show(this, $"Successfully installed {Program.FriendlyName}.", "Installation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, $"Failed to install {Program.FriendlyName}: {ex.Message}", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             Close();
