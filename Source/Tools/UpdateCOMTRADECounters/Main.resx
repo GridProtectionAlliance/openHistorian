@@ -127,7 +127,7 @@
   <data name="pictureBoxLogo.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wQAADsEBuJFr7QAA/7JJREFUeF7s3QV4k+f6P3Dq7u7umkoaT+ruQnF3pjB8QHFpG2txp+4tpcUdihTd
+        wAAADsABataJCQAA/7JJREFUeF7s3QV4k+f6P3Dq7u7umkoaT+ruQnF3pjB8QHFpG2txp+4tpcUdihTd
         GFO2M2ODjSGFUkme//fNwn47O+z8t50JbL2v63MlLe3blPb+PvfzRjpooAZqoAZqoAZqoAZqoAZqoAZq
         oAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZq
         oAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZqoAZq
@@ -1262,9 +1262,6 @@
         +UDA8gAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>170, 17</value>
-  </metadata>
   <metadata name="timerFlashButton.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>260, 17</value>
   </metadata>

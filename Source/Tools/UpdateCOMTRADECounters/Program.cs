@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -30,6 +31,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using GSF;
 using GSF.Console;
+using GSF.Identity;
 using Microsoft.Win32;
 
 // ReSharper disable LocalizableElement
@@ -39,8 +41,11 @@ namespace UpdateCOMTRADECounters
     // application will run from a single downloaded standalone executable
     internal static class Program
     {
-        private const string UriScheme = "comtrade-update-counter";
-        private const string FriendlyName = "COMTRADE Update Counter";
+        public const string TargetExeFileName = nameof(UpdateCOMTRADECounters) + ".exe";
+        public const string UriScheme = "comtrade-update-counter";
+        public const string FriendlyName = "COMTRADE Update Counter";
+
+        // Chromium based browsers share a policy structure
         private const string ChromePolicies = "SOFTWARE\\Policies\\Google\\Chrome";
         private const string EdgePolicies = "SOFTWARE\\Policies\\Microsoft\\Edge";
         private const string FirefoxPolicies = "SOFTWARE\\Policies\\Mozilla\\Firefox";
@@ -51,7 +56,7 @@ namespace UpdateCOMTRADECounters
         private static Assembly s_currentAssembly;
         private static Dictionary<string, Assembly> s_assemblyCache;
         
-        private static Assembly CurrentAssembly => s_currentAssembly ??= typeof(Program).Assembly;
+        public static Assembly CurrentAssembly => s_currentAssembly ??= typeof(Program).Assembly;
 
         private static Dictionary<string, Assembly> AssemblyCache => s_assemblyCache ??= new Dictionary<string, Assembly>();
 
@@ -77,15 +82,16 @@ namespace UpdateCOMTRADECounters
             AppDomain.CurrentDomain.Load("Newtonsoft.Json");
             AppDomain.CurrentDomain.Load("GSF.COMTRADE");
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             string commandLine = Environment.CommandLine.ToLowerInvariant();
 
             RegisterUriScheme(commandLine);
 
-            if (commandLine.Contains("-registeronly") || commandLine.Contains("-forceupdate"))
+            if (commandLine.Contains("-registeronly") || commandLine.Contains("-install"))
                 Environment.Exit(0);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
         }
 
@@ -93,89 +99,125 @@ namespace UpdateCOMTRADECounters
         {
             bool targetAllUsers = false;
             bool silent = commandLine.Contains("-silent");
+            bool elevated = UserAccountControl.IsCurrentProcessElevated;
 
             try
             {
-                // -AllUsers flag requires admin elevation
                 targetAllUsers = commandLine.Contains("-allusers");
+
+                // -AllUsers flag requires admin elevation
+                if (targetAllUsers && !elevated)
+                    throw new InvalidOperationException("Cannot target all users without process elevation. Try running process as administrator.");
+
                 bool unregister = commandLine.Contains("-unregister");
                 bool forceUpdate = commandLine.Contains("-forceupdate");
+
+                string allUsersApplicationFolder = ShellHelpers.GetCommonApplicationDataFolder();
+                string allUsersApplicationFilePath = Path.Combine(allUsersApplicationFolder, TargetExeFileName);
+                string localUserApplicationFolder = ShellHelpers.GetUserApplicationDataFolder();
+                string localUserApplicationFilePath = Path.Combine(localUserApplicationFolder, TargetExeFileName);
 
                 if (unregister || forceUpdate)
                 {
                     if (targetAllUsers)
                         DeleteRegistration(Registry.LocalMachine, silent);
 
-                    DeleteRegistration(Registry.CurrentUser, silent);
+                    DeleteRegistration(Registry.CurrentUser, silent || !elevated);
 
-                    if (unregister)
-                        Environment.Exit(0);
-                }
+                    if (targetAllUsers)
+                    {
+                        try
+                        {
+                            // Try to remove all users installation
+                            File.Delete(allUsersApplicationFilePath);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    }
 
-                RegistryKey rootKey = targetAllUsers ? Registry.LocalMachine : Registry.CurrentUser;
-                string applicationFolder = ShellHelpers.GetApplicationDataFolder();
-                string applicationFilePath = Path.Combine(applicationFolder, $"{nameof(UpdateCOMTRADECounters)}.exe");
-
-                if (forceUpdate)
-                {
                     try
                     {
-                        File.Delete(applicationFilePath);
+                        // Try to remove local user installation
+                        File.Delete(localUserApplicationFilePath);
                     }
                     catch
                     {
                         // ignored
                     }
+
+                    if (unregister)
+                        Environment.Exit(0);
                 }
 
-                if (targetAllUsers)
+                using RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
+                using RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}");
+
+                if (((!File.Exists(allUsersApplicationFilePath) || allUsersKey is null) && (!File.Exists(localUserApplicationFilePath) || localUserKey is null)) || forceUpdate)
                 {
-                    applicationFilePath = CurrentAssembly.Location;
-                }
-                else
-                {
-                    try
+                    if (!commandLine.Contains("-registeronly") && !commandLine.Contains("-install"))
                     {
-                        // Make sure target application folder exists
-                        if (!Directory.Exists(applicationFolder))
-                            Directory.CreateDirectory(applicationFolder);
-
-                        // Copy executable to application data folder as primary install location
-                        if (!File.Exists(applicationFilePath))
-                            File.Copy(CurrentAssembly.Location, applicationFilePath);
+                        // Show install dialog if tool is not properly registered or installed
+                        Application.Run(new Install());
                     }
-                    catch
+                    else
                     {
-                        applicationFilePath = CurrentAssembly.Location;
+                        string currentExeFilePath = Process.GetCurrentProcess().MainModule?.FileName ?? CurrentAssembly.Location;
+                        string targetApplicationFilePath = targetAllUsers ? allUsersApplicationFilePath : localUserApplicationFilePath;
+                        string targetApplicationFolder = targetAllUsers ? allUsersApplicationFolder : localUserApplicationFolder;
+
+                        try
+                        {
+                            // Make sure target application folder exists
+                            if (!Directory.Exists(targetApplicationFolder))
+                                Directory.CreateDirectory(targetApplicationFolder);
+
+                            // Copy executable to application data folder as primary install location
+                            if (!File.Exists(targetApplicationFilePath))
+                                File.Copy(currentExeFilePath, targetApplicationFilePath);
+                        }
+                        catch
+                        {
+                            targetApplicationFilePath = currentExeFilePath;
+                        }
+
+                        if (allUsersKey is null && (localUserKey is null || targetAllUsers))
+                        {
+                            RegistryKey rootKey = targetAllUsers ? 
+                                Registry.LocalMachine : 
+                                Registry.CurrentUser;
+
+                            using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
+
+                            if (uriSchemeKey is null)
+                                return;
+
+                            uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
+                            uriSchemeKey.SetValue("URL Protocol", "");
+
+                            using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
+                            defaultIcon?.SetValue("", $"{targetApplicationFilePath},1");
+
+                            using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
+                            commandKey?.SetValue("", $"\"{targetApplicationFilePath}\" \"%1\"");
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (!silent)
+                    MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-                using (RegistryKey allUsersKey = Registry.LocalMachine.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
-                using (RegistryKey localUserKey = Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{UriScheme}"))
-                {
-                    if (allUsersKey is null && (localUserKey is null || targetAllUsers))
-                    {
-                        using RegistryKey uriSchemeKey = rootKey.CreateSubKey($"SOFTWARE\\Classes\\{UriScheme}");
-
-                        if (uriSchemeKey is null)
-                            return;
-
-                        uriSchemeKey.SetValue("", $"URL:{FriendlyName}");
-                        uriSchemeKey.SetValue("URL Protocol", "");
-
-                        using RegistryKey defaultIcon = uriSchemeKey.CreateSubKey("DefaultIcon");
-                        defaultIcon?.SetValue("", $"{applicationFilePath},1");
-
-                        using RegistryKey commandKey = uriSchemeKey.CreateSubKey(@"shell\open\command");
-                        commandKey?.SetValue("", $"\"{applicationFilePath}\" \"%1\"");
-                    }
-                }
-
+            try
+            {
                 if (targetAllUsers)
                 {
                     RegisterBrowserPolicies(Registry.LocalMachine);
                 }
-                else
+                else if (elevated)
                 {
                     using RegistryKey chromeKeyAllUsers = Registry.LocalMachine.OpenSubKey(ChromePolicies);
                     using RegistryKey edgeKeyAllUsers = Registry.LocalMachine.OpenSubKey(EdgePolicies);
@@ -198,7 +240,7 @@ namespace UpdateCOMTRADECounters
             catch (Exception ex)
             {
                 if (!silent)
-                    MessageBox.Show($"Failed to register URI scheme \"{UriScheme}\" for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Failed to register browser policies for {(targetAllUsers ? "all users" : "current user")}: {ex.Message}", "Browser Policy Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -206,7 +248,10 @@ namespace UpdateCOMTRADECounters
         {
             try
             {
+                // Remove registration first - non-admin local user action is allowed
                 DeleteRegistryKey(keyRoot, $"SOFTWARE\\Classes\\{UriScheme}");
+
+                // Removing the following registry keys may require elevation
                 DeleteRegistryKey(keyRoot, ChromePolicies);
                 DeleteRegistryKey(keyRoot, EdgePolicies);
                 DeleteRegistryKey(keyRoot, FirefoxPolicies);

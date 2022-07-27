@@ -51,8 +51,13 @@ namespace UpdateCOMTRADECounters
                 return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             }
         }
+        public static string GetCommonApplicationDataFolder()
+        {
+            string rootFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            return Path.Combine(rootFolder, AssemblyInfo.EntryAssembly.Company, AssemblyInfo.EntryAssembly.Name);    
+        }
 
-        public static string GetApplicationDataFolder()
+        public static string GetUserApplicationDataFolder()
         {
             string rootFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             return Path.Combine(rootFolder, AssemblyInfo.EntryAssembly.Company, AssemblyInfo.EntryAssembly.Name);    

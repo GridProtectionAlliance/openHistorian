@@ -153,9 +153,9 @@ namespace UpdateCOMTRADECounters
             this.labelSelectDownloadedCFF.ForeColor = System.Drawing.SystemColors.InfoText;
             this.labelSelectDownloadedCFF.Location = new System.Drawing.Point(174, 81);
             this.labelSelectDownloadedCFF.Name = "labelSelectDownloadedCFF";
-            this.labelSelectDownloadedCFF.Size = new System.Drawing.Size(119, 13);
+            this.labelSelectDownloadedCFF.Size = new System.Drawing.Size(138, 13);
             this.labelSelectDownloadedCFF.TabIndex = 8;
-            this.labelSelectDownloadedCFF.Text = "Select downloaded CFF";
+            this.labelSelectDownloadedCFF.Text = "Select last downloaded CFF";
             // 
             // pictureBoxLogo
             // 
