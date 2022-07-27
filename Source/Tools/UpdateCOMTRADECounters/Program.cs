@@ -99,7 +99,7 @@ namespace UpdateCOMTRADECounters
         {
             bool targetAllUsers = false;
             bool silent = commandLine.Contains("-silent");
-            bool elevated = UserAccountControl.IsCurrentProcessElevated;
+            bool elevated = UserAccountControl.IsCurrentProcessElevated || UserAccountControl.IsUserAdmin;
 
             try
             {
@@ -120,12 +120,9 @@ namespace UpdateCOMTRADECounters
                 if (unregister || forceUpdate)
                 {
                     if (targetAllUsers)
+                    {
                         DeleteRegistration(Registry.LocalMachine, silent);
 
-                    DeleteRegistration(Registry.CurrentUser, silent || !elevated);
-
-                    if (targetAllUsers)
-                    {
                         try
                         {
                             // Try to remove all users installation
@@ -136,6 +133,8 @@ namespace UpdateCOMTRADECounters
                             // ignored
                         }
                     }
+
+                    DeleteRegistration(Registry.CurrentUser, silent || !elevated);
 
                     try
                     {
