@@ -2757,12 +2757,17 @@
             Represents common resources that can be used in a web page.
             </summary>
         </member>
-        <member name="F:GSF.Web.Shared.Resources.Root">
+        <member name="F:GSF.Web.Shared.Resources.DefaultRoot">
             <summary>
-            Defines embedded resource root path.
+            Defines default embedded resource root path.
             </summary>
         </member>
-        <member name="F:GSF.Web.Shared.Resources.HeaderIcons">
+        <member name="P:GSF.Web.Shared.Resources.Root">
+            <summary>
+            Gets derived embedded resource root path.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Shared.Resources.HeaderIcons">
             <summary>
             Gets common set of icon resources that can be included in web page header.
             </summary>
