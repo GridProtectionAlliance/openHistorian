@@ -557,6 +557,23 @@
             return false;
         }
 
+        function phaseStartsWith(phaseLabel, phaseMatches, ignoreCase) {
+            if (ignoreCase)
+                phaseLabel = phaseLabel.toUpperCase();
+
+            for (let i = 0; i < phaseMatches.length; i++) {
+                let phaseMatch = phaseMatches[i];
+
+                if (ignoreCase)
+                    phaseMatch = phaseMatch.toUpperCase();
+
+                if (phaseLabel.startsWith(phaseMatch))
+                    return true;
+            }
+
+            return false;
+        }
+
         function phaseContains(phaseLabel, phaseMatches, ignoreCase) {
             if (ignoreCase)
                 phaseLabel = phaseLabel.toUpperCase();
@@ -576,6 +593,9 @@
 
         function phaseMatchHighConfidence(phaseLabel, containsMatches, endsWithMatches) {
             if (phaseEndsWith(phaseLabel, containsMatches, true))
+                return true;
+
+            if (phaseStartsWith(phaseLabel, containsMatches, true))
                 return true;
 
             const matches = containsMatches.concat(endsWithMatches);
@@ -611,16 +631,25 @@
             return false;
         }
 
-        function guessPhase(phase, phasorLabel) {
+        function guessPhase(phasorDefinition, phasorLabel) {
+            const phase = phasorDefinition.Phase;
+
+            // If user has already manually updated phase, do not "re-guess"
+            const updatedOn = new Date(phasorDefinition.UpdatedOn);
+            const createdOn = new Date(phasorDefinition.CreatedOn);
+
+            if (updatedOn > createdOn)
+                return phase;
+
             if (!isEmpty(phase) && phase !== "+" && !phase.endsWith("?"))
                 return phase;
 
             // Handle high confidence phase matches when no phase is defined or when phase is "+" - since positive sequence is often default value, it's treated with suspicion
             if (isEmpty(phase) || phase === "+") {
-                if (phaseMatchExact(phasorLabel, [ "V1PM", "I1PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V1", "I1" ], [ "POS", "V1PM", "I1PM", "PS", "PSV", "PSI" ]) || phaseEndsWith(phasorLabel, [ "+SV", "+SI", "+V", "+I" ], true))
+                if (phaseMatchExact(phasorLabel, [ "V1PM", "I1PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V1", "VP", "I1", "IP", "VSEQ1", "ISEQ1" ], [ "POS", "V1PM", "I1PM", "PS", "PSV", "PSI" ]) || phaseEndsWith(phasorLabel, [ "+SV", "+SI", "+V", "+I" ], true))
                     return "+";
 
-                if (phaseMatchExact(phasorLabel, [ "V0PM", "I0PM", "VZPM", "IZPM" ]) || phaseMatchHighConfidence(phasorLabel, ["V0", "I0"], [ "ZERO", "ZPV", "ZPI", "VSPM", "V0PM", "I0PM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI" ]) || phaseEndsWith(phasorLabel, [ "0SV", "0SI" ], true))
+                if (phaseMatchExact(phasorLabel, [ "V0PM", "I0PM", "VZPM", "IZPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V0", "I0", "VSEQ0", "ISEQ0" ], [ "ZERO", "ZPV", "ZPI", "VSPM", "V0PM", "I0PM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI" ]) || phaseEndsWith(phasorLabel, [ "0SV", "0SI" ], true))
                     return "0";
 
                 if (phaseMatchExact(phasorLabel, [ "VAPM", "IAPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VA", "IA" ], [ "APV", "API", "VAPM", "IAPM", "AV", "AI" ]))
@@ -635,14 +664,14 @@
                 if (phaseMatchExact(phasorLabel, [ "VNPM", "INPM" ]) || phaseMatchHighConfidence(phasorLabel, [ "VN", "IN" ], [ "NEUT", "NPV", "NPI", "VNPM", "INPM", "NV", "NI" ]))
                     return "N";
 
-                if (phaseMatchExact(phasorLabel, [ "V2PM", "I2PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V2", "I2" ], [ "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI" ]))
+                if (phaseMatchExact(phasorLabel, [ "V2PM", "I2PM" ]) || phaseMatchHighConfidence(phasorLabel, [ "V2", "I2", "VSEQ2", "ISEQ2" ], [ "NEG", "-SV", "-SI", "V2PM", "I2PM", "NS", "NSV", "NSI" ]))
                     return "-";
             }
 
             // Handle lower confidence phase matches only when phase is not defined
             if (isEmpty(phase)) {
                 // Since positive sequence is the default and always treated with accuracy suspicion, verify it's value first
-                if (phaseMatchLowConfidence(phasorLabel, [ "V1", "I1", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
+                if (phaseMatchLowConfidence(phasorLabel, [ "V1", "VP", "I1", "IP", "POS", "V1PM", "I1PM", "PS", "PSV", "PSI", "+SV", "+SI", "+V", "+I" ]))
                     return "+?";
 
                 if (phaseMatchLowConfidence(phasorLabel, [ "V0", "I0", "ZERO", "ZPV", "ZPI", "VSPM", "VZPM", "IZPM", "ZS", "ZSV", "ZSI", "0SV", "0SI" ]))
@@ -1224,7 +1253,7 @@
                 for (let i = 0; i < deviceCount; i++) {
                     const cell = self.configFrame().Cells[i];
 
-                    // TODO: Update screen to accomodate lat/long at the device level
+                    // TODO: Update screen to accommodate lat/long at the device level
                     if (!isEmpty(cell.Latitude))
                         self.latitude(cell.Latitude);
 
@@ -1458,7 +1487,7 @@
                 const voltage = {};
                 const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
                 const nominalVoltage = guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
-                const phase = guessPhase(phasorDefinition.Phase, phasorLabel);
+                const phase = guessPhase(phasorDefinition, phasorLabel);
                 const vphmSignalType = getPhasorSignalType("VPHM");
 
                 voltage._enabled = ko.observable(!self.forwardOnly() && nominalVoltage >= 0);
@@ -1686,7 +1715,7 @@
                 current.AssociatedVoltage(phasorDefinition.DestinationPhasorID);
 
                 // Guess phase, which will subsequently guess any unassociated voltage
-                current.Phase(guessPhase(phasorDefinition.Phase, phasorLabel));
+                current.Phase(guessPhase(phasorDefinition, phasorLabel));
 
                 phasorDefinition.Current = current;
                 phasorDefinition.Label = current.Label;
@@ -1869,15 +1898,15 @@
                     measurement.Enabled = phasorDefinition.Enabled();
 
                     return phasorHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                     });
                 })
                 .fail(function (error) {
-                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error, null, true);
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
             });
         }
 
@@ -1889,7 +1918,7 @@
             const vphaSignalType = getPhasorSignalType("VPHA");
 
             if (iphmSignalType == null || iphaSignalType == null || vphmSignalType == null || vphaSignalType == null) {
-                showErrorMessage("Failed to find one or more phasor signal type records.");
+                showErrorMessage("Failed to find one or more phasor signal type records.", null, true);
                 return $.Deferred().resolve().promise();
             }
 
@@ -1936,20 +1965,20 @@
 
                                 if (measurement.PhasorSourceIndex === phasorDefinition.SourceIndex) {
                                     promises.push(phasorHub.deleteMeasurement(measurement.PointID).fail(function (error) {
-                                        showErrorMessage("Failed to delete phasor measurement: " + error);
+                                        showErrorMessage("Failed to delete phasor measurement: " + error, null, true);
                                     }));
                                 }
                             }
 
                             // Remove phasor
                             promises.push(phasorHub.deletePhasor(phasorDefinition.ID).fail(function (error) {
-                                showErrorMessage("Failed to delete phasor: " + error);
+                                showErrorMessage("Failed to delete phasor: " + error, null, true);
                             }));
 
                             return $(promises).whenAll();
                         })
                             .fail(function (error) {
-                                showErrorMessage("Failed to query device measurements: " + error);
+                                showErrorMessage("Failed to query device measurements: " + error, null, true);
                             }));
                     }
                     else {
@@ -2003,16 +2032,16 @@
                                             voltageIDMap[voltage.ID] = newPhasor.ID;
                                         })
                                         .fail(function (error) {
-                                            showErrorMessage("Failed to query voltage phasor: " + error);
+                                            showErrorMessage("Failed to query voltage phasor: " + error, null, true);
                                         });
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to save new voltage phasor: " + error);
+                                    showErrorMessage("Failed to save new voltage phasor: " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to create new voltage phasor: " + error);
+                                showErrorMessage("Failed to create new voltage phasor: " + error, null, true);
                             }));
                         }
 
@@ -2071,11 +2100,11 @@
                                         });
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Failed to save new current phasor: " + error);
+                                        showErrorMessage("Failed to save new current phasor: " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to create current new phasor: " + error);
+                                    showErrorMessage("Failed to create current new phasor: " + error, null, true);
                                 }));
                             }
 
@@ -2083,7 +2112,7 @@
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to delete old phasors: " + error);
+                        showErrorMessage("Failed to delete old phasors: " + error, null, true);
                     }));
                 }
                 else {
@@ -2124,11 +2153,11 @@
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to save voltage phasor: " + error);
+                                showErrorMessage("Failed to save voltage phasor: " + error, null, true);
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed to query voltage phasor: " + error);
+                            showErrorMessage("Failed to query voltage phasor: " + error, null, true);
                         }));
                     }
 
@@ -2174,11 +2203,11 @@
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to save current phasor: " + error);
+                                showErrorMessage("Failed to save current phasor: " + error, null, true);
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed to query current phasor: " + error);
+                            showErrorMessage("Failed to query current phasor: " + error, null, true);
                         }));
                     }
                 }
@@ -2186,7 +2215,7 @@
                 return $(saveDevicePromises).whenAll();
             })
             .fail(function (error) {
-                showErrorMessage("Failed to query phasor count: " + error);
+                showErrorMessage("Failed to query phasor count: " + error, null, true);
             });
         }
 
@@ -2207,15 +2236,15 @@
                     measurement.Enabled = true;
 
                     return phasorHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                     });
                 })
                 .fail(function (error) {
-                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error, null, true);
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
             });
         }
 
@@ -2229,7 +2258,7 @@
             const flagSignalType = getDeviceSignalType("FLAG");
 
             if (freqSignalType == null || dfdtSignalType == null || flagSignalType == null) {
-                showErrorMessage("Failed to find one or more signal type records.");
+                showErrorMessage("Failed to find one or more signal type records.", null, true);
                 return $.Deferred().resolve().promise();
             }
 
@@ -2258,7 +2287,7 @@
 
                             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
                             promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
-                                return phasorHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index).then(function (pointTag) {
+                                return phasorHub.createIndexedPointTag(cell.IDLabel(), analogSignalType.Acronym, index, analogDefinition.Label).then(function (pointTag) {
                                     measurement.DeviceID = cell.ID;
                                     measurement.HistorianID = viewModel.historianID();
                                     measurement.PointTag = pointTag;
@@ -2270,22 +2299,22 @@
                                     measurement.Enabled = true;
 
                                     return phasorHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
                             }));
                         }
 
                         return $(promises).whenAll();
                     }
                     else {
-                        showErrorMessage("Failed to find analog signal type record.");
+                        showErrorMessage("Failed to find analog signal type record.", null, true);
                         return $.Deferred().resolve().promise();
                     }
                 }
@@ -2303,40 +2332,40 @@
 
                         for (let i = 0; i < cell.DigitalDefinitions.length; i++) {
                             const index = i + 1;
-                            const digitialDefinition = cell.DigitalDefinitions[i];
+                            const digitalDefinition = cell.DigitalDefinitions[i];
                             const orgSignalReference = String.format("{0}-{1}{2}", cell.OriginalAcronym(), digitalSignalType.Suffix, index);
                             const signalReference = String.format("{0}-{1}{2}", cell.IDLabel(), digitalSignalType.Suffix, index);
 
                             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
                             promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
-                                return phasorHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index).then(function (pointTag) {
+                                return phasorHub.createIndexedPointTag(cell.IDLabel(), digitalSignalType.Acronym, index, digitalDefinition.Label).then(function (pointTag) {
                                     measurement.DeviceID = cell.ID;
                                     measurement.HistorianID = viewModel.historianID();
                                     measurement.PointTag = pointTag;
-                                    measurement.AlternateTag = digitialDefinition.Label;
-                                    measurement.Description = String.format("{0} Digital Value {1}: {2}", cell.IDLabel(), index, digitialDefinition.Label);
+                                    measurement.AlternateTag = digitalDefinition.Label;
+                                    measurement.Description = String.format("{0} Digital Value {1}: {2}", cell.IDLabel(), index, digitalDefinition.Label);
                                     measurement.SignalReference = signalReference;
                                     measurement.SignalTypeID = digitalSignalType.ID;
                                     measurement.Internal = true;
                                     measurement.Enabled = true;
 
                                     return phasorHub.addNewOrUpdateMeasurement(measurement).fail(function (error) {
-                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                        showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error);
+                                    showErrorMessage("Failed to create point tag for measurement " + signalReference + ": " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
                             }));
                         }
 
                         return $(promises).whenAll();
                     }
                     else {
-                        showErrorMessage("Failed to find digital signal type record.");
+                        showErrorMessage("Failed to find digital signal type record.", null, true);
                         return $.Deferred().resolve().promise();
                     }
                 }
@@ -2382,17 +2411,17 @@
 
                                 if (powerCalculation.ID === 0) {
                                     return phasorHub.addNewPowerCalculation(powerCalculation).fail(function (error) {
-                                        showErrorMessage("Failed to add new power calculation record: " + error);
+                                        showErrorMessage("Failed to add new power calculation record: " + error, null, true);
                                     });
                                 }
                                 else {
                                     return phasorHub.updatePowerCalculation(powerCalculation).fail(function (error) {
-                                        showErrorMessage("Failed to update power calculation record: " + error);
+                                        showErrorMessage("Failed to update power calculation record: " + error, null, true);
                                     });
                                 }
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to query power calculation record: " + error);
+                                showErrorMessage("Failed to query power calculation record: " + error, null, true);
                             }));
                         }
                     }
@@ -2526,7 +2555,7 @@
                 return $.Deferred().resolve(null).promise();
             })
             .fail(function (error) {
-                showErrorMessage("Failed to query power calculation record: " + error);
+                showErrorMessage("Failed to query power calculation record: " + error, null, true);
             });
         }
 
@@ -2619,23 +2648,23 @@
                                         return serviceHub.sendCommand("initialize " + adapter.AdapterName);
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Save failed for new custom action adapter: " + error);
+                                        showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to create new custom action adapter record: " + error);
+                                    showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                            showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error);
+                        showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
                     });
                 }));
             }
@@ -3025,23 +3054,23 @@
                                             return serviceHub.sendCommand("initialize " + adapter.AdapterName);
                                         })
                                         .fail(function (error) {
-                                            showErrorMessage("Save failed for new custom action adapter: " + error);
+                                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
                                         });
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Failed to create new custom action adapter record: " + error);
+                                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error);
+                                    showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Save failed for new measurement " + signalReference + ": " + error);
+                                showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error);
+                            showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
                         }));
                     }
                 }
@@ -3064,11 +3093,11 @@
                     return serviceHub.sendCommand("initialize " + adapter.AdapterName);
                 })
                 .fail(function (error) {
-                    showErrorMessage("Save failed for new custom action adapter: " + error);
+                    showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to create new custom action adapter record: " + error);
+                showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
             });
         }
 
@@ -3085,7 +3114,7 @@
             const calcSignalType = getDeviceSignalType("CALC");
 
             if (calcSignalType == null && !errorDisplayed) {
-                showErrorMessage("Cannot save tag template calculations: no signal type record found for 'CALC'");
+                showErrorMessage("Cannot save tag template calculations: no signal type record found for 'CALC'", null, true);
                 return $.Deferred().resolve().promise();
             }
 
@@ -3156,7 +3185,7 @@
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to validate calculator configurations: " + error);
+                        showErrorMessage("Failed to validate calculator configurations: " + error, null, true);
                     });
                 });
             })
@@ -3171,7 +3200,7 @@
             const cellCount = cells.length;
 
             if (cellCount === 0) {
-                showErrorMessage("Cannot save device records: no devices were defined in loaded configuration.");
+                showErrorMessage("Cannot save device records: no devices were defined in loaded configuration.", null, true);
                 return $.Deferred().resolve().promise();
             }
 
