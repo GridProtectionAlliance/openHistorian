@@ -122,8 +122,18 @@
         <member name="M:GSF.Geo.GeoCoordinate.Distance(GSF.Geo.GeoCoordinate)">
             <summary>
             Calculates distance between this and another <see cref="T:GSF.Geo.GeoCoordinate"/> value.
+            Base on the <see cref="T:GSF.Geo.EPSG3857"/> reference system.
             </summary>
             <param name="other">Other <see cref="T:GSF.Geo.GeoCoordinate"/>.</param>
+            <returns>Distance between two <see cref="T:GSF.Geo.GeoCoordinate"/> values.</returns>
+        </member>
+        <member name="M:GSF.Geo.GeoCoordinate.Distance(GSF.Geo.GeoCoordinate,GSF.Geo.CoordinateReferenceSystem)">
+            <summary>
+            Calculates distance between this and another <see cref="T:GSF.Geo.GeoCoordinate"/> value.
+            using the specified <see cref="T:GSF.Geo.CoordinateReferenceSystem"/>
+            </summary>
+            <param name="other">Other <see cref="T:GSF.Geo.GeoCoordinate"/>.</param>
+            <param name="referenceSystem">The <see cref="T:GSF.Geo.CoordinateReferenceSystem"/> used.</param>
             <returns>Distance between two <see cref="T:GSF.Geo.GeoCoordinate"/> values.</returns>
         </member>
         <member name="T:GSF.Geo.IProjection">
