@@ -18299,6 +18299,30 @@
             <param name="propertyName">Name of the active directory property whose value is to be retrieved.</param>
             <returns><see cref="T:System.String"/> value for the specified active directory property.</returns>
         </member>
+        <member name="F:GSF.Identity.UserInfo.BuiltInGroupName">
+            <summary>
+            Localized version of Windows "BUILTIN" local permissions group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different. For example, on a German OS this is "VORDEFINIERT".
+            </remarks>
+        </member>
+        <member name="F:GSF.Identity.UserInfo.NTAuthorityGroupName">
+            <summary>
+            Localized version of Windows "NT AUTHORITY" local permissions group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different. For example, on a French OS this is "NT-AUTORITÄT".
+            </remarks>
+        </member>
+        <member name="F:GSF.Identity.UserInfo.NTServiceGroupName">
+            <summary>
+            Localized version of Windows "NT SERVICE" local Windows services group name.
+            </summary>
+            <remarks>
+            For non-English based OS languages, this name may be different.
+            </remarks>
+        </member>
         <member name="P:GSF.Identity.UserInfo.CurrentUserID">
             <summary>
             Gets the ID name of the current user.
@@ -18364,7 +18388,7 @@
                      string password = "password";
                     
                      // Authenticate user credentials.
-                     if ((object)UserInfo.AuthenticateUser(domain, username, password) != null)
+                     if (UserInfo.AuthenticateUser(domain, username, password) is not null)
                          Console.WriteLine("Successfully authenticated user \"{0}\\{1}\".", domain, username);
                      else
                          Console.WriteLine("Failed to authenticate user \"{0}\\{1}\".", domain, username);
@@ -18400,7 +18424,7 @@
                      string errorMessage;
             
                      // Authenticate user credentials.
-                     if ((object)UserInfo.AuthenticateUser(domain, username, password, out errorMessage) != null)
+                     if (UserInfo.AuthenticateUser(domain, username, password, out errorMessage) is not null)
                          Console.WriteLine("Successfully authenticated user \"{0}\\{1}\".", domain, username);
                      else
                          Console.WriteLine("Failed to authenticate user \"{0}\\{1}\" due to exception: {2}", domain, username, errorMessage);
