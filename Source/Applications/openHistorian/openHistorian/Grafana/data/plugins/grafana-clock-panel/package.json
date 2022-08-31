@@ -34,7 +34,7 @@
     "jest": "23.6.0",
     "lodash": "4.17.11",
     "moment": "2.24.0",
-    "moment-timezone": "0.5.25",
+    "moment-timezone": "0.5.35",
     "ng-annotate-webpack-plugin": "0.3.0",
     "style-loader": "0.23.1",
     "ts-jest": "23.10.5",
