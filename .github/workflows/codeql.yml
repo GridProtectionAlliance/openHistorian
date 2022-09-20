@@ -76,7 +76,7 @@ jobs:
       
     - name: Build openHistorian
       run: |
-       msbuild Source/openHistorian.sln -t:restore,build -p:Configuration=Debug -p:RestorePackagesConfig=true
+       msbuild Source/openHistorian.sln -t:restore,build -p:Configuration=Debug -p:RestorePackagesConfig=true -p:PostBuildEvent=
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
