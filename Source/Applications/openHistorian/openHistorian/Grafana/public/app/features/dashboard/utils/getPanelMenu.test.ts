@@ -1,10 +1,11 @@
 import { PanelMenuItem } from '@grafana/data';
-import { DashboardModel, PanelModel } from '../state';
-import { getPanelMenu } from './getPanelMenu';
-import { describe } from '../../../../test/lib/common';
-import { setStore } from 'app/store/store';
 import config from 'app/core/config';
-import * as actions from 'app/features/explore/state/actions';
+import * as actions from 'app/features/explore/state/main';
+import { setStore } from 'app/store/store';
+
+import { DashboardModel, PanelModel } from '../state';
+
+import { getPanelMenu } from './getPanelMenu';
 
 jest.mock('app/core/services/context_srv', () => ({
   contextSrv: {
@@ -45,6 +46,12 @@ describe('getPanelMenu', () => {
           "text": "Explore",
         },
         Object {
+          "iconClassName": "exchange-alt",
+          "onClick": [Function],
+          "shortcut": "p l",
+          "text": "Show legend",
+        },
+        Object {
           "iconClassName": "info-circle",
           "onClick": [Function],
           "shortcut": "i",
@@ -69,6 +76,10 @@ describe('getPanelMenu', () => {
             Object {
               "onClick": [Function],
               "text": "Copy",
+            },
+            Object {
+              "onClick": [Function],
+              "text": "Create library panel",
             },
           ],
           "text": "More...",
@@ -125,6 +136,12 @@ describe('getPanelMenu', () => {
             "text": "Explore",
           },
           Object {
+            "iconClassName": "exchange-alt",
+            "onClick": [Function],
+            "shortcut": "p l",
+            "text": "Show legend",
+          },
+          Object {
             "iconClassName": "info-circle",
             "onClick": [Function],
             "shortcut": "i",
@@ -151,16 +168,6 @@ describe('getPanelMenu', () => {
             "text": "More...",
             "type": "submenu",
           },
-          Object {
-            "text": "",
-            "type": "divider",
-          },
-          Object {
-            "iconClassName": "trash-alt",
-            "onClick": [Function],
-            "shortcut": "p r",
-            "text": "Remove",
-          },
         ]
       `);
     });
@@ -178,7 +185,7 @@ describe('getPanelMenu', () => {
       const panel = new PanelModel({});
       const dashboard = new DashboardModel({});
       const menuItems = getPanelMenu(dashboard, panel);
-      explore = menuItems.find(item => item.text === 'Explore') as PanelMenuItem;
+      explore = menuItems.find((item) => item.text === 'Explore') as PanelMenuItem;
       navigateSpy = jest.spyOn(actions, 'navigateToExplore');
       window.open = windowOpen;
 

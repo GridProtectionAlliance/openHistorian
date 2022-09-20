@@ -1,10 +1,12 @@
+import { css } from '@emotion/css';
 import React, { PureComponent } from 'react';
-import { Modal, stylesFactory } from '@grafana/ui';
-import { css } from 'emotion';
-import { dashboardWatcher } from './dashboardWatcher';
-import { config } from '@grafana/runtime';
-import { DashboardEvent, DashboardEventAction } from './types';
+
 import { GrafanaTheme } from '@grafana/data';
+import { config } from '@grafana/runtime';
+import { Modal, stylesFactory } from '@grafana/ui';
+
+import { dashboardWatcher } from './dashboardWatcher';
+import { DashboardEvent, DashboardEventAction } from './types';
 
 interface Props {
   event?: DashboardEvent;
@@ -81,7 +83,7 @@ export class DashboardChangedModal extends PureComponent<Props, State> {
             <div>This dashboard has been modifed by another session</div>
           )}
           <br />
-          {options.map(opt => {
+          {options.map((opt) => {
             return (
               <div key={opt.label} onClick={opt.action} className={styles.radioItem}>
                 <h3>{opt.label}</h3>
@@ -110,7 +112,7 @@ const getStyles = stylesFactory((theme: GrafanaTheme) => {
       width: 100%;
 
       &:hover {
-        background: ${theme.colors.formCheckboxBgCheckedHover};
+        background: ${theme.colors.bgBlue1};
         color: ${theme.colors.text};
       }
     `,

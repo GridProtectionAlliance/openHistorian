@@ -1,26 +1,19 @@
 import React from 'react';
+
+import { reportInteraction } from '@grafana/runtime/src';
 import { Modal, ModalTabsHeader, TabContent } from '@grafana/ui';
+import { config } from 'app/core/config';
+import { contextSrv } from 'app/core/core';
 import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
-import { ShareLink } from './ShareLink';
-import { ShareSnapshot } from './ShareSnapshot';
-import { ShareExport } from './ShareExport';
+import { isPanelModelLibraryPanel } from 'app/features/library-panels/guard';
+
 import { ShareEmbed } from './ShareEmbed';
+import { ShareExport } from './ShareExport';
+import { ShareLibraryPanel } from './ShareLibraryPanel';
+import { ShareLink } from './ShareLink';
+import { SharePublicDashboard } from './SharePublicDashboard';
+import { ShareSnapshot } from './ShareSnapshot';
 import { ShareModalTabModel } from './types';
-
-const shareCommonTabs: ShareModalTabModel[] = [
-  { label: 'Link', value: 'link', component: ShareLink },
-  { label: 'Snapshot', value: 'snapshot', component: ShareSnapshot },
-];
-
-// prettier-ignore
-const shareDashboardTabs: ShareModalTabModel[] = [
-  { label: 'Export', value: 'export', component: ShareExport },
-];
-
-// prettier-ignore
-const sharePanelTabs: ShareModalTabModel[] = [
-  { label: 'Embed', value: 'embed', component: ShareEmbed },
-];
 
 const customDashboardTabs: ShareModalTabModel[] = [];
 const customPanelTabs: ShareModalTabModel[] = [];
@@ -43,14 +36,27 @@ function getInitialState(props: Props): State {
 
 function getTabs(props: Props) {
   const { panel } = props;
-  const tabs = [...shareCommonTabs];
+
+  const tabs: ShareModalTabModel[] = [{ label: 'Link', value: 'link', component: ShareLink }];
+
+  if (contextSrv.isSignedIn) {
+    tabs.push({ label: 'Snapshot', value: 'snapshot', component: ShareSnapshot });
+  }
 
   if (panel) {
-    tabs.push(...sharePanelTabs);
+    tabs.push({ label: 'Embed', value: 'embed', component: ShareEmbed });
+
+    if (!isPanelModelLibraryPanel(panel)) {
+      tabs.push({ label: 'Library panel', value: 'library_panel', component: ShareLibraryPanel });
+    }
     tabs.push(...customPanelTabs);
   } else {
-    tabs.push(...shareDashboardTabs);
+    tabs.push({ label: 'Export', value: 'export', component: ShareExport });
     tabs.push(...customDashboardTabs);
+  }
+
+  if (Boolean(config.featureToggles['publicDashboards'])) {
+    tabs.push({ label: 'Public Dashboard', value: 'share', component: SharePublicDashboard });
   }
 
   return tabs;
@@ -74,10 +80,9 @@ export class ShareModal extends React.Component<Props, State> {
     this.state = getInitialState(props);
   }
 
-  onDismiss = () => {
-    this.setState(getInitialState(this.props));
-    this.props.onDismiss();
-  };
+  componentDidMount() {
+    reportInteraction('grafana_dashboards_share_modal_viewed');
+  }
 
   onSelectTab = (t: any) => {
     this.setState({ activeTab: t.value });
@@ -89,7 +94,7 @@ export class ShareModal extends React.Component<Props, State> {
 
   getActiveTab() {
     const { tabs, activeTab } = this.state;
-    return tabs.find(t => t.value === activeTab)!;
+    return tabs.find((t) => t.value === activeTab)!;
   }
 
   renderTitle() {
@@ -115,9 +120,9 @@ export class ShareModal extends React.Component<Props, State> {
     const ActiveTab = activeTabModel.component;
 
     return (
-      <Modal isOpen={true} title={this.renderTitle()} onDismiss={this.onDismiss}>
+      <Modal isOpen={true} title={this.renderTitle()} onDismiss={this.props.onDismiss}>
         <TabContent>
-          <ActiveTab dashboard={dashboard} panel={panel} onDismiss={this.onDismiss} />
+          <ActiveTab dashboard={dashboard} panel={panel} onDismiss={this.props.onDismiss} />
         </TabContent>
       </Modal>
     );

@@ -3,31 +3,34 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "description": "Grafana Home Page (openHistorian Hosted)",
   "editable": false,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 1,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": null,
       "editable": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 4,
         "w": 24,
@@ -37,65 +40,38 @@
       "id": 1,
       "links": [],
       "options": {
-        "content": "<div class=\"text-center dashboard-header\">\r\n    <span>Home Dashboard</span>\r\n</div>\r\n<h4 style=\"margin-right: 15px\"><a style=\"color: #e3e3e3; text-decoration: none\" href=\"/\"><span id=\"companyName\"></span><span class=\"pull-right\"><img src=\"/Images/openHistorian.png\" /> openHistorian Home<small id=\"ieDetected\" class=\"pull-right\" style=\"color: darkgray; padding-top: 8px; display: none\">&nbsp;(on&nbsp;IE)</small><br /><small id=\"serverTime\" class=\"pull-right\" style=\"color: darkgray\"></small></span></a></h4>\r\n<script>\r\nvar isIE;\r\nvar lastURL;\r\n\r\nif (isIE === undefined)\r\n    isIE = detectIE();\r\n\r\nfunction updateServerTime() {\r\n    $.get({url: \"/grafana/servertime\", cache: false})\r\n    .then(function(result) {\r\n         window.serverTimeUpdateRunning = true;\r\n         $(\"#serverTime\").text(result.serverTime);\r\n\r\n         // Accessing host system every so often keeps user logged in\r\n         setTimeout(updateServerTime, 5000);\r\n    })\r\n   .fail(function() {\r\n        window.serverTimeUpdateRunning = false;\r\n\r\n        if (isIE)\r\n            document.execCommand(\"ClearAuthenticationCache\", \"false\");\r\n\r\n        location.reload();\r\n    });\r\n}\r\n\r\nfunction udpatePageTitle() {\r\n    if (lastURL != document.URL && !document.title.endsWith(window.systemName)) {\r\n        document.title += \" \" + window.systemName;\r\n    }\r\n\r\n    setTimeout(udpatePageTitle, 2000);\r\n}\r\n\r\n$(function () {\r\n    if (!window.serverTimeUpdateRunning)\r\n        updateServerTime();\r\n\r\n    if (window.cachedSystemVars) {\r\n        if (window.companyName)\r\n            $(\"#companyName\").text(window.companyName);\r\n    }\r\n    else {\r\n        window.cachedSystemVars = true;\r\n\r\n        $.get({url: \"/grafana/servervar/SystemName\", cache: false})\r\n        .then(function(result) {\r\n            const value = result.value.trim();\r\n            \r\n            if (value.length > 0) {\r\n                window.systemName = \"[\" + value + \"]\";\r\n                udpatePageTitle();\r\n            }\r\n        });\r\n\r\n        $.get({url: \"/grafana/servervar/CompanyName\", cache: false})\r\n        .then(function(result) {\r\n            const value = result.value.trim();\r\n\r\n            if (value.length > 0) {\r\n                window.companyName = value;\r\n                $(\"#companyName\").text(window.companyName);\r\n            }\r\n        });\r\n    }\r\n\r\n    if (isIE)\r\n        $(\"#ieDetected\").show();\r\n});\r\n\r\nfunction detectIE() {\r\n    const ua = window.navigator.userAgent;\r\n    const msie = ua.indexOf(\"MSIE \");\r\n\r\n    if (msie > 0) {\r\n        return parseInt(ua.substring(msie + 5, ua.indexOf(\".\", msie)), 10);\r\n    }\r\n    const trident = ua.indexOf(\"Trident/\");\r\n\r\n    if (trident > 0) {\r\n        const rv = ua.indexOf(\"rv:\");\r\n        return parseInt(ua.substring(rv + 3, ua.indexOf(\".\", rv)), 10);\r\n    }\r\n\r\n    const edge = ua.indexOf(\"Edge/\");\r\n\r\n    if (edge > 0) {\r\n        return parseInt(ua.substring(edge + 5, ua.indexOf(\".\", edge)), 10);\r\n    }\r\n\r\n    return false;\r\n}\r\n</script>",
+        "content": "<div class=\"text-center dashboard-header\">\r\n    <span>Home Dashboard</span>\r\n</div>\r\n<h4 style=\"margin-right: 15px\"><a style=\"color: #e3e3e3; text-decoration: none\" href=\"../Index.cshtml\" target=\"_self\"><span id=\"companyName\"></span><span class=\"pull-right\"><img src=\"/Images/openHistorian.png\" /> openHistorian Home<small id=\"ieDetected\" class=\"pull-right\" style=\"color: darkgray; padding-top: 8px; display: none\">&nbsp;(on&nbsp;IE)</small><br /><small id=\"serverTime\" class=\"pull-right\" style=\"color: darkgray\"></small></span></a></h4>\r\n<script>\r\nvar isIE;\r\nvar lastURL;\r\n\r\nif (isIE === undefined)\r\n    isIE = detectIE();\r\n\r\nfunction updateServerTime() {\r\n    $.get({url: \"/grafana/servertime\", cache: false})\r\n    .then(function(result) {\r\n         window.serverTimeUpdateRunning = true;\r\n         $(\"#serverTime\").text(result.serverTime);\r\n\r\n         // Accessing host system every so often keeps user logged in\r\n         setTimeout(updateServerTime, 5000);\r\n    })\r\n   .fail(function() {\r\n        window.serverTimeUpdateRunning = false;\r\n\r\n        if (isIE)\r\n            document.execCommand(\"ClearAuthenticationCache\", \"false\");\r\n\r\n        location.reload();\r\n    });\r\n}\r\n\r\nfunction udpatePageTitle() {\r\n    if (lastURL != document.URL && !document.title.endsWith(window.systemName)) {\r\n        document.title += \" \" + window.systemName;\r\n    }\r\n\r\n    setTimeout(udpatePageTitle, 2000);\r\n}\r\n\r\n$(function () {\r\n    if (!window.serverTimeUpdateRunning)\r\n        updateServerTime();\r\n\r\n    if (window.cachedSystemVars) {\r\n        if (window.companyName)\r\n            $(\"#companyName\").text(window.companyName);\r\n    }\r\n    else {\r\n        window.cachedSystemVars = true;\r\n\r\n        $.get({url: \"/grafana/servervar/SystemName\", cache: false})\r\n        .then(function(result) {\r\n            const value = result.value.trim();\r\n            \r\n            if (value.length > 0) {\r\n                window.systemName = \"[\" + value + \"]\";\r\n                udpatePageTitle();\r\n            }\r\n        });\r\n\r\n        $.get({url: \"/grafana/servervar/CompanyName\", cache: false})\r\n        .then(function(result) {\r\n            const value = result.value.trim();\r\n\r\n            if (value.length > 0) {\r\n                window.companyName = value;\r\n                $(\"#companyName\").text(window.companyName);\r\n            }\r\n        });\r\n    }\r\n\r\n    if (isIE)\r\n        $(\"#ieDetected\").show();\r\n});\r\n\r\nfunction detectIE() {\r\n    const ua = window.navigator.userAgent;\r\n    const msie = ua.indexOf(\"MSIE \");\r\n\r\n    if (msie > 0) {\r\n        return parseInt(ua.substring(msie + 5, ua.indexOf(\".\", msie)), 10);\r\n    }\r\n    const trident = ua.indexOf(\"Trident/\");\r\n\r\n    if (trident > 0) {\r\n        const rv = ua.indexOf(\"rv:\");\r\n        return parseInt(ua.substring(rv + 3, ua.indexOf(\".\", rv)), 10);\r\n    }\r\n\r\n    const edge = ua.indexOf(\"Edge/\");\r\n\r\n    if (edge > 0) {\r\n        return parseInt(ua.substring(edge + 5, ua.indexOf(\".\", edge)), 10);\r\n    }\r\n\r\n    return false;\r\n}\r\n</script>",
         "mode": "html"
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "9.1.5",
       "style": {},
-      "title": "",
       "transparent": true,
       "type": "text"
     },
     {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "folderId": null,
       "gridPos": {
-        "h": 14,
-        "w": 14,
+        "h": 17,
+        "w": 24,
         "x": 0,
         "y": 4
       },
-      "headings": true,
       "id": 3,
-      "limit": 4,
       "links": [],
-      "query": "",
-      "recent": true,
-      "search": false,
-      "starred": true,
+      "options": {
+        "maxItems": 4,
+        "query": "",
+        "showHeadings": true,
+        "showRecentlyViewed": true,
+        "showSearch": false,
+        "showStarred": true,
+        "tags": []
+      },
+      "pluginVersion": "9.1.5",
       "tags": [],
-      "title": "",
       "type": "dashlist"
-    },
-    {
-      "datasource": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 10,
-        "x": 14,
-        "y": 4
-      },
-      "id": 4,
-      "links": [],
-      "title": "",
-      "type": "pluginlist"
     }
   ],
-  "schemaVersion": 26,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -108,16 +84,7 @@
   "timepicker": {
     "enable": false,
     "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
+      "5s"
     ],
     "time_options": [
       "5m",
@@ -135,5 +102,6 @@
   "timezone": "utc",
   "title": "Home",
   "uid": "000000001",
-  "version": 8
+  "version": 12,
+  "weekStart": ""
 }

@@ -1,15 +1,16 @@
+import { css } from '@emotion/css';
 import React, { useEffect, useMemo, useState } from 'react';
 import { mergeMap } from 'rxjs/operators';
-import { css } from 'emotion';
-import { Icon, JSONFormatter, useStyles } from '@grafana/ui';
+
 import {
   DataFrame,
   DataTransformerConfig,
   GrafanaTheme,
   transformDataFrame,
-  TransformerRegistyItem,
+  TransformerRegistryItem,
 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { Icon, JSONFormatter, useStyles } from '@grafana/ui';
 
 import { TransformationsEditorTransformation } from './types';
 
@@ -17,7 +18,7 @@ interface TransformationEditorProps {
   debugMode?: boolean;
   index: number;
   data: DataFrame[];
-  uiConfig: TransformerRegistyItem<any>;
+  uiConfig: TransformerRegistryItem<any>;
   configs: TransformationsEditorTransformation[];
   onChange: (index: number, config: DataTransformerConfig) => void;
 }
@@ -36,11 +37,11 @@ export const TransformationEditor = ({
   const config = useMemo(() => configs[index], [configs, index]);
 
   useEffect(() => {
-    const inputTransforms = configs.slice(0, index).map(t => t.transformation);
-    const outputTransforms = configs.slice(index, index + 1).map(t => t.transformation);
+    const inputTransforms = configs.slice(0, index).map((t) => t.transformation);
+    const outputTransforms = configs.slice(index, index + 1).map((t) => t.transformation);
     const inputSubscription = transformDataFrame(inputTransforms, data).subscribe(setInput);
     const outputSubscription = transformDataFrame(inputTransforms, data)
-      .pipe(mergeMap(before => transformDataFrame(outputTransforms, before)))
+      .pipe(mergeMap((before) => transformDataFrame(outputTransforms, before)))
       .subscribe(setOutput);
 
     return function unsubscribe() {
@@ -61,10 +62,11 @@ export const TransformationEditor = ({
     [
       uiConfig.editor,
       uiConfig.transformation.defaultOptions,
-      config.transformation.id,
       config.transformation.options,
+      config.transformation.id,
       input,
       onChange,
+      index,
     ]
   );
 

@@ -1,4 +1,5 @@
 import { Grammar } from 'prismjs';
+
 import { CompletionItem } from '@grafana/ui';
 
 const AGGREGATION_OPERATORS: CompletionItem[] = [
@@ -66,6 +67,18 @@ export const PIPE_PARSERS: CompletionItem[] = [
     insertText: 'logfmt',
     documentation: 'Extracting labels from the log line using logfmt parser. Only available in Loki 2.0+.',
   },
+  {
+    label: 'pattern',
+    insertText: 'pattern',
+    documentation: 'Extracting labels from the log line using pattern parser. Only available in Loki 2.3+.',
+  },
+  {
+    label: 'unpack',
+    insertText: 'unpack',
+    detail: 'unpack identifier',
+    documentation:
+      'Parses a JSON log line, unpacking all embedded labels in the pack stage. A special property "_entry" will also be used to replace the original log line. Only available in Loki 2.2+.',
+  },
 ];
 
 export const PIPE_OPERATORS: CompletionItem[] = [
@@ -79,12 +92,14 @@ export const PIPE_OPERATORS: CompletionItem[] = [
   {
     label: 'label_format',
     insertText: 'label_format',
-    documentation: 'Only available in Loki 2.0+.',
+    documentation:
+      'Use to rename, modify or add labels. For example, | label_format foo=bar . Only available in Loki 2.0+.',
   },
   {
     label: 'line_format',
     insertText: 'line_format',
-    documentation: 'Only available in Loki 2.0+.',
+    documentation:
+      'Rewrites log line content. For example, | line_format "{{.query}} {{.duration}}" . Only available in Loki 2.0+.',
   },
 ];
 
@@ -106,6 +121,18 @@ export const RANGE_VEC_FUNCTIONS = [
     label: 'max_over_time',
     detail: 'max_over_time(range-vector)',
     documentation: 'The maximum of all values in the specified interval. Only available in Loki 2.0+.',
+  },
+  {
+    insertText: 'first_over_time',
+    label: 'first_over_time',
+    detail: 'first_over_time(range-vector)',
+    documentation: 'The first of all values in the specified interval. Only available in Loki 2.3+.',
+  },
+  {
+    insertText: 'last_over_time',
+    label: 'last_over_time',
+    detail: 'last_over_time(range-vector)',
+    documentation: 'The last of all values in the specified interval. Only available in Loki 2.3+.',
   },
   {
     insertText: 'sum_over_time',
@@ -155,14 +182,14 @@ export const RANGE_VEC_FUNCTIONS = [
     insertText: 'rate',
     label: 'rate',
     detail: 'rate(v range-vector)',
-    documentation:
-      "Calculates the per-second average rate of increase of the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for. Also, the calculation extrapolates to the ends of the time range, allowing for missed scrapes or imperfect alignment of scrape cycles with the range's time period.",
+    documentation: 'Calculates the number of entries per second.',
   },
 ];
 
 export const FUNCTIONS = [...AGGREGATION_OPERATORS, ...RANGE_VEC_FUNCTIONS];
+export const LOKI_KEYWORDS = [...FUNCTIONS, ...PIPE_OPERATORS, ...PIPE_PARSERS].map((keyword) => keyword.label);
 
-const tokenizer: Grammar = {
+export const lokiGrammar: Grammar = {
   comment: {
     pattern: /#.*/,
   },
@@ -185,7 +212,7 @@ const tokenizer: Grammar = {
         pattern: /#.*/,
       },
       'label-key': {
-        pattern: /[a-z_]\w*(?=\s*(=|!=|=~|!~))/,
+        pattern: /[a-zA-Z_]\w*(?=\s*(=|!=|=~|!~))/,
         alias: 'attr-name',
         greedy: true,
       },
@@ -205,12 +232,12 @@ const tokenizer: Grammar = {
         alias: 'operator',
       },
       'pipe-operations': {
-        pattern: new RegExp(`${[...PIPE_PARSERS, ...PIPE_OPERATORS].map(f => f.label).join('|')}`, 'i'),
+        pattern: new RegExp(`${[...PIPE_PARSERS, ...PIPE_OPERATORS].map((f) => f.label).join('|')}`, 'i'),
         alias: 'keyword',
       },
     },
   },
-  function: new RegExp(`\\b(?:${FUNCTIONS.map(f => f.label).join('|')})(?=\\s*\\()`, 'i'),
+  function: new RegExp(`\\b(?:${FUNCTIONS.map((f) => f.label).join('|')})(?=\\s*\\()`, 'i'),
   'context-range': [
     {
       pattern: /\[[^\]]*(?=\])/, // [1m]
@@ -232,9 +259,19 @@ const tokenizer: Grammar = {
       },
     },
   ],
+  quote: {
+    pattern: /"(?:\\.|[^\\"])*"/,
+    alias: 'string',
+    greedy: true,
+  },
+  backticks: {
+    pattern: /`(?:\\.|[^\\`])*`/,
+    alias: 'string',
+    greedy: true,
+  },
   number: /\b-?\d+((\.\d*)?([eE][+-]?\d+)?)?\b/,
   operator: /\s?(\|[=~]?|!=?|<(?:=>?|<|>)?|>[>=]?)\s?/i,
-  punctuation: /[{}()`,.]/,
+  punctuation: /[{}(),.]/,
 };
 
-export default tokenizer;
+export default lokiGrammar;

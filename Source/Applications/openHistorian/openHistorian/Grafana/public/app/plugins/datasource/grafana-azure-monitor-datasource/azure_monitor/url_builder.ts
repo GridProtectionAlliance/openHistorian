@@ -1,54 +1,103 @@
+import { TemplateSrv } from '@grafana/runtime';
+
+import { AzureMetricResource, GetMetricNamespacesQuery, GetMetricNamesQuery } from '../types';
+
 export default class UrlBuilder {
-  static buildAzureMonitorGetMetricNamespacesUrl(
-    baseUrl: string,
-    subscriptionId: string,
-    resourceGroup: string,
-    metricDefinition: string,
-    resourceName: string,
-    apiVersion: string
-  ) {
-    if ((metricDefinition.match(/\//g) || []).length > 1) {
-      const rn = resourceName.split('/');
-      const service = metricDefinition.substring(metricDefinition.lastIndexOf('/') + 1);
-      const md = metricDefinition.substring(0, metricDefinition.lastIndexOf('/'));
-      return (
-        `${baseUrl}/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${md}/${rn[0]}/${service}/${rn[1]}` +
-        `/providers/microsoft.insights/metricNamespaces?api-version=${apiVersion}`
-      );
+  static buildResourceUri(templateSrv: TemplateSrv, resource: AzureMetricResource) {
+    const urlArray = [];
+    const { subscription, resourceGroup, metricNamespace, resourceName } = resource;
+
+    if (subscription) {
+      urlArray.push('/subscriptions', subscription);
+
+      if (resourceGroup) {
+        urlArray.push('resourceGroups', resourceGroup);
+
+        if (metricNamespace && resourceName) {
+          const metricNamespaceProcessed = templateSrv.replace(metricNamespace);
+          const metricNamespaceArray = metricNamespace.split('/');
+          const resourceNameProcessed = templateSrv.replace(resourceName);
+          const resourceNameArray = resourceName.split('/');
+          const provider = metricNamespaceArray.shift();
+          if (provider) {
+            urlArray.push('providers', provider);
+          }
+
+          if (
+            metricNamespaceProcessed.toLowerCase().startsWith('microsoft.storage/storageaccounts/') &&
+            !resourceNameProcessed.endsWith('default')
+          ) {
+            resourceNameArray.push('default');
+          }
+
+          if (resourceNameArray.length > metricNamespaceArray.length) {
+            const parentResource = resourceNameArray.shift();
+            if (parentResource) {
+              urlArray.push(parentResource);
+            }
+          }
+
+          for (const i in metricNamespaceArray) {
+            urlArray.push(metricNamespaceArray[i]);
+            urlArray.push(resourceNameArray[i]);
+          }
+        }
+      }
     }
 
-    return (
-      `${baseUrl}/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${metricDefinition}/${resourceName}` +
-      `/providers/microsoft.insights/metricNamespaces?api-version=${apiVersion}`
-    );
+    return urlArray.join('/');
+  }
+
+  static buildAzureMonitorGetMetricNamespacesUrl(
+    baseUrl: string,
+    apiVersion: string,
+    query: GetMetricNamespacesQuery,
+    globalRegion: boolean,
+    templateSrv: TemplateSrv
+  ) {
+    let resourceUri: string;
+
+    if ('resourceUri' in query) {
+      resourceUri = query.resourceUri;
+    } else {
+      const { subscription, resourceGroup, metricNamespace, resourceName } = query;
+      resourceUri = UrlBuilder.buildResourceUri(templateSrv, {
+        subscription,
+        resourceGroup,
+        metricNamespace,
+        resourceName,
+      });
+    }
+
+    return `${baseUrl}${resourceUri}/providers/microsoft.insights/metricNamespaces?api-version=${apiVersion}${
+      globalRegion ? '&region=global' : ''
+    }`;
   }
 
   static buildAzureMonitorGetMetricNamesUrl(
     baseUrl: string,
-    subscriptionId: string,
-    resourceGroup: string,
-    metricDefinition: string,
-    resourceName: string,
-    metricNamespace: string,
-    apiVersion: string
+    apiVersion: string,
+    query: GetMetricNamesQuery,
+    templateSrv: TemplateSrv
   ) {
-    if ((metricDefinition.match(/\//g) || []).length > 1) {
-      const rn = resourceName.split('/');
-      const service = metricDefinition.substring(metricDefinition.lastIndexOf('/') + 1);
-      const md = metricDefinition.substring(0, metricDefinition.lastIndexOf('/'));
-      return (
-        `${baseUrl}/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${md}/${rn[0]}/${service}/${rn[1]}` +
-        `/providers/microsoft.insights/metricdefinitions?api-version=${apiVersion}&metricnamespace=${encodeURIComponent(
-          metricNamespace
-        )}`
-      );
+    let resourceUri: string;
+    const { customNamespace } = query;
+    if ('resourceUri' in query) {
+      resourceUri = query.resourceUri;
+    } else {
+      const { subscription, resourceGroup, metricNamespace, resourceName } = query;
+      resourceUri = UrlBuilder.buildResourceUri(templateSrv, {
+        subscription,
+        resourceGroup,
+        metricNamespace,
+        resourceName,
+      });
+    }
+    let url = `${baseUrl}${resourceUri}/providers/microsoft.insights/metricdefinitions?api-version=${apiVersion}`;
+    if (customNamespace) {
+      url += `&metricnamespace=${encodeURIComponent(customNamespace)}`;
     }
 
-    return (
-      `${baseUrl}/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${metricDefinition}/${resourceName}` +
-      `/providers/microsoft.insights/metricdefinitions?api-version=${apiVersion}&metricnamespace=${encodeURIComponent(
-        metricNamespace
-      )}`
-    );
+    return url;
   }
 }

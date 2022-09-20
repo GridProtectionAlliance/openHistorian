@@ -1,16 +1,27 @@
-import { updateLocation } from 'app/core/actions';
-import { store } from 'app/store/store';
-import { AngularComponent, getDataSourceSrv, getLocationSrv } from '@grafana/runtime';
+import { t } from '@lingui/macro';
+
 import { PanelMenuItem } from '@grafana/data';
-import { copyPanel, duplicatePanel, removePanel, sharePanel } from 'app/features/dashboard/utils/panel';
-import { PanelModel } from 'app/features/dashboard/state/PanelModel';
-import { DashboardModel } from 'app/features/dashboard/state/DashboardModel';
-import { contextSrv } from '../../../core/services/context_srv';
-import { navigateToExplore } from '../../explore/state/actions';
-import { getExploreUrl } from '../../../core/utils/explore';
-import { getTimeSrv } from '../services/TimeSrv';
-import { PanelCtrl } from '../../panel/panel_ctrl';
+import { AngularComponent, getDataSourceSrv, locationService } from '@grafana/runtime';
+import { PanelCtrl } from 'app/angular/panel/panel_ctrl';
 import config from 'app/core/config';
+import { DashboardModel } from 'app/features/dashboard/state/DashboardModel';
+import { PanelModel } from 'app/features/dashboard/state/PanelModel';
+import {
+  addLibraryPanel,
+  copyPanel,
+  duplicatePanel,
+  removePanel,
+  sharePanel,
+  toggleLegend,
+  unlinkLibraryPanel,
+} from 'app/features/dashboard/utils/panel';
+import { isPanelModelLibraryPanel } from 'app/features/library-panels/guard';
+import { store } from 'app/store/store';
+
+import { contextSrv } from '../../../core/services/context_srv';
+import { getExploreUrl } from '../../../core/utils/explore';
+import { navigateToExplore } from '../../explore/state/main';
+import { getTimeSrv } from '../services/TimeSrv';
 
 export function getPanelMenu(
   dashboard: DashboardModel,
@@ -19,26 +30,16 @@ export function getPanelMenu(
 ): PanelMenuItem[] {
   const onViewPanel = (event: React.MouseEvent<any>) => {
     event.preventDefault();
-    store.dispatch(
-      updateLocation({
-        query: {
-          viewPanel: panel.id,
-        },
-        partial: true,
-      })
-    );
+    locationService.partial({
+      viewPanel: panel.id,
+    });
   };
 
   const onEditPanel = (event: React.MouseEvent<any>) => {
     event.preventDefault();
-    store.dispatch(
-      updateLocation({
-        query: {
-          editPanel: panel.id,
-        },
-        partial: true,
-      })
-    );
+    locationService.partial({
+      editPanel: panel.id,
+    });
   };
 
   const onSharePanel = (event: React.MouseEvent<any>) => {
@@ -46,13 +47,25 @@ export function getPanelMenu(
     sharePanel(dashboard, panel);
   };
 
+  const onToggleLegend = (event: React.MouseEvent<any>) => {
+    event.preventDefault();
+    toggleLegend(panel);
+  };
+
+  const onAddLibraryPanel = (event: React.MouseEvent<any>) => {
+    event.preventDefault();
+    addLibraryPanel(dashboard, panel);
+  };
+
+  const onUnlinkLibraryPanel = (event: React.MouseEvent<any>) => {
+    event.preventDefault();
+    unlinkLibraryPanel(panel);
+  };
+
   const onInspectPanel = (tab?: string) => {
-    getLocationSrv().update({
-      partial: true,
-      query: {
-        inspect: panel.id,
-        inspectTab: tab,
-      },
+    locationService.partial({
+      inspect: panel.id,
+      inspectTab: tab,
     });
   };
 
@@ -85,8 +98,12 @@ export function getPanelMenu(
   const menu: PanelMenuItem[] = [];
 
   if (!panel.isEditing) {
+    const viewTextTranslation = t({
+      id: 'panel.header-menu.view',
+      message: `View`,
+    });
     menu.push({
-      text: 'View',
+      text: viewTextTranslation,
       iconClassName: 'eye',
       onClick: onViewPanel,
       shortcut: 'v',
@@ -102,8 +119,13 @@ export function getPanelMenu(
     });
   }
 
+  const shareTextTranslation = t({
+    id: 'panel.header-menu.share',
+    message: `Share`,
+  });
+
   menu.push({
-    text: 'Share',
+    text: shareTextTranslation,
     iconClassName: 'share-alt',
     onClick: onSharePanel,
     shortcut: 'p s',
@@ -113,17 +135,29 @@ export function getPanelMenu(
     menu.push({
       text: 'Explore',
       iconClassName: 'compass',
-      shortcut: 'x',
       onClick: onNavigateToExplore,
+      shortcut: 'x',
     });
   }
+
+  menu.push({
+    text: panel.options.legend?.showLegend ? 'Hide legend' : 'Show legend',
+    iconClassName: 'exchange-alt',
+    onClick: onToggleLegend,
+    shortcut: 'p l',
+  });
 
   const inspectMenu: PanelMenuItem[] = [];
 
   // Only show these inspect actions for data plugins
   if (panel.plugin && !panel.plugin.meta.skipDataQuery) {
+    const dataTextTranslation = t({
+      id: 'panel.header-menu.inspect-data',
+      message: `Data`,
+    });
+
     inspectMenu.push({
-      text: 'Data',
+      text: dataTextTranslation,
       onClick: (e: React.MouseEvent<any>) => onInspectPanel('data'),
     });
 
@@ -135,14 +169,23 @@ export function getPanelMenu(
     }
   }
 
+  const jsonTextTranslation = t({
+    id: 'panel.header-menu.inspect-json',
+    message: `Panel JSON`,
+  });
+
   inspectMenu.push({
-    text: 'Panel JSON',
+    text: jsonTextTranslation,
     onClick: (e: React.MouseEvent<any>) => onInspectPanel('json'),
   });
 
+  const inspectTextTranslation = t({
+    id: 'panel.header-menu.inspect',
+    message: `Inspect`,
+  });
   menu.push({
     type: 'submenu',
-    text: 'Inspect',
+    text: inspectTextTranslation,
     iconClassName: 'info-circle',
     onClick: (e: React.MouseEvent<any>) => onInspectPanel(),
     shortcut: 'i',
@@ -162,6 +205,18 @@ export function getPanelMenu(
       text: 'Copy',
       onClick: onCopyPanel,
     });
+
+    if (isPanelModelLibraryPanel(panel)) {
+      subMenu.push({
+        text: 'Unlink library panel',
+        onClick: onUnlinkLibraryPanel,
+      });
+    } else {
+      subMenu.push({
+        text: 'Create library panel',
+        onClick: onAddLibraryPanel,
+      });
+    }
   }
 
   // add old angular panel options
@@ -188,16 +243,20 @@ export function getPanelMenu(
   }
 
   if (!panel.isEditing && subMenu.length) {
+    const moreTextTranslation = t({
+      id: 'panel.header-menu.more',
+      message: `More...`,
+    });
     menu.push({
       type: 'submenu',
-      text: 'More...',
+      text: moreTextTranslation,
       iconClassName: 'cube',
       subMenu,
       onClick: onMore,
     });
   }
 
-  if (dashboard.canEditPanel(panel) && !panel.isEditing) {
+  if (dashboard.canEditPanel(panel) && !panel.isEditing && !panel.isViewing) {
     menu.push({ type: 'divider', text: '' });
 
     menu.push({

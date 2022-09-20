@@ -1,12 +1,26 @@
-import config from '../../../core/config';
+import { DataSourcePluginMeta, DataSourceSettings, locationUtil } from '@grafana/data';
+import {
+  DataSourceWithBackend,
+  getDataSourceSrv,
+  HealthCheckError,
+  HealthCheckResultDetails,
+  isFetchError,
+  locationService,
+} from '@grafana/runtime';
+import { updateNavIndex } from 'app/core/actions';
+import { contextSrv } from 'app/core/core';
 import { getBackendSrv } from 'app/core/services/backend_srv';
 import { getDatasourceSrv } from 'app/features/plugins/datasource_srv';
-import { updateLocation, updateNavIndex } from 'app/core/actions';
-import { buildNavModel } from './navModel';
-import { DataSourcePluginMeta, DataSourceSettings } from '@grafana/data';
-import { DataSourcePluginCategory, ThunkResult, ThunkDispatch } from 'app/types';
-import { getPluginSettings } from 'app/features/plugins/PluginSettingsCache';
+import { getPluginSettings } from 'app/features/plugins/pluginSettings';
 import { importDataSourcePlugin } from 'app/features/plugins/plugin_loader';
+import { DataSourcePluginCategory, ThunkDispatch, ThunkResult } from 'app/types';
+
+import * as api from '../api';
+import { DATASOURCES_ROUTES } from '../constants';
+import { nameExits, findNewName } from '../utils';
+
+import { buildCategories } from './buildCategories';
+import { buildNavModel } from './navModel';
 import {
   dataSourceLoaded,
   dataSourceMetaLoaded,
@@ -15,13 +29,11 @@ import {
   dataSourcesLoaded,
   initDataSourceSettingsFailed,
   initDataSourceSettingsSucceeded,
+  testDataSourceFailed,
   testDataSourceStarting,
   testDataSourceSucceeded,
-  testDataSourceFailed,
 } from './reducers';
-import { buildCategories } from './buildCategories';
 import { getDataSource, getDataSourceMeta } from './selectors';
-import { getDataSourceSrv } from '@grafana/runtime';
 
 export interface DataSourceTypesLoadedPayload {
   plugins: DataSourcePluginMeta[];
@@ -30,6 +42,7 @@ export interface DataSourceTypesLoadedPayload {
 
 export interface InitDataSourceSettingDependencies {
   loadDataSource: typeof loadDataSource;
+  loadDataSourceMeta: typeof loadDataSourceMeta;
   getDataSource: typeof getDataSource;
   getDataSourceMeta: typeof getDataSourceMeta;
   importDataSourcePlugin: typeof importDataSourcePlugin;
@@ -41,34 +54,34 @@ export interface TestDataSourceDependencies {
 }
 
 export const initDataSourceSettings = (
-  pageId: number,
+  uid: string,
   dependencies: InitDataSourceSettingDependencies = {
     loadDataSource,
+    loadDataSourceMeta,
     getDataSource,
     getDataSourceMeta,
     importDataSourcePlugin,
   }
 ): ThunkResult<void> => {
-  return async (dispatch: ThunkDispatch, getState) => {
-    if (isNaN(pageId)) {
-      dispatch(initDataSourceSettingsFailed(new Error('Invalid ID')));
+  return async (dispatch, getState) => {
+    if (!uid) {
+      dispatch(initDataSourceSettingsFailed(new Error('Invalid UID')));
       return;
     }
 
     try {
-      await dispatch(dependencies.loadDataSource(pageId));
-      if (getState().dataSourceSettings.plugin) {
-        return;
-      }
+      const loadedDataSource = await dispatch(dependencies.loadDataSource(uid));
+      await dispatch(dependencies.loadDataSourceMeta(loadedDataSource));
 
-      const dataSource = dependencies.getDataSource(getState().dataSources, pageId);
+      const dataSource = dependencies.getDataSource(getState().dataSources, uid);
       const dataSourceMeta = dependencies.getDataSourceMeta(getState().dataSources, dataSource!.type);
       const importedPlugin = await dependencies.importDataSourcePlugin(dataSourceMeta);
 
       dispatch(initDataSourceSettingsSucceeded(importedPlugin));
     } catch (err) {
-      console.error('Failed to import plugin module', err);
-      dispatch(initDataSourceSettingsFailed(err));
+      if (err instanceof Error) {
+        dispatch(initDataSourceSettingsFailed(err));
+      }
     }
   };
 };
@@ -95,141 +108,123 @@ export const testDataSource = (
 
         dispatch(testDataSourceSucceeded(result));
       } catch (err) {
-        let message = '';
+        let message: string | undefined;
+        let details: HealthCheckResultDetails;
 
-        if (err.statusText) {
-          message = 'HTTP Error ' + err.statusText;
-        } else {
+        if (err instanceof HealthCheckError) {
+          message = err.message;
+          details = err.details;
+        } else if (isFetchError(err)) {
+          message = err.data.message ?? `HTTP error ${err.statusText}`;
+        } else if (err instanceof Error) {
           message = err.message;
         }
 
-        dispatch(testDataSourceFailed({ message }));
+        dispatch(testDataSourceFailed({ message, details }));
       }
     });
   };
 };
 
 export function loadDataSources(): ThunkResult<void> {
-  return async dispatch => {
-    const response = await getBackendSrv().get('/api/datasources');
+  return async (dispatch) => {
+    const response = await api.getDataSources();
     dispatch(dataSourcesLoaded(response));
   };
 }
 
-export function loadDataSource(id: number): ThunkResult<void> {
-  return async dispatch => {
-    const dataSource = (await getBackendSrv().get(`/api/datasources/${id}`)) as DataSourceSettings;
-    const pluginInfo = (await getPluginSettings(dataSource.type)) as DataSourcePluginMeta;
-    const plugin = await importDataSourcePlugin(pluginInfo);
+export function loadDataSource(uid: string): ThunkResult<Promise<DataSourceSettings>> {
+  return async (dispatch) => {
+    let dataSource = await api.getDataSourceByIdOrUid(uid);
+
+    // Reload route to use UID instead
+    // -------------------------------
+    // In case we were trying to fetch and reference a data-source with an old numeric ID
+    // (which can happen by referencing it with a "old" URL), we would like to automatically redirect
+    // to the new URL format using the UID.
+    // [Please revalidate the following]: Unfortunately we can update the location using react router, but need to fully reload the
+    // route as the nav model page index is not matching with the url in that case.
+    // And react router has no way to unmount remount a route.
+    if (uid !== dataSource.uid) {
+      window.location.href = locationUtil.assureBaseUrl(`/datasources/edit/${dataSource.uid}`);
+
+      // Avoid a flashing error while the reload happens
+      dataSource = {} as DataSourceSettings;
+    }
 
     dispatch(dataSourceLoaded(dataSource));
-    dispatch(dataSourceMetaLoaded(pluginInfo));
+
+    return dataSource;
+  };
+}
+
+export function loadDataSourceMeta(dataSource: DataSourceSettings): ThunkResult<void> {
+  return async (dispatch) => {
+    const pluginInfo = (await getPluginSettings(dataSource.type)) as DataSourcePluginMeta;
+    const plugin = await importDataSourcePlugin(pluginInfo);
+    const isBackend = plugin.DataSourceClass.prototype instanceof DataSourceWithBackend;
+    const meta = {
+      ...pluginInfo,
+      isBackend: pluginInfo.backend || isBackend,
+    };
+
+    dispatch(dataSourceMetaLoaded(meta));
+
+    plugin.meta = meta;
     dispatch(updateNavIndex(buildNavModel(dataSource, plugin)));
   };
 }
 
-export function addDataSource(plugin: DataSourcePluginMeta): ThunkResult<void> {
+export function addDataSource(plugin: DataSourcePluginMeta, editLink = DATASOURCES_ROUTES.Edit): ThunkResult<void> {
   return async (dispatch, getStore) => {
     await dispatch(loadDataSources());
 
     const dataSources = getStore().dataSources.dataSources;
-
+    const isFirstDataSource = dataSources.length === 0;
     const newInstance = {
       name: plugin.name,
       type: plugin.id,
       access: 'proxy',
-      isDefault: dataSources.length === 0,
+      isDefault: isFirstDataSource,
     };
 
     if (nameExits(dataSources, newInstance.name)) {
       newInstance.name = findNewName(dataSources, newInstance.name);
     }
 
-    const result = await getBackendSrv().post('/api/datasources', newInstance);
-    dispatch(updateLocation({ path: `/datasources/edit/${result.id}` }));
+    const result = await api.createDataSource(newInstance);
+
+    await getDatasourceSrv().reload();
+    await contextSrv.fetchUserPermissions();
+
+    locationService.push(editLink.replace(/:uid/gi, result.datasource.uid));
   };
 }
 
 export function loadDataSourcePlugins(): ThunkResult<void> {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch(dataSourcePluginsLoad());
-    const plugins = await getBackendSrv().get('/api/plugins', { enabled: 1, type: 'datasource' });
+    const plugins = await api.getDataSourcePlugins();
     const categories = buildCategories(plugins);
     dispatch(dataSourcePluginsLoaded({ plugins, categories }));
   };
 }
 
 export function updateDataSource(dataSource: DataSourceSettings): ThunkResult<void> {
-  return async dispatch => {
-    await getBackendSrv().put(`/api/datasources/${dataSource.id}`, dataSource);
-    await updateFrontendSettings();
-    return dispatch(loadDataSource(dataSource.id));
+  return async (dispatch) => {
+    await api.updateDataSource(dataSource);
+    await getDatasourceSrv().reload();
+    return dispatch(loadDataSource(dataSource.uid));
   };
 }
 
-export function deleteDataSource(): ThunkResult<void> {
+export function deleteLoadedDataSource(): ThunkResult<void> {
   return async (dispatch, getStore) => {
-    const dataSource = getStore().dataSources.dataSource;
-    await getBackendSrv().delete(`/api/datasources/${dataSource.id}`);
-    await updateFrontendSettings();
-    dispatch(updateLocation({ path: '/datasources' }));
+    const { uid } = getStore().dataSources.dataSource;
+
+    await api.deleteDataSource(uid);
+    await getDatasourceSrv().reload();
+
+    locationService.push('/datasources');
   };
-}
-
-interface ItemWithName {
-  name: string;
-}
-
-export function nameExits(dataSources: ItemWithName[], name: string) {
-  return (
-    dataSources.filter(dataSource => {
-      return dataSource.name.toLowerCase() === name.toLowerCase();
-    }).length > 0
-  );
-}
-
-export function findNewName(dataSources: ItemWithName[], name: string) {
-  // Need to loop through current data sources to make sure
-  // the name doesn't exist
-  while (nameExits(dataSources, name)) {
-    // If there's a duplicate name that doesn't end with '-x'
-    // we can add -1 to the name and be done.
-    if (!nameHasSuffix(name)) {
-      name = `${name}-1`;
-    } else {
-      // if there's a duplicate name that ends with '-x'
-      // we can try to increment the last digit until the name is unique
-
-      // remove the 'x' part and replace it with the new number
-      name = `${getNewName(name)}${incrementLastDigit(getLastDigit(name))}`;
-    }
-  }
-
-  return name;
-}
-
-function updateFrontendSettings() {
-  return getBackendSrv()
-    .get('/api/frontend/settings')
-    .then((settings: any) => {
-      config.datasources = settings.datasources;
-      config.defaultDatasource = settings.defaultDatasource;
-      getDatasourceSrv().init();
-    });
-}
-
-function nameHasSuffix(name: string) {
-  return name.endsWith('-', name.length - 1);
-}
-
-function getLastDigit(name: string) {
-  return parseInt(name.slice(-1), 10);
-}
-
-function incrementLastDigit(digit: number) {
-  return isNaN(digit) ? 1 : digit + 1;
-}
-
-function getNewName(name: string) {
-  return name.slice(0, name.length - 1);
 }

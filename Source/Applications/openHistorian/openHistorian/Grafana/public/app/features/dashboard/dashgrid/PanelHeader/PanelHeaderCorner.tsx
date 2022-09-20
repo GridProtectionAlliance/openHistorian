@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 import { renderMarkdown, LinkModelSupplier, ScopedVars } from '@grafana/data';
+import { selectors } from '@grafana/e2e-selectors';
+import { locationService, getTemplateSrv } from '@grafana/runtime';
 import { Tooltip, PopoverContent } from '@grafana/ui';
-import { getLocationSrv, getTemplateSrv } from '@grafana/runtime';
-
-import { PanelModel } from 'app/features/dashboard/state/PanelModel';
 import { getTimeSrv, TimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import { InspectTab } from '../../components/Inspector/types';
+import { PanelModel } from 'app/features/dashboard/state/PanelModel';
+import { InspectTab } from 'app/features/inspector/types';
 
 enum InfoMode {
   Error = 'Error',
@@ -14,7 +14,7 @@ enum InfoMode {
   Links = 'Links',
 }
 
-interface Props {
+export interface Props {
   panel: PanelModel;
   title?: string;
   description?: string;
@@ -46,7 +46,7 @@ export class PanelHeaderCorner extends Component<Props> {
     const markdown = panel.description || '';
     const interpolatedMarkdown = getTemplateSrv().replace(markdown, panel.scopedVars);
     const markedInterpolatedMarkdown = renderMarkdown(interpolatedMarkdown);
-    const links = this.props.links && this.props.links.getLinks(panel);
+    const links = this.props.links && this.props.links.getLinks(panel.replaceVariables);
 
     return (
       <div className="panel-info-content markdown-html">
@@ -73,17 +73,23 @@ export class PanelHeaderCorner extends Component<Props> {
    * Open the Panel Inspector when we click on an error
    */
   onClickError = () => {
-    getLocationSrv().update({ partial: true, query: { inspect: this.props.panel.id, inspectTab: InspectTab.Error } });
+    locationService.partial({
+      inspect: this.props.panel.id,
+      inspectTab: InspectTab.Error,
+    });
   };
 
   renderCornerType(infoMode: InfoMode, content: PopoverContent, onClick?: () => void) {
     const theme = infoMode === InfoMode.Error ? 'error' : 'info';
+    const className = `panel-info-corner panel-info-corner--${infoMode.toLowerCase()}`;
+    const ariaLabel = selectors.components.Panels.Panel.headerCornerInfo(infoMode.toLowerCase());
+
     return (
-      <Tooltip content={content} placement="top-start" theme={theme}>
-        <div className={`panel-info-corner panel-info-corner--${infoMode.toLowerCase()}`} onClick={onClick}>
-          <i className="fa" />
+      <Tooltip content={content} placement="top-start" theme={theme} interactive>
+        <section className={className} onClick={onClick} aria-label={ariaLabel}>
+          <i aria-hidden className="fa" />
           <span className="panel-info-corner-inner" />
-        </div>
+        </section>
       </Tooltip>
     );
   }

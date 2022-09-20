@@ -1,12 +1,16 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
+import { Unsubscribable } from 'rxjs';
+
+import { selectors } from '@grafana/e2e-selectors';
+import { getTemplateSrv, RefreshEvent } from '@grafana/runtime';
 import { Icon } from '@grafana/ui';
-import { PanelModel } from '../../state/PanelModel';
-import { DashboardModel } from '../../state/DashboardModel';
 import appEvents from 'app/core/app_events';
-import { CoreEvents } from 'app/types';
+
+import { ShowConfirmModalEvent } from '../../../../types/events';
+import { DashboardModel } from '../../state/DashboardModel';
+import { PanelModel } from '../../state/PanelModel';
 import { RowOptionsButton } from '../RowOptions/RowOptionsButton';
-import { getTemplateSrv } from '@grafana/runtime';
 
 export interface DashboardRowProps {
   panel: PanelModel;
@@ -14,18 +18,16 @@ export interface DashboardRowProps {
 }
 
 export class DashboardRow extends React.Component<DashboardRowProps, any> {
-  constructor(props: DashboardRowProps) {
-    super(props);
+  sub?: Unsubscribable;
 
-    this.state = {
-      collapsed: this.props.panel.collapsed,
-    };
-
-    this.props.dashboard.on(CoreEvents.templateVariableValueUpdated, this.onVariableUpdated);
+  componentDidMount() {
+    this.sub = this.props.dashboard.events.subscribe(RefreshEvent, this.onVariableUpdated);
   }
 
   componentWillUnmount() {
-    this.props.dashboard.off(CoreEvents.templateVariableValueUpdated, this.onVariableUpdated);
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   onVariableUpdated = () => {
@@ -34,39 +36,37 @@ export class DashboardRow extends React.Component<DashboardRowProps, any> {
 
   onToggle = () => {
     this.props.dashboard.toggleRow(this.props.panel);
-
-    this.setState((prevState: any) => {
-      return { collapsed: !prevState.collapsed };
-    });
   };
 
-  onUpdate = (title: string, repeat: string | undefined) => {
-    this.props.panel['title'] = title;
-    this.props.panel['repeat'] = repeat;
+  onUpdate = (title: string, repeat?: string | null) => {
+    this.props.panel.setProperty('title', title);
+    this.props.panel.setProperty('repeat', repeat ?? undefined);
     this.props.panel.render();
     this.props.dashboard.processRepeats();
     this.forceUpdate();
   };
 
   onDelete = () => {
-    appEvents.emit(CoreEvents.showConfirmModal, {
-      title: 'Delete Row',
-      text: 'Are you sure you want to remove this row and all its panels?',
-      altActionText: 'Delete row only',
-      icon: 'fa-trash',
-      onConfirm: () => {
-        this.props.dashboard.removeRow(this.props.panel, true);
-      },
-      onAltAction: () => {
-        this.props.dashboard.removeRow(this.props.panel, false);
-      },
-    });
+    appEvents.publish(
+      new ShowConfirmModalEvent({
+        title: 'Delete row',
+        text: 'Are you sure you want to remove this row and all its panels?',
+        altActionText: 'Delete row only',
+        icon: 'trash-alt',
+        onConfirm: () => {
+          this.props.dashboard.removeRow(this.props.panel, true);
+        },
+        onAltAction: () => {
+          this.props.dashboard.removeRow(this.props.panel, false);
+        },
+      })
+    );
   };
 
   render() {
     const classes = classNames({
       'dashboard-row': true,
-      'dashboard-row--collapsed': this.state.collapsed,
+      'dashboard-row--collapsed': this.props.panel.collapsed,
     });
 
     const title = getTemplateSrv().replace(this.props.panel.title, this.props.panel.scopedVars, 'text');
@@ -75,9 +75,13 @@ export class DashboardRow extends React.Component<DashboardRowProps, any> {
     const canEdit = this.props.dashboard.meta.canEdit === true;
 
     return (
-      <div className={classes}>
-        <a className="dashboard-row__title pointer" onClick={this.onToggle}>
-          <Icon name={this.state.collapsed ? 'angle-right' : 'angle-down'} />
+      <div className={classes} data-testid="dashboard-row-container">
+        <a
+          className="dashboard-row__title pointer"
+          data-testid={selectors.components.DashboardRow.title(title)}
+          onClick={this.onToggle}
+        >
+          <Icon name={this.props.panel.collapsed ? 'angle-right' : 'angle-down'} />
           {title}
           <span className="dashboard-row__panel_count">
             ({count} {panels})
@@ -90,17 +94,17 @@ export class DashboardRow extends React.Component<DashboardRowProps, any> {
               repeat={this.props.panel.repeat}
               onUpdate={this.onUpdate}
             />
-            <a className="pointer" onClick={this.onDelete}>
+            <a className="pointer" onClick={this.onDelete} role="button" aria-label="Delete row">
               <Icon name="trash-alt" />
             </a>
           </div>
         )}
-        {this.state.collapsed === true && (
+        {this.props.panel.collapsed === true && (
           <div className="dashboard-row__toggle-target" onClick={this.onToggle}>
             &nbsp;
           </div>
         )}
-        {canEdit && <div className="dashboard-row__drag grid-drag-handle" />}
+        {canEdit && <div data-testid="dashboard-row-drag" className="dashboard-row__drag grid-drag-handle" />}
       </div>
     );
   }

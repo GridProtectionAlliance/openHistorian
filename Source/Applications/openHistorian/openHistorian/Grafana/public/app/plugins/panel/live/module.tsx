@@ -1,9 +1,10 @@
 import { PanelPlugin } from '@grafana/data';
+
 import { LiveChannelEditor } from './LiveChannelEditor';
 import { LivePanel } from './LivePanel';
 import { LivePanelOptions, MessageDisplayMode } from './types';
 
-export const plugin = new PanelPlugin<LivePanelOptions>(LivePanel).setPanelOptions(builder => {
+export const plugin = new PanelPlugin<LivePanelOptions>(LivePanel).setPanelOptions((builder) => {
   builder.addCustomEditor({
     category: ['Channel'],
     id: 'channel',

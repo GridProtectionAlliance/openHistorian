@@ -5,8 +5,14 @@ import {
   parseCredentials,
   parseHeaders,
   parseInitFromOptions,
+  parseResponseBody,
   parseUrlFromOptions,
 } from './fetch';
+
+jest.mock('@grafana/data', () => ({
+  ...(jest.requireActual('@grafana/data') as unknown as object),
+  deprecationWarning: () => {},
+}));
 
 describe('parseUrlFromOptions', () => {
   it.each`
@@ -126,4 +132,72 @@ describe('parseCredentials', () => {
       expect(parseCredentials(options)).toEqual(expected);
     }
   );
+});
+
+describe('parseResponseBody', () => {
+  let rsp: Response;
+
+  beforeEach(() => {
+    rsp = new Response();
+  });
+
+  it('parses json', async () => {
+    const value = { hello: 'world' };
+    const body = await parseResponseBody(
+      {
+        ...rsp,
+        json: jest.fn().mockImplementationOnce(() => value),
+      },
+      'json'
+    );
+    expect(body).toEqual(value);
+  });
+
+  it('returns an empty object {} when the response is empty but is declared as JSON type', async () => {
+    rsp.headers.set('Content-Length', '0');
+    jest.spyOn(console, 'warn').mockImplementation();
+
+    const json = jest.fn();
+    const body = await parseResponseBody(
+      {
+        ...rsp,
+        json,
+      },
+      'json'
+    );
+
+    expect(body).toEqual({});
+    expect(json).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+  });
+
+  it('parses text', async () => {
+    const value = 'RAW TEXT';
+    const body = await parseResponseBody(
+      {
+        ...rsp,
+        text: jest.fn().mockImplementationOnce(() => value),
+      },
+      'text'
+    );
+    expect(body).toEqual(value);
+  });
+
+  it('undefined text', async () => {
+    const value = 'RAW TEXT';
+    const body = await parseResponseBody({
+      ...rsp,
+      text: jest.fn().mockImplementationOnce(() => value),
+    });
+    expect(body).toEqual(value);
+  });
+
+  it('undefined as parsed json', async () => {
+    const value = { hello: 'world' };
+    const body = await parseResponseBody({
+      ...rsp,
+      text: jest.fn().mockImplementationOnce(() => JSON.stringify(value)),
+    });
+    expect(body).toEqual(value);
+  });
 });

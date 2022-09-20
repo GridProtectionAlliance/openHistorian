@@ -1,6 +1,8 @@
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
+
 import { BackendSrvRequest, FetchResponse } from '@grafana/runtime';
+
 import { FetchQueue } from './FetchQueue';
 
 interface FetchWorkEntry {
@@ -21,7 +23,7 @@ export class ResponseQueue {
     // This will create an implicit live subscription for as long as this class lives.
     // But as FetchQueue is used by the singleton backendSrv that also lives for as long as Grafana app lives
     // I think this ok. We could add some disposable pattern later if the need arises.
-    this.queue.subscribe(entry => {
+    this.queue.subscribe((entry) => {
       const { id, options } = entry;
 
       // Let the fetchQueue know that this id has started data fetching.
@@ -36,5 +38,5 @@ export class ResponseQueue {
   };
 
   getResponses = <T>(id: string): Observable<FetchResponsesEntry<T>> =>
-    this.responses.asObservable().pipe(filter(entry => entry.id === id));
+    this.responses.asObservable().pipe(filter((entry) => entry.id === id));
 }

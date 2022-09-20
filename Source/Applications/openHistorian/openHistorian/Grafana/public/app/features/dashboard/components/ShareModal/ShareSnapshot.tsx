@@ -1,28 +1,19 @@
+import { Trans, t } from '@lingui/macro';
 import React, { PureComponent } from 'react';
-import { Button, ClipboardButton, Icon, LegacyForms, LinkButton } from '@grafana/ui';
-import { AppEvents, SelectableValue } from '@grafana/data';
-import { getBackendSrv } from '@grafana/runtime';
-import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
+
+import { SelectableValue } from '@grafana/data';
+import { getBackendSrv, reportInteraction } from '@grafana/runtime';
+import { Button, ClipboardButton, Field, Input, LinkButton, Modal, Select, Spinner } from '@grafana/ui';
 import { getTimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import { appEvents } from 'app/core/core';
+import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
+
 import { VariableRefresh } from '../../../variables/types';
 
-const { Select, Input } = LegacyForms;
+import { ShareModalTabProps } from './types';
 
 const snapshotApiUrl = '/api/snapshots';
 
-const expireOptions: Array<SelectableValue<number>> = [
-  { label: 'Never', value: 0 },
-  { label: '1 Hour', value: 60 * 60 },
-  { label: '1 Day', value: 60 * 60 * 24 },
-  { label: '7 Days', value: 60 * 60 * 24 * 7 },
-];
-
-interface Props {
-  dashboard: DashboardModel;
-  panel?: PanelModel;
-  onDismiss(): void;
-}
+interface Props extends ShareModalTabProps {}
 
 interface State {
   isLoading: boolean;
@@ -39,15 +30,46 @@ interface State {
 
 export class ShareSnapshot extends PureComponent<Props, State> {
   private dashboard: DashboardModel;
+  private expireOptions: Array<SelectableValue<number>>;
 
   constructor(props: Props) {
     super(props);
     this.dashboard = props.dashboard;
+    this.expireOptions = [
+      {
+        label: t({
+          id: 'share-modal.snapshot.expire-never',
+          message: `Never`,
+        }),
+        value: 0,
+      },
+      {
+        label: t({
+          id: 'share-modal.snapshot.expire-hour',
+          message: `1 Hour`,
+        }),
+        value: 60 * 60,
+      },
+      {
+        label: t({
+          id: 'share-modal.snapshot.expire-day',
+          message: `1 Day`,
+        }),
+        value: 60 * 60 * 24,
+      },
+      {
+        label: t({
+          id: 'share-modal.snapshot.expire-week',
+          message: `7 Days`,
+        }),
+        value: 60 * 60 * 24 * 7,
+      },
+    ];
     this.state = {
       isLoading: false,
       step: 1,
-      selectedExpireOption: expireOptions[0],
-      snapshotExpires: expireOptions[0].value,
+      selectedExpireOption: this.expireOptions[0],
+      snapshotExpires: this.expireOptions[0].value,
       snapshotName: props.dashboard.title,
       timeoutSeconds: 4,
       snapshotUrl: '',
@@ -58,6 +80,7 @@ export class ShareSnapshot extends PureComponent<Props, State> {
   }
 
   componentDidMount() {
+    reportInteraction('grafana_dashboards_snapshot_share_viewed');
     this.getSnaphotShareOptions();
   }
 
@@ -100,13 +123,16 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     };
 
     try {
-      const results: { deleteUrl: any; url: any } = await getBackendSrv().post(snapshotApiUrl, cmdData);
+      const results: { deleteUrl: string; url: string } = await getBackendSrv().post(snapshotApiUrl, cmdData);
       this.setState({
         deleteUrl: results.deleteUrl,
         snapshotUrl: results.url,
         step: 2,
       });
     } finally {
+      reportInteraction('grafana_dashboards_snapshot_created', {
+        location: external ? 'raintank' : 'local',
+      });
       this.setState({ isLoading: false });
     }
   };
@@ -120,16 +146,19 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     // make relative times absolute
     dash.time = getTimeSrv().timeRange();
 
+    // Remove links
+    dash.links = [];
+
     // remove panel queries & links
-    dash.panels.forEach(panel => {
+    dash.panels.forEach((panel) => {
       panel.targets = [];
       panel.links = [];
       panel.datasource = null;
     });
 
     // remove annotation queries
-    const annotations = dash.annotations.list.filter(annotation => annotation.enable);
-    dash.annotations.list = annotations.map((annotation: any) => {
+    const annotations = dash.annotations.list.filter((annotation) => annotation.enable);
+    dash.annotations.list = annotations.map((annotation) => {
       return {
         name: annotation.name,
         enable: annotation.enable,
@@ -163,7 +192,7 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     this.dashboard.forEachPanel((panel: PanelModel) => {
       delete panel.snapshotData;
     });
-    this.dashboard.annotations.list.forEach(annotation => {
+    this.dashboard.annotations.list.forEach((annotation) => {
       delete annotation.snapshotData;
     });
   };
@@ -193,69 +222,78 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     });
   };
 
-  onSnapshotUrlCopy = () => {
-    appEvents.emit(AppEvents.alertSuccess, ['Content copied to clipboard']);
-  };
-
   renderStep1() {
     const { onDismiss } = this.props;
-    const {
-      snapshotName,
-      selectedExpireOption,
-      timeoutSeconds,
-      isLoading,
-      sharingButtonText,
-      externalEnabled,
-    } = this.state;
+    const { snapshotName, selectedExpireOption, timeoutSeconds, isLoading, sharingButtonText, externalEnabled } =
+      this.state;
+
+    const snapshotNameTranslation = t({
+      id: 'share-modal.snapshot.name',
+      message: `Snapshot name`,
+    });
+
+    const expireTranslation = t({
+      id: 'share-modal.snapshot.expire',
+      message: `Expire`,
+    });
+
+    const timeoutTranslation = t({
+      id: 'share-modal.snapshot.timeout',
+      message: `Timeout (seconds)`,
+    });
+
+    const timeoutDescriptionTranslation = t({
+      id: 'share-modal.snapshot.timeout-description',
+      message: `You might need to configure the timeout value if it takes a long time to collect your dashboard
+      metrics.`,
+    });
 
     return (
       <>
         <div>
           <p className="share-modal-info-text">
-            A snapshot is an instant way to share an interactive dashboard publicly. When created, we{' '}
-            <strong>strip sensitive data</strong> like queries (metric, template and annotation) and panel links,
-            leaving only the visible metric data and series names embedded into your dashboard.
+            <Trans id="share-modal.snapshot.info-text-1">
+              A snapshot is an instant way to share an interactive dashboard publicly. When created, we strip sensitive
+              data like queries (metric, template, and annotation) and panel links, leaving only the visible metric data
+              and series names embedded in your dashboard.
+            </Trans>
           </p>
           <p className="share-modal-info-text">
-            Keep in mind, your <strong>snapshot can be viewed by anyone</strong> that has the link and can reach the
-            URL. Share wisely.
+            <Trans id="share-modal.snapshot.info-text-2">
+              Keep in mind, your snapshot <em>can be viewed by anyone</em> that has the link and can access the URL.
+              Share wisely.
+            </Trans>
           </p>
         </div>
-        <div className="gf-form-group share-modal-options">
-          <div className="gf-form" ng-if="step === 1">
-            <label className="gf-form-label width-12">Snapshot name</label>
-            <Input width={15} value={snapshotName} onChange={this.onSnapshotNameChange} />
-          </div>
-          <div className="gf-form" ng-if="step === 1">
-            <label className="gf-form-label width-12">Expire</label>
-            <Select width={15} options={expireOptions} value={selectedExpireOption} onChange={this.onExpireChange} />
-          </div>
-        </div>
+        <Field label={snapshotNameTranslation}>
+          <Input id="snapshot-name-input" width={30} value={snapshotName} onChange={this.onSnapshotNameChange} />
+        </Field>
+        <Field label={expireTranslation}>
+          <Select
+            inputId="expire-select-input"
+            width={30}
+            options={this.expireOptions}
+            value={selectedExpireOption}
+            onChange={this.onExpireChange}
+          />
+        </Field>
+        <Field label={timeoutTranslation} description={timeoutDescriptionTranslation}>
+          <Input id="timeout-input" type="number" width={21} value={timeoutSeconds} onChange={this.onTimeoutChange} />
+        </Field>
 
-        <p className="share-modal-info-text">
-          You may need to configure the timeout value if it takes a long time to collect your dashboard's metrics.
-        </p>
-
-        <div className="gf-form-group share-modal-options">
-          <div className="gf-form">
-            <span className="gf-form-label width-12">Timeout (seconds)</span>
-            <Input type="number" width={15} value={timeoutSeconds} onChange={this.onTimeoutChange} />
-          </div>
-        </div>
-
-        <div className="gf-form-button-row">
-          <Button className="width-10" variant="primary" disabled={isLoading} onClick={this.createSnapshot()}>
-            Local Snapshot
+        <Modal.ButtonRow>
+          <Button variant="secondary" onClick={onDismiss} fill="outline">
+            <Trans id="share-modal.snapshot.cancel-button">Cancel</Trans>
           </Button>
           {externalEnabled && (
-            <Button className="width-16" variant="secondary" disabled={isLoading} onClick={this.createSnapshot(true)}>
+            <Button variant="secondary" disabled={isLoading} onClick={this.createSnapshot(true)}>
               {sharingButtonText}
             </Button>
           )}
-          <Button variant="secondary" onClick={onDismiss}>
-            Cancel
+          <Button variant="primary" disabled={isLoading} onClick={this.createSnapshot()}>
+            <Trans id="share-modal.snapshot.local-button">Local Snapshot</Trans>
           </Button>
-        </div>
+        </Modal.ButtonRow>
       </>
     );
   }
@@ -265,22 +303,23 @@ export class ShareSnapshot extends PureComponent<Props, State> {
 
     return (
       <>
-        <div className="gf-form" style={{ marginTop: '40px' }}>
-          <div className="gf-form-row">
-            <a href={snapshotUrl} className="large share-modal-link" target="_blank">
-              <Icon name="external-link-alt" /> {snapshotUrl}
-            </a>
-            <br />
-            <ClipboardButton variant="secondary" getText={this.getSnapshotUrl} onClipboardCopy={this.onSnapshotUrlCopy}>
-              Copy Link
-            </ClipboardButton>
-          </div>
-        </div>
+        <Field label="Snapshot URL">
+          <Input
+            id="snapshot-url-input"
+            value={snapshotUrl}
+            readOnly
+            addonAfter={
+              <ClipboardButton icon="copy" variant="primary" getText={this.getSnapshotUrl}>
+                <Trans id="share-modal.snapshot.copy-link-button">Copy</Trans>
+              </ClipboardButton>
+            }
+          />
+        </Field>
 
-        <div className="pull-right" ng-if="step === 2" style={{ padding: '5px' }}>
-          Did you make a mistake?{' '}
-          <LinkButton variant="link" target="_blank" onClick={this.deleteSnapshot}>
-            delete snapshot.
+        <div className="pull-right" style={{ padding: '5px' }}>
+          <Trans id="share-modal.snapshot.mistake-message">Did you make a mistake? </Trans>&nbsp;
+          <LinkButton fill="text" target="_blank" onClick={this.deleteSnapshot}>
+            <Trans id="share-modal.snapshot.delete-button">Delete snapshot.</Trans>
           </LinkButton>
         </div>
       </>
@@ -291,8 +330,10 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     return (
       <div className="share-modal-header">
         <p className="share-modal-info-text">
-          The snapshot has now been deleted. If it you have already accessed it once, It might take up to an hour before
-          it is removed from browser caches or CDN caches.
+          <Trans id="share-modal.snapshot.deleted-message">
+            The snapshot has been deleted. If you have already accessed it once, then it might take up to an hour before
+            before it is removed from browser caches or CDN caches.
+          </Trans>
         </p>
       </div>
     );
@@ -302,22 +343,12 @@ export class ShareSnapshot extends PureComponent<Props, State> {
     const { isLoading, step } = this.state;
 
     return (
-      <div className="share-modal-body">
-        <div className="share-modal-header">
-          {isLoading ? (
-            <div className="share-modal-big-icon">
-              <Icon name="fa fa-spinner" className="fa-spin" />
-            </div>
-          ) : (
-            <Icon name="camera" className="share-modal-big-icon" size="xxl" />
-          )}
-          <div className="share-modal-content">
-            {step === 1 && this.renderStep1()}
-            {step === 2 && this.renderStep2()}
-            {step === 3 && this.renderStep3()}
-          </div>
-        </div>
-      </div>
+      <>
+        {step === 1 && this.renderStep1()}
+        {step === 2 && this.renderStep2()}
+        {step === 3 && this.renderStep3()}
+        {isLoading && <Spinner inline={true} />}
+      </>
     );
   }
 }
