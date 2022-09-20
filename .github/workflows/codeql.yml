@@ -70,9 +70,12 @@ jobs:
 
     #   If the Autobuild fails above, remove it and uncomment the following three lines. 
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-
-    - run: |
-       echo "Build openHistorian..."
+    
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1.1
+      
+    - name: Build openHistorian
+      run: |
        msbuild Source/openHistorian.sln /p:Configuration=Debug /restore /t:Build
 
     - name: Perform CodeQL Analysis
