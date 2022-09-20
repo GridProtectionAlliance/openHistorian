@@ -3,12 +3,18 @@
 	<div class="gf-form" ng-show="ctrl.target.textEditor">
 		<input type="text" class="gf-form-input" ng-model="ctrl.target.target" spellcheck="false" ng-blur="ctrl.textEditorChanged()"></input>
 	</div>
+	<div class="gf-form">
+		<gf-form-switch class="gf-form-inline" label="PI Point Search" label-class="query-keyword" checked="ctrl.target.isPiPoint"
+			on-change="ctrl.togglePiPointSearch()">
+		</gf-form-switch>
+	</div>
 
 	<div ng-hide="ctrl.target.textEditor">
 		<div class="gf-form-inline">
 			<div class="gf-form">
 				<label class="gf-form-label query-keyword width-7">
-					<span>Element</span>
+					<span ng-if="!ctrl.target.isPiPoint">Element</span>
+					<span ng-if="ctrl.target.isPiPoint">Data Server</span>
 				</label>
 				<div ng-repeat="segment in ctrl.segments" role="menuitem">
 					<metric-segment segment="segment" get-options="ctrl.getElementSegments($index)" on-change="ctrl.segmentValueChanged(segment, $index)"></metric-segment>
@@ -21,12 +27,13 @@
 		<div class="gf-form-inline">
 			<div class="gf-form">
 				<label class="gf-form-label query-keyword width-7">
-					<span>Attributes</span>
+					<span ng-if="!ctrl.target.isPiPoint">Attributes</span>
+					<span ng-if="ctrl.target.isPiPoint">Pi Points</span>
 				</label>
 				<div ng-repeat="segment in ctrl.attributes" role="menuitem">
-					<metric-segment segment="segment" get-options="ctrl.getAttributeSegments()" on-change="ctrl.attributeValueChanged(segment, $index)"></metric-segment>
+					<metric-segment segment="segment" get-options="ctrl.getAttributeSegments($query)" on-change="ctrl.attributeValueChanged(segment, $index)"></metric-segment>
 				</div>
-				<metric-segment segment="ctrl.attributeSegment" get-options="ctrl.getAttributeSegments()" on-change="ctrl.attributeAction(part, $index)"></metric-segment>
+				<metric-segment segment="ctrl.attributeSegment" get-options="ctrl.getAttributeSegments($query)" on-change="ctrl.attributeAction(part, $index)"></metric-segment>
 			</div>
 			<div class="gf-form gf-form--grow">
 				<div class="gf-form-label gf-form-label--grow"></div>
@@ -54,6 +61,11 @@
 		<div class="gf-form">
 			<gf-form-switch class="gf-form-inline" label="Recorded Values" label-class="query-keyword" checked="ctrl.target.recordedValues.enable"
 				on-change="ctrl.targetBlur()" ng-disabled="ctrl.target.interpolate.enable">
+			</gf-form-switch>
+		</div>
+		<div class="gf-form">
+			<gf-form-switch class="gf-form-inline" label="Digital States" label-class="query-keyword" checked="ctrl.target.digitalStates.enable"
+				on-change="ctrl.targetBlur()">
 			</gf-form-switch>
 		</div>
   </div>

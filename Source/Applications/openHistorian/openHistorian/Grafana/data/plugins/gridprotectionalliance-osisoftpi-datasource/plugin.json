@@ -1,0 +1,42 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "name": "OSIsoft-PI",
+  "type": "datasource",
+  "id": "gridprotectionalliance-osisoftpi-datasource",
+  "metrics": true,
+  "annotations": true,
+  "alerting": false,
+  "info": {
+    "description": "Datasource plugin for OSIsoft PI Web API",
+    "author": {
+      "name": "Grid Protection Alliance",
+      "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"
+    },
+    "keywords": ["OSIsoft", "PI", "Historian", "GPA"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana/blob/master/LICENSE"
+      },
+      {
+        "name": "PI System",
+        "url": "https://www.osisoft.com/pi-system"
+      }
+    ],
+    "screenshots": [],
+    "version": "3.0.0",
+    "updated": "2022-09-07"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=8.4.0",
+    "plugins": []
+  }
+}

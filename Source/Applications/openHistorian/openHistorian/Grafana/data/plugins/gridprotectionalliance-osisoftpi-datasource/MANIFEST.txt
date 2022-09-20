@@ -1,0 +1,39 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "gridprotectionalliance",
+  "signedByOrgName": "Grid Protection Alliance",
+  "plugin": "gridprotectionalliance-osisoftpi-datasource",
+  "version": "3.0.0",
+  "time": 1662559021811,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "module.js.LICENSE.txt": "cdf963ced7d25a0f98901a547647b4d6e2dbe0197fd78c87a059a87b0e542fe2",
+    "partials/query.options.html": "81baf9e252737a2dceced1c7b3fc5762b739a9538119d76cb76dbab08347ae79",
+    "partials/annotations.editor.html": "b91ce7c5cba4711dee4bcac1209434224885b8ab7571f01fc441039e2a576aec",
+    "partials/query.editor.html": "894b1fd186d783064c0585efba8eb382e03f1c9d0438cd3f662a04c6e4744834",
+    "img/osi-pi.png": "79111de7172578d604396b8b950165f4289d134486e9a2248b09fe88acfa538e",
+    "img/logo.svg": "9861578d47a319afe323668368bd710e7f9a883aead55b49ba1417dd810f49ce",
+    "module.js": "2e9ff2161c9f6ca2e5772376fea72a37ba318d7759a6e256233f712e7c8f8c1c",
+    "module.js.map": "dfb3f29d9d49664d8f18a1e2488701fb64683bc6897af3337c43865cbbba9da1",
+    "LICENSE": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "README.md": "b58b9ce46d96022472b1e0fadc107d7e0ad754ede26e9edb24245f37679e9a50",
+    "plugin.json": "f2350c025fa24aa31ff9d1e1925a04cf63a9facdfd7a1bff7ec822dac86f09c6",
+    "CHANGELOG.md": "a1899de57a4712e940c1dfef1d4617aafd1ec029be22bdf51294bef7be568aa1"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.10
+Comment: https://openpgpjs.org
+
+wrcEARMKAAYFAmMYoy4AIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5w6JAgjxQ4haqeAiheldq0o4cmlBGjDSFc7ZlmOYrcBqgsB+ZQjdRM9E
+Ru2peJj5kTEdHzbIaRDojQ5sdBgxDe1Iz6W0PAIED5IXX/NbUVIfySMC5LOz
+Ih0+4dLce8MJb9h5t4FNWdRa/si3jAyvv1ZqT9SNUEh7uku5a9eYEi4oaaTc
+lZ2SqQU=
+=hF60
+-----END PGP SIGNATURE-----
