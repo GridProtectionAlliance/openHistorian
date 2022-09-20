@@ -33,7 +33,7 @@
     "css-loader": "1.0.1",
     "jest": "23.6.0",
     "lodash": "4.17.11",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "moment-timezone": "0.5.25",
     "ng-annotate-webpack-plugin": "0.3.0",
     "style-loader": "0.23.1",
