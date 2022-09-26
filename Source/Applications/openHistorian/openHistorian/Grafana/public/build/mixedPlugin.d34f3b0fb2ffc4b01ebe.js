@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[2001],{96862:(a,e,r)=>{r.r(e),r.d(e,{Datasource:()=>s.w,MixedDatasource:()=>s.w});var s=r(81127)}}]);

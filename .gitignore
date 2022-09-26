@@ -22,6 +22,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+!Source/Applications/openHistorian/openHistorian/Grafana/public/build/
+
 # Make sure certain folders are fully included
 !Source/Applications/openHistorian/openHistorian/Grafana/**
 

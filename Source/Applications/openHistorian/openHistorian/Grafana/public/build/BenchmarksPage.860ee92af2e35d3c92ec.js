@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[4908],{26480:(a,e,r)=>{r.r(e),r.d(e,{BenchmarksPage:()=>t,default:()=>f});r(68404);var s,n=r(3490),c=r(45916);const t=()=>s||(s=(0,c.jsx)(n.VerticalGroup,{children:(0,c.jsx)(n.EmotionPerfTest,{})})),f=t}}]);
+//# sourceMappingURL=BenchmarksPage.860ee92af2e35d3c92ec.js.map

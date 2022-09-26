@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[2364],{14285:a=>{a.exports=JSON.parse('{"id":"grafana-azure-monitor-datasource"}')}}]);

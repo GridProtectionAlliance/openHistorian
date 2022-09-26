@@ -1,0 +1,30 @@
+/*! Hammer.JS - v2.0.7 - 2016-04-22
+ * http://hammerjs.github.io/
+ *
+ * Copyright (c) 2016 Jorik Tangelder;
+ * Licensed under the MIT license */
+
+/**
+ * vis.js
+ * https://github.com/almende/vis
+ *
+ * A dynamic, browser-based visualization library.
+ *
+ * @version 4.25.0
+ * @date    2018-09-20
+ *
+ * @license
+ * Copyright (C) 2011-2017 Almende B.V, http://almende.com
+ *
+ * Vis.js is dual licensed under both
+ *
+ * * The Apache 2.0 License
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * and
+ *
+ * * The MIT License
+ *   http://opensource.org/licenses/MIT
+ *
+ * Vis.js may be distributed under either license.
+ */

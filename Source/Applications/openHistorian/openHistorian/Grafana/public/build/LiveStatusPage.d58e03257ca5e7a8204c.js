@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[2120],{93970:(e,n,a)=>{a.d(n,{q:()=>r});var s=a(18745),t=a(8674);const r=e=>{const n=(0,s.useSelector)((e=>e.navIndex));return(0,t.h)(n,e)}},6006:(e,n,a)=>{a.r(n),a.d(n,{default:()=>u});a(68404);var s,t=a(69371),r=a(93970),c=a(45916);function u(){const e=(0,r.q)("live-status");return(0,c.jsx)(t.T,{navModel:e,children:s||(s=(0,c.jsx)(t.T.Contents,{children:"Live/Live/Live"}))})}}}]);
+//# sourceMappingURL=LiveStatusPage.d58e03257ca5e7a8204c.js.map

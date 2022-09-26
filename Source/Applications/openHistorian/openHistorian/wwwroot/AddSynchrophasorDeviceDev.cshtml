@@ -1979,9 +1979,9 @@
 
                             return $(promises).whenAll();
                         })
-                            .fail(function (error) {
-                                showErrorMessage("Failed to query device measurements: " + error, null, true);
-                            }));
+                        .fail(function (error) {
+                            showErrorMessage("Failed to query device measurements: " + error, null, true);
+                        }));
                     }
                     else {
                         if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
@@ -2002,7 +2002,7 @@
                         for (let i = 0; i < voltages.length; i++) {
                             const voltage = voltages[i];
 
-                            voltagePromises.push(phasorHub.newPhasor().then(function (phasor) {
+                            voltagePromises.push(phasorHub.newPhasorWithTimestamps(voltage.UpdatedOn, voltage.CreatedOn).then(function (phasor) {
                                 phasor.DeviceID = cell.ID;
                                 phasor.Label = voltage.Label();
                                 phasor.Type = "V";
@@ -2062,7 +2062,7 @@
                             for (let i = 0; i < currents.length; i++) {
                                 const current = currents[i];
 
-                                currentPromises.push(phasorHub.newPhasor().then(function (phasor) {
+                                currentPromises.push(phasorHub.newPhasorWithTimestamps(current.UpdatedOn, current.CreatedOn).then(function (phasor) {
                                     const associatedVoltage = current.Current.AssociatedVoltage();
                                     const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
                                     let baseKV = 0;
@@ -2112,7 +2112,6 @@
                                                 showErrorMessage("Failed to update current phasor: " + error, null, true);
                                             });
                                         });
-
                                     })
                                     .fail(function (error) {
                                         showErrorMessage("Failed to save new current phasor: " + error, null, true);

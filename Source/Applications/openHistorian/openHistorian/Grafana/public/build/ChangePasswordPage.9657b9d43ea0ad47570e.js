@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[6848],{62111:(e,a,s)=>{s.r(a),s.d(a,{ChangePasswordPage:()=>h,default:()=>t});s(68404);var r=s(62586),n=s(85040),d=s(23452),c=s(45916);const h=e=>(0,c.jsx)(n.dd,{children:(0,c.jsx)(n.$s,{children:(0,c.jsx)(r.Z,{resetCode:e.queryParams.code,children:e=>{let{changePassword:a}=e;return(0,c.jsx)(d.G,{onSubmit:a})}})})}),t=h}}]);
+//# sourceMappingURL=ChangePasswordPage.9657b9d43ea0ad47570e.js.map
