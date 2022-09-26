@@ -1181,7 +1181,9 @@
             };
 
             self.loadConfigFrame = function (configFrame) {
-                self.connectionString(configFrame.ConnectionString + "");
+                if ((configFrame.ConnectionString + "").length > 0)
+                    self.connectionString(configFrame.ConnectionString + "");
+
                 self.configFrame(configFrame);
                 self.voltageCount = 0;
 
@@ -1742,7 +1744,7 @@
                     StationName: self.deviceName(),
                     IDLabel: self.deviceAcronym(),
                     FrameRate: configFrame.FrameRate,
-                    ConnectionString: configFrame.ConnectionString,
+                    ConnectionString: "", //configFrame.ConnectionString,
                     ProtocolID: configFrame.ProtocolID,
                     Cells: serializedCells
                 };
@@ -2034,6 +2036,12 @@
                                         .fail(function (error) {
                                             showErrorMessage("Failed to query voltage phasor: " + error, null, true);
                                         });
+                                    })
+                                    .then(function () {
+                                        // Update phasor after add so UpdatedOn date is greater than CreatedOn
+                                        return phasorHub.updatePhasor(phasor).fail(function (error) {
+                                            showErrorMessage("Failed to update voltage phasor: " + error, null, true);
+                                        });
                                     });
                                 })
                                 .fail(function (error) {
@@ -2097,7 +2105,14 @@
                                             return phasorHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
                                                 current.iphaMeasurement = measurement;
                                             });
+                                        })
+                                        .then(function () {
+                                            // Update phasor after add so UpdatedOn date is greater than CreatedOn
+                                            return phasorHub.updatePhasor(phasor).fail(function (error) {
+                                                showErrorMessage("Failed to update current phasor: " + error, null, true);
+                                            });
                                         });
+
                                     })
                                     .fail(function (error) {
                                         showErrorMessage("Failed to save new current phasor: " + error, null, true);

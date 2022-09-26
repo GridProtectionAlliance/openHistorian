@@ -309,6 +309,12 @@
                         <hr class="quarter-break" />
                     </text>
                     }
+                    @if (Model.Global.MASInstalled && !string.IsNullOrEmpty(Model.Global.MASVersion)) {
+                    <text>
+                        <span class="badge badge-fixed" id="Model.Global.MASVersion">@(Model.Global.MASVersion)</span>MAS&nbsp;Version
+                        <hr class="quarter-break" />
+                    </text>
+                    }
                     <span class="badge badge-fixed" id="databaseType">DB: @databaseType</span>Config&nbsp;Type
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name

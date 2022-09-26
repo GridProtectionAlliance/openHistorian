@@ -280,6 +280,47 @@ namespace openHistorian
             Model.Global.SystemName = systemSettings["SystemName"].Value;
             Model.Global.OscDashboard = systemSettings["OscDashboard"].Value;
 
+
+
+            try
+            {
+                string assemblyFile = FilePath.GetAbsolutePath("MAS.Adapters.dll");
+                
+                if (File.Exists(assemblyFile))
+                {
+                    Model.Global.MASInstalled = true;
+                    Model.Global.MASVersion = Assembly.LoadFrom(assemblyFile).GetName().Version.ToString();
+                }
+                else
+                {
+                    assemblyFile = FilePath.GetAbsolutePath("MAS\\MAS.Adapters.dll");
+                    
+                    if (File.Exists(assemblyFile))
+                    {
+                        Model.Global.MASInstalled = true;
+                        Model.Global.MASVersion = Assembly.LoadFrom(assemblyFile).GetName().Version.ToString();
+                    }
+                    else
+                    {
+                        assemblyFile = FilePath.GetAbsolutePath("MASTools\\MAS.Adapters.dll");
+                    
+                        if (File.Exists(assemblyFile))
+                        {
+                            Model.Global.MASInstalled = true;
+                            Model.Global.MASVersion = Assembly.LoadFrom(assemblyFile).GetName().Version.ToString();
+                        }
+                    }
+                }
+
+                if (Model.Global.MASVersion.EndsWith(".0"))
+                    Model.Global.MASVersion = Model.Global.MASVersion.Substring(0, Model.Global.MASVersion.Length - 2);
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                Model.Global.MASInstalled = false;
+            }
+
             try
             {
                 // Attempt to check if table exists using a method that should work across database types

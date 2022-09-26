@@ -59,6 +59,10 @@ namespace openHistorian
 
         public string GrafanaServerPath { get; set; }
 
+        public bool MASInstalled { get; set; }
+        
+        public string MASVersion { get; set; }
+
         public string DefaultCorsOrigins { get; set; }
 
         public string DefaultCorsHeaders { get; set; }
