@@ -22,6 +22,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+!Source/Applications/openHistorian/openHistorian/Grafana/
+!Source/Applications/openHistorian/openHistorian/Grafana/public/
 !Source/Applications/openHistorian/openHistorian/Grafana/public/build/
 !Source/Applications/openHistorian/openHistorian/Grafana/public/lib/
 
