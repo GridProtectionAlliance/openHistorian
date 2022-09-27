@@ -469,7 +469,7 @@
   <Target Name="ArchiveSource" Condition="'@(SourcesToArchive)' != ''">
     <!-- Create archive of source tree. -->
     <Message Text="Archiving source code..."/>
-    <Copy SourceFiles="@(SourcesToArchive)" DestinationFolder="$(SourceArchiveWorkingDirectory)\%(SourcesToArchive.RecursiveDir)" ContinueOnError="WarnAndContinue"/>
+    <Copy SourceFiles="@(SourcesToArchive)" DestinationFolder="$(SourceArchiveWorkingDirectory)\%(SourcesToArchive.RecursiveDir)"/>
     <ItemGroup>
       <SourcesToArchive Remove="@(SourcesToArchive)"/>
       <SourcesToArchive Include="$(SourceArchiveWorkingDirectory)\**\*.*"/>
