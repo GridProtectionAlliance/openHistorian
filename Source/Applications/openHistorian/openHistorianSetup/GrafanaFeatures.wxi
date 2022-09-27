@@ -1,5 +1,5 @@
 <Include>
-<Feature Id="GrafanaFilesFeature" Title="Grafana" Description="Grafana Visualization System">
+<Feature Id="GrafanaFilesFeature" Title="Grafana" Description="Installs the Grafana visualization system and related components.">
   <ComponentGroupRef Id="Grafana_Components" />
   <ComponentGroupRef Id="Grafana_bin_Components" />
   <ComponentGroupRef Id="Grafana_conf_Components" />

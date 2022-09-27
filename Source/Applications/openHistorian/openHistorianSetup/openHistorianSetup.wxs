@@ -18,7 +18,7 @@
 
     <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER">
       <!-- openHistorian -->
-      <Feature Id="openHistorianFeature" Title="openHistorian">
+      <Feature Id="openHistorianFeature" Title="openHistorian" Description="Installs the openHistorian Windows service application along with any needed dependencies.">
         <ComponentGroupRef Id="openHistorianComponents" />
         <ComponentGroupRef Id="AdapterComponents" />
         <ComponentGroupRef Id="BouncyCastleDependencyComponents" />
@@ -42,7 +42,7 @@
       </Feature>
 
       <!-- openHistorian Manager -->
-      <Feature Id="openHistorianManagerFeature" Title="openHistorian Manager">
+      <Feature Id="openHistorianManagerFeature" Title="openHistorian Manager" Description="Installs the openHistorian Manager Windows application along with any needed dependencies.">
         <ComponentGroupRef Id="openHistorianManagerComponents" />
         <ComponentGroupRef Id="AdapterComponents" />
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
@@ -52,63 +52,71 @@
       </Feature>
 
       <!-- openHistorian Console -->
-      <Feature Id="openHistorianConsoleFeature" Title="openHistorian Console">
+      <Feature Id="openHistorianConsoleFeature" Title="openHistorian Console" Description="Installs the openHistorian remote console application along with any needed dependencies.">
         <ComponentGroupRef Id="openHistorianConsoleComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
       </Feature>
 
       <!-- openHistorian Tools -->
-      <Feature Id="openHistorianToolsFeature" Title="Tools">
-        <Feature Id="ConfigCrypterFeature" Title="Config Crypter">
+      <Feature Id="openHistorianToolsFeature" Title="Tools" Description="Installs the openHistorian support applications and tools along with any needed dependencies.">
+        <Feature Id="ConfigCrypterFeature" Title="Config Crypter" Description="The Config Crypter tool is used to encrypt text strings for use in XML-based configuration files, as well as import and export local cipher keys.">
           <ComponentGroupRef Id="ConfigCrypterComponents" />
         </Feature>
-        <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
+        <Feature Id="ConfigurationEditorFeature" Title="XML Configuration Editor" Description="The XML Configuration Editor is used to modify XML-based application configuration files, i.e., files suffixed with '.exe.Config'.">
           <ComponentGroupRef Id="ConfigurationEditorComponents" />
         </Feature>
-        <Feature Id="CSVDataManagerFeature" Title="CSV Data Manager">
+        <Feature Id="CSVDataManagerFeature" Title="CSV Data Manager" Description="The CSV Data Manager tool is used for bulk database operations and is used to allow CSV based I/O for update and delete operations associated with a target database.">
           <ComponentGroupRef Id="CSVDataManagerComponents" />
         </Feature>
-        <Feature Id="StatisticViewFeature" Title="Statistics Trending Tool">
+        <Feature Id="StatisticViewFeature" Title="Statistics Trending Tool" Description="The Statistics Trending Tool is used to trend and export archived diagnostic statistics over a provided time range.">
           <ComponentGroupRef Id="StatisticViewComponents" />
         </Feature>
-        <Feature Id="HistorianViewFeature" Title="Historian Trending Tool">
+        <Feature Id="HistorianViewFeature" Title="Historian View Utility" Description="The Historian View Utility is used to trend archived openHistorian time-series data over a provided time range.">
           <ComponentGroupRef Id="HistorianViewComponents" />
         </Feature>
-        <Feature Id="LogFileViewerFeature" Title="Log File Viewer">
+        <Feature Id="LogFileViewerFeature" Title="Log File Viewer" Description="The Log File Viewer tool is used to examine and filter logged diagnostics data and perform detailed analysis and filtering of log information.">
           <ComponentGroupRef Id="LogFileViewerComponents" />
         </Feature>
-        <Feature Id="ArchiveUpgradeUtilityFeature" Title="Archive Upgrade Utility">
+        <Feature Id="ArchiveUpgradeUtilityFeature" Title="Archive Upgrade Utility" Description="The Archive Upgrade Utility is used to convert version 1.0 openHistorian files into the new 2.0 file format.">
           <ComponentGroupRef Id="ArchiveUpgradeUtilityComponents" />
         </Feature>
-        <Feature Id="DNP3ConfigGeneratorFeature" Title="DNP3 Configuration Generator">
+        <Feature Id="DNP3ConfigGeneratorFeature" Title="DNP3 Configuration Generator" Description="The DNP3 Configuration Generator is a console tool to create a sample DNP3 configuration files and extract any needed DNP3 adapter dependencies.">
           <ComponentRef Id="DNP3ConfigGenerator" />
         </Feature>
-        <Feature Id="CreateOutputStreamFeature" Title="Create Output Stream Tool">
+        <Feature Id="CreateOutputStreamFeature" Title="Create Output Stream Tool" Description="The Create Output Stream Tool is a console tool to create an IEEE C37.118 output stream from a source CSV file.">
           <ComponentRef Id="CreateOutputStream"/>
         </Feature>
-        <Feature Id="UpdateCOMTRADECountersFeature" Title="Update COMTRADE Counters Utility">
+        <Feature Id="UpdateCOMTRADECountersFeature" Title="Update COMTRADE Counters Utility" Description="The Update COMTRADE Counters Utility allows for web-based exports of COMTRADE Combined File Format (CFF) files to update counts post download.">
           <ComponentRef Id="UpdateCOMTRADECounters"/>
         </Feature>
-        <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility">
+        <Feature Id="ArchiveComparisonUtilityFeature" Title="Archive Comparison Utility" Description="The Archive Comparison tool is used to compare two separate openHistorian archives and produce a report of differences.">
           <ComponentGroupRef Id="ArchiveComparisonUtilityComponents" />
         </Feature>
-        <Feature Id="DataExtractionUtilityFeature" Title="Data Extraction Utility">
+        <Feature Id="DataExtractionUtilityFeature" Title="Data Extraction Utility" Description="The Data Extraction Utility is a simple openHistorian to CSV export utility that exports data based on signal type selections.">
           <ComponentGroupRef Id="DataExtractionUtilityComponents" />
         </Feature>
-        <Feature Id="GEPDataExtractorFeature" Title="GEP Data Extractor">
+        <Feature Id="GEPDataExtractorFeature" Title="GEP Data Extractor" Description="The Gateway Exchange Protocol (GEP) Data Extraction Utility is used to export selected signals from a given time-range to CSV files.">
           <ComponentGroupRef Id="GEPDataExtractorComponents" />
         </Feature>
-        <Feature Id="UpdateTagNamesFeature" Title="Update Tag Names Tool">
+        <Feature Id="UpdateTagNamesFeature" Title="Update Tag Names Tool" Description="The Update Point Tag Name tool is used update the point tag naming expression used to automate naming of measurement points tags in time-series databases.">
           <ComponentGroupRef Id="UpdateTagNamesComponents" />
         </Feature>
-        <Feature Id="openVisNFeature" Title="openVisN">
+        <Feature Id="openVisNFeature" Title="openVisN" Description="The openVision application is a visualization and analysis tool for the openHistorian that display parallel data charts over a provided time window.">
           <ComponentGroupRef Id="openVisNComponents" />
         </Feature>
-        <Feature Id="NoInetFixUtilFeature" Title="No-Internet Fix Utility">
+        <Feature Id="NoInetFixUtilFeature" Title="No-Internet Fix Utility" Description="The No-Internet File Utility tool is used to update a system that does not have access to an Internet connection.">
           <ComponentRef Id="NoInetFixUtil" />
         </Feature>
 
         <ComponentGroupRef Id="GSFDependencyComponents" />
+      </Feature>
+
+      <!-- openHistorian Optional Features -->
+      <Feature Id="openHistorianOptionalFeatures" Title="Optional Components" Description="Allows installation of optional openHistorian components that are not required for common deployments." Level="2">
+        <!-- eDNA Adapter Components -->
+        <Feature Id="eDNAAdapterFeature" Title="eDNA Historian Adapter" Description="Installs the eDNA Historian time-series library output adapter and associated eDNA API dependencies">
+          <ComponentGroupRef Id="eDNAAdapterComponents" />
+        </Feature>
       </Feature>
 
       <ComponentRef Id="InstallFolderPermissions"/>
@@ -892,6 +900,30 @@
           <netfx:NativeImage Id="ngen_WavInputAdapter.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="NModbus4">
+        <!-- Dependency for Modbus connectivity -->
+        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll">
+          <netfx:NativeImage Id="ngen_NModbus4.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="AzureEventHubAdapters">
+        <File Id="AzureEventHubAdapters.dll" Name="AzureEventHubAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AzureEventHubAdapters.dll">
+          <netfx:NativeImage Id="ngen_AzureEventHubAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Azure.Amqp">
+        <File Id="Microsoft.Azure.Amqp.dll" Name="Microsoft.Azure.Amqp.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.Amqp.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Azure.Ampq.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Azure.EventHubs">
+        <File Id="Microsoft.Azure.EventHubs.dll" Name="Microsoft.Azure.EventHubs.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.EventHubs.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Azure.EventHubs.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+    </ComponentGroup>
+    
+    <ComponentGroup Id="eDNAAdapterComponents" Directory="INSTALLFOLDER">
       <Component Id="eDNAAdapters">
         <!-- eDNA Historian Adapters -->
         <File Id="eDNAAdapters.dll" Name="eDNAAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\eDNAAdapters.dll">
@@ -917,27 +949,6 @@
       <Component Id="EzDNAServApiNet64">
         <File Id="EzDNAServApiNet64.dll" Name="EzDNAServApiNet64.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EzDNAServApiNet64.dll">
           <netfx:NativeImage Id="ngen_ExDNAServApiNet64.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-        </File>
-      </Component>
-      <Component Id="NModbus4">
-        <!-- Dependency for Modbus connectivity -->
-        <File Id="NModbus4.dll" Name="NModbus4.dll" Source="$(var.SolutionDir)\Dependencies\GSF\NModbus4.dll">
-          <netfx:NativeImage Id="ngen_NModbus4.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-        </File>
-      </Component>
-      <Component Id="AzureEventHubAdapters">
-        <File Id="AzureEventHubAdapters.dll" Name="AzureEventHubAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AzureEventHubAdapters.dll">
-          <netfx:NativeImage Id="ngen_AzureEventHubAdapters.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-        </File>
-      </Component>
-      <Component Id="Microsoft.Azure.Amqp">
-        <File Id="Microsoft.Azure.Amqp.dll" Name="Microsoft.Azure.Amqp.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.Amqp.dll">
-          <netfx:NativeImage Id="ngen_Microsoft.Azure.Ampq.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-        </File>
-      </Component>
-      <Component Id="Microsoft.Azure.EventHubs">
-        <File Id="Microsoft.Azure.EventHubs.dll" Name="Microsoft.Azure.EventHubs.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Azure.EventHubs.dll">
-          <netfx:NativeImage Id="ngen_Microsoft.Azure.EventHubs.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
     </ComponentGroup>
