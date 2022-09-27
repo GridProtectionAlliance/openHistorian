@@ -24,4 +24,4 @@ SetLocal
 IF NOT "%1" == "" SET logflag=/l:FileLogger,Microsoft.Build.Engine;logfile=%1
 
 ECHO BuildBeta: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe openHistorian.buildproj /p:ForceBuild=true %logflag%
-"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" openHistorian.buildproj /p:ForceBuild=true %logFlag%
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" openHistorian.buildproj /p:SourceArchiveWorkingDirectory=D:\temp\openHistorian\ /p:ForceBuild=true %logFlag%
