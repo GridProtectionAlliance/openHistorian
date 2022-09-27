@@ -1,5 +1,5 @@
 <Include>
-<Feature Id="WebFilesFeature" Title="Web Files" Description="Web Files">
+<Feature Id="WebFilesFeature" Title="Web Files" Description="Installs the openHistorian web UI components.">
   <ComponentGroupRef Id="wwwroot_Components" />
   <ComponentGroupRef Id="wwwroot_Content_Components" />
   <ComponentGroupRef Id="wwwroot_Content_fonts_Components" />

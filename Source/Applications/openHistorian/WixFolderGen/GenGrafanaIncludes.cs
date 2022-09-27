@@ -61,7 +61,7 @@ namespace WiXFolderGen
             using (StreamWriter writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<Include>");
-                writer.WriteLine("<Feature Id=\"GrafanaFilesFeature\" Title=\"Grafana\" Description=\"Grafana Visualization System\">");
+                writer.WriteLine("<Feature Id=\"GrafanaFilesFeature\" Title=\"Grafana\" Description=\"Installs the Grafana visualization system and related components.\">");
 
                 foreach (string tag in componentGroupRefTags)
                     writer.WriteLine("  " + tag);

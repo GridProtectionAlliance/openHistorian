@@ -60,7 +60,7 @@ namespace WiXFolderGen
             using (StreamWriter writer = new StreamWriter(stream))
             {
                 writer.WriteLine("<Include>");
-                writer.WriteLine("<Feature Id=\"WebFilesFeature\" Title=\"Web Files\" Description=\"Web Files\">");
+                writer.WriteLine("<Feature Id=\"WebFilesFeature\" Title=\"Web Files\" Description=\"Installs the openHistorian web UI components.\">");
 
                 foreach (string tag in componentGroupRefTags)
                     writer.WriteLine("  " + tag);

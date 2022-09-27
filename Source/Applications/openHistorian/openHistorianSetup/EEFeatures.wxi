@@ -1,5 +1,5 @@
 <Include >
-  <Feature Id="EEFilesFeature" Title="EE Files" Description="Enterprise Edition Files">
+  <Feature Id="EEFilesFeature" Title="EE Files" Description="Installs any available openHistorian Enterprise Edition components.">
     <ComponentGroupRef Id="EEFiles" />
   </Feature>
 </Include>
