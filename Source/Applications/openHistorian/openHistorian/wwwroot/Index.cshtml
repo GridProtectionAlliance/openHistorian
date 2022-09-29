@@ -296,22 +296,38 @@
                     <span class="badge badge-fixed" id="localTime">@DateTime.Now.ToString(localTimeFormat)</span>Client&nbsp;Time
                 </p>
             </div>
-            <div class="list-group-item">
+            <div class="list-group-item" style="white-space: nowrap">
                 <p class="list-group-item-text">
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="currentUser"><button type="button" class="btn btn-link" id="userInfoButton" style="margin-left: -5px">@GetCurrentUserID()</button></span> Current User
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="applicationVersion">@applicationVersion</span>App&nbsp;Version
                     <hr class="quarter-break" />
-                    @if (Model.Global.GrafanaServerInstalled && !string.IsNullOrEmpty(grafanaVersion)) {
+                    @if (Model.Global.GrafanaServerInstalled && !string.IsNullOrEmpty(grafanaVersion))
+                    {
                     <text>
                         <span class="badge badge-fixed" id="grafanaVersion">@(grafanaVersion)</span>Grafana&nbsp;Version
                         <hr class="quarter-break" />
                     </text>
                     }
-                    @if (Model.Global.MASInstalled && !string.IsNullOrEmpty(Model.Global.MASVersion)) {
+                    @if (Model.Global.MASInstalled && !string.IsNullOrEmpty(Model.Global.MASVersion))
+                    {
                     <text>
-                        <span class="badge badge-fixed" id="Model.Global.MASVersion">@(Model.Global.MASVersion)</span>MAS&nbsp;Version
+                        <span class="badge badge-fixed" id="MASVersion">@(Model.Global.MASVersion)</span>MAS&nbsp;Version
+                        <hr class="quarter-break" />
+                    </text>
+                    }
+                    @if (Model.Global.PMUConnectionTesterInstalled && !string.IsNullOrEmpty(Model.Global.PMUConnectionTesterVersion))
+                    {
+                    <text>
+                        <span class="badge badge-fixed" id="PMUConnectionTesterVersion">@(Model.Global.PMUConnectionTesterVersion)</span>PMU&nbsp;CT&nbsp;Version
+                        <hr class="quarter-break" />
+                    </text>
+                    }
+                    @if (Model.Global.StreamSplitterInstalled && !string.IsNullOrEmpty(Model.Global.StreamSplitterVersion))
+                    {
+                    <text>
+                        <span class="badge badge-fixed" id="StreamSplitterVersion">@(Model.Global.StreamSplitterVersion)</span>StreamSplitter&nbsp;Version
                         <hr class="quarter-break" />
                     </text>
                     }

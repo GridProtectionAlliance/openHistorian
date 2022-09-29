@@ -63,6 +63,14 @@ namespace openHistorian
         
         public string MASVersion { get; set; }
 
+        public bool PMUConnectionTesterInstalled { get; set; }
+        
+        public string PMUConnectionTesterVersion { get; set; }
+
+        public bool StreamSplitterInstalled { get; set; }
+        
+        public string StreamSplitterVersion { get; set; }
+
         public string DefaultCorsOrigins { get; set; }
 
         public string DefaultCorsHeaders { get; set; }

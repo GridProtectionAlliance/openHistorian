@@ -55,6 +55,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace openHistorian
 {
@@ -280,7 +281,8 @@ namespace openHistorian
             Model.Global.SystemName = systemSettings["SystemName"].Value;
             Model.Global.OscDashboard = systemSettings["OscDashboard"].Value;
 
-
+            static string removeTrailingZeroRevision(string version) =>
+                version.EndsWith(".0") ? version.Substring(0, version.Length - 2) : version;
 
             try
             {
@@ -312,13 +314,52 @@ namespace openHistorian
                     }
                 }
 
-                if (Model.Global.MASVersion.EndsWith(".0"))
-                    Model.Global.MASVersion = Model.Global.MASVersion.Substring(0, Model.Global.MASVersion.Length - 2);
+                Model.Global.MASVersion = removeTrailingZeroRevision(Model.Global.MASVersion);
             }
             catch (Exception ex)
             {
                 Logger.SwallowException(ex);
                 Model.Global.MASInstalled = false;
+            }
+
+            try
+            {
+                object connectionTesterRevision = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\PMUConnectionTester", "Revision", null);
+
+                if (connectionTesterRevision is null)
+                {
+                    Model.Global.PMUConnectionTesterInstalled = false;
+                }
+                else
+                {
+                    Model.Global.PMUConnectionTesterInstalled = File.Exists($@"{Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\PMUConnectionTester", "InstallPath", null)}\PmuConnectionTester.exe");
+                    Model.Global.PMUConnectionTesterVersion = removeTrailingZeroRevision(connectionTesterRevision.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                Model.Global.PMUConnectionTesterInstalled = false;
+            }
+
+            try
+            {
+                object streamSplitterRevision = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\SynchrophasorStreamSplitter", "Revision", null);
+
+                if (streamSplitterRevision is null)
+                {
+                    Model.Global.StreamSplitterInstalled = false;
+                }
+                else
+                {
+                    Model.Global.StreamSplitterInstalled = File.Exists($@"{Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\SynchrophasorStreamSplitter", "InstallPath", null)}\StreamSplitter.exe");;
+                    Model.Global.StreamSplitterVersion = removeTrailingZeroRevision(streamSplitterRevision.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                Model.Global.StreamSplitterInstalled = false;
             }
 
             try
