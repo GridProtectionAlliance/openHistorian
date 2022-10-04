@@ -273,6 +273,8 @@
       <Link>UpdateCOMTRADECounters.exe</Link>
     </EmbeddedResource>
     <Content Include="Grafana\Readme.txt" />
+    <Content Include="Installers\PMUConnectionTesterVersion.txt" />
+    <Content Include="Installers\StreamSplitterVersion.txt" />
     <Content Include="Readme.txt" />
     <Content Include="wwwroot\Content\bootstrap-datetimepicker.css" />
     <Content Include="wwwroot\Content\fonts\jsglyph.svg" />
@@ -323,6 +325,8 @@
     <Content Include="Grafana\data\grafana.db" />
     <EmbeddedResource Include="Full Calculations.TagTemplate" />
     <Content Include="Grafana\data\Home.json" />
+    <Content Include="Installers\PMUConnectionTesterSetup.msi" />
+    <Content Include="Installers\StreamSplitterSetup.msi" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <EmbeddedResource Include="Sample1344.PmuCapture">

@@ -28,14 +28,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace ConfigurationSetupUtility.Screens
 {
     /// <summary>
     /// Interaction logic for WelcomePage.xaml
     /// </summary>
-    public partial class WelcomeScreen : UserControl, IScreen
+    public partial class WelcomeScreen : IScreen
     {
         #region [ Members ]
 
@@ -122,7 +122,7 @@ namespace ConfigurationSetupUtility.Screens
                 m_state["64bit"] = args.Contains("-64bit", StringComparer.CurrentCultureIgnoreCase);
 
             if (installFlag)
-                m_welcomeMessageTextBlock.Text = "You now need to set up the openHistorian configuration.\r\n";
+                m_welcomeMessageTextBlock.Text = "You now need to set up the openHistorian configuration.";
             else
                 m_welcomeMessageTextBlock.Text = "";
 
@@ -132,30 +132,119 @@ namespace ConfigurationSetupUtility.Screens
             if (m_state != null)
                 m_state["historianSetupScreen"] = new HistorianSetupScreen();
 
-            m_installConnectionTester.IsEnabled = File.Exists("Installers\\PMUConnectionTesterSetup.msi");
-            m_installStreamSplitter.IsEnabled = File.Exists("Installers\\StreamSplitterSetup.msi");
+            UpdateInstallerVersionInfo();
         }
 
         private void m_installConnectionTester_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            using (Process installProcess = new Process())
-            {
-                installProcess.StartInfo.FileName = "msiexec.exe";
-                installProcess.StartInfo.Arguments = "-i Installers\\PMUConnectionTesterSetup.msi";
-                installProcess.Start();
-                installProcess.WaitForExit();
-            }
+            using Process installProcess = new Process();
+
+            installProcess.StartInfo.FileName = "msiexec.exe";
+            installProcess.StartInfo.Arguments = "-i Installers\\PMUConnectionTesterSetup.msi";
+            installProcess.Start();
+            installProcess.WaitForExit();
+
+            UpdateInstallerVersionInfo();
         }
 
         private void m_installStreamSplitter_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            using (Process installProcess = new Process())
+            using Process installProcess = new Process();
+
+            installProcess.StartInfo.FileName = "msiexec.exe";
+            installProcess.StartInfo.Arguments = "-i Installers\\StreamSplitterSetup.msi";
+            installProcess.Start();
+            installProcess.WaitForExit();
+
+            UpdateInstallerVersionInfo();
+        }
+
+        private void UpdateInstallerVersionInfo()
+        {
+            static string removeTrailingZeroRevision(string version) =>
+                version.EndsWith(".0") ? version.Substring(0, version.Length - 2) : version;
+            
+            string connectionTesterVersion;
+
+            try
             {
-                installProcess.StartInfo.FileName = "msiexec.exe";
-                installProcess.StartInfo.Arguments = "-i Installers\\StreamSplitterSetup.msi";
-                installProcess.Start();
-                installProcess.WaitForExit();
+                connectionTesterVersion = File.ReadAllText("Installers\\PMUConnectionTesterVersion.txt").Trim();
             }
+            catch
+            {
+                connectionTesterVersion = null;
+            }            
+            
+            if (!string.IsNullOrWhiteSpace(connectionTesterVersion))
+                m_installConnectionTester.Content = string.Format(m_installConnectionTester.Tag.ToString(), connectionTesterVersion);
+            
+            bool connectionTesterInstalled;
+
+            try
+            {
+                object connectionTesterRevision = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\PMUConnectionTester", "Revision", null);
+
+                if (connectionTesterRevision is null)
+                {
+                    connectionTesterInstalled = false;
+                }
+                else
+                {
+                    connectionTesterInstalled = File.Exists($@"{Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\PMUConnectionTester", "InstallPath", null)}\PmuConnectionTester.exe");
+                    connectionTesterVersion = removeTrailingZeroRevision(connectionTesterRevision.ToString());
+                }
+            }
+            catch
+            {
+                connectionTesterInstalled = false;
+            }
+
+            m_connectionTesterExisting.Content = connectionTesterInstalled ? 
+                $"Currently installed PMU Connection Tester: v{connectionTesterVersion}" :
+                "No current PMU Connection Tester installation detected";
+
+            m_installConnectionTester.IsEnabled = m_connectionTesterExisting.IsEnabled = File.Exists("Installers\\PMUConnectionTesterSetup.msi");
+
+            string streamSplitterVersion;
+
+            try
+            {
+                streamSplitterVersion = File.ReadAllText("Installers\\StreamSplitterVersion.txt").Trim();
+            }
+            catch
+            {
+                streamSplitterVersion = null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(streamSplitterVersion))
+                m_installStreamSplitter.Content = string.Format(m_installStreamSplitter.Tag.ToString(), streamSplitterVersion);
+
+            bool streamSplitterInstalled;
+
+            try
+            {
+                object streamSplitterRevision = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\SynchrophasorStreamSplitter", "Revision", null);
+
+                if (streamSplitterRevision is null)
+                {
+                    streamSplitterInstalled = false;
+                }
+                else
+                {
+                    streamSplitterInstalled = File.Exists($@"{Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Grid Protection Alliance\SynchrophasorStreamSplitter", "InstallPath", null)}\StreamSplitter.exe");
+                    streamSplitterVersion = removeTrailingZeroRevision(streamSplitterRevision.ToString());
+                }
+            }
+            catch
+            {
+                streamSplitterInstalled = false;
+            }
+
+            m_streamSplitterExisting.Content = streamSplitterInstalled ?
+                $"Currently installed Stream Splitter: v{streamSplitterVersion}" :
+                "No current Stream Splitter installation detected";
+
+            m_installStreamSplitter.IsEnabled = m_streamSplitterExisting.IsEnabled = File.Exists("Installers\\StreamSplitterSetup.msi");
         }
 
         #endregion

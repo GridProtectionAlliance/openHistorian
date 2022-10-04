@@ -298,8 +298,14 @@
       <Component Id="PMUConnectionTesterSetup">
         <File Id="PMUConnectionTesterSetup" Name="PMUConnectionTesterSetup.msi" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterSetup.msi" />
       </Component>
+      <Component Id="PMUConnectionTesterVersion">
+        <File Id="PMUConnectionTesterVersion" Name="PMUConnectionTesterVersion.txt" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\PMUConnectionTesterVersion.txt" />
+      </Component>
       <Component Id="StreamSplitterSetup">
         <File Id="StreamSplitterSetup" Name="StreamSplitterSetup.msi" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\StreamSplitterSetup.msi" />
+      </Component>
+      <Component Id="StreamSplitterVersion">
+        <File Id="StreamSplitterVersion" Name="StreamSplitterVersion.txt" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Installers\StreamSplitterVersion.txt" />
       </Component>
     </ComponentGroup>
   </Fragment>
