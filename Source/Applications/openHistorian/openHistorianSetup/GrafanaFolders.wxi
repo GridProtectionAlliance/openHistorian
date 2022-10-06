@@ -14,35 +14,7 @@
   <Directory Id="DATAFOLDER" Name="data">
     <Directory Id="DATAPLUGINSFOLDER" Name="plugins">
       <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELFOLDER" Name="grafana-clock-panel">
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANEL.CIRCLECIFOLDER" Name=".circleci" />
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELARTIFACTSFOLDER" Name="artifacts" />
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELDISTFOLDER" Name="dist">
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELDISTIMGFOLDER" Name="img" />
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELDISTPARTIALSFOLDER" Name="partials" />
-        </Directory>
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELPROVISIONINGFOLDER" Name="provisioning">
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELPROVISIONINGDATASOURCESFOLDER" Name="datasources" />
-        </Directory>
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSPECFOLDER" Name="spec" />
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSRCFOLDER" Name="src">
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSRCCSSFOLDER" Name="css" />
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSRCEXTERNALFOLDER" Name="external" />
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSRCIMGFOLDER" Name="img" />
-          <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELSRCPARTIALSFOLDER" Name="partials" />
-        </Directory>
-      </Directory>
-      <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELFOLDER" Name="grafana-piechart-panel">
-        <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANEL.CIRCLECIFOLDER" Name=".circleci" />
-        <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELARTIFACTSFOLDER" Name="artifacts" />
-        <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELDISTFOLDER" Name="dist">
-          <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELDISTIMGFOLDER" Name="img" />
-          <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELDISTSTYLESFOLDER" Name="styles" />
-        </Directory>
-        <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELSRCFOLDER" Name="src">
-          <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELSRCIMGFOLDER" Name="img" />
-          <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELSRCLIBFOLDER" Name="lib" />
-          <Directory Id="DATAPLUGINSGRAFANA_PIECHART_PANELSRCSTYLESFOLDER" Name="styles" />
-        </Directory>
+        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELIMGFOLDER" Name="img" />
       </Directory>
       <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELFOLDER" Name="grafana-pmumap-panel">
         <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELCSSFOLDER" Name="css" />
