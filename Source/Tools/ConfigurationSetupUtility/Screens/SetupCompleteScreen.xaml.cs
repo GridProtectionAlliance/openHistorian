@@ -216,6 +216,9 @@ namespace ConfigurationSetupUtility.Screens
                         // Always make sure time series startup operations are defined in the database.
                         ValidateTimeSeriesStartupOperations();
 
+                        // Validate the MAS adapter configuration in the database.
+                        ValidateMASAdapterConfiguration();
+
                         // Always make sure new configuration entity records are defined in the database.
                         ValidateConfigurationEntity();
 
@@ -575,6 +578,27 @@ namespace ConfigurationSetupUtility.Screens
             }
         }
 
+        private void ValidateMASAdapterConfiguration()
+        {
+            const string UpdateQuery = "UPDATE CustomActionAdapter SET AdapterName='OD-MW', AssemblyName='MAS.Adapters.dll' WHERE TypeName='MASGSF.BulkPhasorInputOscillationDetector'";
+            const string DeleteQuery = "DELETE FROM Measurement WHERE SignalReference LIKE 'MAS!%'";
+
+            IDbConnection connection = null;
+
+            try
+            {
+                connection = OpenNewConnection();
+
+                // See if MAS adapter needs updating to root location
+                if (connection.ExecuteNonQuery(UpdateQuery) > 0)
+                    connection.ExecuteNonQuery(DeleteQuery); // If so, force regeneration of MAS tags
+            }
+            finally
+            {
+                connection?.Dispose();
+            }
+        }
+        
         private void ValidateConfigurationEntity()
         {
             const string CountNodeInfoQuery = "SELECT COUNT(*) FROM ConfigurationEntity WHERE RuntimeName = 'NodeInfo'";
