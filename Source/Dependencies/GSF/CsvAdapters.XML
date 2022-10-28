@@ -19,6 +19,26 @@
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.TimestampFormat"/> property.
             </summary>
         </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultDownsampleInterval">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.DownsampleInterval"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultEnableTimeReasonabilityValidation">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.EnableTimeReasonabilityValidation"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultLagTime">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.LagTime"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultLeadTime">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.LeadTime"/> property.
+            </summary>
+        </member>
         <member name="M:CsvAdapters.CsvExportAdapter.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:CsvAdapters.CsvExportAdapter"/> class.
@@ -46,6 +66,26 @@
             Gets or sets the format of timestamps in the CSV exports.
             </summary>
         </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.DownsampleInterval">
+            <summary>
+            Gets or sets the downsampling interval, in seconds, set to zero for no downsampling.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.EnableTimeReasonabilityValidation">
+            <summary>
+            Gets or sets the flag that determines if timestamps should be validated against local clock for reasonability.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance against local clock for time reasonability validation, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance against local clock for time reasonability validation, in seconds (can be sub-second).
+            </summary>
+        </member>
         <member name="P:CsvAdapters.CsvExportAdapter.OutputIsForArchive">
             <summary>
             Gets the flag that determines if measurements sent to this <see cref="T:CsvAdapters.CsvExportAdapter"/> are destined for archival.
@@ -67,6 +107,11 @@
             offloaded due to errors or system failures.
             </summary>
         </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.Status">
+            <summary>
+            Gets the status of this <see cref="T:CsvAdapters.CsvExportAdapter"/>.
+            </summary>
+        </member>
         <member name="M:CsvAdapters.CsvExportAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:CsvAdapters.CsvExportAdapter"/>.
@@ -81,6 +126,12 @@
             <summary>
             Attempts to disconnect from data output stream.
             </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvExportAdapter.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
         </member>
         <member name="M:CsvAdapters.CsvExportAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
             <summary>
