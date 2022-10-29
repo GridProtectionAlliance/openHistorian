@@ -19,6 +19,16 @@
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.TimestampFormat"/> property.
             </summary>
         </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultHeaderLine">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.HeaderLine"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultFileNameTemplate">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.FileNameTemplate"/> property.
+            </summary>
+        </member>
         <member name="F:CsvAdapters.CsvExportAdapter.DefaultDownsampleInterval">
             <summary>
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.DownsampleInterval"/> property.
@@ -64,6 +74,16 @@
         <member name="P:CsvAdapters.CsvExportAdapter.TimestampFormat">
             <summary>
             Gets or sets the format of timestamps in the CSV exports.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.HeaderLine">
+            <summary>
+            Gets or sets the default header line for the CSV exports, set to empty string for no header. Column order is fixed as timestamp, ID, and value.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.FileNameTemplate">
+            <summary>
+            Gets or sets the CSV export filename template. String format parameter 0 is current UTC time.
             </summary>
         </member>
         <member name="P:CsvAdapters.CsvExportAdapter.DownsampleInterval">
