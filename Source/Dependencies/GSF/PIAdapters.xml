@@ -298,6 +298,11 @@
             Gets or sets the flag that determines if the compression enabled state, per UseCompression flag, should be adjusted for existing tags.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ArchiveOnChangeDataTypes">
+            <summary>
+            Gets or sets the data types to only archive on change. Empty string value means all values archived, <c>*</c> means archive all values on change, <c>DIGI</c> means only archive digital values on change. Separate multiple values with a comma, for example: <c>DIGI,VPHM,FREQ</c>.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
             <summary>
             Gets or sets the filename to be used for tag map cache.
@@ -360,6 +365,12 @@
             <summary>
             Closes this <see cref="T:PIAdapters.PIOutputAdapter"/> connections to the PI server.
             </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
         </member>
         <member name="M:PIAdapters.PIOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
             <summary>
