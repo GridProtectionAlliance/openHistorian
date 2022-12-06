@@ -51,6 +51,7 @@ using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
 using DeviceGroup = openHistorian.Model.DeviceGroup;
+using Measurement = openHistorian.Model.Measurement;
 using Timer = System.Timers.Timer;
 using GSFDataPublisher = GSF.TimeSeries.Transport.DataPublisher;
 using STTPDataPublisher = sttp.DataPublisher;
@@ -239,7 +240,7 @@ namespace openHistorian.Adapters
                 }
                 else
                 {
-                    List<string> archivePaths = new List<string>();
+                    List<string> archivePaths = new();
 
                     foreach (string archivePath in value.Split(';'))
                     {
@@ -298,7 +299,7 @@ namespace openHistorian.Adapters
                 }
                 else
                 {
-                    List<string> attachedPaths = new List<string>();
+                    List<string> attachedPaths = new();
 
                     foreach (string archivePath in value.Split(';'))
                     {
@@ -438,7 +439,7 @@ namespace openHistorian.Adapters
                 if (value is null)
                     return;
 
-                Dictionary<ulong, DataRow> measurements = new Dictionary<ulong, DataRow>();
+                Dictionary<ulong, DataRow> measurements = new();
                 string instanceName = InstanceName;
 
                 // Create dictionary of metadata for this server instance
@@ -448,7 +449,7 @@ namespace openHistorian.Adapters
                         measurements[key.ID] = row;
                 }
 
-                Dictionary<ulong, Tuple<int, int, double>> compressionSettings = new Dictionary<ulong, Tuple<int, int, double>>();
+                Dictionary<ulong, Tuple<int, int, double>> compressionSettings = new();
 
                 if (value.Tables.Contains("CompressionSettings"))
                 {
@@ -484,7 +485,7 @@ namespace openHistorian.Adapters
         {
             get
             {
-                StringBuilder status = new StringBuilder();
+                StringBuilder status = new();
 
                 status.Append(base.Status);
                 status.AppendLine();
@@ -510,10 +511,10 @@ namespace openHistorian.Adapters
                     status.AppendLine($" Maximum future time limit: {FutureTimeReasonabilityLimit:N4}s, i.e., {new Ticks(m_futureTimeReasonabilityLimit).ToElapsedTimeString(4)}");
                 }
 
-                if (!(m_dataServices is null))
+                if (m_dataServices is not null)
                     status.Append(m_dataServices.Status);
 
-                if (!(m_replicationProviders is null))
+                if (m_replicationProviders is not null)
                     status.Append(m_replicationProviders.Status);
 
                 Server?.Host?.GetFullStatus(status, 25);
@@ -536,7 +537,7 @@ namespace openHistorian.Adapters
         {
             set
             {
-                if (!(m_attachedPathWatchers is null))
+                if (m_attachedPathWatchers is not null)
                 {
                     foreach (SafeFileWatcher watcher in m_attachedPathWatchers)
                     {
@@ -569,7 +570,7 @@ namespace openHistorian.Adapters
 
                 AttachedPathWatchers = null;
 
-                if (!(m_dataServices is null))
+                if (m_dataServices is not null)
                 {
                     m_dataServices.AdapterCreated -= DataServices_AdapterCreated;
                     m_dataServices.AdapterLoaded -= DataServices_AdapterLoaded;
@@ -578,7 +579,7 @@ namespace openHistorian.Adapters
                     m_dataServices.Dispose();
                 }
 
-                if (!(m_replicationProviders is null))
+                if (m_replicationProviders is not null)
                 {
                     m_replicationProviders.AdapterCreated -= ReplicationProviders_AdapterCreated;
                     m_replicationProviders.AdapterLoaded -= ReplicationProviders_AdapterLoaded;
@@ -587,7 +588,7 @@ namespace openHistorian.Adapters
                     m_replicationProviders.Dispose();
                 }
 
-                if (!(m_archiveCurtailmentTimer is null))
+                if (m_archiveCurtailmentTimer is not null)
                 {
                     m_archiveCurtailmentTimer.Stop();
                     m_archiveCurtailmentTimer.Elapsed -= ArchiveCurtailmentTimerElapsed;
@@ -685,10 +686,10 @@ namespace openHistorian.Adapters
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
 
-            if (!(m_archiveDirectories is null))
+            if (m_archiveDirectories is not null)
                 m_archiveInfo.FinalWritePaths.AddRange(m_archiveDirectories);
 
-            if (!(m_attachedPaths is null))
+            if (m_attachedPaths is not null)
                 m_archiveInfo.ImportPaths.AddRange(m_attachedPaths);
 
             m_archiveInfo.ImportAttachedPathsAtStartup = false;
@@ -817,7 +818,7 @@ namespace openHistorian.Adapters
 
         private void ExecuteWildCardFileOperation(ClientDatabaseBase<HistorianKey, HistorianValue> database, string fileName, Action<List<Guid>> fileOperation)
         {
-            HashSet<string> sourceFiles = new HashSet<string>(FilePath.GetFileList(fileName).Select(Path.GetFullPath), StringComparer.OrdinalIgnoreCase);
+            HashSet<string> sourceFiles = new(FilePath.GetFileList(fileName).Select(Path.GetFullPath), StringComparer.OrdinalIgnoreCase);
             List<Guid> files = database.GetAllAttachedFiles().Where(file => sourceFiles.Contains(Path.GetFullPath(file.FileName))).Select(file => file.Id).ToList();
             fileOperation(files);
         }
@@ -836,7 +837,7 @@ namespace openHistorian.Adapters
 
         private ClientDatabaseBase<HistorianKey, HistorianValue> GetClientDatabase()
         {
-            if (!(m_archive?.ClientDatabase is null))
+            if (m_archive?.ClientDatabase is not null)
                 return m_archive.ClientDatabase;
 
             throw new InvalidOperationException("Cannot execute historian operation, archive database is not open.");
@@ -867,7 +868,7 @@ namespace openHistorian.Adapters
 
             OnConnected();
 
-            if (!(m_attachedPathWatchers is null))
+            if (m_attachedPathWatchers is not null)
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = true;
@@ -881,7 +882,7 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            if (!(m_attachedPathWatchers is null))
+            if (m_attachedPathWatchers is not null)
             {
                 foreach (SafeFileWatcher fileWatcher in m_attachedPathWatchers)
                     fileWatcher.EnableRaisingEvents = false;
@@ -924,10 +925,8 @@ namespace openHistorian.Adapters
                 // Check to see if swinging door compression is enabled
                 if (SwingingDoorCompressionEnabled)
                 {
-                    Tuple<int, int, double> settings = null;
-
                     // Attempt to lookup compression settings for this measurement
-                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out settings) ?? false) && !(settings is null))
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && settings is not null)
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
@@ -999,8 +998,8 @@ namespace openHistorian.Adapters
             {
                 ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
 
-                string[] archivedirectories = m_archiveDirectories ?? new string[0];
-                string[] attachedPaths = m_attachedPaths ?? new string[0];
+                string[] archivedirectories = m_archiveDirectories ?? Array.Empty<string>();
+                string[] attachedPaths = m_attachedPaths ?? Array.Empty<string>();
 
                 List<string> files = archivedirectories
                     .Concat(attachedPaths)
@@ -1037,7 +1036,7 @@ namespace openHistorian.Adapters
 
         private SafeFileWatcher WatchPath(string path)
         {
-            SafeFileWatcher fileWatcher = new SafeFileWatcher(path, "*.d2*");
+            SafeFileWatcher fileWatcher = new(path, "*.d2*");
 
             fileWatcher.Created += (sender, args) => ThreadPool.QueueUserWorkItem(state =>
             {
@@ -1121,7 +1120,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Accesses local output adapter instances (normally only one).
         /// </summary>
-        public static readonly ConcurrentDictionary<string, LocalOutputAdapter> Instances = new ConcurrentDictionary<string, LocalOutputAdapter>(StringComparer.OrdinalIgnoreCase);
+        public static readonly ConcurrentDictionary<string, LocalOutputAdapter> Instances = new(StringComparer.OrdinalIgnoreCase);
 
         private static int s_virtualProtocolID;
 
@@ -1152,10 +1151,11 @@ namespace openHistorian.Adapters
         // ReSharper disable UnusedParameter.Local
         private static void OptimizeLocalHistorianSettings(AdoDataConnection connection, string nodeIDQueryString, ulong trackingVersion, string arguments, Action<string> statusMessage, Action<Exception> processException)
         {
-            TableOperations<CustomInputAdapter> inputAdapterTable = new TableOperations<CustomInputAdapter>(connection);
-            TableOperations<CustomActionAdapter> actionAdapterTable = new TableOperations<CustomActionAdapter>(connection);
-            TableOperations<CustomOutputAdapter> outputAdapterTable = new TableOperations<CustomOutputAdapter>(connection);
-            TableOperations<Historian> historianTable = new TableOperations<Historian>(connection);
+            TableOperations<CustomInputAdapter> inputAdapterTable = new(connection);
+            TableOperations<CustomActionAdapter> actionAdapterTable = new(connection);
+            TableOperations<CustomOutputAdapter> outputAdapterTable = new(connection);
+            TableOperations<Historian> historianTable = new(connection);
+            TableOperations<Measurement> measurementTable = new(connection);
 
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup
             ConfigurationFile configFile = ConfigurationFile.Current;
@@ -1170,7 +1170,7 @@ namespace openHistorian.Adapters
                 // Load the defined local system historians
                 IEnumerable<DataRow> historians = connection.RetrieveData($"SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {nodeIDQueryString} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'").AsEnumerable();
 
-                List<string> validHistorians = new List<string>();
+                List<string> validHistorians = new();
 
                 // Apply settings optimizations to local historians
                 foreach (DataRow row in historians)
@@ -1187,7 +1187,7 @@ namespace openHistorian.Adapters
                 validHistorians.Sort();
 
                 // Create a list to track categories to remove
-                HashSet<string> categoriesToRemove = new HashSet<string>();
+                HashSet<string> categoriesToRemove = new();
 
                 // Search for unused settings categories
                 foreach (PropertyInformation info in configFile.Settings.ElementInformation.Properties)
@@ -1255,7 +1255,7 @@ namespace openHistorian.Adapters
                     string readerName = $"{instanceName}READER";
                     CustomInputAdapter inputAdapter = inputAdapterTable.QueryRecordWhere("AdapterName = {0}", readerName);
 
-                    if (!(inputAdapter is null))
+                    if (inputAdapter is not null)
                         continue;
 
                     ushort? port = null;
@@ -1331,6 +1331,56 @@ namespace openHistorian.Adapters
 
                 actionAdapter.ConnectionString = connectionString.JoinKeyValuePairs();
                 actionAdapterTable.UpdateRecord(actionAdapter);
+            }
+
+            IEnumerable<CustomActionAdapter> dynamicCalculators = actionAdapterTable.QueryRecordsWhere("TypeName = 'DynamicCalculator.DynamicCalculator'");
+
+            foreach (CustomActionAdapter dynamicCalculator in dynamicCalculators)
+            {
+                if (dynamicCalculator is null)
+                    continue;
+
+                Dictionary<string, string> connectionString = dynamicCalculator.ConnectionString?.ParseKeyValuePairs() ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                
+                // variableList={FREQ=bef9f097-d6f8-4b4f-9ce4-97ffa30a08e9}; expressionText=FREQ-60; framesPerSecond=30; lagTime=6; leadTime=3; outputMeasurements=5966846f-156d-4a2d-a181-08c4875447a1; useLatestValues=false
+                // variableList={VPOSA=62eb881c-4423-47bc-87bd-e3acfd5c7430; VAA=01564cc5-2451-4501-ba51-4fcea7173333}; expressionText=VPOSA-VAA; framesPerSecond=30; lagTime=6; leadTime=3; outputMeasurements=d59389a2-3816-4e84-a593-75f07369e582; useLatestValues=false
+
+                if (!connectionString.ContainsKey("variableList"))
+                    continue;
+
+                string variableList = connectionString["variableList"];
+
+                if (string.IsNullOrWhiteSpace(variableList))
+                    continue;
+
+                Dictionary<string, string> variables = variableList.ParseKeyValuePairs();
+                HashSet<Guid> signalIDs = new(variables.Values.Select(id => Guid.TryParse(id, out Guid signalID) ? signalID : Guid.Empty).Where(signalID => signalID != Guid.Empty));
+
+                if (signalIDs.Count == 0)
+                    continue;
+
+                int inputCount = connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM Measurement WHERE ID IN ({string.Join(",", signalIDs.Select(id => $"'{id}'"))})");
+                
+                if (inputCount == signalIDs.Count)
+                    continue;
+
+                // Remove any calculations that reference non-existent input measurements
+                int affectedRows = actionAdapterTable.DeleteRecord(dynamicCalculator);
+
+                if (affectedRows > 0)
+                    statusMessage($"Removed dynamic calculation adapter \"{dynamicCalculator.AdapterName}\" that referenced non-existent input measurements.");
+
+                // Remove result calculation output measurement
+                if (!connectionString.ContainsKey("outputMeasurements"))
+                    continue;
+
+                string outputMeasurement = connectionString["outputMeasurements"];
+
+                if (string.IsNullOrWhiteSpace(outputMeasurement))
+                    continue;
+
+                if (Guid.TryParse(outputMeasurement, out Guid outputMeasurementID))
+                    measurementTable.DeleteRecordWhere($"SignalID = '{outputMeasurementID}'");
             }
         }
 
