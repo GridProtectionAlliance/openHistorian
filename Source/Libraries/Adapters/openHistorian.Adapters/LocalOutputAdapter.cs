@@ -926,7 +926,7 @@ namespace openHistorian.Adapters
                 if (SwingingDoorCompressionEnabled)
                 {
                     // Attempt to lookup compression settings for this measurement
-                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && settings is not null)
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && !(settings is null))
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
