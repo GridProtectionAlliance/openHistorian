@@ -926,7 +926,7 @@ namespace openHistorian.Adapters
                 if (SwingingDoorCompressionEnabled)
                 {
                     // Attempt to lookup compression settings for this measurement
-                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && !(settings is null))
+                    if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && settings is not null)
                     {
                         // Get compression settings
                         int compressionMinTime = settings.Item1;
@@ -934,7 +934,7 @@ namespace openHistorian.Adapters
                         double compressionLimit = settings.Item3;
 
                         // Get current swinging door compression state, creating state if needed
-                        Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, id => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, double.MinValue, double.MaxValue));
+                        Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, _ => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, double.MinValue, double.MaxValue));
                         IMeasurement currentData = measurement;
                         IMeasurement archivedData = state.Item1;
                         IMeasurement previousData = state.Item2;
@@ -1038,7 +1038,7 @@ namespace openHistorian.Adapters
         {
             SafeFileWatcher fileWatcher = new(path, "*.d2*");
 
-            fileWatcher.Created += (sender, args) => ThreadPool.QueueUserWorkItem(state =>
+            fileWatcher.Created += (_, args) => ThreadPool.QueueUserWorkItem(state =>
             {
                 ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
                 string[] filePtr = { (string)state };
@@ -1359,7 +1359,7 @@ namespace openHistorian.Adapters
                 if (signalIDs.Count == 0)
                     continue;
 
-                int inputCount = connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM Measurement WHERE ID IN ({string.Join(",", signalIDs.Select(id => $"'{id}'"))})");
+                int inputCount = connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM Measurement WHERE SignalID IN ({string.Join(",", signalIDs.Select(id => $"'{id}'"))})");
                 
                 if (inputCount == signalIDs.Count)
                     continue;
