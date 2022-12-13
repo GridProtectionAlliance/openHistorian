@@ -254,19 +254,32 @@
             viewModel.queryPageRecords();
         });
 
-        function openDeviceGroupClassEditor() {
-            $("#editClassesFrame").attr({
-                "src": "DeviceGroupClasses.cshtml",
-                "height": $("#contentWell").outerHeight(true) * .85 + "px",
-                "width": "100%"
-            });
+        var previousLastUpdatedOn;
 
-            $("#editClassesDialog").modal("show");
+        function openDeviceGroupClassEditor() {
+            showInfoMessage("Loading device group class list editor...");
+
+            dataHub.queryDeviceGroupClassLastUpdated().done(function (lastUpdatedOn) {
+                previousLastUpdatedOn = new Date(lastUpdatedOn);
+
+                $("#editClassesFrame").attr({
+                    "src": "DeviceGroupClasses.cshtml",
+                    "height": $("#contentWell").outerHeight(true) * .85 + "px",
+                    "width": "100%"
+                });
+
+                $("#editClassesDialog").modal("show");
+            });
         }
 
         $("#editClassesDialog").on("hidden.bs.modal", function () {
-            // Reload page after class edit
-            location.reload();
+            dataHub.queryDeviceGroupClassLastUpdated().done(function (lastUpdatedOn) {
+                // Reload page after class edit
+                if (new Date(lastUpdatedOn) > previousLastUpdatedOn) {
+                    showInfoMessage("Refreshing updated device group class list...");
+                    location.reload();
+                }
+            });
         });
 
         $(function() {

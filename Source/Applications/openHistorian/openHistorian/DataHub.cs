@@ -410,6 +410,11 @@ namespace openHistorian
             return DataContext.Table<DeviceGroupClass>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
+        public DateTime QueryDeviceGroupClassLastUpdated()
+        {
+            return DataContext.Table<DeviceGroupClass>().QueryRecords().Max(deviceGroupClass => deviceGroupClass.UpdatedOn);
+        }
+
         [AuthorizeHubRole("Administrator, Editor")]
         [RecordOperation(typeof(DeviceGroupClass), RecordOperation.DeleteRecord)]
         public void DeleteDeviceGroupClass(int id)
