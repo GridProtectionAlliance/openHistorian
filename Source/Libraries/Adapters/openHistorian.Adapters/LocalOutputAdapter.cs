@@ -1156,6 +1156,7 @@ namespace openHistorian.Adapters
             TableOperations<CustomOutputAdapter> outputAdapterTable = new(connection);
             TableOperations<Historian> historianTable = new(connection);
             TableOperations<Measurement> measurementTable = new(connection);
+            TableOperations<DeviceGroupClass> deviceGroupClassTable = new(connection);
 
             // Make sure setting exists to allow user to by-pass local historian optimizations at startup
             ConfigurationFile configFile = ConfigurationFile.Current;
@@ -1331,6 +1332,29 @@ namespace openHistorian.Adapters
 
                 actionAdapter.ConnectionString = connectionString.JoinKeyValuePairs();
                 actionAdapterTable.UpdateRecord(actionAdapter);
+            }
+
+            // Make sure default device group classes are defined
+            int count = deviceGroupClassTable.QueryRecordCountWhere("Longitude = {0} and Latitude = {0}", DeviceGroupClass.DefaultGeoID);
+            
+            if (count == 0)
+            {
+                // Add default device group classes
+                List<string> classOptions = new()
+                {
+                    "Region",
+                    "Substation",
+                    "Generation",
+                    "Other"
+                };
+
+                foreach (string classOption in classOptions)
+                {
+                    DeviceGroupClass deviceGroupClass = deviceGroupClassTable.NewRecord();
+                    deviceGroupClass.Acronym = classOption.ToUpperInvariant();
+                    deviceGroupClass.Name = classOption;
+                    deviceGroupClassTable.AddNewRecord(deviceGroupClass);
+                }
             }
 
             IEnumerable<CustomActionAdapter> dynamicCalculators = actionAdapterTable.QueryRecordsWhere("TypeName = 'DynamicCalculator.DynamicCalculator'");

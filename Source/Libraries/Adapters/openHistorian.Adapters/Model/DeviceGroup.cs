@@ -43,7 +43,9 @@ namespace openHistorian.Model
         [StringLength(200)]
         public string Name { get; set; }
 
-        [StringLength(20)]
+        [Label("Class")]
+        [StringLength(200)]
+        [Searchable]
         public string OriginalSource { get; set; }
 
         [DefaultValue(false)]

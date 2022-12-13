@@ -396,6 +396,49 @@ namespace openHistorian
 
         #endregion
 
+        #region [ DeviceGroupClass Table Operations ]
+
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.QueryRecordCount)]
+        public int QueryDeviceGroupClassCount(string filterText)
+        {
+            return DataContext.Table<DeviceGroupClass>().QueryRecordCount(filterText);
+        }
+
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.QueryRecords)]
+        public IEnumerable<DeviceGroupClass> QueryDeviceGroupClasses(string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            return DataContext.Table<DeviceGroupClass>().QueryRecords(sortField, ascending, page, pageSize, filterText);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.DeleteRecord)]
+        public void DeleteDeviceGroupClass(int id)
+        {
+            DataContext.Table<DeviceGroupClass>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.CreateNewRecord)]
+        public DeviceGroupClass NewDeviceGroupClass()
+        {
+            return DataContext.Table<DeviceGroupClass>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.AddNewRecord)]
+        public void AddNewDeviceGroupClass(DeviceGroupClass deviceGroupClass)
+        {
+            DataContext.Table<DeviceGroupClass>().AddNewRecord(deviceGroupClass);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(DeviceGroupClass), RecordOperation.UpdateRecord)]
+        public void UpdateDeviceGroupClass(DeviceGroupClass deviceGroupClass)
+        {
+            DataContext.Table<DeviceGroupClass>().UpdateRecord(deviceGroupClass);
+        }
+
+        #endregion
+
         #region [ Measurement Table Operations ]
 
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecordCount)]

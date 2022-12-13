@@ -327,6 +327,7 @@
     <Content Include="Grafana\data\Home.json" />
     <Content Include="Installers\PMUConnectionTesterSetup.msi" />
     <Content Include="Installers\StreamSplitterSetup.msi" />
+    <Content Include="Grafana\VERSION" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <EmbeddedResource Include="Sample1344.PmuCapture">
@@ -347,6 +348,7 @@
     <Content Include="wwwroot\Content\fonts\jsglyph.eot" />
     <Content Include="wwwroot\Content\fonts\jsglyph.ttf" />
     <Content Include="wwwroot\Content\fonts\jsglyph.woff" />
+    <Content Include="wwwroot\DeviceGroupClasses.cshtml" />
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <Content Include="wwwroot\IaonGraph.cshtml" />

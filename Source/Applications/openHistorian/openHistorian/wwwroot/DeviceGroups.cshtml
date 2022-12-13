@@ -51,7 +51,8 @@
     {   //    { "Field", "Label", "Classes" }
         new[] { "Acronym", "Acronym", "text-left" },
         new[] { "Name", "Name", "text-left" },
-        new[] { null, "Devices", "text-center" },
+        new[] { "OriginalSource", "<button type=\"button\" class=\"btn btn-link\" onclick=\"openDeviceGroupClassEditor()\" title=\"Click to edit available device group classes\">Class <small>(edit)</small></button>", "text-center" },
+        new[] { null, "Devices", "text-center valign-middle" },
         new[] { null, "Enabled", "text-center valign-middle" }
     };
 
@@ -72,7 +73,8 @@
 @helper BodyRows()
 {
     <td width="30%" class="text-left valign-middle"><button type="button" class="btn btn-link" data-bind="text: Acronym, click: $parent.viewPageRecord"></button></td>
-    <td width="40%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="30%" class="text-left valign-middle" data-bind="text: Name"></td>
+    <td width="10%" class="text-center valign-middle" data-bind="text: OriginalSource"></td>
     <td width="20%" class="text-center valign-middle"><button type="button" class="btn btn-default btn-sm" data-bind="click: openDeviceSelector.bind($data)" hub-dependent><span data-bind="attr: {id: 'deviceMode' + ID}">Add</span>&nbsp;&nbsp;<span class="badge" data-bind="text: getDeviceCount(ID), attr: {id: 'deviceCount' + ID}">0</span></button></td>
     <td width="5%" class="text-center valign-middle"><input type="checkbox" data-bind="checked: Enabled, click: enabledStateChanged.bind($data)" /></td>
     <td width="5%" class="text-center valign-middle" nowrap>
@@ -83,16 +85,19 @@
 @helper AddNewEditDialog(DataContext dataContext)
 {
     <div class="col-md-6">
+        @*
         @Raw(dataContext.AddInputField<DeviceGroup>("ID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
         @Raw(dataContext.AddInputField<DeviceGroup>("UniqueID", customDataBinding: "disable: true", groupDataBinding: "visible: $root.recordMode() !== RecordMode.AddNew"))
+        *@
         @Raw(dataContext.AddInputField<DeviceGroup>("Acronym", initialFocus: true))
         @Raw(dataContext.AddInputField<DeviceGroup>("Name"))
+        @Raw(dataContext.AddSelectField<DeviceGroup, Company>("CompanyID", "ID", "Acronym"))
         @Raw(dataContext.AddSelectField<DeviceGroup, Interconnection>("InterconnectionID", "ID", "Acronym"))
     </div>
     <div class="col-md-6">
+        @Raw(dataContext.AddSelectField<DeviceGroup, DeviceGroupClass>("OriginalSource", "Acronym", "Name", allowUnset: true, addEmptyRow: true))
         @Raw(dataContext.AddInputField<DeviceGroup>("Longitude"))
         @Raw(dataContext.AddInputField<DeviceGroup>("Latitude"))
-        @Raw(dataContext.AddSelectField<DeviceGroup, Company>("CompanyID", "ID", "Acronym"))
         @Raw(dataContext.AddInputField<DeviceGroup>("ContactList"))
         <div class="form-inline pull-right">
             @Raw(dataContext.AddCheckBoxField<DeviceGroup>("Enabled"))
@@ -135,9 +140,9 @@
                     if (phasorHub) {
                         // Lookup Device record by Acronym - this will return an empty record if not found
                         phasorHub.queryDevice(newVal).done(function (device) {
-                                // Valid if device doesn't exist or is itself
-                                callback(device.ID === 0 || notNull(device.Acronym).toLowerCase() === notNull(options).toLowerCase());
-                            })
+                            // Valid if device doesn't exist or is itself
+                            callback(device.ID === 0 || notNull(device.Acronym).toLowerCase() === notNull(options).toLowerCase());
+                        })
                             .fail(function (error) {
                                 showErrorMessage(error);
 
@@ -154,7 +159,7 @@
 
             ko.bindingHandlers.selectOnError = {
                 init: function (element, valueAccessor) {
-                    $(element).on("input", function(event) {
+                    $(element).on("input", function (event) {
                         setTimeout(function () {
                             if (!valueAccessor().isValid())
                                 element.select();
@@ -162,7 +167,7 @@
                     });
                 }
             }
-            
+
             // Enable knockout validation
             ko.validation.init({
                 registerExtenders: true,
@@ -194,6 +199,19 @@
         </div>
     </div>
 </div>
+<div id="editClassesDialog" class="modal fade" role="dialog">
+    <div class="modal-vertical-align-container">
+        <div class="modal-dialog modal-vertical-align-center">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <iframe style="border: none" id="editClassesFrame"></iframe>
+                    <button type="button" class="btn btn-default pull-right popup-ok-button" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
         var modeledValidationParametersFunction;
@@ -215,9 +233,10 @@
 
             return "0";
         }
-        
+
         $(window).resize(function() {
             $("#editDevicesFrame").attr("height", $("#contentWell").outerHeight(true) + "px");
+            $("#editClassesFrame").attr("height", $("#contentWell").outerHeight(true) * .85 + "px");
         });
 
         function openDeviceSelector(record) {
@@ -235,8 +254,24 @@
             viewModel.queryPageRecords();
         });
 
+        function openDeviceGroupClassEditor() {
+            $("#editClassesFrame").attr({
+                "src": "DeviceGroupClasses.cshtml",
+                "height": $("#contentWell").outerHeight(true) * .85 + "px",
+                "width": "100%"
+            });
+
+            $("#editClassesDialog").modal("show");
+        }
+
+        $("#editClassesDialog").on("hidden.bs.modal", function () {
+            // Reload page after class edit
+            location.reload();
+        });
+
         $(function() {
             $("#editDevicesDialog").modal({ show: false, backdrop: "static", keyboard: false });
+            $("#editClassesDialog").modal({ show: false, backdrop: "static", keyboard: false });
 
             modeledValidationParametersFunction = viewModel.applyValidationParameters;
 

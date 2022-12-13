@@ -133,6 +133,7 @@
     <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HadoopDataLoader.cs" />
+    <Compile Include="Model\DeviceGroupClass.cs" />
     <Compile Include="Model\DeviceGroup.cs" />
     <Compile Include="Model\IaonActionAdapter.cs" />
     <Compile Include="Model\IaonInputAdapter.cs" />
