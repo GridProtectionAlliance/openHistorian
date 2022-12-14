@@ -862,7 +862,8 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerAdapterInputCount">
             <summary>
-            Gets number of input measurement required by each adapter.
+            Gets number of input measurement required by each adapter. If value is not constant, use
+            <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.CurrentAdapterIndex"/> to determine input count for adapter at current index.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.InputMeasurementIndexUsedForName">
