@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 14 AS VersionNumber
+SELECT 15 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -2167,8 +2167,9 @@ AS
 SELECT    dbo.Node.ID AS NodeID, COALESCE(dbo.Device.NodeID, dbo.Historian.NodeID) AS SourceNodeID, COALESCE(dbo.Historian.Acronym, dbo.Device.Acronym, '__') + ':' + CONVERT(NVARCHAR(10), dbo.Measurement.PointID) AS ID, dbo.Measurement.SignalID, 
                       dbo.Measurement.PointTag, dbo.Measurement.AlternateTag, dbo.Measurement.SignalReference, dbo.Measurement.Internal, dbo.Measurement.Subscribed, dbo.Device.Acronym AS Device, 
                       CASE WHEN dbo.Device.IsConcentrator = 0 AND dbo.Device.ParentID IS NOT NULL THEN RuntimeP.ID ELSE dbo.Runtime.ID END AS DeviceID,
-                      COALESCE(dbo.Device.FramesPerSecond, 30) AS FramesPerSecond, dbo.Protocol.Acronym AS Protocol, dbo.Protocol.Type AS ProtocolType, dbo.SignalType.Acronym AS SignalType, dbo.SignalType.EngineeringUnits, dbo.Phasor.ID AS PhasorID, dbo.Phasor.Type AS PhasorType, 
-                      dbo.Phasor.Phase, dbo.Measurement.Adder, dbo.Measurement.Multiplier, dbo.Company.Acronym AS Company, dbo.Device.Longitude, 
+                      COALESCE(dbo.Device.FramesPerSecond, 30) AS FramesPerSecond, dbo.Protocol.Acronym AS Protocol, dbo.Protocol.Type AS ProtocolType, dbo.SignalType.Acronym AS SignalType, dbo.SignalType.EngineeringUnits,
+                      dbo.Phasor.ID AS PhasorID, dbo.Phasor.Label AS PhasorLabel, dbo.Phasor.Type AS PhasorType, dbo.Phasor.Phase, dbo.Phasor.BaseKV,
+                      dbo.Measurement.Adder, dbo.Measurement.Multiplier, dbo.Company.Acronym AS Company, dbo.Device.Longitude, 
                       dbo.Device.Latitude, dbo.Measurement.Description, dbo.Measurement.UpdatedOn
 FROM         dbo.Company WITH (NOLOCK) RIGHT OUTER JOIN
                       dbo.Device WITH (NOLOCK) ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
@@ -2184,8 +2185,9 @@ WHERE     (dbo.Device.Enabled <> 0 OR dbo.Device.Enabled IS NULL) AND (dbo.Measu
 UNION ALL
 SELECT		NodeID, SourceNodeID, Source + ':' + CONVERT(NVARCHAR(10), PointID) AS ID, SignalID,
                     PointTag, AlternateTag, SignalReference, 0 AS Internal, 1 AS Subscribed, NULL AS Device,
-                    NULL AS DeviceID, FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits, PhasorID, PhasorType,
-                    Phase, Adder, Multiplier, CompanyAcronym AS Company, Longitude,
+                    NULL AS DeviceID, FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits,
+                    PhasorID, '' AS PhasorLabel, PhasorType, Phase, 0 AS BaseKV,
+                    Adder, Multiplier, CompanyAcronym AS Company, Longitude,
                     Latitude, Description, getutcdate() AS UpdatedOn
 FROM		dbo.ImportedMeasurement WITH (NOLOCK)
 WHERE		dbo.ImportedMeasurement.Enabled <> 0

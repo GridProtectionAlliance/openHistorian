@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 14 AS VersionNumber
+SELECT 15 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -1458,8 +1458,10 @@ AS
 SELECT Node.ID AS NodeID, COALESCE(Device.NodeID, Historian.NodeID) AS SourceNodeID, COALESCE(Historian.Acronym, Device.Acronym, '__') || ':' ||
     Measurement.PointID AS ID, Measurement.SignalID, Measurement.PointTag, Measurement.AlternateTag, Measurement.SignalReference AS SignalReference, Measurement.Internal, Measurement.Subscribed,
     Device.Acronym AS Device, CASE WHEN Device.IsConcentrator = 0 AND Device.ParentID IS NOT NULL THEN RuntimeP.ID ELSE Runtime.ID END AS DeviceID, COALESCE(Device.FramesPerSecond, 30) AS FramesPerSecond, 
-    Protocol.Acronym AS Protocol, Protocol.Type AS ProtocolType, SignalType.Acronym AS SignalType, SignalType.EngineeringUnits, Phasor.ID AS PhasorID, Phasor.Type AS PhasorType, Phasor.Phase, Measurement.Adder, 
-    Measurement.Multiplier, Company.Acronym AS Company, Device.Longitude, Device.Latitude, Measurement.Description, Measurement.UpdatedOn
+    Protocol.Acronym AS Protocol, Protocol.Type AS ProtocolType, SignalType.Acronym AS SignalType, SignalType.EngineeringUnits, 
+    Phasor.ID AS PhasorID, Phasor.Label AS PhasorLabel, Phasor.Type AS PhasorType, Phasor.Phase, Phasor.BaseKV,
+    Measurement.Adder, Measurement.Multiplier, Company.Acronym AS Company, 
+    Device.Longitude, Device.Latitude, Measurement.Description, Measurement.UpdatedOn
 FROM Company RIGHT OUTER JOIN
     Device ON Company.ID = Device.CompanyID RIGHT OUTER JOIN
     Measurement LEFT OUTER JOIN
@@ -1475,8 +1477,10 @@ WHERE (Device.Enabled <> 0 OR Device.Enabled IS NULL) AND (Measurement.Enabled <
 UNION ALL
 SELECT NodeID, SourceNodeID, Source || ':' || PointID AS ID, SignalID, PointTag,
     AlternateTag, SignalReference, 0 AS Internal, 1 AS Subscribed, NULL AS Device, NULL AS DeviceID,
-    FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits, PhasorID, PhasorType, Phase, Adder, Multiplier,
-    CompanyAcronym AS Company, Longitude, Latitude, Description, SYSDATE AS UpdatedOn
+    FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits, 
+    PhasorID, '' AS PhasorLabel, PhasorType, Phase, 0 AS BaseKV,
+    Adder, Multiplier, CompanyAcronym AS Company, 
+    Longitude, Latitude, Description, SYSDATE AS UpdatedOn
 FROM ImportedMeasurement
 WHERE ImportedMeasurement.Enabled <> 0;
 
