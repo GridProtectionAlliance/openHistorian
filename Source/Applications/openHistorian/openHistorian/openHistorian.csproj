@@ -328,6 +328,7 @@
     <Content Include="Installers\PMUConnectionTesterSetup.msi" />
     <Content Include="Installers\StreamSplitterSetup.msi" />
     <Content Include="Grafana\VERSION" />
+    <EmbeddedResource Include="Device Viability Calculations.TagTemplate" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <EmbeddedResource Include="Sample1344.PmuCapture">
