@@ -12,6 +12,9 @@
   <Component Id="Companies_cshtml">
     <File Id="Companies.cshtml" Name="Companies.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Companies.cshtml" />
   </Component>
+  <Component Id="DeviceGroupClasses_cshtml">
+    <File Id="DeviceGroupClasses.cshtml" Name="DeviceGroupClasses.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\DeviceGroupClasses.cshtml" />
+  </Component>
   <Component Id="DeviceGroups_cshtml">
     <File Id="DeviceGroups.cshtml" Name="DeviceGroups.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\DeviceGroups.cshtml" />
   </Component>
