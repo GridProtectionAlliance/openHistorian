@@ -4,6 +4,85 @@
         <name>DynamicCalculator</name>
     </assembly>
     <members>
+        <member name="T:DynamicCalculator.AggregateFunctions">
+            <summary>
+            Common aggregate functions for use with array variables in the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Count(System.Double[])">
+            <summary>
+            Gets the number of items in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array length.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Sum(System.Double[])">
+            <summary>
+            Gets the sum of the values in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array values sum.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Min(System.Double[])">
+            <summary>
+            Gets the minimum of the values in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array values minimum.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Max(System.Double[])">
+            <summary>
+            Gets the maximum of the values in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array values maximum.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Avg(System.Double[])">
+            <summary>
+            Gets the average of the values in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array values average.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.StdDev(System.Double[])">
+            <summary>
+            Gets the standard deviation of the values in the <paramref name="array"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <returns>Array values standard deviation.</returns>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.Any(System.Double[],System.String)">
+            <summary>
+            Gets flag that determines if any of the values in the <paramref name="array"/>
+            evaluate to <c>true</c> for the provided <paramref name="comparisonExpr"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <param name="comparisonExpr">Comparison expression, e.g., "> 0".</param>
+            <returns>
+            Cumulative boolean result for any values evaluating to <c>true</c> for
+            provided comparison expression.
+            </returns>
+            <remarks>
+            Expression is compiled with support for <see cref="T:System.Math"/> and <see cref="T:System.DateTime"/> types so
+            related static functions and constants can be used in expressions, e.g., <c>">= 2 * PI"</c>.
+            </remarks>
+        </member>
+        <member name="M:DynamicCalculator.AggregateFunctions.All(System.Double[],System.String)">
+            <summary>
+            Gets flag that determines if all of the values in the <paramref name="array"/>
+            evaluate to <c>true</c> for the provided <paramref name="comparisonExpr"/>.
+            </summary>
+            <param name="array">Source value array.</param>
+            <param name="comparisonExpr">Comparison expression, e.g., "> 0".</param>
+            <returns>
+            Cumulative boolean result for all values evaluating to <c>true</c> for
+            provided comparison expression.
+            </returns>
+            <remarks>
+            Expression is compiled with support for <see cref="T:System.Math"/> and <see cref="T:System.DateTime"/> types so
+            related static functions and constants can be used in expressions, e.g., <c>">= 2 * PI"</c>.
+            </remarks>
+        </member>
         <member name="T:DynamicCalculator.DatabaseNotifier">
             <summary>
             The DatabaseNotifier is an action adapter which takes multiple input measurements and defines
