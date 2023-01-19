@@ -1368,6 +1368,7 @@ namespace openHistorian.Adapters
                 
                 // variableList={FREQ=bef9f097-d6f8-4b4f-9ce4-97ffa30a08e9}; expressionText=FREQ-60; framesPerSecond=30; lagTime=6; leadTime=3; outputMeasurements=5966846f-156d-4a2d-a181-08c4875447a1; useLatestValues=false
                 // variableList={VPOSA=62eb881c-4423-47bc-87bd-e3acfd5c7430; VAA=01564cc5-2451-4501-ba51-4fcea7173333}; expressionText=VPOSA-VAA; framesPerSecond=30; lagTime=6; leadTime=3; outputMeasurements=d59389a2-3816-4e84-a593-75f07369e582; useLatestValues=false
+                // variableList={IANG_DIFF_CA[]=9108df49-4f96-4e8c-a23f-1eb07b281fa1,a66b1545-16f2-4f4a-8469-f3942cf27a56}; expressionText=IF(Any(IANG_DIFF_CA, "< 110") OR Any(IANG_DIFF_CA, "> 130"), 0, 1); framesPerSecond=30; lagTime=6; leadTime=3; outputMeasurements=174b312a-cc47-4390-b073-ee68033956e9; useLatestValues=false
 
                 if (!connectionString.ContainsKey("variableList"))
                     continue;
@@ -1378,7 +1379,7 @@ namespace openHistorian.Adapters
                     continue;
 
                 Dictionary<string, string> variables = variableList.ParseKeyValuePairs();
-                HashSet<Guid> signalIDs = new(variables.Values.Select(id => Guid.TryParse(id, out Guid signalID) ? signalID : Guid.Empty).Where(signalID => signalID != Guid.Empty));
+                HashSet<Guid> signalIDs = new(variables.Values.SelectMany(ids => ids.Split(',')).Select(id => Guid.TryParse(id, out Guid signalID) ? signalID : Guid.Empty).Where(signalID => signalID != Guid.Empty));
 
                 if (signalIDs.Count == 0)
                     continue;
