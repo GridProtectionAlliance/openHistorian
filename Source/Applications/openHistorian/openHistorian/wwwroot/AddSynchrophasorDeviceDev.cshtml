@@ -2533,8 +2533,7 @@
                 attempt = 1;
 
             if (attempt > 4) {
-                showErrorMessage("Failed to find power output measurement after waiting 12 seconds - skipping 3-phase power calculations.");
-                return $.Deferred().resolve(null).promise();
+                return $.Deferred().reject("Failed to find \"" + type +"\" power output measurement after waiting 12 seconds - skipping 3-phase power calculations.").promise();
             }
 
             if (!linePhase.voltage.hasOwnProperty("vphaMeasurement") || !linePhase.voltage.hasOwnProperty("vphmMeasurement") || !linePhase.current.hasOwnProperty("iphaMeasurement") || !linePhase.current.hasOwnProperty("iphmMeasurement"))
@@ -2863,10 +2862,17 @@
             return null;
         }
 
-        function saveDynamicCalculation(cell, tagTemplate, calcSignalType) {
+        function saveDynamicCalculation(cell, tagTemplate, calcSignalType, attempt) {
+            if (attempt === undefined)
+                attempt = 1;
+
+            if (attempt > 4) {
+                return $.Deferred().reject("Failed to create \"" + tagTemplate.TagName + "\" aggregate tag template: input \"" + property + "\" source array could not be resolved after waiting 12 seconds.").promise();
+            }
+
             return initializeDynamicCalculation().then(function () {
-                const vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
-                const inputSet = {};
+                var vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
+                var inputSet = {};
                 let arrayInputs = 0;
                 
                 for (let i = 0; i < tagTemplate.Inputs.length; i++) {
@@ -2930,7 +2936,7 @@
 
                     if (inputName.endsWith("[]")) {
                         arrayInputs++;
-                        inputName = inputName.substring(0, inputName.length - 2);
+                        varName = inputName = inputName.substring(0, inputName.length - 2);
                     }
 
                     inputSet[inputName] = vars[varName];
@@ -2939,10 +2945,10 @@
                 if (arrayInputs > 0 && arrayInputs !== Object.keys(inputSet).length)
                     return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" tag template input definitions. When array inputs are used, arrays must be the only input types specified using array indicator suffix \"[]\".").promise();
 
-                let maxInputLength = 0;
-                let inputsAvailable = true;
-                let singletonCalculation = false;
-                let aggregateCalculation = arrayInputs > 0;
+                var maxInputLength = 0;
+                var inputsAvailable = true;
+                var singletonCalculation = false;
+                var aggregateCalculation = arrayInputs > 0;
 
                 if (aggregateCalculation) {
                     // Aggregate calculations operate over a single set of input arrays
@@ -2953,7 +2959,10 @@
                     for (let property in inputSet) {
                         if (inputSet.hasOwnProperty(property)) {
                             if (!Array.isArray(inputSet[property]))
-                                return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" tag template, input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
+                                return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" tag template: input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
+
+                            if (Object.keys(inputSet[property]).length === 0)
+                                return delayedPromise(3000).then(function () { return saveDynamicCalculation(cell, tagTemplate, calcSignalType, ++attempt); });
                         }
                     }
                 }
@@ -3016,8 +3025,8 @@
                         promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                             measurement.DeviceID = cell.ID;
                             measurement.HistorianID = viewModel.historianID();
-                            measurement.PointTag = String.format("{0}-<0>{1}{2}", cell.IDLabel(), aggregateCalculation ? "" : ":CALC-", tagTemplate.TagName);
-                            measurement.Description = String.format("{0}<0>{1} Value{2}: {3}", cell.IDLabel(), aggregateCalculation ? "" : " Calculated", singletonCalculation ? "" : " " + index.toString(), tagTemplate.Description);
+                            measurement.PointTag = String.format("{0}-<0>{1}{2}", cell.IDLabel(), aggregateCalculation ? "-" : ":CALC-", tagTemplate.TagName);
+                            measurement.Description = String.format("{0}<0>{1} Value{2}: {3}", cell.IDLabel(), aggregateCalculation ? "" : " Calculated", singletonCalculation ? "" : " " + String(index), tagTemplate.Description);
                             measurement.SignalReference = signalReference;
                             measurement.SignalTypeID = calcSignalType.ID;
                             measurement.Internal = true;
@@ -3025,13 +3034,15 @@
 
                             return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
                                 return phasorHub.queryMeasurement(signalReference).then(function (measurement) {
-                                    let phasorDefinition = null;
+                                    var phasorDefinition = null;
                                     const connectionString = new Dictionary();
                                     const variableList = new Dictionary();
-                                    let equation = tagTemplate.Equation;
+                                    var equation = tagTemplate.Equation;
 
-                                    if (!singletonCalculation && !aggregateCalculation)
+                                    if (!singletonCalculation && !aggregateCalculation) {
                                         vars[tagTemplate.TagName].push(measurement.SignalID);
+                                        dynamicCalculation.deviceVariables.set(cell.IDLabel(), vars);
+                                    }
 
                                     for (let property in inputSet) {
                                         if (inputSet.hasOwnProperty(property)) {
@@ -3106,7 +3117,7 @@
 
                                     return phasorHub.newCustomActionAdapter().then(function (adapter) {
                                         adapter.NodeID = nodeID;
-                                        adapter.AdapterName = measurement.PointTag + aggregateCalculation ? "-CALC" : "";
+                                        adapter.AdapterName = measurement.PointTag + (aggregateCalculation ? "-CALC" : "");
                                         adapter.AssemblyName = "DynamicCalculator.dll";
                                         adapter.TypeName = "DynamicCalculator.DynamicCalculator";
                                         adapter.ConnectionString = connectionString.joinKeyValuePairs();
@@ -3138,9 +3149,7 @@
                     }
                 }
 
-                return $(promises).whenAll().then(function () {
-                    dynamicCalculation.deviceVariables.get(cell.IDLabel(), vars);
-                });
+                return $(promises).whenAll();
             });
         }
 
@@ -3413,7 +3422,10 @@
                 if (isEmpty(device.Name))
                     device.Name = device.Acronym;
 
-                device.ConnectionString = connectionString;
+                // Only update connection string if one has been defined, prevents changing any existing one to blank
+                if (connectionString.length > 0)
+                    device.ConnectionString = connectionString;
+                    
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
                 device.Enabled = true;
