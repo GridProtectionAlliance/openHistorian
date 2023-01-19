@@ -37,7 +37,7 @@
 #
 # Phasor type variables and the Tag Name column, which become system output measurements, can also be used to create device
 # level aggregate equation-based calculations using one or more selected array type inputs. The aggregate equations still use
-# the DynamicCalculator type where the Inputs column variables separated by semi-colon, however the Inputs are always arrays.
+# the DynamicCalculator type where the Inputs column variables are separated by semi-colon, however Inputs are always arrays.
 # When using outputs from previous calculations as inputs to an aggregation calculation, only those that can produce multiple
 # outputs per device can be used. Also, the outputs to be used as inputs must be defined in the same tag template file and be
 # defined before they are used as inputs. Names of Inputs should be the Inputs variable name or the Tag Name suffixed with an
