@@ -56,9 +56,9 @@ jobs:
       # Install all (latest) SDKs which are used by multi framework projects
       run: choco install dotnet4.6
       
-    #- name: Install .NET Framework 4.6.1
-    #  # Install all (latest) SDKs which are used by multi framework projects
-    #  run: choco install dotnet4.6.1
+    - name: Install .NET Framework 4.6.1
+      # Install all (latest) SDKs which are used by multi framework projects
+      run: choco install dotnet4.6.1
      
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
