@@ -314,7 +314,8 @@ namespace openHistorian
                     }
                 }
 
-                Model.Global.MASVersion = removeTrailingZeroRevision(Model.Global.MASVersion);
+                if (!string.IsNullOrEmpty(Model.Global.MASVersion))
+                    Model.Global.MASVersion = removeTrailingZeroRevision(Model.Global.MASVersion);
             }
             catch (Exception ex)
             {
