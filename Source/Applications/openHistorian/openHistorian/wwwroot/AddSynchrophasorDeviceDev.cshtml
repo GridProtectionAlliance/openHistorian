@@ -934,7 +934,7 @@
                     const settings = value.parseKeyValuePairs();
                     settings.set("forwardOnly", self.forwardOnly());
                     self._connectionString(settings.joinKeyValuePairs());
-                    self.configFrame.ConnectionString = self._connectionString();
+                    self.configFrame().ConnectionString = self._connectionString();
                 },
                 owner: self
             });
@@ -1184,7 +1184,10 @@
                 if ((configFrame.ConnectionString + "").length > 0)
                     self.connectionString(configFrame.ConnectionString + "");
 
+                const currentConnectionString = self.connectionString();
                 self.configFrame(configFrame);
+                self.connectionString(currentConnectionString);
+
                 self.voltageCount = 0;
 
                 if (configFrame.ProtocolID > 0) {
