@@ -44,6 +44,7 @@
     string grafanaVersion;
     string databaseType;
     string databaseName;
+    string schemaVersion;
     string localTimeFormat = Model.Global.DateFormat + " hh:mm:ss.fff";
 
     try
@@ -74,12 +75,24 @@
                 // Fall back on database name if file anything fails
                 databaseName = database.Connection.Database;
             }
+
+            try
+            {
+                int tslSchemaVersion = database.ExecuteScalar<int>("SELECT VersionNumber FROM SchemaVersion");
+                int localSchemaVersion = database.ExecuteScalar<int>("SELECT VersionNumber FROM LocalSchemaVersion");
+                schemaVersion = string.Format("{0}.{1}", tslSchemaVersion, localSchemaVersion);
+            }
+            catch
+            {
+                schemaVersion = "Undetermined";
+            }
         }
     }
     catch
     {
         databaseType = "Not Available";
         databaseName = "Not Available";
+        schemaVersion = "Undetermined";
     }
 
     try
@@ -305,35 +318,37 @@
                     <hr class="quarter-break" />
                     @if (Model.Global.GrafanaServerInstalled && !string.IsNullOrEmpty(grafanaVersion))
                     {
-                    <text>
-                        <span class="badge badge-fixed" id="grafanaVersion">@(grafanaVersion)</span>Grafana&nbsp;Version
-                        <hr class="quarter-break" />
-                    </text>
+                        <text>
+                            <span class="badge badge-fixed" id="grafanaVersion">@(grafanaVersion)</span>Grafana&nbsp;Version
+                            <hr class="quarter-break" />
+                        </text>
                     }
                     @if (Model.Global.MASInstalled && !string.IsNullOrEmpty(Model.Global.MASVersion))
                     {
-                    <text>
-                        <span class="badge badge-fixed" id="MASVersion">@(Model.Global.MASVersion)</span>MAS&nbsp;Version
-                        <hr class="quarter-break" />
-                    </text>
+                        <text>
+                            <span class="badge badge-fixed" id="MASVersion">@(Model.Global.MASVersion)</span>MAS&nbsp;Version
+                            <hr class="quarter-break" />
+                        </text>
                     }
                     @if (Model.Global.PMUConnectionTesterInstalled && !string.IsNullOrEmpty(Model.Global.PMUConnectionTesterVersion))
                     {
-                    <text>
-                        <span class="badge badge-fixed" id="PMUConnectionTesterVersion">@(Model.Global.PMUConnectionTesterVersion)</span>PMU&nbsp;CT&nbsp;Version
-                        <hr class="quarter-break" />
-                    </text>
+                        <text>
+                            <span class="badge badge-fixed" id="PMUConnectionTesterVersion">@(Model.Global.PMUConnectionTesterVersion)</span>PMU&nbsp;CT&nbsp;Version
+                            <hr class="quarter-break" />
+                        </text>
                     }
                     @if (Model.Global.StreamSplitterInstalled && !string.IsNullOrEmpty(Model.Global.StreamSplitterVersion))
                     {
-                    <text>
-                        <span class="badge badge-fixed" id="StreamSplitterVersion">@(Model.Global.StreamSplitterVersion)</span>StreamSplitter&nbsp;Version
-                        <hr class="quarter-break" />
-                    </text>
+                        <text>
+                            <span class="badge badge-fixed" id="StreamSplitterVersion">@(Model.Global.StreamSplitterVersion)</span>StreamSplitter&nbsp;Version
+                            <hr class="quarter-break" />
+                        </text>
                     }
                     <span class="badge badge-fixed" id="databaseType">DB: @databaseType</span>Config&nbsp;Type
                     <hr class="quarter-break" />
                     <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name
+                    <hr class="quarter-break" />
+                    <span class="badge badge-fixed" id="databaseVersion">@schemaVersion</span>Schema&nbsp;Version
                 </p>
             </div>
         </div>
