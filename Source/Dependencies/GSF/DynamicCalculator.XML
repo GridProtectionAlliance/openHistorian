@@ -185,6 +185,154 @@
             Queues database operation for execution. Operation will execute immediately if not already running.
             </summary>
         </member>
+        <member name="T:DynamicCalculator.FilterOperation">
+            <summary>
+            Represents the target operation type for a filter.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.FilterOperation.RemoveWhenTrue">
+            <summary>
+            Defines filter operation that removes measurements from processing when expression evaluates to true.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.FilterOperation.ValueAugmentation">
+            <summary>
+            Defines filter operation that changes measurement values based on expression evaluation.
+            </summary>
+        </member>
+        <member name="T:DynamicCalculator.DynamicFilter">
+            <summary>
+            The DynamicFilter is a filter adapter which takes multiple input measurements
+            and performs a calculation on those measurements to augment their values
+            before they are routed to other adapters.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:DynamicCalculator.DynamicFilter"/> class.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.ExpressionText">
+            <summary>
+            Gets or sets the boolean expression used to determine if the database operation should be executed.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.VariableList">
+            <summary>
+            Gets or sets the list of variables used in the expression.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.ExecutionOrder">
+            <summary>
+            Gets or sets the value that determines the order in which filter adapters are executed.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.FilterOperation">
+            <summary>
+            Gets or sets the operation type of the filter calculation.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> expects, if any.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.OutputMeasurements">
+            <summary>
+            Gets or sets output measurements that the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> will produce, if any.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.FramesPerSecond">
+            <summary>
+            Gets or sets the number of frames per second.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.CalculationInterval">
+            <summary>
+            Gets or sets the interval at which the adapter should calculate values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.TimestampSource">
+            <summary>
+            Gets or sets the source of the timestamps of the calculated values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.UseLatestValues">
+            <summary>
+            Gets or sets the flag indicating whether to use the latest
+            received values to fill in values missing from the current frame.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.SkipNaNOutput">
+            <summary>
+            Gets or sets the flag indicating whether to skip processing of an output with a value of NaN.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.ReservedVariableNames">
+            <summary>
+            Gets the list of reserved variable names.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.ExpectsOutputMeasurement">
+            <summary>
+            Gets flag that determines if the implementation of the <see cref="T:DynamicCalculator.DynamicCalculator"/> requires an output measurement.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicFilter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.Initialize">
+            <summary>
+            Initializes <see cref="T:DynamicCalculator.DatabaseNotifier"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Handler for new measurements that have not yet been routed.
+            </summary>
+            <param name="measurements">Measurements that have not yet been routed.</param>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.HandleSpecialVariables(Ciloci.Flee.VariableCollection)">
+            <summary>
+            Handler for assignment of special variables, e.g., constants, for the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+            <param name="variables">Variable set to current calculation.</param>
+            <remarks>
+            Special constants should be defined in the <see cref="P:DynamicCalculator.DynamicCalculator.ReservedVariableNames"/> array.
+            </remarks>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.HandleCalculatedValue(System.Object)">
+            <summary>
+            Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+            <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.IsInputMeasurement(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Determines if the given measurement represents a signal that is bound for this filter adapter.
+            </summary>
+            <param name="measurement">The source measurement to be checked.</param>
+            <returns><c>true</c> if <paramref name="measurement"/> is bound for this filter adapter.</returns>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
         <member name="T:DynamicCalculator.EmailNotifier">
             <summary>
             The EmailNotifier is an action adapter which takes multiple input measurements and defines
@@ -357,6 +505,11 @@
             Creates a new instance of the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the dynamic calculator expects.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the action adapter will produce, if any.
@@ -412,11 +565,6 @@
             Gets or sets the source of the timestamps of the calculated values.
             </summary>
         </member>
-        <member name="P:DynamicCalculator.DynamicCalculator.InputMeasurementKeys">
-            <summary>
-            Gets or sets primary keys of input measurements the dynamic calculator expects.
-            </summary>
-        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.ExpectsOutputMeasurement">
             <summary>
             Gets flag that determines if the implementation of the <see cref="T:DynamicCalculator.DynamicCalculator"/> requires an output measurement.
@@ -424,7 +572,27 @@
         </member>
         <member name="P:DynamicCalculator.DynamicCalculator.Variables">
             <summary>
-            Gets defined variable collection with current values.
+            Gets defined expression variable collection with current values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.VariableNames">
+            <summary>
+            Gets the configured list of variables names.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.ArrayVariableLengths">
+            <summary>
+            Gets array variables names mapped to their defined lengths.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.VariableKeys">
+            <summary>
+            Gets variable names mapped to their <see cref="T:GSF.TimeSeries.MeasurementKey"/> values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.ReservedVariableNames">
+            <summary>
+            Gets the list of reserved variable names.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DynamicCalculator.Status">
@@ -449,6 +617,15 @@
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.HandleSpecialVariables(Ciloci.Flee.VariableCollection)">
+            <summary>
+            Handler for assignment of special variables, e.g., constants, for the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+            <param name="variables">Variable set to current calculation.</param>
+            <remarks>
+            Special constants should be defined in the <see cref="P:DynamicCalculator.DynamicCalculator.ReservedVariableNames"/> array.
+            </remarks>
         </member>
         <member name="M:DynamicCalculator.DynamicCalculator.HandleCalculatedValue(System.Object)">
             <summary>

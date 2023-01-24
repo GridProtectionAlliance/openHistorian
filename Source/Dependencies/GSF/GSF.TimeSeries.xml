@@ -99,6 +99,11 @@
             Represents a collection of <see cref="T:GSF.TimeSeries.Adapters.IFilterAdapter"/> implementations.
             </summary>
         </member>
+        <member name="E:GSF.TimeSeries.Adapters.FilterAdapterCollection.CollectionCountChanged">
+            <summary>
+            Provides notification of change in collection count.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Adapters.FilterAdapterCollection"/>.
@@ -146,6 +151,16 @@
             Removes the element at the specified index of the <see cref="T:System.Collections.ObjectModel.Collection`1"/>.
             </summary>
             <param name="index">The zero-based index of the element to remove.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.ClearItems">
+            <summary>
+            Removes all elements from the <see cref="T:System.Collections.ObjectModel.Collection`1"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.FilterAdapterCollection.OnCollectionCountChanged">
+            <summary>
+            Raises <see cref="E:GSF.TimeSeries.Adapters.FilterAdapterCollection.CollectionCountChanged"/> event.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Adapters.IaonSession">
             <summary>
@@ -2508,6 +2523,17 @@
             as an example, this would be <c>true</c> for an action adapter that calculated measurement, but <c>false</c> for an action adapter used to archive inputs.
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterCollection.ConvertReadonlyCollectionsToWritable">
+            <summary>
+            Gets or sets flag that determines if readonly collections should be converted
+            to writable so published measurement sets can be augmented by filter adapters.
+            </summary>
+            <remarks>
+            When filter adapters are detected in the <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>, collections that
+            output new measurements should convert all readonly measurement collections into
+            collections that can be modified so that measurements can be removed if needed.
+            </remarks>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterCollection.Status">
             <summary>
             Gets the descriptive status of this <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterCollection"/>.
@@ -3942,7 +3968,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.FallBackOnLocalClock">
             <summary>
-            Gest or sets flag that determines whether to fall back on local clock time as real time when time is unreasonable.
+            Gets or sets flag that determines whether to fall back on local clock time as real time when time is unreasonable.
             </summary>
             <remarks>
             This property is only applicable when <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> is <c>false</c>.
@@ -4599,6 +4625,22 @@
         <member name="M:GSF.TimeSeries.Adapters.InputAdapterCollection.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Adapters.InputAdapterCollection"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.InputAdapterCollection.ConvertReadonlyCollectionsToWritable">
+            <summary>
+            Gets or sets flag that determines if readonly collections should be converted
+            to writable so published measurement sets can be augmented by filter adapters.
+            </summary>
+            <remarks>
+            When filter adapters are detected in the <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>, collections that
+            output new measurements should convert all readonly measurement collections into
+            collections that can be modified so that measurements can be removed if needed.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.InputAdapterCollection.Status">
+            <summary>
+            Gets the descriptive status of this <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterCollection"/>.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.InputAdapterCollection.OnNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
@@ -5305,7 +5347,7 @@
         </member>
         <member name="F:GSF.TimeSeries.Common.DynamicAssembliesFolderName">
             <summary>
-            Folder name for dyanmically compiled assemblies.
+            Folder name for dynamically compiled assemblies.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Configuration.ConfigurationLoaderBase">
@@ -13021,6 +13063,11 @@
         <member name="P:GSF.TimeSeries.ServiceHostBase.OutputAdapters">
             <summary>
             Gets reference to the <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterCollection"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.ServiceHostBase.FilterAdapters">
+            <summary>
+            Gets reference to the <see cref="T:GSF.TimeSeries.Adapters.FilterAdapterCollection"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.ServiceHostBase.NodeID">

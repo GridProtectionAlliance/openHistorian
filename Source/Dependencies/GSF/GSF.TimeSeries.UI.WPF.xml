@@ -2233,17 +2233,23 @@
             <param name="adapterType">The type to be searched for in the assemblies.</param>
             <returns>The collection of types found as well as their descriptions.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.GetEditorBrowsableState(System.Type)">
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.GetEditorBrowsableState(System.Type,System.Type)">
             <summary>
             Gets the editor browsable state of the given type. This method will
             search for a <see cref="T:System.ComponentModel.EditorBrowsableAttribute"/> using reflection.
             If none is found, it will default to <see cref="F:System.ComponentModel.EditorBrowsableState.Always"/>.
             </summary>
             <param name="type">The type for which an editor browsable state is found.</param>
+            <param name="adapterType">The type to be searched for in the assemblies.</param>
             <returns>
             Either the editor browsable state as defined by an <see cref="T:System.ComponentModel.EditorBrowsableAttribute"/>
             or else <see cref="F:System.ComponentModel.EditorBrowsableState.Always"/>.
             </returns>
+            <remarks>
+            For IFilterAdapters derived from IActionAdapters, the editor browsable state of advanced
+            will give precedence to IFilterAdapter over IActionAdapter, i.e., adapter will only be
+            visible on the Filter Adapters screen.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Adapters.GetDescription(System.Type)">
             <summary>
