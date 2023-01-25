@@ -60,11 +60,11 @@ DEVICE_VA	VMAG_DEV_VA[]	IF(Any(VMAG_DEV_VA, "> 10"), 0, 1)	DynamicCalculator	Dev
 DEVICE_VB	VMAG_DEV_VB[]	IF(Any(VMAG_DEV_VB, "> 10"), 0, 1)	DynamicCalculator	Device Voltage Deviation from Nominal B Alarm
 DEVICE_VC	VMAG_DEV_VC[]	IF(Any(VMAG_DEV_VC, "> 10"), 0, 1)	DynamicCalculator	Device Voltage Deviation from Nominal C Alarm
 DEVICE_VX	VMAG_DEV_XP[]	IF(Any(VMAG_DEV_XP, "> 10"), 0, 1)	DynamicCalculator	Device Voltage Deviation across Phases Alarm
-DEVICE_IA	IAM[]	IF(Any(IAM, "< 100") OR Any(IAM, "> 3000"), 0, 1)	DynamicCalculator	Device Voltage Deviation from Nominal A Alarm
-DEVICE_IB	IBM[]	IF(Any(IBM, "< 100") OR Any(IBM, "> 3000"), 0, 1)	DynamicCalculator	Device Voltage Deviation from Nominal B Alarm
-DEVICE_IC	ICM[]	IF(Any(ICM, "< 100") OR Any(ICM, "> 3000"), 0, 1)	DynamicCalculator	Device Voltage Deviation from Nominal C Alarm
+DEVICE_IA	IAM[]	IF(Any(IAM, "< 100") OR Any(IAM, "> 3000"), 0, 1)	DynamicCalculator	Device Current Outside Range A Alarm
+DEVICE_IB	IBM[]	IF(Any(IBM, "< 100") OR Any(IBM, "> 3000"), 0, 1)	DynamicCalculator	Device Current Outside Range B Alarm
+DEVICE_IC	ICM[]	IF(Any(ICM, "< 100") OR Any(ICM, "> 3000"), 0, 1)	DynamicCalculator	Device Current Outside Range C Alarm
 DEVICE_IX	IMAG_DEV_XP[]	IF(Any(IMAG_DEV_XP, "> 10"), 0, 1)	DynamicCalculator	Device Current Deviation across Phases Alarm
-FREQ_ALARM	FREQ	IF(FREQ < 59.7 OR FREQ > 60.3, 0, 1)	DynamicCalculator	Frequency Alarm
+DEVICE_FREQ_UNBOUNDED	FREQ	IF(FREQ < 59.7 OR FREQ > 60.3, 0, 1)	DynamicCalculator	Device Frequency Outside Range Alarm
 DEVICE_VB_ANG	VANG_DIFF_BA[]	IF(Any(VANG_DIFF_BA, "< -130") OR Any(VANG_DIFF_BA, "> -110"), 0, 1)	DynamicCalculator	Device Voltage Angle Difference B to A Alarm
 DEVICE_VC_ANG	VANG_DIFF_CA[]	IF(Any(VANG_DIFF_CA, "< 110") OR Any(VANG_DIFF_CA, "> 130"), 0, 1)	DynamicCalculator	Device Voltage Angle Difference C to A Alarm
 DEVICE_IB_ANG	IANG_DIFF_BA[]	IF(Any(IANG_DIFF_BA, "< -130") OR Any(IANG_DIFF_BA, "> -110"), 0, 1)	DynamicCalculator	Device Current Angle Difference B to A Alarm
