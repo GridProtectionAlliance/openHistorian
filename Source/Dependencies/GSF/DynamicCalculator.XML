@@ -232,6 +232,11 @@
             Gets or sets the operation type of the filter calculation.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicFilter.Enabled">
+            <summary>
+            Gets or sets the current enabled state of the <see cref="T:DynamicCalculator.DynamicFilter"/>.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicFilter.InputMeasurementKeys">
             <summary>
             Gets or sets primary keys of input measurements the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> expects, if any.
@@ -298,6 +303,21 @@
             Initializes <see cref="T:DynamicCalculator.DatabaseNotifier"/>.
             </summary>
         </member>
+        <member name="M:DynamicCalculator.DynamicFilter.Start">
+            <summary>
+            Starts the <see cref="T:DynamicCalculator.DynamicCalculator"/> or restarts it if it is already running.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.Stop">
+            <summary>
+            Stops the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicFilter.ExamineQueueState">
+            <summary>
+            Examines the concentrator frame queue state of the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
+            </summary>
+        </member>
         <member name="M:DynamicCalculator.DynamicFilter.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
             <summary>
             Handler for new measurements that have not yet been routed.
@@ -318,13 +338,6 @@
             Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
             <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
-        </member>
-        <member name="M:DynamicCalculator.DynamicFilter.IsInputMeasurement(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Determines if the given measurement represents a signal that is bound for this filter adapter.
-            </summary>
-            <param name="measurement">The source measurement to be checked.</param>
-            <returns><c>true</c> if <paramref name="measurement"/> is bound for this filter adapter.</returns>
         </member>
         <member name="M:DynamicCalculator.DynamicFilter.GetShortStatus(System.Int32)">
             <summary>
@@ -632,6 +645,13 @@
             Handler for the values calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
             </summary>
             <param name="value">The value calculated by the <see cref="T:DynamicCalculator.DynamicCalculator"/>.</param>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.Calculate(System.Collections.Generic.IReadOnlyDictionary{GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.IMeasurement},System.Collections.Generic.IReadOnlyDictionary{System.String,System.Int32})">
+            <summary>
+            Executes dynamic calculation for input measurements and any provided index restrictions.
+            </summary>
+            <param name="measurements">Measurement dictionary that contains inputs for calculation.</param>
+            <param name="indexRestrictions">Any index restrictions to apply to array inputs.</param>
         </member>
     </members>
 </doc>
