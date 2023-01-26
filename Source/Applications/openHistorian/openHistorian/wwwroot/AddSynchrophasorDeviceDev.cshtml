@@ -2709,6 +2709,8 @@
             //   FNOM: Model.Global.NominalFrequency
             //   FAVG: Frequency Average = system singleton where signal reference is "SYSTEM!FREQ-FQ"
             //  FLAGS: Status Flags
+            //   ALOG: Analog value array
+            //   DIGI: Digital value array
 
             const promises = [];
             const configFrame = viewModel.configFrame();
@@ -2724,9 +2726,12 @@
                     VANOM: [], VBNOM: [], VCNOM: [], VNNOM: [], VPOSNOM: [], VNEGNOM: [], VZNOM: [],
                       IAM: [],   IBM: [],   ICM: [],   INM: [],   IPOSM: [],   INEGM: [],   IZM: [],
                       IAA: [],   IBA: [],   ICA: [],   INA: [],   IPOSA: [],   INEGA: [],   IZA: [],
-                     FREQ: "", FLAGS: ""
+                     FREQ: "", FLAGS: "",
+                     ALOG: [],  DIGI: []
                 };
 
+                dynamicCalculation.deviceVariables.set(label, vars);
+                
                 for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
                     const phasorDefinition = cell.PhasorDefinitions[j];
                     const phase = phasorDefinition.Phase().toUpperCase();
@@ -2825,11 +2830,34 @@
                 })
                 .then(function (measurement) {
                     vars.FLAGS = measurement.SignalID;
-                    dynamicCalculation.deviceVariables.set(label, vars);
                 })
                 .fail(function (error) {
-                    showErrorMessage("Failed to find device '" + label + "' frequency or flags: " + error);
+                    showErrorMessage("Failed to find device '" + label + "' frequency or flags measurement: " + error);
                 }));
+
+                // Add analogs array
+                for (let j = 0; j < cell.AnalogDefinitions.length; j++) {
+                    const index = j + 1;
+                    
+                    promises.push(phasorHub.queryMeasurement(String.format("{0}-AV{1}", label, index)).then(function (measurement) {
+                        vars.ALOG.push(measurement.SignalID);
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to find device '" + label + "' analog value " + String(index) + " measurement: " + error);
+                    }));
+                }
+
+                // Add digitals array
+                for (let j = 0; j < cell.DigitalDefinitions.length; j++) {
+                    const index = j + 1;
+
+                    promises.push(phasorHub.queryMeasurement(String.format("{0}-DV{1}", label, index)).then(function (measurement) {
+                        vars.DIGI.push(measurement.SignalID);
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to find device '" + label + "' digital value " + String(index) + " measurement: " + error);
+                    }));
+                }
             }
 
             return $(promises).whenAll().then(function () {
