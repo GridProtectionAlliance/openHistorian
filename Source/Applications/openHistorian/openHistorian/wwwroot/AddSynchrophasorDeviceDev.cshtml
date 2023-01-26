@@ -2395,7 +2395,7 @@
             });
         }
 
-        function savePowerCalcuations(cell, tagTemplate) {
+        function savePowerCalculations(cell, tagTemplate) {
             const promises = [];
             const phase = tagTemplate.Inputs[0].toUpperCase()[0];
 
@@ -2865,7 +2865,7 @@
             return null;
         }
 
-        function saveDynamicCalculation(cell, tagTemplate, calcSignalType, attempt) {
+        function saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, attempt) {
             if (attempt === undefined)
                 attempt = 1;
 
@@ -2877,7 +2877,7 @@
                 var vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
                 var inputSet = {};
                 let arrayInputs = 0;
-                
+
                 for (let i = 0; i < tagTemplate.Inputs.length; i++) {
                     let inputName = tagTemplate.Inputs[i].toUpperCase();
                     let varName = inputName;
@@ -2944,9 +2944,12 @@
 
                     inputSet[inputName] = vars[varName];
                 }
-                
+
                 if (arrayInputs > 0 && arrayInputs !== Object.keys(inputSet).length)
-                    return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" tag template input definitions. When array inputs are used, arrays must be the only input types specified using array indicator suffix \"[]\".").promise();
+                    return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" [" + String(templateIndex) + "] tag template input definitions. When array inputs are used, arrays must be the only input types specified using array indicator suffix \"[]\".").promise();
+
+                if (arrayInputs === 0 && subType !== "Calc")
+                    return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" [" + String(templateIndex) + "] tag template input definitions. For ValueAdjuster and ValueFilter types, arrays must be the only input types specified using array indicator suffix \"[]\".").promise();
 
                 var maxInputLength = 0;
                 var inputsAvailable = true;
@@ -2962,10 +2965,10 @@
                     for (let property in inputSet) {
                         if (inputSet.hasOwnProperty(property)) {
                             if (!Array.isArray(inputSet[property]))
-                                return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" tag template: input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
+                                return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" [" + String(templateIndex) + "] tag template: input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
 
                             if (Object.keys(inputSet[property]).length === 0)
-                                return delayedPromise(3000).then(function () { return saveDynamicCalculation(cell, tagTemplate, calcSignalType, ++attempt); });
+                                return delayedPromise(3000).then(function () { return saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, ++attempt); });
                         }
                     }
                 }
@@ -3012,143 +3015,178 @@
                     }
                 }
 
+                function addDynamicCalculatorAdapter(index, measurement) {
+                    let phasorDefinition = null;
+                    const connectionString = new Dictionary();
+                    const variableList = new Dictionary();
+                    let equation = tagTemplate.Equation;
+
+                    if (!singletonCalculation && !aggregateCalculation && measurement !== undefined) {
+                        vars[tagTemplate.TagName].push(measurement.SignalID);
+                        dynamicCalculation.deviceVariables.set(cell.IDLabel(), vars);
+                    }
+
+                    for (let property in inputSet) {
+                        if (inputSet.hasOwnProperty(property)) {
+                            const input = inputSet[property];
+
+                            if (aggregateCalculation) {
+                                // Get all array input signal IDs
+                                const signalIDs = [];
+
+                                for (let inputProperty in input) {
+                                    if (input.hasOwnProperty(inputProperty)) {
+                                        signalIDs.push(input[inputProperty] + "");
+                                    }
+                                }
+
+                                // Define array variable input for dynamic calculation
+                                const arrayName = subType !== "Calc" && property === tagTemplate.TagName ? "value" : property;
+                                variableList.set(arrayName + "[]", signalIDs.join(","));
+                            }
+                            else {
+                                if (Array.isArray(input)) {
+                                    if (property === "VNOM") {
+                                        // Replace VNOM constant
+                                        equation = equation.replaceAll("VNOM", String(inputSet.VNOM[index]), true);
+                                    }
+                                    else {
+                                        // Assign variable to signal ID
+                                        const signalID = input[index] + "";
+                                        variableList.set(property, signalID);
+
+                                        if (phasorDefinition == null) {
+                                            const matchedPhasorDefinition = lookupAssociatedPhasorDefinition(cell, signalID);
+
+                                            if (matchedPhasorDefinition != null)
+                                                phasorDefinition = matchedPhasorDefinition;
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (property === "FNOM") {
+                                        // Replace FNOM constant
+                                        equation = equation.replaceAll("FNOM", String(inputSet.FNOM), true);
+                                    } else {
+                                        // Assign variable to signal ID
+                                        const signalID = input + "";
+                                        variableList.set(property, signalID);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    let pointTag;
+                    
+                    if (measurement === undefined) {
+                        // ValueAdjuster and ValueFilter types produce no output measurement, proxy a point tag to be used in adapter name
+                        pointTag = String.format("{0}-{1}!{2}{3}", cell.IDLabel(), getCleanAcronym(tagTemplate.TagName), subType.toUpperCase(), templateIndex);
+                    }
+                    else {
+                        // Inject phasor definition label into output measurement point tag and description
+                        if (phasorDefinition != null) {
+                            const label = phasorDefinition.Label().replaceAll(" ", "_").toUpperCase();
+                            pointTag = measurement.PointTag = getCleanAcronym(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
+                            measurement.Description = String.format(measurement.Description.replace("<0>", " {0}"), phasorDefinition.Label());
+                            phasorHub.updateMeasurement(measurement);
+                        }
+                        else {
+                            pointTag = measurement.PointTag = getCleanAcronym(measurement.PointTag.replace("-<0>", ""));
+                            measurement.Description = measurement.Description.replace("<0>", "");
+                            phasorHub.updateMeasurement(measurement);
+                        }
+                    }
+
+                    connectionString.set("variableList", variableList.joinKeyValuePairs());
+                    connectionString.set("expressionText", equation);
+
+                    return phasorHub.newCustomActionAdapter().then(function (adapter) {
+                        adapter.NodeID = nodeID;
+                        adapter.AdapterName = pointTag + (aggregateCalculation ? "-CALC" : "");
+                        adapter.AssemblyName = "DynamicCalculator.dll";
+
+                        switch (subType) {
+                            case "Calc":  // DynamicCalculator type
+                                adapter.TypeName = "DynamicCalculator.DynamicCalculator";
+                                connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
+                                connectionString.set("lagTime", "@DefaultCalculationLagTime");
+                                connectionString.set("leadTime", "@DefaultCalculationLeadTime");
+                                connectionString.set("outputMeasurements", measurement.SignalID);
+                                connectionString.set("useLatestValues", "false");
+                                break;
+                            case "Adjust": // ValueAdjuster type
+                                adapter.TypeName = "DynamicCalculator.DynamicFilter";
+                                connectionString.set("filterOperation", "ValueAugmentation");
+                                connectionString.set("executionOrder", String(templateIndex));
+                                break;
+                            case "Filter": // ValueFilter type
+                                adapter.TypeName = "DynamicCalculator.DynamicFilter";
+                                connectionString.set("filterOperation", "RemoveWhenTrue");
+                                connectionString.set("executionOrder", String(templateIndex));
+                                break;
+                        }
+
+                        adapter.ConnectionString = connectionString.joinKeyValuePairs();
+                        adapter.LoadOrder = 100;
+                        adapter.Enabled = true;
+
+                        return phasorHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
+                            return serviceHub.sendCommand("initialize " + adapter.AdapterName);
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
+                        });
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
+                    });
+                }
+
                 const promises = [];
 
                 if (inputsAvailable) {
                     for (let i = 0; i < maxInputLength; i++) {
                         const index = i;
-                        const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
-                        const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
 
-                        // Track all dynamic calculation output SignalIDs by tag name so they can be used as inputs to aggregate calculations
-                        if (!singletonCalculation && !aggregateCalculation)
-                            vars[tagTemplate.TagName] = [];
+                        if (subType === "Calc") {
+                            const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
+                            const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
 
-                        // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                        promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
-                            measurement.DeviceID = cell.ID;
-                            measurement.HistorianID = viewModel.historianID();
-                            measurement.PointTag = String.format("{0}-<0>{1}{2}", cell.IDLabel(), aggregateCalculation ? "-" : ":CALC-", tagTemplate.TagName);
-                            measurement.Description = String.format("{0}<0>{1} Value{2}: {3}", cell.IDLabel(), aggregateCalculation ? "" : " Calculated", singletonCalculation ? "" : " " + String(index), tagTemplate.Description);
-                            measurement.SignalReference = signalReference;
-                            measurement.SignalTypeID = calcSignalType.ID;
-                            measurement.Internal = true;
-                            measurement.Enabled = true;
+                            // Track all dynamic calculation output SignalIDs by tag name so they can be used as inputs to aggregate calculations
+                            if (!singletonCalculation && !aggregateCalculation)
+                                vars[tagTemplate.TagName] = [];
 
-                            return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
-                                return phasorHub.queryMeasurement(signalReference).then(function (measurement) {
-                                    var phasorDefinition = null;
-                                    const connectionString = new Dictionary();
-                                    const variableList = new Dictionary();
-                                    var equation = tagTemplate.Equation;
+                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                            promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
+                                measurement.DeviceID = cell.ID;
+                                measurement.HistorianID = viewModel.historianID();
+                                measurement.PointTag = String.format("{0}-<0>{1}{2}", cell.IDLabel(), aggregateCalculation ? "-" : ":CALC-", tagTemplate.TagName);
+                                measurement.Description = String.format("{0}<0>{1} Value{2}: {3}", cell.IDLabel(), aggregateCalculation ? "" : " Calculated", singletonCalculation ? "" : " " + String(index), tagTemplate.Description);
+                                measurement.SignalReference = signalReference;
+                                measurement.SignalTypeID = calcSignalType.ID;
+                                measurement.Internal = true;
+                                measurement.Enabled = true;
 
-                                    if (!singletonCalculation && !aggregateCalculation) {
-                                        vars[tagTemplate.TagName].push(measurement.SignalID);
-                                        dynamicCalculation.deviceVariables.set(cell.IDLabel(), vars);
-                                    }
-
-                                    for (let property in inputSet) {
-                                        if (inputSet.hasOwnProperty(property)) {
-                                            const input = inputSet[property];
-
-                                            if (aggregateCalculation) {
-                                                // Get all array input signal IDs
-                                                const signalIDs = [];
-                                                
-                                                for (let inputProperty in input) {
-                                                    if (input.hasOwnProperty(inputProperty)) {
-                                                        signalIDs.push(input[inputProperty] + "");
-                                                    }
-                                                }
-
-                                                // Define array variable input for dynamic calculation
-                                                variableList.set(property + "[]", signalIDs.join(","));
-                                            }
-                                            else {
-                                                if (Array.isArray(input)) {
-                                                    if (property === "VNOM") {
-                                                        // Replace VNOM constant
-                                                        equation = equation.replaceAll("VNOM", String(inputSet.VNOM[index]), true);
-                                                    }
-                                                    else {
-                                                        // Assign variable to signal ID
-                                                        const signalID = input[index] + "";
-                                                        variableList.set(property, signalID);
-
-                                                        if (phasorDefinition == null) {
-                                                            const matchedPhasorDefinition = lookupAssociatedPhasorDefinition(cell, signalID);
-
-                                                            if (matchedPhasorDefinition != null)
-                                                                phasorDefinition = matchedPhasorDefinition;
-                                                        }
-                                                    }
-                                                }
-                                                else {
-                                                    if (property === "FNOM") {
-                                                        // Replace FNOM constant
-                                                        equation = equation.replaceAll("FNOM", String(inputSet.FNOM), true);
-                                                    } else {
-                                                        // Assign variable to signal ID
-                                                        const signalID = input + "";
-                                                        variableList.set(property, signalID);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // Inject phasor definition label into output measurement point tag and description
-                                    if (phasorDefinition != null) {
-                                        const label = phasorDefinition.Label().replaceAll(" ", "_").toUpperCase();
-                                        measurement.PointTag = getCleanAcronym(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
-                                        measurement.Description = String.format(measurement.Description.replace("<0>", " {0}"), phasorDefinition.Label());
-                                        phasorHub.updateMeasurement(measurement);
-                                    }
-                                    else {
-                                        measurement.PointTag = getCleanAcronym(measurement.PointTag.replace("-<0>", ""));
-                                        measurement.Description = measurement.Description.replace("<0>", "");
-                                        phasorHub.updateMeasurement(measurement);
-                                    }
-
-                                    connectionString.set("variableList", variableList.joinKeyValuePairs());
-                                    connectionString.set("expressionText", equation);
-                                    connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                                    connectionString.set("lagTime", "@DefaultCalculationLagTime");
-                                    connectionString.set("leadTime", "@DefaultCalculationLeadTime");
-                                    connectionString.set("outputMeasurements", measurement.SignalID);
-                                    connectionString.set("useLatestValues", "false");
-
-                                    return phasorHub.newCustomActionAdapter().then(function (adapter) {
-                                        adapter.NodeID = nodeID;
-                                        adapter.AdapterName = measurement.PointTag + (aggregateCalculation ? "-CALC" : "");
-                                        adapter.AssemblyName = "DynamicCalculator.dll";
-                                        adapter.TypeName = "DynamicCalculator.DynamicCalculator";
-                                        adapter.ConnectionString = connectionString.joinKeyValuePairs();
-                                        adapter.LoadOrder = 100;
-                                        adapter.Enabled = true;
-
-                                        return phasorHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
-                                            return serviceHub.sendCommand("initialize " + adapter.AdapterName);
-                                        })
-                                        .fail(function (error) {
-                                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
-                                        });
+                                return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
+                                    return phasorHub.queryMeasurement(signalReference).then(function () {
+                                        return addDynamicCalculatorAdapter(index, measurement);
                                     })
                                     .fail(function (error) {
-                                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
+                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
                                     });
                                 })
                                 .fail(function (error) {
-                                    showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
+                                    showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
-                            });
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
-                        }));
+                                showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
+                            }));
+                        }
+                        else {
+                            promises.push(addDynamicCalculatorAdapter(index));
+                        }
                     }
                 }
 
@@ -3229,7 +3267,7 @@
 
                             switch (tagTemplate.Type.toUpperCase()) {
                                 case "CALCULATEPOWER":
-                                    promises.push(savePowerCalcuations(cell, tagTemplate).then(function () {
+                                    promises.push(savePowerCalculations(cell, tagTemplate).then(function () {
                                         return serviceHub.sendCommand("initialize PHASOR!POWERCALC");
                                     }));
                                     break;
@@ -3239,7 +3277,13 @@
                                         sumPhaseTagTemplates.push(tagTemplate);
                                     break;
                                 case "DYNAMICCALCULATOR":
-                                    promises.push(saveDynamicCalculation(cell, tagTemplate, calcSignalType));
+                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Calc", calcSignalType));
+                                    break;
+                                case "VALUEADJUSTER":
+                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Adjust", calcSignalType));
+                                    break;
+                                case "VALUEFILTER":
+                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Filter", calcSignalType));
                                     break;
                                 default:
                                     // All other template types are assumed to be custom action adapter defintions. Since
@@ -3428,7 +3472,7 @@
                 // Only update connection string if one has been defined, prevents changing any existing one to blank
                 if (connectionString.length > 0)
                     device.ConnectionString = connectionString;
-                    
+
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
                 device.Enabled = true;
@@ -3535,7 +3579,7 @@
             else
                 showInfoMessage(message);
         }
-        
+
         function showConnectionBuilderDialog() {
             switch ($("#selectTransport").val()) {
                 case "TCP":
@@ -3553,7 +3597,7 @@
                 // TODO: case "FILE:"
             }
         }
-        
+
         function applyTcpConnectionSettings() {
             viewModel.connectionString(String.format("hostName = {0}; port = {1}",
                 $("#inputTcpHostName").val(),
@@ -3723,15 +3767,15 @@
             ko.watch(viewModel.devices, { depth: -1 }, function (parents, child, item) {
                 viewModel.isDirty(true);
             });
-            
+
             $("#connectionSettings").on("shown.bs.collapse", function() {
                 resizePageElements();
             });
-            
+
             $("#connectionSettings").on("hidden.bs.collapse", function() {
                 resizePageElements();
             });
-            
+
             $("#connectionStatus").on("shown.bs.collapse", function() {
                 scrollConnectionStatusWindowToBottom();
             });
@@ -3942,7 +3986,7 @@
 
                 $("#inputConfigFile").tooltip("hide");
             });
-            
+
             // Setup save configuration file name dialog functionality
             $("#saveConfigurationFile").click(function() {
                 $("#saveConfigurationFileNameDialog").hide();
@@ -3968,7 +4012,7 @@
             $("#inputConifgurationFileName").focus(function() {
                 $(this).select();
             });
-            
+
             // Prevent default form submission when user presses enter
             $("#saveConfigurationFileNameDialog").submit(function() {
                 return false;
