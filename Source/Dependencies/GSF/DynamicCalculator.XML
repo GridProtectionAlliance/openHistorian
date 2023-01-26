@@ -232,6 +232,11 @@
             Gets or sets the operation type of the filter calculation.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicFilter.AugmentationFlags">
+            <summary>
+            Gets or sets measurement state flags that are applied when a value has been replaced when filter operation is set to <see cref="F:DynamicCalculator.FilterOperation.ValueAugmentation"/>.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicFilter.Enabled">
             <summary>
             Gets or sets the current enabled state of the <see cref="T:DynamicCalculator.DynamicFilter"/>.
