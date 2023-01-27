@@ -102,5 +102,37 @@
             <param name="stopCalled"></param>
             <returns></returns>
         </member>
+        <member name="T:PhasorWebUI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:PhasorWebUI.Properties.Resources.TagTemplateHeader">
+             <summary>
+               Looks up a localized string similar to # File format is tab-delimited with the following columns:
+            #     Tag Name-&gt;Inputs-&gt;Equation-&gt;Type-&gt;Description
+            #
+            # For custom action adapter types, the format can be interpreted as:
+            #     Tag Name = Adapter Instance Name
+            #     Inputs = Connection String
+            #     Equation = Assembly Name (i.e., DLL file name)
+            #     Type = Fully Qualified Type Name
+            #     Description = Local Comments
+            #
+            # Otherwise format defines dynamic signal based calculations based on input configuration:
+            #     Tag Name = Identifier [rest of string was truncated]&quot;;.
+             </summary>
+        </member>
     </members>
 </doc>

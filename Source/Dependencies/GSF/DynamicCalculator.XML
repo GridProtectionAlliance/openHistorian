@@ -298,6 +298,11 @@
             Gets flag that determines if the implementation of the <see cref="T:DynamicCalculator.DynamicCalculator"/> requires an output measurement.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicFilter.ShowConcentratorStatus">
+            <summary>
+            Gets flags that determines if <see cref="T:GSF.TimeSeries.ConcentratorBase"/> class status should be included in <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/> status.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.DynamicFilter.Status">
             <summary>
             Returns the detailed status of the data input source.
@@ -316,11 +321,6 @@
         <member name="M:DynamicCalculator.DynamicFilter.Stop">
             <summary>
             Stops the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
-            </summary>
-        </member>
-        <member name="M:DynamicCalculator.DynamicFilter.ExamineQueueState">
-            <summary>
-            Examines the concentrator frame queue state of the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterBase"/>.
             </summary>
         </member>
         <member name="M:DynamicCalculator.DynamicFilter.HandleNewMeasurements(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement})">
@@ -592,6 +592,9 @@
             <summary>
             Gets defined expression variable collection with current values.
             </summary>
+            <remarks>
+            Updates to variables outside <see cref="M:DynamicCalculator.DynamicCalculator.Calculate(System.Collections.Generic.IReadOnlyDictionary{GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.IMeasurement},System.Collections.Generic.IReadOnlyDictionary{System.String,System.Int32})"/> method should be synchronized with <c>lock(this)</c>.
+            </remarks>
         </member>
         <member name="P:DynamicCalculator.DynamicCalculator.VariableNames">
             <summary>
