@@ -2995,6 +2995,7 @@
                             if (!Array.isArray(inputSet[property]))
                                 return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" [" + String(templateIndex) + "] tag template: input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
 
+                            // Inputs can be outputs of other calculations, so will wait for a moment for these to get created if needed
                             if (Object.keys(inputSet[property]).length === 0)
                                 return delayedPromise(3000).then(function () { return saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, ++attempt); });
                         }
@@ -3126,10 +3127,22 @@
                         }
                     }
 
+                    function newDynamicCalculatorAdapter() {
+                        return subType === "Calc" ? 
+                            phasorHub.newCustomActionAdapter() : 
+                            phasorHub.newCustomFilterAdapter();
+                    }
+
+                    function addNewOrUpdateDynamicCalculatorAdapter(adapter) {
+                        return subType === "Calc" ? 
+                            phasorHub.addNewOrUpdateCustomActionAdapter(adapter) : 
+                            phasorHub.addNewOrUpdateCustomFilterAdapter(adapter);
+                    }
+
                     connectionString.set("variableList", variableList.joinKeyValuePairs());
                     connectionString.set("expressionText", equation);
 
-                    return phasorHub.newCustomActionAdapter().then(function (adapter) {
+                    return newDynamicCalculatorAdapter().then(function (adapter) {
                         adapter.NodeID = nodeID;
                         adapter.AdapterName = pointTag + (aggregateCalculation ? "-CALC" : "");
                         adapter.AssemblyName = "DynamicCalculator.dll";
@@ -3146,28 +3159,26 @@
                             case "Adjust": // ValueAdjuster type
                                 adapter.TypeName = "DynamicCalculator.DynamicFilter";
                                 connectionString.set("filterOperation", "ValueAugmentation");
-                                connectionString.set("executionOrder", String(templateIndex));
                                 break;
                             case "Filter": // ValueFilter type
                                 adapter.TypeName = "DynamicCalculator.DynamicFilter";
                                 connectionString.set("filterOperation", "RemoveWhenTrue");
-                                connectionString.set("executionOrder", String(templateIndex));
                                 break;
                         }
 
                         adapter.ConnectionString = connectionString.joinKeyValuePairs();
-                        adapter.LoadOrder = 100;
+                        adapter.LoadOrder = 100 + templateIndex;
                         adapter.Enabled = true;
 
-                        return phasorHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
+                        return addNewOrUpdateDynamicCalculatorAdapter(adapter).then(function () {
                             return serviceHub.sendCommand("initialize " + adapter.AdapterName);
                         })
                         .fail(function (error) {
-                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
+                            showErrorMessage("Save failed for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter: " + error, null, true);
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
+                        showErrorMessage("Failed to create new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
                     });
                 }
 
