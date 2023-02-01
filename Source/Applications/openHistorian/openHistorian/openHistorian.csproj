@@ -323,12 +323,11 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <EmbeddedResource Include="Full Calculations.TagTemplate" />
+    <EmbeddedResource Include=".TagTemplate" />
     <Content Include="Grafana\data\Home.json" />
     <Content Include="Installers\PMUConnectionTesterSetup.msi" />
     <Content Include="Installers\StreamSplitterSetup.msi" />
     <Content Include="Grafana\VERSION" />
-    <EmbeddedResource Include="Device Viability Calculations.TagTemplate" />
     <None Include="openHistorian.ico" />
     <None Include="PostBuildSetup.bat" />
     <EmbeddedResource Include="Sample1344.PmuCapture">
@@ -339,10 +338,7 @@
     </Content>
     <Content Include="wwwroot\AddSynchrophasorDevice.cshtml" />
     <Content Include="wwwroot\AddDevice.cshtml" />
-    <EmbeddedResource Include="Single Phase Power Calculations.TagTemplate" />
-    <EmbeddedResource Include="Three Phase Power Calculations.TagTemplate" />
     <Content Include="wwwroot\AddSynchrophasorDeviceDev.cshtml" />
-    <EmbeddedResource Include="Three Phase Power Calculations with Time Sync.TagTemplate" />
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <Content Include="wwwroot\DeviceGroups.cshtml" />
