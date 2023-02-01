@@ -323,7 +323,6 @@
     </None>
     <Content Include="Grafana\conf\custom.ini" />
     <Content Include="Grafana\data\grafana.db" />
-    <EmbeddedResource Include=".TagTemplate" />
     <Content Include="Grafana\data\Home.json" />
     <Content Include="Installers\PMUConnectionTesterSetup.msi" />
     <Content Include="Installers\StreamSplitterSetup.msi" />
