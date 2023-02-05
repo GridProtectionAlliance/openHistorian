@@ -1837,6 +1837,11 @@
             return acronym.replace(/[^A-Z0-9\-!_\.@@#\$]/gi, "");
         }
 
+        function getCleanPointTag(pointTag) {
+            // Remove any invalid characters from point tag - @@ is Razor escaped single "at" symbol:
+            return pointTag.replace(/[^A-Z0-9\-\+!\:_\.@@#\$]/gi, "");
+        }
+
         function getDeviceSignalType(acronym) {
             acronym = acronym.toUpperCase();
 
@@ -2626,7 +2631,7 @@
                     return phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
                         measurement.DeviceID = cell.ID;
                         measurement.HistorianID = viewModel.historianID();
-                        measurement.PointTag = getCleanAcronym(String.format("{0}-{1}:CALC-{2}", cell.IDLabel(), lineName, tagTemplate.TagName));
+                        measurement.PointTag = getCleanPointTag(String.format("{0}-{1}:CALC-{2}", cell.IDLabel(), lineName, tagTemplate.TagName));
                         measurement.Description = String.format("{0} {1} Calculated Value: {2}", cell.IDLabel(), lineName, tagTemplate.Description);
                         measurement.SignalReference = signalReference;
                         measurement.SignalTypeID = calcSignalType.ID;
@@ -2731,7 +2736,7 @@
                 };
 
                 dynamicCalculation.deviceVariables.set(label, vars);
-                
+
                 for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
                     const phasorDefinition = cell.PhasorDefinitions[j];
                     const phase = phasorDefinition.Phase().toUpperCase();
@@ -2838,7 +2843,7 @@
                 // Add analogs array
                 for (let j = 0; j < cell.AnalogDefinitions.length; j++) {
                     const index = j + 1;
-                    
+
                     promises.push(phasorHub.queryMeasurement(String.format("{0}-AV{1}", label, index)).then(function (measurement) {
                         vars.ALOG.push(measurement.SignalID);
                     })
@@ -3107,78 +3112,85 @@
                     }
 
                     let pointTag;
-                    
+                    let pointTagPromise;
+
                     if (measurement === undefined) {
                         // ValueAdjuster and ValueFilter types produce no output measurement, proxy a point tag to be used in adapter name
-                        pointTag = String.format("{0}-{1}!{2}{3}", cell.IDLabel(), getCleanAcronym(tagTemplate.TagName), subType.toUpperCase(), templateIndex);
+                        pointTag = String.format("{0}-{1}!{2}{3}", cell.IDLabel(), getCleanPointTag(tagTemplate.TagName), subType.toUpperCase(), templateIndex);
+                        pointTagPromise = $.Deferred().resolve().promise();
                     }
                     else {
                         // Inject phasor definition label into output measurement point tag and description
-                        if (phasorDefinition != null) {
+                        if (phasorDefinition != null && !isEmpty(phasorDefinition.Label())) {
                             const label = phasorDefinition.Label().replaceAll(" ", "_").toUpperCase();
-                            pointTag = measurement.PointTag = getCleanAcronym(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
+                            pointTag = measurement.PointTag = getCleanPointTag(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
                             measurement.Description = String.format(measurement.Description.replace("<0>", " {0}"), phasorDefinition.Label());
-                            phasorHub.updateMeasurement(measurement);
+                            pointTagPromise = phasorHub.updateMeasurement(measurement);
                         }
                         else {
-                            pointTag = measurement.PointTag = getCleanAcronym(measurement.PointTag.replace("-<0>", ""));
+                            pointTag = measurement.PointTag = getCleanPointTag(measurement.PointTag.replace("-<0>", ""));
                             measurement.Description = measurement.Description.replace("<0>", "");
-                            phasorHub.updateMeasurement(measurement);
+                            pointTagPromise = phasorHub.updateMeasurement(measurement);
                         }
                     }
 
                     function newDynamicCalculatorAdapter() {
-                        return subType === "Calc" ? 
-                            phasorHub.newCustomActionAdapter() : 
+                        return subType === "Calc" ?
+                            phasorHub.newCustomActionAdapter() :
                             phasorHub.newCustomFilterAdapter();
                     }
 
                     function addNewOrUpdateDynamicCalculatorAdapter(adapter) {
-                        return subType === "Calc" ? 
-                            phasorHub.addNewOrUpdateCustomActionAdapter(adapter) : 
+                        return subType === "Calc" ?
+                            phasorHub.addNewOrUpdateCustomActionAdapter(adapter) :
                             phasorHub.addNewOrUpdateCustomFilterAdapter(adapter);
                     }
 
                     connectionString.set("variableList", variableList.joinKeyValuePairs());
                     connectionString.set("expressionText", equation);
 
-                    return newDynamicCalculatorAdapter().then(function (adapter) {
-                        adapter.NodeID = nodeID;
-                        adapter.AdapterName = pointTag + (aggregateCalculation ? "-CALC" : "");
-                        adapter.AssemblyName = "DynamicCalculator.dll";
+                    return pointTagPromise.then(function () {
+                        return newDynamicCalculatorAdapter().then(function (adapter) {
+                            adapter.NodeID = nodeID;
+                            adapter.AdapterName = pointTag + (aggregateCalculation ? "-CALC" : "");
+                            adapter.AssemblyName = "DynamicCalculator.dll";
 
-                        switch (subType) {
-                            case "Calc":  // DynamicCalculator type
-                                adapter.TypeName = "DynamicCalculator.DynamicCalculator";
-                                connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                                connectionString.set("lagTime", "@DefaultCalculationLagTime");
-                                connectionString.set("leadTime", "@DefaultCalculationLeadTime");
-                                connectionString.set("outputMeasurements", measurement.SignalID);
-                                connectionString.set("useLatestValues", "false");
-                                break;
-                            case "Adjust": // ValueAdjuster type
-                                adapter.TypeName = "DynamicCalculator.DynamicFilter";
-                                connectionString.set("filterOperation", "ValueAugmentation");
-                                break;
-                            case "Filter": // ValueFilter type
-                                adapter.TypeName = "DynamicCalculator.DynamicFilter";
-                                connectionString.set("filterOperation", "RemoveWhenTrue");
-                                break;
-                        }
+                            switch (subType) {
+                                case "Calc":  // DynamicCalculator type
+                                    adapter.TypeName = "DynamicCalculator.DynamicCalculator";
+                                    connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
+                                    connectionString.set("lagTime", "@DefaultCalculationLagTime");
+                                    connectionString.set("leadTime", "@DefaultCalculationLeadTime");
+                                    connectionString.set("outputMeasurements", measurement.SignalID);
+                                    connectionString.set("useLatestValues", "false");
+                                    break;
+                                case "Adjust": // ValueAdjuster type
+                                    adapter.TypeName = "DynamicCalculator.DynamicFilter";
+                                    connectionString.set("filterOperation", "ValueAugmentation");
+                                    break;
+                                case "Filter": // ValueFilter type
+                                    adapter.TypeName = "DynamicCalculator.DynamicFilter";
+                                    connectionString.set("filterOperation", "RemoveWhenTrue");
+                                    break;
+                            }
 
-                        adapter.ConnectionString = connectionString.joinKeyValuePairs();
-                        adapter.LoadOrder = 100 + templateIndex;
-                        adapter.Enabled = true;
+                            adapter.ConnectionString = connectionString.joinKeyValuePairs();
+                            adapter.LoadOrder = 100 + templateIndex;
+                            adapter.Enabled = true;
 
-                        return addNewOrUpdateDynamicCalculatorAdapter(adapter).then(function () {
-                            return serviceHub.sendCommand("initialize " + adapter.AdapterName);
+                            return addNewOrUpdateDynamicCalculatorAdapter(adapter).then(function () {
+                                return serviceHub.sendCommand("initialize " + adapter.AdapterName);
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Save failed for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter: " + error, null, true);
+                            });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Save failed for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter: " + error, null, true);
+                            showErrorMessage("Failed to create new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to create new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
+                        showErrorMessage("Failed to update output measurement tag \"" + pointTag + "\" for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
                     });
                 }
 
