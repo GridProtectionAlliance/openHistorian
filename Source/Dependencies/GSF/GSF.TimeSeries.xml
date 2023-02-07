@@ -8144,6 +8144,17 @@
             <param name="timestamp">New timestamp, in ticks, for cloned measurement.</param>
             <returns>A copy of the <see cref="T:GSF.TimeSeries.Measurement"/> object.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.Measurement.Clone(GSF.TimeSeries.IMeasurement,System.Double,GSF.Ticks,GSF.TimeSeries.MeasurementStateFlags,System.Boolean)">
+            <summary>
+            Creates a copy of the specified measurement using a new value, timestamp and state flags.
+            </summary>
+            <param name="measurementToClone">Specified measurement to clone.</param>
+            <param name="value">New value for cloned measurement.</param>
+            <param name="timestamp">New timestamp, in ticks, for cloned measurement.</param>
+            <param name="stateFlags">New state flags for cloned measurement.</param>
+            <param name="replaceFlags">Determines if <paramref name="stateFlags"/> should assigned as new (default) or be Or'd with existing flags.</param>
+            <returns>A copy of the <see cref="T:GSF.TimeSeries.Measurement"/> object.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.Measurement.ToString(GSF.TimeSeries.IMeasurement,System.Boolean)">
             <summary>
             Returns a <see cref="T:System.String"/> that represents the specified <see cref="T:GSF.TimeSeries.IMeasurement"/>.

@@ -58,7 +58,7 @@
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.TrackRecentValues">
             <summary>
-            Gets or sets flag that determines if the last few values should be monitored.
+            Gets or sets flag that determines if the last few values should be monitored for diagnostics.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.SampleSize">
@@ -81,9 +81,9 @@
             Gets or sets flag that determines if zero sequence calculations should be included.
             </summary>
         </member>
-        <member name="P:PowerCalculations.BulkSequenceCalculator.UseBadQualityData">
+        <member name="P:PowerCalculations.BulkSequenceCalculator.BadDataStrategy">
             <summary>
-            Gets or sets flag that determines if calculations should use data even when the bad quality flag is set. When value is false and any input has bad quality, calculation will be skipped.
+            Gets or sets the bad data strategy used to when inputs are marked with bad quality.
             </summary>
         </member>
         <member name="P:PowerCalculations.BulkSequenceCalculator.PerAdapterInputCount">
@@ -160,6 +160,21 @@
         <member name="M:PowerCalculations.BulkSequenceCalculator.ParseConnectionString">
             <summary>
             Parses connection string.
+            </summary>
+        </member>
+        <member name="T:PowerCalculations.BadDataStrategy">
+            <summary>
+            Represents an enumeration of bad data strategies.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.BadDataStrategy.DropData">
+            <summary>
+            Drops outputs when inputs are bad.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.BadDataStrategy.FlagAsBad">
+            <summary>
+            Marks outputs as bad when inputs are bad.
             </summary>
         </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.MeasurementRepository">
@@ -408,6 +423,11 @@
             Creates the adapter
             </summary>
         </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.TrackRecentValues">
+            <summary>
+            Gets or sets flag that determines if the last few values should be monitored for diagnostics.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.TableName">
             <summary>
             Gets or sets the name of the table this adapter will use to obtain its metadata.
@@ -429,6 +449,16 @@
             Gets or sets flag that determines if adapter should enable temporal processing support.
             </summary>
         </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SIUnitsFactor">
+            <summary>
+            Gets or sets SI units factor to use for power calculations, defaults to Mega (10^6).
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.BadDataStrategy">
+            <summary>
+            Gets or sets the bad data strategy used to when inputs are marked with bad quality.
+            </summary>
+        </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
@@ -446,7 +476,7 @@
         </member>
         <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
-            Calculates MW, MVAR and MVA then publishes those measurements
+            Calculates MW, MVAR and MVA then publishes those measurements.
             </summary>
             <param name="frame">Input values for calculation</param>
             <param name="index">Index of frame within second.</param>
@@ -600,7 +630,7 @@
         </member>
         <member name="P:PowerCalculations.SequenceCalculator.TrackRecentValues">
             <summary>
-            Gets or sets flag that determines if the last few values should be monitored.
+            Gets or sets flag that determines if the last few values should be monitored for diagnostics.
             </summary>
         </member>
         <member name="P:PowerCalculations.SequenceCalculator.SampleSize">
@@ -623,9 +653,9 @@
             Gets or sets flag that determines if zero sequence calculations should be included.
             </summary>
         </member>
-        <member name="P:PowerCalculations.SequenceCalculator.UseBadQualityData">
+        <member name="P:PowerCalculations.SequenceCalculator.BadDataStrategy">
             <summary>
-            Gets or sets flag that determines if calculations should use data even when the bad quality flag is set. When value is false and any input has bad quality, calculation will be skipped.
+            Gets or sets the bad data strategy used to when inputs are marked with bad quality.
             </summary>
         </member>
         <member name="P:PowerCalculations.SequenceCalculator.SupportsTemporalProcessing">
@@ -788,9 +818,9 @@
             Gets or sets the ratio used to calculate the total estimated MW change from frequency.
             </summary>
         </member>
-        <member name="P:PowerCalculations.EventDetection.FrequencyExcursion.AlarmProhibitPeriod">
+        <member name="P:PowerCalculations.EventDetection.FrequencyExcursion.MinimumAlarmInterval">
             <summary>
-            Gets or sets the period used to prevent duplicate alarms.
+            Gets or sets the period, in seconds, used to prevent duplicate alarms.
             </summary>
         </member>
         <member name="P:PowerCalculations.EventDetection.FrequencyExcursion.Status">

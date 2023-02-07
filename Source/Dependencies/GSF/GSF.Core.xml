@@ -31566,6 +31566,172 @@
             <param name="frequency">The frequency of the sine wave, in Hz.</param>
             <returns>A <see cref="T:GSF.NumericalAnalysis.SineWave"/> approximated from the given data points.</returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "T:GSF.NumericalAnalysis.FFT" -->
+        <member name="P:GSF.NumericalAnalysis.FFT.ComplexMagnitude">
+            <summary>
+            The compelx result of the FFT
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FFT.Frequency">
+            <summary>
+            The Center of the Frequency Bins used by the FFT
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.FFT.FrequencyBinWidth">
+            <summary>
+            The width of the Frequency bins used by the FFT
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:GSF.NumericalAnalysis.FFT.#ctor(System.Double[])" -->
+        <member name="M:GSF.NumericalAnalysis.FFT.IsPower2(System.Int32)">
+            <summary>
+            Determines if an <see cref="T:System.Int32"/> is a power of 2
+            </summary>
+            <param name="value"></param>
+            <returns>true if the integer is a clean power of 2</returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.AnalogFilter">
+            <summary>
+            Contains an implementation of an analog LTI Filter
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.InputCoefficents">
+            <summary>
+            The Input Coeficents used to multiply the input signal and it's derrivateives
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.OutputCoefficents">
+            <summary>
+            The Output Coeficents used to multiply the output signal and it's derrivateives
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.AnalogFilter.Order">
+            <summary>
+            The order of the filter
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.#ctor(System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Creates a new <see cref="!:Filter"/> based on continous design
+            </summary>
+            <param name="poles">The Continous Poles</param>
+            <param name="zeros"> The Continous Zeros</param>
+            <param name="Gain">The Continous Gain </param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.ContinousToDiscrete(System.Double,System.Double)">
+            <summary>
+            Transforms Continous Poles and zeros into Discrete poles and zeros.
+            this uses the biLinear transformation/ Tustin Approximation
+            If necessary Prewarping is supported via fp
+            </summary>
+            <param name="fs"> Sampling Frequency </param>
+            <param name="fp"> pre-warp frequency</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.PolesToPolynomial(System.Numerics.Complex[])">
+            <summary>
+            Turns poles into Polynomial coefficients
+            </summary>
+            <param name="poles">The complex poles</param>
+            <returns> the polynomial coeffcients for the given poles</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.LP2HP">
+            <summary>
+            Turns the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/> from Low Pass Filter into an High Pass Filter
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Scale(System.Double)">
+            <summary>
+            Scale the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/> such that Gain at Corner frequency is -3dB
+            </summary>
+            <param name="fc"> Corner Frequency</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.NormalButter(System.Int32)">
+            <summary>
+            Generates a normal Butterworth Filter of Nth order
+            </summary>
+            <param name="order"> order of the Filter</param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.HPButterworth(System.Double,System.Int32)">
+            <summary>
+            Generates a High Pass Butterworth Filter
+            </summary>
+            <param name="fc"> corner frequency in Hz</param>
+            <param name="order"> Order of the Filter </param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.LPButterworth(System.Double,System.Int32)">
+            <summary>
+            Generates a High Pass Butterworth Filter
+            </summary>
+            <param name="fc"> corner frequency in Hz</param>
+            <param name="order"> Order of the Filter </param>
+            <returns> the <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/></returns>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.FilterState">
+            <summary>
+            Represents the internal state of a <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> or <see cref="T:GSF.NumericalAnalysis.AnalogFilter"/>
+            </summary>
+            #ToDo Implement ability to derrive state from constant value (f(t) = 5 for infinity
+        </member>
+        <member name="M:GSF.NumericalAnalysis.FilterState.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.FilterState"/> with all internal states set to 0
+            </summary>
+        </member>
+        <member name="T:GSF.NumericalAnalysis.DigitalFilter">
+            <summary>
+            Contains an implementation of a digital LTI Filter
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.InputCoefficents">
+            <summary>
+            The Input Coeficents used to multiply the input signal
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.OutputCoefficents">
+            <summary>
+            The Output Coeficents used to multiply the output signal
+            </summary>
+        </member>
+        <member name="P:GSF.NumericalAnalysis.DigitalFilter.Order">
+            <summary>
+            The order of the filter
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.#ctor(System.Double[],System.Double[])">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> based on the coeficents of
+            a[0] y[k] + a[1] y[k-1].... = b[0] x[k] + b[1] x[k-1]... b[n] x[k-n]
+            </summary>
+            <param name="A"> the output coeficents (a[0] through a[n])</param>
+            <param name="B"> the input coefficents (b[0] through b[n])</param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.#ctor(System.Double[],System.Double[],System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.NumericalAnalysis.DigitalFilter"/> based on coeficents and Gain
+            a[0] y[k] + a[1] y[k-1].... = K * (b[0] x[k] + b[1] x[k-1]... b[n] x[k-n])
+            </summary>
+            <param name="A"> the output coeficents (a[0] through a[n])</param>
+            <param name="B"> the input coefficents (b[0] through b[n])</param>
+            <param name="K"> The gain of the filter. </param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filt(System.Double[])">
+            <summary>
+            applies this filter to an evenly sampled signal f(t)
+            </summary>
+            <param name="signal"> f(t) for the signal </param>
+            <returns>The output of teh filter y(t) </returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filt(System.Double,GSF.NumericalAnalysis.FilterState,GSF.NumericalAnalysis.FilterState@)">
+            <summary>
+            Computes the output of the filter for the given single input and <see cref="T:GSF.NumericalAnalysis.FilterState"/>
+            </summary>
+            <param name="value"> The input value </param>
+            <param name="initialState">The initial state of the filter </param>
+            <param name="finalState"> The final State of the Filter</param>
+            <returns> the value of the filtered signal</returns>
+        </member>
         <member name="T:GSF.NumericalAnalysis.Euclidean">
             <summary>
             Contains an implementation of greatest common denominator
