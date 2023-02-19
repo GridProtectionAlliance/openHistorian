@@ -31631,6 +31631,24 @@
             <param name="fs"> Sampling Frequency </param>
             <param name="fp"> pre-warp frequency</param>
         </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Filter(System.Double,System.Double,GSF.NumericalAnalysis.FilterState,GSF.NumericalAnalysis.FilterState@)">
+            <summary>
+            Computes the output of the filter for the given single input and <see cref="T:GSF.NumericalAnalysis.FilterState"/>.
+            </summary>
+            <param name="value"> The input value </param>
+            <param name="fs"> The sampling Frequency of the signal</param>
+            <param name="initialState">The initial state of the filter </param>
+            <param name="finalState"> The final State of the Filter</param>
+            <returns> the value of the filtered signal</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.AnalogFilter.Filter(System.Double[],System.Double)">
+            <summary>
+            applies this filter to an evenly sampled signal f(t).
+            </summary>
+            <param name="signal"> f(t) for the signal</param>
+            <param name="fs"> sampling frquency of the signal </param>
+            <returns>The output of the filter y(t)</returns>
+        </member>
         <member name="M:GSF.NumericalAnalysis.AnalogFilter.PolesToPolynomial(System.Numerics.Complex[])">
             <summary>
             Turns poles into Polynomial coefficients.
@@ -31666,7 +31684,7 @@
         </member>
         <member name="M:GSF.NumericalAnalysis.AnalogFilter.LPButterworth(System.Double,System.Int32)">
             <summary>
-            Generates a High Pass Butterworth Filter.
+            Generates a Low Pass Butterworth Filter.
             </summary>
             <param name="fc"> corner frequency in Hz</param>
             <param name="order"> Order of the Filter </param>
@@ -31726,10 +31744,10 @@
         </member>
         <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filter(System.Double[])">
             <summary>
-            applies this filter to an evenly sampled signal f(t).
+            Applies this filter to an evenly sampled signal f(t).
             </summary>
             <param name="signal"> f(t) for the signal</param>
-            <returns>The output of teh filter y(t)</returns>
+            <returns>The output of the filter y(t)</returns>
         </member>
         <member name="M:GSF.NumericalAnalysis.DigitalFilter.Filter(System.Double,GSF.NumericalAnalysis.FilterState,GSF.NumericalAnalysis.FilterState@)">
             <summary>
@@ -31739,6 +31757,14 @@
             <param name="initialState">The initial state of the filter </param>
             <param name="finalState"> The final State of the Filter</param>
             <returns> the value of the filtered signal</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.DigitalFilter.FiltFilt(System.Double[])">
+            <summary>
+            Applies the filter to a signal and reverse signal to remove any Phasor shift
+            </summary>
+            <param name="signal"> f(t) for the signal</param>
+            <returns>The output of the filter y(t)</returns>
+            <remarks>This is the equivalent of MatLab <c>FiltFilt</c>.</remarks>
         </member>
         <member name="T:GSF.NumericalAnalysis.Euclidean">
             <summary>
