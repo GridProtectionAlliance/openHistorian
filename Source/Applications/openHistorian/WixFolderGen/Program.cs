@@ -21,6 +21,9 @@
 //
 //******************************************************************************************************
 
+// Uncomment to generate Azure AD component group
+//#define GenAzureADComponentGroup
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,8 +40,14 @@ namespace WiXFolderGen
         private static readonly HashSet<string> NewIdentifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static int Generation;
 
+        [STAThread]
         static void Main()
         {
+        #if GenAzureADComponentGroup
+            GenAzureADComponentGroup.Generate();
+            Console.ReadKey();
+            return;
+        #else
             // Generate WiX setup include files for "wwwroot" folder
             NewIdentifiers.Clear();
             Generation = 1;
@@ -49,6 +58,7 @@ namespace WiXFolderGen
             NewIdentifiers.Clear();
             Generation = 2;
             GenGrafanaIncludes.Execute();
+        #endif
         }
 
         public static string GetCleanID(string path, string prefix, string suffix, int limit,
