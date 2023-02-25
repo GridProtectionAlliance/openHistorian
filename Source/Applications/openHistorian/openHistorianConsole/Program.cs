@@ -45,11 +45,8 @@ namespace openHistorian
             Environment.Exit(0);
         }
 
-        private static void OnConsoleClosing(object sender, CancelEventArgs e)
-        {
-            // Dispose the client component.
-            if (s_serviceClient != null)
-                s_serviceClient.Dispose();
-        }
+        // Dispose the client component.
+        private static void OnConsoleClosing(object sender, CancelEventArgs e) => 
+            s_serviceClient?.Dispose();
     }
 }

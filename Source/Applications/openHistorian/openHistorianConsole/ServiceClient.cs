@@ -44,41 +44,45 @@ namespace openHistorian
             List<object> attachments = e.Argument.Attachments;
 
             // Handle any special attachments coming in from service
-            if (attachments != null)
+            if (attachments is not null)
             {
                 foreach (object attachment in attachments)
                 {
-                    if (attachment is ConfigurationErrorFrame)
+                    switch (attachment)
                     {
-                        Console.WriteLine("Received configuration error frame, invocation request for device configuration has failed. See common phasor services response for reason.\r\n");
-                    }
-                    else if (attachment is IConfigurationFrame)
-                    {
-                        // Attachment is a configuration frame, serialize it to XML and open it in a browser
-                        IConfigurationFrame configurationFrame = attachment as IConfigurationFrame;
-                        string fileName = string.Format("{0}\\DownloadedConfiguration-ID[{1}].xml", FilePath.GetAbsolutePath(""), configurationFrame.IDCode);
-                        FileStream configFile = File.Create(fileName);
-                        SoapFormatter xmlSerializer = new SoapFormatter();
-
-                        xmlSerializer.AssemblyFormat = FormatterAssemblyStyle.Simple;
-                        xmlSerializer.TypeFormat = FormatterTypeStyle.TypesWhenNeeded;
-
-                        try
+                        case ConfigurationErrorFrame:
+                            Console.WriteLine("Received configuration error frame, invocation request for device configuration has failed. See common phasor services response for reason.\r\n");
+                            break;
+                        case IConfigurationFrame configurationFrame:
                         {
-                            // Attempt to serialize configuration frame as XML
-                            xmlSerializer.Serialize(configFile, configurationFrame);
-                        }
-                        catch (Exception ex)
-                        {
-                            byte[] errorMessage = Encoding.UTF8.GetBytes(ex.Message);
-                            configFile.Write(errorMessage, 0, errorMessage.Length);
-                            Console.Write("Failed to serialize configuration frame: {0}", ex.Message);
-                        }
+                            // Attachment is a configuration frame, serialize it to XML and open it in a browser
+                            string fileName = $"{FilePath.GetAbsolutePath("")}\\DownloadedConfiguration-ID[{configurationFrame.IDCode}].xml";
+                            FileStream configFile = File.Create(fileName);
+                            
+                            SoapFormatter xmlSerializer = new()
+                            { 
+                                AssemblyFormat = FormatterAssemblyStyle.Simple, 
+                                TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+                            };
 
-                        configFile.Close();
+                            try
+                            {
+                                // Attempt to serialize configuration frame as XML
+                                xmlSerializer.Serialize(configFile, configurationFrame);
+                            }
+                            catch (Exception ex)
+                            {
+                                byte[] errorMessage = Encoding.UTF8.GetBytes(ex.Message);
+                                configFile.Write(errorMessage, 0, errorMessage.Length);
+                                Console.Write("Failed to serialize configuration frame: {0}", ex.Message);
+                            }
 
-                        // Open captured XML sample file in explorer...
-                        Process.Start("explorer.exe", fileName);
+                            configFile.Close();
+
+                            // Open captured XML sample file in explorer...
+                            Process.Start("explorer.exe", fileName);
+                            break;
+                        }
                     }
                 }
             }
