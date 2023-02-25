@@ -6,9 +6,9 @@
     <MediaTemplate EmbedCab="yes" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
-    <PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
-    <Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>
-      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED]]>
+    <PropertyRef Id='WIXNETFX4RELEASEINSTALLED'/>
+    <Condition Message='This setup requires Microsoft .NET Framework 4.8 or greater - this will need to be installed before installation can continue.'>
+      <![CDATA[Installed OR (WIXNETFX4RELEASEINSTALLED >= "#528040")]]>
     </Condition>
 
     <!-- Restore last installation folder -->
@@ -24,6 +24,8 @@
         <ComponentGroupRef Id="BouncyCastleDependencyComponents" />
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
+        <ComponentGroupRef Id="MicrosoftDependencyComponents" />
+        <ComponentGroupRef Id="AzureADDependencyComponents" />
         <ComponentGroupRef Id="MySQLScriptComponents" />
         <ComponentGroupRef Id="OracleScriptComponents" />
         <ComponentGroupRef Id="PostgresScriptComponents" />
@@ -48,6 +50,7 @@
         <ComponentGroupRef Id="ConfigurationSetupUtilityComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
         <ComponentGroupRef Id="MicrosoftDependencyComponents" />
+        <ComponentGroupRef Id="AzureADDependencyComponents" />
         <ComponentRef Id="makecert"/>
       </Feature>
 
@@ -55,6 +58,7 @@
       <Feature Id="openHistorianConsoleFeature" Title="openHistorian Console" Description="Installs the openHistorian remote console application along with any needed dependencies.">
         <ComponentGroupRef Id="openHistorianConsoleComponents" />
         <ComponentGroupRef Id="GSFDependencyComponents" />
+        <ComponentGroupRef Id="AzureADDependencyComponents" />
       </Feature>
 
       <!-- openHistorian Tools -->
@@ -322,6 +326,7 @@
       <ComponentGroupRef Id="AdapterComponents" />
       <ComponentGroupRef Id="GSFDependencyComponents" />
       <ComponentGroupRef Id="MicrosoftDependencyComponents" />
+      <ComponentGroupRef Id="AzureADDependencyComponents" />
 
       <!-- Database Scripts -->
       <ComponentGroupRef Id="MySQLScriptComponents" />
@@ -1085,6 +1090,9 @@
           <netfx:NativeImage Id="ngen_GSF.Web.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
+      <Component Id="GSF.Web.config">
+        <File Id="GSF.Web.dll.config" Name="GSF.Web.dll.config" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll.config" />
+      </Component>
       <Component Id="GSF.Windows">
         <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll">
           <netfx:NativeImage Id="ngen_GSF.Windows.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
@@ -1141,7 +1149,7 @@
         </File>
       </Component>
     </ComponentGroup>
-    
+
     <!-- Microsoft Dependencies -->
     <ComponentGroup Id="MicrosoftDependencyComponents" Directory="INSTALLFOLDER">
       <Component Id="DynamicDataDisplay">
@@ -1279,6 +1287,240 @@
       <Component Id="System.Web.WebPages.Razor">
         <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Web.WebPages.Razor.dll">
           <netfx:NativeImage Id="ngen_System.Web.WebPages.Razor.dll" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Azure AD Dependencies -->
+    <ComponentGroup Id="AzureADDependencyComponents" Directory="INSTALLFOLDER">
+      <Component Id="Azure.Core">
+        <File Id="Azure.Core.dll" Name="Azure.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Azure.Core.dll">
+          <netfx:NativeImage Id="ngen_Azure.Core.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.AspNetCore.Cryptography.Internal">
+        <File Id="Microsoft.AspNetCore.Cryptography.Internal.dll" Name="Microsoft.AspNetCore.Cryptography.Internal.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNetCore.Cryptography.Internal.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.AspNetCore.Cryptography.Internal.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.AspNetCore.DataProtection.Abstractions">
+        <File Id="Microsoft.AspNetCore.DataProtection.Abstractions.dll" Name="Microsoft.AspNetCore.DataProtection.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNetCore.DataProtection.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.AspNetCore.DataProtection.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.AspNetCore.DataProtection">
+        <File Id="Microsoft.AspNetCore.DataProtection.dll" Name="Microsoft.AspNetCore.DataProtection.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.AspNetCore.DataProtection.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.AspNetCore.DataProtection.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Bcl.AsyncInterfaces">
+        <File Id="Microsoft.Bcl.AsyncInterfaces.dll" Name="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Bcl.AsyncInterfaces.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Bcl.AsyncInterfaces.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Caching.Abstractions">
+        <File Id="Microsoft.Extensions.Caching.Abstractions.dll" Name="Microsoft.Extensions.Caching.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Caching.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Caching.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Caching.Memory">
+        <File Id="Microsoft.Extensions.Caching.Memory.dll" Name="Microsoft.Extensions.Caching.Memory.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Caching.Memory.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Caching.Memory.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Configuration.Abstractions">
+        <File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Name="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Configuration.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Configuration.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.DependencyInjection.Abstractions">
+        <File Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Name="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.DependencyInjection.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.DependencyInjection.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.DependencyInjection">
+        <File Id="Microsoft.Extensions.DependencyInjection.dll" Name="Microsoft.Extensions.DependencyInjection.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.DependencyInjection.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.DependencyInjection.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.FileProviders.Abstractions">
+        <File Id="Microsoft.Extensions.FileProviders.Abstractions.dll" Name="Microsoft.Extensions.FileProviders.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.FileProviders.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.FileProviders.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Hosting.Abstractions">
+        <File Id="Microsoft.Extensions.Hosting.Abstractions.dll" Name="Microsoft.Extensions.Hosting.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Hosting.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Hosting.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Logging.Abstractions">
+        <File Id="Microsoft.Extensions.Logging.Abstractions.dll" Name="Microsoft.Extensions.Logging.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Logging.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Logging.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Logging">
+        <File Id="Microsoft.Extensions.Logging.dll" Name="Microsoft.Extensions.Logging.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Logging.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Logging.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Options">
+        <File Id="Microsoft.Extensions.Options.dll" Name="Microsoft.Extensions.Options.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Options.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Options.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Extensions.Primitives">
+        <File Id="Microsoft.Extensions.Primitives.dll" Name="Microsoft.Extensions.Primitives.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Extensions.Primitives.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Extensions.Primitives.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Graph.Core">
+        <File Id="Microsoft.Graph.Core.dll" Name="Microsoft.Graph.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Graph.Core.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Graph.Core.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Graph">
+        <File Id="Microsoft.Graph.dll" Name="Microsoft.Graph.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Graph.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Graph.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Identity.Client.Broker">
+        <File Id="Microsoft.Identity.Client.Broker.dll" Name="Microsoft.Identity.Client.Broker.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Client.Broker.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Identity.Client.Broker.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Identity.Client.Desktop">
+        <File Id="Microsoft.Identity.Client.Desktop.dll" Name="Microsoft.Identity.Client.Desktop.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Client.Desktop.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Identity.Client.Desktop.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Identity.Client">
+        <File Id="Microsoft.Identity.Client.dll" Name="Microsoft.Identity.Client.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Client.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Identity.Client.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Identity.Client.NativeInterop">
+        <File Id="Microsoft.Identity.Client.NativeInterop.dll" Name="Microsoft.Identity.Client.NativeInterop.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Client.NativeInterop.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Identity.Client.NativeInterop.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Identity.Web.TokenCache">
+        <File Id="Microsoft.Identity.Web.TokenCache.dll" Name="Microsoft.Identity.Web.TokenCache.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Identity.Web.TokenCache.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Identity.Web.TokenCache.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.Abstractions">
+        <File Id="Microsoft.IdentityModel.Abstractions.dll" Name="Microsoft.IdentityModel.Abstractions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Abstractions.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.Abstractions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.JsonWebTokens">
+        <File Id="Microsoft.IdentityModel.JsonWebTokens.dll" Name="Microsoft.IdentityModel.JsonWebTokens.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.JsonWebTokens.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.JsonWebTokens.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.Logging">
+        <File Id="Microsoft.IdentityModel.Logging.dll" Name="Microsoft.IdentityModel.Logging.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Logging.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.Logging.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.Protocols">
+        <File Id="Microsoft.IdentityModel.Protocols.dll" Name="Microsoft.IdentityModel.Protocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Protocols.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.Protocols.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.Protocols.OpenIdConnect">
+        <File Id="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Name="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.Protocols.OpenIdConnect.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.IdentityModel.Tokens">
+        <File Id="Microsoft.IdentityModel.Tokens.dll" Name="Microsoft.IdentityModel.Tokens.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.IdentityModel.Tokens.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.IdentityModel.Tokens.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Web.WebView2.Core">
+        <File Id="Microsoft.Web.WebView2.Core.dll" Name="Microsoft.Web.WebView2.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Web.WebView2.Core.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Web.WebView2.Core.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Web.WebView2.WinForms">
+        <File Id="Microsoft.Web.WebView2.WinForms.dll" Name="Microsoft.Web.WebView2.WinForms.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Web.WebView2.WinForms.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Web.WebView2.WinForms.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Web.WebView2.Wpf">
+        <File Id="Microsoft.Web.WebView2.Wpf.dll" Name="Microsoft.Web.WebView2.Wpf.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Web.WebView2.Wpf.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Web.WebView2.Wpf.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="Microsoft.Win32.Registry">
+        <File Id="Microsoft.Win32.Registry.dll" Name="Microsoft.Win32.Registry.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Microsoft.Win32.Registry.dll">
+          <netfx:NativeImage Id="ngen_Microsoft.Win32.Registry.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Diagnostics.DiagnosticSource">
+        <File Id="System.Diagnostics.DiagnosticSource.dll" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Diagnostics.DiagnosticSource.dll">
+          <netfx:NativeImage Id="ngen_System.Diagnostics.DiagnosticSource.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Drawing.Common">
+        <File Id="System.Drawing.Common.dll" Name="System.Drawing.Common.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Drawing.Common.dll">
+          <netfx:NativeImage Id="ngen_System.Drawing.Common.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.IdentityModel.Tokens.Jwt">
+        <File Id="System.IdentityModel.Tokens.Jwt.dll" Name="System.IdentityModel.Tokens.Jwt.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.IdentityModel.Tokens.Jwt.dll">
+          <netfx:NativeImage Id="ngen_System.IdentityModel.Tokens.Jwt.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Memory.Data">
+        <File Id="System.Memory.Data.dll" Name="System.Memory.Data.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Memory.Data.dll">
+          <netfx:NativeImage Id="ngen_System.Memory.Data.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Net.Http.Json">
+        <File Id="System.Net.Http.Json.dll" Name="System.Net.Http.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.Json.dll">
+          <netfx:NativeImage Id="ngen_System.Net.Http.Json.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Net.Http.WinHttpHandler">
+        <File Id="System.Net.Http.WinHttpHandler.dll" Name="System.Net.Http.WinHttpHandler.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Net.Http.WinHttpHandler.dll">
+          <netfx:NativeImage Id="ngen_System.Net.Http.WinHttpHandler.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Numerics.Vectors">
+        <File Id="System.Numerics.Vectors.dll" Name="System.Numerics.Vectors.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Numerics.Vectors.dll">
+          <netfx:NativeImage Id="ngen_System.Numerics.Vectors.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Security.AccessControl">
+        <File Id="System.Security.AccessControl.dll" Name="System.Security.AccessControl.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Security.AccessControl.dll">
+          <netfx:NativeImage Id="ngen_System.Security.AccessControl.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Security.Cryptography.Xml">
+        <File Id="System.Security.Cryptography.Xml.dll" Name="System.Security.Cryptography.Xml.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Security.Cryptography.Xml.dll">
+          <netfx:NativeImage Id="ngen_System.Security.Cryptography.Xml.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Security.Permissions">
+        <File Id="System.Security.Permissions.dll" Name="System.Security.Permissions.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Security.Permissions.dll">
+          <netfx:NativeImage Id="ngen_System.Security.Permissions.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Security.Principal.Windows">
+        <File Id="System.Security.Principal.Windows.dll" Name="System.Security.Principal.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Security.Principal.Windows.dll">
+          <netfx:NativeImage Id="ngen_System.Security.Principal.Windows.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Text.Encodings.Web">
+        <File Id="System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Text.Encodings.Web.dll">
+          <netfx:NativeImage Id="ngen_System.Text.Encodings.Web.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Text.Json">
+        <File Id="System.Text.Json.dll" Name="System.Text.Json.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Text.Json.dll">
+          <netfx:NativeImage Id="ngen_System.Text.Json.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
     </ComponentGroup>
