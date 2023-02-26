@@ -102,7 +102,7 @@
         </member>
         <member name="P:GSF.ServiceProcess.ClientHelper.Password">
             <summary>
-            Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating is null the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
         </member>

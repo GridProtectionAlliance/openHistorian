@@ -1821,6 +1821,11 @@
             Gets the user's login name.
             </summary>
         </member>
+        <member name="P:GSF.Security.SecurityIdentity.Type">
+            <summary>
+            Gets the user type.
+            </summary>
+        </member>
         <member name="P:GSF.Security.SecurityIdentity.Provider">
             <summary>
             Gets the <see cref="T:GSF.Security.ISecurityProvider"/> of the user.
