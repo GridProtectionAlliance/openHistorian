@@ -3111,24 +3111,26 @@
                         }
                     }
 
-                    let pointTag;
+                    let adapterName;
                     let pointTagPromise;
 
                     if (measurement === undefined) {
-                        // ValueAdjuster and ValueFilter types produce no output measurement, proxy a point tag to be used in adapter name
-                        pointTag = String.format("{0}-{1}!{2}{3}", cell.IDLabel(), getCleanPointTag(tagTemplate.TagName), subType.toUpperCase(), templateIndex);
+                        // ValueAdjuster and ValueFilter types produce no output measurement, only need an adapter name
+                        adapterName = getCleanAcronym(String.format("{0}-{1}!{2}{3}", cell.IDLabel(), tagTemplate.TagName, subType.toUpperCase(), templateIndex));
                         pointTagPromise = $.Deferred().resolve().promise();
                     }
                     else {
                         // Inject phasor definition label into output measurement point tag and description
                         if (phasorDefinition != null && !isEmpty(phasorDefinition.Label())) {
                             const label = phasorDefinition.Label().replaceAll(" ", "_").toUpperCase();
-                            pointTag = measurement.PointTag = getCleanPointTag(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
+                            measurement.PointTag = getCleanPointTag(String.format(measurement.PointTag.replace("<0>", "{0}"), label));
+                            adapterName = getCleanAcronym(measurement.PointTag);
                             measurement.Description = String.format(measurement.Description.replace("<0>", " {0}"), phasorDefinition.Label());
                             pointTagPromise = phasorHub.updateMeasurement(measurement);
                         }
                         else {
-                            pointTag = measurement.PointTag = getCleanPointTag(measurement.PointTag.replace("-<0>", ""));
+                            measurement.PointTag = getCleanPointTag(measurement.PointTag.replace("-<0>", ""));
+                            adapterName = getCleanAcronym(measurement.PointTag);
                             measurement.Description = measurement.Description.replace("<0>", "");
                             pointTagPromise = phasorHub.updateMeasurement(measurement);
                         }
@@ -3152,7 +3154,7 @@
                     return pointTagPromise.then(function () {
                         return newDynamicCalculatorAdapter().then(function (adapter) {
                             adapter.NodeID = nodeID;
-                            adapter.AdapterName = pointTag + (aggregateCalculation ? "-CALC" : "");
+                            adapter.AdapterName = adapterName + (aggregateCalculation ? "-CALC" : "");
                             adapter.AssemblyName = "DynamicCalculator.dll";
 
                             switch (subType) {
@@ -3190,7 +3192,7 @@
                         });
                     })
                     .fail(function (error) {
-                        showErrorMessage("Failed to update output measurement tag \"" + pointTag + "\" for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
+                        showErrorMessage("Failed to update output measurement tag \"" + adapterName + "\" for new custom " + (subType === "Calc" ? "action" : "filter") + " adapter record: " + error, null, true);
                     });
                 }
 
