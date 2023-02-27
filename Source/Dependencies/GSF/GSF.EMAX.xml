@@ -57,6 +57,13 @@
             <exception cref="T:System.InvalidOperationException">"No EMAX control file name was specified.</exception>
             <exception cref="T:System.IO.FileNotFoundException">EMAX control file was not found.</exception>
         </member>
+        <member name="M:GSF.EMAX.ControlFile.Parse(System.IO.Stream)">
+            <summary>
+            Parses the <see cref="T:GSF.EMAX.ControlFile"/> from the given stream.
+            </summary>
+            <param name="stream">A stream containing data for the EMAX control file.</param>
+            <exception cref="T:System.InvalidOperationException">Stream must be readable and seekable in order to parse EMAX control file data.</exception>
+        </member>
         <member name="T:GSF.EMAX.Parser">
             <summary>
             EMAX data file(s) parser.

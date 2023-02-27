@@ -2254,6 +2254,16 @@
             <param name="logStatusMessageFunction">Delegate to use to log status messages, if any.</param>
             <param name="logExceptionFunction">Delegate to use to log exceptions, if any.</param>
         </member>
+        <member name="P:GSF.Web.Security.SecurityHub.AzureADSettings">
+            <summary>
+            Gets Azure AD settings.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.Security.SecurityHub.GraphClient">
+            <summary>
+            Gets Graph client.
+            </summary>
+        </member>
         <member name="F:GSF.Web.Security.SecurityHub.DefaultNodeID">
             <summary>
             Gets current default Node ID for security.
@@ -2410,6 +2420,32 @@
             Gets the default NodeID based on the current configuration.
             </summary>
             <returns>Default NodeID based on the current configuration.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GetAzureADUserList">
+            <summary>
+            Gets the list of Azure AD users that are defined.
+            </summary>
+            <returns>Azure AD user list.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.GetAzureADGroupList">
+            <summary>
+            Gets the list of Azure AD groups that are defined.
+            </summary>
+            <returns>Azure AD group list.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsValidAzureADUserName(System.String)">
+            <summary>
+            Gets flag that determines if specified user name can be found on Azure AD.
+            </summary>
+            <param name="userName">User name to lookup.</param>
+            <returns><c>true</c> if user name was found in Azure AD; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.SecurityHub.IsValidAzureADGroupName(System.String)">
+            <summary>
+            Gets flag that determines if specified group name can be found on Azure AD.
+            </summary>
+            <param name="groupName">Group name to lookup</param>
+            <returns><c>true</c> if group name was found in Azure AD; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.SecurityHub.QueryUserAccountCount(System.String)">
             <summary>
@@ -2644,6 +2680,17 @@
             <param name="sessionToken">Token used for identifying the session ID in cookie headers.</param>
             <returns>Session ID string, if defined; otherwise, <c>null</c>.</returns>
         </member>
+        <member name="M:GSF.Web.Security.SessionHandler.SetCookie(System.Net.Http.HttpRequestMessage,System.Net.Http.HttpResponseMessage,System.String,System.String,System.String,System.Nullable{System.TimeSpan})">
+            <summary>
+            Gets the session state as defined in the request cookie header values.
+            </summary>
+            <param name="request">Request message.</param>
+            <param name="response">Response message.</param>
+            <param name="key">Cookie key.</param>
+            <param name="value">Cookie value.</param>
+            <param name="path">Cookie path.</param>
+            <param name="maxAge">Cookie max age.</param>
+        </member>
         <member name="T:GSF.Web.Security.HttpConfigurationExtensions">
             <summary>
             Represents <see cref="T:System.Web.Http.HttpConfiguration"/> extension functions for GSF authentication middle-ware.
@@ -2662,6 +2709,13 @@
             </summary>
             <param name="request">The HTTP request.</param>
             <returns>The authentication options.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.HttpConfigurationExtensions.GetOwinContext(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Retrieves the OWIN context from the specified <paramref name="request"/>.
+            </summary>
+            <param name="request">The HTTP request.</param>
+            <returns><see cref="T:Microsoft.Owin.IOwinContext"/> if found; otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:GSF.Web.Security.HttpConfigurationExtensions.GenerateRequestVerficationHeaderToken(System.Net.Http.HttpRequestMessage)">
             <summary>

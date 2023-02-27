@@ -764,10 +764,11 @@
             SecurityPortal
             </summary>
         </member>
-        <member name="M:GSF.Windows.SecurityPortal.#ctor(GSF.Windows.DisplayType)">
+        <member name="M:GSF.Windows.SecurityPortal.#ctor(GSF.Windows.SecureWindow,GSF.Windows.DisplayType)">
             <summary>
             Initializes a new WPF window.
             </summary>
+            <param name="parent">Parent secure window reference.</param>
             <param name="displayType">Type of the message received from security API which is used to decide controls to be displayed on the screen.</param>
         </member>
         <member name="P:GSF.Windows.SecurityPortal.SecurityPrincipal">
@@ -785,11 +786,18 @@
             Displays requested screen section based on received request.
             </summary>
         </member>
-        <member name="M:GSF.Windows.SecurityPortal.DisplayErrorMessage(System.String)">
+        <member name="M:GSF.Windows.SecurityPortal.DisplayStatusMessage(System.String)">
+            <summary>
+            Displays status message.
+            </summary>
+            <param name="message">Error message to display.</param>
+        </member>
+        <member name="M:GSF.Windows.SecurityPortal.DisplayErrorMessage(System.String,System.Windows.Media.Brush)">
             <summary>
             Displays error message.
             </summary>
             <param name="message">Error message to display.</param>
+            <param name="color">Target color for error messages.</param>
         </member>
         <member name="M:GSF.Windows.SecurityPortal.ClearErrorMessage">
             <summary>
@@ -813,6 +821,13 @@
         <member name="M:GSF.Windows.SecurityPortal.ButtonLogin_Click(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Logins the user.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Windows.SecurityPortal.ButtonAzAuth_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Attempts to logins user with Azure authentication.
             </summary>
             <param name="sender">Source of this event.</param>
             <param name="e">Arguments of this event.</param>

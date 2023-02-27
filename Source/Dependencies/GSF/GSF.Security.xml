@@ -4,8 +4,6 @@
         <name>GSF.Security</name>
     </assembly>
     <members>
-<<<<<<< HEAD
-=======
         <member name="M:GSF.Security.AzureADPassthroughPrincipal.#ctor(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Security.AzureADPassthroughPrincipal" />
@@ -120,7 +118,6 @@
             <param name="settingsCategory">Settings category to use for settings load.</param>
             <returns>Loaded <see cref="T:GSF.Security.AzureADSettings"/> settings instance.</returns>
         </member>
->>>>>>> Updated to latest .NET 4.8 GSF dependencies
         <member name="T:GSF.Security.TokenResponse">
             <summary>
             Defines a JSON token response for the <see cref="T:GSF.Security.OIDCSecurityProvider"/>.
@@ -332,7 +329,7 @@
         <member name="T:GSF.Security.AdoSecurityProvider">
             <summary>
             Represents an <see cref="T:GSF.Security.ISecurityProvider"/> that uses ADO.NET data source (SQL Server, MySQL, Oracle, etc.) for its
-            backend data store and authenticates internal users against Active Directory and external users against the database.
+            back-end data store and authenticates internal users against Active Directory and external users against the database.
             </summary>
             <example>
             Required config file entries (automatically added):
@@ -485,7 +482,7 @@
             Initializes a new instance of the <see cref="T:GSF.Security.AdoSecurityProvider"/> class.
             </summary>
             <param name="username">Name that uniquely identifies the user.</param>
-            <param name="canRefreshData">true if the security provider can refresh <see cref="T:GSF.Security.UserData"/> from the backend data store, otherwise false.</param>
+            <param name="canRefreshData">true if the security provider can refresh <see cref="T:GSF.Security.UserData"/> from the back-end data store, otherwise false.</param>
             <param name="canResetPassword">true if the security provider can reset user password, otherwise false.</param>
             <param name="canChangePassword">true if the security provider can change user password, otherwise false.</param>
         </member>
@@ -560,9 +557,9 @@
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.GetUserRoles(System.String)">
             <summary>
-            Gets a list of Roles for this user for a specified ApplicationId.
+            Gets a list of roles for this user for a specified application ID, i.e., target node ID.
             </summary>
-            <param name="applicationId">The applicationId for the roles to be returned.</param>
+            <param name="applicationId">The node ID for the roles to be returned.</param>
             <returns>The roles that the specified user has.</returns>
         </member>
         <member name="E:GSF.Security.AdoSecurityProvider.SecurityContextRefreshed">
@@ -2176,6 +2173,11 @@
         <member name="P:GSF.Security.UserData.IsExternal">
             <summary>
             Gets a boolean value that indicates whether the user is defined as an external user in the backend security data store.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.UserData.IsAzureAD">
+            <summary>
+            Gets a boolean value that indicates whether the user is defined as an AzureAD account.
             </summary>
         </member>
         <member name="P:GSF.Security.UserData.IsDisabled">

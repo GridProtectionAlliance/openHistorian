@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworks>net46</TargetFrameworks>
+    <TargetFrameworks>net48</TargetFrameworks>
 	<AssemblyName>SampleFunctions</AssemblyName>
     <RootNamespace>SampleFunctions</RootNamespace>
     <Company>Grid Protection Alliance</Company>

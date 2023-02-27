@@ -34766,6 +34766,43 @@
             <param name="other">The other mergeable object.</param>
             <returns>The result of merging this object with another.</returns>
         </member>
+        <member name="T:GSF.Security.Cryptography.DataProtection">
+            <summary>
+            Provides methods for encrypting and decrypting data.
+            </summary>
+            <remarks>
+            This is a safety wrapper around the <see cref="T:System.Security.Cryptography.ProtectedData"/> class such that it can be used with
+            <c>LocalMachine</c> scope regardless of current user. This is especially important for applications
+            that may be running as user account that has no association to the current user, e.g., an Azure AD
+            user or database account when authenticated using <c>AdoSecurityProvider</c>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.Cryptography.DataProtection.Protect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)">
+            <summary>
+            Encrypts the data in a specified byte array and returns a byte array that contains the encrypted data.
+            </summary>
+            <returns>A byte array representing the encrypted data.</returns>
+            <param name="userData">A byte array that contains data to encrypt.</param>
+            <param name="optionalEntropy">An optional additional byte array used to increase the complexity of the encryption, or null for no additional complexity.</param>
+            <param name="scope">One of the enumeration values that specifies the scope of encryption.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="userData"/> parameter is null.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The encryption failed.</exception>
+            <exception cref="T:System.NotSupportedException">The operating system does not support this method. </exception>
+            <exception cref="T:System.OutOfMemoryException">The system ran out of memory while encrypting the data.</exception>
+        </member>
+        <member name="M:GSF.Security.Cryptography.DataProtection.Unprotect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)">
+            <summary>
+            Decrypts the data in a specified byte array and returns a byte array that contains the decrypted data.
+            </summary>
+            <returns>A byte array representing the decrypted data.</returns>
+            <param name="encryptedData">A byte array containing data encrypted using the <see cref="M:GSF.Security.Cryptography.DataProtection.Protect(System.Byte[],System.Byte[],System.Security.Cryptography.DataProtectionScope)"/> method.</param>
+            <param name="optionalEntropy">An optional additional byte array that was used to encrypt the data, or null if the additional byte array was not used.</param>
+            <param name="scope">One of the enumeration values that specifies the scope of data protection that was used to encrypt the data.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="encryptedData"/> parameter is null.</exception>
+            <exception cref="T:System.Security.Cryptography.CryptographicException">The decryption failed.</exception>
+            <exception cref="T:System.NotSupportedException">The operating system does not support this method. </exception>
+            <exception cref="T:System.OutOfMemoryException">Out of memory.</exception>
+        </member>
         <member name="T:GSF.Security.Cryptography.X509.CertificateMaker">
             <summary>
             Allows for on the fly creation of a self signed X509 certificate.
