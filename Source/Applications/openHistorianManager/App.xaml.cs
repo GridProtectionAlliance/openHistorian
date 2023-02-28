@@ -59,7 +59,6 @@ namespace openHistorianManager
 
         // Fields
         private Guid m_nodeID;
-        private readonly ErrorLogger m_errorLogger;
         private readonly Func<string> m_defaultErrorText;
 
         #endregion
@@ -173,21 +172,21 @@ namespace openHistorianManager
                 // If this fails, it's not a huge deal
             }
 
-            m_errorLogger = new ErrorLogger
+            ErrorLogger = new ErrorLogger
             {
-                ErrorTextMethod = ErrorText, 
-                ExitOnUnhandledException = false, 
-                HandleUnhandledException = true, 
-                LogToEmail = false, 
-                LogToEventLog = true, 
-                LogToFile = true, 
-                LogToScreenshot = true, 
+                ExitOnUnhandledException = false,
+                HandleUnhandledException = true,
+                LogToEmail = false,
+                LogToEventLog = true,
+                LogToFile = true,
+                LogToScreenshot = true,
                 LogToUI = true
             };
 
-            m_errorLogger.Initialize();
+            m_defaultErrorText = ErrorLogger.ErrorTextMethod;
+            ErrorLogger.ErrorTextMethod = ErrorText;
 
-            m_defaultErrorText = m_errorLogger.ErrorTextMethod;
+            ErrorLogger.Initialize();
 
             Title = AssemblyInfo.EntryAssembly.Title;
 
@@ -229,12 +228,7 @@ namespace openHistorianManager
             }
             catch (Exception ex)
             {
-                // First attempt to display a modal dialog will fail to block this
-                // thread -- modal dialog displayed by the error logger will block now
-                MessageBox.Show(ex.Message);
-
-                // Log and display error, then exit application - manager must connect to database to continue
-                m_errorLogger.Log(new InvalidOperationException($"{Title} cannot connect to database: {ex.Message}", ex), true);
+                LoadException = new InvalidOperationException($"{Title} cannot connect to database: {ex.Message}", ex);
             }
             finally
             {
@@ -266,6 +260,16 @@ namespace openHistorianManager
         /// </summary>
         public string Title { get; }
 
+        /// <summary>
+        /// Gets the <see cref="ErrorLogger"/> for the application.
+        /// </summary>
+        public ErrorLogger ErrorLogger { get; }
+
+        /// <summary>
+        /// Gets the <see cref="Exception"/> that was thrown during the load process.
+        /// </summary>
+        public Exception LoadException { get; private set; }
+
         #endregion
 
         #region [ Methods ]
@@ -284,16 +288,25 @@ namespace openHistorianManager
 
         private string ErrorText()
         {
-            string errorMessage = m_defaultErrorText();
-            Exception ex = m_errorLogger.LastException;
+            string errorMessage;
 
-            if (ex != null)
+            if (LoadException is not null)
             {
-                if (string.Compare(ex.Message, "UnhandledException", StringComparison.OrdinalIgnoreCase) == 0 && ex.InnerException != null)
-                    ex = ex.InnerException;
-
-                errorMessage = $"{errorMessage}\r\n\r\nError details: {ex.Message}";
+                errorMessage = LoadException.Message;
+                LoadException = null;
+                return errorMessage;
             }
+
+            errorMessage = m_defaultErrorText();
+            Exception ex = ErrorLogger.LastException;
+
+            if (ex is null)
+                return errorMessage;
+
+            if (string.Compare(ex.Message, "UnhandledException", StringComparison.OrdinalIgnoreCase) == 0 && ex.InnerException is not null)
+                ex = ex.InnerException;
+
+            errorMessage = $"{errorMessage}\r\n\r\nError details: {ex.Message}";
 
             return errorMessage;
         }
