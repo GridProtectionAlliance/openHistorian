@@ -25,5 +25,5 @@ using System.Runtime.InteropServices;
 
 // Assembly identity attributes.
 
-[assembly: AssemblyVersion("2.8.256.0")]
-[assembly: AssemblyFileVersion("2.8.256.0")]
+[assembly: AssemblyVersion("2.8.257.0")]
+[assembly: AssemblyFileVersion("2.8.257.0")]
