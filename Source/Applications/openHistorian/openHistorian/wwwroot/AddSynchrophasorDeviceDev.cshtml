@@ -2653,7 +2653,7 @@
                                 connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
 
                                 // Adding one second to lag and lead time to ensure that the calculation does not time out
-                                // too fast since this calculation is dependent on power calcualtion measurements as inputs
+                                // too fast since this calculation is dependent on power calculation measurements as inputs
                                 connectionString.set("lagTime", "@(DefaultCalculationLagTime + 1.0D)");
                                 connectionString.set("leadTime", "@(DefaultCalculationLeadTime + 1.0D)");
 
@@ -2662,7 +2662,7 @@
 
                                 return phasorHub.newCustomActionAdapter().then(function (adapter) {
                                     adapter.NodeID = nodeID;
-                                    adapter.AdapterName = measurement.PointTag;
+                                    adapter.AdapterName = getCleanAcronym(measurement.PointTag);
                                     adapter.AssemblyName = "DynamicCalculator.dll";
                                     adapter.TypeName = "DynamicCalculator.DynamicCalculator";
                                     adapter.ConnectionString = connectionString.joinKeyValuePairs();
@@ -3254,7 +3254,7 @@
         function saveCustomActionAdapter(tagTemplate) {
             return phasorHub.newCustomActionAdapter().then(function (adapter) {
                 adapter.NodeID = nodeID;
-                adapter.AdapterName = tagTemplate.TagName;
+                adapter.AdapterName = getCleanAcronym(tagTemplate.TagName);
                 adapter.AssemblyName = tagTemplate.Equation;
                 adapter.TypeName = tagTemplate.Type;
                 adapter.ConnectionString = tagTemplate.Inputs.join(";");
