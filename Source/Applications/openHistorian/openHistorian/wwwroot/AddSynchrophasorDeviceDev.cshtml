@@ -3222,8 +3222,8 @@
                                 measurement.Enabled = true;
 
                                 return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
-                                    return phasorHub.queryMeasurement(signalReference).then(function () {
-                                        return addDynamicCalculatorAdapter(index, measurement);
+                                    return phasorHub.queryMeasurement(signalReference).then(function (updatedMeasurement) {
+                                        return addDynamicCalculatorAdapter(index, updatedMeasurement);
                                     })
                                     .fail(function (error) {
                                         showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
