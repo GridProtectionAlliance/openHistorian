@@ -509,7 +509,7 @@
     <script src="@Resources.Root/Shared/Scripts/select2.js"></script>
     <script src="@Resources.Root/Shared/Scripts/knockout-select2.js"></script>
     <script>
-        "use script";
+        "use strict";
 
         var phasorHub, phasorHubClient;
         var firstConnect = true;
@@ -2651,8 +2651,12 @@
                                 connectionString.set("variableList", variableList.joinKeyValuePairs());
                                 connectionString.set("expressionText", equation);
                                 connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                                connectionString.set("lagTime", "@DefaultCalculationLagTime");
-                                connectionString.set("leadTime", "@DefaultCalculationLeadTime");
+
+                                // Adding one second to lag and lead time to ensure that the calculation does not time out
+                                // too fast since this calculation is dependent on power calcualtion measurements as inputs
+                                connectionString.set("lagTime", "@(DefaultCalculationLagTime + 1.0D)");
+                                connectionString.set("leadTime", "@(DefaultCalculationLeadTime + 1.0D)");
+
                                 connectionString.set("outputMeasurements", measurement.SignalID);
                                 connectionString.set("useLatestValues", "false");
 
