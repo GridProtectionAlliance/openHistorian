@@ -6629,6 +6629,13 @@
             <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to test.</param>
             <returns><c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.BadTime"/> is not set.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.IMeasurementExtensions.TimestampQualityIsSuspect(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Returns <c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.SuspectTime"/> is set.
+            </summary>
+            <param name="measurement"><see cref="T:GSF.TimeSeries.IMeasurement"/> instance to test.</param>
+            <returns><c>true</c> if <see cref="F:GSF.TimeSeries.MeasurementStateFlags.SuspectTime"/> is set.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.IMeasurementExtensions.DeriveQualityFlags(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
             <summary>
             Gets derived quality flags from a set of source measurements.
@@ -7735,8 +7742,23 @@
             Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.ImmediateMeasurements"/> object is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.ImmediateMeasurements.OutlierOperation">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.TemporalOutlierOperation"/> for the <see cref="T:GSF.TimeSeries.ImmediateMeasurements"/> when
+            timestamp is outside defined Lag/Lead time bounds.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.ImmediateMeasurements.OutlierState">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to apply to the <see cref="T:GSF.TimeSeries.ImmediateMeasurements"/> when
+            <see cref="P:GSF.TimeSeries.ImmediateMeasurements.OutlierOperation"/> is set to <see cref="F:GSF.TimeSeries.TemporalOutlierOperation.PublishWithBadState"/> and
+            timestamp is outside defined Lag/Lead time bounds.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.ImmediateMeasurements.Item(GSF.TimeSeries.MeasurementKey)">
-            <summary>We retrieve adjusted measurement values within time tolerance of concentrator real-time.</summary>
+            <summary>
+            We retrieve adjusted measurement values within time tolerance of concentrator real-time.
+            </summary>
             <param name="id">A <see cref="T:System.Guid"/> representing the measurement ID.</param>
             <returns>A <see cref="T:System.Double"/> representing the adjusted measurement value.</returns>
         </member>
@@ -7747,11 +7769,15 @@
             <summary>Returns ID collection for measurement tags.</summary>
         </member>
         <member name="P:GSF.TimeSeries.ImmediateMeasurements.Minimum">
-            <summary>Returns the minimum value of all measurements.</summary>
+            <summary>
+            Returns the minimum value of all measurements.
+            </summary>
             <remarks>This is only useful if all measurements represent the same type of measurement.</remarks>
         </member>
         <member name="P:GSF.TimeSeries.ImmediateMeasurements.Maximum">
-            <summary>Returns the maximum value of all measurements.</summary>
+            <summary>
+            Returns the maximum value of all measurements.
+            </summary>
             <remarks>This is only useful if all measurements represent the same type of measurement.</remarks>
         </member>
         <member name="P:GSF.TimeSeries.ImmediateMeasurements.RealTimeFunction">
@@ -7791,22 +7817,30 @@
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.TaggedMeasurementKeys(System.String)">
-            <summary>Returns measurement list of specified tag, if it exists.</summary>
+            <summary>
+            Returns measurement list of specified tag, if it exists.
+            </summary>
             <param name="tag">A <see cref="T:System.String"/> that indicates the tag to use.</param>
             <returns>A collection of measurement keys.</returns>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.UpdateMeasurementValue(GSF.TimeSeries.IMeasurement)">
-            <summary>Store new measurement.</summary>
+            <summary>
+            Store new measurement.
+            </summary>
             <param name="newMeasurement">New measurement value to update.</param>
             <remarks>Value is only stored if it is newer than the cached value.</remarks>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.Measurement(GSF.TimeSeries.MeasurementKey)">
-            <summary>Retrieves the specified immediate temporal measurement, creating it if needed.</summary>
+            <summary>
+            Retrieves the specified immediate temporal measurement, creating it if needed.
+            </summary>
             <param name="id"><see cref="T:System.Guid"/> based signal ID of measurement.</param>
             <returns>A <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> object.</returns>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.Measurement(GSF.TimeSeries.IMeasurement)">
-            <summary>Retrieves the specified immediate temporal measurement, creating it if needed.</summary>
+            <summary>
+            Retrieves the specified immediate temporal measurement, creating it if needed.
+            </summary>
             <param name="measurement">Source <see cref="T:GSF.TimeSeries.IMeasurement"/> value.</param>
             <returns>A <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> object.</returns>
         </member>
@@ -7816,35 +7850,47 @@
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.DefineTaggedMeasurements(System.Data.DataTable)">
-            <summary>Defines tagged measurements from a data table.</summary>
+            <summary>
+            Defines tagged measurements from a data table.
+            </summary>
             <remarks>Expects <see cref="T:System.String"/> based tag field to be aliased as "Tag" and <see cref="T:System.Guid"/> based measurement ID field to be aliased as "ID".</remarks>
             <param name="taggedMeasurements">A <see cref="T:System.Data.DataTable"/> to use for defining the tagged measurements.</param>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.AddTaggedMeasurement(System.String,GSF.TimeSeries.MeasurementKey)">
-            <summary>Associates a new measurement ID with a tag, creating the new tag if needed.</summary>
+            <summary>
+            Associates a new measurement ID with a tag, creating the new tag if needed.
+            </summary>
             <remarks>Allows you to define "grouped" points so you can aggregate certain measurements.</remarks>
             <param name="tag">A <see cref="T:System.String"/> to represent the key.</param>
             <param name="id">A <see cref="T:System.Guid"/> ID to associate with the tag.</param>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.CalculateAverage(System.Int32@)">
-            <summary>Calculates an average of all measurements.</summary>
+            <summary>
+            Calculates an average of all measurements.
+            </summary>
             <remarks>This is only useful if all measurements represent the same type of measurement.</remarks>
             <param name="count">An <see cref="T:System.Int32"/> value to get the count of values averaged.</param>
             <returns>A <see cref="T:System.Double"/> value representing the average of the measurements.</returns>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.CalculateTagAverage(System.String,System.Int32@)">
-            <summary>Calculates an average of all measurements associated with the specified tag.</summary>
+            <summary>
+            Calculates an average of all measurements associated with the specified tag.
+            </summary>
             <param name="count">An <see cref="T:System.Int32"/> value to get the count of values averaged.</param>
             <param name="tag">The type of measurements to average.</param>
             <returns>A <see cref="T:System.Double"/> value representing the average of the tags.</returns>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.TagMinimum(System.String)">
-            <summary>Returns the minimum value of all measurements associated with the specified tag.</summary>
+            <summary>
+            Returns the minimum value of all measurements associated with the specified tag.
+            </summary>
             <returns>A <see cref="T:System.Double"/> value representing the tag minimum.</returns>
             <param name="tag">The tag group to evaluate.</param>
         </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.TagMaximum(System.String)">
-            <summary>Returns the maximum value of all measurements associated with the specified tag.</summary>
+            <summary>
+            Returns the maximum value of all measurements associated with the specified tag.
+            </summary>
             <returns>A <see cref="T:System.Double"/> value representing the tag maximum.</returns>
             <param name="tag">The tag group to evaluate.</param>
         </member>
@@ -13494,6 +13540,25 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.TemporalOutlierOperation">
+            <summary>
+            Enumeration that defines how to handle <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>
+            values that are outside of the defined Lag/Lead time bounds.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.TemporalOutlierOperation.PublishValueAsNan">
+            <summary>
+            Measurement value is set to <see cref="F:System.Double.NaN"/> if it is outside of the
+            defined time bounds. This is the default behavior.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.TemporalOutlierOperation.PublishWithBadState">
+            <summary>
+            Measurement value is preserved if it is outside of the time bounds, but the state
+            flags are set to <see cref="P:GSF.TimeSeries.TemporalMeasurement.OutlierState"/> which defaults to
+            <see cref="F:GSF.TimeSeries.MeasurementStateFlags.SuspectTime"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.TemporalMeasurement">
             <summary>
             Represents a time constrained measured value.
@@ -13514,6 +13579,19 @@
             <param name="lagTime">Past time deviation tolerance, in seconds - this becomes the amount of time to wait before publishing begins.</param>
             <param name="leadTime">Future time deviation tolerance, in seconds - this becomes the tolerated +/- accuracy of the local clock to real-time.</param>
         </member>
+        <member name="P:GSF.TimeSeries.TemporalMeasurement.OutlierOperation">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.TemporalOutlierOperation"/> for this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> when
+            timestamp is outside defined Lag/Lead time bounds.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.TemporalMeasurement.OutlierState">
+            <summary>
+            Gets or sets the <see cref="T:GSF.TimeSeries.MeasurementStateFlags"/> to apply to this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> when
+            <see cref="P:GSF.TimeSeries.TemporalMeasurement.OutlierOperation"/> is set to <see cref="F:GSF.TimeSeries.TemporalOutlierOperation.PublishWithBadState"/> and
+            timestamp is outside defined Lag/Lead time bounds.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.TemporalMeasurement.LagTime">
             <summary>Allowed past time deviation tolerance in seconds (can be sub-second).</summary>
             <remarks>
@@ -13531,7 +13609,9 @@
             <exception cref="T:System.ArgumentOutOfRangeException">LeadTime must be greater than zero, but it can be less than one.</exception>
         </member>
         <member name="M:GSF.TimeSeries.TemporalMeasurement.GetAdjustedValue(GSF.Ticks)">
-            <summary>Gets numeric adjusted value of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, constrained within specified ticks.</summary>
+            <summary>
+            Gets numeric adjusted value of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, constrained within specified ticks.
+            </summary>
             <remarks>
             <para>Operation will return NaN if ticks are outside of time deviation tolerances.</para>
             <para>Note that returned value will be offset by adder and multiplier.</para>
@@ -13540,20 +13620,25 @@
             <returns>Value offset by adder and multiplier (i.e., Value * Multiplier + Adder).</returns>
         </member>
         <member name="M:GSF.TimeSeries.TemporalMeasurement.GetValue(GSF.Ticks)">
-            <summary>Gets numeric value of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, constrained within specified ticks.</summary>
+            <summary>
+            Gets numeric value of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, constrained within specified ticks.
+            </summary>
             <remarks>
             <para>Operation will return NaN if ticks are outside of time deviation tolerances.</para>
             </remarks>
             <param name="timestamp">Timestamp, in ticks, used to constrain <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> (typically set to real-time, i.e. "now").</param>
             <returns>Raw value of this measurement (i.e., value that is not offset by adder and multiplier).</returns>
         </member>
-        <member name="M:GSF.TimeSeries.TemporalMeasurement.SetValue(GSF.Ticks,System.Double)">
-            <summary>Sets numeric value and timestamp, as ticks, of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.</summary>
+        <member name="M:GSF.TimeSeries.TemporalMeasurement.SetValue(GSF.Ticks,System.Double,GSF.TimeSeries.MeasurementStateFlags)">
+            <summary>
+            Sets numeric value and timestamp, as ticks, of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.
+            </summary>
             <remarks>
             <para>Operation will only store a value that is newer than the cached value.</para>
             </remarks>
             <param name="timestamp">New timestamp, in ticks, for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.</param>
             <param name="value">New value for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, only stored if <paramref name="timestamp"/> are newer than current <see cref="T:GSF.Ticks"/>.</param>
+            <param name="flags">New flags for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.</param>
             <returns><c>true</c> if value was updated; otherwise <c>false</c>.</returns>
         </member>
         <member name="T:GSF.TimeSeries.TrackingFrame">
