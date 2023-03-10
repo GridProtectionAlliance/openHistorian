@@ -46,22 +46,27 @@
         </member>
         <member name="P:PhasorWebUI.Model.Phasor.CreatedOn">
             <summary>
-                Created on field.
+            Created on field.
             </summary>
         </member>
         <member name="P:PhasorWebUI.Model.Phasor.CreatedBy">
             <summary>
-                Created by field.
+            Created by field.
             </summary>
         </member>
         <member name="P:PhasorWebUI.Model.Phasor.UpdatedOn">
             <summary>
-                Updated on field.
+            Updated on field.
             </summary>
+            <remarks>
+            For phasors, any time record is saved, we increment time of update
+            as compared to the time of creation to ensure that any future loads
+            do not attempt to guess phase data that has already been edited.
+            </remarks>
         </member>
         <member name="P:PhasorWebUI.Model.Phasor.UpdatedBy">
             <summary>
-                Updated by field.
+            Updated by field.
             </summary>
         </member>
         <member name="T:PhasorWebUI.PhasorHub">
