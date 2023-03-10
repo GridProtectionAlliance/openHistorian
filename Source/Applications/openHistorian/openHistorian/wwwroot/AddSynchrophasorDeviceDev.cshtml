@@ -1180,7 +1180,10 @@
                 self.addDigitals(digitalCount > 0 && !self.forwardOnly());
             };
 
-            self.loadConfigFrame = function (configFrame) {
+            self.loadConfigFrame = function (configFrame, skipGuessing) {
+                if (skipGuessing === undefined)
+                    skipGuessing = false;
+
                 if ((configFrame.ConnectionString + "").length > 0)
                     self.connectionString(configFrame.ConnectionString + "");
 
@@ -1305,10 +1308,10 @@
                         phasorDefinition.Label = String(phasorDefinition.Label).toUpperCase();
 
                         if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
-                            self.voltages.push(self.createObservableVoltage(cell, phasorDefinition, firstVoltage));
+                            self.voltages.push(self.createObservableVoltage(cell, phasorDefinition, firstVoltage, skipGuessing));
                             firstVoltage = false;
                         } else {
-                            self.currents.push(self.createObservableCurrent(cell, phasorDefinition, firstCurrent));
+                            self.currents.push(self.createObservableCurrent(cell, phasorDefinition, firstCurrent, skipGuessing));
                             firstCurrent = false;
                         }
                     }
@@ -1488,11 +1491,14 @@
                 self.currents.valueHasMutated();
             };
 
-            self.createObservableVoltage = function (cell, phasorDefinition, firstVoltage) {
+            self.createObservableVoltage = function (cell, phasorDefinition, firstVoltage, skipGuessing) {
+                if (skipGuessing === undefined)
+                    skipGuessing = false;
+
                 const voltage = {};
                 const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
-                const nominalVoltage = guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
-                const phase = guessPhase(phasorDefinition, phasorLabel);
+                const nominalVoltage = skipGuessing ? phasorDefinition.NominalVoltage : guessNominalVoltage(phasorDefinition.NominalVoltage, phasorLabel, cell.IDLabel());
+                const phase = skipGuessing ? phasorDefinition.Phase : guessPhase(phasorDefinition, phasorLabel);
                 const vphmSignalType = getPhasorSignalType("VPHM");
 
                 voltage._enabled = ko.observable(!self.forwardOnly() && nominalVoltage >= 0);
@@ -1568,7 +1574,10 @@
                 return voltage;
             };
 
-            self.createObservableCurrent = function (cell, phasorDefinition, firstCurrent) {
+            self.createObservableCurrent = function (cell, phasorDefinition, firstCurrent, skipGuessing) {
+                if (skipGuessing === undefined)
+                    skipGuessing = false;
+
                 const current = {};
                 const phasorLabel = notNull(phasorDefinition.Label).replaceAll(" ", "_").toUpperCase();
                 const iphmSignalType = getPhasorSignalType("IPHM");
@@ -1626,7 +1635,7 @@
                         }
 
                         // Guess associated voltage
-                        if (current.AssociatedVoltage() === -1)
+                        if (current.AssociatedVoltage() === -1 && !skipGuessing)
                             current.AssociatedVoltage(guessAssociatedVoltage(current));
                     },
                     owner: current
@@ -1720,7 +1729,7 @@
                 current.AssociatedVoltage(phasorDefinition.DestinationPhasorID);
 
                 // Guess phase, which will subsequently guess any unassociated voltage
-                current.Phase(guessPhase(phasorDefinition, phasorLabel));
+                current.Phase(skipGuessing ? phasorDefinition.Phase : guessPhase(phasorDefinition, phasorLabel));
 
                 phasorDefinition.Current = current;
                 phasorDefinition.Label = current.Label;
@@ -1790,7 +1799,9 @@
                     self.configFrameDetails("Loading...");
 
                     self.forwardOnly(false);
-                    self.loadConfigFrame(configFrame);
+
+                    // Do not guess any values for a directly loaded JSON configuration
+                    self.loadConfigFrame(configFrame, true);
                 };
 
                 reader.onloadend = function () {
