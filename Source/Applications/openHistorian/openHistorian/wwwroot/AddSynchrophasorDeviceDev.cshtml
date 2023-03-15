@@ -907,6 +907,7 @@
             self.currents = ko.observableArray();
             self.configFrame = ko.observable({ConnectionString: "", Cells: []});
             self.configFrameDetails = ko.observable("Calculating...");
+            self.configExported = ko.observable(false);
             self.addAnalogs = ko.observable(false);
             self.addDigitals = ko.observable(false);
             self.readOnly = ko.observable(false);
@@ -1138,6 +1139,9 @@
                         value = true;
 
                     self._isDirty(value);
+
+                    if (value)
+                        self.configExported(false);
                 },
                 owner: self
             });
@@ -1329,7 +1333,8 @@
                                 Phase: phasorDefinition.Phase(),
                                 DestinationPhasorID: isVoltage ? phasorDefinition.DestinationPhasorID : phasorDefinition.Current.AssociatedVoltage(),
                                 NominalVoltage: isVoltage ? phasorDefinition.Voltage.NominalVoltage() : phasorDefinition.Current.AssociatedNominalVoltage(),
-                                SourceIndex: phasorDefinition.SourceIndex
+                                SourceIndex: phasorDefinition.SourceIndex,
+                                TaggedForDelete: phasorDefinition.TaggedForDelete()
                             });
                         });
 
@@ -1502,7 +1507,7 @@
                 const vphmSignalType = getPhasorSignalType("VPHM");
 
                 voltage._enabled = ko.observable(!self.forwardOnly() && nominalVoltage >= 0);
-                voltage._taggedForDelete = ko.observable(false);
+                voltage._taggedForDelete = ko.observable(Boolean(phasorDefinition.TaggedForDelete));
 
                 voltage.ID = phasorDefinition.ID;
                 voltage.Device = cell;
@@ -1591,7 +1596,7 @@
                 current._associatedVoltage = ko.observable(-1);
                 current._phase = ko.observable("");
                 current._enabled = ko.observable(!self.forwardOnly() && phasorDefinition.NominalVoltage >= 0);
-                current._taggedForDelete = ko.observable(false);
+                current._taggedForDelete = ko.observable(Boolean(phasorDefinition.TaggedForDelete));
 
                 current.AssociatedVoltage = ko.pureComputed({
                     read: function () {
@@ -1776,6 +1781,8 @@
                     else
                         window.open("data:text/json;charset=utf-8," + encodeURIComponent(data), "_blank", "");
                 }
+
+                self.configExported(true);
             };
 
             self.loadConfiguration = function (fileBlob) {
@@ -1802,6 +1809,7 @@
 
                     // Do not guess any values for a directly loaded JSON configuration
                     self.loadConfigFrame(configFrame, true);
+                    self.configExported(true);
                 };
 
                 reader.onloadend = function () {
@@ -2720,7 +2728,7 @@
                 return $.Deferred().resolve().promise();
 
             // Input variables - expanded per device:
-            //   VNOM: Nominal Voltage = viewModel.configFrame().PhasorDefintions[voltage].Voltage.NominalVoltage()
+            //   VNOM: Nominal Voltage = viewModel.configFrame().phasorDefinitions[voltage].Voltage.NominalVoltage()
             //    VAM: Voltage A-Phase Magnitude also VBM, VCM, VNM for B, C & N phases and VPOSM, VNEGM, VZM for +, -, 0 sequence
             //    VAA: Voltage A-Phase Angle     also VBA, VCA, VNA            ↑            VPOSA, VNEGA, VZA
             //    IAM: Current A-Phase Magnitude also IBM, ICM, INM         Neutral         IPOSM, INEGM, IZM
@@ -3354,8 +3362,8 @@
                                     promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Filter", calcSignalType));
                                     break;
                                 default:
-                                    // All other template types are assumed to be custom action adapter defintions. Since
-                                    // these adpater defintions are singletons, only execute save for first device:
+                                    // All other template types are assumed to be custom action adapter definitions. Since
+                                    // these adpater definitions are singletons, only execute save for first device:
                                     if (index === 0)
                                         promises.push(saveCustomActionAdapter(tagTemplate));
                                     break;
@@ -3491,6 +3499,39 @@
         }
 
         function saveDeviceConnection() {
+            const configFrame = viewModel.configFrame();
+
+            // Warn user to export config when phasors are tagged for deletion before save removes them permanently
+            if (!viewModel.configExported()) {
+                let anyTaggedForDelete = false;
+
+                const cells = configFrame.Cells;
+                const cellCount = cells.length;
+
+                for (let i = 0; i < cellCount && !anyTaggedForDelete; i++) {
+                    const cell = cells[i];
+
+                    for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
+                        const phasorDefinition = cell.PhasorDefinitions[j];
+
+                        if (phasorDefinition.TaggedForDelete()) {
+                            anyTaggedForDelete = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (anyTaggedForDelete) {
+                    if (confirm("Phasors are tagged for deletion: to preserve definitions, configuration should be exported before saving device record.\n\nDo you want to export config now?")) {
+                        setTimeout(() => { $("#saveConfigurationFileNameDialogButton").click(); }, 100);
+                        return $.Deferred().resolve().promise();
+                    }
+                    else if (!confirm("Skipping configuration export.\n\nDo you want to continue with saving device record?")) {
+                        return $.Deferred().resolve().promise();
+                    }
+                }
+            }
+
             if (!hubIsConnected) {
                 showErrorMessage("Cannot save device connection, cannot connect to server.");
                 return $.Deferred().resolve().promise();
@@ -3502,11 +3543,10 @@
             // Query existing device record - function will create a new blank device record if one does not exist
             return phasorHub.queryDeviceByID(deviceID).then(function (device) {
                 // Set device properties
-                const configFrame = viewModel.configFrame();
-                var connectionString = configFrame.ConnectionString + "";
+                let connectionString = configFrame.ConnectionString + "";
                 const connectionStringMap = new Dictionary(connectionString.parseKeyValuePairs());
-                var autoStartDataParsingSequence = true;
-                var skipDisableRealTimeData = false;
+                let autoStartDataParsingSequence = true;
+                let skipDisableRealTimeData = false;
 
                 // Handle connection string parameters that are fields in the device table
                 if (connectionStringMap.containsKey("autoStartDataParsingSequence")) {
