@@ -2000,9 +2000,16 @@
                             }
 
                             // Remove phasor
-                            promises.push(phasorHub.deletePhasor(phasorDefinition.ID).fail(function (error) {
-                                showErrorMessage("Failed to delete phasor: " + error, null, true);
-                            }));
+                            for (let j = 0; j < phasors.length; j++) {
+                                const phasor = phasors[j];
+
+                                if (phasor.SourceIndex === phasorDefinition.SourceIndex) {
+                                    promises.push(phasorHub.deletePhasor(phasor.ID).fail(function (error) {
+                                        showErrorMessage("Failed to delete phasor: " + error, null, true);
+                                    }));
+                                    break;
+                                }
+                            }
 
                             return $(promises).whenAll();
                         })
