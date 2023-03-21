@@ -2562,6 +2562,17 @@
             </summary>
             <param name="measurements">New measurements.</param>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterCollection.OnNewMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterCollection.NewMeasurements"/> event.
+            </summary>
+            <param name="sender">Event source.</param>
+            <param name="e">New measurements event arguments.</param>
+            <remarks>
+            This event handler is overridable to allow derived class interception of all
+            measurements flowing out of the <see cref="T:GSF.TimeSeries.Adapters.ActionAdapterCollection"/>.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.ActionAdapterCollection.OnUnpublishedSamples(System.Int32)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterCollection.UnpublishedSamples"/> event.
@@ -4653,6 +4664,17 @@
             Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterCollection.NewMeasurements"/> event.
             </summary>
             <param name="measurements">New measurements.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.InputAdapterCollection.OnNewMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterCollection.NewMeasurements"/> event.
+            </summary>
+            <param name="sender">Event source.</param>
+            <param name="e">New measurements event arguments.</param>
+            <remarks>
+            This event handler is overridable to allow derived class interception of all
+            measurements flowing out of the <see cref="T:GSF.TimeSeries.Adapters.InputAdapterCollection"/>.
+            </remarks>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.InputAdapterCollection.OnProcessingComplete">
             <summary>
