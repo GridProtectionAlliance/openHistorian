@@ -434,6 +434,11 @@
             Default value for the <see cref="P:TestingAdapters.SynchronizeLocalClock.UpdateTolerance"/> property.
             </summary>
         </member>
+        <member name="F:TestingAdapters.SynchronizeLocalClock.DefaultPreferGoodTimeQuality">
+            <summary>
+            Default value for the <see cref="P:TestingAdapters.SynchronizeLocalClock.PreferGoodTimeQuality"/> property.
+            </summary>
+        </member>
         <member name="P:TestingAdapters.SynchronizeLocalClock.UpdateFrequency">
             <summary>
             Gets or sets the update frequency, in milliseconds, for setting the local system clock time.
@@ -442,6 +447,12 @@
         <member name="P:TestingAdapters.SynchronizeLocalClock.UpdateTolerance">
             <summary>
             Gets or sets the minimum update tolerance, in seconds, as deviation to current local time to check before updating the local clock.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.SynchronizeLocalClock.PreferGoodTimeQuality">
+            <summary>
+            Gets or sets flag that determines if good time quality should be preferred for clock syncs.
+            If false, absolute latest time will always be used regardless of reported quality.
             </summary>
         </member>
         <member name="P:TestingAdapters.SynchronizeLocalClock.UseLocalClockAsRealTime">
@@ -456,7 +467,7 @@
         </member>
         <member name="P:TestingAdapters.SynchronizeLocalClock.FallBackOnLocalClock">
             <summary>
-            Gest or sets flag that determines whether to fall back on local clock time as real time when time is unreasonable.
+            Gets or sets flag that determines whether to fall back on local clock time as real time when time is unreasonable.
             </summary>
             <remarks>
             This property is only applicable when <see cref="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.UseLocalClockAsRealTime"/> is <c>false</c>.
@@ -504,6 +515,11 @@
             Starts the <see cref="T:TestingAdapters.SynchronizeLocalClock"/>.
             </summary>
         </member>
+        <member name="M:TestingAdapters.SynchronizeLocalClock.EnableSystemTimePrivilege">
+            <summary>
+            Attempts to enable system time privilege for the current process. Privilege must be already granted.
+            </summary>
+        </member>
         <member name="M:TestingAdapters.SynchronizeLocalClock.ManualSync(System.String)">
             <summary>
             Manually synchronizes local to specified date/time.
@@ -511,15 +527,15 @@
         </member>
         <member name="M:TestingAdapters.SynchronizeLocalClock.ForceSync">
             <summary>
-            Forces local clock synchronization to latest time value without reasonability considerations.
+            Forces local clock synchronization to latest time value.
             </summary>
         </member>
         <member name="M:TestingAdapters.SynchronizeLocalClock.GetShortStatus(System.Int32)">
             <summary>
-            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            Gets a short one-line status of this <see cref="T:TestingAdapters.SynchronizeLocalClock"/>.
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
-            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+            <returns>A short one-line summary of the current status of this <see cref="T:TestingAdapters.SynchronizeLocalClock"/>.</returns>
         </member>
         <member name="M:TestingAdapters.SynchronizeLocalClock.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
             <summary>
