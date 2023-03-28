@@ -186,6 +186,10 @@
             z-index: 10;
         }
 
+        button.save-button {
+            width: 140px;
+        }
+
         div.no-access {
             margin-top: -33px;
             z-index: 10;
@@ -896,6 +900,40 @@
 
             const $state = $("<span>" + label + " <span class='sub-text'>(" + orgLabel + ")</span></span>");
             return $state;
+        }
+
+        function saveDeviceConfiguration(acronym, configuration) {
+            return $.ajax({
+                url: "/api/PhasorConfig/SaveDeviceConfiguration/" + acronym,
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: configuration,
+                dataType: "json"
+            });
+        }
+
+        function loadDeviceConfiguration(acronym) {
+            return $.ajax({
+                url: "/api/PhasorConfig/LoadDeviceConfiguration/" + acronym,
+                method: "GET",
+                contentType: "application/json; charset=utf-8"
+            });
+        }
+
+        function getConfigurationCacheFileName(acronym) {
+            return $.ajax({
+                url: "/api/PhasorConfig/GetConfigurationCacheFileName/" + acronym,
+                method: "GET",
+                contentType: "application/json; charset=utf-8"
+            });
+        }
+
+        function getConfigurationCachePath() {
+            return $.ajax({
+                url: "/api/PhasorConfig/GetConfigurationCachePath",
+                method: "GET",
+                contentType: "application/json; charset=utf-8"
+            });
         }
 
         function DeviceViewModel() {
@@ -3655,6 +3693,14 @@
                 viewModel.deviceAcronym(device.Acronym);
                 viewModel.longitude(device.Longitude);
                 viewModel.latitude(device.Latitude);
+
+                setTimeout(function () {
+                    showInfoMessage("Loading existing configuration...");
+                    loadDeviceConfiguration(device.Acronym).done(function (mapping) {
+                        if (mapping && mapping.length > 0)
+                            viewModel.loadConfiguration(new Blob([mapping], { type: "application/json" }), false);
+                    });
+                }, 100);
             })
             .fail(function (error) {
                 showErrorMessage(String.format("Failed to load existing device \"{0}\": {1}", id, error), null, true);
@@ -3779,6 +3825,22 @@
         function loadConfigurationFile(event) {
             viewModel.loadConfiguration(event.target.files[0]);
             $("#loadConfigurationFileName").val("");
+        }
+
+        function requestDeviceConfiguration() {
+            if (!hubIsConnected)
+                return;
+
+            showInfoMessage("Requesting latest device configuration...", -1, true);
+
+            phasorHub.queryDeviceByID(deviceID).done(function (device) {
+                showInfoMessage("Device configuration request complete, analyzing...", null, true);
+                viewModel.analyzeConfig(device.ConnectionString);
+            })
+            .fail(function (error) {
+                hideInfoMessage();
+                showErrorMessage(String.format("Failed to load record for existing device \"{0}\": {1}", deviceID, error), null, true);
+            });
         }
 
         // Page initialization function
@@ -4171,6 +4233,9 @@
                                 <span id="connected" style="display: none">Connected&nbsp;&nbsp;<span class="glyphicon glyphicon-check" style="color: chartreuse"></span></span>
                                 <button type="button" class="btn btn-xs btn-collapsable" data-toggle="collapse" data-target="#connectionSettings"></button>
                             </div>
+                            <span class="pull-right clearfix" id="loadingDataLabel" style="display: inline; color: white; margin-right: -10px">
+                                Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                            </span>
                         </div>
                         <div class="panel-body collapse" data-bind="css: {'in': deviceID === 0}" id="connectionSettings" style="padding: 2px 6px">
                             <div id="tabs">
@@ -4271,7 +4336,7 @@
                     @if (userIsEditor)
                     {
                         <div class="input-group save-button pull-right">
-                            <button type="button" class="btn btn-primary pull-right" id="saveData" data-bind="disable: !isDirty() && (working() || validationErrors() > 0 || !phasorHubIsConnected())">
+                            <button type="button" class="btn btn-primary save-button pull-right" id="saveData" data-bind="disable: !isDirty() && (working() || validationErrors() > 0 || !phasorHubIsConnected())">
                                 <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Save&nbsp;Device&nbsp;
                             </button>
                         </div>
@@ -4295,7 +4360,7 @@
                         <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !fieldHasValue(deviceName, true), style: { 'margin-right': readOnly() ? undefined: '54px' }"></span>
                     </div>
                     <div class="input-group save-button pull-right">
-                        <button type="button" class="btn btn-default pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
+                        <button type="button" class="btn btn-default save-button pull-right" onclick="showSaveConfigurationFileNameDialog()" id="saveConfigurationFileNameDialogButton" data-bind="enable: configFrame().Cells.length > 0">
                             <span class="glyphicon glyphicon-floppy-save glyphicon-action-button"></span>&nbsp;Export&nbsp;Config
                         </button>
                     </div>
@@ -4340,8 +4405,8 @@
                     @if (userIsEditor)
                     {
                         <div class="input-group save-button pull-right">
-                            <button type="button" class="btn btn-default pull-right" onclick="showLoadConfigurationFileNameDialog()">
-                                <span class="glyphicon glyphicon-import glyphicon-action-button"></span>&nbsp;Import&nbsp;Config
+                            <button type="button" class="btn btn-default save-button pull-right" onclick="showLoadConfigurationFileNameDialog()">
+                                <span class="glyphicon glyphicon-import glyphicon-action-button"></span>&nbsp;Import&nbsp;Config&nbsp;
                             </button>
                         </div>
                         <input id="loadConfigurationFileName" type="file" accept="text/json" style="position: fixed; top: -100em" onchange="loadConfigurationFile(event)">
@@ -4359,12 +4424,14 @@
                             <label class="disabled" style="margin-top: 6px; display: none"><input type="checkbox" data-bind="checked: addTagsAsVirtualPoints" disabled> Generate virtual tags (otherwise tags will be archived)</label>
                         </div>
                     </div>
+                    <div class="input-group save-button pull-right" style="margin-top: -29px; margin-bottom: 4px">
+                        <button type="button" class="btn btn-default save-button pull-right" onclick="requestDeviceConfiguration()">
+                            <span class="glyphicon glyphicon-refresh glyphicon-action-button"></span>&nbsp;Request&nbsp;Config
+                        </button>
+                    </div>
                 </td>
             </tr>
         </table>
-        <span class="pull-right clearfix" id="loadingDataLabel" style="display: inline; margin-top: -27px">
-            Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
-        </span>
     </div>
 </div>
 <div id="contentWell" class="well well-dynamic-content">

@@ -98,13 +98,12 @@ namespace openHistorian
             // Load phasor hub into application domain, initializing default status and exception handlers
             try
             {
-                using (PhasorHub hub = new PhasorHub(
+                using PhasorHub hub = new(
                     (message, updateType) => Program.Host.LogWebHostStatusMessage(message, updateType),
                     Program.Host.LogException
-                ))
-                {
-                    WebExtensions.AddEmbeddedResourceAssembly(hub.GetType().Assembly);                  
-                }
+                );
+
+                WebExtensions.AddEmbeddedResourceAssembly(hub.GetType().Assembly);
             }
             catch (Exception ex)
             {
@@ -123,8 +122,8 @@ namespace openHistorian
                 Load_TrenDAPController();
 
             // Configure Windows Authentication for self-hosted web service
-            HubConfiguration hubConfig = new HubConfiguration();
-            HttpConfiguration httpConfig = new HttpConfiguration();
+            HubConfiguration hubConfig = new();
+            HttpConfiguration httpConfig = new();
 
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
@@ -269,7 +268,7 @@ namespace openHistorian
                 new Action(() =>
                 {
                     // Make embedded resources of Modbus poller available to web server
-                    using (ModbusPoller poller = new ModbusPoller())
+                    using (ModbusPoller poller = new())
                         WebExtensions.AddEmbeddedResourceAssembly(poller.GetType().Assembly);
 
                     ModbusPoller.RestoreConfigurations(FilePath.GetAbsolutePath("ModbusConfigs"));
@@ -341,7 +340,7 @@ namespace openHistorian
         /// <summary>
         /// Gets the authentication options used for the hosted web server.
         /// </summary>
-        public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
+        public static AuthenticationOptions AuthenticationOptions { get; } = new();
 
         #region [ Old Code ]
 

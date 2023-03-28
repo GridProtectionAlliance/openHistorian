@@ -4,6 +4,35 @@
         <name>PhasorWebUI</name>
     </assembly>
     <members>
+        <member name="T:PhasorWebUI.PhasorConfigController">
+            <summary>
+            Defines an API controller for saving and loading phasor protocol configurations.
+            </summary>
+        </member>
+        <member name="M:PhasorWebUI.PhasorConfigController.SaveDeviceConfiguration(System.String,Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            Saves the configuration for the device with the given acronym.
+            </summary>
+            <param name="acronym">Acronym of device.</param>
+            <param name="configuration">JSON config.</param>
+        </member>
+        <member name="M:PhasorWebUI.PhasorConfigController.LoadDeviceConfiguration(System.String)">
+            <summary>
+            Loads the configuration for the device with the given acronym.
+            </summary>
+            <param name="acronym">Acronym of device.</param>
+        </member>
+        <member name="M:PhasorWebUI.PhasorConfigController.GetConfigurationCacheFileName(System.String)">
+            <summary>
+            Gets the file name of the configuration cache file for the device with the given acronym.
+            </summary>
+            <param name="acronym">Acronym of device.</param>
+        </member>
+        <member name="M:PhasorWebUI.PhasorConfigController.GetConfigurationCachePath">
+            <summary>
+            Gets the path to the configuration cache directory.
+            </summary>
+        </member>
         <member name="P:PhasorWebUI.Model.Device.CreatedOn">
             <summary>
                 Created on field.
