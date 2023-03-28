@@ -920,22 +920,6 @@
             });
         }
 
-        function getConfigurationCacheFileName(acronym) {
-            return $.ajax({
-                url: "/api/PhasorConfig/GetConfigurationCacheFileName/" + acronym,
-                method: "GET",
-                contentType: "application/json; charset=utf-8"
-            });
-        }
-
-        function getConfigurationCachePath() {
-            return $.ajax({
-                url: "/api/PhasorConfig/GetConfigurationCachePath",
-                method: "GET",
-                contentType: "application/json; charset=utf-8"
-            });
-        }
-
         function DeviceViewModel() {
             const self = this;
             const defaultDeviceAcronym = "DEVICEACRONYM";
@@ -3630,55 +3614,63 @@
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
                 device.Enabled = true;
 
-                // Check if this is a new device or an edit to an existing one
-                if (device.ID === 0) {
-                    // Add new device record
-                    return phasorHub.addNewDevice(device).then(function () {
-                        // Get newly added device with auto-incremented ID
-                        return phasorHub.queryDevice(device.Acronym).then(function (newDevice) {
-                            // Save associated device records...
-                            deviceID = newDevice.ID;
+                // Save serialized config JSON to server to it can be retrieved later restoring
+                // records that were marked for deletion for possible re-association
+                return saveDeviceConfiguration(device.Acronym, JSON.stringify(viewModel.serializeConfiguration(), null, 2)).done(function () {
+                    // Check if this is a new device or an edit to an existing one
+                    if (device.ID === 0) {
+                        // Add new device record
+                        return phasorHub.addNewDevice(device).then(function () {
+                            // Get newly added device with auto-incremented ID
+                            return phasorHub.queryDevice(device.Acronym).then(function (newDevice) {
+                                // Save associated device records...
+                                deviceID = newDevice.ID;
 
-                            return saveDeviceRecords(deviceID).then(function () {
+                                return saveDeviceRecords(deviceID).then(function () {
+                                    enableUIButtons("Save complete.");
+
+                                    serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                        window.location = "GraphMeasurements.cshtml";
+                                    });
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error, null, true);
+                                enableUIButtons();
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Save failed for new device " + device.Acronym + ": " + error, null, true);
+                            enableUIButtons();
+                        });
+                    }
+                    else {
+                        // Update existing device record
+                        return phasorHub.updateDevice(device).then(function () {
+                            // Save associated device records...
+                            return saveDeviceRecords(device.ID).then(function () {
                                 enableUIButtons("Save complete.");
 
-                                serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                const connectionID = device.ParentID ? device.ParentID : device.ID;
+
+                                serviceHub.sendCommand("initialize " + connectionID).done(function () {
                                     window.location = "GraphMeasurements.cshtml";
                                 });
                             });
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed while querying new device " + device.Acronym + " - no measurements saved: " + error, null, true);
+                            showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error, null, true);
                             enableUIButtons();
                         });
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Save failed for new device " + device.Acronym + ": " + error, null, true);
-                        enableUIButtons();
-                    });
-                }
-                else {
-                    // Update existing device record
-                    return phasorHub.updateDevice(device).then(function () {
-                        // Save associated device records...
-                        return saveDeviceRecords(device.ID).then(function () {
-                            enableUIButtons("Save complete.");
-
-                            const connectionID = device.ParentID ? device.ParentID : device.ID;
-
-                            serviceHub.sendCommand("initialize " + connectionID).done(function () {
-                                window.location = "GraphMeasurements.cshtml";
-                            });
-                        });
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Update failed for existing device " + device.Acronym + " - no measurements updated: " + error, null, true);
-                        enableUIButtons();
-                    });
-                }
+                    }
+                })
+                .fail(function (error) {
+                    showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error, null, true);
+                    enableUIButtons();
+                });
             })
             .fail(function (error) {
-                showErrorMessage("Save failed for new device " + device.Acronym + " - could not create new or lookup existing device: " + error, null, true);
+                showErrorMessage("Failed to save JSON config for new device " + device.Acronym + ": " + error, null, true);
                 enableUIButtons();
             });
         }
