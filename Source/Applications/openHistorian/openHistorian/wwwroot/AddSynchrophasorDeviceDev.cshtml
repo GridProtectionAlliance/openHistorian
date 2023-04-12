@@ -1531,6 +1531,9 @@
                 voltage._enabled = ko.observable(!self.forwardOnly() && nominalVoltage >= 0);
                 voltage._taggedForDelete = ko.observable(Boolean(phasorDefinition.TaggedForDelete));
 
+                if (voltage._taggedForDelete())
+                    voltage._enabled(false);
+
                 voltage.ID = phasorDefinition.ID;
                 voltage.Device = cell;
                 voltage.Label = ko.observable(phasorLabel);
@@ -1572,6 +1575,8 @@
                         // Uncheck enabled when tagging for deletion
                         if (value)
                             voltage.Enabled(false);
+                        else
+                            self.resortPhasors();
                     },
                     owner: voltage
                 });
@@ -1619,6 +1624,9 @@
                 current._phase = ko.observable("");
                 current._enabled = ko.observable(!self.forwardOnly() && phasorDefinition.NominalVoltage >= 0);
                 current._taggedForDelete = ko.observable(Boolean(phasorDefinition.TaggedForDelete));
+
+                if (current._taggedForDelete())
+                    current._enabled(false);
 
                 current.AssociatedVoltage = ko.pureComputed({
                     read: function () {
