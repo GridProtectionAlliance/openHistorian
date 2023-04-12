@@ -464,6 +464,17 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> alternate command channel.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetConfigurationCacheFileName(System.String)">
+            <summary>
+            Gets the file name of the configuration cache file for the device with the given acronym.
+            </summary>
+            <param name="acronym">Acronym of device.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetConfigurationCachePath">
+            <summary>
+            Gets the path to the configuration cache directory.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String,System.String)">
             <summary>
             LoadKeys <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
