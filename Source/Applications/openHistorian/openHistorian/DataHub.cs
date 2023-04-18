@@ -24,6 +24,7 @@
 using GSF;
 using GSF.COMTRADE;
 using GSF.Data.Model;
+using GSF.Diagnostics;
 using GSF.Identity;
 using GSF.Web.Hubs;
 using GSF.Web.Model.HubOperations;
@@ -33,6 +34,7 @@ using ModbusAdapters;
 using ModbusAdapters.Model;
 using openHistorian.Adapters;
 using openHistorian.Model;
+using PhasorWebUI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -266,6 +268,17 @@ namespace openHistorian
         [RecordOperation(typeof(Device), RecordOperation.DeleteRecord)]
         public void DeleteDevice(int id)
         {
+            try
+            {
+                Device device = QueryDeviceByID(id);
+                File.Delete(PhasorConfigController.GetConfigurationCacheFileName(device.Acronym));
+            }
+            catch (Exception ex)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(DataHub), MessageClass.Component);
+                log.Publish(MessageLevel.Warning, "Error Message", "Failed to delete cached device config", null, ex);
+            }
+
             TableOperations<Device> deviceTable = DataContext.Table<Device>();            
             deviceTable.DeleteRecordWhere("ParentID = {0}", id);
             deviceTable.DeleteRecord(id);
