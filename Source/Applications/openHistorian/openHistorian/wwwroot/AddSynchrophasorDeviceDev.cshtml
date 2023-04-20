@@ -1728,6 +1728,12 @@
                             // Un-tag for delete when enabled
                             current.TaggedForDelete(false);
                         }
+                        else {
+                            if (current.NominalVoltage() === 0)
+                                current.NominalVoltage(-1);
+                            else
+                                current.NominalVoltage(Math.abs(current.NominalVoltage()) * -1);
+                        }
 
                         self.resortPhasors();
                     },
