@@ -1708,10 +1708,22 @@
                     read: function () {
                         const voltage = lookupAssociatedVoltage(current.Device, current.AssociatedVoltage());
 
-                        if (voltage)
-                            return voltage.Voltage.NominalVoltage();
+                        let nominalVoltage = 0;
 
-                        return 0;
+                        if (voltage && voltage.Voltage.Enabled())
+                            nominalVoltage = voltage.Voltage.NominalVoltage();
+
+                        if (nominalVoltage < 0)
+                            nominalVoltage = 0;
+
+                        if (!current.Enabled()) {
+                            if (nominalVoltage === 0)
+                                nominalVoltage = -1;
+                            else
+                                nominalVoltage = Math.abs(nominalVoltage) * -1;
+                        }
+
+                        return nominalVoltage;
                     },
                     owner: current
                 });
@@ -1727,12 +1739,6 @@
 
                             // Un-tag for delete when enabled
                             current.TaggedForDelete(false);
-                        }
-                        else {
-                            if (current.NominalVoltage() === 0)
-                                current.NominalVoltage(-1);
-                            else
-                                current.NominalVoltage(Math.abs(current.NominalVoltage()) * -1);
                         }
 
                         self.resortPhasors();
@@ -2134,24 +2140,12 @@
 
                                 currentPromises.push(phasorHub.newPhasorWithTimestamps(current.UpdatedOn, current.CreatedOn).then(function (phasor) {
                                     const associatedVoltage = current.Current.AssociatedVoltage();
-                                    const voltage = lookupAssociatedVoltage(cell, associatedVoltage);
-                                    let baseKV = 0;
-
-                                    if (voltage)
-                                        baseKV = voltage.Voltage.NominalVoltage();
-
-                                    if (!current.Enabled()) {
-                                        if (baseKV === 0)
-                                            baseKV = -1;
-                                        else
-                                            baseKV = Math.abs(baseKV) * -1;
-                                    }
 
                                     phasor.DeviceID = cell.ID;
                                     phasor.Label = current.Label();
                                     phasor.Type = "I";
                                     phasor.Phase = current.Phase();
-                                    phasor.BaseKV = baseKV;
+                                    phasor.BaseKV = current.Current.AssociatedNominalVoltage();
                                     phasor.DestinationPhasorID = voltageIDMap[associatedVoltage];
                                     phasor.SourceIndex = current.SourceIndex;
 
@@ -3705,6 +3699,8 @@
                     loadDeviceConfiguration(device.Acronym).done(function (mapping) {
                         if (mapping && mapping.length > 0)
                             viewModel.loadConfiguration(new Blob([mapping], { type: "application/json" }), false);
+                        else
+                            viewModel.loadExisting();
                     });
                 }, 100);
             })
@@ -4050,9 +4046,6 @@
 
                 firstConnect = false;
 
-                if (deviceID > 0)
-                    loadDeviceConnection(deviceID);
-
                 const instanceNameSelect = $("#instanceName");
 
                 // Load available historian instance names, if not already loaded
@@ -4132,7 +4125,7 @@
                         phasorSignalTypes = result;
 
                         if (deviceID > 0)
-                            viewModel.loadExisting();
+                            loadDeviceConnection(deviceID);
                     });
                 });
             });
