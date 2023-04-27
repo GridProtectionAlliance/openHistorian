@@ -954,9 +954,20 @@
             self.connectionString = ko.pureComputed({
                 read: self._connectionString,
                 write: function (value) {
-                    const settings = value.parseKeyValuePairs();
-                    settings.set("forwardOnly", self.forwardOnly());
-                    self._connectionString(settings.joinKeyValuePairs());
+                    if (value === self._connectionString())
+                        return;
+
+                    value = value + "";
+
+                    if (value.length === 0) {
+                        self._connectionString("");
+                    }
+                    else {
+                        const settings = value.parseKeyValuePairs();
+                        settings.set("forwardOnly", self.forwardOnly());
+                        self._connectionString(settings.joinKeyValuePairs());
+                    }
+
                     self.configFrame().ConnectionString = self._connectionString();
                 },
                 owner: self
@@ -1210,10 +1221,12 @@
                 if (skipGuessing === undefined)
                     skipGuessing = false;
 
-                if ((configFrame.ConnectionString + "").length > 0)
+                let currentConnectionString = self.connectionString() + "";
+
+                if (currentConnectionString.length > 0 && currentConnectionString !== "forwardOnly=false")
                     self.connectionString(configFrame.ConnectionString + "");
 
-                const currentConnectionString = self.connectionString();
+                currentConnectionString = self.connectionString() + "";
                 self.configFrame(configFrame);
                 self.connectionString(currentConnectionString);
 
