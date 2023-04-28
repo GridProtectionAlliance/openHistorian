@@ -2131,6 +2131,65 @@
             <param name="urlPath">Path to check as an alternative SecurityProvider resource.</param>
             <returns><c>true</c> if path is an alternate Security Provider resource; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="T:GSF.Web.Security.AuthenticationOptionsExtensions">
+            <summary>
+            Extension methods for authentication options.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullLoginPath(GSF.Web.Security.AuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.AuthenticationOptions.LoginPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the login page.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullLogoutPath(GSF.Web.Security.AuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.AuthenticationOptions.LogoutPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the logout page.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullAuthTestPath(GSF.Web.Security.AuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.AuthenticationOptions.AuthTestPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the auth test page.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullLoginPath(GSF.Web.Security.ReadonlyAuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LoginPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the login page.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullLogoutPath(GSF.Web.Security.ReadonlyAuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.LogoutPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the logout page.</returns>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationOptionsExtensions.GetFullAuthTestPath(GSF.Web.Security.ReadonlyAuthenticationOptions,System.String)">
+            <summary>
+            Gets full path to <see cref="P:GSF.Web.Security.ReadonlyAuthenticationOptions.AuthTestPage"/>,
+            evaluating leading <c>~</c> character as the given base path.
+            </summary>
+            <param name="options">Authentication options for the website</param>
+            <param name="basePath">Base path of the website</param>
+            <returns>The full path to the auth test page.</returns>
+        </member>
         <member name="T:GSF.Web.Security.AuthorizationCache">
             <summary>
             Defines authorization cache.
