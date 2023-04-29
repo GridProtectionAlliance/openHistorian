@@ -7102,8 +7102,15 @@
         </member>
         <member name="P:GSF.TimeSeries.Reports.ReportingProcessCollection.Status">
             <summary>
-            Gets the descriptive status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterCollectionBase`1"/>.
+            Gets the descriptive status of this <see cref="T:System.Collections.ObjectModel.Collection`1"/>.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Reports.ReportingProcessCollection.LoadImplementations(System.Action{GSF.TimeSeries.Reports.IReportingProcess},System.Action{System.Exception})">
+            <summary>
+            Loads available <see cref="T:GSF.TimeSeries.Reports.IReportingProcess"/> implementations.
+            </summary>
+            <param name="newReportProcessHandler">New report process handler to call when new <see cref="T:GSF.TimeSeries.Reports.IReportingProcess"/> implementations are loaded.</param>
+            <param name="exceptionHandler">Exception handler, if any, to call when type creation fails; otherwise, if <c>null</c> any exceptions will be thrown.</param>
         </member>
         <member name="M:GSF.TimeSeries.Reports.ReportingProcessCollection.FindReportType(System.String)">
             <summary>
@@ -7136,13 +7143,6 @@
             <paramref name="index"/> is less than zero. -or-
             <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
             </exception>
-        </member>
-        <member name="M:GSF.TimeSeries.Reports.ReportingProcessCollection.LoadImplementations(System.Action{System.Exception})">
-            <summary>
-            Loads available <see cref="T:GSF.TimeSeries.Reports.IReportingProcess"/> implementations.
-            </summary>
-            <param name="exceptionHandler">Exception handler, if any, to call when type creation fails; otherwise, if <c>null</c> any exceptions will be thrown.</param>
-            <returns>New collection of <see cref="T:GSF.TimeSeries.Reports.IReportingProcess"/> implementations.</returns>
         </member>
         <member name="T:GSF.TimeSeries.Frame">
             <summary>

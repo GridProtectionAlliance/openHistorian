@@ -36,6 +36,11 @@
             Default value for <see cref="P:GSF.Security.AzureADSettings.ClientID"/> property.
             </summary>
         </member>
+        <member name="F:GSF.Security.AzureADSettings.DefaultRedirectURI">
+            <summary>
+            Default value for <see cref="P:GSF.Security.AzureADSettings.RedirectURI"/> property.
+            </summary>
+        </member>
         <member name="F:GSF.Security.AzureADSettings.DefaultCallbackPath">
             <summary>
             Default value for <see cref="P:GSF.Security.AzureADSettings.CallbackPath"/> property.
@@ -64,6 +69,11 @@
         <member name="P:GSF.Security.AzureADSettings.ClientID">
             <summary>
             Gets or sets the Azure AD client ID.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.AzureADSettings.RedirectURI">
+            <summary>
+            Gets or sets the redirect URI where authentication responses can be received by the application.
             </summary>
         </member>
         <member name="P:GSF.Security.AzureADSettings.CallbackPath">
