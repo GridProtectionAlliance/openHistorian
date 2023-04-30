@@ -156,6 +156,12 @@
             Initiates a full point-tag rename based on the currently configured \"PointTagNameExpression\" as defined in the &lt;systemSettings&gt; section of the local configuration file.
             </summary>
         </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.RemoveFile(System.String)">
+            <summary>
+            Removes file from local folder.
+            </summary>
+            <param name="fileName">File name to remove.</param>
+        </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
             Sends the specified <see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to the current device connection.
