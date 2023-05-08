@@ -9,13 +9,13 @@ Hash: SHA512
   "signedByOrgName": "Grafana Labs",
   "plugin": "input",
   "version": "1.0.0",
-  "time": 1663063939285,
+  "time": 1682355426750,
   "keyId": "7e4d0c6a708866e7",
   "files": {
     "README.md": "64725ebd88f7505cca78f3204eb9bc58371fc7e84172d4f35e3b7eddc4e18cee",
     "img/input.svg": "8095517d5565d37438bf457e4a2fe5b850a6a6d2d2ecb5378a981828fac58367",
-    "module.js": "e3941b74dd2e52649a3c07d9e9aa4bff84b88c329ac55a28d5f9fe4dc836761f",
-    "module.js.map": "be561a9de68ad64087df3a1f48b5388c1bb38e097130e77c3bea0047298e4506",
+    "module.js": "d071fb65a11c452d244e78468cb39950500833da57b165b7f5ee00d4350dbd5f",
+    "module.js.map": "4182f8aec6d5345bf622a4a5e24751fc552d3b40d73d320947306baf93175300",
     "plugin.json": "cf26a3afb7c10cd9ae40b5296d04172b5dac927d69a51082e6d085b34341ccc3"
   }
 }
@@ -23,10 +23,10 @@ Hash: SHA512
 Version: OpenPGP.js v4.10.10
 Comment: https://openpgpjs.org
 
-wrgEARMKAAYFAmMgV4MAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
-cIhm5+QqAgkBcgPViGQMnrBzwXwk3/EILsiAk+t3G7u/EFJXmUQnHAeASx5l
-0EEWsW3Pt0u/p9t1v7e21BcPdROIpBL2bWML+rECCJt8/ASlsqj+KoEQOfgJ
-jzIWwHV3NE7iiLzrXlGvyLYwEFOfKGcH/4r8d9AVqSN50sgCmJZbVw/DOa3+
-6Cwojlk3
-=uRtI
+wrgEARMKAAYFAmRGtOIAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm51LbAgkBNDrHRzE+Lvrruycmau7mZgEevUjP56+Wn8HQQT8lFWXzSI5k
+hf+nHJzpJtcwmxMUlu52EpOq5Tt04F1oRM0Nlg8CB0YNpZJj+bpiL0hNgnEp
+R+YC3pNCIfEPywNB+hvjPsy+jch+3wN0yKaQeo2CUmlM29aD+cQ2AHOmdjpV
+MNFfyxT3
+=Ljre
 -----END PGP SIGNATURE-----

@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><meta name="viewport" content="width=device-width"/><meta name="theme-color" content="#000"/><title>[[.AppTitle]]</title><base href="[[.AppSubUrl]]/"/><link rel="preload" href="[[.ContentDeliveryURL]]public/fonts/roboto/RxZJdnzeo3R5zSexge8UUVtXRa8TVwTICgirnJhmVJw.woff2" as="font" crossorigin/><link rel="icon" type="image/png" href="[[.FavIcon]]"/><link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]"/><link rel="mask-icon" href="[[.ContentDeliveryURL]]public/img/grafana_mask_icon.svg" color="#F05A28"/>[[ if eq .Theme "light" ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.light.54fffb6dcf6204494323.css"/>[[ else ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.dark.6c90b8800e5171d28a90.css"/>[[ end ]]<script nonce="[[.Nonce]]">performance.mark('frontend_boot_css_time_seconds');</script><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="msapplication-TileColor" content="#2b5797"/><meta name="msapplication-config" content="public/img/browserconfig.xml"/></head><body class="theme-[[ .Theme ]] [[.AppNameBodyClass]]"><style>.preloader {
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><meta name="viewport" content="width=device-width"/><meta name="theme-color" content="#000"/><title>[[.AppTitle]]</title><base href="[[.AppSubUrl]]/"/><link rel="icon" type="image/png" href="[[.FavIcon]]"/><link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]"/><link rel="mask-icon" href="[[.ContentDeliveryURL]]public/img/grafana_mask_icon.svg" color="#F05A28"/>[[ if eq .Theme "light" ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.light.664bea2b0c15e6740fd3.css"/>[[ else if eq .Theme "dark" ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.dark.922c73a268c5f56fe5fe.css"/>[[ end ]]<script nonce="[[.Nonce]]">performance.mark('frontend_boot_css_time_seconds');</script><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="msapplication-TileColor" content="#2b5797"/><meta name="msapplication-config" content="public/img/browserconfig.xml"/></head><body class="theme-[[ .Theme ]] [[.AppNameBodyClass]]"><style>.preloader {
         height: 100%;
         flex-direction: column;
         display: flex;
@@ -132,7 +132,7 @@
       [ng-cloak],
       .ng-cloak {
         display: none !important;
-      }</style><div class="preloader"><div class="preloader__enter"><div class="preloader__bounce"><div class="preloader__logo"></div></div></div><div class="preloader__text">Loading Grafana</div><div class="preloader__text preloader__text--fail"><p><strong>If you're seeing this Grafana has failed to load its application files</strong><br/><br/></p><p>1. This could be caused by your reverse proxy settings.<br/><br/>2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath. If not using a reverse proxy make sure to set serve_from_sub_path to true.<br/><br/>3. If you have a local dev build make sure you build frontend using: yarn start, yarn start:hot, or yarn build<br/><br/>4. Sometimes restarting grafana-server can help<br/><br/>5. Check if you are using a non-supported browser. For more information, refer to the list of <a href="https://grafana.com/docs/grafana/latest/installation/requirements/#supported-web-browsers">supported browsers</a>.</p></div><script nonce="[[.Nonce]]">// Check to see if browser is not supported by Grafana
+      }</style><div class="preloader"><div class="preloader__enter"><div class="preloader__bounce"><div class="preloader__logo"></div></div></div><div class="preloader__text">Loading Grafana</div><div class="preloader__text preloader__text--fail"><p><strong>If you're seeing this Grafana has failed to load its application files</strong><br/><br/></p><p>1. This could be caused by your reverse proxy settings.<br/><br/>2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath. If not using a reverse proxy make sure to set serve_from_sub_path to true.<br/><br/>3. If you have a local dev build make sure you build frontend using: yarn start, or yarn build<br/><br/>4. Sometimes restarting grafana-server can help<br/><br/>5. Check if you are using a non-supported browser. For more information, refer to the list of <a href="https://grafana.com/docs/grafana/latest/installation/requirements/#supported-web-browsers">supported browsers</a>.</p></div><script nonce="[[.Nonce]]">// Check to see if browser is not supported by Grafana
         // Source file in app/core/utils/browser.ts & tests make edits there and copy compiled typescript here
         function checkBrowserCompatibility() {
           var isIE = navigator.userAgent.indexOf('MSIE') > -1;
@@ -172,10 +172,30 @@
         settings: [[.Settings]],
         navTree: [[.NavTree]],
         themePaths: {
-          light: '[[.ContentDeliveryURL]]public/build/grafana.light.54fffb6dcf6204494323.css',
-          dark: '[[.ContentDeliveryURL]]public/build/grafana.dark.6c90b8800e5171d28a90.css'
+          light: '[[.ContentDeliveryURL]]public/build/grafana.light.664bea2b0c15e6740fd3.css',
+          dark: '[[.ContentDeliveryURL]]public/build/grafana.dark.922c73a268c5f56fe5fe.css'
         }
       };
+
+      // Set theme to match system only on startup.
+      // Do not react to changes in system theme after startup.
+      if (window.grafanaBootData.user.theme === "system") {
+        document.body.classList.remove("theme-system");
+        var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        var cssLink = document.createElement("link");
+        cssLink.rel = 'stylesheet';
+
+        if (darkQuery.matches) {
+          document.body.classList.add("theme-dark");
+          cssLink.href = window.grafanaBootData.themePaths.dark;
+          window.grafanaBootData.user.lightTheme = false;
+        } else {
+          document.body.classList.add("theme-light");
+          cssLink.href = window.grafanaBootData.themePaths.light;
+          window.grafanaBootData.user.lightTheme = true;
+        }
+        document.head.appendChild(cssLink);
+      }
 
       window.__grafana_load_failed = function() {
         var preloader = document.getElementsByClassName("preloader");
@@ -215,4 +235,4 @@
         j.async = true;
         j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', '[[.GoogleTagManagerId]]');</script>[[end]]<script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/runtime.69af0634fb5df2933a11.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/8683.e8e950030315b5a81926.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/2449.def35241a3dcae812382.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/8893.aa83759dfd69659e4433.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/6151.962c8f241d27d9b5b744.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/app.40373df184fe8e5ef77b.js"></script><script nonce="[[.Nonce]]">performance.mark('frontend_boot_js_done_time_seconds');</script></body></html>
+      })(window, document, 'script', 'dataLayer', '[[.GoogleTagManagerId]]');</script>[[end]]<script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/runtime.2434a49086cee1380c4e.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/8683.9259ad853ca27103e2cc.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/7490.cf2da2a42f577bdb1843.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/6291.cb5ce8837ec621d8b6a1.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/6749.32f81d7fa137df51b539.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/app.c52aa5cf53b2693cadba.js"></script><script nonce="[[.Nonce]]">performance.mark('frontend_boot_js_done_time_seconds');</script></body></html>

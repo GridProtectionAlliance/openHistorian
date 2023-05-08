@@ -1,13 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
+import { getGrafanaContextMock } from 'test/mocks/getGrafanaContextMock';
 
 import { NavModelItem, NavSection } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
-import { configureStore } from 'app/store/configureStore';
 
-import TestProvider from '../../../../test/helpers/TestProvider';
+import { TestProvider } from '../../../../test/helpers/TestProvider';
 
 import { MegaMenu } from './MegaMenu';
 
@@ -31,16 +30,15 @@ const setup = () => {
     },
   ];
 
-  const store = configureStore({ navBarTree });
+  const grafanaContext = getGrafanaContextMock();
+  grafanaContext.chrome.onToggleMegaMenu();
 
   return render(
-    <Provider store={store}>
-      <TestProvider>
-        <Router history={locationService.getHistory()}>
-          <MegaMenu onClose={() => {}} />
-        </Router>
-      </TestProvider>
-    </Provider>
+    <TestProvider storeState={{ navBarTree }} grafanaContext={grafanaContext}>
+      <Router history={locationService.getHistory()}>
+        <MegaMenu onClose={() => {}} />
+      </Router>
+    </TestProvider>
   );
 };
 
@@ -49,8 +47,7 @@ describe('MegaMenu', () => {
     setup();
 
     expect(await screen.findByTestId('navbarmenu')).toBeInTheDocument();
-    expect(await screen.findByLabelText('Home')).toBeInTheDocument();
-    expect(screen.queryAllByLabelText('Section name').length).toBe(2);
+    expect(await screen.findByRole('link', { name: 'Section name' })).toBeInTheDocument();
   });
 
   it('should filter out profile', async () => {
