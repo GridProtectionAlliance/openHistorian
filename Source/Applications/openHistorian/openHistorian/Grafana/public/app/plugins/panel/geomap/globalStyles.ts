@@ -56,19 +56,21 @@ export function getGlobalStyles(theme: GrafanaTheme2) {
       color: ${theme.colors.text.primary}; //  #eee;
     }
     .ol-control {
-      background-color: ${theme.colors.background.secondary}; //rgba(255,255,255,0.4);
+      background-color: ${theme.colors.background.primary}; //rgba(255,255,255,0.4);
     }
     .ol-control:hover {
-      background-color: ${theme.colors.action.hover}; // rgba(255,255,255,0.6);
+      background-color: ${theme.colors.background.secondary}; // rgba(255,255,255,0.6);
     }
     .ol-control button {
       color: ${theme.colors.secondary.text}; // white;
       background-color: ${theme.colors.secondary.main}; // rgba(0,60,136,0.5);
     }
     .ol-control button:hover {
+      color: ${theme.colors.secondary.text};
       background-color: ${theme.colors.secondary.shade}; // rgba(0,60,136,0.5);
     }
     .ol-control button:focus {
+      color: ${theme.colors.secondary.text};
       background-color: ${theme.colors.secondary.main}; // rgba(0,60,136,0.5);
     }
     .ol-attribution ul {

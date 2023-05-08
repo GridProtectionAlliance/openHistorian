@@ -12,6 +12,7 @@ import {
 import { dispatch } from 'app/store/store';
 import { RichHistoryQuery } from 'app/types/explore';
 
+import { config } from '../config';
 import RichHistoryLocalStorage from '../history/RichHistoryLocalStorage';
 import RichHistoryRemoteStorage from '../history/RichHistoryRemoteStorage';
 import {
@@ -233,19 +234,16 @@ export function createQueryHeading(query: RichHistoryQuery, sortOrder: SortOrder
   return heading;
 }
 
-export function createQueryText(query: DataQuery, queryDsInstance: DataSourceApi | undefined) {
-  /* query DatasourceInstance is necessary because we use its getQueryDisplayText method
-   * to format query text
-   */
-  if (queryDsInstance?.getQueryDisplayText) {
-    return queryDsInstance.getQueryDisplayText(query);
+export function createQueryText(query: DataQuery, dsApi?: DataSourceApi) {
+  if (dsApi?.getQueryDisplayText) {
+    return dsApi.getQueryDisplayText(query);
   }
 
   return getQueryDisplayText(query);
 }
 
 export function mapQueriesToHeadings(query: RichHistoryQuery[], sortOrder: SortOrder) {
-  let mappedQueriesToHeadings: any = {};
+  let mappedQueriesToHeadings: Record<string, RichHistoryQuery[]> = {};
 
   query.forEach((q) => {
     let heading = createQueryHeading(q, sortOrder);
@@ -264,12 +262,11 @@ export function mapQueriesToHeadings(query: RichHistoryQuery[], sortOrder: SortO
  */
 export function createDatasourcesList() {
   return getDataSourceSrv()
-    .getList()
+    .getList({ mixed: config.featureToggles.exploreMixedDatasource === true })
     .map((dsSettings) => {
       return {
         name: dsSettings.name,
         uid: dsSettings.uid,
-        imgUrl: dsSettings.meta.info.logos.small,
       };
     });
 }

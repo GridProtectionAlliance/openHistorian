@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { AnnotationQuery } from '@grafana/data';
-import { EditorRow, EditorField } from '@grafana/experimental';
+import { EditorField, EditorRow } from '@grafana/experimental';
 import { Input } from '@grafana/ui';
 
 import { ElasticsearchQuery } from '../../types';
@@ -23,9 +23,15 @@ export function ElasticsearchAnnotationsQueryEditor(props: Props) {
         <ElasticSearchQueryField
           value={annotation.target?.query}
           onChange={(query) => {
+            const currentTarget = annotation.target ?? { refId: 'annotation_query' };
+            const newTarget = {
+              ...currentTarget,
+              query,
+            };
+
             onAnnotationChange({
               ...annotation,
-              query,
+              target: newTarget,
             });
           }}
         />

@@ -4,7 +4,7 @@ import tinycolor from 'tinycolor2';
 
 import { GrafanaTheme2 } from '@grafana/data';
 
-import { HeatmapColorOptions, defaultPanelOptions, HeatmapColorMode, HeatmapColorScale } from './models.gen';
+import { HeatmapColorOptions, defaultPanelOptions, HeatmapColorMode, HeatmapColorScale } from './types';
 
 // https://observablehq.com/@d3/color-schemes?collection=@d3/d3-scale-chromatic
 
@@ -97,11 +97,14 @@ export function quantizeScheme(opts: HeatmapColorOptions, theme: GrafanaTheme2):
     }
 
     if (
-      opts.reverse ||
       scheme.invert === 'always' ||
       (scheme.invert === 'dark' && theme.isDark) ||
       (scheme.invert === 'light' && theme.isLight)
     ) {
+      palette.reverse();
+    }
+
+    if (opts.reverse) {
       palette.reverse();
     }
   }

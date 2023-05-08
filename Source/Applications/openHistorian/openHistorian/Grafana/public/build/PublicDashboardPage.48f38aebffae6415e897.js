@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[2613],{77452:(a,s,e)=>{e.r(s),e.d(s,{default:()=>f});e(68404);var u=e(16145),c=e(45916);const f=a=>(0,c.jsx)(u.default,Object.assign({isPublic:!0},a))}}]);
-//# sourceMappingURL=PublicDashboardPage.48f38aebffae6415e897.js.map
