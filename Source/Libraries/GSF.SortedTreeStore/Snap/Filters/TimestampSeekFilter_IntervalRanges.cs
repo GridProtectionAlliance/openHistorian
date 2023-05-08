@@ -92,7 +92,7 @@ namespace GSF.Snap.Filters
                     throw new ArgumentOutOfRangeException("start", "start must be before stop");
                 if (mainInterval < subInterval)
                     throw new ArgumentOutOfRangeException("mainInterval", "must be larger than the subinterval");
-                if (tolerance >= subInterval)
+                if (tolerance > subInterval)
                     throw new ArgumentOutOfRangeException("tolerance", "must be smaller than the subinterval");
 
                 m_start = start;
