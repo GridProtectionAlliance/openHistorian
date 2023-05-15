@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -161,6 +162,9 @@ namespace openHistorian.Adapters
             if (url.StartsWith("avatar/", StringComparison.OrdinalIgnoreCase))
                 return HandleGrafanaAvatarRequest(Request);
 
+            if (url.StartsWith("keycoordinates", StringComparison.OrdinalIgnoreCase))
+                return HandleKeyCoordinatesRequest(Request);
+
             // Proxy all other requests
             SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
 
@@ -179,7 +183,7 @@ namespace openHistorian.Adapters
             if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
             {
                 // HACK: Internet Explorer sometimes applies cached authorization headers to concurrent AJAX requests
-                if (Request.Headers.Authorization != null)
+                if (Request.Headers.Authorization is not null)
                 {
                     // Clone request to allow modification
                     HttpRequestMessage retryRequest = await CloneRequest();
@@ -234,7 +238,7 @@ namespace openHistorian.Adapters
 
         private async Task<HttpRequestMessage> CloneRequest()
         {
-            HttpRequestMessage clone = new HttpRequestMessage(Request.Method, Request.RequestUri)
+            HttpRequestMessage clone = new(Request.Method, Request.RequestUri)
             {
                 Version = Request.Version
             };
@@ -245,16 +249,16 @@ namespace openHistorian.Adapters
             foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
                 clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
-            if (Request.Content != null)
+            if (Request.Content is not null)
             {
-                MemoryStream content = new MemoryStream();
+                MemoryStream content = new();
                 
                 await Request.Content.CopyToAsync(content);
                 content.Position = 0;
                 
                 clone.Content = new StreamContent(content);
 
-                if (Request.Content.Headers != null)
+                if (Request.Content.Headers is not null)
                 {
                     foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Content.Headers)
                         clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
@@ -333,19 +337,19 @@ namespace openHistorian.Adapters
             s_initializationTimeout *= 3;
         #endif
 
-            if (File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
+            if (!File.Exists(grafanaHosting["ServerPath"].ValueAs(DefaultServerPath)))
+                return;
+            
+            s_initializationWaitHandle = new ManualResetEventSlim();
+
+            // Establish a synchronized operation for handling Grafana user synchronizations
+            s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex =>
             {
-                s_initializationWaitHandle = new ManualResetEventSlim();
+                OnStatusMessage($"ERROR: {GetExceptionMessage(ex)}");
+            });
 
-                // Establish a synchronized operation for handling Grafana user synchronizations
-                s_synchronizeUsers = new ShortSynchronizedOperation(SynchronizeUsers, ex =>
-                {
-                    OnStatusMessage($"ERROR: {GetExceptionMessage(ex)}");
-                });
-
-                // Attach to event for notifications of when security context has been refreshed
-                AdoSecurityProvider.SecurityContextRefreshed += AdoSecurityProvider_SecurityContextRefreshed;
-            }
+            // Attach to event for notifications of when security context has been refreshed
+            AdoSecurityProvider.SecurityContextRefreshed += AdoSecurityProvider_SecurityContextRefreshed;
         }
 
         // Static Methods
@@ -374,7 +378,7 @@ namespace openHistorian.Adapters
                 // Test server response by hitting health page
                 dynamic result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}{ServerCheckUrl}").Result;
                 OnStatusMessage(string.Format(DebugMessage, s_baseUrl, result?.ToString() ?? "null"));
-                return result != null;
+                return result is not null;
             }
             catch (Exception ex)
             {
@@ -386,7 +390,7 @@ namespace openHistorian.Adapters
             {
                 // Test server response by hitting health page
                 dynamic result = CallAPIFunction(HttpMethod.Get, $"{s_baseUrl}{ServerCheckUrl}").Result;
-                return result != null;
+                return result is not null;
             }
             catch
             {
@@ -604,7 +608,7 @@ namespace openHistorian.Adapters
             catch (Exception ex)
             {
                 message = ex.Message;
-                return new OrgUserDetail[0];
+                return Array.Empty<OrgUserDetail>();
             }
         }
 
@@ -651,12 +655,12 @@ namespace openHistorian.Adapters
 
         private static async Task<dynamic> CallAPIFunction(HttpMethod method, string url, string content = null, bool responseIsArray = false)
         {
-            HttpRequestMessage request = new HttpRequestMessage(method, url);
+            HttpRequestMessage request = new(method, url);
 
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Add(s_authProxyHeaderName, s_adminUser);
 
-            if ((object)content != null)
+            if (content is not null)
                 request.Content = new StringContent(content, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await s_http.SendAsync(request);
@@ -710,35 +714,33 @@ namespace openHistorian.Adapters
 
         private static Dictionary<string, string[]> StartUserSynchronization(string currentUserName)
         {
-            Dictionary<string, string[]> userRoles = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string[]> userRoles = new(StringComparer.OrdinalIgnoreCase);
 
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            using (UserRoleCache userRoleCache = UserRoleCache.GetCurrentCache())
+            using AdoDataConnection connection = new("systemSettings");
+            using UserRoleCache userRoleCache = UserRoleCache.GetCurrentCache();
+            TableOperations<UserAccount> userAccountTable = new(connection);
+            string[] roles;
+
+            foreach (UserAccount user in userAccountTable.QueryRecords())
             {
-                TableOperations<UserAccount> userAccountTable = new TableOperations<UserAccount>(connection);
-                string[] roles;
+                string userName = user.AccountName;
 
-                foreach (UserAccount user in userAccountTable.QueryRecords())
-                {
-                    string userName = user.AccountName;
+                if (userRoleCache.TryGetUserRole(userName, out roles))
+                    userRoles[userName] = roles;
+            }
 
-                    if (userRoleCache.TryGetUserRole(userName, out roles))
-                        userRoles[userName] = roles;
-                }
+            // Also make sure current user is added since user may have implicit rights based on group
+            if (!string.IsNullOrEmpty(currentUserName))
+            {
+                if (!userRoles.ContainsKey(currentUserName) && userRoleCache.TryGetUserRole(currentUserName, out roles))
+                    userRoles[currentUserName] = roles;
+            }
 
-                // Also make sure current user is added since user may have implicit rights based on group
-                if (!string.IsNullOrEmpty(currentUserName))
-                {
-                    if (!userRoles.ContainsKey(currentUserName) && userRoleCache.TryGetUserRole(currentUserName, out roles))
-                        userRoles[currentUserName] = roles;
-                }
-
-                if (userRoles.Count > 0)
-                {
-                    Interlocked.Exchange(ref s_latestSecurityContext, userRoles);
-                    s_manualSynchronization = true;
-                    s_synchronizeUsers.RunOnceAsync();
-                }
+            if (userRoles.Count > 0)
+            {
+                Interlocked.Exchange(ref s_latestSecurityContext, userRoles);
+                s_manualSynchronization = true;
+                s_synchronizeUsers.RunOnceAsync();
             }
 
             return userRoles;
@@ -820,7 +822,7 @@ namespace openHistorian.Adapters
 
         private static HttpResponseMessage HandleGrafanaLogoutRequest(HttpRequestMessage request)
         {
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Redirect) { RequestMessage = request };
+            HttpResponseMessage response = new(HttpStatusCode.Redirect) { RequestMessage = request };
             Uri requestUri = request.RequestUri, referrerUri = request.Headers.Referrer;
 
             if (referrerUri.AbsolutePath.ToLowerInvariant().Contains("/grafana/"))
@@ -886,9 +888,52 @@ namespace openHistorian.Adapters
             };
         }
 
+        private HttpResponseMessage HandleKeyCoordinatesRequest(HttpRequestMessage request)
+        {
+            string[] parts = request.RequestUri.AbsolutePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            string instanceName = "PPA";
+
+            if (parts.Length > 1)
+                instanceName = parts[parts.Length - 1].Trim();
+
+            if (instanceName.Equals("keycoordinates", StringComparison.OrdinalIgnoreCase))
+                instanceName = "PPA";
+
+            DataSet dataSource = null;
+
+            if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance))
+                dataSource = adapterInstance.DataSource;
+
+            if (dataSource is null)
+                return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                {
+                    RequestMessage = request,
+                    Content = new StringContent($"Failed to find data source for \"{instanceName}\".", Encoding.UTF8, "text/plain")
+                };
+
+            JArray keyCoordinates = new();
+
+            foreach (DataRow row in dataSource.Tables["ActiveMeasurements"].AsEnumerable())
+            {
+                keyCoordinates.Add(JObject.FromObject(new
+                {
+                    key = row["PointTag"].ToNonNullString("UNDEFINED"),
+                    lat = double.Parse(row["Longitude"].ToNonNullString("0.0")),
+                    lon = double.Parse(row["Latitude"].ToNonNullString("0.0")),
+                    name = row["Description"].ToNonNullString()
+                }));
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(keyCoordinates.ToString(), Encoding.UTF8, "application/json")
+            };
+        }
+
         private static HttpResponseMessage HandleGrafanaAvatarRequest(HttpRequestMessage request)
         {
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.MovedPermanently) { RequestMessage = request };
+            HttpResponseMessage response = new(HttpStatusCode.MovedPermanently) { RequestMessage = request };
             Uri uri = request.RequestUri;
 
             response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_avatarResource}");
