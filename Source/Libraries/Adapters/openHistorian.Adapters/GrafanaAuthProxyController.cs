@@ -918,8 +918,8 @@ namespace openHistorian.Adapters
                 keyCoordinates.Add(JObject.FromObject(new
                 {
                     key = row["PointTag"].ToNonNullString("UNDEFINED"),
-                    lat = double.Parse(row["Longitude"].ToNonNullString("0.0")),
-                    lon = double.Parse(row["Latitude"].ToNonNullString("0.0")),
+                    lat = double.Parse(row["Latitude"].ToNonNullString("0.0")),
+                    lon = double.Parse(row["Longitude"].ToNonNullString("0.0")),
                     name = row["Description"].ToNonNullString()
                 }));
             }
