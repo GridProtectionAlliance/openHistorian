@@ -1515,6 +1515,11 @@
             Gets or sets if source prefix should be used for device names.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.UseConfigLabels">
+            <summary>
+            Gets or sets if config labels should be used for phasor label names.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcMessage">
             <summary>
             Gets or sets message to be displayed on the screen when PDC acronym changes.
