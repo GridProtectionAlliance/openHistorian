@@ -22,3 +22,23 @@ SELECT
     CompressionSetting.CompressionMaxTime,
     CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node;
+
+CREATE TABLE EventMarker(
+    ID NUMBER NOT NULL,
+    ParentID Number NULL,
+    Source VARCHAR2(200) NULL,
+    StartTime DATE NULL,
+    StopTime DATE NULL,
+    Notes VARCHAR2(4000) NULL
+);
+
+CREATE UNIQUE INDEX IX_EventMarker_ID ON EventMarker (ID ASC) TABLESPACE openHistorian_INDEX;
+
+ALTER TABLE EventMarker ADD CONSTRAINT PK_EventMarker PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_EventMarker START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_EventMarker BEFORE INSERT ON EventMarker
+    FOR EACH ROW BEGIN SELECT SEQ_EventMarker.nextval INTO :NEW.ID FROM dual;
+END;
+

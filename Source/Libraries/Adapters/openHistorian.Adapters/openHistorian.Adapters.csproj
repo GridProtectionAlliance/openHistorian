@@ -138,6 +138,7 @@
     <Compile Include="Model\IaonActionAdapter.cs" />
     <Compile Include="Model\IaonInputAdapter.cs" />
     <Compile Include="Model\IIaonAdapter.cs" />
+    <Compile Include="Model\EventMarker.cs" />
     <Compile Include="Model\OscEvents.cs" />
     <Compile Include="Model\Runtime.cs" />
     <Compile Include="OscEventLogger.cs" />
