@@ -1,0 +1,188 @@
+﻿@*******************************************************************************************************
+//  EventMarker.cshtml - Gbtc
+//
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  05/24/2023 - C Lackner
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Net.Http
+@using System.Text
+@using GSF.Data.Model
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@using openHistorian
+@using openHistorian.Model
+@inherits ExtendedTemplateBase<AppModel>
+@section StyleSheets {
+    <style>
+        html, body {
+            height: 100%;
+        }
+    </style>
+}
+@{
+    DataContext dataContext = ViewBag.DataContext;
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+
+    string parameter;
+    int parentID;
+
+    if (!parameters.TryGetValue("parentID", out parameter) || !int.TryParse(parameter, out parentID)) {
+        parentID = 0;
+    }
+
+    string parentSource = "N/A";
+
+    if (parentID == 0) {
+        parameters.TryGetValue("source", out parentSource);
+    } else {
+        TableOperations<EventMarker> eventMarkerTable = dataContext.Table<EventMarker>();
+        EventMarker parentRecord = eventMarkerTable.QueryRecordWhere("ID = {0}", parentID);
+
+        if (parentRecord != null) {
+            parentSource = parentRecord.Source;
+        }
+    }
+
+    Layout = "Layout.cshtml";
+    ViewBag.Title = (parentID == 0 ? "Primary " : "") + "Event";
+    ViewBag.ShowSearchFilter = true;
+
+    ViewBag.HeaderColumns = new[]
+    {   //    { "Field", "Label", "Classes" }
+        new[] { "Source", parentID == 0 ? "Source Locations" : "Other Location", "text-left" },
+        new[] { "StartTime", "Start Time", "text-left" },
+        new[] { "StopTime", "Stop Time", "text-left" },
+        new[] { null, parentID == 0 ? "Related Events" : "Primary Events ", "text-center" }
+    };
+
+    ViewBag.BodyRows = BodyRows(parentID, parentSource).ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+}
+@helper BodyRows(int parentID, string parentSource)
+{
+    <td width="20%" class="text-left valign-middle"><button type="button" class="btn btn-link btn-xs" data-bind="text: Source, click: downloadDetails.bind($data)"></button></td>
+    <td width="20%" class="text-left valign-middle" data-bind="text: StartTime"></td>
+    <td width="20%" class="text-left valign-middle" data-bind="text: StopTime"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="html: frequency($data)"></td>
+    <td width="12%" class="text-left valign-middle" data-bind="html: magnitude($data)"></td>
+    <td width="9%" class="text-center valign-middle">
+        <button type="button" class="btn btn-link btn-xs" data-bind="click: openAssociated.bind($data)" hub-dependent>
+        @if (parentID == 0) {
+            <span class="badge" data-bind="html: getAssociatedCount(ID), attr: {id: 'associatedCount' + ID}">0 events</span>
+        }
+        else {
+            @parentSource
+        }
+        </button>
+    </td>
+    <td width="5%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-xs" data-bind="click: viewDashboard.bind($data), enable: $parent.dataHubIsConnected" title="View in Grafana"><span class="glyphicon glyphicon-dashboard"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.editPageRecord, enable: $parent.dataHubIsConnected" title="Edit Notes..."><span class="glyphicon glyphicon-paperclip"></span></button>
+        <button type="button" class="btn btn-xs" data-bind="click: $parent.removePageRecord, enable: $parent.dataHubIsConnected" title="Delete Record"><span class="glyphicon glyphicon-remove"></span></button>
+    </td>
+}
+@helper AddNewEditDialog(DataContext dataContext)
+{
+    <div class="row">
+        <div class="col-md-6">
+            @Raw(dataContext.AddInputField<EventMarker>("Source"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<EventMarker>("StartTime", "datetime"))
+        </div>
+        <div class="col-md-3">
+            @Raw(dataContext.AddInputField<EventMarker>("StopTime", "datetime"))
+        </div>
+    </div>
+    <div class="row">
+        <hr style="margin:0 15px 15px 15px; border-top: 2px solid #ddd"/>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            @Raw(dataContext.AddTextAreaField<EventMarker>("Notes", 8, initialFocus: true))
+        </div>
+    </div>
+
+}
+@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+@section Scripts {
+    <script src="@Resources.Root/Shared/Scripts/moment.js"></script>
+
+    <script>    
+        @Raw(dataContext.RenderViewModelConfiguration<EventMarker, DataHub>(ViewBag, "-StartTime", null, parentID))
+
+        @if (parentID == 0 && !string.IsNullOrWhiteSpace(parentSource)) {
+        <text>
+            $(function() {
+                $("#searchFilter").val("@parentSource");
+                $("#searchFilter").keyup();
+            });
+        </text>
+        }
+
+        function getAssociatedCount(eventID) {
+            if (viewModel.dataHubIsConnected()) {
+                dataHub.queryAssociatedEventCount(eventID).done(function (count) {
+                    $("#associatedCount" + eventID).html(`&nbsp;${count}&nbsp;others&nbsp;`);
+                });
+            }
+
+            return "&nbsp;0&nbsp;others&nbsp;";
+        }
+
+        function openAssociated(record) {
+            if (@parentID === 0) {
+                location.href = `EventMarker.cshtml?parentID=${record.ID}`;
+            } else {
+                location.href = `EventMarker.cshtml?source=${encodeURIComponent("@parentSource")}`;
+            }
+        }
+
+        function viewDashboard(record) {
+            window.open(`@Model.Global.OscDashboard&var-Source=${encodeURIComponent(record.Source)}&from=${moment.utc(record.StartTime, "YYYY-MM-DDTHH:mm:ssZ").valueOf()}&to=${moment.utc(record.StopTime, "YYYY-MM-DDTHH:mm:ssZ").valueOf()}`, '_blank');
+        }
+
+        
+        function downloadDetails(record) {
+            var details = "Event Report\r\n";
+            details += "------------------------\r\n";
+            details += `Source: ${record.Source}\r\n`;
+            details += `Duration: ${record.StartTime} to ${record.StopTime}\r\n\r\n`;
+
+            details += `Notes: ${record.Notes}\r\n`;
+
+            downloadString(details, "text/plain", `EventReport_${record.Source}.txt`);
+        }
+
+        function downloadString(text, fileType, fileName) {
+            const blob = new Blob([text], { type: fileType });
+            const a = document.createElement("a");
+            a.download = fileName;
+            a.href = URL.createObjectURL(blob);
+            a.dataset.downloadurl = [fileType, a.download, a.href].join(":");
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+        }
+    </script>
+}
