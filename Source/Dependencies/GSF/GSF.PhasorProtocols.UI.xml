@@ -697,6 +697,16 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> analog scalars, i.e., adders and multipliers.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.DigitalLabelsPreview">
+            <summary>
+            Gets a tool tip preview of <see cref="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.DigitalLabels"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.AnalogLabelsPreview">
+            <summary>
+            Gets a tool tip preview of <see cref="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.AnalogLabels"/>.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Load(GSF.Data.AdoDataConnection)">
             <summary>
             Retrieves <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
