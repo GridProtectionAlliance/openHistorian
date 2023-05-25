@@ -682,6 +682,68 @@ namespace openHistorian
 
         #endregion
 
+        #region [ EventMarker Table Operations ]
+
+        [RecordOperation(typeof(EventMarker), RecordOperation.QueryRecordCount)]
+        public int QueryEventmarkerCount(int parentID, string filterText)
+        {
+            TableOperations<EventMarker> eventMarkerTable = DataContext.Table<EventMarker>();
+
+            RecordRestriction restriction = (parentID > 0 ?
+                new RecordRestriction("ParentID = {0}", parentID) :
+                new RecordRestriction("ParentID IS NULL")) +
+                eventMarkerTable.GetSearchRestriction(filterText);
+
+            return DataContext.Table<EventMarker>().QueryRecordCount(restriction);
+        }
+
+        [RecordOperation(typeof(EventMarker), RecordOperation.QueryRecords)]
+        public IEnumerable<EventMarker> QueryEventMarker(int parentID, string sortField, bool ascending, int page, int pageSize, string filterText)
+        {
+            TableOperations<EventMarker> eventMarkerTable = DataContext.Table<EventMarker>();
+
+            RecordRestriction restriction = (parentID > 0 ?
+                new RecordRestriction("ParentID = {0}", parentID) :
+                new RecordRestriction("ParentID IS NULL")) +
+                eventMarkerTable.GetSearchRestriction(filterText);
+
+            return DataContext.Table<EventMarker>().QueryRecords(sortField, ascending, page, pageSize, restriction);
+        }
+
+        public int QueryAssociatedEventMarkerCount(int parentID)
+        {
+            return DataContext.Table<EventMarker>().QueryRecordCountWhere("ParentID = {0}", parentID);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(EventMarker), RecordOperation.DeleteRecord)]
+        public void DeleteEventMarker(int id)
+        {
+            DataContext.Table<EventMarker>().DeleteRecord(id);
+        }
+
+        [RecordOperation(typeof(EventMarker), RecordOperation.CreateNewRecord)]
+        public EventMarker NewEventMarker()
+        {
+            return DataContext.Table<EventMarker>().NewRecord();
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(EventMarker), RecordOperation.AddNewRecord)]
+        public void AddNewEventMarker(EventMarker eventMarker)
+        {
+            DataContext.Table<EventMarker>().AddNewRecord(eventMarker);
+        }
+
+        [AuthorizeHubRole("Administrator, Editor")]
+        [RecordOperation(typeof(EventMarker), RecordOperation.UpdateRecord)]
+        public void UpdateEventMarkers(EventMarker eventMarker)
+        {
+            DataContext.Table<EventMarker>().UpdateRecord(eventMarker);
+        }
+
+        #endregion
+
         #region [ Historian Table Operations ]
 
         [RecordOperation(typeof(Historian), RecordOperation.QueryRecordCount)]
