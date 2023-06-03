@@ -115,6 +115,8 @@
     <ForceBuild>$(ForceBuild)</ForceBuild>
     <!-- Skips the versioning process and just executes build steps. -->
     <SkipVersioning>$(SkipVersioning)</SkipVersioning>
+    <!-- Pushes changes into a branch named after the version. -->
+    <PushToVersionBranch>$(PushToVersionBranch)</PushToVersionBranch>
     <!-- Prevents the build script from pushing to the remote repository. -->
     <DoNotPush>$(DoNotPush)</DoNotPush>
     <!--Executes build without running unit tests when true.-->
@@ -488,9 +490,13 @@
   <Target Name="BeforePushToServer"/>
 
   <Target Name="CorePushToServer" Condition="'$(DoNotPush)' == 'false' And '$(SkipVersioning)' != 'true'">
+    <PropertyGroup>
+      <RemoteBranch>$(GitBranch)</RemoteBranch>
+      <RemoteBranch Condition="'$(PushToVersionBranch)' == 'true'">$(BuildTag)</RemoteBranch>
+    </PropertyGroup>
     <!-- Commit all of the pending changes. -->
     <Message Text="Pushing changes to Git server..." />
-    <Exec Command="%22$(GitClient)%22 push origin $(GitBranch):$(GitBranch)" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"  />
+    <Exec Command="%22$(GitClient)%22 push origin $(GitBranch):$(RemoteBranch)" WorkingDirectory="$(LocalFolder)" ContinueOnError="true"  />
   </Target>
 
   <Target Name="AfterPushToServer"/>

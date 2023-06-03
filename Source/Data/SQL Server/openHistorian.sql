@@ -3182,3 +3182,21 @@ SELECT
     CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node
 GO
+
+
+CREATE TABLE [dbo].[EventMarker](
+    [ID] [int] IDENTITY(1,1) NOT NULL,
+    [ParentID] [int] NULL,
+    [Source] [varchar](200) NULL,
+    [StartTime] [datetime] NULL,
+    [StopTime] [datetime] NULL,
+    [Notes] [varchar](max) NULL,
+    CONSTRAINT [PK_EventMarker] PRIMARY KEY CLUSTERED
+    ( [ID] ASC ) WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+)
+ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[EventMarker] WITH CHECK ADD CONSTRAINT [FK_EventMarker_EventMarker] FOREIGN KEY([ParentID])
+REFERENCES [dbo].[EventMarker] ([ID])
+GO

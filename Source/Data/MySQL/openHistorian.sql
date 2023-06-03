@@ -1888,3 +1888,13 @@ SELECT
     CompressionSetting.CompressionMaxTime,
     CompressionSetting.CompressionLimit
 FROM CompressionSetting CROSS JOIN Node;
+
+CREATE TABLE EventMarker(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    ParentID INTEGER NULL,
+    Source VARCHAR(200) NULL,
+    StartTime DATETIME NULL,
+    StopTime DATETIME NULL,
+    Notes VARCHAR(max) NULL,
+    CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID) ON DELETE CASCADE ON UPDATE CASCADE
+);
