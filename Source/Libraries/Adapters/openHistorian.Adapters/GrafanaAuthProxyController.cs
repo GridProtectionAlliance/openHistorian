@@ -37,6 +37,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -127,6 +128,7 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyRoot(CancellationToken cancellationToken)
         {
