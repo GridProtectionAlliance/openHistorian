@@ -892,9 +892,25 @@ namespace openHistorian.Adapters
         {
             string[] parts = request.RequestUri.AbsolutePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             string instanceName = "PPA";
+            string source = "ActiveMeasurements";
+            string filter = "";
 
             if (parts.Length > 1)
                 instanceName = parts[parts.Length - 1].Trim();
+
+            if (parts.Length > 2)
+                source = parts[parts.Length - 2].Trim();
+
+            if (parts.Length > 3)
+                filter = parts[parts.Length - 3].Trim();
+
+            if (string.IsNullOrEmpty(filter))
+            {
+                if (source.Equals("ActiveMeasurements", StringComparison.OrdinalIgnoreCase))
+                    filter = "SignalType <> 'STAT'";
+                else if (source.Equals("MeasurementDetail", StringComparison.OrdinalIgnoreCase))
+                    filter = "SignalAcronym <> 'STAT'";
+            }
 
             if (instanceName.Equals("keycoordinates", StringComparison.OrdinalIgnoreCase))
                 instanceName = "PPA";
@@ -911,9 +927,25 @@ namespace openHistorian.Adapters
                     Content = new StringContent($"Failed to find data source for \"{instanceName}\".", Encoding.UTF8, "text/plain")
                 };
 
+            DataRow[] rows;
+
+            if (dataSource.Tables.Contains(source))
+            {
+                rows = string.IsNullOrEmpty(filter) ? 
+                    dataSource.Tables[source].AsEnumerable().ToArray() : 
+                    dataSource.Tables[source].Select(filter);
+            }
+            else
+            {
+                using AdoDataConnection connection = new("systemSettings");
+                rows = string.IsNullOrEmpty(filter) ?
+                    connection.RetrieveData($"SELECT * FROM {source}").AsEnumerable().ToArray() :
+                    connection.RetrieveData($"SELECT * FROM {source} WHERE {filter}").AsEnumerable().ToArray();
+            }
+
             JArray keyCoordinates = new();
 
-            foreach (DataRow row in dataSource.Tables["ActiveMeasurements"].AsEnumerable())
+            foreach (DataRow row in rows)
             {
                 keyCoordinates.Add(JObject.FromObject(new
                 {
