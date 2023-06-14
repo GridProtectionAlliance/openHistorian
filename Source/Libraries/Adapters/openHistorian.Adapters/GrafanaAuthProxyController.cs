@@ -142,6 +142,7 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyPage(string url, CancellationToken cancellationToken)
         {
