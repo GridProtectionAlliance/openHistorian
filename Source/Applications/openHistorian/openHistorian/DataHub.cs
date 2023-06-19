@@ -21,6 +21,8 @@
 //
 //******************************************************************************************************
 
+// Ignore Spelling: json
+
 using GSF;
 using GSF.COMTRADE;
 using GSF.Data.Model;
@@ -40,8 +42,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF.IO;
 using Measurement = openHistorian.Model.Measurement;
 
 namespace openHistorian
@@ -1217,6 +1221,35 @@ namespace openHistorian
         /// <returns><c>true</c> if completed; otherwise, <c>false</c>.</returns>
         public bool CheckIfUpdateCOMTRADECountersIsCompleted(uint operationHandle) =>
             FeedbackController.CheckIfUpdateCOMTRADECountersIsCompleted(operationHandle.ToString());
+
+        /// <summary>
+        /// Saves JSON content to a local file path.
+        /// </summary>
+        /// <param name="targetFilePath">Target directory or file path for JSON file.</param>
+        /// <param name="json">JSON file content.</param>
+        /// <exception cref="SecurityException">Cannot save JSON file outside local file path.</exception>
+        /// <returns>URL to download filename.</returns>
+        public string SaveJSONFile(string targetFilePath, string json)
+        {
+            string localPath = FilePath.GetAbsolutePath("");
+            targetFilePath = FilePath.GetAbsolutePath(targetFilePath);
+
+            // Prevent file saves outside local file path
+            if (!targetFilePath.StartsWith(localPath))
+                throw new SecurityException("Path access error: Cannot save JSON file outside local file path.");
+
+            if (string.IsNullOrEmpty(Path.GetFileName(targetFilePath)) || string.IsNullOrEmpty(Path.GetExtension(targetFilePath)))
+                targetFilePath = Path.Combine(targetFilePath, $"{DateTime.Now:s}KeyCoordMerge.json".Replace(':', '.'));
+
+            string directory = Path.GetDirectoryName(targetFilePath);
+
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory!);
+
+            File.WriteAllText(targetFilePath, json);
+
+            return targetFilePath.Substring(localPath.Length + 8).Replace('\\', '/');
+        }
 
         #endregion
     }

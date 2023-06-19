@@ -352,6 +352,7 @@
     <None Include="wwwroot\GraphMeasurements.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <Content Include="wwwroot\IaonGraph.cshtml" />
+    <Content Include="wwwroot\Download.cshtml" />
     <None Include="wwwroot\Help.cshtml" />
     <Content Include="wwwroot\UnbalanceReport.cshtml" />
     <None Include="wwwroot\Index.cshtml" />

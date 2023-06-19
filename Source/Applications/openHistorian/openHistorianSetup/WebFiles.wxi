@@ -21,6 +21,12 @@
   <Component Id="Devices_cshtml">
     <File Id="Devices.cshtml" Name="Devices.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Devices.cshtml" />
   </Component>
+  <Component Id="Download_cshtml">
+    <File Id="Download.cshtml" Name="Download.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Download.cshtml" />
+  </Component>
+  <Component Id="EventMarker_cshtml">
+    <File Id="EventMarker.cshtml" Name="EventMarker.cshtml" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\EventMarker.cshtml" />
+  </Component>
   <Component Id="ExportDataHandler_ashx">
     <File Id="ExportDataHandler.ashx" Name="ExportDataHandler.ashx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\ExportDataHandler.ashx" />
   </Component>
