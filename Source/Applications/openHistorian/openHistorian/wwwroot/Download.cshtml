@@ -32,7 +32,7 @@
     Uri requestUri = request.RequestUri;
 }
 <label for="downloadPath">Download Path:</label>
-<input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="wwwroot\public\gazzeteer">
+<input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="Grafana\public\gazetteer">
 <br />
 <table id="urlTable" class="table table-striped">
     <thead>
@@ -62,22 +62,22 @@
 
     $(document).ready(function () {
         // Load previous settings from local storage
-        const savedDownloadPath = localStorage.getItem("downloadPath") || "wwwroot\\public\\gazzeteer";
-        const savedRows = JSON.parse(localStorage.getItem("rows") || "[]");
+        const savedDownloadPath = localStorage.getItem('downloadPath') || 'Grafana\\public\\gazetteer';
+        const savedRows = JSON.parse(localStorage.getItem('rows') || '[]');
 
         $('#downloadPath').val(savedDownloadPath);
 
         if (savedRows.length == 0) {
-            savedRows.push({ url: "", checked: true });
+            savedRows.push({ url: '', checked: true });
         }
 
         for (const row of savedRows) {
-            $('#urlTable > tbody:last-child').append(String.format(urlRow, row.checked ? " checked" : "", row.url));
+            $('#urlTable > tbody:last-child').append(String.format(urlRow, row.checked ? ' checked' : '', row.url));
         }
 
         // Add URL button
         $('#addUrl').click(function () {
-            $('#urlTable > tbody:last-child').append(String.format(urlRow, "", ""));
+            $('#urlTable > tbody:last-child').append(String.format(urlRow, '', ''));
         });
 
         // Remove URL button
@@ -88,7 +88,7 @@
         // Download JSON button
         $('#downloadJson').click(function () {
             if (!hubIsConnected) {
-                showErrorMessage("Cannot download JSON, not connected to openHistorian server.", -1);
+                showErrorMessage('Cannot download JSON, not connected to openHistorian server.', -1);
                 return;
             }
 
@@ -130,7 +130,7 @@
                                 showErrorMessage(`Failed to copy download URL to clipboard. Copy manually from link shown below.`, -1, true);
                         })
                         .fail(function (error) {
-                            showErrorMessage("Failed to download merged JSON file: " + error, null, true);
+                            showErrorMessage(`Failed to download JSON file: ${error}`, null, true);
                         });
 
                         // The following will download merged JSON file directly from browser:
@@ -141,6 +141,9 @@
                         //link.download = 'merged.json';
                         //link.click();
                     }
+                })
+                .fail(function (_, error) {
+                    showErrorMessage(`Failed to download merged JSON file: ${error}`, null, true);
                 });
             });
         });
@@ -151,38 +154,38 @@
 
             $('#urlTable > tbody > tr').each(function (i, elem) {
                 let url = $(this).children().children('.urlInput').val();
-                let checked = $(this).children().children('.downloadCheckbox').is(":checked");
+                let checked = $(this).children().children('.downloadCheckbox').is(':checked');
                 rows.push({ url: url, checked: checked });
             });
 
-            localStorage.setItem("rows", JSON.stringify(rows));
-            localStorage.setItem("downloadPath", $('#downloadPath').val());
+            localStorage.setItem('rows', JSON.stringify(rows));
+            localStorage.setItem('downloadPath', $('#downloadPath').val());
         });
     });
 
     function copyToClipboard(text) {
         let result = false;
 
-        if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-            const textarea = document.createElement("textarea");
+        if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+            const textarea = document.createElement('textarea');
 
             textarea.textContent = text;
-            textarea.style.position = "fixed";
+            textarea.style.position = 'fixed';
             document.body.appendChild(textarea);
             textarea.select();
 
             try {
-                result = document.execCommand("copy");
+                result = document.execCommand('copy');
             }
             catch (ex) {
-                console.warn("Copy to clipboard failed.", ex);
+                console.warn('Copy to clipboard failed.', ex);
             }
             finally {
                 document.body.removeChild(textarea);
             }
         }
         else {
-            console.warn("Clipboard function unavailable.");
+            console.warn('Clipboard function unavailable.');
         }
 
         return result;
