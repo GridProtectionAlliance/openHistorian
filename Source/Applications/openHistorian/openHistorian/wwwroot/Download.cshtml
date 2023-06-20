@@ -19,7 +19,7 @@
 //  06/13/2023 - J. Ritchie Carroll
 //       Generated original version of source code.
 //
-    //*****************************************************************************************************@
+//*****************************************************************************************************@
 @using System
 @using System.Net.Http
 @using openHistorian.Model
@@ -121,7 +121,7 @@
                         showInfoMessage(`Downloading merged JSON file to "${downloadPath}"...`);
 
                         dataHub.saveJSONFile(downloadPath, JSON.stringify(merged)).done(function (downloadUrl) {
-                            downloadUrl = '@(requestUri.Scheme + "://" + requestUri.Host + ":" + requestUri.Port)' + downloadUrl;
+                            downloadUrl = `@(requestUri.Scheme + "://" + requestUri.Host + ":" + requestUri.Port)'${downloadUrl}`;
                             $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}">${downloadUrl}</a>`);
 
                             if (copyToClipboard(downloadUrl))
