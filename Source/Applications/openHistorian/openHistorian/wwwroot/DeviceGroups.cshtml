@@ -28,9 +28,58 @@
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets {
-    <style>
+<style>
         html, body {
             height: 100%;
+        }
+
+        /* Adjust fill page height for post table message */
+        .fill-height {
+            height: calc(100% - 155px);
+            height: -o-calc(100% - 155px);
+            height: -webkit-calc(100% - 155px);
+            height: -moz-calc(100% - 155px);
+        }
+
+        .fill-height-one-message {
+            height: calc(100% - 228px);
+            height: -o-calc(100% - 228px);
+            height: -webkit-calc(100% - 228px);
+            height: -moz-calc(100% - 228px);
+        }
+
+        .fill-height-two-messages {
+            height: calc(100% - 300px);
+            height: -o-calc(100% - 300px);
+            height: -webkit-calc(100% - 300px);
+            height: -moz-calc(100% - 300px);
+        }
+
+        .fill-height-with-search {
+            height: calc(100% - 189px);
+            height: -o-calc(100% - 189px);
+            height: -webkit-calc(100% - 189px);
+            height: -moz-calc(100% - 189px);
+        }
+
+        .fill-height-one-message-with-search {
+            height: calc(100% - 262px);
+            height: -o-calc(100% - 262px);
+            height: -webkit-calc(100% - 262px);
+            height: -moz-calc(100% - 262px);
+        }
+
+        .fill-height-two-messages-with-search {
+            height: calc(100% - 334px);
+            height: -o-calc(100% - 334px);
+            height: -webkit-calc(100% - 334px);
+            height: -moz-calc(100% - 334px);
+        }
+
+        #deviceGroupDetails {
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
         }
     </style>
 }
@@ -211,6 +260,17 @@
             </div>
         </div>
     </div>
+</div>
+<br/>
+<div id="deviceGroupDetails">
+    Defined groups can be used in Grafana queries using the <code>DeviceGroupsMeasurements</code> table instead of the <code>ActiveMeasurements</code> table.<br />
+    The <code>DeviceGroupsMeasurements</code> table has all the same fields as the <code>ActiveMeasurements</code> table, but adds the following fields:<br />
+    <ul>
+        <li><code>DeviceGroup</code> (string): device group acronym</li>
+        <li><code>DeviceGroupName</code> (string): free form device group name</li>
+        <li><code>DeviceGroupID</code> (int): device group record ID</li>
+        <li><code>DeviceGroupClass</code> (string): device group class</li>
+    </ul>
 </div>
 @section Scripts {
     <script>
