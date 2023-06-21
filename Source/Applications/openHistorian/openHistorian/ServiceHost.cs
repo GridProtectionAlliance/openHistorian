@@ -205,7 +205,7 @@ namespace openHistorian
             const string AnonymousApiFeedBackExpression = "^/api/Feedback/";
             const string AnonymousGrafanaKeyCoordinatesExpression = "^/grafana/keycoordinates";
             const string OldGrafanaAuthFailExcludeExpression = "^/grafana(?!/api/).*$";
-            const string NewGrafanaAuthFailExcludeExpression = "^/grafana(?!/(api/|keycoordinates).*$";
+            const string NewGrafanaAuthFailExcludeExpression = "^/grafana(?!/(api/|keycoordinates)).*$";
             const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|" + AnonymousApiFeedBackExpression + "|^/favicon.ico$";
             const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|" + NewGrafanaAuthFailExcludeExpression;
 
@@ -293,39 +293,34 @@ namespace openHistorian
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
-            Model = new AppModel
-            {
-                Global =
-                {
-                    CompanyName = systemSettings["CompanyName"].Value,
-                    CompanyAcronym = systemSettings["CompanyAcronym"].Value,
-                    NodeID = Guid.Parse(systemSettings["NodeID"].Value),
-                    SubscriptionConnectionString = systemSettings["SubscriptionConnectionString"].Value,
-                    ApplicationName = "openHistorian",
-                    ApplicationDescription = "openHistorian System",
-                    ApplicationKeywords = "open source, utility, software, time-series, archive",
-                    DateFormat = systemSettings["DateFormat"].Value,
-                    TimeFormat = systemSettings["TimeFormat"].Value,
-                    PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value,
-                    PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value,
-                    BootstrapTheme = systemSettings["BootstrapTheme"].Value,
-                    WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value),
-                    GrafanaServerPath = grafanaHosting["ServerPath"].Value,
-                    GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath),
-                    DefaultCorsOrigins = systemSettings["DefaultCorsOrigins"].Value,
-                    DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value,
-                    DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value,
-                    DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true),
-                    NominalFrequency = systemSettings["NominalFrequency"].ValueAsInt32(60),
-                    DefaultCalculationLagTime = systemSettings["DefaultCalculationLagTime"].ValueAsDouble(6.0),
-                    DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0),
-                    DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30),
-                    SystemName = systemSettings["SystemName"].Value,
-                    OscDashboard = systemSettings["OscDashboard"].Value
-                }
-            };
-
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            Model = new AppModel();
+            Model.Global.CompanyName = systemSettings["CompanyName"].Value;
+            Model.Global.CompanyAcronym = systemSettings["CompanyAcronym"].Value;
+            Model.Global.NodeID = Guid.Parse(systemSettings["NodeID"].Value);
+            Model.Global.SubscriptionConnectionString = systemSettings["SubscriptionConnectionString"].Value;
+            Model.Global.ApplicationName = "openHistorian";
+            Model.Global.ApplicationDescription = "openHistorian System";
+            Model.Global.ApplicationKeywords = "open source, utility, software, time-series, archive";
+            Model.Global.DateFormat = systemSettings["DateFormat"].Value;
+            Model.Global.TimeFormat = systemSettings["TimeFormat"].Value;
             Model.Global.DateTimeFormat = $"{Model.Global.DateFormat} {Model.Global.TimeFormat}";
+            Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
+            Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
+            Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
+            Model.Global.WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value);
+            Model.Global.GrafanaServerPath = grafanaHosting["ServerPath"].Value;
+            Model.Global.GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath);
+            Model.Global.DefaultCorsOrigins = systemSettings["DefaultCorsOrigins"].Value;
+            Model.Global.DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value;
+            Model.Global.DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value;
+            Model.Global.DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true);
+            Model.Global.NominalFrequency = systemSettings["NominalFrequency"].ValueAsInt32(60);
+            Model.Global.DefaultCalculationLagTime = systemSettings["DefaultCalculationLagTime"].ValueAsDouble(6.0);
+            Model.Global.DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0);
+            Model.Global.DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30);
+            Model.Global.SystemName = systemSettings["SystemName"].Value;
+            Model.Global.OscDashboard = systemSettings["OscDashboard"].Value;
 
             static string removeTrailingZeroRevision(string version) =>
                 version.EndsWith(".0") ? version.Substring(0, version.Length - 2) : version;
@@ -805,8 +800,11 @@ namespace openHistorian
                 return;
             }
 
-            ClientInfo clientInfo = new();
-            clientInfo.ClientID = clientID;
+            ClientInfo clientInfo = new()
+            {
+                ClientID = clientID
+            };
+
             clientInfo.SetClientUser(principal);
 
             ClientRequestInfo requestInfo = new(clientInfo, request);
