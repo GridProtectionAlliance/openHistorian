@@ -203,8 +203,11 @@ namespace openHistorian
 
             // Define set of default anonymous web resources for this site
             const string AnonymousApiFeedBackExpression = "^/api/Feedback/";
+            const string AnonymousGrafanaKeyCoordinatesExpression = "^/grafana/keycoordinates";
+            const string OldGrafanaAuthFailExcludeExpression = "^/grafana(?!/api/).*$";
+            const string NewGrafanaAuthFailExcludeExpression = "^/grafana(?!/(api/|keycoordinates).*$";
             const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|" + AnonymousApiFeedBackExpression + "|^/favicon.ico$";
-            const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|^/grafana(?!/api/).*$";
+            const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|" + NewGrafanaAuthFailExcludeExpression;
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
@@ -242,44 +245,87 @@ namespace openHistorian
             systemSettings.Add("SystemName", "", "Name of system that will be prefixed to system level tags, when defined. Value should follow tag naming conventions, e.g., no spaces and all upper case.");
             systemSettings.Add("OscDashboard", "/grafana/d/eL8vgPHGi/mas-band-energy-detail?orgId=1", "URL of associated oscillation dashboard");
 
-            // Ensure "^/api/Feedback" exists in AnonymousResourceExpression
+            bool allowGrafanaKeyCoordinates = !string.IsNullOrWhiteSpace(systemSettings["DefaultCorsOrigins"].ValueAs(""));
+
+            // Ensure OH specific anonymous expressions exists in AnonymousResourceExpression
             string anonymousResourceExpression = systemSettings["AnonymousResourceExpression"].Value;
+            bool anonymousResourceExpressionUpdated = false;
 
             if (!anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousApiFeedBackExpression.ToLowerInvariant()))
             {
-                systemSettings["AnonymousResourceExpression"].Update($"{AnonymousApiFeedBackExpression}|{anonymousResourceExpression}");
+                anonymousResourceExpression = $"{AnonymousApiFeedBackExpression}|{anonymousResourceExpression}";
+                anonymousResourceExpressionUpdated = true;
+            }
+
+            if (allowGrafanaKeyCoordinates && !anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousGrafanaKeyCoordinatesExpression.ToLowerInvariant()))
+            {
+                anonymousResourceExpression = $"{AnonymousGrafanaKeyCoordinatesExpression}|{anonymousResourceExpression}";
+                anonymousResourceExpressionUpdated = true;
+            }
+
+            if (anonymousResourceExpressionUpdated)
+            {
+                systemSettings["AnonymousResourceExpression"].Update(anonymousResourceExpression);
+                ConfigurationFile.Current.Save();
+            }
+
+            // Ensure OH specific authentication failure expressions exists in AuthFailureRedirectResourceExpression
+            string authFailureRedirectResourceExpression = systemSettings["AuthFailureRedirectResourceExpression"].Value;
+            bool authFailureRedirectResourceExpressionUpdated = false;
+
+            if (authFailureRedirectResourceExpression.ToLowerInvariant().Contains(OldGrafanaAuthFailExcludeExpression.ToLowerInvariant()))
+            {
+                authFailureRedirectResourceExpression = authFailureRedirectResourceExpression.Replace(OldGrafanaAuthFailExcludeExpression, NewGrafanaAuthFailExcludeExpression);
+                authFailureRedirectResourceExpressionUpdated = true;
+            }
+
+            if (!anonymousResourceExpression.ToLowerInvariant().Contains(NewGrafanaAuthFailExcludeExpression.ToLowerInvariant()))
+            {
+                authFailureRedirectResourceExpression = $"{authFailureRedirectResourceExpression}|{NewGrafanaAuthFailExcludeExpression}";
+                authFailureRedirectResourceExpressionUpdated = true;
+            }
+
+            if (authFailureRedirectResourceExpressionUpdated)
+            {
+                systemSettings["AuthFailureRedirectResourceExpression"].Update(authFailureRedirectResourceExpression);
                 ConfigurationFile.Current.Save();
             }
 
             DefaultWebPage = systemSettings["DefaultWebPage"].Value;
 
-            Model = new AppModel();
-            Model.Global.CompanyName = systemSettings["CompanyName"].Value;
-            Model.Global.CompanyAcronym = systemSettings["CompanyAcronym"].Value;
-            Model.Global.NodeID = Guid.Parse(systemSettings["NodeID"].Value);
-            Model.Global.SubscriptionConnectionString = systemSettings["SubscriptionConnectionString"].Value;
-            Model.Global.ApplicationName = "openHistorian";
-            Model.Global.ApplicationDescription = "openHistorian System";
-            Model.Global.ApplicationKeywords = "open source, utility, software, time-series, archive";
-            Model.Global.DateFormat = systemSettings["DateFormat"].Value;
-            Model.Global.TimeFormat = systemSettings["TimeFormat"].Value;
+            Model = new AppModel
+            {
+                Global =
+                {
+                    CompanyName = systemSettings["CompanyName"].Value,
+                    CompanyAcronym = systemSettings["CompanyAcronym"].Value,
+                    NodeID = Guid.Parse(systemSettings["NodeID"].Value),
+                    SubscriptionConnectionString = systemSettings["SubscriptionConnectionString"].Value,
+                    ApplicationName = "openHistorian",
+                    ApplicationDescription = "openHistorian System",
+                    ApplicationKeywords = "open source, utility, software, time-series, archive",
+                    DateFormat = systemSettings["DateFormat"].Value,
+                    TimeFormat = systemSettings["TimeFormat"].Value,
+                    PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value,
+                    PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value,
+                    BootstrapTheme = systemSettings["BootstrapTheme"].Value,
+                    WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value),
+                    GrafanaServerPath = grafanaHosting["ServerPath"].Value,
+                    GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath),
+                    DefaultCorsOrigins = systemSettings["DefaultCorsOrigins"].Value,
+                    DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value,
+                    DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value,
+                    DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true),
+                    NominalFrequency = systemSettings["NominalFrequency"].ValueAsInt32(60),
+                    DefaultCalculationLagTime = systemSettings["DefaultCalculationLagTime"].ValueAsDouble(6.0),
+                    DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0),
+                    DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30),
+                    SystemName = systemSettings["SystemName"].Value,
+                    OscDashboard = systemSettings["OscDashboard"].Value
+                }
+            };
+
             Model.Global.DateTimeFormat = $"{Model.Global.DateFormat} {Model.Global.TimeFormat}";
-            Model.Global.PasswordRequirementsRegex = securityProvider["PasswordRequirementsRegex"].Value;
-            Model.Global.PasswordRequirementsError = securityProvider["PasswordRequirementsError"].Value;
-            Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
-            Model.Global.WebRootPath = FilePath.GetAbsolutePath(systemSettings["WebRootPath"].Value);
-            Model.Global.GrafanaServerPath = grafanaHosting["ServerPath"].Value;
-            Model.Global.GrafanaServerInstalled = File.Exists(Model.Global.GrafanaServerPath);
-            Model.Global.DefaultCorsOrigins = systemSettings["DefaultCorsOrigins"].Value;
-            Model.Global.DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value;
-            Model.Global.DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value;
-            Model.Global.DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true);
-            Model.Global.NominalFrequency = systemSettings["NominalFrequency"].ValueAsInt32(60);
-            Model.Global.DefaultCalculationLagTime = systemSettings["DefaultCalculationLagTime"].ValueAsDouble(6.0);
-            Model.Global.DefaultCalculationLeadTime = systemSettings["DefaultCalculationLeadTime"].ValueAsDouble(3.0);
-            Model.Global.DefaultCalculationFramesPerSecond = systemSettings["DefaultCalculationFramesPerSecond"].ValueAsInt32(30);
-            Model.Global.SystemName = systemSettings["SystemName"].Value;
-            Model.Global.OscDashboard = systemSettings["OscDashboard"].Value;
 
             static string removeTrailingZeroRevision(string version) =>
                 version.EndsWith(".0") ? version.Substring(0, version.Length - 2) : version;
