@@ -1248,7 +1248,7 @@ namespace openHistorian
 
             File.WriteAllText(targetFilePath, json);
 
-            return targetFilePath.Substring(localPath.Length + 8).Replace('\\', '/');
+            return targetFilePath.Substring(localPath.Length).Replace('\\', '/');
         }
 
         #endregion
