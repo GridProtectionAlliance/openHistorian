@@ -27,9 +27,10 @@
 @inherits TemplateBase<AppModel>
 @{
     Layout = "Layout.cshtml";
-    ViewBag.Title = "JSON Downloader";
+    ViewBag.Title = "JSON Merge and Download";
     HttpRequestMessage request = ViewBag.Request;
     Uri requestUri = request.RequestUri;
+    string requestRoot = requestUri.Scheme + "://{0}:" + requestUri.Port;
 }
 <label for="downloadPath">Download Path:</label>
 <input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="Grafana\public\gazetteer">
@@ -46,7 +47,7 @@
 </table>
 <button id="addUrl" class="btn btn-primary">Add URL</button>
 <button id="removeUrl" class="btn btn-danger">Remove URL</button>
-<button id="downloadJson" class="btn btn-success pull-right" hub-dependent>Download JSON</button>
+<button id="executeJsonOp" class="btn btn-success pull-right" hub-dependent>Merge &amp; Download</button>
 <br /><br />
 <div id="downloadUrl"></div>
 <script>
@@ -60,6 +61,19 @@
             </td>
         </tr>`;
 
+    function addUrlRow(checked, url) {
+        $('#urlTable > tbody:last-child').append(String.format(urlRow, checked ? ' checked' : '', url));
+
+        const lastInput = $('#urlTable .urlInput:last');
+
+        lastInput.blur(function () {
+            const url = lastInput.val();
+
+            if (!url.startsWith('http'))
+                lastInput.val(String.format('@requestRoot/grafana/KeyCoordinates', url));
+        });
+    }
+
     $(document).ready(function () {
         // Load previous settings from local storage
         const savedDownloadPath = localStorage.getItem('downloadPath') || 'Grafana\\public\\gazetteer';
@@ -67,17 +81,15 @@
 
         $('#downloadPath').val(savedDownloadPath);
 
-        if (savedRows.length == 0) {
+        if (savedRows.length === 0)
             savedRows.push({ url: '', checked: true });
-        }
 
-        for (const row of savedRows) {
-            $('#urlTable > tbody:last-child').append(String.format(urlRow, row.checked ? ' checked' : '', row.url));
-        }
+        for (const row of savedRows)
+            addUrlRow(row.checked, row.url);
 
         // Add URL button
         $('#addUrl').click(function () {
-            $('#urlTable > tbody:last-child').append(String.format(urlRow, '', ''));
+            addUrlRow(false, '');
         });
 
         // Remove URL button
@@ -85,25 +97,25 @@
             $('#urlTable > tbody:last-child').children().last().remove();
         });
 
-        // Download JSON button
-        $('#downloadJson').click(function () {
+        // Merge / Download JSON button
+        $('#executeJsonOp').click(function () {
             if (!hubIsConnected) {
-                showErrorMessage('Cannot download JSON, not connected to openHistorian server.', -1);
+                showErrorMessage('Cannot save merged / downloaded JSON data, not connected to openHistorian server.', -1);
                 return;
             }
 
             const downloadCount = $('.downloadCheckbox:checked').length;
 
-            if (downloadCount == 0) {
+            if (downloadCount === 0) {
                 alert('No URLs selected for download.');
                 return;
             }
 
-            let merged = [];
-            let keysSeen = {}; // Map to keep track of keys we've already seen
+            const merged = [];
+            const keysSeen = {}; // Map to keep track of keys we've already seen
 
             $('.downloadCheckbox:checked').each(function (i, elem) {
-                let url = $(this).parent().siblings().children('.urlInput').val();
+                const url = $(this).parent().siblings().children('.urlInput').val();
 
                 $.getJSON(url, function (data) {
                     // Only add data to merged array if its key hasn't been seen before
@@ -114,15 +126,15 @@
                         }
                     }
 
-                    if (i == downloadCount - 1) {
+                    if (i === downloadCount - 1) {
                         // After all JSON content is downloaded, save it locally
-                        let downloadPath = $('#downloadPath').val();
+                        const downloadPath = $('#downloadPath').val();
 
                         showInfoMessage(`Downloading merged JSON file to "${downloadPath}"...`);
 
                         dataHub.saveJSONFile(downloadPath, JSON.stringify(merged)).done(function (downloadUrl) {
-                            downloadUrl = `@(requestUri.Scheme + "://" + requestUri.Host + ":" + requestUri.Port)'${downloadUrl}`;
-                            $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}">${downloadUrl}</a>`);
+                            downloadUrl = `@string.Format(requestRoot, requestUri.Host)${downloadUrl}`;
+                            $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}" target="_blank">${downloadUrl}</a>`);
 
                             if (copyToClipboard(downloadUrl))
                                 showInfoMessage(`JSON download succeeded, URL of downloaded file copied to clipboard.`, -1, true);
@@ -143,18 +155,18 @@
                     }
                 })
                 .fail(function (_, error) {
-                    showErrorMessage(`Failed to download merged JSON file: ${error}`, null, true);
+                    showErrorMessage(`Failed to download merged JSON file from "${url}": ${error}`, null, true);
                 });
             });
         });
 
         // Save settings in local storage when user leaves the page
         $(window).on('beforeunload', function () {
-            let rows = [];
+            const rows = [];
 
             $('#urlTable > tbody > tr').each(function (i, elem) {
-                let url = $(this).children().children('.urlInput').val();
-                let checked = $(this).children().children('.downloadCheckbox').is(':checked');
+                const url = $(this).children().children('.urlInput').val();
+                const checked = $(this).children().children('.downloadCheckbox').is(':checked');
                 rows.push({ url: url, checked: checked });
             });
 
