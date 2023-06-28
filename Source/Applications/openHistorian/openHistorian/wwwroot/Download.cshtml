@@ -27,56 +27,264 @@
 @inherits TemplateBase<AppModel>
 @{
     Layout = "Layout.cshtml";
-    ViewBag.Title = "JSON Merge and Download";
+    ViewBag.Title = "JSON Download and Merge";
     HttpRequestMessage request = ViewBag.Request;
     Uri requestUri = request.RequestUri;
     string requestRoot = requestUri.Scheme + "://{0}:" + requestUri.Port;
 }
-<label for="downloadPath">Download Path:</label>
-<input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="Grafana\public\gazetteer">
+@section StyleSheets{
+    <style>
+        #urlTable {
+            margin-bottom: 2px;
+        }
+
+        .table thead>tr>th.select-column,
+        .table tbody>tr>td.select-column {
+            width: 65px;
+            white-space: nowrap;
+        }
+
+        .table thead > tr > th.feedback-column,
+        .table tbody > tr > td.feedback-column {
+            width: 65px;
+            white-space: nowrap;
+        }
+
+        .table tbody > tr.feedback-downloading {
+            background: #bae140;
+            box-shadow: 0 0 10px 1px #bae140;
+        }
+
+        .table tbody > tr.feedback-success {
+            background: #419641;
+        }
+
+        .table tbody > tr.feedback-failed {
+            background: #c12e2a;
+        }
+
+        .glyphicon-downloading {
+            font-size: 1.5em;
+        }
+
+        .glyphicon-success {
+            display: none;
+            font-size: 1.5em;
+            color: yellow;
+        }
+
+        .glyphicon-failed {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .glyphicon-idle {
+            display: none;
+            font-size: 1.5em;
+            color: #b5b3b3;
+        }
+
+        #controlTable {
+            width: 100%;
+        }
+
+        #keyName {
+            width: 75px;
+        }
+
+        #options {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        #browserDownload {
+            margin-left: -11px;
+        }
+
+        #feedbackDownloading {
+            display: none;
+        }
+
+        #feedbackMerging {
+            display: none;
+        }
+
+        #feedbackComplete {
+            display: none;
+        }
+        
+        #feedbackFailed {
+            display: none;
+        }
+    </style>
+}
+<span class="glyphicon glyphicon-refresh pre-cache"></span>
+<span class="glyphicon glyphicon-check pre-cache"></span>
+<span class="glyphicon glyphicon-remove pre-cache"></span>
+<span class="glyphicon glyphicon-option-horizontal pre-cache"></span>
+
+<div title="Path for direct download of merged JSON file as sub-path of openHistorian web files to allow immediate use...">
+    <label for="downloadPath" id="downloadPathLabel">Download Path:</label>
+    <input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="Grafana\public\gazetteer">
+</div>
 <br />
 <table id="urlTable" class="table table-striped">
     <thead>
         <tr>
-            <th style="text-align: center; width: 65px">Select</th>
+            <th class="text-center valign-middle select-column">Select&nbsp;&nbsp;<input type="checkbox" onclick="selectAll(this)" title="Select/Unselect all..."></th>
             <th>URL</th>
+            <th class="text-center valign-middle feedback-column">Status</th>
         </tr>
     </thead>
     <tbody>
     </tbody>
 </table>
-<button id="addUrl" class="btn btn-primary">Add URL</button>
-<button id="removeUrl" class="btn btn-danger">Remove URL</button>
-<button id="executeJsonOp" class="btn btn-success pull-right" hub-dependent>Merge &amp; Download</button>
-<div class="control-group pull-right" style="margin-top: 5px">
-    <label for="sort"><input type="checkbox" id="sort"> Sort Tags</label>&nbsp;&nbsp;
-    <label for="unique"><input type="checkbox" id="unique"> Unique Tags</label>&nbsp;&nbsp;
-    <label for="condense"><input type="checkbox" id="condense"> Condense JSON</label>&nbsp;&nbsp;
-</div>
-<br /><br />
+<table id="controlTable">
+    <tr>
+        <td>
+            <form class="form-inline">
+                <div class="form-group pull-right">
+                    <div class="pull-right">
+                        <label for="keyName">JSON Key Element Name:</label>
+                        <input type="text" id="keyName" class="form-control" placeholder="JSON element name used as key" value="key">
+                    </div>
+                    <br />
+                    <div id="options" class="pull-right">
+                        <label for="sort" title="Sorts merged JSON based on specified key..."><input type="checkbox" id="sort"> Sort Keys</label>&nbsp;&nbsp;
+                        <label for="unique" title="Removes any duplicates from merged JSON based on specified key..."><input type="checkbox" id="unique"> Unique Keys</label>&nbsp;&nbsp;
+                        <label for="condense" title="Removes any unneeded blank spaces from merged JSON to reduce size..."><input type="checkbox" id="condense"> Condense JSON</label>
+                        <br />
+                        <label for="serverDownload" class="pull-right" title="Downloads merged JSON file directly to server in sub-path of openHistorian web files, download path specified above, to allow immediate use..."><input type="checkbox" id="serverDownload"> Server Download</label>&nbsp;&nbsp;
+                        <label for="browserDownload" title="Downloads merged JSON file to browser..."><input type="checkbox" id="browserDownload"> Browser Download</label>
+                    </div>
+                </div>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button id="addUrl" class="btn btn-primary">Add URL</button>
+            <button id="removeUrl" class="btn btn-danger">Remove URL</button>
+            <button id="executeJsonOp" class="btn btn-success pull-right" hub-dependent>Download &amp; Merge</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4 class="pull-right">
+                <span id="feedbackDownloading">Downloading...&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span></span>
+                <span id="feedbackMerging">Merging...&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span></span>
+                <span id="feedbackComplete">Complete!</span>
+                <span id="feedbackFailed">Failed.</span>
+            </h4>
+        </td>
+    </tr>
+</table>
 <div id="downloadUrl"></div>
 <script>
     const urlRow =
         `<tr>
-            <td style="text-align: center">
+            <td class="text-center valign-middle select-column">
                 <input type="checkbox" class="downloadCheckbox"{0}>
             </td>
             <td>
                 <input type="text" placeholder="Enter server name or full URL" class="form-control urlInput" value="{1}">
             </td>
+            <td class="text-center valign-middle feedback-column">
+                <span class="glyphicon glyphicon-refresh glyphicon-spin glyphicon-downloading"></span>
+                <span class="glyphicon glyphicon-check glyphicon-success"></span>
+                <span class="glyphicon glyphicon-remove glyphicon-failed" onclick="resetRow(this)"></span>
+                <span class="glyphicon glyphicon-option-horizontal glyphicon-idle"></span>
+            </td>
         </tr>`;
 
+    // Add a URL row based on above row template
     function addUrlRow(checked, url) {
         $('#urlTable > tbody:last-child').append(String.format(urlRow, checked ? ' checked' : '', url));
 
-        const lastInput = $('#urlTable .urlInput:last');
+        const urlInput = $('#urlTable .urlInput:last');
 
-        lastInput.blur(function () {
-            const url = lastInput.val();
+        urlInput.blur(function () {
+            const url = urlInput.val();
 
             if (!url.startsWith('http'))
-                lastInput.val(String.format('@requestRoot/grafana/KeyCoordinates', url));
+                urlInput.val(String.format('@requestRoot/grafana/KeyCoordinates', url));
         });
+
+        const row = urlInput.closest('tr');
+
+        // Set initial row state, glyphicon-refresh is initially visible to activate the spinner
+        hideRowFeedback(row, true);
+
+        const selected = row.find('.downloadCheckbox');
+
+        // Unchecking selected checkbox resets the row state
+        selected.click(function () {
+            if (!this.checked)
+                hideRowFeedback(row, true);
+        });
+    }
+
+    // Clicking failed "X" glyphicon resets the row state
+    function resetRow(element) {
+        const row = $(element).closest('tr');
+        row.find('.downloadCheckbox').prop('checked', false);
+        hideRowFeedback(row, true);
+    }
+
+    function selectAll(element) {
+        const checked = element.checked;
+        $('#urlTable .downloadCheckbox').prop('checked', checked);
+        resetAllRowsFeedback();
+    }
+
+    function hideDownloadMessageFeedback() {
+        $('#feedbackDownloading').hide();
+        $('#feedbackMerging').hide();
+        $('#feedbackComplete').hide();
+        $('#feedbackFailed').hide();
+    }
+
+    function showDownloadMessageFeedback(option) {
+        hideDownloadMessageFeedback();
+        $(`#feedback${option}`).show();
+    }
+
+    function hideRowFeedback(row, showIdle) {
+        row.removeClass('feedback-downloading');
+        row.removeClass('feedback-success');
+        row.removeClass('feedback-failed');
+
+        row.find('.glyphicon-downloading').hide();
+        row.find('.glyphicon-success').hide();
+        row.find('.glyphicon-failed').hide();
+
+        if (showIdle)
+            row.find('.glyphicon-idle').show();
+        else
+            row.find('.glyphicon-idle').hide();
+    }
+
+    function showRowFeedback(row, option) {
+        hideRowFeedback(row);
+        row.addClass(`feedback-${option}`);
+        row.find(`.glyphicon-${option}`).show();
+    }
+
+    function resetAllRowsFeedback() {
+        $('#urlTable tr').each(function () {
+            hideRowFeedback($(this), true);
+        });
+    }
+
+    function serverDownloadClick() {
+        if ($('#serverDownload').is(':checked')) {
+            $('#downloadPath').enable();
+            $('#downloadPathLabel').removeClass('disabled');
+        } else {
+            $('#downloadPath').disable();
+            $('#downloadPathLabel').addClass('disabled');
+        }
     }
 
     $(document).ready(function () {
@@ -85,9 +293,12 @@
         const savedRows = JSON.parse(localStorage.getItem('rows') || '[]');
 
         $('#downloadPath').val(savedDownloadPath);
+        $('#keyName').val(localStorage.getItem('keyName') || 'key');
         $('#sort').prop('checked', localStorage.getItem('sort') === 'true');
         $('#unique').prop('checked', localStorage.getItem('unique') === 'true');
         $('#condense').prop('checked', localStorage.getItem('condense') === 'true');
+        $('#browserDownload').prop('checked', localStorage.getItem('browserDownload') === 'true');
+        $('#serverDownload').prop('checked', localStorage.getItem('serverDownload') === 'true');
 
         if (savedRows.length === 0)
             savedRows.push({ url: '', checked: true });
@@ -95,84 +306,164 @@
         for (const row of savedRows)
             addUrlRow(row.checked, row.url);
 
-        // Add URL button
+        // Server download checkbox handler
+        $('#serverDownload').click(serverDownloadClick);
+
+        // Set initial state based on loaded settings
+        serverDownloadClick();
+
+        // Add URL button handler
         $('#addUrl').click(function () {
             addUrlRow(false, '');
         });
 
-        // Remove URL button
+        // Remove URL button handler
         $('#removeUrl').click(function () {
             $('#urlTable > tbody:last-child').children().last().remove();
         });
 
-        // Merge / Download JSON button
+        // Download / Merge JSON button handler
         $('#executeJsonOp').click(function () {
+            // Reset all feedback
+            hideInfoMessage();
+            hideErrorMessage();
+            hideDownloadMessageFeedback();
+            resetAllRowsFeedback();
+            $('#downloadUrl').text('');
+
             if (!hubIsConnected) {
-                showErrorMessage('Cannot save merged / downloaded JSON data, not connected to openHistorian server.', -1);
+                showErrorMessage('Cannot save downloaded / merged JSON data, not connected to openHistorian server.', -1, true);
                 return;
             }
+
+            const serverDownload = $('#serverDownload').is(':checked');
+            const browserDownload = $('#browserDownload').is(':checked');
+
+            if (!serverDownload && !browserDownload) {
+                showErrorMessage('Cannot save downloaded / merged JSON data, no download option selected.', -1, true);
+                return;
+            }
+
+            showDownloadMessageFeedback('Downloading');
 
             const downloadCount = $('.downloadCheckbox:checked').length;
 
             if (downloadCount === 0) {
-                alert('No URLs selected for download.');
+                showErrorMessage('Cannot save downloaded / merged JSON data, no URLs selected for download.', -1, true);
                 return;
             }
 
-            const merged = [];
-            const keysSeen = {}; // Map to keep track of keys we've already seen
-            const sortTags = $('#sort').is(':checked');
-            const includeAllTags = !$('#unique').is(':checked');
-            const condenseJSON = $('#condense').is(':checked');
+            const downloadPromises = [];
+            const dataSets = [];
 
             $('.downloadCheckbox:checked').each(function (i, elem) {
-                // Parent of this checkbox is table cell, sibling of table cell is next table cell with child element that has 'urlInput' class,
-                // see urlRow template above for details
-                const url = $(this).parent().siblings().children('.urlInput').val();
+                // Parent of this checkbox is table cell, sibling of table cell is next table cell with
+                // child element that has 'urlInput' class, see urlRow template above for details
+                const parentCell = $(this).parent();
+                const url = parentCell.siblings().children('.urlInput').val();
+                const row = parentCell.parent();
 
-                $.getJSON(url, function (data) {
-                    // Only add data to merged array if its key hasn't been seen before
+                showRowFeedback(row, 'downloading');
+
+                downloadPromises.push(delayedPromise(1000 + i * 200).then(function () {
+                    return $.getJSON(url, function (data) {
+                        dataSets.push(data);
+                        showRowFeedback(row, 'success');
+                    })
+                    .fail(function (_, error) {
+                        showRowFeedback(row, 'failed');
+                        showErrorMessage(`Failed to download merged JSON file from "${url}": ${error}`, 1500);
+                    })
+                }));
+            });
+
+            // When all downloads are complete, merge data sets
+            $(downloadPromises).whenAll().then(function () {
+                showInfoMessage('Downloaded all JSON content, merging...');
+                showDownloadMessageFeedback('Merging');
+
+                const mergedData = [];
+                const keysSeen = {}; // Map to keep track of keys we've already seen
+                const keyName = $('#keyName').val();
+                const includeAllKeys = !$('#unique').is(':checked');
+
+                for (let data of dataSets) {
                     for (let item of data) {
-                        if (includeAllTags || !keysSeen[item.key]) {
-                            merged.push(item);
-                            keysSeen[item.key] = true;
+                        // When requested, only add data to merged array if its key hasn't been seen before
+                        if (includeAllKeys || !keyName.length || !keysSeen[item[keyName]]) {
+                            mergedData.push(item);
+
+                            if (keyName.length)
+                                keysSeen[item[keyName]] = true;
                         }
                     }
+                }
 
-                    if (i === downloadCount - 1) {
-                        // After all JSON content is downloaded, save it locally
-                        const downloadPath = $('#downloadPath').val();
+                // Sort merged keys if requested
+                if ($('#sort').is(':checked') && keyName.length)
+                    mergedData.sort((a, b) => a[keyName].localeCompare(b[keyName]));
 
-                        showInfoMessage(`Downloading merged JSON file to "${downloadPath}"...`);
+                const mergedJSON = JSON.stringify(mergedData, null, $('#condense').is(':checked') ? null : 2);
+                const savePromises = [];
+                let clipboardSucceeded = false;
 
-                        if (sortTags)
-                            merged.sort((a, b) => a.key.localeCompare(b.key));
+                if (serverDownload) {
+                    const downloadPath = $('#downloadPath').val();
 
-                        dataHub.saveJSONFile(downloadPath, JSON.stringify(merged, null, condenseJSON ? null : 2)).done(function (downloadUrl) {
-                            downloadUrl = `@string.Format(requestRoot, requestUri.Host)${downloadUrl}`;
-                            $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}" target="_blank">${downloadUrl}</a>`);
+                    showInfoMessage(`Saving merged JSON file to server at "${downloadPath}"...`);
 
-                            if (copyToClipboard(downloadUrl))
-                                showInfoMessage(`JSON download succeeded, URL of downloaded file copied to clipboard.`, -1, true);
-                            else
-                                showErrorMessage(`Failed to copy download URL to clipboard. Copy manually from link shown below.`, -1, true);
+                    savePromises.push(dataHub.saveJSONFile(downloadPath, mergedJSON).done(function (downloadUrl) {
+                        downloadUrl = `@string.Format(requestRoot, requestUri.Host)${downloadUrl}`;
+                        $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}" target="_blank">${downloadUrl}</a>`);
+
+                        if (copyToClipboard(downloadUrl)) {
+                            showInfoMessage('JSON server-side save succeeded, URL of accessible file copied to clipboard.');
+                            clipboardSucceeded = true;
+                        } else {
+                            showInfoMessage('JSON server-side save succeeded.');
+                            showErrorMessage('WARNING: Failed to copy URL to clipboard. Copy manually from link shown below.', -1, true);
+                        }
                         })
-                        .fail(function (error) {
-                            showErrorMessage(`Failed to download JSON file: ${error}`, null, true);
-                        });
+                    .fail(function (error) {
+                        showErrorMessage(`Failed to save JSON file: ${error}`);
+                    }));
+                }
 
-                        // The following will download merged JSON file directly from browser:
-                        //let mergedBlob = new Blob([JSON.stringify(merged)], { type: "application/json" });
-                        //let url = URL.createObjectURL(mergedBlob);
-                        //let link = document.createElement('a');
-                        //link.href = url;
-                        //link.download = 'merged.json';
-                        //link.click();
-                    }
+                if (browserDownload) {
+                    showInfoMessage('Downloading merged JSON file to browser...');
+
+                    savePromises.push(new Promise((resolve, reject) => {
+                        try {
+                            const mergedBlob = new Blob([mergedJSON], { type: 'application/json' });
+                            const url = URL.createObjectURL(mergedBlob);
+                            const link = document.createElement('a');
+
+                            link.href = url;
+                            link.download = 'merged.json';
+                            link.click();
+
+                            showInfoMessage('JSON browser download succeeded');
+                            resolve();
+                        } catch (error) {
+                            showErrorMessage(`Failed to download merged JSON file to browser: ${error}`);
+                            reject(`Browser Save ${error}`);
+                        }
+                    }));
+                }
+
+                $(savePromises).whenAll().then(function () {
+                    const clipboardMessage = clipboardSucceeded ? ', URL of accessible file copied to clipboard' : '';
+                    showDownloadMessageFeedback('Complete');
+                    showInfoMessage(`Save operation succeeded${clipboardMessage}...`, -1, true);
                 })
-                .fail(function (_, error) {
-                    showErrorMessage(`Failed to download merged JSON file from "${url}": ${error}`, null, true);
+                .fail(function (error) {
+                    showDownloadMessageFeedback('Failed');
+                    showErrorMessage(`Save operation failed: ${error}`, -1, true);
                 });
+            })
+            .fail(function (error) {
+                showDownloadMessageFeedback('Failed');
+                showErrorMessage('One or more JSON downloads failed, correct failed download URLs or unselect and retry download and merge.', -1, true);
             });
         });
 
@@ -188,9 +479,12 @@
 
             localStorage.setItem('rows', JSON.stringify(rows));
             localStorage.setItem('downloadPath', $('#downloadPath').val());
+            localStorage.setItem('keyName', $('#keyName').val());
             localStorage.setItem('sort', $('#sort').is(':checked'));
             localStorage.setItem('unique', $('#unique').is(':checked'));
             localStorage.setItem('condense', $('#condense').is(':checked'));
+            localStorage.setItem('serverDownload', $('#serverDownload').is(':checked'));
+            localStorage.setItem('browserDownload', $('#browserDownload').is(':checked'));
         });
     });
 
