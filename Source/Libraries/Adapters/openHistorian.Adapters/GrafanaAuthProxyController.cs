@@ -48,7 +48,6 @@ using GSF.Security;
 using GSF.Security.Cryptography;
 using GSF.Security.Model;
 using GSF.Threading;
-using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
 using CancellationToken = System.Threading.CancellationToken;
 using Http = System.Net.WebRequestMethods.Http;
