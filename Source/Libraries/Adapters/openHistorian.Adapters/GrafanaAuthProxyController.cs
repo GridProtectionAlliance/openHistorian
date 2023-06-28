@@ -48,6 +48,7 @@ using GSF.Security;
 using GSF.Security.Cryptography;
 using GSF.Security.Model;
 using GSF.Threading;
+using GSF.Web.Model;
 using Newtonsoft.Json.Linq;
 using CancellationToken = System.Threading.CancellationToken;
 using Http = System.Net.WebRequestMethods.Http;
@@ -893,19 +894,22 @@ namespace openHistorian.Adapters
 
         private HttpResponseMessage HandleKeyCoordinatesRequest(HttpRequestMessage request)
         {
+            //      0         1         2          3            4 
+            // /grafana/KeyCoordinates/PPA/ActiveMeasurements/FILTER
+            //                      instance      source      filter
             string[] parts = request.RequestUri.AbsolutePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             string instanceName = "PPA";
             string source = "ActiveMeasurements";
             string filter = "";
 
-            if (parts.Length > 1)
-                instanceName = parts[parts.Length - 1].Trim();
-
             if (parts.Length > 2)
-                source = parts[parts.Length - 2].Trim();
+                instanceName = Uri.UnescapeDataString(parts[2].Trim());
 
             if (parts.Length > 3)
-                filter = parts[parts.Length - 3].Trim();
+                source = Uri.UnescapeDataString(parts[3].Trim());
+
+            if (parts.Length > 4)
+                filter = Uri.UnescapeDataString(parts[4].Trim());
 
             if (string.IsNullOrEmpty(filter))
             {
