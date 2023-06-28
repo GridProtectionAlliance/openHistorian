@@ -48,6 +48,11 @@
 <button id="addUrl" class="btn btn-primary">Add URL</button>
 <button id="removeUrl" class="btn btn-danger">Remove URL</button>
 <button id="executeJsonOp" class="btn btn-success pull-right" hub-dependent>Merge &amp; Download</button>
+<div class="control-group pull-right" style="margin-top: 5px">
+    <label for="sort"><input type="checkbox" id="sort"> Sort Tags</label>&nbsp;&nbsp;
+    <label for="unique"><input type="checkbox" id="unique"> Unique Tags</label>&nbsp;&nbsp;
+    <label for="condense"><input type="checkbox" id="condense"> Condense JSON</label>&nbsp;&nbsp;
+</div>
 <br /><br />
 <div id="downloadUrl"></div>
 <script>
@@ -80,6 +85,9 @@
         const savedRows = JSON.parse(localStorage.getItem('rows') || '[]');
 
         $('#downloadPath').val(savedDownloadPath);
+        $('#sort').prop('checked', localStorage.getItem('sort') === 'true');
+        $('#unique').prop('checked', localStorage.getItem('unique') === 'true');
+        $('#condense').prop('checked', localStorage.getItem('condense') === 'true');
 
         if (savedRows.length === 0)
             savedRows.push({ url: '', checked: true });
@@ -113,14 +121,19 @@
 
             const merged = [];
             const keysSeen = {}; // Map to keep track of keys we've already seen
+            const sortTags = $('#sort').is(':checked');
+            const includeAllTags = !$('#unique').is(':checked');
+            const condenseJSON = $('#condense').is(':checked');
 
             $('.downloadCheckbox:checked').each(function (i, elem) {
+                // Parent of this checkbox is table cell, sibling of table cell is next table cell with child element that has 'urlInput' class,
+                // see urlRow template above for details
                 const url = $(this).parent().siblings().children('.urlInput').val();
 
                 $.getJSON(url, function (data) {
                     // Only add data to merged array if its key hasn't been seen before
                     for (let item of data) {
-                        if (!keysSeen[item.key]) {
+                        if (includeAllTags || !keysSeen[item.key]) {
                             merged.push(item);
                             keysSeen[item.key] = true;
                         }
@@ -132,7 +145,10 @@
 
                         showInfoMessage(`Downloading merged JSON file to "${downloadPath}"...`);
 
-                        dataHub.saveJSONFile(downloadPath, JSON.stringify(merged)).done(function (downloadUrl) {
+                        if (sortTags)
+                            merged.sort((a, b) => a.key.localeCompare(b.key));
+
+                        dataHub.saveJSONFile(downloadPath, JSON.stringify(merged, null, condenseJSON ? null : 2)).done(function (downloadUrl) {
                             downloadUrl = `@string.Format(requestRoot, requestUri.Host)${downloadUrl}`;
                             $('#downloadUrl').html(`<label for="downloadUrlAnchor">Downloaded URL:</label> <a id="downloadUrlAnchor" href="${downloadUrl}" target="_blank">${downloadUrl}</a>`);
 
@@ -172,6 +188,9 @@
 
             localStorage.setItem('rows', JSON.stringify(rows));
             localStorage.setItem('downloadPath', $('#downloadPath').val());
+            localStorage.setItem('sort', $('#sort').is(':checked'));
+            localStorage.setItem('unique', $('#unique').is(':checked'));
+            localStorage.setItem('condense', $('#condense').is(':checked'));
         });
     });
 
