@@ -298,7 +298,7 @@
         $('#unique').prop('checked', localStorage.getItem('unique') === 'true');
         $('#condense').prop('checked', localStorage.getItem('condense') === 'true');
         $('#browserDownload').prop('checked', localStorage.getItem('browserDownload') === 'true');
-        $('#serverDownload').prop('checked', localStorage.getItem('serverDownload') === 'true');
+        $('#serverDownload').prop('checked', (localStorage.getItem('serverDownload') || 'true') === 'true');
 
         if (savedRows.length === 0)
             savedRows.push({ url: '', checked: true });
@@ -332,7 +332,7 @@
             $('#downloadUrl').text('');
 
             if (!hubIsConnected) {
-                showErrorMessage('Cannot save downloaded / merged JSON data, not connected to openHistorian server.', -1, true);
+                showErrorMessage('Cannot save downloaded / merged JSON data, not connected to openHistorian server.', null, true);
                 return;
             }
 
@@ -340,7 +340,7 @@
             const browserDownload = $('#browserDownload').is(':checked');
 
             if (!serverDownload && !browserDownload) {
-                showErrorMessage('Cannot save downloaded / merged JSON data, no download option selected.', -1, true);
+                showErrorMessage('Cannot save downloaded / merged JSON data, no download option selected.', null, true);
                 return;
             }
 
@@ -349,7 +349,7 @@
             const downloadCount = $('.downloadCheckbox:checked').length;
 
             if (downloadCount === 0) {
-                showErrorMessage('Cannot save downloaded / merged JSON data, no URLs selected for download.', -1, true);
+                showErrorMessage('Cannot save downloaded / merged JSON data, no URLs selected for download.', null, true);
                 return;
             }
 
@@ -458,12 +458,12 @@
                 })
                 .fail(function (error) {
                     showDownloadMessageFeedback('Failed');
-                    showErrorMessage(`Save operation failed: ${error}`, -1, true);
+                    showErrorMessage(`Save operation failed: ${error}`, 10000, true);
                 });
             })
-            .fail(function (error) {
+            .fail(function () {
                 showDownloadMessageFeedback('Failed');
-                showErrorMessage('One or more JSON downloads failed, correct failed download URLs or unselect and retry download and merge.', -1, true);
+                showErrorMessage('One or more JSON downloads failed, correct failed download URLs or unselect and retry download and merge.', 10000, true);
             });
         });
 
