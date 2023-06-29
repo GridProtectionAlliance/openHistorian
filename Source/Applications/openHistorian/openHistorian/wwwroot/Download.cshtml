@@ -373,7 +373,7 @@
                     .fail(function (_, error) {
                         showRowFeedback(row, 'failed');
                         showErrorMessage(`Failed to download merged JSON file from "${url}": ${error}`, 1500);
-                    })
+                    });
                 }));
             });
 
@@ -423,7 +423,7 @@
                             showInfoMessage('JSON server-side save succeeded.');
                             showErrorMessage('WARNING: Failed to copy URL to clipboard. Copy manually from link shown below.', -1, true);
                         }
-                        })
+                    })
                     .fail(function (error) {
                         showErrorMessage(`Failed to save JSON file: ${error}`);
                     }));
