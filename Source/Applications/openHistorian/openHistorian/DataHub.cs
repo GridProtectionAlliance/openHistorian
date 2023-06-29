@@ -34,6 +34,8 @@ using GSF.Web.Security;
 using Microsoft.AspNet.SignalR;
 using ModbusAdapters;
 using ModbusAdapters.Model;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using PhasorWebUI;
@@ -47,6 +49,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GSF.IO;
 using Measurement = openHistorian.Model.Measurement;
+using Microsoft.Ajax.Utilities;
 
 namespace openHistorian
 {
@@ -950,7 +953,7 @@ namespace openHistorian
             catch (Exception ex)
             {
                 LogException(new InvalidOperationException($"Exception while reading discrete inputs starting @ {startAddress}: {ex.Message}", ex));
-                return new bool[0];
+                return Array.Empty<bool>();
             }
         }
 
@@ -963,7 +966,7 @@ namespace openHistorian
             catch (Exception ex)
             {
                 LogException(new InvalidOperationException($"Exception while reading coil values starting @ {startAddress}: {ex.Message}", ex));
-                return new bool[0];
+                return Array.Empty<bool>();
             }
         }
 
@@ -976,7 +979,7 @@ namespace openHistorian
             catch (Exception ex)
             {
                 LogException(new InvalidOperationException($"Exception while reading input registers starting @ {startAddress}: {ex.Message}", ex));
-                return new ushort[0];
+                return Array.Empty<ushort>();
             }
         }
 
@@ -989,7 +992,7 @@ namespace openHistorian
             catch (Exception ex)
             {
                 LogException(new InvalidOperationException($"Exception while reading holding registers starting @ {startAddress}: {ex.Message}", ex));
-                return new ushort[0];
+                return Array.Empty<ushort>();
             }
         }
 
@@ -1238,8 +1241,12 @@ namespace openHistorian
             if (!targetFilePath.StartsWith(localPath))
                 throw new SecurityException("Path access error: Cannot save JSON file outside local file path.");
 
+            // Prevent saving data that is not valid JSON (helps prevent possible function abuse)
+            if (!IsValidJson(json))
+                throw new InvalidOperationException("JSON content is not valid.");
+
             if (string.IsNullOrEmpty(Path.GetFileName(targetFilePath)) || string.IsNullOrEmpty(Path.GetExtension(targetFilePath)))
-                targetFilePath = Path.Combine(targetFilePath, $"{DateTime.Now:s}KeyCoordMerge.json".Replace(':', '.'));
+                targetFilePath = Path.Combine(targetFilePath, $"{DateTime.Now:s}Merge.json".Replace(':', '.'));
 
             string directory = Path.GetDirectoryName(targetFilePath);
 
@@ -1249,6 +1256,33 @@ namespace openHistorian
             File.WriteAllText(targetFilePath, json);
 
             return targetFilePath.Substring(localPath.Length).Replace('\\', '/');
+        }
+
+        /// <summary>
+        /// Determines if <paramref name="input"/> string is valid JSON.
+        /// </summary>
+        /// <param name="input">Input string to test for valid JSON.</param>
+        /// <returns><c>true</c> if <paramref name="input"/> is valid JSON; otherwise, <c>false</c>.</returns>
+        public bool IsValidJson(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
+
+            input = input.Trim();
+            
+            // Check if input starts and ends with a valid JSON array or object token
+            if ((!input.StartsWith("{") || !input.EndsWith("}")) && (!input.StartsWith("[") || !input.EndsWith("]")))
+                return false;
+
+            try
+            {
+                JToken.Parse(input);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         #endregion

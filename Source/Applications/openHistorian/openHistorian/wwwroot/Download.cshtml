@@ -22,6 +22,7 @@
 //*****************************************************************************************************@
 @using System
 @using System.Net.Http
+@using GSF.Web
 @using openHistorian.Model
 @using RazorEngine.Templating
 @inherits TemplateBase<AppModel>
@@ -31,6 +32,21 @@
     HttpRequestMessage request = ViewBag.Request;
     Uri requestUri = request.RequestUri;
     string requestRoot = requestUri.Scheme + "://{0}:" + requestUri.Port;
+
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string targetJsonUrl;
+
+    if (!parameters.TryGetValue("targetJsonUrl", out targetJsonUrl)) {
+        targetJsonUrl = "/grafana/KeyCoordinates";
+    }
+
+    if (!targetJsonUrl.StartsWith("/") && !targetJsonUrl.Contains("{0}")) {
+        targetJsonUrl = "/" + targetJsonUrl;
+    }
+
+    if (!targetJsonUrl.Contains("{0}")) {
+        targetJsonUrl = requestRoot + targetJsonUrl;
+    }
 }
 @section StyleSheets{
     <style>
@@ -155,7 +171,7 @@
                         <label for="unique" title="Removes any duplicates from merged JSON based on specified key..."><input type="checkbox" id="unique"> Unique Keys</label>&nbsp;&nbsp;
                         <label for="condense" title="Removes any unneeded blank spaces from merged JSON to reduce size..."><input type="checkbox" id="condense"> Condense JSON</label>
                         <br />
-                        <label for="serverDownload" class="pull-right" title="Downloads merged JSON file directly to server in sub-path of openHistorian web files, download path specified above, to allow immediate use..."><input type="checkbox" id="serverDownload"> Server Download</label>&nbsp;&nbsp;
+                        <label for="serverDownload" class="pull-right" title="Downloads merged JSON file directly to server in sub-path of openHistorian web files, download path specified above, to allow immediate use..."><input type="checkbox" id="serverDownload"> Server Download</label>
                         <label for="browserDownload" title="Downloads merged JSON file to browser..."><input type="checkbox" id="browserDownload"> Browser Download</label>
                     </div>
                 </div>
@@ -193,7 +209,7 @@
             <td class="text-center valign-middle feedback-column">
                 <span class="glyphicon glyphicon-refresh glyphicon-spin glyphicon-downloading"></span>
                 <span class="glyphicon glyphicon-check glyphicon-success"></span>
-                <span class="glyphicon glyphicon-remove glyphicon-failed" onclick="resetRow(this)"></span>
+                <span class="glyphicon glyphicon-remove glyphicon-failed" onclick="deleteRow(this)"></span>
                 <span class="glyphicon glyphicon-option-horizontal glyphicon-idle"></span>
             </td>
         </tr>`;
@@ -208,7 +224,7 @@
             const url = urlInput.val();
 
             if (!url.startsWith('http'))
-                urlInput.val(String.format('@requestRoot/grafana/KeyCoordinates', url));
+                urlInput.val(String.format('@targetJsonUrl', url));
         });
 
         const row = urlInput.closest('tr');
@@ -225,11 +241,18 @@
         });
     }
 
-    // Clicking failed "X" glyphicon resets the row state
-    function resetRow(element) {
+    // Clicking failed "X" glyphicon requests row to be deleted
+    function deleteRow(element) {
+        // Unselect all other rows
+        $('#urlTable .downloadCheckbox').prop('checked', false);
+        resetAllRowsFeedback();
+
+        // Select current row only
         const row = $(element).closest('tr');
-        row.find('.downloadCheckbox').prop('checked', false);
-        hideRowFeedback(row, true);
+        row.find('.downloadCheckbox').prop('checked', true);
+
+        // Execute delete operation
+        $('#removeUrl').click();
     }
 
     function selectAll(element) {
@@ -271,10 +294,18 @@
         row.find(`.glyphicon-${option}`).show();
     }
 
+    function showSelectedRowsFeedback(rows, option) {
+        for (let row of rows)
+            showRowFeedback($(row), option);
+    }
+
+    function hideSelectedRowsFeedback(rows, showIdle) {
+        for (let row of rows)
+            hideRowFeedback($(row), showIdle);
+    }
+
     function resetAllRowsFeedback() {
-        $('#urlTable tr').each(function () {
-            hideRowFeedback($(this), true);
-        });
+        hideSelectedRowsFeedback($('#urlTable tr'), true);
     }
 
     function serverDownloadClick() {
@@ -318,8 +349,22 @@
         });
 
         // Remove URL button handler
-        $('#removeUrl').click(function () {
-            $('#urlTable > tbody:last-child').children().last().remove();
+        $('#removeUrl').click(function() {
+            const selected = $('.downloadCheckbox:checked').parent().parent();
+
+            if (selected.length > 0) {
+                showSelectedRowsFeedback(selected, 'failed');
+
+                // Wait fifty milliseconds to allow feedback to render before showing confirmation
+                setTimeout(function () {
+                    if (confirm(`This will remove ${selected.length} selected rows.`))
+                        selected.remove();
+                    else
+                        hideSelectedRowsFeedback(selected, true);
+                }, 50);
+            } else {
+                showErrorMessage('No rows selected to remove.', null, true);
+            }
         });
 
         // Download / Merge JSON button handler
