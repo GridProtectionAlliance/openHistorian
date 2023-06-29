@@ -181,8 +181,8 @@
     <tr>
         <td>
             <button id="addUrl" class="btn btn-primary">Add URL</button>
-            <button id="removeUrl" class="btn btn-danger">Remove URL</button>
-            <button id="executeJsonOp" class="btn btn-success pull-right" hub-dependent>Download &amp; Merge</button>
+            <button id="removeUrl" class="btn btn-danger">Remove URLs</button>
+            <button id="executeJsonOp" class="btn btn-success pull-right">Download &amp; Merge</button>
         </td>
     </tr>
     <tr>
@@ -376,16 +376,16 @@
             resetAllRowsFeedback();
             $('#downloadUrl').text('');
 
-            if (!hubIsConnected) {
-                showErrorMessage('Cannot save downloaded / merged JSON data, not connected to openHistorian server.', null, true);
-                return;
-            }
-
             const serverDownload = $('#serverDownload').is(':checked');
             const browserDownload = $('#browserDownload').is(':checked');
 
             if (!serverDownload && !browserDownload) {
                 showErrorMessage('Cannot save downloaded / merged JSON data, no download option selected.', null, true);
+                return;
+            }
+
+            if (serverDownload && !hubIsConnected) {
+                showErrorMessage('Cannot save downloaded / merged JSON data, not connected to openHistorian server.', null, true);
                 return;
             }
 
