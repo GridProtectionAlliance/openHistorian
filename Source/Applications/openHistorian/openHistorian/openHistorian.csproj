@@ -273,7 +273,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\Tools\UpdateCOMTRADECounters\bin\$(Configuration)\UpdateCOMTRADECounters.exe">
+    <EmbeddedResource Include="..\..\..\Tools\UpdateCOMTRADECounters\bin\$(Configuration)\UpdateCOMTRADECounters.exe"  Condition="'$(Configuration)' != 'Mono'">
       <Link>UpdateCOMTRADECounters.exe</Link>
     </EmbeddedResource>
     <Content Include="Grafana\Readme.txt" />
