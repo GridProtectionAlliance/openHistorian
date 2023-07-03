@@ -22,6 +22,7 @@
 //*****************************************************************************************************@
 @using System
 @using System.Net.Http
+@using GSF
 @using GSF.Web
 @using openHistorian.Model
 @using RazorEngine.Templating
@@ -46,6 +47,12 @@
 
     if (!targetJsonUrl.Contains("{0}")) {
         targetJsonUrl = requestRoot + targetJsonUrl;
+    }
+
+    string defaultDownloadPath = "Grafana\\public\\gazetteer";
+
+    if (Common.IsPosixEnvironment) {
+        defaultDownloadPath = defaultDownloadPath.Replace("\\", "/");
     }
 }
 @section StyleSheets{
@@ -142,7 +149,7 @@
 
 <div title="Path for direct download of merged JSON file as sub-path of openHistorian web files to allow immediate use...">
     <label for="downloadPath" id="downloadPathLabel">Download Path:</label>
-    <input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download" value="Grafana\public\gazetteer">
+    <input type="text" id="downloadPath" class="form-control" placeholder="Path or file name for JSON download">
 </div>
 <br />
 <table id="urlTable" class="table table-striped">
@@ -320,7 +327,7 @@
 
     $(document).ready(function () {
         // Load previous settings from local storage
-        const savedDownloadPath = localStorage.getItem('downloadPath') || 'Grafana\\public\\gazetteer';
+        const savedDownloadPath = localStorage.getItem('downloadPath') || '@defaultDownloadPath';
         const savedRows = JSON.parse(localStorage.getItem('rows') || '[]');
 
         $('#downloadPath').val(savedDownloadPath);
