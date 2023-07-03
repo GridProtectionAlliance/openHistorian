@@ -91,7 +91,11 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Defines the default installation server path for Grafana.
         /// </summary>
+    #if MONO            
+        public const string DefaultServerPath = "Grafana/bin/grafana-server";
+    #else
         public const string DefaultServerPath = "Grafana\\bin\\grafana-server.exe";
+    #endif  
 
         /// <summary>
         /// Default URL for the hosted Grafana process.
