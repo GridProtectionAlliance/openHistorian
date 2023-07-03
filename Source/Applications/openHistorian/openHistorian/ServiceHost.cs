@@ -279,7 +279,7 @@ namespace openHistorian
                 authFailureRedirectResourceExpressionUpdated = true;
             }
 
-            if (!anonymousResourceExpression.ToLowerInvariant().Contains(NewGrafanaAuthFailExcludeExpression.ToLowerInvariant()))
+            if (!authFailureRedirectResourceExpression.ToLowerInvariant().Contains(NewGrafanaAuthFailExcludeExpression.ToLowerInvariant()))
             {
                 authFailureRedirectResourceExpression = $"{authFailureRedirectResourceExpression}|{NewGrafanaAuthFailExcludeExpression}";
                 authFailureRedirectResourceExpressionUpdated = true;
