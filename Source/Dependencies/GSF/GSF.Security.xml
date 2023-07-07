@@ -476,6 +476,31 @@
             Default value for <see cref="P:GSF.Security.AdoSecurityProvider.UseDatabaseLogging"/>.
             </summary>
         </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultMessageUserNotDefined">
+            <summary>
+            Default message displayed when user is not defined.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultMessageUserIsDisabled">
+            <summary>
+            Default message displayed when user is disabled.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultMessageUserIsLockedOut">
+            <summary>
+            Default message displayed when user is locked out.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultMessageUserPasswordExpired">
+            <summary>
+            Default message displayed when password is expired or has not been set.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultMessageUserHasNoRoles">
+            <summary>
+            Default message displayed when user is not a member of any roles.
+            </summary>
+        </member>
         <member name="F:GSF.Security.AdoSecurityProvider.ProviderID">
             <summary>
             Defines the provider ID for the <see cref="T:GSF.Security.AdoSecurityProvider"/>.

@@ -85,12 +85,31 @@
             <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetPagedList(GSF.Web.Model.ModelController{`0}.PostData,System.Int32)">
+            <summary>
+            Gets a subset of records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
+            based on <see cref="P:GSF.Web.Model.ModelController`1.Take" /> and 0-based <paramref name="page"/> index
+            </summary>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="page">The 0-based index of the page to be retrieved</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
         <member name="M:GSF.Web.Model.ModelController`1.GetSearchableList(GSF.Web.Model.ModelController{`0}.PostData,System.String)">
             <summary>
             Gets all records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
             </summary>
             <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
             <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.GetPagedList(GSF.Web.Model.ModelController{`0}.PostData,System.Int32,System.String)">
+            <summary>
+            Gets a subset of records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
+            based on <see cref="P:GSF.Web.Model.ModelController`1.Take" /> and 0-based <paramref name="page"/> index
+            </summary>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="page">The 0-based index of the page to be retrieved</param>
+            <param name="parentID"> Parent ID to be used if Table has a set Parent Key</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
         <member name="M:GSF.Web.Model.ModelController`1.GetAuthCheck">
@@ -117,11 +136,20 @@
             </summary>
             <returns>True if User is authorized for DELETE requests</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetSearchResults(GSF.Web.Model.ModelController{`0}.PostData)">
+        <member name="M:GSF.Web.Model.ModelController`1.GetSearchResults(GSF.Web.Model.ModelController{`0}.PostData,System.Nullable{System.Int32})">
             <summary>
             Gets the <see cref="T:System.Data.DataTable"/> with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`1.PostData"/>. 
             </summary>
-            <returns>A <see cref="T:System.Data.DataTable"/>.</returns>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="page">The 0-based index of the page to be retrieved</param>
+            <returns>A <see cref="T:System.Data.DataTable"/> containing the results of the search.</returns>
+        </member>
+        <member name="M:GSF.Web.Model.ModelController`1.CountSearchResults(GSF.Web.Model.ModelController{`0}.PostData)">
+            <summary>
+            Counts the number of records with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`1.PostData"/>.
+            </summary>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <returns>The number of records that match the search filters.</returns>
         </member>
         <member name="T:GSF.Web.Model.DataContext">
             <summary>
