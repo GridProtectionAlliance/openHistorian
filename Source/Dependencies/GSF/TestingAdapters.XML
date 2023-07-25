@@ -231,6 +231,45 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="T:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter">
+            <summary>
+            Normalizes subsecond timestamps for configured input measurements.
+            </summary>
+        </member>
+        <member name="F:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.DefaultFramesPerSecond">
+            <summary>
+            Default value for the <see cref="P:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.FramesPerSecond"/> property.
+            </summary>
+        </member>
+        <member name="F:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.DefaultSupportsTemporalProcessing">
+            <summary>
+            Default value for the <see cref="P:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.FramesPerSecond">
+            <summary>
+            Gets or sets the number of frames per second used for subsecond timestamp normalization.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+            <remarks>
+            Use case exists when replaying historical data that subsecond timestamp normalization might be useful.
+            </remarks>
+        </member>
+        <member name="M:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.NormalizeSubsecondTimestampsFilterAdapter.ProcessMeasurements(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Processes the measurements to normalize subsecond timestamps.
+            </summary>
+            <param name="measurements">The set of measurements for which to normalize subsecond timestamps.</param>
+        </member>
         <member name="T:TestingAdapters.RandomValueInputAdapter">
             <summary>
             Represents a class used to stream in random values for input measurements.
