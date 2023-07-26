@@ -2277,7 +2277,7 @@ SELECT
     SystemName              = DeviceAcronym,
     SourceID                = ProtocolID,
     Enabled                 = Enabled,
-    ScanRate                = 1.0 / FramesPerSecond,
+    ScanRate                = CASE WHEN FramesPerSecond = 0 THEN 1.0 ELSE 1.0 / FramesPerSecond END,
     CompressionMinTime      = 0,
     CompressionMaxTime      = 0,
     EngineeringUnits        = EngineeringUnits,
