@@ -4718,37 +4718,42 @@
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.DisableRealTimeData">
             <summary>
-            0001 Turn off transmission of data frames.
+            0000 0000 0000 0001 Turn off transmission of data frames.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.EnableRealTimeData">
             <summary>
-            0010 Turn on transmission of data frames.
+            0000 0000 0000 0010 Turn on transmission of data frames.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.SendHeaderFrame">
             <summary>
-            0011 Send header file.
+            0000 0000 0000 0011 Send header file.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.SendConfigurationFrame1">
             <summary>
-            0100 Send configuration file 1.
+            0000 0000 0000 0100 Send configuration file 1.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.SendConfigurationFrame2">
             <summary>
-            0101 Send configuration file 2.
+            0000 0000 0000 0101 Send configuration file 2.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.SendConfigurationFrame3">
             <summary>
-            0110 Send configuration file 3.
+            0000 0000 0000 0110 Send configuration file 3.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.ReceiveExtendedFrame">
             <summary>
-            1000 Receive extended frame for IEEE C37.118 / receive reference phasor for IEEE 1344.
+            0000 0000 0000 1000 Receive extended frame for IEEE C37.118 / receive reference phasor for IEEE 1344.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.DeviceCommand.SendLatestConfigurationFrameVersion">
+            <summary>
+            0000 1000 0000 0000 User designated command. Used to send latest configuration frame version.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.DeviceCommand.ReservedBits">
@@ -9490,6 +9495,22 @@
             <summary>
             Gets or sets <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.TransportProtocol"/> to use with this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConfigurationFrameVersion">
+            <summary>
+            Gets or sets specific configuration frame version to request from device which overrides default that otherwise
+            requests latest configuration frame version for current protocol.
+            </summary>
+            <remarks>
+            <para>
+            If user selects IEEE C37.118-2011 protocol, this will default to requesting a configuration frame 3 frame. If
+            remote device does not support this, this property can be set to send a configuration frame 2 frame instead.
+            </para>
+            <para>
+            This property can be assigned as a connection string parameter, e.g.: <c>configurationFrameVersion=2</c> or
+            <c>configurationFrameVersion=SendConfigurationFrame2</c>
+            </para>
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.ConnectionString">
             <summary>
