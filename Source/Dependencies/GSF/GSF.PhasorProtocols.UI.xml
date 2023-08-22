@@ -464,15 +464,15 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> alternate command channel.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetConfigurationCacheFileName(System.String)">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetJsonConfigurationFileName(System.String)">
             <summary>
-            Gets the file name of the configuration cache file for the device with the given acronym.
+            Gets the file name of the JSON configuration file for the device with the given acronym.
             </summary>
             <param name="acronym">Acronym of device.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetConfigurationCachePath">
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetJsonConfigurationPath">
             <summary>
-            Gets the path to the configuration cache directory.
+            Gets the path to the JSON configuration directory.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.LoadKeys(GSF.Data.AdoDataConnection,System.Int32,System.String,System.String,System.String)">

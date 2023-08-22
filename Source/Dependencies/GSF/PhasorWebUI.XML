@@ -22,13 +22,13 @@
             </summary>
             <param name="acronym">Acronym of device.</param>
         </member>
-        <member name="M:PhasorWebUI.PhasorConfigController.GetConfigurationCacheFileName(System.String)">
+        <member name="M:PhasorWebUI.PhasorConfigController.GetJsonConfigurationFileName(System.String)">
             <summary>
-            Gets the file name of the configuration cache file for the device with the given acronym.
+            Gets the file name of the JSON configuration file for the device with the given acronym.
             </summary>
             <param name="acronym">Acronym of device.</param>
         </member>
-        <member name="M:PhasorWebUI.PhasorConfigController.GetConfigurationCachePath">
+        <member name="M:PhasorWebUI.PhasorConfigController.GetJsonConfigurationPath">
             <summary>
             Gets the path to the configuration cache directory.
             </summary>
