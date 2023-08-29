@@ -1285,6 +1285,7 @@ namespace openHistorian.Adapters
                 }
             }
 
+            // TODO: Remove this code when device IDs have been updated to use GUIDs:
             // Make sure gateway protocol data publishers filter out device groups from metadata since groups reference local device IDs
             const string DefaultDeviceFilter = "FROM DeviceDetail WHERE IsConcentrator = 0;";
             const string GSFDataPublisherTypeName = nameof(GSF) + "." + nameof(GSF.TimeSeries) + "." + nameof(GSF.TimeSeries.Transport) + "." + nameof(GSF.TimeSeries.Transport.DataPublisher);
@@ -1302,6 +1303,7 @@ namespace openHistorian.Adapters
                     continue;
 
                 Dictionary<string, string> connectionString = actionAdapter.ConnectionString?.ParseKeyValuePairs() ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                bool connectionStringUpdated = false;
 
                 switch (actionAdapter.TypeName)
                 {
@@ -1310,6 +1312,7 @@ namespace openHistorian.Adapters
                             continue;
                         
                         connectionString[GSFMetadataTables] = GSFDataPublisher.DefaultMetadataTables.Replace(DefaultDeviceFilter, deviceGroupFilter);
+                        connectionStringUpdated = true;
                         break;
                     case STTPDataPublisherTypeName:
                         // For down-stream identity matched metadata replication, check option to allow device groups replicate - this will OK when device IDs match, e.g.,
@@ -1324,11 +1327,15 @@ namespace openHistorian.Adapters
                                 continue;
 
                             connectionString[STTPMetadataTables] = STTPDataPublisher.DefaultMetadataTables.Replace(DefaultDeviceFilter, deviceGroupFilter);
+                            connectionStringUpdated = true;
                         }
                         break;
                     default:
                         continue;
                 }
+
+                if (!connectionStringUpdated)
+                    continue;
 
                 actionAdapter.ConnectionString = connectionString.JoinKeyValuePairs();
                 actionAdapterTable.UpdateRecord(actionAdapter);

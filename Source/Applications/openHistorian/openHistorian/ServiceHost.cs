@@ -693,6 +693,8 @@ namespace openHistorian
                     if (!settings.TryGetValue("deviceIDs", out string deviceIDs) || string.IsNullOrWhiteSpace(deviceIDs))
                         continue;
 
+                    // TODO: Update the device ID list to be based on the device's unique GUID instead of the database ID
+
                     // Parse device ID list
                     HashSet<int> deviceIDSet = new();
 
