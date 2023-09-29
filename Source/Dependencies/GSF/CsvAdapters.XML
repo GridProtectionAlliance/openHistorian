@@ -34,6 +34,11 @@
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.DownsampleInterval"/> property.
             </summary>
         </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultFramesPerSecond">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.FramesPerSecond"/> property.
+            </summary>
+        </member>
         <member name="F:CsvAdapters.CsvExportAdapter.DefaultEnableTimeReasonabilityValidation">
             <summary>
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.EnableTimeReasonabilityValidation"/> property.
@@ -89,6 +94,11 @@
         <member name="P:CsvAdapters.CsvExportAdapter.DownsampleInterval">
             <summary>
             Gets or sets the downsampling interval, in seconds, set to zero for no downsampling.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.FramesPerSecond">
+            <summary>
+            Gets or sets the number of frames per second for incoming data used to normalize timestamps when downsampling interval is greater than 0.0, set to zero to skip time normalization.
             </summary>
         </member>
         <member name="P:CsvAdapters.CsvExportAdapter.EnableTimeReasonabilityValidation">
