@@ -98,7 +98,7 @@
         </member>
         <member name="P:CsvAdapters.CsvExportAdapter.FramesPerSecond">
             <summary>
-            Gets or sets the number of frames per second for incoming data used to normalize timestamps when downsampling interval is greater than 0.0, set to zero to skip time normalization.
+            Gets or sets the number of frames per second for incoming data used to align timestamps when downsampling interval is greater than 0.0, set to zero to skip time alignment.
             </summary>
         </member>
         <member name="P:CsvAdapters.CsvExportAdapter.EnableTimeReasonabilityValidation">
