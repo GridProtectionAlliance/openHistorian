@@ -22,8 +22,10 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GrafanaAdapters.GrafanaFunctions;
 using GSF;
 using GSF.Collections;
+using GSF.IO;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
@@ -35,6 +37,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -420,32 +423,75 @@ namespace openHistorian.Adapters
             cancellationToken);
         }
 
+
         /// <summary>
-        /// Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+        /// Queries openHistorian as a Grafana Metadatas source for multiple targets.
         /// </summary>
-        /// <param name="radius">Radius of overlapping coordinate distribution.</param>
-        /// <param name="zoom">Zoom level.</param>
-        /// <param name="request"> Query request.</param>
+        /// <param name="requests">Array of query requests.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        /// <returns>JSON serialized location metadata for specified targets.</returns>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
-        public virtual Task<string> GetLocationData([FromUri] double radius, [FromUri] double zoom, [FromBody] List<Target> request, CancellationToken cancellationToken)
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public virtual Task<string> GetMetadatas(MetadataTargetRequest[] requests, CancellationToken cancellationToken)
         {
-            return LocationData.GetLocationData(radius, zoom, request, cancellationToken);
+            return Task.Factory.StartNew(() =>
+            {
+                var targetDataDict = new Dictionary<string, Dictionary<string, DataTable>>();
+                foreach (var request in requests)
+                {
+                    if (string.IsNullOrWhiteSpace(request.Target))
+                        continue;
+                    var tableDataDict = new Dictionary<string, DataTable>();
+                    foreach (var table in request.Tables)
+                    {
+                        DataRow[] rows = DataSource?.Metadata.Tables[table].Select($"PointTag = '{request.Target}'") ?? new DataRow[0];
+                        if (rows.Length > 0)
+                        {
+                            DataTable dt = rows.CopyToDataTable();
+                            tableDataDict[table] = dt;
+                        }
+                    }
+                    targetDataDict[request.Target] = tableDataDict;
+                }
+                return JsonConvert.SerializeObject(targetDataDict);
+            },
+            cancellationToken);
+
+        }
+
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadata options source.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<Dictionary<string, string[]>> GetMetadataOptions([FromBody] MetadataOptionsRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource.GetMetadataOptions(request, cancellationToken);
+        }
+
+        // <summary>
+        /// Queries openHistorian as a Grafana Metadata options source.
+        /// </summary>
+        /// <param name="request">A boolean indicating whether the data is a phasor.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<string[]> GetTableOptions([FromBody] bool isPhasor, CancellationToken cancellationToken)
+        {
+            return DataSource.GetTableOptions(isPhasor, cancellationToken);
         }
 
         /// <summary>
-        /// Queries openHistorian location data for Grafana.
+        /// Queries openHistorian as a Grafana Functions options source.
         /// </summary>
-        /// <param name="request"> Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        /// <returns>JSON serialized location metadata for specified targets.</returns>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "CSRF exposure limited to meta-data access.")]
-        public virtual Task<string> GetLocationData(List<Target> request, CancellationToken cancellationToken)
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<FunctionDescription[]> GetFunctions(CancellationToken cancellationToken)
         {
-            return LocationData.GetLocationData(request, cancellationToken);
+            return DataSource.GetFunctionDescription(cancellationToken);
         }
 
         /// <summary>
@@ -545,6 +591,7 @@ namespace openHistorian.Adapters
         {
             return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
+
 
         #endregion
 
