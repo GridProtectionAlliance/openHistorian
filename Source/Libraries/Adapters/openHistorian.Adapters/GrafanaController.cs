@@ -22,10 +22,12 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GrafanaAdapters.GrafanaFunctions;
 using GSF;
 using GSF.Collections;
-using GSF.IO;
+using GSF.Configuration;
+using GSF.Diagnostics;
+using GSF.Historian;
+using GSF.Historian.Files;
 using GSF.Snap;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
@@ -37,7 +39,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -93,13 +94,11 @@ namespace openHistorian.Adapters
                 MinFlags = MaxFlags = 0UL;
             }
 
-            public static readonly Peak Default = new Peak();
+            public static readonly Peak Default = new();
         }
 
-        /// <summary>
-        /// Represents a historian data source for the Grafana adapter.
-        /// </summary>
-        protected class HistorianDataSource : GrafanaDataSourceBase
+        // Represents a historian 2.0 data source for the Grafana adapter.
+        internal class OH2DataSource : GrafanaDataSourceBase
         {
             private readonly ulong m_baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
 
@@ -119,127 +118,180 @@ namespace openHistorian.Adapters
                 if (server is null)
                     yield break;
 
-                using (SnapClient connection = SnapClient.Connect(server))
-                using (ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName))
-                {
-                    if (database is null)
-                        yield break;
+                using SnapClient connection = SnapClient.Connect(server);
+                using ClientDatabaseBase<HistorianKey, HistorianValue> database = connection.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
 
-                    if (!TryParseInterval(interval, out TimeSpan resolutionInterval))
+                if (database is null)
+                    yield break;
+
+                if (!TryParseInterval(interval, out TimeSpan resolutionInterval))
+                {
+                    Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
+                    resolutionInterval = resolution.GetInterval();
+                }
+
+                BaselineTimeInterval timeInterval = resolutionInterval.Ticks switch
+                {
+                    < Ticks.PerMinute => BaselineTimeInterval.Second,
+                    < Ticks.PerHour => BaselineTimeInterval.Minute,
+                    Ticks.PerHour => BaselineTimeInterval.Hour,
+                    _ => BaselineTimeInterval.Second
+                };
+
+                startTime = startTime.BaselinedTimestamp(timeInterval);
+                stopTime = stopTime.BaselinedTimestamp(timeInterval);
+
+                if (startTime == stopTime)
+                    stopTime = stopTime.AddSeconds(1.0D);
+
+                SeekFilterBase<HistorianKey> timeFilter;
+
+                // Set timestamp filter resolution
+                if (includePeaks || resolutionInterval == TimeSpan.Zero)
+                {
+                    // Full resolution query
+                    timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                }
+                else
+                {
+                    // Interval query
+                    timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+                }
+
+                // Setup point ID selections
+                MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(targetMap.Keys);
+                Dictionary<ulong, ulong> lastTimes = new(targetMap.Count);
+                Dictionary<ulong, Peak> peaks = new(targetMap.Count);
+                ulong resolutionSpan = (ulong)resolutionInterval.Ticks;
+
+                if (includePeaks)
+                    resolutionSpan *= 2UL;
+
+                // Start stream reader for the provided time window and selected points
+                using TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter);
+                HistorianKey key = new();
+                HistorianValue value = new();
+                Peak peak = Peak.Default;
+
+                while (stream.Read(key, value))
+                {
+                    ulong pointID = key.PointID;
+                    ulong timestamp = key.Timestamp;
+                    float pointValue = value.AsSingle;
+
+                    if (includePeaks)
                     {
-                        Resolution resolution = TrendValueAPI.EstimatePlotResolution(InstanceName, startTime, stopTime, targetMap.Keys);
-                        resolutionInterval = resolution.GetInterval();
+                        peak = peaks.GetOrAdd(pointID, _ => new Peak());
+                        peak.Set(pointValue, timestamp, value.Value3);
                     }
 
-                    BaselineTimeInterval timeInterval = BaselineTimeInterval.Second;
+                    if (resolutionSpan > 0UL && timestamp - lastTimes.GetOrAdd(pointID, 0UL) < resolutionSpan)
+                        continue;
 
-                    if (resolutionInterval.Ticks < Ticks.PerMinute)
-                        timeInterval = BaselineTimeInterval.Second;
-                    else if (resolutionInterval.Ticks < Ticks.PerHour)
-                        timeInterval = BaselineTimeInterval.Minute;
-                    else if (resolutionInterval.Ticks == Ticks.PerHour)
-                        timeInterval = BaselineTimeInterval.Hour;
+                    // New value is ready for publication
+                    string target = targetMap[pointID];
 
-                    startTime = startTime.BaselinedTimestamp(timeInterval);
-                    stopTime = stopTime.BaselinedTimestamp(timeInterval);
-
-                    if (startTime == stopTime)
-                        stopTime = stopTime.AddSeconds(1.0D);
-
-                    SeekFilterBase<HistorianKey> timeFilter;
-
-                    // Set timestamp filter resolution
-                    if (includePeaks || resolutionInterval == TimeSpan.Zero)
+                    if (includePeaks)
                     {
-                        // Full resolution query
-                        timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+                        if (peak.MinTimestamp > 0UL)
+                        {
+                            yield return new DataSourceValue
+                            {
+                                Target = target,
+                                Value = peak.Min,
+                                Time = (peak.MinTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                Flags = (MeasurementStateFlags)peak.MinFlags
+                            };
+                        }
+
+                        if (peak.MaxTimestamp != peak.MinTimestamp)
+                        {
+                            yield return new DataSourceValue
+                            {
+                                Target = target,
+                                Value = peak.Max,
+                                Time = (peak.MaxTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                                Flags = (MeasurementStateFlags)peak.MaxFlags
+                            };
+                        }
+
+                        peak.Reset();
                     }
                     else
                     {
-                        // Interval query
-                        timeFilter = TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, resolutionInterval, new TimeSpan(TimeSpan.TicksPerMillisecond));
-                    }
-
-                    // Setup point ID selections
-                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(targetMap.Keys);
-                    Dictionary<ulong, ulong> lastTimes = new Dictionary<ulong, ulong>(targetMap.Count);
-                    Dictionary<ulong, Peak> peaks = new Dictionary<ulong, Peak>(targetMap.Count);
-                    ulong resolutionSpan = (ulong)resolutionInterval.Ticks;
-
-                    if (includePeaks)
-                        resolutionSpan *= 2UL;
-
-                    // Start stream reader for the provided time window and selected points
-                    using (TreeStream<HistorianKey, HistorianValue> stream = database.Read(SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter))
-                    {
-                        HistorianKey key = new HistorianKey();
-                        HistorianValue value = new HistorianValue();
-                        Peak peak = Peak.Default;
-
-                        while (stream.Read(key, value))
+                        yield return new DataSourceValue
                         {
-                            ulong pointID = key.PointID;
-                            ulong timestamp = key.Timestamp;
-                            float pointValue = value.AsSingle;
-
-                            if (includePeaks)
-                            {
-                                peak = peaks.GetOrAdd(pointID, _ => new Peak());
-                                peak.Set(pointValue, timestamp, value.Value3);
-                            }
-
-                            if (resolutionSpan > 0UL && timestamp - lastTimes.GetOrAdd(pointID, 0UL) < resolutionSpan)
-                                continue;
-
-                            // New value is ready for publication
-                            string target = targetMap[pointID];
-
-                            if (includePeaks)
-                            {
-                                if (peak.MinTimestamp > 0UL)
-                                {
-                                    yield return new DataSourceValue
-                                    {
-                                        Target = target,
-                                        Value = peak.Min,
-                                        Time = (peak.MinTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                        Flags = (MeasurementStateFlags)peak.MinFlags
-                                    };
-                                }
-
-                                if (peak.MaxTimestamp != peak.MinTimestamp)
-                                {
-                                    yield return new DataSourceValue
-                                    {
-                                        Target = target,
-                                        Value = peak.Max,
-                                        Time = (peak.MaxTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                        Flags = (MeasurementStateFlags)peak.MaxFlags
-                                    };
-                                }
-
-                                peak.Reset();
-                            }
-                            else
-                            {
-                                yield return new DataSourceValue
-                                {
-                                    Target = target,
-                                    Value = pointValue,
-                                    Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
-                                    Flags = (MeasurementStateFlags)value.Value3
-                                };
-                            }
-
-                            lastTimes[pointID] = timestamp;
-                        }
+                            Target = target,
+                            Value = pointValue,
+                            Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
+                            Flags = (MeasurementStateFlags)value.Value3
+                        };
                     }
+
+                    lastTimes[pointID] = timestamp;
+                }
+            }
+        }
+
+        // Represents a historian 1.0 data source for the Grafana adapter.
+        internal sealed class OH1DataSource : GrafanaDataSourceBase, IDisposable
+        {
+            private readonly ArchiveReader m_archiveReader;
+            private readonly long m_baseTicks;
+
+            public OH1DataSource(string instanceName)
+            {
+                m_archiveReader = new ArchiveReader();
+                m_archiveReader.DataReadException += (sender, args) => Logger.SwallowException(args.Argument);
+                m_archiveReader.Open(GetArchiveFileName(instanceName));
+
+                m_baseTicks = UnixTimeTag.BaseTicks.Value;
+
+                InstanceName = instanceName;
+            }
+
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool includePeaks, Dictionary<ulong, string> targetMap)
+            {
+                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), startTime, stopTime, false).Select(dataPoint => new DataSourceValue
+                {
+                    Target = targetMap[(ulong)dataPoint.HistorianID],
+                    Value = dataPoint.Value,
+                    Time = (dataPoint.Time.ToDateTime().Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
+                    Flags = dataPoint.Quality.MeasurementQuality()
+                });
+            }
+
+            public void Dispose()
+            {
+                m_archiveReader?.Dispose();
+            }
+
+            private static readonly Dictionary<string, string> s_archiveFileNames = new();
+
+            private static string GetArchiveFileName(string instanceName)
+            {
+                instanceName = instanceName.ToLowerInvariant();
+
+                lock (s_archiveFileNames)
+                {
+                    if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
+                        return archiveFileName;
+                    
+                    CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
+                    archiveFileName = settings?["FileName"]?.Value;
+
+                    if (string.IsNullOrWhiteSpace(archiveFileName))
+                        archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
+
+                    s_archiveFileNames[instanceName] = archiveFileName;
+
+                    return archiveFileName;
                 }
             }
         }
 
         // Fields
-        private HistorianDataSource m_dataSource;
+        private GrafanaDataSourceBase m_dataSource;
         private LocationData m_locationData;
         private string m_defaultApiPath;
 
@@ -271,7 +323,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets historian data source for this Grafana adapter.
         /// </summary>
-        protected HistorianDataSource DataSource
+        protected GrafanaDataSourceBase DataSource
         {
             get
             {
@@ -298,15 +350,42 @@ namespace openHistorian.Adapters
 
                 if (!string.IsNullOrWhiteSpace(instanceName))
                 {
-                    LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
+                    //                                                   012345
+                    // Support optional version in instance name (e.g., "1.0-STAT")
+                    const string versionPattern = @"^(\d+\.\d+)-";
 
-                    if (adapterInstance != null)
+                    Match match = Regex.Match(instanceName, versionPattern);
+                    int version = 1;
+
+                    if (match.Success)
                     {
-                        m_dataSource = new HistorianDataSource
+                        string decimalValue = match.Groups[1].Value;
+                        instanceName = instanceName.Substring(decimalValue.Length + 1);
+                        version = int.Parse(decimalValue.Split('.')[0]);
+                    }
+
+                    if (version is < 1 or > 2)
+                        version = 2;
+
+                    if (version == 1)
+                    {
+                        m_dataSource = new OH1DataSource(instanceName)
                         {
-                            InstanceName = instanceName,
-                            Metadata = adapterInstance.DataSource
+                            Metadata = GetAdapterInstance(TrendValueAPI.DefaultInstanceName)?.DataSource
                         };
+                    }
+                    else
+                    {
+                        LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
+
+                        if (adapterInstance != null)
+                        {
+                            m_dataSource = new OH2DataSource
+                            {
+                                InstanceName = instanceName,
+                                Metadata = adapterInstance.DataSource
+                            };
+                        }
                     }
                 }
 
@@ -314,11 +393,27 @@ namespace openHistorian.Adapters
             }
         }
 
-        private LocationData LocationData => m_locationData ?? (m_locationData = new LocationData { DataSource = DataSource });
+        // TODO: JRC - This looks to no longer be referenced - is radial distribution functionality still supported?
+        private LocationData LocationData => m_locationData ??= new LocationData { DataSource = DataSource };
 
         #endregion
 
         #region [ Methods ]
+
+        /// <summary>
+        /// Releases the unmanaged resources that are used by the object and, optionally, releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing)
+                return;
+
+            if (m_dataSource is IDisposable disposable)
+                disposable.Dispose();
+        }
 
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
@@ -412,7 +507,7 @@ namespace openHistorian.Adapters
                 if (string.IsNullOrWhiteSpace(request.target))
                     return string.Empty;
 
-                DataTable table = new DataTable();
+                DataTable table = new();
                 DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{request.target}'") ?? new DataRow[0];
 
                 if (rows.Length > 0)
@@ -592,12 +687,11 @@ namespace openHistorian.Adapters
             return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
-
         #endregion
 
         #region [ Static ]
 
-        private static readonly Regex s_intervalExpression = new Regex(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
+        private static readonly Regex s_intervalExpression = new(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
 
         // Static Methods
         private static bool TryParseInterval(string interval, out TimeSpan timeSpan)
@@ -638,13 +732,10 @@ namespace openHistorian.Adapters
 
         private static LocalOutputAdapter GetAdapterInstance(string instanceName)
         {
-            if (!string.IsNullOrWhiteSpace(instanceName))
-            {
-                if (LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance))
-                    return adapterInstance;
-            }
+            if (string.IsNullOrWhiteSpace(instanceName))
+                return null;
 
-            return null;
+            return LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance) ? adapterInstance : null;
         }
 
         #endregion
