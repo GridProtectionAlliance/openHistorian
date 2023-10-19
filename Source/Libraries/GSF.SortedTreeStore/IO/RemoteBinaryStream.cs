@@ -126,7 +126,7 @@ namespace GSF.Net
                 m_receivePosition += count;
                 return count;
             }
-            int origionalCount = count;
+            int originalCount = count;
 
             //first empty the receive buffer.
             if (receiveBufferLength > 0)
@@ -161,7 +161,7 @@ namespace GSF.Net
                     offset += receiveBufferLength;
                     count -= receiveBufferLength;
                 }
-                return origionalCount;
+                return originalCount;
             }
             else
             {
@@ -188,7 +188,7 @@ namespace GSF.Net
                 }
                 Array.Copy(m_receiveBuffer, 0, buffer, offset, count);
                 m_receivePosition = count;
-                return origionalCount;
+                return originalCount;
             }
         }
 

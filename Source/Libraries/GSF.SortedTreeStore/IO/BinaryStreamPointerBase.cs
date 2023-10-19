@@ -641,7 +641,7 @@ namespace GSF.IO
 
         private int Read2(byte[] value, int offset, int count)
         {
-            int origionalCount = count;
+            int originalCount = count;
             while (count > 0)
             {
                 if (RemainingReadLength <= 0)
@@ -654,7 +654,7 @@ namespace GSF.IO
                 count -= availableLength;
                 offset += availableLength;
             }
-            return origionalCount;
+            return originalCount;
         }
 
         public override void SetLength(long value)

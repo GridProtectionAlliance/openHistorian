@@ -48,7 +48,7 @@ namespace openVisN.Calculations
         {
             Dependencies[0].Calculate(signals);
 
-            SignalDataBase origionalSignal = signals[Dependencies[0].UniqueId];
+            SignalDataBase originalSignal = signals[Dependencies[0].UniqueId];
 
             SignalDataBase newSignal = TryGetSignal(m_newSignal, signals);
 
@@ -57,9 +57,9 @@ namespace openVisN.Calculations
 
             int pos = 0;
 
-            while (pos < origionalSignal.Count)
+            while (pos < originalSignal.Count)
             {
-                origionalSignal.GetData(pos, out ulong time, out double vm);
+                originalSignal.GetData(pos, out ulong time, out double vm);
                 pos++;
 
                 newSignal.AddData(time, vm * m_scalingFactor);
