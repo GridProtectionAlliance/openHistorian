@@ -28,7 +28,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <LangVersion>8</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="BenchmarkSockets.cs" />
     <Compile Include="CheckSHA1Guid.cs" />
+    <Compile Include="DownsampledWriter.cs" />
     <Compile Include="ConcurrentReading.cs" />
     <Compile Include="Diagnostics\StackTrace_Test.cs" />
     <Compile Include="GCTime.cs" />

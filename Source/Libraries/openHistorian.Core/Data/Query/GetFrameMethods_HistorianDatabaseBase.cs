@@ -129,27 +129,27 @@ namespace openHistorian.Data.Query
         /// <summary>
         /// Rounds the frame to the nearest level of specified tolerance.
         /// </summary>
-        /// <param name="origional">the frame to round</param>
+        /// <param name="original">the frame to round</param>
         /// <param name="toleranceMilliseconds">the timespan in milliseconds.</param>
         /// <returns>A new frame that is rounded.</returns>
-        public static SortedList<DateTime, FrameData> RoundToTolerance(this SortedList<DateTime, FrameData> origional, int toleranceMilliseconds)
+        public static SortedList<DateTime, FrameData> RoundToTolerance(this SortedList<DateTime, FrameData> original, int toleranceMilliseconds)
         {
-            return origional.RoundToTolerance(new TimeSpan(TimeSpan.TicksPerMillisecond * toleranceMilliseconds));
+            return original.RoundToTolerance(new TimeSpan(TimeSpan.TicksPerMillisecond * toleranceMilliseconds));
         }
 
         /// <summary>
         /// Rounds the frame to the nearest level of specified tolerance.
         /// </summary>
-        /// <param name="origional">the frame to round</param>
+        /// <param name="original">the frame to round</param>
         /// <param name="tolerance">the timespan to round on.</param>
         /// <returns>A new frame that is rounded.</returns>
-        public static SortedList<DateTime, FrameData> RoundToTolerance(this SortedList<DateTime, FrameData> origional, TimeSpan tolerance)
+        public static SortedList<DateTime, FrameData> RoundToTolerance(this SortedList<DateTime, FrameData> original, TimeSpan tolerance)
         {
             SortedList<DateTime, FrameData> results = new SortedList<DateTime, FrameData>();
 
             SortedList<DateTime, List<FrameData>> buckets = new SortedList<DateTime, List<FrameData>>();
 
-            foreach (KeyValuePair<DateTime, FrameData> items in origional)
+            foreach (KeyValuePair<DateTime, FrameData> items in original)
             {
                 DateTime roundedDate = items.Key.Round(tolerance);
                 if (!buckets.TryGetValue(roundedDate, out List<FrameData> frames))
@@ -205,12 +205,12 @@ namespace openHistorian.Data.Query
             return results;
         }
 
-        static DateTime Round(this DateTime origional, TimeSpan tolerance)
+        static DateTime Round(this DateTime original, TimeSpan tolerance)
         {
-            long delta = origional.Ticks % tolerance.Ticks;
+            long delta = original.Ticks % tolerance.Ticks;
             if (delta >= tolerance.Ticks >> 1)
-                return new DateTime(origional.Ticks - delta + tolerance.Ticks);
-            return new DateTime(origional.Ticks - delta);
+                return new DateTime(original.Ticks - delta + tolerance.Ticks);
+            return new DateTime(original.Ticks - delta);
         }
 
         static EnumerableHelper Min(EnumerableHelper left, EnumerableHelper right)

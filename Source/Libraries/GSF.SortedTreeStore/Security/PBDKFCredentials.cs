@@ -33,7 +33,7 @@ namespace GSF.Security
     /// </summary>
     internal class PBDKFCredentials
     {
-        //Origional Username and Passwords
+        //original Username and Passwords
         /// <summary>
         /// The UTF8 encoded normalized username.
         /// </summary>

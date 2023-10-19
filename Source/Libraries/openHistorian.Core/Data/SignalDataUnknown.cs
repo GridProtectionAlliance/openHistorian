@@ -29,7 +29,7 @@ namespace openHistorian.Data.Query
 {
     /// <summary>
     /// This type of signal only supports reading and writing data via 
-    /// its raw type. Type conversions are not supported since its origional
+    /// its raw type. Type conversions are not supported since its original
     /// type is unknown.
     /// </summary>
     public class SignalDataUnknown

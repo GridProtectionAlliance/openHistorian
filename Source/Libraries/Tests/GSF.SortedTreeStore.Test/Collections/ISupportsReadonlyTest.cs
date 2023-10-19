@@ -12,21 +12,21 @@ namespace GSF.Collections.Test
     {
         public static void Test<T>(IImmutableObject<T> obj)
         {
-            bool origional = obj.IsReadOnly;
+            bool original = obj.IsReadOnly;
 
             IImmutableObject<T> ro = (IImmutableObject<T>)obj.CloneReadonly();
             Assert.AreEqual(true, ro.IsReadOnly);
-            Assert.AreEqual(origional, obj.IsReadOnly);
+            Assert.AreEqual(original, obj.IsReadOnly);
 
             IImmutableObject<T> rw = (IImmutableObject<T>)obj.CloneEditable();
             Assert.AreEqual(false, rw.IsReadOnly);
-            Assert.AreEqual(origional, obj.IsReadOnly);
+            Assert.AreEqual(original, obj.IsReadOnly);
             rw.IsReadOnly = true;
-            Assert.AreEqual(origional, obj.IsReadOnly);
+            Assert.AreEqual(original, obj.IsReadOnly);
 
             Assert.AreEqual(true, rw.IsReadOnly);
             HelperFunctions.ExpectError(() => rw.IsReadOnly = false);
-            Assert.AreEqual(origional, obj.IsReadOnly);
+            Assert.AreEqual(original, obj.IsReadOnly);
 
             HelperFunctions.ExpectError(() => ro.IsReadOnly = false);
         }

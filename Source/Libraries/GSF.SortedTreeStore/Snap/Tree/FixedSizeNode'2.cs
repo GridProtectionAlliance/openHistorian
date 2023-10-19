@@ -230,7 +230,7 @@ namespace GSF.Snap.Tree
             if (RightSiblingNodeIndex != uint.MaxValue)
                 SetLeftSiblingProperty(RightSiblingNodeIndex, NodeIndex, newNodeIndex);
 
-            //update the origional header
+            //update the original header
             RecordCount = (ushort)recordsInTheFirstNode;
             ValidBytes = (ushort)(HeaderSize + recordsInTheFirstNode * KeyValueSize);
             RightSiblingNodeIndex = newNodeIndex;

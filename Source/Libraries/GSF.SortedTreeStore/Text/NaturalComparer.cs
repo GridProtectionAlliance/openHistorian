@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-// Origional Source From http://www.codeproject.com/Articles/22517/Natural-Sort-Comparer
+// Original Source From http://www.codeproject.com/Articles/22517/Natural-Sort-Comparer
 // Licensed under The Code Project Open License (CPOL)
 
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ using System.Text.RegularExpressions;
 namespace GSF.Text
 {
     /// <summary>
-    /// Does a sort on a string that is natual to how humans look at it. 
+    /// Does a sort on a string that is natural to how humans look at it. 
     /// Such as sorting numbers.
     /// </summary>
     public class NaturalComparer
