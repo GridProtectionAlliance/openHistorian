@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Linq;
 
 namespace GSF.Snap.Services
 {
@@ -108,6 +109,15 @@ namespace GSF.Snap.Services
             private set;
         }
 
+        /// <summary>
+        /// Gets the flags for the archive file.
+        /// </summary>
+        public Guid[] Flags
+        {
+            get;
+            private set;
+        }
+
         private ArchiveDetails()
         {
         }
@@ -126,7 +136,8 @@ namespace GSF.Snap.Services
                 IsEmpty = table.IsEmpty,
                 FileSize = table.SortedTreeTable.BaseFile.ArchiveSize,
                 FirstKey = table.FirstKey.ToString(),
-                LastKey = table.LastKey.ToString()
+                LastKey = table.LastKey.ToString(),
+                Flags = table.SortedTreeTable.BaseFile.Snapshot.Header.Flags.ToArray()
             };
 
 #if SQLCLR

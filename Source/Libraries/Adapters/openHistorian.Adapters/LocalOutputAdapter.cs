@@ -43,13 +43,17 @@ using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
 using GSF.IO.Unmanaged;
+using GSF.Snap.Filters;
 using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Storage;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using GSF.Units;
 using openHistorian.Model;
 using openHistorian.Net;
 using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
 using DeviceGroup = openHistorian.Model.DeviceGroup;
 using Measurement = openHistorian.Model.Measurement;
 using Timer = System.Timers.Timer;
@@ -97,6 +101,11 @@ namespace openHistorian.Adapters
         /// Defines the default value for <see cref="MaximumArchiveDays"/>.
         /// </summary>
         public const int DefaultMaximumArchiveDays = 0;
+
+        /// <summary>
+        /// Defines the default value for <see cref="DownsamplingIntervals"/>.
+        /// </summary>
+        public const string DefaultDownsamplingIntervals = "";
 
         /// <summary>
         /// Defines the default value for <see cref="AutoRemoveOldestFilesBeforeFull"/>.
@@ -152,6 +161,7 @@ namespace openHistorian.Adapters
         private Dictionary<ulong, DataRow> m_measurements;
         private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
         private readonly Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
+        private SortedList<int, double> m_downsamplingIntervals;
         private Timer m_archiveCurtailmentTimer;
         private SafeFileWatcher[] m_attachedPathWatchers;
         private bool m_disposed;
@@ -168,6 +178,7 @@ namespace openHistorian.Adapters
             m_key = new HistorianKey();
             m_value = new HistorianValue();
             m_swingingDoorStates = new Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>>();
+            m_downsamplingIntervals = new SortedList<int, double>();
         }
 
         #endregion
@@ -369,6 +380,51 @@ namespace openHistorian.Adapters
         public int MaximumArchiveDays { get; set; } = DefaultMaximumArchiveDays;
 
         /// <summary>
+        /// Gets or sets the scheduled downsampling intervals for this archive.
+        /// </summary>
+        [ConnectionStringParameter]
+        [Description("Define the scheduled downsampling intervals for this archive. Format: any number of downsampling-start-days=samples-per-second separated by semi-colons, e.g., 180=10; 365=1; 650=0.1")]
+        [DefaultValue(DefaultDownsamplingIntervals)]
+        public string DownsamplingIntervals
+        {
+            get
+            {
+                if (m_downsamplingIntervals.Count == 0)
+                    return string.Empty;
+
+                StringBuilder downsampling = new();
+
+                foreach (KeyValuePair<int, double> interval in m_downsamplingIntervals)
+                {
+                    if (downsampling.Length > 0)
+                        downsampling.Append("; ");
+
+                    downsampling.Append($"{interval.Key}={interval.Value}");
+                }
+
+                return downsampling.ToString();
+            }
+            set
+            {
+                m_downsamplingIntervals.Clear();
+
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                foreach (string interval in value.Split(';'))
+                {
+                    string[] parts = interval.Split('=');
+
+                    if (parts.Length != 2)
+                        continue;
+
+                    if (int.TryParse(parts[0].Trim(), out int startDay) && startDay > 0 && double.TryParse(parts[1].Trim(), out double samplesPerSecond) && samplesPerSecond > 0.0D)
+                        m_downsamplingIntervals[startDay] = samplesPerSecond;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the flag that determines if oldest archive files should be removed before running out of archive space.
         /// </summary>
         [ConnectionStringParameter]
@@ -501,6 +557,7 @@ namespace openHistorian.Adapters
                 status.AppendLine($"             Staging count: {m_archiveInfo.StagingCount:N0}");
                 status.AppendLine($"          Memory pool size: {Globals.MemoryPool.MaximumPoolSize / SI2.Giga:N4}GB");
                 status.AppendLine($"      Maximum archive days: {(MaximumArchiveDays < 1 ? "No limit" : MaximumArchiveDays.ToString("N0"))}");
+                status.AppendLine($"    Downsampling intervals: {(string.IsNullOrWhiteSpace(DownsamplingIntervals) ? "None defined" : DownsamplingIntervals)}");
                 status.AppendLine($"  Auto-remove old archives: {AutoRemoveOldestFilesBeforeFull}");
                 status.AppendLine($"  Time reasonability check: {(EnableTimeReasonabilityCheck ? "Enabled" : "Not Enabled")}");
                 status.AppendLine($" Archive curtailment timer: {Time.ToElapsedTimeString(ArchiveCurtailmentInterval, 0)}");
@@ -654,6 +711,18 @@ namespace openHistorian.Adapters
             if (settings.TryGetValue(nameof(AutoRemoveOldestFilesBeforeFull), out setting))
                 AutoRemoveOldestFilesBeforeFull = setting.ParseBoolean();
 
+            if (MaximumArchiveDays < 1 && !AutoRemoveOldestFilesBeforeFull)
+                OnStatusMessage(MessageLevel.Warning, "Maximum archive days not set and automated removal of oldest files before full disk is not enabled: system will not initiate archive file curtailment operations in this configuration. Disk space for target archive paths should be monitored externally.");
+
+            if (settings.TryGetValue(nameof(DownsamplingIntervals), out setting))
+                DownsamplingIntervals = setting;
+
+            if (MaximumArchiveDays > 0 && m_downsamplingIntervals.Any(kvp => kvp.Key >= MaximumArchiveDays))
+            {
+                OnStatusMessage(MessageLevel.Warning, $"Downsampling intervals defined for days greater than or equal to maximum archive days ({MaximumArchiveDays:N0}) will be ignored.");
+                m_downsamplingIntervals = new SortedList<int, double>(m_downsamplingIntervals.Where(kvp => kvp.Key < MaximumArchiveDays).ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+            }
+
             EnableTimeReasonabilityCheck = settings.TryGetValue(nameof(EnableTimeReasonabilityCheck), out setting) && setting.ParseBoolean();
 
             if (settings.TryGetValue(nameof(PastTimeReasonabilityLimit), out setting) && double.TryParse(setting, out double value))
@@ -682,6 +751,11 @@ namespace openHistorian.Adapters
 
             if (!settings.TryGetValue("CacheFlushInterval", out setting) || !int.TryParse(setting, out int cacheFlushInterval))
                 cacheFlushInterval = 100;
+
+            // Validate maximum downsampling intervals. Currently only 10 stages are defined, 0 to 9 - since configured
+            // staging count is typically 3, this allows 6 total downsampling intervals (as extra stages):
+            if (m_downsamplingIntervals.Count > 9 - stagingCount)
+                throw new InvalidOperationException($"Maximum of {9 - stagingCount} downsampling intervals are allowed.");
 
             // Establish archive information for this historian instance
             m_archiveInfo = new HistorianServerDatabaseConfig(InstanceName, WorkingDirectory, true);
@@ -787,32 +861,230 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Initiates archive file curtailment based on defined maximum archive days.
+        /// Initiates archive file curtailment based on defined maximum archive days, auto removal of oldest files before full disk and defined downsampling intervals.
         /// </summary>
-        [AdapterCommand("Initiates archive file curtailment based on defined maximum archive days.", "Administrator", "Editor")]
+        [AdapterCommand("Initiates archive file curtailment based on defined maximum archive days, auto removal of oldest files before full disk and defined downsampling intervals.", "Administrator", "Editor")]
         public void CurtailArchiveFiles()
         {
-            if (MaximumArchiveDays < 1)
+            if (AutoRemoveOldestFilesBeforeFull)
+                RemoveOldestFilesBeforeFull();
+
+            if (m_downsamplingIntervals.Count > 0)
+                DownsampleArchiveFiles();
+
+            if (MaximumArchiveDays > 0)
+                RemoveFilesOlderThanMaxArchiveDays();
+        }
+
+        private void RemoveOldestFilesBeforeFull()
+        {
+            // Set target space to be three times the target file size plus minimum disk space before considered full,
+            // this will allow three new final stage archive files to be written before next curtailment interval.
+            // Curtailment interval, desired remaining space and target file size can all be adjusted to better
+            // accommodate high volume data archiving in very low disk space environments.
+            long neededSpace = m_archiveInfo.DesiredRemainingSpace + 3 * m_archiveInfo.TargetFileSize;
+
+            try
             {
-                OnStatusMessage(MessageLevel.Info, "Maximum archive days not set, cannot initiate archive file curtailment.");
+                // Check if any target archive destination has enough disk space
+                foreach (string path in m_archiveDirectories)
+                {
+                    FilePath.GetAvailableFreeSpace(path, out long freeSpace, out _);
+
+                    // If any path has needed space, then we are done
+                    if (freeSpace > neededSpace)
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Oldest file removal operation cancelled: failed during check for full disk: {ex.Message}", ex));
+
+                // Do not continue with archive curtailment if disk space check failed
                 return;
             }
 
             try
             {
-                OnStatusMessage(MessageLevel.Info, "Attempting to curtail archive files based on defined maximum archive days...");
+                OnStatusMessage(MessageLevel.Warning, "Disk space is near full, scanning for oldest archive files...");
 
                 ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
 
-                // Get list of files that have both a start time and an end time that are greater than the maximum archive days. We check both start and end times
-                // since PMUs can provide bad time (not currently being filtered) and you don't want to accidentally delete a file with otherwise in-range data.
-                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file => (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays && (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
+                long fileSizeSum = 0;
+
+                // Find oldest archive files until we have reached target disk space. End time is preferred over start
+                // time for sorting since devices with an inaccurate GPS clock can provide bad start times when out
+                // of range timestamps are not configured to be filtered and you don't want to accidentally delete a
+                // file with otherwise in-range data.
+                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().OrderBy(file => file.EndTime).TakeWhile(item =>
+                {
+                    fileSizeSum += item.FileSize;
+                    return fileSizeSum < neededSpace;
+                }).ToArray();
+
                 database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
-                OnStatusMessage(MessageLevel.Info, $"Deleted the following old archive files:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString(Environment.NewLine + "    ")}");
+
+                OnStatusMessage(MessageLevel.Warning, $"Deleted the following oldest archive files in order to free disk space:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString($"{Environment.NewLine}    ")}");
             }
             catch (Exception ex)
             {
-                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed to limit maximum archive size: {ex.Message}", ex));
+                OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed while attempting to delete oldest archive files in order to free disk space: {ex.Message}", ex));
+            }
+        }
+
+        private void DownsampleArchiveFiles()
+        {
+            ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+            SortedList<int, ArchiveDetails[]> filesToDownsample = new();
+
+            try
+            {
+                OnStatusMessage(MessageLevel.Info, "Scanning archive files for downsampling...");
+
+                List<ArchiveDetails> attachedFiles = database.GetAllAttachedFiles();
+
+                // Start with oldest files first, this way they can be excluded from further downsampling if they are already targeted
+                int[] startDays = m_downsamplingIntervals.Keys.OrderByDescending(value => value).ToArray();
+                HashSet<ArchiveDetails> targetedArchives = new();
+
+                int downsamplingStage = m_archiveInfo.StagingCount + startDays.Length;
+
+                foreach (int startDay in startDays)
+                {
+                    // Get list of files that have both a start time and an end time that are greater than the target
+                    // start day for a given downsampling interval. We check both start and end times since devices
+                    // with an inaccurate GPS clock can provide bad time when out of range timestamps are not configured
+                    // to be filtered and you don't want to accidentally delete a file with otherwise in-range data.
+                    // We also filter on stage number to avoid downsampling files that have already been downsampled.
+                    HashSet<ArchiveDetails> matchingFiles = new(attachedFiles.Where(file =>
+                        (DateTime.UtcNow - file.StartTime).TotalDays > startDay &&
+                        (DateTime.UtcNow - file.EndTime).TotalDays > startDay &&
+                        FileFlags.GetStageNumber(file.Flags) < downsamplingStage &&
+                        !file.Flags.Contains(FileFlags.IntermediateFile)));
+
+                    // Start days are ordered from highest to lowest, so we decrement the downsampling stage
+                    downsamplingStage--;
+
+                    if (matchingFiles.Count == 0)
+                        continue;
+                    
+                    matchingFiles.ExceptWith(targetedArchives);
+
+                    if (matchingFiles.Count == 0)
+                        continue;
+
+                    filesToDownsample[startDay] = matchingFiles.ToArray();
+                    targetedArchives.UnionWith(matchingFiles);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed while scanning archive files for downsampling: {ex.Message}", ex));
+            }
+
+            if (filesToDownsample.Count == 0)
+                return;
+
+            try
+            {
+                int downsamplingStage = 1;
+
+                foreach (KeyValuePair<int, ArchiveDetails[]> kvp in filesToDownsample)
+                {
+                    int startDay = kvp.Key;
+                    ArchiveDetails[] files = kvp.Value;
+                    double samplesPerSecond = m_downsamplingIntervals[startDay];
+
+                    // Each successive downsampled file will be flagged with a higher stage count
+                    Guid stageFlags = FileFlags.GetStage(m_archiveInfo.StagingCount + downsamplingStage++);
+
+                    OnStatusMessage(MessageLevel.Info, $"Downsampling {files.Length:N0} archive files older than {startDay:N0} days to {samplesPerSecond} samples per second...");
+
+                    foreach (ArchiveDetails file in files)
+                    {
+                        string downsampledFile = DownsampleArchiveFile(file, samplesPerSecond, stageFlags);
+
+                        if (string.IsNullOrWhiteSpace(downsampledFile))
+                            continue;
+
+                        try
+                        {
+                            // Remove higher resolution file after successful downsampling
+                            database.DeleteFiles(new List<Guid>(new[] { file.Id }));
+
+                            // Attach downsampled resolution file to active historian instance
+                            database.AttachFilesOrPaths(new [] { downsampledFile });
+
+                            OnStatusMessage(MessageLevel.Info, $"Downsampled archive file \"{FilePath.GetFileName(file.FileName)}\" to {samplesPerSecond} samples per second.");
+                        }
+                        catch (Exception ex)
+                        {
+                            OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed while attempting to transition to downsampled archive file \"{FilePath.GetFileName(downsampledFile)}\": {ex.Message}", ex));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed downsampling archive files: {ex.Message}", ex));
+            }
+        }
+
+        private string DownsampleArchiveFile(ArchiveDetails file, double samplesPerSecond, Guid stageFlags)
+        {
+            try
+            {
+                DateTime startTime = file.StartTime;
+                DateTime endTime = file.EndTime;
+                TimeSpan interval = new((long)(TimeSpan.TicksPerSecond * samplesPerSecond));
+
+                using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
+                archiveList.LoadFiles(new[] { file.FileName });
+
+                using SequentialReaderStream<HistorianKey, HistorianValue> reader = new(archiveList, SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, endTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond)));
+
+                string sourcePath = FilePath.GetDirectoryName(file.FileName);
+                string completeFileName = Path.Combine(sourcePath, $"{FilePath.GetFileNameWithoutExtension(file.FileName)}-{samplesPerSecond}sps.d2");
+                string pendingFileName = Path.Combine(sourcePath, $"{FilePath.GetFileNameWithoutExtension(completeFileName)}.~d2i");
+
+                SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, HistorianFileEncodingDefinition.TypeGuid, reader, stageFlags);
+
+                return completeFileName;
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed while attempting to downsample archive file \"{FilePath.GetFileName(file.FileName)}\" to {samplesPerSecond} samples per second: {ex.Message}", ex));
+            }
+
+            return null;
+        }
+
+        private void RemoveFilesOlderThanMaxArchiveDays()
+        {
+            try
+            {
+                OnStatusMessage(MessageLevel.Info, $"Scanning for archive files older than {MaximumArchiveDays:N0} days...");
+
+                ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
+
+                // Get list of files that have both a start time and an end time that are greater than the maximum
+                // archive days. We check both start and end times since devices with an inaccurate GPS clock can
+                // provide bad time when out of range timestamps are not configured to be filtered and you don't
+                // want to accidentally delete a file with otherwise in-range data.
+                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file =>
+                    (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays &&
+                    (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
+
+                if (filesToDelete.Length <= 0)
+                    return;
+
+                database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
+
+                OnStatusMessage(MessageLevel.Info, $"Deleted the following archive files that were older than {MaximumArchiveDays:N0} days:\r\n    {filesToDelete.Select(file => FilePath.TrimFileName(file.FileName, 75)).ToDelimitedString($"{Environment.NewLine}    ")}");
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(MessageLevel.Warning, new InvalidOperationException($"Failed while attempting to delete archive files older than {MaximumArchiveDays:N0} days: {ex.Message}", ex));
             }
         }
 
@@ -1288,9 +1560,9 @@ namespace openHistorian.Adapters
             // TODO: Remove this code when device IDs have been updated to use GUIDs:
             // Make sure gateway protocol data publishers filter out device groups from metadata since groups reference local device IDs
             const string DefaultDeviceFilter = "FROM DeviceDetail WHERE IsConcentrator = 0;";
-            const string GSFDataPublisherTypeName = nameof(GSF) + "." + nameof(GSF.TimeSeries) + "." + nameof(GSF.TimeSeries.Transport) + "." + nameof(GSF.TimeSeries.Transport.DataPublisher);
+            const string GSFDataPublisherTypeName = $"{nameof(GSF)}.{nameof(GSF.TimeSeries)}.{nameof(GSF.TimeSeries.Transport)}.{nameof(GSF.TimeSeries.Transport.DataPublisher)}";
             const string GSFMetadataTables = nameof(GSFDataPublisher.MetadataTables);
-            const string STTPDataPublisherTypeName = nameof(sttp) + "." + nameof(sttp.DataPublisher);
+            const string STTPDataPublisherTypeName = $"{nameof(sttp)}.{nameof(sttp.DataPublisher)}";
             const string STTPMetadataTables = nameof(STTPDataPublisher.MetadataTables);
             int virtualProtocolID = s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
             string deviceGroupFilter = $"FROM DeviceDetail WHERE IsConcentrator = 0 AND NOT (ProtocolID = {virtualProtocolID} AND AccessID = {DeviceGroup.DefaultAccessID});";
