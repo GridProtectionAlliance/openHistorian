@@ -42,5 +42,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2.8.343.0")]
 [assembly: AssemblyFileVersion("2.8.343.0")]
 [assembly: InternalsVisibleTo("GSF.SortedTreeStore.Test")]
+[assembly: InternalsVisibleTo("openHistorian.Adapters")]
 [assembly: InternalsVisibleTo("openHistorian.PerformanceTests")]
 [assembly: InternalsVisibleTo("ArchiveIntegrityChecker")]
