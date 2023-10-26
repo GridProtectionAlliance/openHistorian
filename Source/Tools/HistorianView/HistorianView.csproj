@@ -211,6 +211,10 @@
     <Resource Include="Icons\navigate_check.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Applications\openHistorian\openHistorian\openHistorian.csproj">
+      <Project>{f6986f10-fc76-475b-a7d0-10315ebf4910}</Project>
+      <Name>openHistorian</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>GSF.SortedTreeStore</Name>

@@ -90,6 +90,7 @@
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="IO\BinaryStreamBenchmark.cs" />
     <Compile Include="MeasureCompression.cs" />
+    <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadonlyGuidDictionary_test.cs" />
@@ -132,6 +133,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NPlot\NPlot45.csproj">
+      <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
+      <Name>NPlot45</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>GSF.SortedTreeStore</Name>
@@ -144,7 +149,6 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
