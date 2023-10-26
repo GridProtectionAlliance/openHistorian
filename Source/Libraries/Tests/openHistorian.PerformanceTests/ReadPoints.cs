@@ -1,12 +1,12 @@
-﻿using GSF.Snap;
+﻿using System;
+using System.Diagnostics;
+using GSF.Snap;
 using GSF.Snap.Services;
 //using System.Windows.Forms;
 using GSF.Snap.Services.Reader;
 using NUnit.Framework;
 using openHistorian.Net;
 using openHistorian.Snap;
-using System;
-using System.Diagnostics;
 
 namespace openHistorian.PerformanceTests
 {
