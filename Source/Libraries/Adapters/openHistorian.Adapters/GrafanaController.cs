@@ -355,7 +355,7 @@ namespace openHistorian.Adapters
                     const string versionPattern = @"^(\d+\.\d+)-";
 
                     Match match = Regex.Match(instanceName, versionPattern);
-                    int version = 1;
+                    int version = 0;
 
                     if (match.Success)
                     {
