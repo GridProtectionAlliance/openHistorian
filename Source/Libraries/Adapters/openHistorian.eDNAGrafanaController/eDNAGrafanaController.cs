@@ -514,46 +514,6 @@ namespace openHistorian.eDNAGrafanaController
             return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
 
-        /// <summary>
-        /// Returns tag keys for ad hoc filters.
-        /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Tag keys request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [ActionName("tag-keys")]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<TagKeysResponse[]> TagKeys(string site, string service, TagKeysRequest request, CancellationToken cancellationToken)
-        {
-            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
-                RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
-
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.TagKeys(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagKeysResponse>());
-        }
-
-        /// <summary>
-        /// Returns tag values for ad hoc filters.
-        /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Tag values request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [ActionName("tag-values")]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<TagValuesResponse[]> TagValues(string site, string service, TagValuesRequest request, CancellationToken cancellationToken)
-        {
-            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
-                RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
-
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
-        }
-
         #endregion
     }
 }

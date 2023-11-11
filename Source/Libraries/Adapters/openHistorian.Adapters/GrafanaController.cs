@@ -231,8 +231,13 @@ namespace openHistorian.Adapters
                     lastTimes[pointID] = timestamp;
                 }
             }
-        }
 
+
+            public override Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new List<AnnotationResponse>());
+            }
+        }
         // Represents a historian 1.0 data source for the Grafana adapter.
         internal sealed class OH1DataSource : GrafanaDataSourceBase, IDisposable
         {
@@ -466,22 +471,6 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Queries openHistorian as a Grafana data source.
-        /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual void QueryAlarms(QueryRequest request, CancellationToken cancellationToken)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                GrafanaAlarmManagement.UpdateAlerts(request, GetAlarms(request, cancellationToken).Result);
-            }, cancellationToken);
-            
-        }
-
-        /// <summary>
         /// Queries openHistorian for DeviceGroups.
         /// </summary>
         /// <param name="request">Query request.</param>
@@ -502,22 +491,8 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
         {
-            return Task.Factory.StartNew(() => 
-            {
-                if (string.IsNullOrWhiteSpace(request.target))
-                    return string.Empty;
-
-                DataTable table = new();
-                DataRow[] rows = DataSource?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag = '{request.target}'") ?? new DataRow[0];
-
-                if (rows.Length > 0)
-                    table = rows.CopyToDataTable();
-
-                return JsonConvert.SerializeObject(table);
-            },
-            cancellationToken);
+            return DataSource?.GetMetadata(request) ?? Task.FromResult("");
         }
-
 
         /// <summary>
         /// Queries openHistorian as a Grafana Metadatas source for multiple targets.
@@ -602,42 +577,6 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Search openHistorian for a field.
-        /// </summary>
-        /// <param name="request">Search target.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchFields(Target request, CancellationToken cancellationToken)
-        {
-            return DataSource?.SearchFields(request, cancellationToken) ?? Task.FromResult(new string[0]);
-        }
-
-        /// <summary>
-        /// Search openHistorian for a table.
-        /// </summary>
-        /// <param name="request">Search target.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchFilters(Target request, CancellationToken cancellationToken)
-        {
-            return DataSource?.SearchFilters(request, cancellationToken) ?? Task.FromResult(new string[0]);
-        }
-
-        /// <summary>
-        /// Search openHistorian for a field.
-        /// </summary>
-        /// <param name="request">Search target.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> SearchOrderBys(Target request, CancellationToken cancellationToken)
-        {
-            return DataSource?.SearchOrderBys(request, cancellationToken) ?? Task.FromResult(new string[0]);
-        }
-
-        /// <summary>
         /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
         /// </summary>
         /// <param name="request">Annotation request.</param>
@@ -647,44 +586,6 @@ namespace openHistorian.Adapters
         public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
-        }
-
-        /// <summary>
-        /// Queries openPDC Alarms as a Grafana alarm data source.
-        /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<GrafanaAlarm>> GetAlarms(QueryRequest request, CancellationToken cancellationToken)
-        {
-            return DataSource?.GetAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAlarm>());
-        }
-
-        /// <summary>
-        /// Returns tag keys for ad hoc filters.
-        /// </summary>
-        /// <param name="request">Tag keys request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [ActionName("tag-keys")]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<TagKeysResponse[]> TagKeys(TagKeysRequest request, CancellationToken cancellationToken)
-        {
-            return DataSource?.TagKeys(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagKeysResponse>());
-        }
-
-        /// <summary>
-        /// Returns tag values for ad hoc filters.
-        /// </summary>
-        /// <param name="request">Tag values request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [ActionName("tag-values")]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<TagValuesResponse[]> TagValues(TagValuesRequest request, CancellationToken cancellationToken)
-        {
-            return DataSource?.TagValues(request, cancellationToken) ?? Task.FromResult(Array.Empty<TagValuesResponse>());
         }
 
         #endregion

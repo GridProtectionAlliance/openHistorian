@@ -133,7 +133,6 @@
     <Compile Include="FeedbackController.cs" />
     <Compile Include="GrafanaAuthProxyController.cs" />
     <Compile Include="GrafanaAlarmManagement.cs" />
-    <Compile Include="GrafanaPhasorController.cs" />
     <Compile Include="GrafanaController.cs" />
     <Compile Include="HadoopDataLoader.cs" />
     <Compile Include="Model\DeviceGroupClass.cs" />
