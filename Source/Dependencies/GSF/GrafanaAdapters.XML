@@ -24,56 +24,26 @@
             Request value.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.Annotation">
+        <member name="T:GrafanaAdapters.AnnotationRequestExtensions">
             <summary>
-            Defines a Grafana annotation.
+            Grafana <see cref="T:GrafanaAdapters.AnnotationRequest"/> extensions class.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.Annotation.name">
-            <summary>
-            Annotation name.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.Annotation.datasource">
-            <summary>
-            Annotation data source.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.Annotation.enable">
-            <summary>
-            Annotation enabled flag.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.Annotation.iconColor">
-            <summary>
-            Annotation icon color.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.Annotation.query">
-            <summary>
-            Annotation query.
-            </summary>
-        </member>
-        <member name="T:GrafanaAdapters.AnnotationExtensions">
-            <summary>
-            Grafana <see cref="T:GrafanaAdapters.Annotation"/> extensions class.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.TableName(GrafanaAdapters.AnnotationType)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.TableName(GrafanaAdapters.AnnotationType)">
             <summary>
             Gets table name for specified annotation <paramref name="type"/>.
             </summary>
             <param name="type">Annotation type.</param>
             <returns>Table name for specified annotation <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.TargetFieldName(GrafanaAdapters.AnnotationType)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.TargetFieldName(GrafanaAdapters.AnnotationType)">
             <summary>
             Gets the target field name for Guid based point IDs for table used with specified annotation <paramref name="type"/>.
             </summary>
             <param name="type">Annotation type.</param>
             <returns>Target field name for Guid based point IDs for specified annotation <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.IsApplicable(GrafanaAdapters.AnnotationType,System.Double[])">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.IsApplicable(GrafanaAdapters.AnnotationType,System.Double[])">
             <summary>
             Determines if the data point is applicable for specified annotation <paramref name="type"/>. 
             </summary>
@@ -81,7 +51,7 @@
             <param name="datapoint">Time series values data point.</param>
             <returns><c>true</c> if the data point is applicable for specified annotation <paramref name="type"/>; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.PopulateResponse(GrafanaAdapters.AnnotationType,GrafanaAdapters.AnnotationResponse,System.String,System.Data.DataRow,System.Double[],System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.PopulateResponse(GrafanaAdapters.AnnotationType,GrafanaAdapters.AnnotationResponse,System.String,System.Data.DataRow,System.Double[],System.Data.DataSet)">
             <summary>
             Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.
             </summary>
@@ -93,7 +63,7 @@
             <param name="source">Metadata of source definitions.</param>
             <returns>Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.ExtractQueryRequest(GrafanaAdapters.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.ExtractQueryRequest(GrafanaAdapters.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
             <summary>
             Extracts a Grafana <see cref="T:GrafanaAdapters.QueryRequest"/> from an <see cref="T:GrafanaAdapters.AnnotationRequest"/>.
             </summary>
@@ -102,33 +72,15 @@
             <param name="maxDataPoints">Maximum points to return.</param>
             <returns>Grafana query request object from an annotation <paramref name="request"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseQueryType(GrafanaAdapters.Annotation,System.Boolean@)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.ParseQueryType(GrafanaAdapters.AnnotationRequest,System.Boolean@)">
             <summary>
             Parses query expression from annotation for annotation type.
             </summary>
-            <param name="annotation">Grafana annotation.</param>
+            <param name="request">Grafana annotation.</param>
             <param name="useFilterExpression">Determines if query is using a filter expression.</param>
             <returns>Parsed annotation type for query expression from <paramref name="annotation"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseQueryType(GrafanaAdapters.AnnotationRequest,System.Boolean@)">
-            <summary>
-            Parses query expression from annotation request for annotation type.
-            </summary>
-            <param name="request">Grafana annotation request.</param>
-            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
-            <returns>Parsed annotation type for query expression from annotation <paramref name="request"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseSourceDefinitions(GrafanaAdapters.Annotation,GrafanaAdapters.AnnotationType,System.Data.DataSet,System.Boolean)">
-            <summary>
-            Parses source definitions for an annotation query.
-            </summary>
-            <param name="annotation">Grafana annotation.</param>
-            <param name="type">Annotation type.</param>
-            <param name="source">Metadata of source definitions.</param>
-            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
-            <returns>Parsed source definitions from <paramref name="annotation"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.ParseSourceDefinitions(GrafanaAdapters.AnnotationRequest,GrafanaAdapters.AnnotationType,System.Data.DataSet,System.Boolean)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.ParseSourceDefinitions(GrafanaAdapters.AnnotationRequest,GrafanaAdapters.AnnotationType,System.Data.DataSet,System.Boolean)">
             <summary>
             Parses source definitions for an annotation query.
             </summary>
@@ -136,9 +88,9 @@
             <param name="type">Annotation type.</param>
             <param name="source">Metadata of source definitions.</param>
             <param name="useFilterExpression">Determines if query is using a filter expression.</param>
-            <returns>Parsed source definitions from annotation <paramref name="request"/>.</returns>
+            <returns>Parsed source definitions from <paramref name="request"/>.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.TagFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.TagFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
             <summary>
             Looks up point tag from measurement <paramref name="key"/> value.
             </summary>
@@ -151,7 +103,7 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyFromTag(System.String,System.Data.DataSet,System.String)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.KeyFromTag(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up measurement key from point tag.
             </summary>
@@ -165,7 +117,7 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.KeyAndTagFromSignalID(System.String,System.Data.DataSet,System.String)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.KeyAndTagFromSignalID(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up measurement key from signal ID.
             </summary>
@@ -179,7 +131,7 @@
             for calls to this function be cached to improve performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.SplitAlias(System.String,System.String@)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.SplitAlias(System.String,System.String@)">
             <summary>
             Splits any defined alias from a point tag expression.
             </summary>
@@ -187,7 +139,7 @@
             <param name="alias">Alias, if defined.</param>
             <returns>Point tag name without any alias.</returns>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet,System.String)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.MetadataRecordFromTag(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up metadata record from point tag.
             </summary>
@@ -206,7 +158,7 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.AnnotationExtensions.MetadataRecordFromSignalID(System.String,System.Data.DataSet,System.String)">
+        <member name="M:GrafanaAdapters.AnnotationRequestExtensions.MetadataRecordFromSignalID(System.String,System.Data.DataSet,System.String)">
             <summary>
             Looks up metadata record from signal ID.
             </summary>
@@ -225,7 +177,7 @@
             Defines a Grafana annotation request.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.AnnotationRequest.annotation">
+        <member name="P:GrafanaAdapters.AnnotationRequest.annotationQuery">
             <summary>
             Annotation request details.
             </summary>
@@ -245,11 +197,6 @@
             Defines a Grafana annotation response.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.AnnotationResponse.annotation">
-            <summary>
-            Annotation in-response-to request.
-            </summary>
-        </member>
         <member name="P:GrafanaAdapters.AnnotationResponse.title">
             <summary>
             Annotation title.
@@ -258,6 +205,11 @@
         <member name="P:GrafanaAdapters.AnnotationResponse.time">
             <summary>
             Annotation time.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.AnnotationResponse.endTime">
+            <summary>
+            Annotation end time.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.AnnotationResponse.text">
@@ -283,6 +235,16 @@
         <member name="F:GrafanaAdapters.AnnotationType.ClearedAlarms">
             <summary>
             Cleared alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.Events">
+            <summary>
+            Manual event annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.AnnotationType.Alarms">
+            <summary>
+            All alarm annotation.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.AnnotationType.Undefined">
@@ -315,40 +277,83 @@
             Flag that determines if column is sorted descending.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.DataSourceValueGroup">
+        <member name="T:GrafanaAdapters.IDataSourceValueGroup">
             <summary>
-            Defines a class that represents an enumeration of <see cref="T:GrafanaAdapters.DataSourceValue"/> for a given target.
+            Defines a interace that represents an enumeration of T for a given target.
             </summary>
             <remarks>
-            This is a group construct keyed on <see cref="F:GrafanaAdapters.DataSourceValueGroup.Target"/> for data source value enumerations.
+            This is a group construct keyed on <see cref="P:GrafanaAdapters.IDataSourceValueGroup.Target"/> for data source value enumerations.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.Target">
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.Target">
             <summary>
-            Query target, e.g., a point-tag, representative of all <see cref="F:GrafanaAdapters.DataSourceValueGroup.Source"/> values.
+            Query target, e.g., a point-tag, representative of all Source/> values.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.RootTarget">
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.RootTarget">
             <summary>
             Defines the root target expression, without any referenced series functions.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.SourceTarget">
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.SourceTarget">
             <summary>
             Defines a reference to the original target that was the source of these results.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.Source">
-            <summary>
-            Data source values enumerable.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.DropEmptySeries">
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.DropEmptySeries">
             <summary>
             Defines flag that determines if empty series are produced.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSourceValueGroup.refId">
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.refId">
+            <summary>
+            Defines a refID for a specific Grafana Query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.IDataSourceValueGroup.metadata">
+            <summary>
+            Defines a refID for a specific Grafana Query.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.DataSourceValueGroup`1">
+            <summary>
+            Defines a class that represents an enumeration of T for a given target.
+            </summary>
+            <remarks>
+            This is a group construct keyed on <see cref="P:GrafanaAdapters.DataSourceValueGroup`1.Target"/> for data source value enumerations.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.Target">
+            <summary>
+            Query target, e.g., a point-tag, representative of all <see cref="P:GrafanaAdapters.DataSourceValueGroup`1.Source"/> values.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.RootTarget">
+            <summary>
+            Defines the root target expression, without any referenced series functions.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.SourceTarget">
+            <summary>
+            Defines a reference to the original target that was the source of these results.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.Source">
+            <summary>
+            Data source values enumerable.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.DropEmptySeries">
+            <summary>
+            Defines flag that determines if empty series are produced.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.refId">
+            <summary>
+            Defines a refID for a specific Grafana Query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.DataSourceValueGroup`1.metadata">
             <summary>
             Defines a refID for a specific Grafana Query.
             </summary>
@@ -690,12 +695,6 @@
             </summary>
             <param name="request">Query request.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.GetAlarms(GrafanaAdapters.QueryRequest)">
-            <summary>
-            Queries openPDC Alarms as a Grafana alarm data source.
-            </summary>
-            <param name="request">Query request.</param>
-        </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.GetMetadata(GrafanaAdapters.Target)">
             <summary>
             Queries openHistorian as a Grafana Metadata source.
@@ -708,48 +707,27 @@
             </summary>
             <param name="request">Search target.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.SearchFields(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of columns from a specific table.
-            </summary>
-            <param name="request">Table Name.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.SearchFilters(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of tables.
-            </summary>
-            <param name="request">Request.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.SearchOrderBys(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of columns from a specific table.
-            </summary>
-            <param name="request">Table Name.</param>
-        </member>
         <member name="M:GrafanaAdapters.GrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
             <summary>
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.GetLocationData(GrafanaAdapters.LocationRequest)">
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetTableOptions(System.Boolean)">
             <summary>
-            Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+            Queries available MetaData Options.
             </summary>
-            <param name="request"> Query request.</param>
-            <returns>JSON serialized location metadata for specified targets.</returns>
+            <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.TagKeys(GrafanaAdapters.TagKeysRequest)">
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetFunctions">
             <summary>
-            Requests available tag keys.
+            Queries description of available functions.
             </summary>
-            <param name="_">Tag keys request.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataService.TagValues(GrafanaAdapters.TagValuesRequest)">
+        <member name="M:GrafanaAdapters.GrafanaDataService.GetMetadataOptions(GrafanaAdapters.MetadataOptionsRequest)">
             <summary>
-            Requests available tag values.
+            Queries svailable metaDataFields for a given source.
             </summary>
-            <param name="request">Tag values request.</param>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
@@ -801,27 +779,6 @@
             <param name="request">Search target.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFields(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of columns from a specific table.
-            </summary>
-            <param name="request">Table Name.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchFilters(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of tables.
-            </summary>
-            <param name="request">Request - ignored.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.SearchOrderBys(GrafanaAdapters.Target,System.Threading.CancellationToken)">
-            <summary>
-            Search data source meta-data for a list of columns from a specific table to use for ORDER BY expression.
-            </summary>
-            <param name="request">Table Name.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.Annotations(GrafanaAdapters.AnnotationRequest,System.Threading.CancellationToken)">
             <summary>
             Queries data source for annotations in a time-range (e.g., Alarms).
@@ -829,20 +786,6 @@
             <param name="request">Annotation request.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>Queried annotations from data source.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagKeys(GrafanaAdapters.TagKeysRequest,System.Threading.CancellationToken)">
-            <summary>
-            Requests available tag keys.
-            </summary>
-            <param name="_">Tag keys request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.TagValues(GrafanaAdapters.TagValuesRequest,System.Threading.CancellationToken)">
-            <summary>
-            Requests available tag values.
-            </summary>
-            <param name="request">Tag values request.</param>
-            <param name="cancellationToken">Cancellation token.</param>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarmState(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
             <summary>
@@ -868,104 +811,164 @@
             <param name="cancellationToken">Cancellation token.</param>
             <returns> List of Device Groups.</returns>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetAlarms(GrafanaAdapters.QueryRequest,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetTableOptions(System.Boolean,System.Threading.CancellationToken)">
             <summary>
-            Query current alarms based on point list.
+            Queries available MetaData Options.
             </summary>
-            <param name="request">Alarm request.</param>
+            <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
             <param name="cancellationToken">Cancellation token.</param>
-            <returns> Queried alarm states.</returns>
+            <returns> Available MetaData Table options.</returns>
         </member>
-        <member name="T:GrafanaAdapters.SeriesFunction">
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetFunctionDescription(System.Threading.CancellationToken)">
             <summary>
-            Defines available functions that can operate on <see cref="T:GrafanaAdapters.TimeSeriesValues"/>.
+            Queries description of available functions.
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetMetadataOptions(GrafanaAdapters.MetadataOptionsRequest,System.Threading.CancellationToken)">
+            <summary>
+            Requests Grafana Metadata source for multiple targets.
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+            <param name="request"> The targets and the meta data requested</param>
+            <returns> Queried metadata.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetMetadata(GrafanaAdapters.Target)">
+            <summary>
+            Queries openHistorian as a Grafana Metadata source.
+            </summary>
+            <param name="request">Query request.</param>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FunctionParser.ParsedTarget`1.ParseTargets(System.String)">
+            <summary>
+            Parses an expresion like Func1(X,Y,Z);FUNC2(D,E,F) into sepperate ParsedTargets
+            </summary>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FunctionParser.Parse``1(System.String,GrafanaAdapters.GrafanaDataSourceBase,GrafanaAdapters.GrafanaFunctions.QueryDataHolder)">
+            <summary>
+            Parses an expresion using the available Grafana Functions
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="expression"> the Expresion to Parse</param>
+            <param name="dataSourceBase">The <see cref="T:GrafanaAdapters.GrafanaDataSourceBase"/></param>
+            <param name="queryData"> The Query information. </param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FunctionParser.GetPointTags(System.String,GrafanaAdapters.GrafanaDataSourceBase)">
+            <summary>
+            Turns an expression Target into PointTags (e.g. Filter, PPA:123)
+            </summary>
+            <param name="expression"></param>
+            <param name="dataSourceBase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FunctionParser.GetFunctionDescription">
+            <summary>
+            Gets the <see cref="T:GrafanaAdapters.FunctionDescription"/> for all available Functions.
+            </summary>
+            <returns> a <see cref="T:System.Collections.Generic.IEnumerable`1"/> </returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FunctionParser.SplitWithPrenteses(System.String,System.Char)">
+            <summary>
+            Splits a string by a character accounting for Prenteses not being split up
+            </summary>
+            <param name="expression"></param>
+            <param name="splitChar"></param>
+            <returns></returns>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction">
+            <summary>
+            Defines a common interface for Grafana functions.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Average">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Name">
             <summary>
-            Returns a single value that represents the mean of the values in the source series.
+            Gets the name of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Average(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Average(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Average, Avg, Mean<br/>
-            Execution: Immediate enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Minimum">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Description">
             <summary>
-            Returns a single value that is the minimum of the values in the source series.
+            Gets the description of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Minimum(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Minimum(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Minimum, Min<br/>
-            Execution: Immediate enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Maximum">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Type">
             <summary>
-            Returns a single value that is the maximum of the values in the source series.
+            Gets the type of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Maximum(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Maximum(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Maximum, Max<br/>
-            Execution: Immediate enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Total">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Regex">
             <summary>
-            Returns a single value that represents the sum of the values in the source series.
+            Gets the regular expression for matching the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Total(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Total(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
-            Variants: Total, Sum<br/>
-            Execution: Immediate enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Range">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Parameters">
             <summary>
-            Returns a single value that represents the range, i.e., <c>maximum - minimum</c>, of the values in the source series.
+            Gets the list of parameters of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Range(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Range(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Range<br/>
-            Execution: Immediate enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Count">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a single value that is the count of the values in the source series.
+            Performs the computation for DataSourceValue of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Count(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Count(PPA:1; PPA:2; PPA:3)</c><br/>
-            Variants: Count<br/>
-            Execution: Immediate enumeration.
-            </remarks>
+            <param name="parameters">The input parameters for the computation.</param>
+            <returns>A sequence of computed data source parameters.</returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Distinct">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IGrafanaFunction.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a series of values that represent the unique set of values in the source series.
+            Performs the computation for phasor of the Grafana function.
             </summary>
-            <remarks>
-            Signature: <c>Distinct(expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Distinct(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Distinct, Unique<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+            <param name="parameters">The input parameters for the computation.</param>
+            <returns>A sequence of computed data source parameters.</returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.AbsoluteValue">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.IParameter">
+            <summary>
+            Defines a common interface for parameters of Grafana functions.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter.Description">
+            <summary>
+            Gets or sets the description of the parameter.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter.Required">
+            <summary>
+            Gets or sets a value indicating whether the parameter is required.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter.ParameterType">
+            <summary>
+            Gets the type of the parameter.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter.ParameterTypeName">
+            <summary>
+            Gets or sets the type name of the parameter.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IParameter.SetValue(GrafanaAdapters.GrafanaDataSourceBase,System.Object,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean)">
+            <summary>
+            Sets the value of the parameter.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.IParameter`1">
+            <summary>
+            Defines a common interface for parameters of a specific type.
+            </summary>
+            <typeparam name="T">The type of the parameter.</typeparam>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter`1.Default">
+            <summary>
+            Gets default value of the parameter.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IParameter`1.Value">
+            <summary>
+            Gets or sets the actual value of the parameter.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.AbsoluteValue">
             <summary>
             Returns a series of values that represent the absolute value each of the values in the source series.
             </summary>
@@ -977,7 +980,41 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Add">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.AbsoluteValue.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.AbsoluteValue"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Add">
             <summary>
             Returns a series of values that represent each of the values in the source series added with N.
             N is a floating point value representing an additive offset to be applied to each value the source series.
@@ -991,172 +1028,88 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Subtract">
-            <summary>
-            Returns a series of values that represent each of the values in the source series subtracted by N.
-            N is a floating point value representing an subtractive offset to be applied to each value the source series.
-            N can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Subtract(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Subtract(2.2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Subtract<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Add.Name">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Multiply">
-            <summary>
-            Returns a series of values that represent each of the values in the source series multiplied by N.
-            N is a floating point value representing a multiplicative factor to be applied to each value the source series.
-            N can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Multiply(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Multiply(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Multiply<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Add.Description">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Divide">
-            <summary>
-            Returns a series of values that represent each of the values in the source series divided by N.
-            N is a floating point value representing a divisive factor to be applied to each value the source series.
-            N can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Divide(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Divide(1.732, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Divide<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Add.Type">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Modulo">
-            <summary>
-            Returns a series of values that represent each of the values in the source series modulo by N.
-            N is a floating point value representing a divisive factor to be applied to each value the source series.
-            N can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Modulo(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Mod(2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Modulo, Modulus, Mod<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Add.Regex">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Round">
-            <summary>
-            Returns a series of values that represent the rounded value, with N fractional digits, of each of the values in the source series.
-            N, optional, is a positive integer value representing the number of decimal places in the return value - defaults to 0.
-            </summary>
-            <remarks>
-            Signature: <c>Round([N = 0], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Round(3, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Round<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Add.Parameters">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Floor">
-            <summary>
-            Returns a series of values that represent the smallest integral value that is less than or equal to each of the values in the source series.
-            </summary>
-            <remarks>
-            Signature: <c>Floor(expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Floor(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
-            Variants: Floor<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Add.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Ceiling">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Add.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a series of values that represent the smallest integral value that is greater than or equal to each of the values in the source series.
+            Computes based on type PhasorValue
             </summary>
-            <remarks>
-            Signature: <c>Ceiling(expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Ceiling(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
-            Variants: Ceiling, Ceil<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Truncate">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Add.#ctor">
             <summary>
-            Returns a series of values that represent the integral part of each of the values in the source series.
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Add"/> class.
             </summary>
-            <remarks>
-            Signature: <c>Truncate(expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Truncate(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
-            Variants: Truncate, Trunc<br/>
-            Execution: Deferred enumeration.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.StandardDeviation">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Average">
             <summary>
-            Returns a single value that represents the standard deviation of the values in the source series. First parameter,
-            optional, is a boolean flag representing if the sample based calculation should be used - defaults to false, which
-            means the population based calculation should be used.
+            Returns a single value that represents the mean of the values in the source series.
             </summary>
             <remarks>
-            Signature: <c>StandardDeviation([useSampleCalc = false], expression)</c><br/>
+            Signature: <c>Average(expression)</c><br/>
             Returns: Single value.<br/>
-            Example: <c>StandardDeviation(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: StandardDeviation, StdDev<br/>
-            Execution: Immediate in-memory array load.
+            Example: <c>Average(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Average, Avg, Mean<br/>
+            Execution: Immediate enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Median">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Average.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Average.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Average.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Average.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Average.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Average.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a single value that represents the median of the values in the source series.
+            Computes based on type DataSourceValue
             </summary>
-            <remarks>
-            Signature: <c>Median(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Median(FILTER ActiveMeasurements WHERE SignalType='ALOG')</c><br/>
-            Variants: Median, Med, Mid<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Mode">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Average.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a single value that represents the mode of the values in the source series.
+            Computes based on type PhasorValue
             </summary>
-            <remarks>
-            Signature: <c>Mode(expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>Mode(FILTER TOP 5 ActiveMeasurements WHERE SignalType='DIGI')</c><br/>
-            Variants: Mode<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Top">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Average.#ctor">
             <summary>
-            Returns a series of N, or N% of total, values that are the largest in the source series.
-            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
-            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
-            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
-            N can either be constant value or a named target available from the expression. Any target values that fall between 0
-            and 1 will be treated as a percentage.
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Average"/> class.
             </summary>
-            <remarks>
-            Signature: <c>Top(N|N%, [normalizeTime = true], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Top(50%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Top, Largest<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Bottom">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Bottom">
             <summary>
             Returns a series of N, or N% of total, values that are the smallest in the source series.
             N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
             suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
-            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
+            Third parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             N can either be constant value or a named target available from the expression. Any target values that fall between 0
             and 1 will be treated as a percentage.
             </summary>
@@ -1168,96 +1121,138 @@
             Execution: Immediate in-memory array load.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Random">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Bottom.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Bottom.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Bottom.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Bottom.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Bottom.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Bottom.convertToValue(System.String,System.Int32)">
             <summary>
-            Returns a series of N, or N% of total, values that are a random sample of the values in the source series.
-            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
-            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
-            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
-            N can either be constant value or a named target available from the expression. Any target values that fall between 0
-            and 1 will be treated as a percentage.
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <param name="numberPoints"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Bottom.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Bottom.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Bottom.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Bottom"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Ceiling">
+            <summary>
+            Returns a series of values that represent the smallest integral value that is greater than or equal to each of the values in the source series.
             </summary>
             <remarks>
-            Signature: <c>Random(N|N%, [normalizeTime = true], expression)</c><br/>
+            Signature: <c>Ceiling(expression)</c><br/>
             Returns: Series of values.<br/>
-            Example: <c>Random(25%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: Random, Rand, Sample<br/>
-            Execution: Immediate in-memory array load.
+            Example: <c>Ceiling(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Ceiling, Ceil<br/>
+            Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.First">
-            <summary>
-            Returns a series of N, or N% of total, values from the start of the source series.
-            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
-            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
-            N can either be constant value or a named target available from the expression. Any target values that fall between 0
-            and 1 will be treated as a percentage.
-            </summary>
-            <remarks>
-            Signature: <c>First([N|N% = 1], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>First(5%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: First<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Ceiling.Name">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Last">
-            <summary>
-            Returns a series of N, or N% of total, values from the end of the source series.
-            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
-            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
-            N can either be constant value or a named target available from the expression. Any target values that fall between 0
-            and 1 will be treated as a percentage.
-            </summary>
-            <remarks>
-            Signature: <c>Last([N|N% = 1], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Last(150, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Last<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Ceiling.Description">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Percentile">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Ceiling.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Ceiling.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Ceiling.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Ceiling.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a single value that represents the Nth order percentile for the sorted values in the source series.
-            N is a floating point value, representing a percentage, that must range from 0 to 100.
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Ceiling.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Ceiling.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Ceiling"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Count">
+            <summary>
+            Returns a single value that is the count of the values in the source series.
             </summary>
             <remarks>
-            Signature: <c>Percentile(N[%], expression)</c><br/>
+            Signature: <c>Count(expression)</c><br/>
             Returns: Single value.<br/>
-            Example: <c>Percentile(10%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: Percentile, Pctl<br/>
-            Execution: Immediate in-memory array load.
+            Example: <c>Count(PPA:1; PPA:2; PPA:3)</c><br/>
+            Variants: Count<br/>
+            Execution: Immediate enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Difference">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Count.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Count.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Count.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Count.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Count.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Count.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a series of values that represent the difference between consecutive values in the source series.
+            Computes based on type DataSourceValue
             </summary>
-            <remarks>
-            Signature: <c>Difference(expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Difference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: Difference, Diff<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.TimeDifference">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Count.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a series of values that represent the time difference, in time units, between consecutive values in the source series. The units
-            parameter, optional, specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds,
-            Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or
-            AtomicUnitsOfTime - defaults to Seconds.
+            Computes based on type PhasorValue
             </summary>
-            <remarks>
-            Signature: <c>TimeDifference([units = Seconds], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>TimeDifference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: TimeDifference, TimeDiff, Elapsed<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+            <param name="parameters"></param>
+            <returns></returns>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Derivative">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Count.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Count"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Derivative">
             <summary>
             Returns a series of values that represent the rate of change, per time units, for the difference between consecutive values in the source
             series. The units parameter, optional, specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds,
@@ -1272,22 +1267,423 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.TimeIntegration">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Derivative.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Derivative.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Derivative.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Derivative.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Derivative.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Derivative.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Returns a single value that represents the time-based integration, i.e., the sum of <c>V(n) * (T(n) - T(n-1))</c> where time difference is
-            calculated in the specified time units, of the values in the source series. The units parameter, optional, specifies the type of time units
-            and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional
-            Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Hours.
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Derivative.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Derivative.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Derivative"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Difference">
+            <summary>
+            Returns a series of values that represent the difference between consecutive values in the source series.
             </summary>
             <remarks>
-            Signature: <c>TimeIntegration([units = Hours], expression)</c><br/>
-            Returns: Single value.<br/>
-            Example: <c>TimeIntegration(FILTER ActiveMeasurements WHERE SignalType='CALC' AND PointTag LIKE '%-MW:%')</c><br/>
-            Variants: TimeIntegration, TimeInt<br/>
-            Execution: Immediate enumeration.
+            Signature: <c>Difference(expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Difference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Difference, Diff<br/>
+            Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Interval">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Difference.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Difference.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Difference.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Difference.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Difference.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Difference.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Difference.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Difference.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Difference"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Distinct">
+            <summary>
+            Returns a series of values that represent the unique set of values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Distinct(expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Distinct(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Distinct, Unique<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Distinct.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Distinct.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Distinct.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Distinct.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Distinct.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Distinct.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Distinct.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Distinct.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Distinct"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Divide">
+            <summary>
+            Returns a series of values that represent each of the values in the source series divided by N.
+            N is a floating point value representing a divisive factor to be applied to each value the source series.
+            N can either be constant value or a named target available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>Divide(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Divide(1.732, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Divide<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Divide.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Divide.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Divide.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Divide.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Divide.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Divide.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Divide.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Divide.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Divide"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.ExcludeRange">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value falls outside the specified low and high.
+            The low and high parameter values are floating-point numbers that represent the range of values excluded in the return series. Fourth parameter, optional,
+            is a boolean flag that determines if range values are inclusive, i.e., excluded values are &lt;= low or &gt;= high - defaults to false, which means
+            values are exclusive, i.e., excluded values are &lt; low or &gt; high. Function allows a fifth optional parameter that is a boolean flag - when four
+            parameters are provided, fourth parameter determines if low value is inclusive and fifth parameter determines if high value is inclusive.
+            The low and high parameter values can either be constant values or named targets available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>ExcludeRange(low, high, expression, [lowInclusive = false], [highInclusive = false])</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>ExcludeRange(-180.0, 180.0, true, false, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
+            Variants: ExcludeRange, Exclude<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.ExcludeRange.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.ExcludeRange.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.ExcludeRange.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.ExcludeRange"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.FilterNaN">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value is a real number, i.e., value is not NaN.
+            Second parameter, optional, is a boolean flag that determines if infinite values should also be excluded - defaults to true.
+            </summary>
+            <remarks>
+            Signature: <c>FilterNaN(expression, [alsoFilterInfinity = true])</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>FilterNaN(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: FilterNaN<br/>
+            Execution: Deferred enumeration.
+            </remarks> 
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.FilterNaN.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.FilterNaN.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.FilterNaN.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.FilterNaN.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.FilterNaN.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FilterNaN.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FilterNaN.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.FilterNaN.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.FilterNaN"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.First">
+            <summary>
+            Returns a series of N, or N% of total, values from the start of the source series.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
+            N can either be constant value or a named target available from the expression. Any target values that fall between 0
+            and 1 will be treated as a percentage.
+            </summary>
+            <remarks>
+            Signature: <c>First([N|N% = 1], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>First(5%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: First<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.First.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.First.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.First.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.First.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.First.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.First.convertToValue(System.String,System.Int32)">
+            <summary>
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <param name="numberPoints"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.First.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.First.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.First.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.First"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Floor">
+            <summary>
+            Returns a series of values that represent the smallest integral value that is less than or equal to each of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Floor(expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Floor(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Floor<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Floor.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Floor.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Floor.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Floor.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Floor.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Floor.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Floor.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Floor.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Floor"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.IncludeRange">
+            <summary>
+            Returns a series of values that represent a filtered set of the values in the source series where each value falls between the specified low and high.
+            The low and high parameter values are floating-point numbers that represent the range of values allowed in the return series. Fourth parameter, optional,
+            is a boolean flag that determines if range values are inclusive, i.e., allowed values are &gt;= low and &lt;= high - defaults to false, which means
+            values are exclusive, i.e., allowed values are &gt; low and &lt; high. Function allows a fifth optional parameter that is a boolean flag - when four
+            parameters are provided, fourth parameter determines if low value is inclusive and fifth parameter determines if high value is inclusive.
+            The low and high parameter values can either be constant values or named targets available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>IncludeRange(low, high, expression, [lowInclusive = false], [highInclusive = false])</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>IncludeRange(59.90, 60.10, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: IncludeRange, Include<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IncludeRange.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IncludeRange.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IncludeRange.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IncludeRange.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.IncludeRange.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IncludeRange.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IncludeRange.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.IncludeRange.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.IncludeRange"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Interval">
             <summary>
             Returns a series of values that represent a decimated set of the values in the source series based on the specified interval N, in time units.
             N is a floating-point value that must be greater than or equal to zero that represents the desired time interval, in time units, for the returned
@@ -1305,83 +1701,41 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.IncludeRange">
-            <summary>
-            Returns a series of values that represent a filtered set of the values in the source series where each value falls between the specified low and high.
-            The low and high parameter values are floating-point numbers that represent the range of values allowed in the return series. Third parameter, optional,
-            is a boolean flag that determines if range values are inclusive, i.e., allowed values are &gt;= low and &lt;= high - defaults to false, which means
-            values are exclusive, i.e., allowed values are &gt; low and &lt; high. Function allows a fourth optional parameter that is a boolean flag - when four
-            parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.
-            The low and high parameter values can either be constant values or named targets available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>IncludeRange(low, high, [inclusive = false], expression)</c> -or- <c>IncludeRange(low, high, [lowInclusive = false], [highInclusive = false], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>IncludeRange(59.90, 60.10, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
-            Variants: IncludeRange, Include<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Interval.Name">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.ExcludeRange">
-            <summary>
-            Returns a series of values that represent a filtered set of the values in the source series where each value falls outside the specified low and high.
-            The low and high parameter values are floating-point numbers that represent the range of values excluded in the return series. Third parameter, optional,
-            is a boolean flag that determines if range values are inclusive, i.e., excluded values are &lt;= low or &gt;= high - defaults to false, which means
-            values are exclusive, i.e., excluded values are &lt; low or &gt; high. Function allows a fourth optional parameter that is a boolean flag - when four
-            parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.
-            The low and high parameter values can either be constant values or named targets available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>ExcludeRange(low, high, [inclusive = false], expression)</c> -or- <c>ExcludeRange(low, high, [lowInclusive = false], [highInclusive = false], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>ExcludeRange(-180.0, 180.0, true, false, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
-            Variants: ExcludeRange, Exclude<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Interval.Description">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.FilterNaN">
-            <summary>
-            Returns a series of values that represent a filtered set of the values in the source series where each value is a real number, i.e., value is not NaN.
-            First parameter, optional, is a boolean flag that determines if infinite values should also be excluded - defaults to true.
-            </summary>
-            <remarks>
-            Signature: <c>FilterNaN([alsoFilterInfinity = true], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>FilterNaN(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
-            Variants: FilterNaN<br/>
-            Execution: Deferred enumeration.
-            </remarks>        
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Interval.Type">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.UnwrapAngle">
-            <summary>
-            Returns a series of values that represent an adjusted set of angles that are unwrapped, per specified angle units, so that a comparable mathematical
-            operation can be executed. For example, for angles that wrap between -180 and +180 degrees, this algorithm unwraps the values to make the values
-            mathematically comparable. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians, Grads,
-            ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
-            </summary>
-            <remarks>
-            Signature: <c>UnwrapAngle([units = Degrees], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>UnwrapAngle(FSX_PMU2-PA1:VH; REA_PMU3-PA2:VH)</c><br/>
-            Variants: UnwrapAngle, Unwrap<br/>
-            Execution: Immediate in-memory array load.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Interval.Regex">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.WrapAngle">
-            <summary>
-            Returns a series of values that represent an adjusted set of angles that are wrapped, per specified angle units, so that angle values are consistently
-            between -180 and +180 degrees. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians,
-            Grads, ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
-            </summary>
-            <remarks>
-            Signature: <c>WrapAngle([units = Degrees], expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>WrapAngle(Radians, FILTER TOP 5 ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
-            Variants: WrapAngle, Wrap<br/>
-            Execution: Deferred enumeration.
-            </remarks>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Interval.Parameters">
+            <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Label">
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Interval.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Interval.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Interval.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Interval"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Label">
             <summary>
             Renames a series with the specified label value. If multiple series are targeted, labels will be indexed starting at one, e.g., if there are three
             series in the target expression with a label value of "Max", series would be labeled as "Max 1", "Max 2" and "Max 3". Group operations on this
@@ -1398,46 +1752,1321 @@
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.Evaluate">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Label.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Label.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Label.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Label.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Label.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Label.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Evaluates an expression over a slice of values in one or more series. The `evalExpression` parameter must always be expressed in braces, e.g., `{ expression }`;
-            expressions are strongly typed, but not case sensitive. Expressions are expected to return a value that can be evaluated as a floating-point number. Target tag
-            names are used as variables in the expression. The Evaluate function is always evaluated as a slice, any specified group operation prefix will be ignored.
-            Default .NET system types available to expressions are <see cref="T:System.Math"/> and <see cref="T:System.DateTime"/>. Use the "Imports" command to define more
-            types for expressions.
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Label.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Label.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Label"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Last">
+            <summary>
+            Returns a series of N, or N% of total, values from the end of the source series.
+            N, optional, is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.
+            N can either be constant value or a named target available from the expression. Any target values that fall between 0
+            and 1 will be treated as a percentage.
             </summary>
             <remarks>
-            Signature: <c>Evaluate(sliceTolerance, evalExpression, filterExpression)</c><br/>
-            Returns: Single value per slice.<br/>
-            Example: <c>eval(0.0333, {R * Sin(T * PI / 180)}, T=GPA_SHELBY-PA1:VH; R=GPA_SHELBY-PM1:V)</c><br/>
-            Variants: Evaluate, Eval<br/>
+            Signature: <c>Last([N|N% = 1], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Last(150, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Last<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Last.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Last.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Last.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Last.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Last.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Last.convertToValue(System.String,System.Int32)">
+            <summary>
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <param name="numberPoints"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Last.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Last.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Last.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Last"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Maximum">
+            <summary>
+            Returns a single value that is the maximum of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Maximum(expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Maximum(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Maximum, Max<br/>
+            Execution: Immediate enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Maximum.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Maximum.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Maximum.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Maximum.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Maximum.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Maximum.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Maximum.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Maximum.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Maximum"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Median">
+            <summary>
+            Returns a single value that represents the median of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Median(expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Median(FILTER ActiveMeasurements WHERE SignalType='ALOG')</c><br/>
+            Variants: Median, Med, Mid<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Median.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Median.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Median.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Median.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Median.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Median.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Median.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Median.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Median"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Minimum">
+            <summary>
+            Returns a single value that is the minimum of the values in the source series.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Minimum.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Minimum.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Minimum.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Minimum.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Minimum.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Minimum.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Minimum.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Minimum.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Minimum"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Mode">
+            <summary>
+            Returns a single value that represents the mode of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Mode(expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Mode(FILTER TOP 5 ActiveMeasurements WHERE SignalType='DIGI')</c><br/>
+            Variants: Mode<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Mode.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Mode.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Mode.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Mode.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Mode.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Mode.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Mode.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Mode.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Mode"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Modulo">
+            <summary>
+            Returns a series of values that represent each of the values in the source series modulo by N.
+            N is a floating point value representing a divisive factor to be applied to each value the source series.
+            N can either be constant value or a named target available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>Modulo(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Mod(2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Modulo, Modulus, Mod<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.SeriesFunction.None">
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Modulo.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Modulo.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Modulo.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Modulo.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Modulo.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Modulo.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
             <summary>
-            Not a recognized function.
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Modulo.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Modulo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Modulo"/> class.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.GroupOperation">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.MovingAverage">
             <summary>
-            Group series operations.
+            Returns a single value that represents the time-based integration, i.e., the sum of <c>V(n) * (T(n) - T(n-1))</c> where time difference is
+            calculated in the specified time units, of the values in the source series. The units parameter, optional, specifies the type of time units
+            and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional
+            Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Hours.
+            </summary>
+            <remarks>
+            Signature: <c>TimeIntegration([units = Hours], expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>TimeIntegration(FILTER ActiveMeasurements WHERE SignalType='CALC' AND PointTag LIKE '%-MW:%')</c><br/>
+            Variants: TimeIntegration, TimeInt<br/>
+            Execution: Immediate enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.MovingAverage.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.MovingAverage.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.MovingAverage.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.MovingAverage.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.MovingAverage.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.MovingAverage.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.MovingAverage.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.MovingAverage.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.MovingAverage"/> class.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GroupOperation.Set">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Multiply">
             <summary>
-            Operates on each series end-to-end.
+            Returns a series of values that represent each of the values in the source series multiplied by N.
+            N is a floating point value representing a multiplicative factor to be applied to each value the source series.
+            N can either be constant value or a named target available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>Multiply(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Multiply(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Multiply<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Multiply.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Multiply.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Multiply.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Multiply.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Multiply.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Multiply.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Multiply.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Multiply.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Multiply"/> class.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GroupOperation.Slice">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Percentile">
             <summary>
-            Operates on each series as a group per time-slice.
+            Returns a single value that represents the Nth order percentile for the sorted values in the source series.
+            N is a floating point value, representing a percentage, that must range from 0 to 100.
+            </summary>
+            <remarks>
+            Signature: <c>Percentile(N[%], expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Percentile(10%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: Percentile, Pctl<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Percentile.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Percentile.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Percentile.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Percentile.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Percentile.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Percentile.ConvertToValue(System.String)">
+            <summary>
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Percentile.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Percentile.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Percentile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Percentile"/> class.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.GroupOperation.None">
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Random">
             <summary>
-            Performs no group operation on the series set.
+            Returns a series of N, or N% of total, values that are a random sample of the values in the source series.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            Third parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
+            N can either be constant value or a named target available from the expression. Any target values that fall between 0
+            and 1 will be treated as a percentage.
             </summary>
+            <remarks>
+            Signature: <c>Random(N|N%, [normalizeTime = true], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Random(25%, FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: Random, Rand, Sample<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Random.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Random.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Random.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Random.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Random.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Random.convertToValue(System.String,System.Int32)">
+            <summary>
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <param name="numberPoints"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Random.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Random.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Random.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Random"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Range">
+            <summary>
+            Returns a single value that represents the range, i.e., <c>maximum - minimum</c>, of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Range(expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Range(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Range<br/>
+            Execution: Immediate enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Range.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Range.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Range.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Range.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Range.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Range.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Range.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Range.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Range"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Round">
+            <summary>
+            Returns a series of values that represent the rounded value, with N fractional digits, of each of the values in the source series.
+            N, optional, is a positive integer value representing the number of decimal places in the return value - defaults to 0.
+            </summary>
+            <remarks>
+            Signature: <c>Round([N = 0], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Round(3, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Round<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Round.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Round.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Round.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Round.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Round.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Round.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Round.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Round.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Round"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.SliceAdd">
+            <summary>
+            Returns a series of values that represent each of the values in the source series added with another series of values.
+            </summary>
+            <remarks>
+            Signature: <c>SliceAdd(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>SliceAdd(FILTER ActiveMeasurements WHERE SignalType='ABC', FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: SliceAdd<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAdd.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAdd.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAdd.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAdd.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAdd.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAdd.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAdd.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAdd.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.SliceAdd"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.SliceAverage">
+            <summary>
+            Returns a series of values that represent each of the values in the source series averaged with another series of values.
+            </summary>
+            <remarks>
+            Signature: <c>SliceAverage(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>SliceAverage(0.033, FILTER ActiveMeasurements WHERE SignalType='ABC', FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: SliceAverage<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAverage.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAverage.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAverage.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAverage.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceAverage.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAverage.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAverage.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceAverage.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.SliceAverage"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.SliceDivide">
+            <summary>
+            Returns a series of values that represent each of the values in the source series divided with another series of values.
+            </summary>
+            <remarks>
+            Signature: <c>SliceDivide(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>SliceDivide(0.033, FILTER ActiveMeasurements WHERE SignalType='ABC', FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: SliceDivide<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceDivide.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceDivide.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceDivide.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceDivide.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceDivide.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceDivide.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceDivide.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceDivide.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.SliceDivide"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.SliceMultiply">
+            <summary>
+            Returns a series of values that represent each of the values in the source series multiplied with another series of values.
+            </summary>
+            <remarks>
+            Signature: <c>SliceMultiply(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>SliceMultiply(0.033, FILTER ActiveMeasurements WHERE SignalType='ABC', FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: SliceMultiply<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceMultiply.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceMultiply.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceMultiply.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.SliceMultiply"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.SliceSubtract">
+            <summary>
+            Returns a series of values that represent each of the values in the source series subtracted with another series of values.
+            </summary>
+            <remarks>
+            Signature: <c>SliceSubtract(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>SliceSubtract(0.033, FILTER ActiveMeasurements WHERE SignalType='ABC', FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: SliceSubtract<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceSubtract.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceSubtract.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.SliceSubtract.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.SliceSubtract"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.StandardDeviation">
+            <summary>
+            Returns a single value that represents the standard deviation of the values in the source series. Second parameter,
+            optional, is a boolean flag representing if the sample based calculation should be used - defaults to false, which
+            means the population based calculation should be used.
+            </summary>
+            <remarks>
+            Signature: <c>StandardDeviation([useSampleCalc = false], expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>StandardDeviation(FILTER ActiveMeasurements WHERE SignalType='VPHM')</c><br/>
+            Variants: StandardDeviation, StdDev<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.StandardDeviation.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.StandardDeviation.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.StandardDeviation.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.StandardDeviation"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Subtract">
+            <summary>
+            Returns a series of values that represent each of the values in the source series subtracted by N.
+            N is a floating point value representing an subtractive offset to be applied to each value the source series.
+            N can either be constant value or a named target available from the expression.
+            </summary>
+            <remarks>
+            Signature: <c>Subtract(N, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Subtract(2.2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Variants: Subtract<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Subtract.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Subtract.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Subtract.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Subtract.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Subtract.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Subtract.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Subtract.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Subtract.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Subtract"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.TimeDifference">
+            <summary>
+            Returns a series of values that represent the time difference, in time units, between consecutive values in the source series. The units
+            parameter, optional, specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds,
+            Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or
+            AtomicUnitsOfTime - defaults to Seconds.
+            </summary>
+            <remarks>
+            Signature: <c>TimeDifference([units = Seconds], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>TimeDifference(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: TimeDifference, TimeDiff, Elapsed<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeDifference.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeDifference.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeDifference.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeDifference.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeDifference.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeDifference.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeDifference.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeDifference.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.TimeDifference"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.TimeIntegration">
+            <summary>
+            Returns a single value that represents the time-based integration, i.e., the sum of <c>V(n) * (T(n) - T(n-1))</c> where time difference is
+            calculated in the specified time units, of the values in the source series. The units parameter, optional, specifies the type of time units
+            and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional
+            Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Hours.
+            </summary>
+            <remarks>
+            Signature: <c>TimeIntegration([units = Hours], expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>TimeIntegration(FILTER ActiveMeasurements WHERE SignalType='CALC' AND PointTag LIKE '%-MW:%')</c><br/>
+            Variants: TimeIntegration, TimeInt<br/>
+            Execution: Immediate enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeIntegration.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeIntegration.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.TimeIntegration.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.TimeIntegration"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Top">
+            <summary>
+            Returns a series of N, or N% of total, values that are the largest in the source series.
+            N is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
+            suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
+            Third parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
+            N can either be constant value or a named target available from the expression. Any target values that fall between 0
+            and 1 will be treated as a percentage.
+            </summary>
+            <remarks>
+            Signature: <c>Top(N|N%, [normalizeTime = true], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Top(50%, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Top, Largest<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Top.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Top.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Top.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Top.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Top.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Top.convertToValue(System.String,System.Int32)">
+            <summary>
+            Used to convert value or percent to the number of points selected
+            </summary>
+            <param name="rawValue"></param>
+            <param name="numberPoints"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Top.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Top.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Top.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Top"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Total">
+            <summary>
+            Returns a single value that represents the sum of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Total(expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Total(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Total, Sum<br/>
+            Execution: Immediate enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Total.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Total.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Total.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Total.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Total.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Total.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Total.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Total.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Total"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.Truncate">
+            <summary>
+            Returns a series of values that represent the integral part of each of the values in the source series.
+            </summary>
+            <remarks>
+            Signature: <c>Truncate(expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Truncate(FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Truncate, Trunc<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Truncate.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Truncate.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Truncate.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Truncate.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.Truncate.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Truncate.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Truncate.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.Truncate.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.Truncate"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.UnwrapAngle">
+            <summary>
+            Returns a series of values that represent an adjusted set of angles that are unwrapped, per specified angle units, so that a comparable mathematical
+            operation can be executed. For example, for angles that wrap between -180 and +180 degrees, this algorithm unwraps the values to make the values
+            mathematically comparable. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians, Grads,
+            ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
+            </summary>
+            <remarks>
+            Signature: <c>UnwrapAngle([units = Degrees], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>UnwrapAngle(FSX_PMU2-PA1:VH; REA_PMU3-PA2:VH)</c><br/>
+            Variants: UnwrapAngle, Unwrap<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.UnwrapAngle.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.UnwrapAngle"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctions.WrapAngle">
+            <summary>
+            Returns a series of values that represent an adjusted set of angles that are wrapped, per specified angle units, so that angle values are consistently
+            between -180 and +180 degrees. The units parameter, optional, specifies the type of angle units and must be one of the following: Degrees, Radians,
+            Grads, ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.
+            </summary>
+            <remarks>
+            Signature: <c>WrapAngle(expression, [units = Degrees])</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>WrapAngle(Radians, FILTER TOP 5 ActiveMeasurements WHERE SignalType LIKE '%PHA')</c><br/>
+            Variants: WrapAngle, Wrap<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.WrapAngle.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.WrapAngle.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.WrapAngle.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.WrapAngle.Regex">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.GrafanaFunctions.WrapAngle.Parameters">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.WrapAngle.Compute(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type DataSourceValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.WrapAngle.ComputePhasor(System.Collections.Generic.List{GrafanaAdapters.GrafanaFunctions.IParameter})">
+            <summary>
+            Computes based on type PhasorValue
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctions.WrapAngle.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GrafanaAdapters.GrafanaFunctions.WrapAngle"/> class.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit">
+            <summary>
+            Represents a time unit that can be targeted in OpenHistorian Grafana functions.
+            This class is designed to handle various forms of time units and provides
+            a way to parse time units from strings.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit.Unit">
+            <summary>
+            Gets or sets the base time unit.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit.Factor">
+            <summary>
+            Gets or sets the factor by which to scale the base time unit.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit.TryParse(System.String,GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit@)">
+            <summary>
+            Tries to parse a string representation of a time unit to a <see cref="T:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit"/>.
+            </summary>
+            <param name="value">The string representation of the time unit to parse.</param>
+            <param name="targetTimeUnit">
+            When this method returns, contains the <see cref="T:GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit"/> equivalent
+            of the time unit contained in <paramref name="value"/>, if the conversion succeeded,
+            or null if the conversion failed. The conversion fails if the <paramref name="value"/>
+            is null or is not of the correct format. This parameter is passed uninitialized.
+            </param>
+            <returns>
+            <c>true</c> if <paramref name="value"/> was converted successfully; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctionBase.TimeConversion.FromTimeUnits(System.Double,GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit)">
+            <summary>
+            Converts a double value from a specified time unit and scaling factor to a <see cref="T:GSF.Units.Time"/> object.
+            </summary>
+            <param name="value">The double value to convert.</param>
+            <param name="target">The target time unit and scaling factor for the conversion.</param>
+            <returns>A <see cref="T:GSF.Units.Time"/> object that represents the converted value.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.GrafanaFunctionBase.TimeConversion.ToTimeUnits(GSF.Units.Time,GrafanaAdapters.GrafanaFunctionBase.TargetTimeUnit)">
+            <summary>
+            Converts a <see cref="T:GSF.Units.Time"/> object to a double value, scaled by a specified time unit and scaling factor.
+            </summary>
+            <param name="value">The <see cref="T:GSF.Units.Time"/> object to convert.</param>
+            <param name="target">The target time unit and scaling factor for the conversion.</param>
+            <returns>A double value that represents the converted and scaled time.</returns>
         </member>
         <member name="T:GrafanaAdapters.IGrafanaDataService">
             <summary>
@@ -1488,48 +3117,28 @@
             </summary>
             <param name="request">Search target.</param>
         </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchFields(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of columns from a specific table.
-            </summary>
-            <param name="request">Table Name.</param>
-        </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchFilters(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of tables.
-            </summary>
-            <param name="request">Request.</param>
-        </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.SearchOrderBys(GrafanaAdapters.Target)">
-            <summary>
-            Search data source for a list of columns from a specific table to use for ORDER BY expression.
-            </summary>
-            <param name="request">Table Name.</param>
-        </member>
         <member name="M:GrafanaAdapters.IGrafanaDataService.Annotations(GrafanaAdapters.AnnotationRequest)">
             <summary>
             Queries openHistorian for annotations in a time-range (e.g., Alarms).
             </summary>
             <param name="request">Annotation request.</param>
         </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.GetLocationData(GrafanaAdapters.LocationRequest)">
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetTableOptions(System.Boolean)">
             <summary>
-            Queries openHistorian location data for Grafana offsetting duplicate coordinates using a radial distribution.
+            Queries available MetaData Options.
             </summary>
-            <param name="request"> Query request.</param>
-            <returns>JSON serialized location metadata for specified targets.</returns>
+            <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
         </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.TagKeys(GrafanaAdapters.TagKeysRequest)">
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetFunctions">
             <summary>
-            Requests available tag keys.
+            Queries description of available functions.
             </summary>
-            <param name="_">Tag keys request.</param>
         </member>
-        <member name="M:GrafanaAdapters.IGrafanaDataService.TagValues(GrafanaAdapters.TagValuesRequest)">
+        <member name="M:GrafanaAdapters.IGrafanaDataService.GetMetadataOptions(GrafanaAdapters.MetadataOptionsRequest)">
             <summary>
-            Requests available tag values.
+            Queries available metaDataFields for a given set of tables.
             </summary>
-            <param name="request">Tag values request.</param>
+            <param name="request"> the set of Tables to be queried. </param>
         </member>
         <member name="T:GrafanaAdapters.LocationData">
             <summary>
@@ -1562,6 +3171,116 @@
         <member name="T:GrafanaAdapters.GrafanaAlarm">
             <summary>
             Defines a Grafana Alarm. Similar to the GSF Alarm but without <see cref="T:GrafanaAdapters.AlarmState"/> location request.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.ParameterDescription">
+            <summary>
+            Describes a Grafana Function Parameter.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.ParameterDescription.Description">
+            <summary>
+            The Description of the Parameter
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.ParameterDescription.Required">
+            <summary>
+            Indicates if this Parameter is required 
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.ParameterDescription.ParameterTypeName">
+            <summary>
+            Derscribes the type of the parameter.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.FunctionDescription">
+            <summary>
+            Describes a Grafana Function.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.FunctionDescription.Name">
+            <summary>
+            gets the Name of the Function
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.FunctionDescription.Description">
+            <summary>
+            Gets the Description of the Function
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.FunctionDescription.Parameters">
+            <summary>
+            gets the Descritpion for the available Parameters.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.MetadataTargetRequest">
+            <summary>
+            Represents a request object for metadata results for a specific Target.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.MetadataTargetRequest.Target">
+            <summary>
+            Gets or sets the target string.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.MetadataTargetRequest.Tables">
+            <summary>
+            Gets or sets the tables array.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.MetadataOptionsRequest">
+            <summary>
+            Represents a request object for available metadata options.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.MetadataOptionsRequest.Tables">
+            <summary>
+            Gets or sets the array of table names.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.PhasorValue">
+            <summary>
+            Defines a structure that represents an individual time-series value from a data source.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.MagnitudeTarget">
+            <summary>
+            Query magnitude target, e.g., a point-tag.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.AngleTarget">
+            <summary>
+            Query magnitude target, e.g., a point-tag.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.Magnitude">
+            <summary>
+            Queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.Angle">
+            <summary>
+            Queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.Time">
+            <summary>
+            Timestamp, in Unix epoch milliseconds, of queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.PhasorValue.Flags">
+            <summary>
+            Flags for queried value.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.PhasorValueComparer">
+            <summary>
+            Helper class to compare two phasors
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.PhasorValueComparer.Compare(GrafanaAdapters.PhasorValue,GrafanaAdapters.PhasorValue)">
+            <summary>
+            Compare function
             </summary>
         </member>
         <member name="T:GrafanaAdapters.QueryRequest">
@@ -1617,6 +3336,11 @@
         <member name="P:GrafanaAdapters.QueryRequest.adhocFilters">
             <summary>
             Ad-hoc filters to apply.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.QueryRequest.isPhasor">
+            <summary>
+            Specifies if is in Phasor mode.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.Range">
@@ -1689,46 +3413,6 @@
             Query request.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.TagKeysRequest">
-            <summary>
-            Defines a Grafana tag-keys request.
-            </summary>
-        </member>
-        <member name="T:GrafanaAdapters.TagKeysResponse">
-            <summary>
-            Defines a Grafana tag-keys response.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.TagKeysResponse.type">
-            <summary>
-            Response type.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.TagKeysResponse.text">
-            <summary>
-            Response text.
-            </summary>
-        </member>
-        <member name="T:GrafanaAdapters.TagValuesRequest">
-            <summary>
-            Defines a Grafana tag-values request.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.TagValuesRequest.key">
-            <summary>
-            Request key.
-            </summary>
-        </member>
-        <member name="T:GrafanaAdapters.TagValuesResponse">
-            <summary>
-            Defines a Grafana tag-values response.
-            </summary>
-        </member>
-        <member name="P:GrafanaAdapters.TagValuesResponse.text">
-            <summary>
-            Response text.
-            </summary>
-        </member>
         <member name="T:GrafanaAdapters.Target">
             <summary>
             Defines a Grafana query request target.
@@ -1744,9 +3428,14 @@
             Target point/tag name.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.Target.type">
+        <member name="P:GrafanaAdapters.Target.isPhasor">
             <summary>
-            Target type, can be "timeseries" or "table".
+            Target method, can either be phasor or not
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Target.metadataSelection">
+            <summary>
+            Metadata selections
             </summary>
         </member>
         <member name="P:GrafanaAdapters.Target.excludedFlags">
@@ -1792,6 +3481,16 @@
         <member name="F:GrafanaAdapters.DataSourceValue.Flags">
             <summary>
             Flags for queried value.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.DataSourceValueComparer">
+            <summary>
+            Helper class to compare two datasources
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.DataSourceValueComparer.Compare(GrafanaAdapters.DataSourceValue,GrafanaAdapters.DataSourceValue)">
+            <summary>
+            Compare function
             </summary>
         </member>
         <member name="T:GrafanaAdapters.TimeSeriesValues">
@@ -1882,34 +3581,34 @@
             The name of the PMU
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.TimeSliceScanner">
+        <member name="T:GrafanaAdapters.TimeSliceScanner`1">
             <summary>
-            Reads series of <see cref="T:GrafanaAdapters.DataSourceValue"/> instances for the same time interval.
+            Reads series of instances for the same time interval.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.TimeSliceScanner.#ctor(System.Collections.Generic.IEnumerable{GrafanaAdapters.DataSourceValueGroup},System.Double)">
+        <member name="M:GrafanaAdapters.TimeSliceScanner`1.#ctor(System.Collections.Generic.IEnumerable{GrafanaAdapters.DataSourceValueGroup{`0}},System.Double)">
             <summary>
-            Creates a new <see cref="T:GrafanaAdapters.TimeSliceScanner"/>.
+            Creates a new <see cref="T:GrafanaAdapters.TimeSliceScanner`1"/>.
             </summary>
-            <param name="dataset">Source <see cref="T:GrafanaAdapters.DataSourceValue"/> series to scan.</param>
+            <param name="dataset">Source series to scan.</param>
             <param name="tolerance">Time tolerance for data slices in Unix epoch milliseconds.</param>
         </member>
-        <member name="P:GrafanaAdapters.TimeSliceScanner.DataReadComplete">
+        <member name="P:GrafanaAdapters.TimeSliceScanner`1.DataReadComplete">
             <summary>
             Gets a flag that determines if data read has been completed.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.TimeSliceScanner.Tolerance">
+        <member name="P:GrafanaAdapters.TimeSliceScanner`1.Tolerance">
             <summary>
             Gets time tolerance for data slices in Unix epoch milliseconds.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.TimeSliceScanner.ReadNextTimeSlice(System.Boolean)">
+        <member name="M:GrafanaAdapters.TimeSliceScanner`1.ReadNextTimeSlice(System.Boolean)">
             <summary>
             Reads next time slice from the series set.
             </summary>
             <param name="lastValue">
-            Set to <c>true</c> to only publish last value per-series in time-slice for specified <see cref="P:GrafanaAdapters.TimeSliceScanner.Tolerance"/>;
+            Set to <c>true</c> to only publish last value per-series in time-slice for specified <see cref="P:GrafanaAdapters.TimeSliceScanner`1.Tolerance"/>;
             otherwise, <c>false</c> to publish all series values since last slice.
             </param>
             <returns>Next time slice.</returns>
