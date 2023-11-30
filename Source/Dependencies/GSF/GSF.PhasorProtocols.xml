@@ -10572,11 +10572,12 @@
             <param name="exceptionHandler"><see cref="T:System.Action`1"/> delegate to handle process exceptions.</param>
             <param name="configurationName"><see cref="T:System.String"/> representing the configuration name.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String)">
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String,System.String)">
             <summary>
             Gets the file name with path of the specified <paramref name="configurationName"/>.
             </summary>
             <param name="configurationName">Name of the configuration to get file name for.</param>
+            <param name="extension">Extension of the configuration file.</param>
             <returns>File name with path of the specified <paramref name="configurationName"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.DeleteCachedConfiguration(System.String)">
