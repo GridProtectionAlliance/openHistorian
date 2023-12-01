@@ -1578,6 +1578,11 @@
             <param name="commandBuffer">Data buffer received from connected client device.</param>
             <param name="length">Valid length of data within the buffer.</param>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.JsonConfigurationPath">
+            <summary>
+            Gets the path to the configuration cache directory.
+            </summary>
+        </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadConfigurationOutOfSyncMarker(System.String)">
             <summary>
             Loads flag that determines if device configuration has changed since last update in host system.
