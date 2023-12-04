@@ -6146,6 +6146,16 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogValue"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.AnalogValue.Definition3">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogDefinition3"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.AnalogValue.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.AnalogValueBase"/> object.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.IEEEC37_118.CommandFrame">
             <summary>
             Represents the IEEE C37.118 implementation of a <see cref="T:GSF.PhasorProtocols.ICommandFrame"/> that can be sent or received.
@@ -6200,6 +6210,11 @@
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.CommandFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.CommandFrame.Version">
             <summary>
@@ -7162,11 +7177,6 @@
             (total length - length of point definitions).
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.m_timebase">
-            <summary>
-            Represents the TimeBase of the configuration frame.
-            </summary>
-        </member>
         <member name="M:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/>.
@@ -7216,6 +7226,11 @@
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1.CommonHeader">
             <summary>
@@ -7591,6 +7606,11 @@
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.DataFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.DataFrame.TypeID">
             <summary>
@@ -8128,6 +8148,11 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.HeaderFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.HeaderFrame.TypeID">
             <summary>
             Gets the identifier that is used to identify the IEEE C37.118 frame.
@@ -8291,6 +8316,11 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.Definition3">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition3"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.UnscaledReal">
             <summary>
             Gets or sets the unscaled integer representation of the real value of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
@@ -8299,6 +8329,11 @@
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.UnscaledImaginary">
             <summary>
             Gets or sets the unscaled integer representation of the imaginary value of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.AnalogValueBase"/> object.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SourceChannel">
@@ -10878,6 +10913,11 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.CommandFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEC61850_90_5.CommandFrame.Version">
             <summary>
             Gets the IEC 61850-90-5 protocol version of this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.CommandFrame"/>.
@@ -12033,6 +12073,11 @@
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame.CommonHeader">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader"/>.
@@ -12373,6 +12418,11 @@
             <remarks>
             The value of this property represents the number of 100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001.
             </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.IDCode">
+            <summary>
+            Gets or sets the ID code.
+            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.TypeID">
             <summary>
