@@ -6146,6 +6146,16 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogValue"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.AnalogValue.Definition3">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogDefinition3"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.AnalogValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.AnalogValue.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.AnalogValueBase"/> object.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.IEEEC37_118.CommandFrame">
             <summary>
             Represents the IEEE C37.118 implementation of a <see cref="T:GSF.PhasorProtocols.ICommandFrame"/> that can be sent or received.
@@ -8306,6 +8316,11 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.Definition3">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorDefinition3"/> associated with this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.UnscaledReal">
             <summary>
             Gets or sets the unscaled integer representation of the real value of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
@@ -8314,6 +8329,11 @@
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.UnscaledImaginary">
             <summary>
             Gets or sets the unscaled integer representation of the imaginary value of this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.PhasorValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.PhasorValue.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.AnalogValueBase"/> object.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SourceChannel">
