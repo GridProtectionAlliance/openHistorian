@@ -10,37 +10,44 @@
             </summary>
             <typeparam name="T">The corresponding Model.</typeparam>
         </member>
-        <member name="T:GSF.Web.Model.ModelController`1.Search">
+        <member name="T:GSF.Web.Model.ModelController`2">
+            <summary>
+            Base Class for A Webcontroller that provides common Model endpoints such as Edit, Delete, Search.
+            </summary>
+            <typeparam name="T">The corresponding Model for Search/Fetch Results.</typeparam>
+            <typeparam name="U">The corresponding Model for database editing.</typeparam>
+        </member>
+        <member name="T:GSF.Web.Model.ModelController`2.Search">
             <summary>
             Class Providing Search Parameters for the Search Endpoints
             </summary>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.#ctor">
+        <member name="M:GSF.Web.Model.ModelController`2.#ctor">
             <summary>
-            Creates a new <see cref="T:GSF.Web.Model.ModelController`1"/>
+            Creates a new <see cref="T:GSF.Web.Model.ModelController`2"/>
             </summary>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetNew">
+        <member name="M:GSF.Web.Model.ModelController`2.GetNew">
             <summary>
             Used to get an empty record
             </summary>
             <returns>An empty record</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String)">
+        <member name="M:GSF.Web.Model.ModelController`2.Get(System.String)">
             <summary>
             Gets all records from associated table, filtered to parent key ID if provided
             </summary>
             <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetOne(System.String)">
+        <member name="M:GSF.Web.Model.ModelController`2.GetOne(System.String)">
             <summary>
             Gets record from associated table with a primary key matching the <paramref name="id"/> provided.
             </summary>
             <param name="id">ID to be used</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <typeparamref name="T"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String,System.Int32)">
+        <member name="M:GSF.Web.Model.ModelController`2.Get(System.String,System.Int32)">
             <summary>
             Gets a sorted list of <typeparamref name="T"/>.
             </summary>
@@ -48,7 +55,7 @@
             <param name="ascending"> parameter to indicate whether the list is in ascending order.</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Get(System.String,System.String,System.Int32)">
+        <member name="M:GSF.Web.Model.ModelController`2.Get(System.String,System.String,System.Int32)">
             <summary>
             Gets all records from associated table, filtered to parent key ID if provided, sorted by the provided Field.
             </summary>
@@ -57,98 +64,98 @@
             <param name="ascending"> parameter to indicate whether the list is in ascending order.</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Post(Newtonsoft.Json.Linq.JObject)">
+        <member name="M:GSF.Web.Model.ModelController`2.Post(Newtonsoft.Json.Linq.JObject)">
             <summary>
             Adds a new Record.
             </summary>
-            <param name="record"> The <typeparamref name="T"/> record to be added.</param>
+            <param name="record"> The <typeparamref name="U"/> record to be added.</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the added record or <see cref="T:System.Exception"/> </returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Patch(`0)">
+        <member name="M:GSF.Web.Model.ModelController`2.Patch(`1)">
             <summary>
             Updates an existing Record.
             </summary>
-            <param name="record"> The <typeparamref name="T"/> record to be updated.</param>
+            <param name="record"> The <typeparamref name="U"/> record to be updated.</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the updated record or <see cref="T:System.Exception"/> </returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.Delete(`0)">
+        <member name="M:GSF.Web.Model.ModelController`2.Delete(`1)">
             <summary>
             Deletes an existing Record.
             </summary>
-            <param name="record"> The <typeparamref name="T"/> record to be deleted.</param>
+            <param name="record"> The <typeparamref name="U"/> record to be deleted.</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing the number of records deleted or <see cref="T:System.Exception"/> </returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetSearchableList(GSF.Web.Model.ModelController{`0}.PostData)">
+        <member name="M:GSF.Web.Model.ModelController`2.GetSearchableList(GSF.Web.Model.ModelController{`0,`1}.PostData)">
             <summary>
             Gets all records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
             </summary>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetPagedList(GSF.Web.Model.ModelController{`0}.PostData,System.Int32)">
+        <member name="M:GSF.Web.Model.ModelController`2.GetPagedList(GSF.Web.Model.ModelController{`0,`1}.PostData,System.Int32)">
             <summary>
             Gets a subset of records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
-            based on <see cref="P:GSF.Web.Model.ModelController`1.Take" /> and 0-based <paramref name="page"/> index
+            based on <see cref="P:GSF.Web.Model.ModelController`2.Take" /> and 0-based <paramref name="page"/> index
             </summary>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <param name="page">The 0-based index of the page to be retrieved</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetSearchableList(GSF.Web.Model.ModelController{`0}.PostData,System.String)">
+        <member name="M:GSF.Web.Model.ModelController`2.GetSearchableList(GSF.Web.Model.ModelController{`0,`1}.PostData,System.String)">
             <summary>
             Gets all records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
             </summary>
             <param name="parentID">Parent ID to be used if Table has a set Parent Key</param>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetPagedList(GSF.Web.Model.ModelController{`0}.PostData,System.Int32,System.String)">
+        <member name="M:GSF.Web.Model.ModelController`2.GetPagedList(GSF.Web.Model.ModelController{`0,`1}.PostData,System.Int32,System.String)">
             <summary>
             Gets a subset of records from associated table, filtered and sorted as defined in <paramref name="postData"/>.
-            based on <see cref="P:GSF.Web.Model.ModelController`1.Take" /> and 0-based <paramref name="page"/> index
+            based on <see cref="P:GSF.Web.Model.ModelController`2.Take" /> and 0-based <paramref name="page"/> index
             </summary>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <param name="page">The 0-based index of the page to be retrieved</param>
             <param name="parentID"> Parent ID to be used if Table has a set Parent Key</param>
             <returns><see cref="T:System.Web.Http.IHttpActionResult"/> containing <see cref="T:System.Collections.Generic.IEnumerable`1"/> or <see cref="T:System.Exception"/></returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetAuthCheck">
+        <member name="M:GSF.Web.Model.ModelController`2.GetAuthCheck">
             <summary>
             Check if current User is authorized for GET Requests
             </summary>
             <returns>True if User is authorized for GET requests</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.PostAuthCheck">
+        <member name="M:GSF.Web.Model.ModelController`2.PostAuthCheck">
             <summary>
             Check if current User is authorized for POST Requests
             </summary>
             <returns>True if User is authorized for POST requests</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.PatchAuthCheck">
+        <member name="M:GSF.Web.Model.ModelController`2.PatchAuthCheck">
             <summary>
             Check if current User is authorized for PATCH Requests
             </summary>
             <returns>True if User is authorized for PATCH requests</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.DeleteAuthCheck">
+        <member name="M:GSF.Web.Model.ModelController`2.DeleteAuthCheck">
             <summary>
             Check if current User is authorized for DELETE Requests
             </summary>
             <returns>True if User is authorized for DELETE requests</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.GetSearchResults(GSF.Web.Model.ModelController{`0}.PostData,System.Nullable{System.Int32})">
+        <member name="M:GSF.Web.Model.ModelController`2.GetSearchResults(GSF.Web.Model.ModelController{`0,`1}.PostData,System.Nullable{System.Int32})">
             <summary>
-            Gets the <see cref="T:System.Data.DataTable"/> with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`1.PostData"/>. 
+            Gets the <see cref="T:System.Data.DataTable"/> with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`2.PostData"/>. 
             </summary>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <param name="page">The 0-based index of the page to be retrieved</param>
             <returns>A <see cref="T:System.Data.DataTable"/> containing the results of the search.</returns>
         </member>
-        <member name="M:GSF.Web.Model.ModelController`1.CountSearchResults(GSF.Web.Model.ModelController{`0}.PostData)">
+        <member name="M:GSF.Web.Model.ModelController`2.CountSearchResults(GSF.Web.Model.ModelController{`0,`1}.PostData)">
             <summary>
-            Counts the number of records with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`1.PostData"/>.
+            Counts the number of records with the SearchResults as specified in <see cref="T:GSF.Web.Model.ModelController`2.PostData"/>.
             </summary>
-            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`1.PostData"/> containing the search and sort parameters</param>
+            <param name="postData"><see cref="T:GSF.Web.Model.ModelController`2.PostData"/> containing the search and sort parameters</param>
             <returns>The number of records that match the search filters.</returns>
         </member>
         <member name="T:GSF.Web.Model.DataContext">
