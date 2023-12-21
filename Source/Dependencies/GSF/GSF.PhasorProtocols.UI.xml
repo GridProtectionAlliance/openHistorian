@@ -2017,9 +2017,24 @@
             Gets or sets flag that determines if the input stream configuration is out of sync.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.EditWidth">
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSyncContent">
             <summary>
-            Gets or sets width of Edit button link for the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
+            Gets content message for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSyncToolTip">
+            <summary>
+            Gets tool tip for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSyncColor">
+            <summary>
+            Gets color for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.DeviceStateUnavailable">
+            <summary>
+            Gets flag that determines if device state is not yet available, e.g., loading.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Enabled">
