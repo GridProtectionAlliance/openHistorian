@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GrafanaAdapters.DataSources;
+using GrafanaAdapters.Functions;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -41,6 +43,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
 using eDNAMetaData = eDNAAdapters.Metadata;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -81,13 +85,11 @@ namespace openHistorian.eDNAGrafanaController
             /// <summary>
             /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
             /// </summary>
-            /// <param name="startTime">Start-time for query.</param>
-            /// <param name="stopTime">Stop-time for query.</param>
-            /// <param name="interval">Interval from Grafana request.</param>
-            /// <param name="decimate">Flag that determines if data should be decimated over provided time range.</param>
+            /// <param name="queryParameters">Parameters that define the query.</param>
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
+            /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool decimate, Dictionary<ulong, string> targetMap)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
                 foreach (string point in targetMap.Values)
                 {
@@ -97,7 +99,7 @@ namespace openHistorian.eDNAGrafanaController
                         (int)eDNAHistoryReturnStatus.NO_HISTORY_FOR_TIME
                     };
 
-                    int result = History.DnaGetHistRaw(point, startTime.ToLocalTime(), stopTime.ToLocalTime(), out uint key);
+                    int result = History.DnaGetHistRaw(point, queryParameters.StartTime.ToLocalTime(), queryParameters.StopTime.ToLocalTime(), out uint key);
 
                     while (result == 0)
                     {
@@ -378,17 +380,17 @@ namespace openHistorian.eDNAGrafanaController
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<TimeSeriesValues>> Query(string site, string service, QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TimeSeriesValues>> Query(string site, string service, QueryRequest request, CancellationToken cancellationToken)
         {
             if (request.targets.FirstOrDefault()?.target is null)
-                return Task.FromResult(new List<TimeSeriesValues>());
+                return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
             {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
             }
 
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
         /// <summary>

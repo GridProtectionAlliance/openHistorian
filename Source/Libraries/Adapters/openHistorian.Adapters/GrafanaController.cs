@@ -22,6 +22,13 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GrafanaAdapters.DataSources;
+using GrafanaAdapters.Functions;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
+using GrafanaAdapters.Model.Database;
+using GrafanaAdapters.Model.Functions;
+using GrafanaAdapters.Model.MetaData;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -38,6 +45,7 @@ using openHistorian.Snap;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
@@ -45,6 +53,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
+using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
 using CancellationToken = System.Threading.CancellationToken;
 
 // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -105,13 +114,11 @@ namespace openHistorian.Adapters
             /// <summary>
             /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
             /// </summary>
-            /// <param name="startTime">Start-time for query.</param>
-            /// <param name="stopTime">Stop-time for query.</param>
-            /// <param name="interval">Interval from Grafana request.</param>
-            /// <param name="includePeaks">Flag that determines if decimated data should include min/max interval peaks over provided time range.</param>
+            /// <param name="queryParameters">Parameters that define the query.</param>
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
+            /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool includePeaks, Dictionary<ulong, string> targetMap)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -123,6 +130,11 @@ namespace openHistorian.Adapters
 
                 if (database is null)
                     yield break;
+
+                DateTime startTime = queryParameters.StartTime;
+                DateTime stopTime = queryParameters.StopTime;
+                string interval = queryParameters.Interval;
+                bool includePeaks = queryParameters.IncludePeaks;
 
                 if (!TryParseInterval(interval, out TimeSpan resolutionInterval))
                 {
@@ -232,12 +244,12 @@ namespace openHistorian.Adapters
                 }
             }
 
-
             public override Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
             {
                 return Task.FromResult(new List<AnnotationResponse>());
             }
         }
+
         // Represents a historian 1.0 data source for the Grafana adapter.
         internal sealed class OH1DataSource : GrafanaDataSourceBase, IDisposable
         {
@@ -247,7 +259,7 @@ namespace openHistorian.Adapters
             public OH1DataSource(string instanceName)
             {
                 m_archiveReader = new ArchiveReader();
-                m_archiveReader.DataReadException += (sender, args) => Logger.SwallowException(args.Argument);
+                m_archiveReader.DataReadException += (_, args) => Logger.SwallowException(args.Argument);
                 m_archiveReader.Open(GetArchiveFileName(instanceName));
 
                 m_baseTicks = UnixTimeTag.BaseTicks.Value;
@@ -255,9 +267,9 @@ namespace openHistorian.Adapters
                 InstanceName = instanceName;
             }
 
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(DateTime startTime, DateTime stopTime, string interval, bool includePeaks, Dictionary<ulong, string> targetMap)
+            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
-                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), startTime, stopTime, false).Select(dataPoint => new DataSourceValue
+                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).Select(dataPoint => new DataSourceValue
                 {
                     Target = targetMap[(ulong)dataPoint.HistorianID],
                     Value = dataPoint.Value,
@@ -332,7 +344,7 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if (m_dataSource != null)
+                if (m_dataSource is not null)
                     return m_dataSource;
 
                 string uriPath = Request.RequestUri.PathAndQuery;
@@ -353,44 +365,43 @@ namespace openHistorian.Adapters
                         throw new InvalidOperationException($"Unexpected API URL route destination encountered: {Request.RequestUri}");
                 }
 
-                if (!string.IsNullOrWhiteSpace(instanceName))
+                Debug.Assert(!string.IsNullOrWhiteSpace(instanceName));
+
+                //                                                   012345
+                // Support optional version in instance name (e.g., "1.0-STAT")
+                const string versionPattern = @"^(\d+\.\d+)-";
+
+                Match match = Regex.Match(instanceName, versionPattern);
+                int version = 0;
+
+                if (match.Success)
                 {
-                    //                                                   012345
-                    // Support optional version in instance name (e.g., "1.0-STAT")
-                    const string versionPattern = @"^(\d+\.\d+)-";
+                    string decimalValue = match.Groups[1].Value;
+                    instanceName = instanceName.Substring(decimalValue.Length + 1);
+                    version = int.Parse(decimalValue.Split('.')[0]);
+                }
 
-                    Match match = Regex.Match(instanceName, versionPattern);
-                    int version = 0;
+                if (version is < 1 or > 2)
+                    version = 2;
 
-                    if (match.Success)
+                if (version == 1)
+                {
+                    m_dataSource = new OH1DataSource(instanceName)
                     {
-                        string decimalValue = match.Groups[1].Value;
-                        instanceName = instanceName.Substring(decimalValue.Length + 1);
-                        version = int.Parse(decimalValue.Split('.')[0]);
-                    }
+                        Metadata = GetAdapterInstance(TrendValueAPI.DefaultInstanceName)?.DataSource
+                    };
+                }
+                else
+                {
+                    LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
 
-                    if (version is < 1 or > 2)
-                        version = 2;
-
-                    if (version == 1)
+                    if (adapterInstance is not null)
                     {
-                        m_dataSource = new OH1DataSource(instanceName)
+                        m_dataSource = new OH2DataSource
                         {
-                            Metadata = GetAdapterInstance(TrendValueAPI.DefaultInstanceName)?.DataSource
+                            InstanceName = instanceName,
+                            Metadata = adapterInstance.DataSource
                         };
-                    }
-                    else
-                    {
-                        LocalOutputAdapter adapterInstance = GetAdapterInstance(instanceName);
-
-                        if (adapterInstance != null)
-                        {
-                            m_dataSource = new OH2DataSource
-                            {
-                                InstanceName = instanceName,
-                                Metadata = adapterInstance.DataSource
-                            };
-                        }
                     }
                 }
 
@@ -436,15 +447,14 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<List<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
             if (request.targets.FirstOrDefault()?.target is null)
-                return Task.FromResult(new List<TimeSeriesValues>());
+                return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
             
-            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(new List<TimeSeriesValues>());
+            return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
-
 
         /// <summary>
         /// Queries openHistorian for Device Alarm Status.
@@ -465,9 +475,9 @@ namespace openHistorian.Adapters
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<IEnumerable<GrafanaAdapters.AlarmState>> GetDeviceAlarms(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<AlarmState>> GetDeviceAlarms(QueryRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetDeviceAlarms(request, cancellationToken) ?? Task.FromResult(new List<GrafanaAdapters.AlarmState>().AsEnumerable());
+            return DataSource?.GetDeviceAlarms(request, cancellationToken) ?? Task.FromResult(new List<AlarmState>().AsEnumerable());
         }
 
         /// <summary>
@@ -491,7 +501,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetMetadata(request) ?? Task.FromResult("");
+            return DataSource?.GetMetadata<DataSourceValue>(request) ?? Task.FromResult("");
         }
 
         /// <summary>
@@ -505,27 +515,31 @@ namespace openHistorian.Adapters
         {
             return Task.Factory.StartNew(() =>
             {
-                var targetDataDict = new Dictionary<string, Dictionary<string, DataTable>>();
-                foreach (var request in requests)
+                Dictionary<string, Dictionary<string, DataTable>> targetDataDict = new();
+
+                foreach (MetadataTargetRequest request in requests)
                 {
                     if (string.IsNullOrWhiteSpace(request.Target))
                         continue;
-                    var tableDataDict = new Dictionary<string, DataTable>();
-                    foreach (var table in request.Tables)
+
+                    Dictionary<string, DataTable> tableDataDict = new();
+
+                    foreach (string table in request.Tables)
                     {
-                        DataRow[] rows = DataSource?.Metadata.Tables[table].Select($"PointTag = '{request.Target}'") ?? new DataRow[0];
-                        if (rows.Length > 0)
-                        {
-                            DataTable dt = rows.CopyToDataTable();
-                            tableDataDict[table] = dt;
-                        }
+                        DataRow[] rows = DataSource?.Metadata.Tables[table].Select($"PointTag = '{request.Target}'") ?? Array.Empty<DataRow>();
+
+                        if (rows.Length <= 0)
+                            continue;
+
+                        DataTable dt = rows.CopyToDataTable();
+                        tableDataDict[table] = dt;
                     }
+
                     targetDataDict[request.Target] = tableDataDict;
                 }
                 return JsonConvert.SerializeObject(targetDataDict);
             },
             cancellationToken);
-
         }
 
 
@@ -541,7 +555,7 @@ namespace openHistorian.Adapters
             return DataSource.GetMetadataOptions(request, cancellationToken);
         }
 
-        // <summary>
+        /// <summary>
         /// Queries openHistorian as a Grafana Metadata options source.
         /// </summary>
         /// <param name="request">A boolean indicating whether the data is a phasor.</param>
@@ -573,7 +587,7 @@ namespace openHistorian.Adapters
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
         public virtual Task<string[]> Search(Target request, CancellationToken cancellationToken)
         {
-            return DataSource?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
+            return DataSource?.Search(request, cancellationToken) ?? Task.FromResult(Array.Empty<string>());
         }
 
         /// <summary>
