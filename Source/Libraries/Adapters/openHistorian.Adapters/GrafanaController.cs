@@ -118,7 +118,8 @@ namespace openHistorian.Adapters
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -267,9 +268,10 @@ namespace openHistorian.Adapters
                 InstanceName = instanceName;
             }
 
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
-                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).Select(dataPoint => new DataSourceValue
+                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().Select(dataPoint => new DataSourceValue
                 {
                     Target = targetMap[(ulong)dataPoint.HistorianID],
                     Value = dataPoint.Value,
