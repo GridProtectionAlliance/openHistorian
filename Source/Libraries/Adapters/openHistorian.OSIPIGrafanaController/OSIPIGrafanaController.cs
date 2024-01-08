@@ -118,7 +118,10 @@ namespace openHistorian.OSIPIGrafanaController
             {
                 Dictionary<int, ulong> idMap = new();
                 PIPointList points = new();
+<<<<<<< HEAD
                 DataSet metadata = Metadata.GetAugmentedDataSet<DataSourceValue>();
+=======
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
 
                 foreach (KeyValuePair<ulong, string> target in targetMap)
                 {
@@ -249,9 +252,14 @@ namespace openHistorian.OSIPIGrafanaController
                 if (string.IsNullOrWhiteSpace(request.target))
                     return string.Empty;
 
+<<<<<<< HEAD
                 DataSet metadata = DataSource(instanceName, serverName)?.Metadata.GetAugmentedDataSet<DataSourceValue>();
                 DataTable table = new();
                 DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
+=======
+                DataTable table = new();
+                DataRow[] rows = DataSource(instanceName, serverName)?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
 
                 if (rows.Length > 0)
                     table = rows.CopyToDataTable();

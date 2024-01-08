@@ -119,10 +119,14 @@ namespace openHistorian.Adapters
             /// <returns>Queried data source data in terms of value and time.</returns>
             //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
 <<<<<<< HEAD
+<<<<<<< HEAD
             protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
 =======
             protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
 >>>>>>> 26c5c82f8b (Updates to accommodate grafana async implementation)
+=======
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -275,6 +279,7 @@ namespace openHistorian.Adapters
 
             //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
 <<<<<<< HEAD
+<<<<<<< HEAD
             protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 await foreach (IDataPoint dataPoint in m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().WithCancellation(cancellationToken))
@@ -283,6 +288,11 @@ namespace openHistorian.Adapters
             {
                 return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().Select(dataPoint => new DataSourceValue
 >>>>>>> 26c5c82f8b (Updates to accommodate grafana async implementation)
+=======
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+            {
+                await foreach (IDataPoint dataPoint in m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().WithCancellation(cancellationToken))
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
                 {
                     yield return new DataSourceValue
                     {
@@ -463,6 +473,10 @@ namespace openHistorian.Adapters
             if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
@@ -513,7 +527,85 @@ namespace openHistorian.Adapters
         [HttpPost]
         public virtual Task<IEnumerable<FunctionDescription>> GetValueTypeFunctions(SearchRequest request, CancellationToken cancellationToken)
         {
+<<<<<<< HEAD
             return DataSource?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
+=======
+            return DataSource?.GetMetadata<DataSourceValue>(request) ?? Task.FromResult("");
+        }
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadatas source for multiple targets.
+        /// </summary>
+        /// <param name="requests">Array of query requests.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public virtual Task<string> GetMetadatas(MetadataTargetRequest[] requests, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                Dictionary<string, Dictionary<string, DataTable>> targetDataDict = new();
+
+                foreach (MetadataTargetRequest request in requests)
+                {
+                    if (string.IsNullOrWhiteSpace(request.Target))
+                        continue;
+
+                    Dictionary<string, DataTable> tableDataDict = new();
+
+                    foreach (string table in request.Tables)
+                    {
+                        DataRow[] rows = DataSource?.Metadata.Tables[table].Select($"PointTag = '{request.Target}'") ?? Array.Empty<DataRow>();
+
+                        if (rows.Length <= 0)
+                            continue;
+
+                        DataTable dt = rows.CopyToDataTable();
+                        tableDataDict[table] = dt;
+                    }
+
+                    targetDataDict[request.Target] = tableDataDict;
+                }
+                return JsonConvert.SerializeObject(targetDataDict);
+            },
+            cancellationToken);
+        }
+
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadata options source.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<Dictionary<string, string[]>> GetMetadataOptions([FromBody] MetadataOptionsRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource.GetMetadataOptions(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Metadata options source.
+        /// </summary>
+        /// <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<string[]> GetTableOptions([FromBody] bool isPhasor, CancellationToken cancellationToken)
+        {
+            return DataSource.GetTableOptions(isPhasor, cancellationToken);
+        }
+
+        /// <summary>
+        /// Queries openHistorian as a Grafana Functions options source.
+        /// </summary>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
+        public Task<FunctionDescription[]> GetFunctions(CancellationToken cancellationToken)
+        {
+            return DataSource.GetFunctionDescription(cancellationToken);
+>>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
         }
 
         /// <summary>
