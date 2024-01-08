@@ -113,10 +113,10 @@ namespace openHistorian.OSIPIGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
-                Dictionary<int, ulong> idMap = new Dictionary<int, ulong>();
-                PIPointList points = new PIPointList();
+                Dictionary<int, ulong> idMap = new();
+                PIPointList points = new();
 
                 foreach (KeyValuePair<ulong, string> target in targetMap)
                 {
@@ -127,7 +127,7 @@ namespace openHistorian.OSIPIGrafanaController
                         if (TryFindPIPoint(Connection, Metadata, GetPITagName(pointTag, PrefixRemoveCount), out point))
                             MetadataIDToPIPoint[metadataID] = point;
 
-                    if ((object)point != null)
+                    if (point is not null)
                     {
                         points.Add(point);
                         idMap[point.ID] = metadataID;
@@ -135,23 +135,18 @@ namespace openHistorian.OSIPIGrafanaController
                 }
 
                 // Start data read from historian
-                using (IEnumerator<AFValue> dataReader = ReadData(queryParameters.StartTime, queryParameters.StopTime, points).GetEnumerator())
+                await foreach (AFValue currentPoint in ReadData(queryParameters.StartTime, queryParameters.StopTime, points).ToAsyncEnumerable().WithCancellation(cancellationToken))
                 {
-                    while (dataReader.MoveNext())
+                    if (currentPoint is null)
+                        continue;
+
+                    yield return new DataSourceValue
                     {
-                        AFValue currentPoint = dataReader.Current;
-
-                        if (currentPoint is null)
-                            continue;
-
-                        yield return new DataSourceValue
-                        {
-                            Target = targetMap[idMap[currentPoint.PIPoint.ID]],
-                            Time = (currentPoint.Timestamp.UtcTime.Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
-                            Value = Convert.ToDouble(currentPoint.Value),
-                            Flags = ConvertStatusFlags(currentPoint.Status)
-                        };
-                    }
+                        Target = targetMap[idMap[currentPoint.PIPoint.ID]],
+                        Time = (currentPoint.Timestamp.UtcTime.Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
+                        Value = Convert.ToDouble(currentPoint.Value),
+                        Flags = ConvertStatusFlags(currentPoint.Status)
+                    };
                 }
             }
 
@@ -252,7 +247,7 @@ namespace openHistorian.OSIPIGrafanaController
                 if (string.IsNullOrWhiteSpace(request.target))
                     return string.Empty;
 
-                DataTable table = new DataTable();
+                DataTable table = new();
                 DataRow[] rows = DataSource(instanceName, serverName)?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
 
                 if (rows.Length > 0)
@@ -326,7 +321,7 @@ namespace openHistorian.OSIPIGrafanaController
 
             DataSet metadata = adapterInstance.DataSource;
 
-            OSIPIDataSource dataSource = new OSIPIDataSource
+            OSIPIDataSource dataSource = new()
             {
                 InstanceName = instanceName,
                 Metadata = metadata,
@@ -367,8 +362,8 @@ namespace openHistorian.OSIPIGrafanaController
 
         #region [ Static ]
 
-        private static readonly ConcurrentDictionary<string, OSIPIDataSource> DataSources = new ConcurrentDictionary<string, OSIPIDataSource>();
-        private static readonly ConcurrentDictionary<ulong, PIPoint> MetadataIDToPIPoint = new ConcurrentDictionary<ulong, PIPoint>();
+        private static readonly ConcurrentDictionary<string, OSIPIDataSource> DataSources = new();
+        private static readonly ConcurrentDictionary<ulong, PIPoint> MetadataIDToPIPoint = new();
 
         // Static Methods
         private static bool TryFindPIPoint(PIConnection connection, DataSet metadata, string pointTag, out PIPoint point)

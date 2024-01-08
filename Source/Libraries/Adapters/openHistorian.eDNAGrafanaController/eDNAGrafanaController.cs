@@ -89,7 +89,7 @@ namespace openHistorian.eDNAGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
             {
                 foreach (string point in targetMap.Values)
                 {

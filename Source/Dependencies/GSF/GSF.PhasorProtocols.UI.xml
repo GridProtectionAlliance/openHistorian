@@ -246,7 +246,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.Acronym">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Acronym.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Acronym.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.Name">
@@ -261,52 +261,52 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.IsConcentrator">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> IsConcenttrator.
+            Gets or sets flag that determines if <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> is a concentrator.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.CompanyID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> CompanyID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> CompanyID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.HistorianID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> HistrianID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> historian ID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.AccessID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> AccessID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> AccessID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.VendorDeviceID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> VendorDeviceID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> VendorDeviceID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.ProtocolID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> protocolID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> protocolID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.Longitude">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Longitude.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Longitude.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.Latitude">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Latitude.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> Latitude.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.InterconnectionID">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> InterconnectionID.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> InterconnectionID.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.ConnectionString">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> ConnectionString.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> ConnectionString.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.TimeZone">
@@ -451,12 +451,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.UpdatedOn">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> UpdatedOn.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> UpdatedOn.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.UpdatedBy">
             <summary>
-             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> UpdatedBy.
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> UpdatedBy.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.AlternateCommandChannel">
@@ -1908,6 +1908,11 @@
             Gets or sets the status color of the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.ConfigurationOutOfSync">
+            <summary>
+            Gets or sets flag that determines if the input stream configuration is out of sync.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Enabled">
             <summary>
             Gets or sets whether the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> is enabled.
@@ -2005,6 +2010,16 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.StatusColor">
             <summary>
             Gets or sets StatusColor of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSync">
+            <summary>
+            Gets or sets flag that determines if the input stream configuration is out of sync.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.EditWidth">
+            <summary>
+            Gets or sets width of Edit button link for the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Enabled">
@@ -2254,6 +2269,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.StreamStatistic.StatusColor">
             <summary>
             Gets or set <see cref="T:GSF.PhasorProtocols.UI.DataModels.StreamStatistic"/>'s Foreground.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.StreamStatistic.ConfigurationOutOfSync">
+            <summary>
+            Gets or sets flag that determines if the input stream configuration is out of sync.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.StreamStatistic.DeviceStatisticList">

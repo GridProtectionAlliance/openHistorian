@@ -50,6 +50,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -119,7 +120,7 @@ namespace openHistorian.Adapters
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
             //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -186,8 +187,10 @@ namespace openHistorian.Adapters
                 HistorianValue value = new();
                 Peak peak = Peak.Default;
 
-                while (stream.Read(key, value))
+                while (await stream.ReadAsync(key, value))
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     ulong pointID = key.PointID;
                     ulong timestamp = key.Timestamp;
                     float pointValue = value.AsSingle;
@@ -269,15 +272,18 @@ namespace openHistorian.Adapters
             }
 
             //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
-            protected override IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
-                return m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().Select(dataPoint => new DataSourceValue
+                await foreach (IDataPoint dataPoint in m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().WithCancellation(cancellationToken))
                 {
-                    Target = targetMap[(ulong)dataPoint.HistorianID],
-                    Value = dataPoint.Value,
-                    Time = (dataPoint.Time.ToDateTime().Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
-                    Flags = dataPoint.Quality.MeasurementQuality()
-                });
+                    yield return new DataSourceValue
+                    {
+                        Target = targetMap[(ulong)dataPoint.HistorianID],
+                        Value = dataPoint.Value,
+                        Time = (dataPoint.Time.ToDateTime().Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
+                        Flags = dataPoint.Quality.MeasurementQuality()
+                    };
+                }
             }
 
             public void Dispose()
@@ -295,7 +301,7 @@ namespace openHistorian.Adapters
                 {
                     if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
                         return archiveFileName;
-                    
+
                     CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
                     archiveFileName = settings?["FileName"]?.Value;
 
@@ -454,7 +460,7 @@ namespace openHistorian.Adapters
             if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
-            
+
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
@@ -560,7 +566,7 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Queries openHistorian as a Grafana Metadata options source.
         /// </summary>
-        /// <param name="request">A boolean indicating whether the data is a phasor.</param>
+        /// <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
         [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]

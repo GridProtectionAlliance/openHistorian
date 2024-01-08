@@ -1342,6 +1342,11 @@
             Gets the actual data rate.
             </summary>
         </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.ConfigurationOutOfSync">
+            <summary>
+            Gets flag that determines if host configuration is out of sync with connected device.
+            </summary>
+        </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.SharedMapping">
             <summary>
             Gets or sets acronym of other device for which to assume a shared mapping.
@@ -1572,6 +1577,25 @@
             <param name="connectionID">Remote client connection identification (i.e., IP:Port).</param>
             <param name="commandBuffer">Data buffer received from connected client device.</param>
             <param name="length">Valid length of data within the buffer.</param>
+        </member>
+        <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.JsonConfigurationPath">
+            <summary>
+            Gets the path to the configuration cache directory.
+            </summary>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadConfigurationOutOfSyncMarker(System.String)">
+            <summary>
+            Loads flag that determines if device configuration has changed since last update in host system.
+            </summary>
+            <param name="configurationName">Name of configuration to check.</param>
+            <returns><c>true</c> if device configuration has changed since last update in host system; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.SaveConfigurationOutOfSyncMarker(System.String,System.Boolean)">
+            <summary>
+            Persists flag that determines if device configuration has changed since last update in host system.
+            </summary>
+            <param name="configurationName">Name of configuration for assignment.</param>
+            <param name="outOfSync">Out of sync marker to apply.</param>
         </member>
         <member name="T:PhasorProtocolAdapters.SignalReferenceMeasurement">
             <summary>

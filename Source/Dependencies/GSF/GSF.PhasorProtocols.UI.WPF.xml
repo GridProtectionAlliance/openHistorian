@@ -2332,7 +2332,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.Load">
             <summary>
-            Overrides Load() method from the base class to add aditional functionalities.
+            Overrides Load() method from the base class to add additional functionality.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.TerminateSubscription">

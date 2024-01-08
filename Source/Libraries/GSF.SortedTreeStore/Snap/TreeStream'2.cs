@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Threading.Tasks;
 
 namespace GSF.Snap
 {
@@ -67,6 +68,22 @@ namespace GSF.Snap
                 EndOfStreamReached();
                 return false;
             }
+            return true;
+        }
+
+        /// <summary>
+        /// Advances the stream to the next value. 
+        /// If before the beginning of the stream, advances to the first value
+        /// </summary>
+        /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
+        public async ValueTask<bool> ReadAsync(TKey key, TValue value)
+        {
+            if (m_eos || !await new ValueTask<bool>(ReadNext(key, value)))
+            {
+                EndOfStreamReached();
+                return false;
+            }
+
             return true;
         }
 

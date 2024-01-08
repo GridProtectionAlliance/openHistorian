@@ -23,12 +23,12 @@
 
 namespace openHistorian.Adapters
 {
-    /// <summary>
-    /// Represents a collection of functions to manage alarms in Grafana and match them to openHistorian alarms.
-    /// </summary>
-    /// <remarks>
-    /// Limit lines are generated in the Grafana data source. This class is only used for the Alert Table panel.
-    /// </remarks>
+    //// <summary>
+    //// Represents a collection of functions to manage alarms in Grafana and match them to openHistorian alarms.
+    //// </summary>
+    //// <remarks>
+    //// Limit lines are generated in the Grafana data source. This class is only used for the Alert Table panel.
+    //// </remarks>
     //public class GrafanaAlarmManagement
     //{
     //    private const string GrafanaAlarmQuery = @"SELECT alert.id, alert.state, tag.value FROM 
