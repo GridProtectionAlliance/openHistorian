@@ -41,6 +41,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters.DataSources.BuiltIn;
 using GrafanaAdapters.Functions;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
@@ -258,19 +259,19 @@ namespace openHistorian.OSIPIGrafanaController
             cancellationToken);
         }
 
-        /// <summary>
-        /// Search OSI-PI for a target.
-        /// </summary>
-        /// <param name="instanceName">Historian instance name.</param>
-        /// <param name="serverName">OSI-PI server name.</param>
-        /// <param name="request">Search target.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<string[]> Search(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
-        {
-            return DataSource(instanceName, serverName)?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
-        }
+        ///// <summary>
+        ///// Search OSI-PI for a target.
+        ///// </summary>
+        ///// <param name="instanceName">Historian instance name.</param>
+        ///// <param name="serverName">OSI-PI server name.</param>
+        ///// <param name="request">Search target.</param>
+        ///// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        //[HttpPost]
+        //[SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
+        //public Task<string[]> Search(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
+        //{
+        //    return DataSource(instanceName, serverName)?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
+        //}
 
       
         /// <summary>

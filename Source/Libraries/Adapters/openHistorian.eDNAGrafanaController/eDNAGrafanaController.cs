@@ -43,6 +43,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters.DataSources.BuiltIn;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
 using eDNAMetaData = eDNAAdapters.Metadata;
