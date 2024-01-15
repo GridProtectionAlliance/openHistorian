@@ -71,6 +71,7 @@ namespace GSF.Snap
             return true;
         }
 
+    #if !SQLCLR
         /// <summary>
         /// Advances the stream to the next value. 
         /// If before the beginning of the stream, advances to the first value
@@ -86,6 +87,7 @@ namespace GSF.Snap
 
             return true;
         }
+    #endif
 
         /// <summary>
         /// Occurs when the end of the stream has been reached. The default behavior is to call <see cref="Dispose"/>
