@@ -23,12 +23,13 @@
 
 using GrafanaAdapters;
 using GrafanaAdapters.DataSources;
+using GrafanaAdapters.DataSources.BuiltIn;
 using GrafanaAdapters.Functions;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
 using GrafanaAdapters.Model.Database;
 using GrafanaAdapters.Model.Functions;
-using GrafanaAdapters.Model.MetaData;
+using GrafanaAdapters.Model.Metadata;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -40,13 +41,10 @@ using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
-using Newtonsoft.Json;
 using openHistorian.Snap;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -317,8 +315,7 @@ namespace openHistorian.Adapters
 
         // Fields
         private GrafanaDataSourceBase m_dataSource;
-        private LocationData m_locationData;
-        private string m_defaultApiPath;
+        private string m_defaultAPIPath;
 
         #endregion
 
@@ -327,21 +324,21 @@ namespace openHistorian.Adapters
         /// <summary>
         /// Gets the default API path string for this controller.
         /// </summary>
-        protected virtual string DefaultApiPath
+        protected virtual string DefaultAPIPath
         {
             get
             {
-                if (!string.IsNullOrEmpty(m_defaultApiPath))
-                    return m_defaultApiPath;
+                if (!string.IsNullOrEmpty(m_defaultAPIPath))
+                    return m_defaultAPIPath;
 
                 string controllerName = GetType().Name.ToLowerInvariant();
 
                 if (controllerName.EndsWith("controller") && controllerName.Length > 10)
                     controllerName = controllerName.Substring(0, controllerName.Length - 10);
 
-                m_defaultApiPath = $"/api/{controllerName}";
+                m_defaultAPIPath = $"/api/{controllerName}";
 
-                return m_defaultApiPath;
+                return m_defaultAPIPath;
             }
         }
 
@@ -358,7 +355,7 @@ namespace openHistorian.Adapters
                 string uriPath = Request.RequestUri.PathAndQuery;
                 string instanceName;
 
-                if (uriPath.StartsWith(DefaultApiPath, StringComparison.OrdinalIgnoreCase))
+                if (uriPath.StartsWith(DefaultAPIPath, StringComparison.OrdinalIgnoreCase))
                 {
                     // No instance provided in URL, use default instance name
                     instanceName = TrendValueAPI.DefaultInstanceName;
@@ -417,9 +414,6 @@ namespace openHistorian.Adapters
             }
         }
 
-        // TODO: JRC - This looks to no longer be referenced - is radial distribution functionality still supported?
-        private LocationData LocationData => m_locationData ??= new LocationData { DataSource = DataSource };
-
         #endregion
 
         #region [ Methods ]
@@ -454,136 +448,62 @@ namespace openHistorian.Adapters
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<IEnumerable<TimeSeriesValues>> Query(QueryRequest request, CancellationToken cancellationToken)
         {
             if (request.targets.FirstOrDefault()?.target is null)
                 return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
-
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
         /// <summary>
-        /// Queries openHistorian for Device Alarm Status.
+        /// Gets the data source value types, i.e., any type that has implemented <see cref="IDataSourceValue"/>,
+        /// that have been loaded into the application domain.
         /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(QueryRequest request, CancellationToken cancellationToken)
+        public virtual IEnumerable<DataSourceValueType> GetValueTypes()
         {
-            return DataSource?.GetAlarmState(request, cancellationToken) ?? Task.FromResult(new List<AlarmDeviceStateView>().AsEnumerable());
+            return DataSource?.GetValueTypes() ?? Enumerable.Empty<DataSourceValueType>();
         }
 
         /// <summary>
-        /// Queries openHistorian for Device Alarm States.
+        /// Gets the table names that, at a minimum, contain all the fields that the value type has defined as
+        /// required, see <see cref="IDataSourceValue.RequiredMetadataFieldNames"/>.
         /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<IEnumerable<AlarmState>> GetDeviceAlarms(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<string>> GetValueTypeTables(SearchRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetDeviceAlarms(request, cancellationToken) ?? Task.FromResult(new List<AlarmState>().AsEnumerable());
+            return DataSource?.GetValueTypeTables(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<string>());
         }
 
         /// <summary>
-        /// Queries openHistorian for DeviceGroups.
+        /// Gets the field names for a given table.
         /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<IEnumerable<DeviceGroup>> GetDeviceGroups(QueryRequest request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<FieldDescription>> GetValueTypeTableFields(SearchRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetDeviceGroups(request, cancellationToken) ?? Task.FromResult(new List<DeviceGroup>().AsEnumerable());
+            return DataSource?.GetValueTypeTableFields(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FieldDescription>());
         }
 
         /// <summary>
-        /// Queries openHistorian as a Grafana Metadata source.
+        /// Gets the functions that are available for a given data source value type.
         /// </summary>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>
+        /// <see cref="SearchRequest.expression"/> is used to filter functions by group operation, specifically a
+        /// value of "None", "Slice", or "Set" as defined in the <see cref="GroupOperations"/> enumeration. If all
+        /// function descriptions are desired, regardless of group operation, an empty string can be provided.
+        /// Combinations are also supported, e.g., "Slice,Set".
+        /// </remarks>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string> GetMetadata(Target request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<FunctionDescription>> GetValueTypeFunctions(SearchRequest request, CancellationToken cancellationToken)
         {
-            return DataSource?.GetMetadata<DataSourceValue>(request) ?? Task.FromResult("");
-        }
-
-        /// <summary>
-        /// Queries openHistorian as a Grafana Metadatas source for multiple targets.
-        /// </summary>
-        /// <param name="requests">Array of query requests.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string> GetMetadatas(MetadataTargetRequest[] requests, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                Dictionary<string, Dictionary<string, DataTable>> targetDataDict = new();
-
-                foreach (MetadataTargetRequest request in requests)
-                {
-                    if (string.IsNullOrWhiteSpace(request.Target))
-                        continue;
-
-                    Dictionary<string, DataTable> tableDataDict = new();
-
-                    foreach (string table in request.Tables)
-                    {
-                        DataRow[] rows = DataSource?.Metadata.Tables[table].Select($"PointTag = '{request.Target}'") ?? Array.Empty<DataRow>();
-
-                        if (rows.Length <= 0)
-                            continue;
-
-                        DataTable dt = rows.CopyToDataTable();
-                        tableDataDict[table] = dt;
-                    }
-
-                    targetDataDict[request.Target] = tableDataDict;
-                }
-                return JsonConvert.SerializeObject(targetDataDict);
-            },
-            cancellationToken);
-        }
-
-
-        /// <summary>
-        /// Queries openHistorian as a Grafana Metadata options source.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public Task<Dictionary<string, string[]>> GetMetadataOptions([FromBody] MetadataOptionsRequest request, CancellationToken cancellationToken)
-        {
-            return DataSource.GetMetadataOptions(request, cancellationToken);
-        }
-
-        /// <summary>
-        /// Queries openHistorian as a Grafana Metadata options source.
-        /// </summary>
-        /// <param name="isPhasor">A boolean indicating whether the data is a phasor.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public Task<string[]> GetTableOptions([FromBody] bool isPhasor, CancellationToken cancellationToken)
-        {
-            return DataSource.GetTableOptions(isPhasor, cancellationToken);
-        }
-
-        /// <summary>
-        /// Queries openHistorian as a Grafana Functions options source.
-        /// </summary>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public Task<FunctionDescription[]> GetFunctions(CancellationToken cancellationToken)
-        {
-            return DataSource.GetFunctionDescription(cancellationToken);
+            return DataSource?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
         }
 
         /// <summary>
@@ -592,10 +512,69 @@ namespace openHistorian.Adapters
         /// <param name="request">Search target.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to meta-data access.")]
-        public virtual Task<string[]> Search(Target request, CancellationToken cancellationToken)
+        public virtual Task<string[]> Search(SearchRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Search(request, cancellationToken) ?? Task.FromResult(Array.Empty<string>());
+        }
+
+        /// <summary>
+        /// Reloads data source value types cache.
+        /// </summary>
+        /// <remarks>
+        /// This function is used to support dynamic data source value type loading. Function only needs to be called
+        /// when a new data source value is added to Grafana at run-time and end-user wants to use newly installed
+        /// data source value type without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public virtual void ReloadValueTypes()
+        {
+            DataSource?.ReloadDataSourceValueTypes();
+        }
+
+        /// <summary>
+        /// Reloads Grafana functions cache.
+        /// </summary>
+        /// <remarks>
+        /// This function is used to support dynamic loading for Grafana functions. Function only needs to be called
+        /// when a new function is added to Grafana at run-time and end-user wants to use newly installed function
+        /// without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public virtual void ReloadGrafanaFunctions()
+        {
+            DataSource?.ReloadGrafanaFunctions();
+        }
+
+        /// <summary>
+        /// Queries openHistorian for alarm state.
+        /// </summary>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(CancellationToken cancellationToken)
+        {
+            return DataSource?.GetAlarmState(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmDeviceStateView>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for device alarms.
+        /// </summary>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<AlarmState>> GetDeviceAlarms(CancellationToken cancellationToken)
+        {
+            return DataSource?.GetDeviceAlarms(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmState>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for device groups.
+        /// </summary>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<DeviceGroup>> GetDeviceGroups(CancellationToken cancellationToken)
+        {
+            return DataSource?.GetDeviceGroups(cancellationToken) ?? Task.FromResult(Enumerable.Empty<DeviceGroup>());
         }
 
         /// <summary>
@@ -604,7 +583,6 @@ namespace openHistorian.Adapters
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
         public virtual Task<List<AnnotationResponse>> Annotations(AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());

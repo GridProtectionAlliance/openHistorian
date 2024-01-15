@@ -25,7 +25,7 @@
 #pragma warning disable 1591
 
 using System.Collections.Generic;
-using GrafanaAdapters.DataSources;
+using GrafanaAdapters.DataSources.BuiltIn;
 
 namespace openHistorian.Model
 {
