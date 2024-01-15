@@ -474,9 +474,12 @@ namespace openHistorian.Adapters
                 return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
+=======
+>>>>>>> a00229fbaa (Updates to support new Grafana web API interfaces)
             return DataSource?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
@@ -527,6 +530,7 @@ namespace openHistorian.Adapters
         [HttpPost]
         public virtual Task<IEnumerable<FunctionDescription>> GetValueTypeFunctions(SearchRequest request, CancellationToken cancellationToken)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             return DataSource?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
 =======
@@ -606,6 +610,9 @@ namespace openHistorian.Adapters
         {
             return DataSource.GetFunctionDescription(cancellationToken);
 >>>>>>> e1b959e8d2 (Updates to all data sources to support async ops)
+=======
+            return DataSource?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
+>>>>>>> a00229fbaa (Updates to support new Grafana web API interfaces)
         }
 
         /// <summary>
