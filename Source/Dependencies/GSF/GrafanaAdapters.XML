@@ -2744,6 +2744,11 @@
             Flags that indicate the group operations that a Grafana function can perform.
             </summary>
         </member>
+        <member name="F:GrafanaAdapters.Functions.GroupOperations.Undefined">
+            <summary>
+            The function has not defined any group operations.
+            </summary>
+        </member>
         <member name="F:GrafanaAdapters.Functions.GroupOperations.None">
             <summary>
             The function can perform standard, non-grouped, per-trend operations.
@@ -2798,6 +2803,9 @@
             <summary>
             Gets set of group operations that the Grafana function exposes publicly.
             </summary>
+            <remarks>
+            In normal operations, the published group operations should be a subset of the allowed group operations.
+            </remarks>
         </member>
         <member name="M:GrafanaAdapters.Functions.IGrafanaFunction.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)">
             <summary>
@@ -3631,6 +3639,11 @@
         <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.allowedGroupOperations">
             <summary>
             Gets or sets allowed group operations for the function.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.publishedGroupOperations">
+            <summary>
+            Gets or sets published group operations for the function.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.parameters">
