@@ -76,9 +76,9 @@ namespace openHistorian.eDNAGrafanaController
             {
                 InstanceName = $"{site}.{service}";
                 DataTable dataTable = GetNewMetaDataTable();
-                Metadata = new DataSet();
-                Metadata.Tables.Add(dataTable);
-
+                DataSet metadata = new DataSet();
+                metadata.Tables.Add(dataTable);
+                Metadata = metadata;
             }
 
             #region [ Methods ]
@@ -411,12 +411,12 @@ namespace openHistorian.eDNAGrafanaController
                     return string.Empty;
 
                 DataTable table = new DataTable();
+                
                 if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-                {
                     RefreshMetaData(site.ToUpper(), service.ToUpper());
-                }
 
-                DataRow[] rows = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+                DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+                DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
 
                 if (rows.Length > 0)
                     table = rows.CopyToDataTable();
@@ -437,11 +437,10 @@ namespace openHistorian.eDNAGrafanaController
         public string[] Search(string site, string service, Target request)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            return metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
         }
 
         /// <summary>
@@ -455,11 +454,10 @@ namespace openHistorian.eDNAGrafanaController
         public string[] SearchFields(string site, string service, Target request)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>
@@ -473,11 +471,10 @@ namespace openHistorian.eDNAGrafanaController
         public string[] SearchFilters(string site, string service, Target request)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables.Cast<DataTable>().Where(table => new[] { "ID", "SignalID", "PointTag", "Adder", "Multiplier" }.All(fieldName => table.Columns.Contains(fieldName))).Select(table => table.TableName).ToArray();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            return metadata.Tables.Cast<DataTable>().Where(table => new[] { "ID", "SignalID", "PointTag", "Adder", "Multiplier" }.All(fieldName => table.Columns.Contains(fieldName))).Select(table => table.TableName).ToArray();
         }
 
         /// <summary>
@@ -491,11 +488,10 @@ namespace openHistorian.eDNAGrafanaController
         public string[] SearchOrderBys(string site, string service, Target request)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
-            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
         /// <summary>

@@ -118,6 +118,7 @@ namespace openHistorian.OSIPIGrafanaController
             {
                 Dictionary<int, ulong> idMap = new();
                 PIPointList points = new();
+                DataSet metadata = Metadata.GetAugmentedDataSet<DataSourceValue>();
 
                 foreach (KeyValuePair<ulong, string> target in targetMap)
                 {
@@ -125,7 +126,7 @@ namespace openHistorian.OSIPIGrafanaController
                     string pointTag = target.Value;
 
                     if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
-                        if (TryFindPIPoint(Connection, Metadata, GetPITagName(pointTag, PrefixRemoveCount), out point))
+                        if (TryFindPIPoint(Connection, metadata, GetPITagName(pointTag, PrefixRemoveCount), out point))
                             MetadataIDToPIPoint[metadataID] = point;
 
                     if (point is not null)
@@ -248,8 +249,9 @@ namespace openHistorian.OSIPIGrafanaController
                 if (string.IsNullOrWhiteSpace(request.target))
                     return string.Empty;
 
+                DataSet metadata = DataSource(instanceName, serverName)?.Metadata.GetAugmentedDataSet<DataSourceValue>();
                 DataTable table = new();
-                DataRow[] rows = DataSource(instanceName, serverName)?.Metadata.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? new DataRow[0];
+                DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
 
                 if (rows.Length > 0)
                     table = rows.CopyToDataTable();
