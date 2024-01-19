@@ -285,16 +285,15 @@
             This defines a list of the required metadata fields for a table in the data source. If any of
             these are missing, the data source table will not be available for use. This list should at
             least include key field names for the <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.MetadataTableName"/> that may be needed by
-            the <see cref="!:GetIDTargetMap"/> or <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)"/>
+            the <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue.GetTargetIDSet(System.Data.DataRow)"/> or <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(System.String,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)"/>
             functions. For example, in order to use a table named 'ActiveMeasurements', the required
             metadata field names might be: 'ID', 'SignalID', and 'PointTag'.
             </para>
             <para>
-            Note that system generally assumes that a 'PointTag' field exists in the metadata table and
-            to use some of the metadata functions, e.g., parsing a filter expression, then an 'ID' and
-            'SignalID' field will also be required. In these cases, pick a primary key field that will
-            mirror to these required fields for needed values. These do not need to be marked as required
-            metadata fields, but they will need to be included in the table as available fields.
+            Note that system generally assumes that the fields 'PointTag', a unique string-based alpha-numeric
+            identifier for a measurement, 'ID', a unique string-based measurement-key formatted identifier
+            (e.g., PPA:101), and 'SignalID', a unique Guid-based identifier all exist in the metadata table.
+            However, these field does not need to be included as required metadata field names.
             </para>
             </remarks>
         </member>
@@ -323,12 +322,25 @@
             Implementations should cache metadata lookups for performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.RecordToKeys(System.Data.DataRow)">
+        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.GetTargetIDSet(System.Data.DataRow)">
             <summary>
-            Converts a metadata record to an associated set of measurement keys.
+            Gets the set of measurement key and point tag identifiers associated with a target.
             </summary>
             <param name="record">Source metadata record.</param>
-            <returns>An enumeration of associated set of measurement keys.</returns>
+            <returns>set of measurement key and point tag identifiers associated with a target.</returns>
+            <remarks>
+            A single target will be associated with a measurement key and point tag for each value
+            in the data source value. The target will be a common name for the group of values in
+            the data source value structure.
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.RecordFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
+            <summary>
+            Gets the metadata record for the specified measurement key.
+            </summary>
+            <param name="key">Source measurement key.</param>
+            <param name="metadata">Source metadata.</param>
+            <returns>The metadata record for the specified measurement key.</returns>
         </member>
         <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.DataTypeIndex">
             <summary>
@@ -341,10 +353,11 @@
             </summary>
             <typeparam name="T">Target <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue"/> type.</typeparam>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(System.String,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)">
             <summary>
             Assign queried data source value to time-value map.
             </summary>
+            <param name="pointTag">Measurement point tag.</param>
             <param name="dataValue">Queried data source value.</param>
             <param name="timeValueMap">Time-value map for specified <paramref name="dataValue"/>.</param>
             <param name="metadata">Source metadata.</param>
@@ -443,7 +456,6 @@
             Gets the Grafana data source metadata, augmented as needed for the target data
             source value type instance <paramref name="value"/>.
             </summary>
-            <typeparam name="T">Data source value type for metadata augmentation.</typeparam>
             <param name="value">Instance of data source value type to use for metadata augmentation.</param>
             <returns>
             Grafana data source metadata, augmented as needed for the target data source
@@ -468,7 +480,7 @@
             Looks up point tag from measurement <paramref name="key"/> value.
             </summary>
             <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
-            <param name="source">Source metadata.</param>
+            <param name="metadata">Source metadata.</param>
             <param name="table">Table to search.</param>
             <param name="pointTagField">Point tag field name.</param>
             <param name="idField">Measurement key-based ID field name.</param>
@@ -503,7 +515,7 @@
             <summary>
             Looks up metadata record from measurement key.
             </summary>
-            <param name="key">Measurement key, as string, to lookup.</param>
+            <param name="keyName">Measurement key, as string, to lookup.</param>
             <param name="metadata">Source metadata.</param>
             <param name="table">Table to search.</param>
             <param name="idField">Measurement key-based ID field name.</param>
@@ -580,11 +592,21 @@
         </member>
         <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Parse``1(System.String,System.Data.DataSet)">
             <summary>
-            Parses a user provided target expression as measurement keys, any defined alias and target table.
+            Parses a user provided target expression which could contain point tags, measurement keys, Guid-based signal IDs,
+            or filter expressions, then returning the set of measurement key and point tag identifiers associated with the
+            target along with any defined alias for the target.
             </summary>
             <param name="target">Target expression to parse.</param>
             <param name="metadata">Source metadata.</param>
-            <returns>Tuple of point tags parsed from expression, any defined alias and target table.</returns>
+            <returns>Tuple representing set of target and associated IDs, as parsed from expression, and any defined alias.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitComponents(System.String)">
+            <summary>
+            Splits a combined target into a point tag and target.
+            </summary>
+            <param name="target">Combined target of point tag and target.</param>
+            <returns>Tuple of point tag and target.</returns>
+            <exception cref="T:System.InvalidOperationException">Invalid combined target encountered.</exception>
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Sqrt`1">
             <summary>
@@ -791,41 +813,6 @@
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputePhasorValue">
-            <inheritdoc />
-        </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Add`1">
-            <summary>
-            Returns a series of values that represent each of the values in the source series added with <c>N</c>.
-            <c>N</c> is a floating point value representing an additive offset to be applied to each value the source series.
-            <c>N</c> can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Add(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Add(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Add<br/>
-            Execution: Deferred enumeration.
-            </remarks>
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Add`1.Name">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Add`1.Description">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Add`1.PublishedGroupOperations">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Add`1.ParameterDefinitions">
-            <inheritdoc />
-        </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Add`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Add`1.ComputeDataSourceValue">
-            <inheritdoc />
-        </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Add`1.ComputePhasorValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Average`1">
@@ -1072,41 +1059,6 @@
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputePhasorValue">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Divide`1">
-            <summary>
-            Returns a series of values that represent each of the values in the source series divided by <c>N</c>.
-            <c>N</c> is a floating point value representing a divisive factor to be applied to each value the source series.
-            <c>N</c> can either be constant value or a named target available from the expression.
-            </summary>
-            <remarks>
-            Signature: <c>Divide(N, expression)</c><br/>
-            Returns: Series of values.<br/>
-            Example: <c>Divide(1.732, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Divide<br/>
-            Execution: Deferred enumeration.
-            </remarks>
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Divide`1.Name">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Divide`1.Description">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Divide`1.PublishedGroupOperations">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Divide`1.ParameterDefinitions">
-            <inheritdoc />
-        </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Divide`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Divide`1.ComputeDataSourceValue">
-            <inheritdoc />
-        </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Divide`1.ComputePhasorValue">
-            <inheritdoc />
-        </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1">
             <summary>
             Returns a series of values that represent a filtered set of the values in the source series where each value falls outside the specified low and high.
@@ -1284,14 +1236,12 @@
             <c>N</c> is a floating-point value that must be greater than or equal to zero that represents the desired time interval, in time units, for the returned
             data. The <c>units</c>parameter, optional, specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds,
             Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or
-            AtomicUnitsOfTime - defaults to Seconds. Setting <c>N</c> value to zero will request non-decimated, full resolution data from the data source. A zero
-            <c>N</c> value will always produce the most accurate aggregation calculation results but will increase query burden for large time ranges. <c>N</c> can
-            either be constant value or a named target available from the expression.
+            AtomicUnitsOfTime - defaults to Seconds. <c>N</c> can either be constant value or a named target available from the expression.
             </summary>
             <remarks>
             Signature: <c>Interval(N, [units = Seconds], expression)</c><br/>
             Returns: Series of values.<br/>
-            Example: <c>Sum(Interval(0, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
+            Example: <c>Sum(Interval(5, FILTER ActiveMeasurements WHERE SignalType LIKE '%PHM'))</c><br/>
             Variants: Interval<br/>
             Execution: Deferred enumeration.
             </remarks>
@@ -1318,9 +1268,6 @@
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Interval`1.ComputePhasorValue">
-            <inheritdoc />
-        </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Interval`1.ParseParameters(GrafanaAdapters.Functions.QueryParameters,System.String)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Label`1">
@@ -1630,39 +1577,40 @@
         <member name="T:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ComputePhasorValue">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Multiply`1">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1">
             <summary>
-            Returns a series of values that represent each of the values in the source series multiplied by <c>N</c>.
-            <c>N</c> is a floating point value representing a multiplicative factor to be applied to each value the source series.
+            Returns a series of values that represent each of the values in the source series scaled by <c>N</c>.
+            <c>N</c> is a floating point value representing a scaling factor (multiplier or reciprocal) to be applied to each value the source series.
             <c>N</c> can either be constant value or a named target available from the expression.
             </summary>
             <remarks>
-            Signature: <c>Multiply(N, expression)</c><br/>
+            Signature: <c>Scale(N, expression)</c><br/>
             Returns: Series of values.<br/>
-            Example: <c>Multiply(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Multiply<br/>
+            Example 1: <c>Scale(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Example 2: <c>Scale(0.5, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Scale<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Multiply`1.Name">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.Name">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Multiply`1.Description">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Multiply`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.PublishedGroupOperations">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Multiply`1.ParameterDefinitions">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.ParameterDefinitions">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Multiply`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Multiply`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputeDataSourceValue">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Multiply`1.ComputePhasorValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputePhasorValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Percentile`1">
@@ -1854,39 +1802,40 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputePhasorValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Subtract`1">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1">
             <summary>
-            Returns a series of values that represent each of the values in the source series subtracted by <c>N</c>.
-            <c>N</c> is a floating point value representing an subtractive offset to be applied to each value the source series.
+            Returns a series of values that represent each of the values in the source series shifted by <c>N</c>.
+            <c>N</c> is a floating point value representing an additive (positive or negative) offset to be applied to each value the source series.
             <c>N</c> can either be constant value or a named target available from the expression.
             </summary>
             <remarks>
-            Signature: <c>Subtract(N, expression)</c><br/>
+            Signature: <c>Shift(N, expression)</c><br/>
             Returns: Series of values.<br/>
-            Example: <c>Subtract(2.2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
-            Variants: Subtract<br/>
+            Example 1: <c>Shift(2.2, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
+            Example 2: <c>Shift(-60, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Shift<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Subtract`1.Name">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.Name">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Subtract`1.Description">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Subtract`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.PublishedGroupOperations">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Subtract`1.ParameterDefinitions">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.ParameterDefinitions">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Subtract`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Subtract`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputeDataSourceValue">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Subtract`1.ComputePhasorValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputePhasorValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1">

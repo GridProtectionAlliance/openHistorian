@@ -1,38 +1,51 @@
 {
-  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
-  "type": "datasource",
-  "name": "Open Historian",
-  "id": "gridprotectionalliance-openhistorian-datasource",
-  "metrics": true,
-  "annotations": true,
-  "info": {
-    "description": "Data source plugin to transfer information from open historian to grafana in order to be displayed",
-    "author": {
-       "name":  "Grid Protection Alliance",
-	   "url":  "https://www.gridprotectionalliance.org"
-    },
-     "keywords":  [
-					  "openHistorian",
-					  "openPDC",
-					  "SIEGate",
-					  "substationSBG",
-					  "openMIC",
-					  "PDQTracker",
-					  "openECA",
-					  "synchrophasor",
-					  "GPA"
-				  ],
-    "logos": {
-		"small":  "img/openHistorian.png",
-		"large":  "img/openHistorian.png"
-    },
-    "links": [],
-    "screenshots": [],
-    "version": "2.0.0",
-    "updated": "2024-01-18"
-  },
-  "dependencies": {
-    "grafanaDependency": ">=9.3.8",
-    "plugins": []
-  }
+	"$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+	"type": "datasource",
+	"name": "openHistorian",
+	"id": "gridprotectionalliance-openhistorian-datasource",
+	"metrics": true,
+	"annotations": true,
+	"info": {
+		"description": "Data source plugin to transfer information from open historian to grafana in order to be displayed",
+		"author": {
+			"name": "Grid Protection Alliance",
+			"url": "https://www.gridprotectionalliance.org"
+		},
+		"keywords": [
+			"openHistorian",
+			"openPDC",
+			"SIEGate",
+			"substationSBG",
+			"openMIC",
+			"PDQTracker",
+			"openECA",
+			"synchrophasor",
+			"GPA"
+		],
+		"logos": {
+			"small": "img/openHistorian.png",
+			"large": "img/openHistorian.png"
+		},
+		"links": [
+			{
+				"name": "GitHub",
+				"url": "https://github.com/GridProtectionAlliance/openHistorian-grafana"
+			},
+			{
+				"name": "MIT License",
+				"url": "https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/LICENSE"
+			},
+			{
+				"name": "openHistorian",
+				"url": "http://openHistorian.com"
+			}
+		],
+		"screenshots": [],
+		"version": "2.0.0",
+		"updated": "2024-01-18"
+	},
+	"dependencies": {
+		"grafanaDependency": ">=9.3.8",
+		"plugins": []
+	}
 }
