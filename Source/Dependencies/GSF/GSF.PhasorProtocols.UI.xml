@@ -2018,6 +2018,9 @@
             </summary>
         </member>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSyncContent">
             <summary>
             Gets content message for input stream configuration sync state.
@@ -2036,11 +2039,14 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.DeviceStateUnavailable">
             <summary>
             Gets flag that determines if device state is not yet available, e.g., loading.
+<<<<<<< HEAD
 =======
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.EditWidth">
             <summary>
             Gets or sets width of Edit button link for the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
 >>>>>>> b52170e389 (Updates to all data sources to support async ops)
+=======
+>>>>>>> master
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Enabled">

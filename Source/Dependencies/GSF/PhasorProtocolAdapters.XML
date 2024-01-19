@@ -1580,18 +1580,24 @@
         </member>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5f6b86a77c (Updated GSF dependencies.)
+=======
+>>>>>>> master
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.JsonConfigurationPath">
             <summary>
             Gets the path to the configuration cache directory.
             </summary>
         </member>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 99f6d15bfd (Updated GSF dependencies.)
 =======
 >>>>>>> 5f6b86a77c (Updated GSF dependencies.)
+=======
+>>>>>>> master
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.LoadConfigurationOutOfSyncMarker(System.String)">
             <summary>
             Loads flag that determines if device configuration has changed since last update in host system.

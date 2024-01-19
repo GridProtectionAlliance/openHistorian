@@ -10609,6 +10609,7 @@
         </member>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String,System.String,System.String)">
 =======
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String,System.String)">
@@ -10616,11 +10617,15 @@
 =======
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String,System.String,System.String)">
 >>>>>>> 5f6b86a77c (Updated GSF dependencies.)
+=======
+        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.GetConfigurationCacheFileName(System.String,System.String,System.String)">
+>>>>>>> master
             <summary>
             Gets the file name with path of the specified <paramref name="configurationName"/>.
             </summary>
             <param name="configurationName">Name of the configuration to get file name for.</param>
             <param name="extension">Extension of the configuration file.</param>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             <param name="basePath">Base path of the configuration file. Set to <c>null</c> to use default <see cref="P:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.ConfigurationCachePath"/>.</param>
@@ -10629,6 +10634,9 @@
 =======
             <param name="basePath">Base path of the configuration file. Set to <c>null</c> to use default <see cref="P:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.ConfigurationCachePath"/>.</param>
 >>>>>>> 5f6b86a77c (Updated GSF dependencies.)
+=======
+            <param name="basePath">Base path of the configuration file. Set to <c>null</c> to use default <see cref="P:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.ConfigurationCachePath"/>.</param>
+>>>>>>> master
             <returns>File name with path of the specified <paramref name="configurationName"/>.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationFrame.DeleteCachedConfiguration(System.String)">
