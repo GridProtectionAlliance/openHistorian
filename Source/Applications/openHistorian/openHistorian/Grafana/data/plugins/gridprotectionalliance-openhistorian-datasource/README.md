@@ -1,4 +1,3 @@
-<!-- This README file is going to be the one displayed on the Grafana.com website for your plugin -->
 # Grafana Data Source Plug-in for openHistorian
 
 This repository defines a Grafana [data source](http://docs.grafana.org/datasources/overview/) plug-in for the [openHistorian](https://github.com/GridProtectionAlliance/openHistorian).
@@ -57,7 +56,7 @@ Range(PPA:9; Sum(FILTER ActiveMeasurements WHERE SignalType = 'FREQ'; STAT:2))
 
 > Complex combined expressions that contain both directly specified point tags and filter expressions are only available when using the _Text Editor_ query builder.
 
-### Functions
+### Series Functions
 
 The openHistorian Grafana data source includes various aggregation and operational functions, e.g., [Average](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md#average) or [StandardDeviation](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md#standarddeviation), which can be applied on a per-series and per-group basis. Functions applied to the group of available series can operate either on the entire set, end-to-end, or by time-slice. See [GSF Grafana Functions](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Documentation/GrafanaFunctions.md) for more detail and the full list of available functions.
 
@@ -105,7 +104,7 @@ Configuration of an openHistorian Grafana data source is normally as simple as s
 
 The openHistorian 2.0 automatically includes Grafana web service interfaces starting with [version 2.0.410](https://github.com/GridProtectionAlliance/openHistorian/releases).
 
-For archived time-series data, the Grafana web service is hosted within the existing MVC based web server architecture and is just ì_on_î with nothing extra to configure. To use the interface, simply register a new openHistorian Grafana data source using the path `/api/grafana/` from the existing web based user interface URL, typically: [http://localhost:8180/api/grafana/](http://localhost:8180/api/grafana/) [\*](#localhost-note).
+For archived time-series data, the Grafana web service is hosted within the existing MVC based web server architecture and is just ‚Äú_on_‚Äù with nothing extra to configure. To use the interface, simply register a new openHistorian Grafana data source using the path `/api/grafana/` from the existing web based user interface URL, typically: [http://localhost:8180/api/grafana/](http://localhost:8180/api/grafana/) [\*](#localhost-note).
 
 When the openHistorian service is hosting multiple historian instances, a specific historian instance can be referenced using a path like `/instance/{instanceName}/grafana/`, e.g.: [http://localhost:8180/instance/ppa/grafana/](http://localhost:8180/instance/ppa/grafana/) [\*](#localhost-note).
 

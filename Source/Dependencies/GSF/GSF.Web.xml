@@ -17,11 +17,6 @@
             <typeparam name="T">The corresponding Model for Search/Fetch Results.</typeparam>
             <typeparam name="U">The corresponding Model for database editing.</typeparam>
         </member>
-        <member name="T:GSF.Web.Model.ModelController`2.Search">
-            <summary>
-            Class Providing Search Parameters for the Search Endpoints
-            </summary>
-        </member>
         <member name="M:GSF.Web.Model.ModelController`2.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.Web.Model.ModelController`2"/>

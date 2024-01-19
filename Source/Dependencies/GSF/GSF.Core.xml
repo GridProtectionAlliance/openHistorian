@@ -8445,6 +8445,78 @@
             </summary>
             <param name="limit">Number of top records to return.</param>
         </member>
+        <member name="T:GSF.Data.Model.SQLSearchFilter">
+            <summary>
+            Defines a Filter to be applied to a Query
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SQLSearchFilter.FieldName">
+            <summary>
+            Gets or sets the Name of the field to be searched.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SQLSearchFilter.SearchText">
+            <summary>
+            Gets or sets the value to be searched for.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.SQLSearchFilter.Operator">
+             <summary>
+             Gets or sets the Operator to be used for the Search.
+             </summary>
+             <remarks>
+             <para>The list of supported operators includes:</para>
+            
+             <list type="bullet">
+               <item>=</item>
+               <item><![CDATA[<>]]></item>
+               <item><![CDATA[<]]></item>
+               <item><![CDATA[>]]></item>
+               <item>IN</item>
+               <item>NOT IN</item>
+               <item>LIKE</item>
+               <item>NOT LIKE</item>
+               <item><![CDATA[<=]]></item>
+               <item><![CDATA[>=]]></item>
+             </list>
+             </remarks>
+             <exception cref="T:System.NotSupportedException">Attempted to assign an operator that is not supported.</exception>
+        </member>
+        <member name="P:GSF.Data.Model.SQLSearchFilter.Type">
+             <summary>
+             Gets or sets the type of the field to be searched.
+             </summary>
+             <remarks>
+             <para>The list of supported types includes:</para>
+            
+             <list type="bullet">
+               <item>integer</item>
+               <item>number</item>
+               <item>boolean</item>
+               <item>datetime</item>
+               <item>string</item>
+             </list>
+             </remarks>
+             <exception cref="T:System.NotSupportedException">Attempted to assign a type that is not supported.</exception>
+        </member>
+        <member name="P:GSF.Data.Model.SQLSearchFilter.IsPivotColumn">
+            <summary>
+            Gets or sets a flag indicating whether this is a pivot column
+            in which case the <see cref="T:GSF.Data.Model.SearchableAttribute"/> should be used.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SQLSearchFilter.GenerateConditional(System.Collections.Generic.List{System.Object})">
+            <summary>
+            Generates the conditional statement to be used in the WHERE clause of the SQL statement.
+            </summary>
+            <param name="parameters">A list of the parameters to be substituted into the full query.</param>
+            <returns>The conditional statement with format string syntax for parameter substitution."</returns>
+        </member>
+        <member name="T:GSF.Data.Model.SQLSearchModifierAttribute">
+            <summary>
+            Defines an attribute that translates Search Queries to more complex SQL Queries 
+            </summary>
+        </member>
         <member name="T:GSF.Data.Model.ViewOnlyAttribute">
             <summary>
             Defines an attribute that will allow setting View only functions for a modeled table.

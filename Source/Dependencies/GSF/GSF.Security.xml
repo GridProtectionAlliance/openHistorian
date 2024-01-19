@@ -101,10 +101,12 @@
             Gets the last exception, if any, encountered after getting a new Graph service client.
             </summary>
         </member>
-        <member name="M:GSF.Security.AzureADSettings.GetGraphClient(System.String)">
+        <member name="M:GSF.Security.AzureADSettings.GetGraphClient(System.String,System.Boolean)">
             <summary>
             Gets a new Graph service client.
             </summary>
+            <param name="settingsCategory">Settings category to use for determine configuration location.</param>
+            <param name="forceRefresh">Set to <c>true</c> to force refresh of Azure AD token.</param>
             <returns>New Graph service client when Azure AD is enabled; otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:GSF.Security.AzureADSettings.Load(System.String)">

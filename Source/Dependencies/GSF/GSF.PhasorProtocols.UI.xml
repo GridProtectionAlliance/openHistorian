@@ -1913,6 +1913,26 @@
             Gets or sets flag that determines if the input stream configuration is out of sync.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.ConfigurationOutOfSyncContent">
+            <summary>
+            Gets content message for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.ConfigurationOutOfSyncToolTip">
+            <summary>
+            Gets tool tip for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.ConfigurationOutOfSyncColor">
+            <summary>
+            Gets color for input stream configuration sync state.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.DeviceStateUnavailable">
+            <summary>
+            Gets flag that determines if device state is not yet available, e.g., loading.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeStream.Enabled">
             <summary>
             Gets or sets whether the current <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> is enabled.
@@ -2002,6 +2022,11 @@
             Gets or sets ParentAcronym of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.IsDirectConnectedDevice">
+            <summary>
+            Gets flag that determines if the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/> is a direct connection.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Expanded">
             <summary>
             Gets or sets Expanded flag of the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
@@ -2017,10 +2042,6 @@
             Gets or sets flag that determines if the input stream configuration is out of sync.
             </summary>
         </member>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> master
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.ConfigurationOutOfSyncContent">
             <summary>
             Gets content message for input stream configuration sync state.
@@ -2039,14 +2060,6 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.DeviceStateUnavailable">
             <summary>
             Gets flag that determines if device state is not yet available, e.g., loading.
-<<<<<<< HEAD
-=======
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.EditWidth">
-            <summary>
-            Gets or sets width of Edit button link for the <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice"/>.
->>>>>>> b52170e389 (Updates to all data sources to support async ops)
-=======
->>>>>>> master
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.RealTimeDevice.Enabled">
