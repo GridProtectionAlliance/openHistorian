@@ -38,6 +38,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -114,7 +115,7 @@ namespace openHistorian.OSIPIGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 Dictionary<int, ulong> idMap = new();
                 PIPointList points = new();

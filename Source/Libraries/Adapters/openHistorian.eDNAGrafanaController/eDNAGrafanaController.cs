@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GrafanaAdapters.DataSources;
 using GrafanaAdapters.Functions;
 using GSF;
 using GSF.Collections;
@@ -40,6 +39,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -90,7 +90,7 @@ namespace openHistorian.eDNAGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 foreach (string point in targetMap.Values)
                 {
@@ -104,7 +104,7 @@ namespace openHistorian.eDNAGrafanaController
 
                     while (result == 0)
                     {
-                        result = History.DnaGetNextHist(key, out double value, out DateTime time, out string _);
+                        result = await new ValueTask<int>(History.DnaGetNextHist(key, out double value, out DateTime time, out string _));
                         DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
                         if (result == 0)
@@ -354,10 +354,6 @@ namespace openHistorian.eDNAGrafanaController
                 }
             });
         }
-
-        #endregion
-
-        #region [ Properties ]
 
         #endregion
 
