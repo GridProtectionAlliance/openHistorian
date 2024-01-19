@@ -852,7 +852,7 @@
       </Component>
       <Component Id="MongoAdapters">
         <File Id="MongoAdapters.dll" Name="MongoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoAdapters.dll">
-          <netfx:NativeImage Id="ngen_MonogAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+          <netfx:NativeImage Id="ngen_MongoAdapters.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="MongoDB">
@@ -1106,6 +1106,11 @@
       <Component Id="System.Buffers">
         <File Id="System.Buffers.dll" Name="System.Buffers.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Buffers.dll">
           <netfx:NativeImage Id="ngen_System.Buffers.dll" Platform="64bit" Priority="1" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
+      </Component>
+      <Component Id="System.Linq.Async">
+        <File Id="System.Linq.Async.dll" Name="System.Linq.Async.dll" Source="$(var.SolutionDir)\Dependencies\GSF\System.Linq.Async.dll">
+          <netfx:NativeImage Id="ngen_System.Linq.Async.dll"  Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
         </File>
       </Component>
       <Component Id="System.Memory">
