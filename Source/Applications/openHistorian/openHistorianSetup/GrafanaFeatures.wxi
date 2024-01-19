@@ -21,7 +21,6 @@
   <ComponentGroupRef Id="Grafana_data_plugins_grafana_pmumap_panel_partials_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis2853440924_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhist290095546_Components" />
-  <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_openhis1701262925_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft1387172533_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft2540937951_Components" />
   <ComponentGroupRef Id="Grafana_data_plugins_gridprotectionalliance_osisoft3056634927_Components" />
