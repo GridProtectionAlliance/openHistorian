@@ -292,6 +292,9 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_data_plugins_gridprotectionalliance_openhist290095546_Components" Directory="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEIMGFOLDER">
+  <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour2565669093_svg">
+    <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour2565669093.svg" Name="logo.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\logo.svg" />
+  </Component>
   <Component Id="data_plugins_gridprotectionalliance_openhistorian_datasour3714170428_png">
     <File Id="data_plugins_gridprotectionalliance_openhistorian_datasour3714170428.png" Name="openHistorian.png" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\data\plugins\gridprotectionalliance-openhistorian-datasource\img\openHistorian.png" />
   </Component>
