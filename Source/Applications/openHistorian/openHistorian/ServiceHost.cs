@@ -938,6 +938,17 @@ namespace openHistorian
 
         private bool FailoverPreventStartup()
         {
+            // Check if FailOver mode is enabled
+            // Check If mode is secondary
+            //      Ping Primary
+            //      if Response initiate delayed restart and shut down
+            //      if no response override Connection Log Files with Failover Log Files
+            // If mode is Primary
+            //      Ping Secondary
+            //      if Response initiate shutdown and small delayed restarts
+            //      if no response override Connection Log Files with Failover Log Files
+            // Note a PING without repsonse will need a retry to ensure it's not a short temporary condition If success on retry it is counted as success.
+            // From a Config Standpoint it is important Retry Time < Small Delay in Startup < delayed restart time
             return false;
         }
 
