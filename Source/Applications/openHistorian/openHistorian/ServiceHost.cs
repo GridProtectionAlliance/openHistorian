@@ -106,6 +106,9 @@ namespace openHistorian
             m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
+            if (FailoverPreventStartup())
+                Environment.Exit(0);
+
             try
             {
                 // Assign default minification exclusion early (well before web server static initialization)
@@ -931,6 +934,11 @@ namespace openHistorian
                 LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
                 log.Publish(MessageLevel.Error, "Error Message", "Failed to setup Grafana hosting adapter", null, ex);
             }
+        }
+
+        private bool FailoverPreventStartup()
+        {
+            return false;
         }
 
         internal static void RestoreEmbeddedResources()
