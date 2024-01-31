@@ -66,6 +66,10 @@ namespace openHistorian
         // Constants
         private const int DefaultMaximumDiagnosticLogSize = 10;
         private const string DefaultMinifyJavascriptExclusionExpression = @"^/?Scripts/force\-graph\.js$";
+        private const string DefaultFailoverNodeType = "None";
+        private const string DefaultFailoverURL = "http://localhost:8180";
+        private const int DefaultFailoverRestartDelay = 3600;
+        private const int DefaultFailoverRecoveryDelay = 60;
 
         // Events
 
@@ -938,6 +942,55 @@ namespace openHistorian
 
         private bool FailoverPreventStartup()
         {
+            bool enableFailover = false;
+            bool isPrimary = false;
+            IEnumerable<string> endpoints;
+            int delay;
+            try
+            {
+                // Assign default minification exclusion early (well before web server static initialization)
+                CategorizedSettingsElementCollection failoverSettings = ConfigurationFile.Current.Settings["failoverSettings"];
+                failoverSettings.Add("NodeType", DefaultFailoverNodeType, "Defines the type of failover node. Options are none, secondary or primary. Any invalid value will be interperated as none.");
+
+                if (!string.IsNullOrWhiteSpace(failoverSettings["NodeType"].Value))
+                {
+                    enableFailover = false;
+                    if (string.Compare(failoverSettings["NodeType"].Value, "primary", true) == 0)
+                    {
+                        enableFailover = true;
+                        isPrimary = true;
+                    }
+                    if (string.Compare(failoverSettings["NodeType"].Value, "secondary", true) == 0)
+                    {
+                        enableFailover = true;
+                        isPrimary = false;
+                    }
+                    else if (string.Compare(failoverSettings["NodeType"].Value, "none", true) != 0)
+                    {
+                        enableFailover = false;
+                        LogStatusMessage("Encoutered invalid Failover NodeType. Disabling FailoverNode.", UpdateType.Warning);
+                    }
+                }
+                if (enableFailover)
+                {
+                    failoverSettings.Add("FailoverEndpoint", DefaultFailoverURL, "Defines the url of the other nodes in the failover system. This may include multiple URLs sepeprated by a ;.");
+                    failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay before the node will attempt to start again in milliseconds.");
+
+                    if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out delay))
+                        delay = DefaultFailoverRestartDelay;
+                    if (string.IsNullOrWhiteSpace(failoverSettings["FailoverEndpoint"].Value))
+                       endpoints = new string[] { DefaultFailoverURL };
+                    else
+                        endpoints = failoverSettings["FailoverEndpoint"].Value.Split(';');
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                return false;
+            }
+
+            
             // Check if FailOver mode is enabled
             // Check If mode is secondary
             //      Ping Primary
