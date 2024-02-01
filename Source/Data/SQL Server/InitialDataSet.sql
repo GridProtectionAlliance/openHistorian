@@ -1,154 +1,286 @@
 USE openHistorian
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('AEP', 'AEP', 'American Electric Power', 1)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('50Hertz', '50Hertz', '50Hertz Transmission', 2)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('AGP', 'AGP', 'Allegheny Power', 2)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('AEP', 'AEP', 'American Electric Power', 3)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('AMR', 'AMR', 'Ameren', 3)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('AGP', 'AGP', 'Allegheny Power', 4)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ATC', 'ATC', 'American Transmission Company', 4)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Amprion', 'Amprion', 'Amprion', 5)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BCH', 'BCH', 'British Columbia Hydro', 5)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('AMR', 'AMR', 'Ameren', 6)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BPA', 'BPA', 'Bonneville Power Administration', 6)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('APG', 'APG', 'Austrian Power Grid AG', 1)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CONED', 'CED', 'ConEdison', 7)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('AST', 'AST', 'Augstsgrieguma tīkls', 7)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DOM', 'DOM', 'Dominion', 8)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ATC', 'ATC', 'American Transmission Company', 8)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ENT', 'ENT', 'Entergy Services Inc', 9)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('BCH', 'BCH', 'British Columbia Hydro', 9)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('EXE', 'EXE', 'Exelon Energy', 10)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('BE', 'BE', 'NSTAR Electric', 10)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('FEN', 'FEN', 'First Energy', 11)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('BH', 'BH', 'Bangor Hydro-Electric Company', 11)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('FPL', 'FPL', 'Florida Power & Light Company', 12)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('BPA', 'BPA', 'Bonneville Power Administration', 12)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('HQC', 'HQC', 'Hydro Quebec', 13)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ČEPS', 'ČEPS', 'ČEPS', 13)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('LIPA', 'LPA', 'Long Island Power Authority', 14)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('CGES', 'CGES', 'Crnogorski elektroprenosni sistem AD', 14)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('LAWP', 'LWP', 'Los Angeles Dept of Water and Power', 15)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('CONED', 'CED', 'ConEdison', 15)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MDA', 'MDA', 'Ameritech', 16)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Creos', 'Creos', 'Creos Luxembourg', 16)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MDK', 'MDK', 'Montana-Dakota ', 17)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('CX', 'CX', 'Northeast Utilities Services Company', 17)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MISO', 'MSO', 'Midwest ISO', 18)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Cyprus TSO', 'Cyprus TSO', 'Cyprus Transmission System Operator', 18)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MTB', 'MTB', 'Manitoba Hydro', 19)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('DDL', 'DDL', 'Desired Device Locations', 19)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('METC', 'MTC', 'Michigan Electric Transmission Co.', 20)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('DOM', 'DOM', 'Dominion', 20)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NYPA', 'NYP', 'New York Power Authority', 21)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('DUKE', 'DUK', 'Duke Power', 21)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DDL', 'DDL', 'Desired Device Locations', 22)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('EirGrid', 'EirGrid', 'EirGrid', 22)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('PPL', 'PPL', 'PPL Electric Utilities', 23)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Elering', 'Elering', 'Elering', 23)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('PGE', 'PGE', 'Pacific Gas and Electric', 24)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ELES', 'ELES', 'Elektro-Slovenija', 24)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('PJM', 'PJM', 'PJM Interconnection', 25)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Elia', 'Elia', 'Elia Transmission Belgium', 25)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SCE', 'SCE', 'Southern California Edison', 26)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('EMS', 'EMS', 'Elektromreža Srbije', 26)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SOCO', 'SOC', 'Southern Company', 27)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Energinet', 'Energinet', 'Energinet', 27)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SPP', 'SPP', 'Southwest Power Pool', 28)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ENT', 'ENT', 'Entergy Services Inc', 28)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SWT', 'SWT', 'Southwest (APS and SRP)', 29)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ESO', 'ESO', 'Electroenergien Sistemen Operator', 29)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('TVA', 'TVA', 'Tennessee Valley Authority', 30)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('EXE', 'EXE', 'Exelon Energy', 30)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UTK', 'UTK', 'University of Tennessee, Knoxville', 31)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('FEAS', 'FEAS', 'French Hosting Entity of "ENTSO-E Awareness System"', 31)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('WAPA', 'WPA', 'Western Area Power Administration', 32)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('FEN', 'FEN', 'First Energy', 32)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NEISO', 'NEI', 'New England ISO', 33)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Fingrid', 'Fingrid', 'Fingrid', 33)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NOJA', 'NOJA', 'NOJA Power Switchgear', 34)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('FPL', 'FPL', 'Florida Power & Light Company', 34)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MPC', 'MPC', 'Minnkota Power Collective', 35)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('GEAS', 'GEAS', 'German Hosting Entity of "ENTSO-E Awareness System"', 35)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('MAM', 'MAM', 'MidAmerican Power', 36)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HEC', 'HEC', 'Hawaiian Electric Company', 36)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('HEC', 'HEC', 'Hawaiian Electric Company', 37)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HOPS', 'HOPS', 'Croatian Transmission System Operator', 37)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('OGE', 'OGE', 'Oklahoma Gas & Electric', 38)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HQC', 'HQC', 'Hydro Quebec', 38)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ITC', 'ITC', 'International Transmission Company', 39)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('IPTO', 'IPTO', 'Independent Power Transmission Operator', 39)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DUKE', 'DUK', 'Duke Power', 40)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ITC', 'ITC', 'International Transmission Company', 40)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('ME', 'ME', 'Central Maine Power Company', 41)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Landsnet', 'Landsnet', 'Landsnet', 41)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('UI', 'UI', 'United Illuminating Company', 42)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('LAWP', 'LWP', 'Los Angeles Dept of Water and Power', 42)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NH', 'NH', 'Public Service Company of New Hampshire', 43)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('LIPA', 'LPA', 'Long Island Power Authority', 43)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('VE', 'VE', 'Vermont Electric Company', 44)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Litgrid', 'Litgrid', 'Litgrid', 44)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('CX', 'CX', 'Northeast Utilities Services Company', 45)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MAM', 'MAM', 'MidAmerican Power', 45)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('NE', 'NE', 'National Grid USA', 46)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MAVIR', 'MAVIR', 'Magyar Villamosenergia-ipari Átviteli Rendszerirányító ZRt.', 46)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BE', 'BE', 'NSTAR Electric', 47)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MDA', 'MDA', 'Ameritech', 47)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('BH', 'BH', 'Bangor Hydro-Electric Company', 48)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MDK', 'MDK', 'Montana-Dakota ', 48)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SDGE', 'SDGE', 'San Diego Gas & Electric', 49)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ME', 'ME', 'Central Maine Power Company', 49)
 GO
 
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('SSE', 'SSE', 'Scottish and Southern Energy', 50)
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MEPSO', 'MEPSO', 'MEPSO', 50)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('METC', 'MTC', 'Michigan Electric Transmission Co.', 51)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MISO', 'MSO', 'Midwest ISO', 52)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MPC', 'MPC', 'Minnkota Power Collective', 53)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('MTB', 'MTB', 'Manitoba Hydro', 54)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NE', 'NE', 'National Grid USA', 55)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NEISO', 'NEI', 'New England ISO', 56)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NH', 'NH', 'Public Service Company of New Hampshire', 57)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NOJA', 'NOJA', 'NOJA Power Switchgear', 58)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NOS BiH', 'NOS BiH', 'BiH Independent System Operator', 59)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('NYPA', 'NYP', 'New York Power Authority', 60)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('OGE', 'OGE', 'Oklahoma Gas & Electric', 61)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('ONS', 'ONS', 'Operador Nacional do Sistema Elétrico', 62)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('OST', 'OST', 'Operatori I Sistemit te Transmetimit', 63)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('PGE', 'PGE', 'Pacific Gas and Electric', 64)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('PJM', 'PJM', 'PJM Interconnection', 65)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('PPL', 'PPL', 'PPL Electric Utilities', 66)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('PSE', 'PSE', 'Polskie Sieci Elektroenergetyczne', 67)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('REE', 'REE', 'Red Eléctrica de España', 68)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('REN', 'REN', 'Redes Energéticas Nacionais', 69)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('RTE', 'RTE', 'Réseau de Transport d''Électricité', 70)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SCE', 'SCE', 'Southern California Edison', 71)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SDGE', 'SDGE', 'San Diego Gas & Electric', 72)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SEPS', 'SEPS', 'Slovenská elektrizačná prenosová sústava', 73)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SOCO', 'SOC', 'Southern Company', 74)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SONI', 'SONI', 'System Operator for Northern Ireland', 75)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SPP', 'SPP', 'Southwest Power Pool', 76)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SSE', 'SSE', 'Scottish and Southern Energy', 77)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Statnett', 'Statnett', 'Statnett', 78)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SVK', 'SVK', 'Svenska Kraftnät', 79)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Swissgrid', 'Swissgrid', 'Swissgrid', 80)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('SWT', 'SWT', 'Southwest (APS and SRP)', 81)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TEİAŞ', 'TEİAŞ', 'Turkish Electricity Transmission Corporation', 82)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TERNA', 'TERNA', 'Terna', 83)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TNG', 'TNG', 'Tennet TSO', 84)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TE', 'TE', 'Transelectrica', 85)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TTN', 'TTN', 'TenneT', 86)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TUG', 'TUG', 'TU Graz', 87)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('TVA', 'TVA', 'Tennessee Valley Authority', 88)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('UI', 'UI', 'United Illuminating Company', 89)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Ukrenergo', 'Ukrenergo', 'Ukrenergo', 90)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('UTK', 'UTK', 'University of Tennessee, Knoxville', 91)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('VE', 'VE', 'Vermont Electric Company', 92)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('VUEN', 'VUEN', 'Vorarlberger Übertragungsnetz', 93)
+GO
+
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('WAPA', 'WPA', 'Western Area Power Administration', 94)
 GO
 
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('IaonFilterAdapter', 'FilterAdapters', 'Defines IFilterAdapter definitions for a PDC node', 1, 1)
@@ -233,6 +365,9 @@ INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('Alaskan', 'Alaskan
 GO
 
 INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('Hawaii', 'Islands of Hawaii', 5)
+GO
+
+INSERT INTO Interconnection(Acronym, Name, LoadOrder) VALUES('Europe', 'European Interconnection', 6)
 GO
 
 INSERT INTO Protocol(Acronym, Name, Type, Category, AssemblyName, TypeName, LoadOrder) VALUES('IeeeC37_118V1', 'IEEE C37.118-2005', 'Frame', 'Phasor', 'PhasorProtocolAdapters.dll', 'PhasorProtocolAdapters.PhasorMeasurementMapper', 1)

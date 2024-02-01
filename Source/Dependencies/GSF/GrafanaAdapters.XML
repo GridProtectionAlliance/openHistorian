@@ -69,9 +69,6 @@
         <member name="M:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.DataSourceValuesParameterDefinition">
-            <inheritdoc />
-        </member>
         <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.TypeIndex">
             <summary>
             Gets the type index for <see cref="T:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue"/>.
@@ -191,9 +188,6 @@
         <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.DataSourceValuesParameterDefinition">
-            <inheritdoc />
-        </member>
         <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.TypeIndex">
             <summary>
             Gets the type index for <see cref="T:GrafanaAdapters.DataSources.BuiltIn.PhasorValue"/>.
@@ -259,6 +253,14 @@
             a <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValue"/> result.
             </remarks>
         </member>
+        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.ValueIndex">
+            <summary>
+            Gets the index of the value within the <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValue"/> array.
+            </summary>
+            <remarks>
+            If data source value has multiple targets, this should be the value index of the primary target.
+            </remarks>
+        </member>
         <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.LoadOrder">
             <summary>
             Gets the desired load order for the data source value type.
@@ -291,9 +293,13 @@
             </para>
             <para>
             Note that system generally assumes that the fields 'PointTag', a unique string-based alpha-numeric
-            identifier for a measurement, 'ID', a unique string-based measurement-key formatted identifier
-            (e.g., PPA:101), and 'SignalID', a unique Guid-based identifier all exist in the metadata table.
-            However, these field does not need to be included as required metadata field names.
+            identifier for a measurement, 'ID', a unique string-based measurement key formatted identifier
+            (e.g., PPA:101), and 'SignalID', a unique Guid-based identifier, all exist in the metadata table.
+            However, these fields do not have to be included as required metadata field names. The 'PointTag'
+            field is used to lookup records in the metadata. The 'ID' and 'SignalID' fields are used by
+            'AdapterBase.ParseFilterExpression' for direct parsing of measurement key and signal ID when
+            expression is not a filter expression. Direct parsing always uses the primary metadata table
+            name for lookups, see <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.MetadataTableName"/> property.
             </para>
             </remarks>
         </member>
@@ -368,11 +374,6 @@
             per each field in the data source value for a given timestamp.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue`1.DataSourceValuesParameterDefinition">
-            <summary>
-            Gets the parameter definition for data source values.
-            </summary>
-        </member>
         <member name="M:GrafanaAdapters.DataSources.IDataSourceValue`1.TransposeCompute(System.Func{System.Double,System.Double})">
             <summary>
             Executes provided function for data source fields, applying the results
@@ -428,11 +429,24 @@
             Gets user selected metadata associated with the query.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.SyntaxError">
+            <summary>
+            Gets or sets a an error message that indicates a syntax error in the query request.
+            </summary>
+        </member>
         <member name="M:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Clone">
             <summary>
             Creates a new <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> from this instance.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.DataSources.DataSourceValueGroup`1.FromException(GrafanaAdapters.Functions.QueryParameters,System.String)">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> for an exception.
+            </summary>
+            <param name="queryParameters">Source query parameters.</param>
+            <param name="syntaxError">Exception message.</param>
+            <returns>New <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> for an exception.</returns>
         </member>
         <member name="T:GrafanaAdapters.Metadata.DataSetAdapter">
             <summary>
@@ -581,6 +595,25 @@
             <param name="queryParameters">Query parameters.</param>
             <returns>Mapped metadata for the specified target and selections.</returns>
         </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.FirstTarget(System.String)">
+            <summary>
+            Gets first target from a target expression.
+            </summary>
+            <param name="target">Source target expression.</param>
+            <returns>Fist target from target expression.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Lookup``1(System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Looks up metadata record for the specified target.
+            </summary>
+            <param name="metadata">Metadata data set.</param>
+            <param name="tableName">Table name to search.</param>
+            <param name="target">Target to lookup.</param>
+            <returns>Filtered metadata row for the specified target.</returns>
+            <remarks>
+            Implementations should cache metadata lookups for performance.
+            </remarks>
+        </member>
         <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadataMap``1(System.Data.DataSet,System.String,System.Collections.Generic.IList{System.ValueTuple{System.String,System.String[]}})">
             <summary>
             Gets metadata map for the specified target and selections.
@@ -626,7 +659,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -658,7 +691,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Pow`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Pow`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Pow`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Pow`1.ParameterDefinitions">
@@ -695,6 +728,15 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.PublishedGroupOperations">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ParameterDefinitions">
@@ -752,6 +794,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.AllowedGroupOperations">
             <inheritdoc />
         </member>
@@ -803,7 +848,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.Aliases">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -834,6 +879,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Average`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Average`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputeDataSourceValue">
@@ -874,6 +922,15 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Bottom`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Bottom`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Bottom`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -907,7 +964,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.Aliases">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -938,6 +995,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Count`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Count`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Count`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -973,6 +1033,15 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Derivative`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Derivative`1.AllowedGroupOperations">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Derivative`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1004,6 +1073,12 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Difference`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Difference`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Difference`1.IsSliceSeriesEquivalent">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.TransposeCompute(`0,`0)">
@@ -1050,6 +1125,12 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Distinct`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Distinct`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -1085,6 +1166,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1114,6 +1198,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ParameterDefinitions">
@@ -1150,6 +1237,12 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.First`1.Description">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.First`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.First`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.First`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1180,7 +1273,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Floor`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Floor`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Floor`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Floor`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -1218,6 +1311,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1250,6 +1346,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Interval`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Interval`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Interval`1.AllowedGroupOperations">
@@ -1305,6 +1404,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Label`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Label`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Label`1.AllowedGroupOperations">
             <inheritdoc />
         </member>
@@ -1348,6 +1450,12 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Last`1.Description">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Last`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Last`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Last`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1381,6 +1489,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Maximum`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
@@ -1412,6 +1523,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Median`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Median`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Median`1.ResultIsSetTargetSeries">
@@ -1450,6 +1564,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Minimum`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
@@ -1477,7 +1594,7 @@
             Example 1: <c>Mode(FILTER TOP 50 ActiveMeasurements WHERE SignalType='DIGI')</c><br/>
             Example 2: <c>Mode(20, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Example 3: <c>Mode(Round(FILTER ActiveMeasurements WHERE SignalType='FREQ'))</c><br/>
-            Example 4: <c>Divide(100, Mode(0, Floor(Multiply(100, FILTER TOP 20 ActiveMeasurements WHERE SignalType='FREQ'))))</c><br/>
+            Example 4: <c>Scale(100, true, Mode(0, Floor(Scale(100, FILTER TOP 20 ActiveMeasurements WHERE SignalType='FREQ'))))</c><br/>
             Variants: Mode<br/>
             Execution: Immediate in-memory array load.
             </remarks>
@@ -1486,6 +1603,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Mode`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Mode`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Mode`1.ResultIsSetTargetSeries">
@@ -1526,7 +1646,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Modulo`1.Aliases">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Modulo`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ParameterDefinitions">
@@ -1565,6 +1685,15 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1581,13 +1710,16 @@
             <summary>
             Returns a series of values that represent each of the values in the source series scaled by <c>N</c>.
             <c>N</c> is a floating point value representing a scaling factor (multiplier or reciprocal) to be applied to each value the source series.
-            <c>N</c> can either be constant value or a named target available from the expression.
+            <c>N</c> can either be constant value or a named target available from the expression. The <c>asReciprocal</c> is a boolean parameter that,
+            when <c>true</c>, requests that <c>N</c> be treated as a reciprocal, i.e., 1 / <c>N</c>, thus resulting in a division operation instead of
+            multiplication - defaults to <c>false</c>.
             </summary>
             <remarks>
-            Signature: <c>Scale(N, expression)</c><br/>
+            Signature: <c>Scale(N, [asReciprocal = false], expression)</c><br/>
             Returns: Series of values.<br/>
             Example 1: <c>Scale(1.5, FILTER ActiveMeasurements WHERE SignalType='CALC')</c><br/>
             Example 2: <c>Scale(0.5, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Example 3: <c>Scale(60, true, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
             Variants: Scale<br/>
             Execution: Deferred enumeration.
             </remarks>
@@ -1598,7 +1730,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Scale`1.ParameterDefinitions">
@@ -1633,6 +1765,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Percentile`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ParameterDefinitions">
@@ -1671,6 +1806,15 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Random`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Random`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Random`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Random`1.PublishedGroupOperations">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Random`1.ParameterDefinitions">
@@ -1718,6 +1862,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Range`1.Description">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Range`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Range`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
@@ -1749,7 +1896,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Round`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Round`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Round`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Round`1.ParameterDefinitions">
@@ -1785,6 +1932,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ParameterDefinitions">
@@ -1823,7 +1973,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Shift`1.ParameterDefinitions">
@@ -1857,6 +2007,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.AllowedGroupOperations">
@@ -1904,6 +2057,15 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.AllowedGroupOperations">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1942,6 +2104,15 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Top`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Top`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Top`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Top`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Top`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -1973,6 +2144,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Total`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Total`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputeDataSourceValue">
@@ -2008,7 +2182,7 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Truncate`1.Aliases">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Truncate`1.PublishedGroupOperations">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
@@ -2042,6 +2216,9 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ReturnType">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ParameterDefinitions">
@@ -2082,6 +2259,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ReturnType">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ParameterDefinitions">
             <inheritdoc />
         </member>
@@ -2109,9 +2289,9 @@
             A tuple of parsed parameters and any remaining query expression.
             Remaining query expression is typically the filter expression.
             </returns>
-            <exception cref="T:System.FormatException">Expected parameters did not match those received.</exception>
+            <exception cref="T:System.Data.SyntaxErrorException">Expected parameters did not match those received.</exception>
         </member>
-        <member name="M:GrafanaAdapters.Functions.ParameterParsing.GenerateParametersAsync``1(GrafanaAdapters.Functions.IGrafanaFunction{``0},System.String[],System.Collections.Generic.IAsyncEnumerable{``0},System.String,System.Data.DataSet,System.Collections.Generic.Dictionary{System.String,System.String},System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.ParameterParsing.GenerateParametersAsync``1(GrafanaAdapters.Functions.IGrafanaFunction{``0},System.String[],System.Collections.Generic.IAsyncEnumerable{``0},System.String,System.Data.DataSet,System.Threading.CancellationToken)">
             <summary>
             Generates a typed list of value mutable parameters from parsed parameters.
             </summary>
@@ -2121,11 +2301,14 @@
             <param name="dataSourceValues">Data source values.</param>
             <param name="rootTarget">Root target.</param>
             <param name="metadata">Metadata.</param>
-            <param name="metadataMap">Metadata map.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>List of value mutable parameters from parsed parameters.</returns>
+            <remarks>
+            In case user has requested metadata as a parameter, pass in the root target
+            which has a higher chance of being resolved for associated metadata.
+            </remarks>
         </member>
-        <member name="M:GrafanaAdapters.Functions.ParameterParsing.ConvertParsedValueAsync``1(GrafanaAdapters.Functions.IMutableParameter,System.String,System.String,System.Collections.Generic.IAsyncEnumerable{``0},System.Data.DataSet,System.Collections.Generic.Dictionary{System.String,System.String},System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.ParameterParsing.ConvertParsedValueAsync``1(GrafanaAdapters.Functions.IMutableParameter,System.String,System.String,System.Collections.Generic.IAsyncEnumerable{``0},System.Data.DataSet,System.Threading.CancellationToken)">
             <summary>
             Converts parsed value to the mutable parameter type for a given data source value type.
             </summary>
@@ -2135,7 +2318,6 @@
             <param name="target">Associated target.</param>
             <param name="dataSourceValues">Data source values.</param>
             <param name="metadata">Source metadata.</param>
-            <param name="metadataMap">Metadata map associated with the target.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <remarks>
             This function is used to convert the parsed value to the parameter type.
@@ -2331,6 +2513,12 @@
         <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.Aliases">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.Category">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.AllowedGroupOperations">
             <inheritdoc />
         </member>
@@ -2338,6 +2526,12 @@
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.GrafanaFunctionBase`1.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.ParameterDefinitions">
@@ -2350,9 +2544,6 @@
             <inheritdoc />
         </member>
         <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.InternalParameterCount">
-            <inheritdoc />
-        </member>
-        <member name="P:GrafanaAdapters.Functions.GrafanaFunctionBase`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
         <member name="M:GrafanaAdapters.Functions.GrafanaFunctionBase`1.ParseParameters(GrafanaAdapters.Functions.QueryParameters,System.String)">
@@ -2706,6 +2897,36 @@
             The function can perform set-based group operations.
             </summary>
         </member>
+        <member name="T:GrafanaAdapters.Functions.ReturnType">
+            <summary>
+            Represents the return type of a Grafana function.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Functions.ReturnType.Scalar">
+            <summary>
+            The function returns a single value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Functions.ReturnType.Series">
+            <summary>
+            The function returns a series of values.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Functions.Category">
+            <summary>
+            Represents a Grafana function category.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Functions.Category.BuiltIn">
+            <summary>
+            The function is a built-in function.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Functions.Category.Custom">
+            <summary>
+            The function is a custom function.
+            </summary>
+        </member>
         <member name="T:GrafanaAdapters.Functions.IGrafanaFunction">
             <summary>
             Defines a common interface for Grafana functions.
@@ -2726,6 +2947,82 @@
             Gets any defined aliases for the Grafana function.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.ReturnType">
+            <summary>
+            Gets the return type of the Grafana function, i.e., scalar or series.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.IsSliceSeriesEquivalent">
+            <summary>
+            Gets or sets a flag indicating whether the function behaves equivalently when processed as a series or as a
+            slice. Value defaults to <c>true</c> for functions that return a series of values, i.e., the return type is
+            <see cref="F:GrafanaAdapters.Functions.ReturnType.Series"/>, and the <see cref="P:GrafanaAdapters.Functions.IGrafanaFunction.AllowedGroupOperations"/> includes the flag for
+            <see cref="F:GrafanaAdapters.Functions.GroupOperations.Slice"/> operations; otherwise, value defaults to <c>false</c> when the return
+            type is a scalar value, i.e., <see cref="F:GrafanaAdapters.Functions.ReturnType.Scalar"/>, or the <see cref="P:GrafanaAdapters.Functions.IGrafanaFunction.AllowedGroupOperations"/>
+            does not include the flag for <see cref="F:GrafanaAdapters.Functions.GroupOperations.Slice"/> operations.
+            </summary>
+            <remarks>
+            <para>
+            When set to <c>true</c>, property indicates that the function, when dealing with time series data, produces
+            the same result matrix whether processed horizontally (series-by-series) or vertically (slice-by-slice).
+            This is typically applicable to functions that return a series of values and are designed to operate across
+            time-aligned data series.
+            </para>
+            <para>
+            Setting this property to <c>true</c> enables certain optimizations. For instance, the system can bypass
+            slice-mode processing and use standard series processing instead, as both approaches yield equivalent results.
+            This can lead to performance improvements, especially in data-intensive scenarios.
+            </para>
+            <para>
+            It is important for users defining custom functions to accurately set this property. If the function's output
+            does not depend on the specific mode of time series processing (series vs. slice), set this property to
+            <c>true</c>. Conversely, if the function yields different results when processed by slice-by-slice as compared
+            to when processed series-by-series, or it is a scalar function, this property should be set to <c>false</c>.
+            </para>
+            <para>
+            Incorrectly setting this property may lead to unexpected behavior or suboptimal performance, as the system
+            relies on this flag to determine the most efficient processing approach.
+            </para>
+            <para>
+            Internally this function descriptor provides a hint to the Grafana data source adapter on how to handle series
+            results for a function. For functions that return a scalar value this property is ignored, but is automatically
+            set to <c>false</c> to preserve meaning. For slice operations on functions that return a series of values and
+            produce the same result matrix whether processed horizontally or vertically, the slice operation is equivalent
+            to its non-slice operation using the <see cref="T:GrafanaAdapters.Functions.BuiltIn.Interval`1"/> function over the same expression, for example,
+            the following queries are equivalent:
+            <list type="bullet">
+                <item>
+                   <c>SliceShift(0.02, 1, FILTER TOP 10 ActiveMeasurements WHERE SignalType='FREQ')</c> -- <i>and</i> --<br/>
+                   <c>Shift(1, Interval(0.02, FILTER TOP 10 ActiveMeasurements WHERE SignalType='FREQ'))</c>
+                </item>
+                <item>
+                    <c>SliceRound(0.0333, 3, ACME-STAR:FREQ; ACME-PLUS:FREQ)</c> -- <i>and</i> --<br/>
+                    <c>Round(3, Interval(0.0333, ACME-STAR:FREQ; ACME-PLUS:FREQ))</c>
+                </item>
+            </list>
+            As a result, slice operations that return a series of values and produce the same result matrix whether processed
+            horizontally or vertically, i.e., is slice-series equivalent, are automatically are replaced with the equivalent
+            non-slice operation and an <see cref="T:GrafanaAdapters.Functions.BuiltIn.Interval`1"/> function as an operational optimization.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.ResultIsSetTargetSeries">
+            <summary>
+            Gets flag that determines if function result is target series for set-based group operations.
+            </summary>
+            <remarks>
+            For set-based group operations, there can also be data in which target series is selected,
+            e.g., with <see cref="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1"/> or <see cref="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1"/> functions.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.Category">
+            <summary>
+            Gets the category of the Grafana function, i.e., built-in or custom.
+            </summary>
+            <remarks>
+            This property is automatically assigned by the system.
+            </remarks>
+        </member>
         <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.AllowedGroupOperations">
             <summary>
             Gets set of group operations that the Grafana function allows.
@@ -2733,12 +3030,11 @@
             <remarks>
             Operations that are not allowed should be taken to mean that the use of the group operation for a function is an
             error. Implementors should carefully consider which group operations that a function exposes as not allowed since
-            when a user selects an group operation that is not allowed, this results in an exception. If the result of a group
-            operation results in the same matrix of values as a standard operation, the group operation should continue to be
-            supported, but can be hidden from the user by overriding the <see cref="P:GrafanaAdapters.Functions.IGrafanaFunction.PublishedGroupOperations"/>. Another option
-            is to simply ignore a group operation that is not supported by forcing supported operations. This is handled by
-            overriding the <see cref="M:GrafanaAdapters.Functions.IGrafanaFunction.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)"/> method. See the <see cref="T:GrafanaAdapters.Functions.BuiltIn.Label`1"/> function for an
-            example of this.
+            when a user selects an group operation that is not allowed, this results in an exception. Groups operations can
+            be hidden from the user by overriding the <see cref="P:GrafanaAdapters.Functions.IGrafanaFunction.PublishedGroupOperations"/>. Additionally, a group operation
+            that is not supported can be ignored, instead of throwing an exception, by forcing supported operations. This is
+            handled by overriding the <see cref="M:GrafanaAdapters.Functions.IGrafanaFunction.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)"/> method. See <see cref="T:GrafanaAdapters.Functions.BuiltIn.Label`1"/> function
+            for an example of this.
             </remarks>
         </member>
         <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.PublishedGroupOperations">
@@ -2755,7 +3051,7 @@
             </summary>
             <param name="requestedOperation">Requested operation.</param>
             <returns>Supported operation.</returns>
-            <exception cref="T:System.InvalidOperationException">Function does not support the requested operation.</exception>
+            <exception cref="T:System.Data.SyntaxErrorException">Function does not support the requested operation.</exception>
         </member>
         <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.ParameterDefinitions">
             <summary>
@@ -2786,15 +3082,6 @@
             <summary>
             Gets the number of internal parameters of the Grafana function.
             </summary>
-        </member>
-        <member name="P:GrafanaAdapters.Functions.IGrafanaFunction.ResultIsSetTargetSeries">
-            <summary>
-            Gets flag that determines if function result is target series for set-based group operations.
-            </summary>
-            <remarks>
-            For set-based group operations, there can also be data in which target series is selected,
-            e.g., with <see cref="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1"/> or <see cref="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1"/> functions.
-            </remarks>
         </member>
         <member name="M:GrafanaAdapters.Functions.IGrafanaFunction.ParseParameters(GrafanaAdapters.Functions.QueryParameters,System.String)">
             <summary>
@@ -2930,15 +3217,20 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetValueTypeTables(GrafanaAdapters.Model.Common.SearchRequest,System.Threading.CancellationToken)">
             <summary>
-            Gets the table names that, at a minimum, contain all the fields that the value type has defined as
-            required, see <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames"/>.
+            Gets the table names that, at a minimum, contain all the fields that the value type has defined as required,
+            see <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames"/> when <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/>
+            is a valid index in the data source value cache. When <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is -1, all
+            table names are returned.
             </summary>
             <param name="request">Search request.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetValueTypeTableFields(GrafanaAdapters.Model.Common.SearchRequest,System.Threading.CancellationToken)">
             <summary>
-            Gets the field names for a given table.
+            Gets the field names for a given table when <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is a valid index in the data
+            source value cache and selected table name contains all the fields that the value type has defined as required, see
+            <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames"/> . When <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is -1,
+            fields for any valid metadata table name are returned.
             </summary>
             <param name="request">Search request.</param>
             <param name="cancellationToken">Cancellation token.</param>
@@ -3217,11 +3509,6 @@
             Gets or sets a Grafana time-series refId to reference a specific query.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.Model.Common.TimeSeriesValues.syntaxError">
-            <summary>
-            Gets or sets a an error message that indicates a syntax error in the query request.
-            </summary>
-        </member>
         <member name="F:GrafanaAdapters.Model.Common.TimeSeriesValues.metadata">
             <summary>
             Gets or sets metadata attached to the <see cref="T:GrafanaAdapters.Model.Common.TimeSeriesValues"/>.
@@ -3230,6 +3517,11 @@
         <member name="F:GrafanaAdapters.Model.Common.TimeSeriesValues.dropEmptySeries">
             <summary>
             Gets or sets a flag that determines if empty series are produced -- non-serialized.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Model.Common.TimeSeriesValues.syntaxError">
+            <summary>
+            Gets or sets a an error message that indicates a syntax error in the query request.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.Model.Common.TimeSeriesValues.datapoints">
@@ -3252,72 +3544,6 @@
             </code>
             </para>
             </remarks>
-        </member>
-        <member name="T:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions">
-            <summary>
-            Grafana <see cref="T:GrafanaAdapters.Model.Annotations.AnnotationRequest"/> extensions class.
-            </summary>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.TableName(GrafanaAdapters.Model.Annotations.AnnotationType)">
-            <summary>
-            Gets table name for specified annotation <paramref name="type"/>.
-            </summary>
-            <param name="type">Annotation type.</param>
-            <returns>Table name for specified annotation <paramref name="type"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.TargetFieldName(GrafanaAdapters.Model.Annotations.AnnotationType)">
-            <summary>
-            Gets the target field name for Guid based point IDs for table used with specified annotation <paramref name="type"/>.
-            </summary>
-            <param name="type">Annotation type.</param>
-            <returns>Target field name for Guid based point IDs for specified annotation <paramref name="type"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.IsApplicable(GrafanaAdapters.Model.Annotations.AnnotationType,System.Double[])">
-            <summary>
-            Determines if the data point is applicable for specified annotation <paramref name="type"/>. 
-            </summary>
-            <param name="type">Annotation type.</param>
-            <param name="datapoint">Time series values data point.</param>
-            <returns><c>true</c> if the data point is applicable for specified annotation <paramref name="type"/>; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.PopulateResponse(GrafanaAdapters.Model.Annotations.AnnotationType,GrafanaAdapters.Model.Annotations.AnnotationResponse,System.String,System.Data.DataRow,System.Double[],System.Data.DataSet)">
-            <summary>
-            Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.
-            </summary>
-            <param name="type">Annotation type.</param>
-            <param name="response">Annotation response.</param>
-            <param name="target">Target of annotation response.</param>
-            <param name="definition">Associated metadata definition for response.</param>
-            <param name="datapoint">Time series values data point for response.</param>
-            <param name="source">Metadata of source definitions.</param>
-            <returns>Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.ExtractQueryRequest(GrafanaAdapters.Model.Annotations.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
-            <summary>
-            Extracts a Grafana <see cref="T:GrafanaAdapters.Model.Common.QueryRequest"/> from an <see cref="T:GrafanaAdapters.Model.Annotations.AnnotationRequest"/>.
-            </summary>
-            <param name="request">Annotation request.</param>
-            <param name="targets">List of desired targets.</param>
-            <param name="maxDataPoints">Maximum points to return.</param>
-            <returns>Grafana query request object from an annotation <paramref name="request"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.ParseQueryType(GrafanaAdapters.Model.Annotations.AnnotationRequest,System.Boolean@)">
-            <summary>
-            Parses query expression from annotation for annotation type.
-            </summary>
-            <param name="request">Grafana annotation.</param>
-            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
-            <returns>Parsed annotation type for query expression from <paramref name="request"/>.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Model.Annotations.AnnotationRequestExtensions.ParseSourceDefinitions(GrafanaAdapters.Model.Annotations.AnnotationRequest,GrafanaAdapters.Model.Annotations.AnnotationType,System.Data.DataSet,System.Boolean)">
-            <summary>
-            Parses source definitions for an annotation query.
-            </summary>
-            <param name="request">Grafana annotation request.</param>
-            <param name="type">Annotation type.</param>
-            <param name="source">Metadata of source definitions.</param>
-            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
-            <returns>Parsed source definitions from <paramref name="request"/>.</returns>
         </member>
         <member name="T:GrafanaAdapters.Model.Annotations.AnnotationRequest">
             <summary>
@@ -3364,36 +3590,6 @@
             Gets or sets annotation tags.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.Model.Annotations.AnnotationType">
-            <summary>
-            Supported annotation types for GSF Time-series Framework.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.Model.Annotations.AnnotationType.RaisedAlarms">
-            <summary>
-            Raised alarm annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.Model.Annotations.AnnotationType.ClearedAlarms">
-            <summary>
-            Cleared alarm annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.Model.Annotations.AnnotationType.Events">
-            <summary>
-            Manual event annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.Model.Annotations.AnnotationType.Alarms">
-            <summary>
-            All alarm annotation.
-            </summary>
-        </member>
-        <member name="F:GrafanaAdapters.Model.Annotations.AnnotationType.Undefined">
-            <summary>
-            Undefined annotation.
-            </summary>
-        </member>
         <member name="T:GrafanaAdapters.Model.Metadata.DataSourceValueType">
             <summary>
             Defines a data source value type.
@@ -3416,7 +3612,7 @@
         </member>
         <member name="P:GrafanaAdapters.Model.Metadata.DataSourceValueType.metadataTableName">
             <summary>
-            Gets or sets the meta-data table name for the data source value type.
+            Gets or sets the default meta-data table name for the data source value type.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.Model.Metadata.FieldDescription">
@@ -3599,6 +3795,16 @@
             Gets or sets other names for the function.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.returnType">
+            <summary>
+            Gets or sets the return type of the function, either "Scalar" or "Series".
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.category">
+            <summary>
+            Gets or sets the category of the function, either "BuiltIn" or "Custom".
+            </summary>
+        </member>
         <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.allowedGroupOperations">
             <summary>
             Gets or sets allowed group operations for the function.
@@ -3612,6 +3818,102 @@
         <member name="P:GrafanaAdapters.Model.Functions.FunctionDescription.parameters">
             <summary>
             Gets or sets the parameter descriptions for the function.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Annotations.AnnotationRequestExtensions">
+            <summary>
+            Grafana <see cref="T:GrafanaAdapters.Model.Annotations.AnnotationRequest"/> extensions class.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.TableName(GrafanaAdapters.Annotations.AnnotationType)">
+            <summary>
+            Gets table name for specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <returns>Table name for specified annotation <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.TargetFieldName(GrafanaAdapters.Annotations.AnnotationType)">
+            <summary>
+            Gets the target field name for Guid based point IDs for table used with specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <returns>Target field name for Guid based point IDs for specified annotation <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.IsApplicable(GrafanaAdapters.Annotations.AnnotationType,System.Double[])">
+            <summary>
+            Determines if the data point is applicable for specified annotation <paramref name="type"/>. 
+            </summary>
+            <param name="type">Annotation type.</param>
+            <param name="datapoint">Time series values data point.</param>
+            <returns><c>true</c> if the data point is applicable for specified annotation <paramref name="type"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.PopulateResponse(GrafanaAdapters.Annotations.AnnotationType,GrafanaAdapters.Model.Annotations.AnnotationResponse,System.String,System.Data.DataRow,System.Double[],System.Data.DataSet)">
+            <summary>
+            Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.
+            </summary>
+            <param name="type">Annotation type.</param>
+            <param name="response">Annotation response.</param>
+            <param name="target">Target of annotation response.</param>
+            <param name="definition">Associated metadata definition for response.</param>
+            <param name="datapoint">Time series values data point for response.</param>
+            <param name="source">Metadata of source definitions.</param>
+            <returns>Populates an annotation response title, text and tags for specified annotation <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.ExtractQueryRequest(GrafanaAdapters.Model.Annotations.AnnotationRequest,System.Collections.Generic.IEnumerable{System.String},System.Int32)">
+            <summary>
+            Extracts a Grafana <see cref="T:GrafanaAdapters.Model.Common.QueryRequest"/> from an <see cref="T:GrafanaAdapters.Model.Annotations.AnnotationRequest"/>.
+            </summary>
+            <param name="request">Annotation request.</param>
+            <param name="targets">List of desired targets.</param>
+            <param name="maxDataPoints">Maximum points to return.</param>
+            <returns>Grafana query request object from an annotation <paramref name="request"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.ParseQueryType(GrafanaAdapters.Model.Annotations.AnnotationRequest,System.Boolean@)">
+            <summary>
+            Parses query expression from annotation for annotation type.
+            </summary>
+            <param name="request">Grafana annotation.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed annotation type for query expression from <paramref name="request"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Annotations.AnnotationRequestExtensions.ParseSourceDefinitions(GrafanaAdapters.Model.Annotations.AnnotationRequest,GrafanaAdapters.Annotations.AnnotationType,System.Data.DataSet,System.Boolean)">
+            <summary>
+            Parses source definitions for an annotation query.
+            </summary>
+            <param name="request">Grafana annotation request.</param>
+            <param name="type">Annotation type.</param>
+            <param name="source">Metadata of source definitions.</param>
+            <param name="useFilterExpression">Determines if query is using a filter expression.</param>
+            <returns>Parsed source definitions from <paramref name="request"/>.</returns>
+        </member>
+        <member name="T:GrafanaAdapters.Annotations.AnnotationType">
+            <summary>
+            Supported annotation types for GSF Time-series Framework.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Annotations.AnnotationType.RaisedAlarms">
+            <summary>
+            Raised alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Annotations.AnnotationType.ClearedAlarms">
+            <summary>
+            Cleared alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Annotations.AnnotationType.Events">
+            <summary>
+            Manual event annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Annotations.AnnotationType.Alarms">
+            <summary>
+            All alarm annotation.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Annotations.AnnotationType.Undefined">
+            <summary>
+            Undefined annotation.
             </summary>
         </member>
         <member name="T:GrafanaAdapters.DeviceAlarmStateAdapter">
@@ -3822,17 +4124,13 @@
             Gets time tolerance for data slices in Unix epoch milliseconds.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.ReadNextTimeSliceAsync(System.Boolean)">
+        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.ReadNextTimeSliceAsync">
             <summary>
             Reads next time slice from the series set.
             </summary>
-            <param name="lastValue">
-            Set to <c>true</c> to only publish last value per-series in time-slice for specified <see cref="P:GrafanaAdapters.TimeSliceScannerAsync`1.Tolerance"/>;
-            otherwise, <c>false</c> to publish all series values since last slice.
-            </param>
             <returns>Next time slice.</returns>
         </member>
-        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.Create(System.Collections.Generic.IAsyncEnumerable{GrafanaAdapters.DataSources.DataSourceValueGroup{`0}},System.Double,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.Create(GrafanaAdapters.DataSources.DataSourceValueGroup{`0}[],System.Double,System.Threading.CancellationToken)">
             <summary>
             Creates a new <see cref="T:GrafanaAdapters.TimeSliceScannerAsync`1"/>.
             </summary>
