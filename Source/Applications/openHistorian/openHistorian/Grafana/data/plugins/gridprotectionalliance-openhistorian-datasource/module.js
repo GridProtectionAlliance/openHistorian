@@ -1,2203 +1,376 @@
-(function(e, a) { for(var i in a) e[i] = a[i]; }(exports, /******/ (function(modules) { // webpackBootstrap
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "../node_modules/css-loader/dist/cjs.js!./css/config-editor.css":
+/*!**********************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!./css/config-editor.css ***!
+  \**********************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ \"../node_modules/css-loader/dist/runtime/sourceMaps.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ \"../node_modules/css-loader/dist/runtime/api.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);\n// Imports\n\n\nvar ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));\n// Module\n___CSS_LOADER_EXPORT___.push([module.id, `.dark-box {\r\n  background-color: rgba(32, 34, 38); \r\n  padding: 8px; \r\n  border-radius: 4px;\r\n  border-color: 1px darkgray;\r\n}\r\n\r\n.dark-box .switch {\r\n  background-color: blue; /* Change the background color */\r\n}\r\n\r\n.dark-box .switch::before {\r\n  background-color: white; /* Change the color of the switch thumb */\r\n}\r\n\r\n.dark-button {\r\n  background-color: rgb(34,37,43); \r\n  color: rgb(199,204,220); \r\n}`, \"\",{\"version\":3,\"sources\":[\"webpack://./css/config-editor.css\"],\"names\":[],\"mappings\":\"AAAA;EACE,kCAAkC;EAClC,YAAY;EACZ,kBAAkB;EAClB,0BAA0B;AAC5B;;AAEA;EACE,sBAAsB,EAAE,gCAAgC;AAC1D;;AAEA;EACE,uBAAuB,EAAE,yCAAyC;AACpE;;AAEA;EACE,+BAA+B;EAC/B,uBAAuB;AACzB\",\"sourcesContent\":[\".dark-box {\\r\\n  background-color: rgba(32, 34, 38); \\r\\n  padding: 8px; \\r\\n  border-radius: 4px;\\r\\n  border-color: 1px darkgray;\\r\\n}\\r\\n\\r\\n.dark-box .switch {\\r\\n  background-color: blue; /* Change the background color */\\r\\n}\\r\\n\\r\\n.dark-box .switch::before {\\r\\n  background-color: white; /* Change the color of the switch thumb */\\r\\n}\\r\\n\\r\\n.dark-button {\\r\\n  background-color: rgb(34,37,43); \\r\\n  color: rgb(199,204,220); \\r\\n}\"],\"sourceRoot\":\"\"}]);\n// Exports\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9janMuanMhLi9jc3MvY29uZmlnLWVkaXRvci5jc3MiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7QUFBQTtBQUM2RztBQUNqQjtBQUM1Riw4QkFBOEIsbUZBQTJCLENBQUMsNEZBQXFDO0FBQy9GO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLDBCQUEwQjtBQUMxQjtBQUNBO0FBQ0E7QUFDQSwyQkFBMkI7QUFDM0I7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLENBQUMsT0FBTyx3RkFBd0YsWUFBWSxXQUFXLFlBQVksYUFBYSxPQUFPLEtBQUssd0JBQXdCLE9BQU8sS0FBSyx3QkFBd0IsT0FBTyxLQUFLLFlBQVksYUFBYSxxQ0FBcUMsMENBQTBDLG9CQUFvQix5QkFBeUIsaUNBQWlDLEtBQUssMkJBQTJCLDhCQUE4QixzQ0FBc0MsbUNBQW1DLCtCQUErQiwrQ0FBK0Msc0JBQXNCLHVDQUF1QywrQkFBK0IsS0FBSyxtQkFBbUI7QUFDbnVCO0FBQ0EsaUVBQWUsdUJBQXVCLEVBQUMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jc3MvY29uZmlnLWVkaXRvci5jc3M/YTMwNCJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBJbXBvcnRzXG5pbXBvcnQgX19fQ1NTX0xPQURFUl9BUElfU09VUkNFTUFQX0lNUE9SVF9fXyBmcm9tIFwiLi4vLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9ydW50aW1lL3NvdXJjZU1hcHMuanNcIjtcbmltcG9ydCBfX19DU1NfTE9BREVSX0FQSV9JTVBPUlRfX18gZnJvbSBcIi4uLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvcnVudGltZS9hcGkuanNcIjtcbnZhciBfX19DU1NfTE9BREVSX0VYUE9SVF9fXyA9IF9fX0NTU19MT0FERVJfQVBJX0lNUE9SVF9fXyhfX19DU1NfTE9BREVSX0FQSV9TT1VSQ0VNQVBfSU1QT1JUX19fKTtcbi8vIE1vZHVsZVxuX19fQ1NTX0xPQURFUl9FWFBPUlRfX18ucHVzaChbbW9kdWxlLmlkLCBgLmRhcmstYm94IHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDMyLCAzNCwgMzgpOyBcclxuICBwYWRkaW5nOiA4cHg7IFxyXG4gIGJvcmRlci1yYWRpdXM6IDRweDtcclxuICBib3JkZXItY29sb3I6IDFweCBkYXJrZ3JheTtcclxufVxyXG5cclxuLmRhcmstYm94IC5zd2l0Y2gge1xyXG4gIGJhY2tncm91bmQtY29sb3I6IGJsdWU7IC8qIENoYW5nZSB0aGUgYmFja2dyb3VuZCBjb2xvciAqL1xyXG59XHJcblxyXG4uZGFyay1ib3ggLnN3aXRjaDo6YmVmb3JlIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsgLyogQ2hhbmdlIHRoZSBjb2xvciBvZiB0aGUgc3dpdGNoIHRodW1iICovXHJcbn1cclxuXHJcbi5kYXJrLWJ1dHRvbiB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogcmdiKDM0LDM3LDQzKTsgXHJcbiAgY29sb3I6IHJnYigxOTksMjA0LDIyMCk7IFxyXG59YCwgXCJcIix7XCJ2ZXJzaW9uXCI6MyxcInNvdXJjZXNcIjpbXCJ3ZWJwYWNrOi8vLi9jc3MvY29uZmlnLWVkaXRvci5jc3NcIl0sXCJuYW1lc1wiOltdLFwibWFwcGluZ3NcIjpcIkFBQUE7RUFDRSxrQ0FBa0M7RUFDbEMsWUFBWTtFQUNaLGtCQUFrQjtFQUNsQiwwQkFBMEI7QUFDNUI7O0FBRUE7RUFDRSxzQkFBc0IsRUFBRSxnQ0FBZ0M7QUFDMUQ7O0FBRUE7RUFDRSx1QkFBdUIsRUFBRSx5Q0FBeUM7QUFDcEU7O0FBRUE7RUFDRSwrQkFBK0I7RUFDL0IsdUJBQXVCO0FBQ3pCXCIsXCJzb3VyY2VzQ29udGVudFwiOltcIi5kYXJrLWJveCB7XFxyXFxuICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDMyLCAzNCwgMzgpOyBcXHJcXG4gIHBhZGRpbmc6IDhweDsgXFxyXFxuICBib3JkZXItcmFkaXVzOiA0cHg7XFxyXFxuICBib3JkZXItY29sb3I6IDFweCBkYXJrZ3JheTtcXHJcXG59XFxyXFxuXFxyXFxuLmRhcmstYm94IC5zd2l0Y2gge1xcclxcbiAgYmFja2dyb3VuZC1jb2xvcjogYmx1ZTsgLyogQ2hhbmdlIHRoZSBiYWNrZ3JvdW5kIGNvbG9yICovXFxyXFxufVxcclxcblxcclxcbi5kYXJrLWJveCAuc3dpdGNoOjpiZWZvcmUge1xcclxcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7IC8qIENoYW5nZSB0aGUgY29sb3Igb2YgdGhlIHN3aXRjaCB0aHVtYiAqL1xcclxcbn1cXHJcXG5cXHJcXG4uZGFyay1idXR0b24ge1xcclxcbiAgYmFja2dyb3VuZC1jb2xvcjogcmdiKDM0LDM3LDQzKTsgXFxyXFxuICBjb2xvcjogcmdiKDE5OSwyMDQsMjIwKTsgXFxyXFxufVwiXSxcInNvdXJjZVJvb3RcIjpcIlwifV0pO1xuLy8gRXhwb3J0c1xuZXhwb3J0IGRlZmF1bHQgX19fQ1NTX0xPQURFUl9FWFBPUlRfX187XG4iXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///../node_modules/css-loader/dist/cjs.js!./css/config-editor.css\n");
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/cjs.js!./css/query-editor.css":
+/*!*********************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!./css/query-editor.css ***!
+  \*********************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ \"../node_modules/css-loader/dist/runtime/sourceMaps.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ \"../node_modules/css-loader/dist/runtime/api.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);\n// Imports\n\n\nvar ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));\n// Module\n___CSS_LOADER_EXPORT___.push([module.id, `.dark-box {\r\n    background-color: rgba(17, 18, 23);\r\n    padding: 6px;\r\n    border-radius: 2px;\r\n    border: 1px solid darkgray;\r\n    display: flex;\r\n    align-items: center;\r\n}\r\n  \r\n.dark-box span {\r\n    margin: 0;\r\n    padding: 2px; \r\n}\r\n\r\n.auto-width {\r\n    width: auto;\r\n}\r\n  \r\n  `, \"\",{\"version\":3,\"sources\":[\"webpack://./css/query-editor.css\"],\"names\":[],\"mappings\":\"AAAA;IACI,kCAAkC;IAClC,YAAY;IACZ,kBAAkB;IAClB,0BAA0B;IAC1B,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,SAAS;IACT,YAAY;AAChB;;AAEA;IACI,WAAW;AACf\",\"sourcesContent\":[\".dark-box {\\r\\n    background-color: rgba(17, 18, 23);\\r\\n    padding: 6px;\\r\\n    border-radius: 2px;\\r\\n    border: 1px solid darkgray;\\r\\n    display: flex;\\r\\n    align-items: center;\\r\\n}\\r\\n  \\r\\n.dark-box span {\\r\\n    margin: 0;\\r\\n    padding: 2px; \\r\\n}\\r\\n\\r\\n.auto-width {\\r\\n    width: auto;\\r\\n}\\r\\n  \\r\\n  \"],\"sourceRoot\":\"\"}]);\n// Exports\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9janMuanMhLi9jc3MvcXVlcnktZWRpdG9yLmNzcyIsIm1hcHBpbmdzIjoiOzs7Ozs7OztBQUFBO0FBQzZHO0FBQ2pCO0FBQzVGLDhCQUE4QixtRkFBMkIsQ0FBQyw0RkFBcUM7QUFDL0Y7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxTQUFTLHVGQUF1RixZQUFZLFdBQVcsWUFBWSxhQUFhLFdBQVcsWUFBWSxPQUFPLEtBQUssVUFBVSxVQUFVLE9BQU8sS0FBSyxVQUFVLG9DQUFvQywyQ0FBMkMscUJBQXFCLDJCQUEyQixtQ0FBbUMsc0JBQXNCLDRCQUE0QixLQUFLLDBCQUEwQixrQkFBa0Isc0JBQXNCLEtBQUsscUJBQXFCLG9CQUFvQixLQUFLLCtCQUErQjtBQUMxa0I7QUFDQSxpRUFBZSx1QkFBdUIsRUFBQyIsInNvdXJjZXMiOlsid2VicGFjazovLy8uL2Nzcy9xdWVyeS1lZGl0b3IuY3NzP2EzZjkiXSwic291cmNlc0NvbnRlbnQiOlsiLy8gSW1wb3J0c1xuaW1wb3J0IF9fX0NTU19MT0FERVJfQVBJX1NPVVJDRU1BUF9JTVBPUlRfX18gZnJvbSBcIi4uLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvcnVudGltZS9zb3VyY2VNYXBzLmpzXCI7XG5pbXBvcnQgX19fQ1NTX0xPQURFUl9BUElfSU1QT1JUX19fIGZyb20gXCIuLi8uLi9ub2RlX21vZHVsZXMvY3NzLWxvYWRlci9kaXN0L3J1bnRpbWUvYXBpLmpzXCI7XG52YXIgX19fQ1NTX0xPQURFUl9FWFBPUlRfX18gPSBfX19DU1NfTE9BREVSX0FQSV9JTVBPUlRfX18oX19fQ1NTX0xPQURFUl9BUElfU09VUkNFTUFQX0lNUE9SVF9fXyk7XG4vLyBNb2R1bGVcbl9fX0NTU19MT0FERVJfRVhQT1JUX19fLnB1c2goW21vZHVsZS5pZCwgYC5kYXJrLWJveCB7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDE3LCAxOCwgMjMpO1xyXG4gICAgcGFkZGluZzogNnB4O1xyXG4gICAgYm9yZGVyLXJhZGl1czogMnB4O1xyXG4gICAgYm9yZGVyOiAxcHggc29saWQgZGFya2dyYXk7XHJcbiAgICBkaXNwbGF5OiBmbGV4O1xyXG4gICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxufVxyXG4gIFxyXG4uZGFyay1ib3ggc3BhbiB7XHJcbiAgICBtYXJnaW46IDA7XHJcbiAgICBwYWRkaW5nOiAycHg7IFxyXG59XHJcblxyXG4uYXV0by13aWR0aCB7XHJcbiAgICB3aWR0aDogYXV0bztcclxufVxyXG4gIFxyXG4gIGAsIFwiXCIse1widmVyc2lvblwiOjMsXCJzb3VyY2VzXCI6W1wid2VicGFjazovLy4vY3NzL3F1ZXJ5LWVkaXRvci5jc3NcIl0sXCJuYW1lc1wiOltdLFwibWFwcGluZ3NcIjpcIkFBQUE7SUFDSSxrQ0FBa0M7SUFDbEMsWUFBWTtJQUNaLGtCQUFrQjtJQUNsQiwwQkFBMEI7SUFDMUIsYUFBYTtJQUNiLG1CQUFtQjtBQUN2Qjs7QUFFQTtJQUNJLFNBQVM7SUFDVCxZQUFZO0FBQ2hCOztBQUVBO0lBQ0ksV0FBVztBQUNmXCIsXCJzb3VyY2VzQ29udGVudFwiOltcIi5kYXJrLWJveCB7XFxyXFxuICAgIGJhY2tncm91bmQtY29sb3I6IHJnYmEoMTcsIDE4LCAyMyk7XFxyXFxuICAgIHBhZGRpbmc6IDZweDtcXHJcXG4gICAgYm9yZGVyLXJhZGl1czogMnB4O1xcclxcbiAgICBib3JkZXI6IDFweCBzb2xpZCBkYXJrZ3JheTtcXHJcXG4gICAgZGlzcGxheTogZmxleDtcXHJcXG4gICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcXHJcXG59XFxyXFxuICBcXHJcXG4uZGFyay1ib3ggc3BhbiB7XFxyXFxuICAgIG1hcmdpbjogMDtcXHJcXG4gICAgcGFkZGluZzogMnB4OyBcXHJcXG59XFxyXFxuXFxyXFxuLmF1dG8td2lkdGgge1xcclxcbiAgICB3aWR0aDogYXV0bztcXHJcXG59XFxyXFxuICBcXHJcXG4gIFwiXSxcInNvdXJjZVJvb3RcIjpcIlwifV0pO1xuLy8gRXhwb3J0c1xuZXhwb3J0IGRlZmF1bHQgX19fQ1NTX0xPQURFUl9FWFBPUlRfX187XG4iXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///../node_modules/css-loader/dist/cjs.js!./css/query-editor.css\n");
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/runtime/api.js":
+/*!******************************************************!*\
+  !*** ../node_modules/css-loader/dist/runtime/api.js ***!
+  \******************************************************/
+/***/ ((module) => {
+
+eval("\n\n/*\n  MIT License http://www.opensource.org/licenses/mit-license.php\n  Author Tobias Koppers @sokra\n*/\nmodule.exports = function (cssWithMappingToString) {\n  var list = [];\n\n  // return the list of modules as css string\n  list.toString = function toString() {\n    return this.map(function (item) {\n      var content = \"\";\n      var needLayer = typeof item[5] !== \"undefined\";\n      if (item[4]) {\n        content += \"@supports (\".concat(item[4], \") {\");\n      }\n      if (item[2]) {\n        content += \"@media \".concat(item[2], \" {\");\n      }\n      if (needLayer) {\n        content += \"@layer\".concat(item[5].length > 0 ? \" \".concat(item[5]) : \"\", \" {\");\n      }\n      content += cssWithMappingToString(item);\n      if (needLayer) {\n        content += \"}\";\n      }\n      if (item[2]) {\n        content += \"}\";\n      }\n      if (item[4]) {\n        content += \"}\";\n      }\n      return content;\n    }).join(\"\");\n  };\n\n  // import a list of modules into the list\n  list.i = function i(modules, media, dedupe, supports, layer) {\n    if (typeof modules === \"string\") {\n      modules = [[null, modules, undefined]];\n    }\n    var alreadyImportedModules = {};\n    if (dedupe) {\n      for (var k = 0; k < this.length; k++) {\n        var id = this[k][0];\n        if (id != null) {\n          alreadyImportedModules[id] = true;\n        }\n      }\n    }\n    for (var _k = 0; _k < modules.length; _k++) {\n      var item = [].concat(modules[_k]);\n      if (dedupe && alreadyImportedModules[item[0]]) {\n        continue;\n      }\n      if (typeof layer !== \"undefined\") {\n        if (typeof item[5] === \"undefined\") {\n          item[5] = layer;\n        } else {\n          item[1] = \"@layer\".concat(item[5].length > 0 ? \" \".concat(item[5]) : \"\", \" {\").concat(item[1], \"}\");\n          item[5] = layer;\n        }\n      }\n      if (media) {\n        if (!item[2]) {\n          item[2] = media;\n        } else {\n          item[1] = \"@media \".concat(item[2], \" {\").concat(item[1], \"}\");\n          item[2] = media;\n        }\n      }\n      if (supports) {\n        if (!item[4]) {\n          item[4] = \"\".concat(supports);\n        } else {\n          item[1] = \"@supports (\".concat(item[4], \") {\").concat(item[1], \"}\");\n          item[4] = supports;\n        }\n      }\n      list.push(item);\n    }\n  };\n  return list;\n};//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9ydW50aW1lL2FwaS5qcyIsIm1hcHBpbmdzIjoiQUFBYTs7QUFFYjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EscURBQXFEO0FBQ3JEO0FBQ0E7QUFDQSxnREFBZ0Q7QUFDaEQ7QUFDQTtBQUNBLHFGQUFxRjtBQUNyRjtBQUNBO0FBQ0E7QUFDQSxxQkFBcUI7QUFDckI7QUFDQTtBQUNBLHFCQUFxQjtBQUNyQjtBQUNBO0FBQ0EscUJBQXFCO0FBQ3JCO0FBQ0E7QUFDQSxLQUFLO0FBQ0w7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxzQkFBc0IsaUJBQWlCO0FBQ3ZDO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLHFCQUFxQixxQkFBcUI7QUFDMUM7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxVQUFVO0FBQ1Ysc0ZBQXNGLHFCQUFxQjtBQUMzRztBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxVQUFVO0FBQ1YsaURBQWlELHFCQUFxQjtBQUN0RTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxVQUFVO0FBQ1Ysc0RBQXNELHFCQUFxQjtBQUMzRTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvcnVudGltZS9hcGkuanM/MDIyZCJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBzdHJpY3RcIjtcblxuLypcbiAgTUlUIExpY2Vuc2UgaHR0cDovL3d3dy5vcGVuc291cmNlLm9yZy9saWNlbnNlcy9taXQtbGljZW5zZS5waHBcbiAgQXV0aG9yIFRvYmlhcyBLb3BwZXJzIEBzb2tyYVxuKi9cbm1vZHVsZS5leHBvcnRzID0gZnVuY3Rpb24gKGNzc1dpdGhNYXBwaW5nVG9TdHJpbmcpIHtcbiAgdmFyIGxpc3QgPSBbXTtcblxuICAvLyByZXR1cm4gdGhlIGxpc3Qgb2YgbW9kdWxlcyBhcyBjc3Mgc3RyaW5nXG4gIGxpc3QudG9TdHJpbmcgPSBmdW5jdGlvbiB0b1N0cmluZygpIHtcbiAgICByZXR1cm4gdGhpcy5tYXAoZnVuY3Rpb24gKGl0ZW0pIHtcbiAgICAgIHZhciBjb250ZW50ID0gXCJcIjtcbiAgICAgIHZhciBuZWVkTGF5ZXIgPSB0eXBlb2YgaXRlbVs1XSAhPT0gXCJ1bmRlZmluZWRcIjtcbiAgICAgIGlmIChpdGVtWzRdKSB7XG4gICAgICAgIGNvbnRlbnQgKz0gXCJAc3VwcG9ydHMgKFwiLmNvbmNhdChpdGVtWzRdLCBcIikge1wiKTtcbiAgICAgIH1cbiAgICAgIGlmIChpdGVtWzJdKSB7XG4gICAgICAgIGNvbnRlbnQgKz0gXCJAbWVkaWEgXCIuY29uY2F0KGl0ZW1bMl0sIFwiIHtcIik7XG4gICAgICB9XG4gICAgICBpZiAobmVlZExheWVyKSB7XG4gICAgICAgIGNvbnRlbnQgKz0gXCJAbGF5ZXJcIi5jb25jYXQoaXRlbVs1XS5sZW5ndGggPiAwID8gXCIgXCIuY29uY2F0KGl0ZW1bNV0pIDogXCJcIiwgXCIge1wiKTtcbiAgICAgIH1cbiAgICAgIGNvbnRlbnQgKz0gY3NzV2l0aE1hcHBpbmdUb1N0cmluZyhpdGVtKTtcbiAgICAgIGlmIChuZWVkTGF5ZXIpIHtcbiAgICAgICAgY29udGVudCArPSBcIn1cIjtcbiAgICAgIH1cbiAgICAgIGlmIChpdGVtWzJdKSB7XG4gICAgICAgIGNvbnRlbnQgKz0gXCJ9XCI7XG4gICAgICB9XG4gICAgICBpZiAoaXRlbVs0XSkge1xuICAgICAgICBjb250ZW50ICs9IFwifVwiO1xuICAgICAgfVxuICAgICAgcmV0dXJuIGNvbnRlbnQ7XG4gICAgfSkuam9pbihcIlwiKTtcbiAgfTtcblxuICAvLyBpbXBvcnQgYSBsaXN0IG9mIG1vZHVsZXMgaW50byB0aGUgbGlzdFxuICBsaXN0LmkgPSBmdW5jdGlvbiBpKG1vZHVsZXMsIG1lZGlhLCBkZWR1cGUsIHN1cHBvcnRzLCBsYXllcikge1xuICAgIGlmICh0eXBlb2YgbW9kdWxlcyA9PT0gXCJzdHJpbmdcIikge1xuICAgICAgbW9kdWxlcyA9IFtbbnVsbCwgbW9kdWxlcywgdW5kZWZpbmVkXV07XG4gICAgfVxuICAgIHZhciBhbHJlYWR5SW1wb3J0ZWRNb2R1bGVzID0ge307XG4gICAgaWYgKGRlZHVwZSkge1xuICAgICAgZm9yICh2YXIgayA9IDA7IGsgPCB0aGlzLmxlbmd0aDsgaysrKSB7XG4gICAgICAgIHZhciBpZCA9IHRoaXNba11bMF07XG4gICAgICAgIGlmIChpZCAhPSBudWxsKSB7XG4gICAgICAgICAgYWxyZWFkeUltcG9ydGVkTW9kdWxlc1tpZF0gPSB0cnVlO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICAgIGZvciAodmFyIF9rID0gMDsgX2sgPCBtb2R1bGVzLmxlbmd0aDsgX2srKykge1xuICAgICAgdmFyIGl0ZW0gPSBbXS5jb25jYXQobW9kdWxlc1tfa10pO1xuICAgICAgaWYgKGRlZHVwZSAmJiBhbHJlYWR5SW1wb3J0ZWRNb2R1bGVzW2l0ZW1bMF1dKSB7XG4gICAgICAgIGNvbnRpbnVlO1xuICAgICAgfVxuICAgICAgaWYgKHR5cGVvZiBsYXllciAhPT0gXCJ1bmRlZmluZWRcIikge1xuICAgICAgICBpZiAodHlwZW9mIGl0ZW1bNV0gPT09IFwidW5kZWZpbmVkXCIpIHtcbiAgICAgICAgICBpdGVtWzVdID0gbGF5ZXI7XG4gICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgaXRlbVsxXSA9IFwiQGxheWVyXCIuY29uY2F0KGl0ZW1bNV0ubGVuZ3RoID4gMCA/IFwiIFwiLmNvbmNhdChpdGVtWzVdKSA6IFwiXCIsIFwiIHtcIikuY29uY2F0KGl0ZW1bMV0sIFwifVwiKTtcbiAgICAgICAgICBpdGVtWzVdID0gbGF5ZXI7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICAgIGlmIChtZWRpYSkge1xuICAgICAgICBpZiAoIWl0ZW1bMl0pIHtcbiAgICAgICAgICBpdGVtWzJdID0gbWVkaWE7XG4gICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgaXRlbVsxXSA9IFwiQG1lZGlhIFwiLmNvbmNhdChpdGVtWzJdLCBcIiB7XCIpLmNvbmNhdChpdGVtWzFdLCBcIn1cIik7XG4gICAgICAgICAgaXRlbVsyXSA9IG1lZGlhO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgICBpZiAoc3VwcG9ydHMpIHtcbiAgICAgICAgaWYgKCFpdGVtWzRdKSB7XG4gICAgICAgICAgaXRlbVs0XSA9IFwiXCIuY29uY2F0KHN1cHBvcnRzKTtcbiAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICBpdGVtWzFdID0gXCJAc3VwcG9ydHMgKFwiLmNvbmNhdChpdGVtWzRdLCBcIikge1wiKS5jb25jYXQoaXRlbVsxXSwgXCJ9XCIpO1xuICAgICAgICAgIGl0ZW1bNF0gPSBzdXBwb3J0cztcbiAgICAgICAgfVxuICAgICAgfVxuICAgICAgbGlzdC5wdXNoKGl0ZW0pO1xuICAgIH1cbiAgfTtcbiAgcmV0dXJuIGxpc3Q7XG59OyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///../node_modules/css-loader/dist/runtime/api.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/runtime/sourceMaps.js":
+/*!*************************************************************!*\
+  !*** ../node_modules/css-loader/dist/runtime/sourceMaps.js ***!
+  \*************************************************************/
+/***/ ((module) => {
+
+eval("\n\nmodule.exports = function (item) {\n  var content = item[1];\n  var cssMapping = item[3];\n  if (!cssMapping) {\n    return content;\n  }\n  if (typeof btoa === \"function\") {\n    var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));\n    var data = \"sourceMappingURL=data:application/json;charset=utf-8;base64,\".concat(base64);\n    var sourceMapping = \"/*# \".concat(data, \" */\");\n    return [content].concat([sourceMapping]).join(\"\\n\");\n  }\n  return [content].join(\"\\n\");\n};//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9ydW50aW1lL3NvdXJjZU1hcHMuanMiLCJtYXBwaW5ncyI6IkFBQWE7O0FBRWI7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLHVEQUF1RCxjQUFjO0FBQ3JFO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9ydW50aW1lL3NvdXJjZU1hcHMuanM/NmY4ZCJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBzdHJpY3RcIjtcblxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbiAoaXRlbSkge1xuICB2YXIgY29udGVudCA9IGl0ZW1bMV07XG4gIHZhciBjc3NNYXBwaW5nID0gaXRlbVszXTtcbiAgaWYgKCFjc3NNYXBwaW5nKSB7XG4gICAgcmV0dXJuIGNvbnRlbnQ7XG4gIH1cbiAgaWYgKHR5cGVvZiBidG9hID09PSBcImZ1bmN0aW9uXCIpIHtcbiAgICB2YXIgYmFzZTY0ID0gYnRvYSh1bmVzY2FwZShlbmNvZGVVUklDb21wb25lbnQoSlNPTi5zdHJpbmdpZnkoY3NzTWFwcGluZykpKSk7XG4gICAgdmFyIGRhdGEgPSBcInNvdXJjZU1hcHBpbmdVUkw9ZGF0YTphcHBsaWNhdGlvbi9qc29uO2NoYXJzZXQ9dXRmLTg7YmFzZTY0LFwiLmNvbmNhdChiYXNlNjQpO1xuICAgIHZhciBzb3VyY2VNYXBwaW5nID0gXCIvKiMgXCIuY29uY2F0KGRhdGEsIFwiICovXCIpO1xuICAgIHJldHVybiBbY29udGVudF0uY29uY2F0KFtzb3VyY2VNYXBwaW5nXSkuam9pbihcIlxcblwiKTtcbiAgfVxuICByZXR1cm4gW2NvbnRlbnRdLmpvaW4oXCJcXG5cIik7XG59OyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///../node_modules/css-loader/dist/runtime/sourceMaps.js\n");
+
+/***/ }),
+
+/***/ "./css/config-editor.css":
+/*!*******************************!*\
+  !*** ./css/config-editor.css ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ \"../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ \"../node_modules/style-loader/dist/runtime/styleDomAPI.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ \"../node_modules/style-loader/dist/runtime/insertBySelector.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ \"../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ \"../node_modules/style-loader/dist/runtime/insertStyleElement.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ \"../node_modules/style-loader/dist/runtime/styleTagTransform.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _node_modules_css_loader_dist_cjs_js_config_editor_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!./config-editor.css */ \"../node_modules/css-loader/dist/cjs.js!./css/config-editor.css\");\n\n      \n      \n      \n      \n      \n      \n      \n      \n      \n\nvar options = {};\n\noptions.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());\noptions.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());\n\n      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, \"head\");\n    \noptions.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());\noptions.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());\n\nvar update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_config_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"], options);\n\n\n\n\n       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_config_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"] && _node_modules_css_loader_dist_cjs_js_config_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals ? _node_modules_css_loader_dist_cjs_js_config_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals : undefined);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jc3MvY29uZmlnLWVkaXRvci5jc3MiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQ0EsTUFBa0c7QUFDbEcsTUFBd0Y7QUFDeEYsTUFBK0Y7QUFDL0YsTUFBa0g7QUFDbEgsTUFBMkc7QUFDM0csTUFBMkc7QUFDM0csTUFBOEc7QUFDOUc7QUFDQTs7QUFFQTs7QUFFQSw0QkFBNEIscUdBQW1CO0FBQy9DLHdCQUF3QixrSEFBYTs7QUFFckMsdUJBQXVCLHVHQUFhO0FBQ3BDO0FBQ0EsaUJBQWlCLCtGQUFNO0FBQ3ZCLDZCQUE2QixzR0FBa0I7O0FBRS9DLGFBQWEsMEdBQUcsQ0FBQyw4RkFBTzs7OztBQUl3RDtBQUNoRixPQUFPLGlFQUFlLDhGQUFPLElBQUksOEZBQU8sVUFBVSw4RkFBTyxtQkFBbUIsRUFBQyIsInNvdXJjZXMiOlsid2VicGFjazovLy8uL2Nzcy9jb25maWctZWRpdG9yLmNzcz9hNjVlIl0sInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgaW1wb3J0IEFQSSBmcm9tIFwiIS4uLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL2luamVjdFN0eWxlc0ludG9TdHlsZVRhZy5qc1wiO1xuICAgICAgaW1wb3J0IGRvbUFQSSBmcm9tIFwiIS4uLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL3N0eWxlRG9tQVBJLmpzXCI7XG4gICAgICBpbXBvcnQgaW5zZXJ0Rm4gZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9pbnNlcnRCeVNlbGVjdG9yLmpzXCI7XG4gICAgICBpbXBvcnQgc2V0QXR0cmlidXRlcyBmcm9tIFwiIS4uLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL3NldEF0dHJpYnV0ZXNXaXRob3V0QXR0cmlidXRlcy5qc1wiO1xuICAgICAgaW1wb3J0IGluc2VydFN0eWxlRWxlbWVudCBmcm9tIFwiIS4uLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL2luc2VydFN0eWxlRWxlbWVudC5qc1wiO1xuICAgICAgaW1wb3J0IHN0eWxlVGFnVHJhbnNmb3JtRm4gZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9zdHlsZVRhZ1RyYW5zZm9ybS5qc1wiO1xuICAgICAgaW1wb3J0IGNvbnRlbnQsICogYXMgbmFtZWRFeHBvcnQgZnJvbSBcIiEhLi4vLi4vbm9kZV9tb2R1bGVzL2Nzcy1sb2FkZXIvZGlzdC9janMuanMhLi9jb25maWctZWRpdG9yLmNzc1wiO1xuICAgICAgXG4gICAgICBcblxudmFyIG9wdGlvbnMgPSB7fTtcblxub3B0aW9ucy5zdHlsZVRhZ1RyYW5zZm9ybSA9IHN0eWxlVGFnVHJhbnNmb3JtRm47XG5vcHRpb25zLnNldEF0dHJpYnV0ZXMgPSBzZXRBdHRyaWJ1dGVzO1xuXG4gICAgICBvcHRpb25zLmluc2VydCA9IGluc2VydEZuLmJpbmQobnVsbCwgXCJoZWFkXCIpO1xuICAgIFxub3B0aW9ucy5kb21BUEkgPSBkb21BUEk7XG5vcHRpb25zLmluc2VydFN0eWxlRWxlbWVudCA9IGluc2VydFN0eWxlRWxlbWVudDtcblxudmFyIHVwZGF0ZSA9IEFQSShjb250ZW50LCBvcHRpb25zKTtcblxuXG5cbmV4cG9ydCAqIGZyb20gXCIhIS4uLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvY2pzLmpzIS4vY29uZmlnLWVkaXRvci5jc3NcIjtcbiAgICAgICBleHBvcnQgZGVmYXVsdCBjb250ZW50ICYmIGNvbnRlbnQubG9jYWxzID8gY29udGVudC5sb2NhbHMgOiB1bmRlZmluZWQ7XG4iXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./css/config-editor.css\n");
+
+/***/ }),
+
+/***/ "./css/query-editor.css":
+/*!******************************!*\
+  !*** ./css/query-editor.css ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ \"../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ \"../node_modules/style-loader/dist/runtime/styleDomAPI.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ \"../node_modules/style-loader/dist/runtime/insertBySelector.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ \"../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ \"../node_modules/style-loader/dist/runtime/insertStyleElement.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ \"../node_modules/style-loader/dist/runtime/styleTagTransform.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _node_modules_css_loader_dist_cjs_js_query_editor_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!./query-editor.css */ \"../node_modules/css-loader/dist/cjs.js!./css/query-editor.css\");\n\n      \n      \n      \n      \n      \n      \n      \n      \n      \n\nvar options = {};\n\noptions.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());\noptions.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());\n\n      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, \"head\");\n    \noptions.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());\noptions.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());\n\nvar update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_query_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"], options);\n\n\n\n\n       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_query_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"] && _node_modules_css_loader_dist_cjs_js_query_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals ? _node_modules_css_loader_dist_cjs_js_query_editor_css__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals : undefined);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jc3MvcXVlcnktZWRpdG9yLmNzcyIsIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFDQSxNQUFrRztBQUNsRyxNQUF3RjtBQUN4RixNQUErRjtBQUMvRixNQUFrSDtBQUNsSCxNQUEyRztBQUMzRyxNQUEyRztBQUMzRyxNQUE2RztBQUM3RztBQUNBOztBQUVBOztBQUVBLDRCQUE0QixxR0FBbUI7QUFDL0Msd0JBQXdCLGtIQUFhOztBQUVyQyx1QkFBdUIsdUdBQWE7QUFDcEM7QUFDQSxpQkFBaUIsK0ZBQU07QUFDdkIsNkJBQTZCLHNHQUFrQjs7QUFFL0MsYUFBYSwwR0FBRyxDQUFDLDZGQUFPOzs7O0FBSXVEO0FBQy9FLE9BQU8saUVBQWUsNkZBQU8sSUFBSSw2RkFBTyxVQUFVLDZGQUFPLG1CQUFtQixFQUFDIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vY3NzL3F1ZXJ5LWVkaXRvci5jc3M/ZWRmNCJdLCJzb3VyY2VzQ29udGVudCI6WyJcbiAgICAgIGltcG9ydCBBUEkgZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9pbmplY3RTdHlsZXNJbnRvU3R5bGVUYWcuanNcIjtcbiAgICAgIGltcG9ydCBkb21BUEkgZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9zdHlsZURvbUFQSS5qc1wiO1xuICAgICAgaW1wb3J0IGluc2VydEZuIGZyb20gXCIhLi4vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5zZXJ0QnlTZWxlY3Rvci5qc1wiO1xuICAgICAgaW1wb3J0IHNldEF0dHJpYnV0ZXMgZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9zZXRBdHRyaWJ1dGVzV2l0aG91dEF0dHJpYnV0ZXMuanNcIjtcbiAgICAgIGltcG9ydCBpbnNlcnRTdHlsZUVsZW1lbnQgZnJvbSBcIiEuLi8uLi9ub2RlX21vZHVsZXMvc3R5bGUtbG9hZGVyL2Rpc3QvcnVudGltZS9pbnNlcnRTdHlsZUVsZW1lbnQuanNcIjtcbiAgICAgIGltcG9ydCBzdHlsZVRhZ1RyYW5zZm9ybUZuIGZyb20gXCIhLi4vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc3R5bGVUYWdUcmFuc2Zvcm0uanNcIjtcbiAgICAgIGltcG9ydCBjb250ZW50LCAqIGFzIG5hbWVkRXhwb3J0IGZyb20gXCIhIS4uLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvY2pzLmpzIS4vcXVlcnktZWRpdG9yLmNzc1wiO1xuICAgICAgXG4gICAgICBcblxudmFyIG9wdGlvbnMgPSB7fTtcblxub3B0aW9ucy5zdHlsZVRhZ1RyYW5zZm9ybSA9IHN0eWxlVGFnVHJhbnNmb3JtRm47XG5vcHRpb25zLnNldEF0dHJpYnV0ZXMgPSBzZXRBdHRyaWJ1dGVzO1xuXG4gICAgICBvcHRpb25zLmluc2VydCA9IGluc2VydEZuLmJpbmQobnVsbCwgXCJoZWFkXCIpO1xuICAgIFxub3B0aW9ucy5kb21BUEkgPSBkb21BUEk7XG5vcHRpb25zLmluc2VydFN0eWxlRWxlbWVudCA9IGluc2VydFN0eWxlRWxlbWVudDtcblxudmFyIHVwZGF0ZSA9IEFQSShjb250ZW50LCBvcHRpb25zKTtcblxuXG5cbmV4cG9ydCAqIGZyb20gXCIhIS4uLy4uL25vZGVfbW9kdWxlcy9jc3MtbG9hZGVyL2Rpc3QvY2pzLmpzIS4vcXVlcnktZWRpdG9yLmNzc1wiO1xuICAgICAgIGV4cG9ydCBkZWZhdWx0IGNvbnRlbnQgJiYgY29udGVudC5sb2NhbHMgPyBjb250ZW50LmxvY2FscyA6IHVuZGVmaW5lZDtcbiJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./css/query-editor.css\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
+/*!*****************************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \*****************************************************************************/
+/***/ ((module) => {
+
+eval("\n\nvar stylesInDOM = [];\nfunction getIndexByIdentifier(identifier) {\n  var result = -1;\n  for (var i = 0; i < stylesInDOM.length; i++) {\n    if (stylesInDOM[i].identifier === identifier) {\n      result = i;\n      break;\n    }\n  }\n  return result;\n}\nfunction modulesToDom(list, options) {\n  var idCountMap = {};\n  var identifiers = [];\n  for (var i = 0; i < list.length; i++) {\n    var item = list[i];\n    var id = options.base ? item[0] + options.base : item[0];\n    var count = idCountMap[id] || 0;\n    var identifier = \"\".concat(id, \" \").concat(count);\n    idCountMap[id] = count + 1;\n    var indexByIdentifier = getIndexByIdentifier(identifier);\n    var obj = {\n      css: item[1],\n      media: item[2],\n      sourceMap: item[3],\n      supports: item[4],\n      layer: item[5]\n    };\n    if (indexByIdentifier !== -1) {\n      stylesInDOM[indexByIdentifier].references++;\n      stylesInDOM[indexByIdentifier].updater(obj);\n    } else {\n      var updater = addElementStyle(obj, options);\n      options.byIndex = i;\n      stylesInDOM.splice(i, 0, {\n        identifier: identifier,\n        updater: updater,\n        references: 1\n      });\n    }\n    identifiers.push(identifier);\n  }\n  return identifiers;\n}\nfunction addElementStyle(obj, options) {\n  var api = options.domAPI(options);\n  api.update(obj);\n  var updater = function updater(newObj) {\n    if (newObj) {\n      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {\n        return;\n      }\n      api.update(obj = newObj);\n    } else {\n      api.remove();\n    }\n  };\n  return updater;\n}\nmodule.exports = function (list, options) {\n  options = options || {};\n  list = list || [];\n  var lastIdentifiers = modulesToDom(list, options);\n  return function update(newList) {\n    newList = newList || [];\n    for (var i = 0; i < lastIdentifiers.length; i++) {\n      var identifier = lastIdentifiers[i];\n      var index = getIndexByIdentifier(identifier);\n      stylesInDOM[index].references--;\n    }\n    var newLastIdentifiers = modulesToDom(newList, options);\n    for (var _i = 0; _i < lastIdentifiers.length; _i++) {\n      var _identifier = lastIdentifiers[_i];\n      var _index = getIndexByIdentifier(_identifier);\n      if (stylesInDOM[_index].references === 0) {\n        stylesInDOM[_index].updater();\n        stylesInDOM.splice(_index, 1);\n      }\n    }\n    lastIdentifiers = newLastIdentifiers;\n  };\n};//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5qZWN0U3R5bGVzSW50b1N0eWxlVGFnLmpzIiwibWFwcGluZ3MiOiJBQUFhOztBQUViO0FBQ0E7QUFDQTtBQUNBLGtCQUFrQix3QkFBd0I7QUFDMUM7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxrQkFBa0IsaUJBQWlCO0FBQ25DO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsTUFBTTtBQUNOO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLE9BQU87QUFDUDtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsTUFBTTtBQUNOO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxvQkFBb0IsNEJBQTRCO0FBQ2hEO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxxQkFBcUIsNkJBQTZCO0FBQ2xEO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL2luamVjdFN0eWxlc0ludG9TdHlsZVRhZy5qcz83OGMwIl0sInNvdXJjZXNDb250ZW50IjpbIlwidXNlIHN0cmljdFwiO1xuXG52YXIgc3R5bGVzSW5ET00gPSBbXTtcbmZ1bmN0aW9uIGdldEluZGV4QnlJZGVudGlmaWVyKGlkZW50aWZpZXIpIHtcbiAgdmFyIHJlc3VsdCA9IC0xO1xuICBmb3IgKHZhciBpID0gMDsgaSA8IHN0eWxlc0luRE9NLmxlbmd0aDsgaSsrKSB7XG4gICAgaWYgKHN0eWxlc0luRE9NW2ldLmlkZW50aWZpZXIgPT09IGlkZW50aWZpZXIpIHtcbiAgICAgIHJlc3VsdCA9IGk7XG4gICAgICBicmVhaztcbiAgICB9XG4gIH1cbiAgcmV0dXJuIHJlc3VsdDtcbn1cbmZ1bmN0aW9uIG1vZHVsZXNUb0RvbShsaXN0LCBvcHRpb25zKSB7XG4gIHZhciBpZENvdW50TWFwID0ge307XG4gIHZhciBpZGVudGlmaWVycyA9IFtdO1xuICBmb3IgKHZhciBpID0gMDsgaSA8IGxpc3QubGVuZ3RoOyBpKyspIHtcbiAgICB2YXIgaXRlbSA9IGxpc3RbaV07XG4gICAgdmFyIGlkID0gb3B0aW9ucy5iYXNlID8gaXRlbVswXSArIG9wdGlvbnMuYmFzZSA6IGl0ZW1bMF07XG4gICAgdmFyIGNvdW50ID0gaWRDb3VudE1hcFtpZF0gfHwgMDtcbiAgICB2YXIgaWRlbnRpZmllciA9IFwiXCIuY29uY2F0KGlkLCBcIiBcIikuY29uY2F0KGNvdW50KTtcbiAgICBpZENvdW50TWFwW2lkXSA9IGNvdW50ICsgMTtcbiAgICB2YXIgaW5kZXhCeUlkZW50aWZpZXIgPSBnZXRJbmRleEJ5SWRlbnRpZmllcihpZGVudGlmaWVyKTtcbiAgICB2YXIgb2JqID0ge1xuICAgICAgY3NzOiBpdGVtWzFdLFxuICAgICAgbWVkaWE6IGl0ZW1bMl0sXG4gICAgICBzb3VyY2VNYXA6IGl0ZW1bM10sXG4gICAgICBzdXBwb3J0czogaXRlbVs0XSxcbiAgICAgIGxheWVyOiBpdGVtWzVdXG4gICAgfTtcbiAgICBpZiAoaW5kZXhCeUlkZW50aWZpZXIgIT09IC0xKSB7XG4gICAgICBzdHlsZXNJbkRPTVtpbmRleEJ5SWRlbnRpZmllcl0ucmVmZXJlbmNlcysrO1xuICAgICAgc3R5bGVzSW5ET01baW5kZXhCeUlkZW50aWZpZXJdLnVwZGF0ZXIob2JqKTtcbiAgICB9IGVsc2Uge1xuICAgICAgdmFyIHVwZGF0ZXIgPSBhZGRFbGVtZW50U3R5bGUob2JqLCBvcHRpb25zKTtcbiAgICAgIG9wdGlvbnMuYnlJbmRleCA9IGk7XG4gICAgICBzdHlsZXNJbkRPTS5zcGxpY2UoaSwgMCwge1xuICAgICAgICBpZGVudGlmaWVyOiBpZGVudGlmaWVyLFxuICAgICAgICB1cGRhdGVyOiB1cGRhdGVyLFxuICAgICAgICByZWZlcmVuY2VzOiAxXG4gICAgICB9KTtcbiAgICB9XG4gICAgaWRlbnRpZmllcnMucHVzaChpZGVudGlmaWVyKTtcbiAgfVxuICByZXR1cm4gaWRlbnRpZmllcnM7XG59XG5mdW5jdGlvbiBhZGRFbGVtZW50U3R5bGUob2JqLCBvcHRpb25zKSB7XG4gIHZhciBhcGkgPSBvcHRpb25zLmRvbUFQSShvcHRpb25zKTtcbiAgYXBpLnVwZGF0ZShvYmopO1xuICB2YXIgdXBkYXRlciA9IGZ1bmN0aW9uIHVwZGF0ZXIobmV3T2JqKSB7XG4gICAgaWYgKG5ld09iaikge1xuICAgICAgaWYgKG5ld09iai5jc3MgPT09IG9iai5jc3MgJiYgbmV3T2JqLm1lZGlhID09PSBvYmoubWVkaWEgJiYgbmV3T2JqLnNvdXJjZU1hcCA9PT0gb2JqLnNvdXJjZU1hcCAmJiBuZXdPYmouc3VwcG9ydHMgPT09IG9iai5zdXBwb3J0cyAmJiBuZXdPYmoubGF5ZXIgPT09IG9iai5sYXllcikge1xuICAgICAgICByZXR1cm47XG4gICAgICB9XG4gICAgICBhcGkudXBkYXRlKG9iaiA9IG5ld09iaik7XG4gICAgfSBlbHNlIHtcbiAgICAgIGFwaS5yZW1vdmUoKTtcbiAgICB9XG4gIH07XG4gIHJldHVybiB1cGRhdGVyO1xufVxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbiAobGlzdCwgb3B0aW9ucykge1xuICBvcHRpb25zID0gb3B0aW9ucyB8fCB7fTtcbiAgbGlzdCA9IGxpc3QgfHwgW107XG4gIHZhciBsYXN0SWRlbnRpZmllcnMgPSBtb2R1bGVzVG9Eb20obGlzdCwgb3B0aW9ucyk7XG4gIHJldHVybiBmdW5jdGlvbiB1cGRhdGUobmV3TGlzdCkge1xuICAgIG5ld0xpc3QgPSBuZXdMaXN0IHx8IFtdO1xuICAgIGZvciAodmFyIGkgPSAwOyBpIDwgbGFzdElkZW50aWZpZXJzLmxlbmd0aDsgaSsrKSB7XG4gICAgICB2YXIgaWRlbnRpZmllciA9IGxhc3RJZGVudGlmaWVyc1tpXTtcbiAgICAgIHZhciBpbmRleCA9IGdldEluZGV4QnlJZGVudGlmaWVyKGlkZW50aWZpZXIpO1xuICAgICAgc3R5bGVzSW5ET01baW5kZXhdLnJlZmVyZW5jZXMtLTtcbiAgICB9XG4gICAgdmFyIG5ld0xhc3RJZGVudGlmaWVycyA9IG1vZHVsZXNUb0RvbShuZXdMaXN0LCBvcHRpb25zKTtcbiAgICBmb3IgKHZhciBfaSA9IDA7IF9pIDwgbGFzdElkZW50aWZpZXJzLmxlbmd0aDsgX2krKykge1xuICAgICAgdmFyIF9pZGVudGlmaWVyID0gbGFzdElkZW50aWZpZXJzW19pXTtcbiAgICAgIHZhciBfaW5kZXggPSBnZXRJbmRleEJ5SWRlbnRpZmllcihfaWRlbnRpZmllcik7XG4gICAgICBpZiAoc3R5bGVzSW5ET01bX2luZGV4XS5yZWZlcmVuY2VzID09PSAwKSB7XG4gICAgICAgIHN0eWxlc0luRE9NW19pbmRleF0udXBkYXRlcigpO1xuICAgICAgICBzdHlsZXNJbkRPTS5zcGxpY2UoX2luZGV4LCAxKTtcbiAgICAgIH1cbiAgICB9XG4gICAgbGFzdElkZW50aWZpZXJzID0gbmV3TGFzdElkZW50aWZpZXJzO1xuICB9O1xufTsiXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/insertBySelector.js":
+/*!*********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/insertBySelector.js ***!
+  \*********************************************************************/
+/***/ ((module) => {
+
+eval("\n\nvar memo = {};\n\n/* istanbul ignore next  */\nfunction getTarget(target) {\n  if (typeof memo[target] === \"undefined\") {\n    var styleTarget = document.querySelector(target);\n\n    // Special case to return head of iframe instead of iframe itself\n    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {\n      try {\n        // This will throw an exception if access to iframe is blocked\n        // due to cross-origin restrictions\n        styleTarget = styleTarget.contentDocument.head;\n      } catch (e) {\n        // istanbul ignore next\n        styleTarget = null;\n      }\n    }\n    memo[target] = styleTarget;\n  }\n  return memo[target];\n}\n\n/* istanbul ignore next  */\nfunction insertBySelector(insert, style) {\n  var target = getTarget(insert);\n  if (!target) {\n    throw new Error(\"Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.\");\n  }\n  target.appendChild(style);\n}\nmodule.exports = insertBySelector;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5zZXJ0QnlTZWxlY3Rvci5qcyIsIm1hcHBpbmdzIjoiQUFBYTs7QUFFYjs7QUFFQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxRQUFRO0FBQ1I7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5zZXJ0QnlTZWxlY3Rvci5qcz9hZDE0Il0sInNvdXJjZXNDb250ZW50IjpbIlwidXNlIHN0cmljdFwiO1xuXG52YXIgbWVtbyA9IHt9O1xuXG4vKiBpc3RhbmJ1bCBpZ25vcmUgbmV4dCAgKi9cbmZ1bmN0aW9uIGdldFRhcmdldCh0YXJnZXQpIHtcbiAgaWYgKHR5cGVvZiBtZW1vW3RhcmdldF0gPT09IFwidW5kZWZpbmVkXCIpIHtcbiAgICB2YXIgc3R5bGVUYXJnZXQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKHRhcmdldCk7XG5cbiAgICAvLyBTcGVjaWFsIGNhc2UgdG8gcmV0dXJuIGhlYWQgb2YgaWZyYW1lIGluc3RlYWQgb2YgaWZyYW1lIGl0c2VsZlxuICAgIGlmICh3aW5kb3cuSFRNTElGcmFtZUVsZW1lbnQgJiYgc3R5bGVUYXJnZXQgaW5zdGFuY2VvZiB3aW5kb3cuSFRNTElGcmFtZUVsZW1lbnQpIHtcbiAgICAgIHRyeSB7XG4gICAgICAgIC8vIFRoaXMgd2lsbCB0aHJvdyBhbiBleGNlcHRpb24gaWYgYWNjZXNzIHRvIGlmcmFtZSBpcyBibG9ja2VkXG4gICAgICAgIC8vIGR1ZSB0byBjcm9zcy1vcmlnaW4gcmVzdHJpY3Rpb25zXG4gICAgICAgIHN0eWxlVGFyZ2V0ID0gc3R5bGVUYXJnZXQuY29udGVudERvY3VtZW50LmhlYWQ7XG4gICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgIC8vIGlzdGFuYnVsIGlnbm9yZSBuZXh0XG4gICAgICAgIHN0eWxlVGFyZ2V0ID0gbnVsbDtcbiAgICAgIH1cbiAgICB9XG4gICAgbWVtb1t0YXJnZXRdID0gc3R5bGVUYXJnZXQ7XG4gIH1cbiAgcmV0dXJuIG1lbW9bdGFyZ2V0XTtcbn1cblxuLyogaXN0YW5idWwgaWdub3JlIG5leHQgICovXG5mdW5jdGlvbiBpbnNlcnRCeVNlbGVjdG9yKGluc2VydCwgc3R5bGUpIHtcbiAgdmFyIHRhcmdldCA9IGdldFRhcmdldChpbnNlcnQpO1xuICBpZiAoIXRhcmdldCkge1xuICAgIHRocm93IG5ldyBFcnJvcihcIkNvdWxkbid0IGZpbmQgYSBzdHlsZSB0YXJnZXQuIFRoaXMgcHJvYmFibHkgbWVhbnMgdGhhdCB0aGUgdmFsdWUgZm9yIHRoZSAnaW5zZXJ0JyBwYXJhbWV0ZXIgaXMgaW52YWxpZC5cIik7XG4gIH1cbiAgdGFyZ2V0LmFwcGVuZENoaWxkKHN0eWxlKTtcbn1cbm1vZHVsZS5leHBvcnRzID0gaW5zZXJ0QnlTZWxlY3RvcjsiXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/insertBySelector.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/insertStyleElement.js":
+/*!***********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
+  \***********************************************************************/
+/***/ ((module) => {
+
+eval("\n\n/* istanbul ignore next  */\nfunction insertStyleElement(options) {\n  var element = document.createElement(\"style\");\n  options.setAttributes(element, options.attributes);\n  options.insert(element, options.options);\n  return element;\n}\nmodule.exports = insertStyleElement;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5zZXJ0U3R5bGVFbGVtZW50LmpzIiwibWFwcGluZ3MiOiJBQUFhOztBQUViO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvaW5zZXJ0U3R5bGVFbGVtZW50LmpzPzMxZWUiXSwic291cmNlc0NvbnRlbnQiOlsiXCJ1c2Ugc3RyaWN0XCI7XG5cbi8qIGlzdGFuYnVsIGlnbm9yZSBuZXh0ICAqL1xuZnVuY3Rpb24gaW5zZXJ0U3R5bGVFbGVtZW50KG9wdGlvbnMpIHtcbiAgdmFyIGVsZW1lbnQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwic3R5bGVcIik7XG4gIG9wdGlvbnMuc2V0QXR0cmlidXRlcyhlbGVtZW50LCBvcHRpb25zLmF0dHJpYnV0ZXMpO1xuICBvcHRpb25zLmluc2VydChlbGVtZW50LCBvcHRpb25zLm9wdGlvbnMpO1xuICByZXR1cm4gZWxlbWVudDtcbn1cbm1vZHVsZS5leHBvcnRzID0gaW5zZXJ0U3R5bGVFbGVtZW50OyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/insertStyleElement.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
+/*!***********************************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
+  \***********************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("\n\n/* istanbul ignore next  */\nfunction setAttributesWithoutAttributes(styleElement) {\n  var nonce =  true ? __webpack_require__.nc : 0;\n  if (nonce) {\n    styleElement.setAttribute(\"nonce\", nonce);\n  }\n}\nmodule.exports = setAttributesWithoutAttributes;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc2V0QXR0cmlidXRlc1dpdGhvdXRBdHRyaWJ1dGVzLmpzIiwibWFwcGluZ3MiOiJBQUFhOztBQUViO0FBQ0E7QUFDQSxjQUFjLEtBQXdDLEdBQUcsc0JBQWlCLEdBQUcsQ0FBSTtBQUNqRjtBQUNBO0FBQ0E7QUFDQTtBQUNBIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4uL25vZGVfbW9kdWxlcy9zdHlsZS1sb2FkZXIvZGlzdC9ydW50aW1lL3NldEF0dHJpYnV0ZXNXaXRob3V0QXR0cmlidXRlcy5qcz9iZjU0Il0sInNvdXJjZXNDb250ZW50IjpbIlwidXNlIHN0cmljdFwiO1xuXG4vKiBpc3RhbmJ1bCBpZ25vcmUgbmV4dCAgKi9cbmZ1bmN0aW9uIHNldEF0dHJpYnV0ZXNXaXRob3V0QXR0cmlidXRlcyhzdHlsZUVsZW1lbnQpIHtcbiAgdmFyIG5vbmNlID0gdHlwZW9mIF9fd2VicGFja19ub25jZV9fICE9PSBcInVuZGVmaW5lZFwiID8gX193ZWJwYWNrX25vbmNlX18gOiBudWxsO1xuICBpZiAobm9uY2UpIHtcbiAgICBzdHlsZUVsZW1lbnQuc2V0QXR0cmlidXRlKFwibm9uY2VcIiwgbm9uY2UpO1xuICB9XG59XG5tb2R1bGUuZXhwb3J0cyA9IHNldEF0dHJpYnV0ZXNXaXRob3V0QXR0cmlidXRlczsiXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/styleDomAPI.js":
+/*!****************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
+  \****************************************************************/
+/***/ ((module) => {
+
+eval("\n\n/* istanbul ignore next  */\nfunction apply(styleElement, options, obj) {\n  var css = \"\";\n  if (obj.supports) {\n    css += \"@supports (\".concat(obj.supports, \") {\");\n  }\n  if (obj.media) {\n    css += \"@media \".concat(obj.media, \" {\");\n  }\n  var needLayer = typeof obj.layer !== \"undefined\";\n  if (needLayer) {\n    css += \"@layer\".concat(obj.layer.length > 0 ? \" \".concat(obj.layer) : \"\", \" {\");\n  }\n  css += obj.css;\n  if (needLayer) {\n    css += \"}\";\n  }\n  if (obj.media) {\n    css += \"}\";\n  }\n  if (obj.supports) {\n    css += \"}\";\n  }\n  var sourceMap = obj.sourceMap;\n  if (sourceMap && typeof btoa !== \"undefined\") {\n    css += \"\\n/*# sourceMappingURL=data:application/json;base64,\".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), \" */\");\n  }\n\n  // For old IE\n  /* istanbul ignore if  */\n  options.styleTagTransform(css, styleElement, options.options);\n}\nfunction removeStyleElement(styleElement) {\n  // istanbul ignore if\n  if (styleElement.parentNode === null) {\n    return false;\n  }\n  styleElement.parentNode.removeChild(styleElement);\n}\n\n/* istanbul ignore next  */\nfunction domAPI(options) {\n  if (typeof document === \"undefined\") {\n    return {\n      update: function update() {},\n      remove: function remove() {}\n    };\n  }\n  var styleElement = options.insertStyleElement(options);\n  return {\n    update: function update(obj) {\n      apply(styleElement, options, obj);\n    },\n    remove: function remove() {\n      removeStyleElement(styleElement);\n    }\n  };\n}\nmodule.exports = domAPI;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc3R5bGVEb21BUEkuanMiLCJtYXBwaW5ncyI6IkFBQWE7O0FBRWI7QUFDQTtBQUNBO0FBQ0E7QUFDQSxrREFBa0Q7QUFDbEQ7QUFDQTtBQUNBLDBDQUEwQztBQUMxQztBQUNBO0FBQ0E7QUFDQSxpRkFBaUY7QUFDakY7QUFDQTtBQUNBO0FBQ0EsYUFBYTtBQUNiO0FBQ0E7QUFDQSxhQUFhO0FBQ2I7QUFDQTtBQUNBLGFBQWE7QUFDYjtBQUNBO0FBQ0E7QUFDQSx5REFBeUQ7QUFDekQ7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLGtDQUFrQztBQUNsQztBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLEtBQUs7QUFDTDtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc3R5bGVEb21BUEkuanM/YmQxYSJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBzdHJpY3RcIjtcblxuLyogaXN0YW5idWwgaWdub3JlIG5leHQgICovXG5mdW5jdGlvbiBhcHBseShzdHlsZUVsZW1lbnQsIG9wdGlvbnMsIG9iaikge1xuICB2YXIgY3NzID0gXCJcIjtcbiAgaWYgKG9iai5zdXBwb3J0cykge1xuICAgIGNzcyArPSBcIkBzdXBwb3J0cyAoXCIuY29uY2F0KG9iai5zdXBwb3J0cywgXCIpIHtcIik7XG4gIH1cbiAgaWYgKG9iai5tZWRpYSkge1xuICAgIGNzcyArPSBcIkBtZWRpYSBcIi5jb25jYXQob2JqLm1lZGlhLCBcIiB7XCIpO1xuICB9XG4gIHZhciBuZWVkTGF5ZXIgPSB0eXBlb2Ygb2JqLmxheWVyICE9PSBcInVuZGVmaW5lZFwiO1xuICBpZiAobmVlZExheWVyKSB7XG4gICAgY3NzICs9IFwiQGxheWVyXCIuY29uY2F0KG9iai5sYXllci5sZW5ndGggPiAwID8gXCIgXCIuY29uY2F0KG9iai5sYXllcikgOiBcIlwiLCBcIiB7XCIpO1xuICB9XG4gIGNzcyArPSBvYmouY3NzO1xuICBpZiAobmVlZExheWVyKSB7XG4gICAgY3NzICs9IFwifVwiO1xuICB9XG4gIGlmIChvYmoubWVkaWEpIHtcbiAgICBjc3MgKz0gXCJ9XCI7XG4gIH1cbiAgaWYgKG9iai5zdXBwb3J0cykge1xuICAgIGNzcyArPSBcIn1cIjtcbiAgfVxuICB2YXIgc291cmNlTWFwID0gb2JqLnNvdXJjZU1hcDtcbiAgaWYgKHNvdXJjZU1hcCAmJiB0eXBlb2YgYnRvYSAhPT0gXCJ1bmRlZmluZWRcIikge1xuICAgIGNzcyArPSBcIlxcbi8qIyBzb3VyY2VNYXBwaW5nVVJMPWRhdGE6YXBwbGljYXRpb24vanNvbjtiYXNlNjQsXCIuY29uY2F0KGJ0b2EodW5lc2NhcGUoZW5jb2RlVVJJQ29tcG9uZW50KEpTT04uc3RyaW5naWZ5KHNvdXJjZU1hcCkpKSksIFwiICovXCIpO1xuICB9XG5cbiAgLy8gRm9yIG9sZCBJRVxuICAvKiBpc3RhbmJ1bCBpZ25vcmUgaWYgICovXG4gIG9wdGlvbnMuc3R5bGVUYWdUcmFuc2Zvcm0oY3NzLCBzdHlsZUVsZW1lbnQsIG9wdGlvbnMub3B0aW9ucyk7XG59XG5mdW5jdGlvbiByZW1vdmVTdHlsZUVsZW1lbnQoc3R5bGVFbGVtZW50KSB7XG4gIC8vIGlzdGFuYnVsIGlnbm9yZSBpZlxuICBpZiAoc3R5bGVFbGVtZW50LnBhcmVudE5vZGUgPT09IG51bGwpIHtcbiAgICByZXR1cm4gZmFsc2U7XG4gIH1cbiAgc3R5bGVFbGVtZW50LnBhcmVudE5vZGUucmVtb3ZlQ2hpbGQoc3R5bGVFbGVtZW50KTtcbn1cblxuLyogaXN0YW5idWwgaWdub3JlIG5leHQgICovXG5mdW5jdGlvbiBkb21BUEkob3B0aW9ucykge1xuICBpZiAodHlwZW9mIGRvY3VtZW50ID09PSBcInVuZGVmaW5lZFwiKSB7XG4gICAgcmV0dXJuIHtcbiAgICAgIHVwZGF0ZTogZnVuY3Rpb24gdXBkYXRlKCkge30sXG4gICAgICByZW1vdmU6IGZ1bmN0aW9uIHJlbW92ZSgpIHt9XG4gICAgfTtcbiAgfVxuICB2YXIgc3R5bGVFbGVtZW50ID0gb3B0aW9ucy5pbnNlcnRTdHlsZUVsZW1lbnQob3B0aW9ucyk7XG4gIHJldHVybiB7XG4gICAgdXBkYXRlOiBmdW5jdGlvbiB1cGRhdGUob2JqKSB7XG4gICAgICBhcHBseShzdHlsZUVsZW1lbnQsIG9wdGlvbnMsIG9iaik7XG4gICAgfSxcbiAgICByZW1vdmU6IGZ1bmN0aW9uIHJlbW92ZSgpIHtcbiAgICAgIHJlbW92ZVN0eWxlRWxlbWVudChzdHlsZUVsZW1lbnQpO1xuICAgIH1cbiAgfTtcbn1cbm1vZHVsZS5leHBvcnRzID0gZG9tQVBJOyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/styleDomAPI.js\n");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/styleTagTransform.js":
+/*!**********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
+  \**********************************************************************/
+/***/ ((module) => {
+
+eval("\n\n/* istanbul ignore next  */\nfunction styleTagTransform(css, styleElement) {\n  if (styleElement.styleSheet) {\n    styleElement.styleSheet.cssText = css;\n  } else {\n    while (styleElement.firstChild) {\n      styleElement.removeChild(styleElement.firstChild);\n    }\n    styleElement.appendChild(document.createTextNode(css));\n  }\n}\nmodule.exports = styleTagTransform;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc3R5bGVUYWdUcmFuc2Zvcm0uanMiLCJtYXBwaW5ncyI6IkFBQWE7O0FBRWI7QUFDQTtBQUNBO0FBQ0E7QUFDQSxJQUFJO0FBQ0o7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi4vbm9kZV9tb2R1bGVzL3N0eWxlLWxvYWRlci9kaXN0L3J1bnRpbWUvc3R5bGVUYWdUcmFuc2Zvcm0uanM/ZTc4YiJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBzdHJpY3RcIjtcblxuLyogaXN0YW5idWwgaWdub3JlIG5leHQgICovXG5mdW5jdGlvbiBzdHlsZVRhZ1RyYW5zZm9ybShjc3MsIHN0eWxlRWxlbWVudCkge1xuICBpZiAoc3R5bGVFbGVtZW50LnN0eWxlU2hlZXQpIHtcbiAgICBzdHlsZUVsZW1lbnQuc3R5bGVTaGVldC5jc3NUZXh0ID0gY3NzO1xuICB9IGVsc2Uge1xuICAgIHdoaWxlIChzdHlsZUVsZW1lbnQuZmlyc3RDaGlsZCkge1xuICAgICAgc3R5bGVFbGVtZW50LnJlbW92ZUNoaWxkKHN0eWxlRWxlbWVudC5maXJzdENoaWxkKTtcbiAgICB9XG4gICAgc3R5bGVFbGVtZW50LmFwcGVuZENoaWxkKGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKGNzcykpO1xuICB9XG59XG5tb2R1bGUuZXhwb3J0cyA9IHN0eWxlVGFnVHJhbnNmb3JtOyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///../node_modules/style-loader/dist/runtime/styleTagTransform.js\n");
+
+/***/ }),
+
+/***/ "./components/AnnotationEditor.tsx":
+/*!*****************************************!*\
+  !*** ./components/AnnotationEditor.tsx ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   AnnotationEditor: () => (/* binding */ AnnotationEditor)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\nfunction _object_spread(target) {\n    for(var i = 1; i < arguments.length; i++){\n        var source = arguments[i] != null ? arguments[i] : {};\n        var ownKeys = Object.keys(source);\n        if (typeof Object.getOwnPropertySymbols === \"function\") {\n            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n            }));\n        }\n        ownKeys.forEach(function(key) {\n            _define_property(target, key, source[key]);\n        });\n    }\n    return target;\n}\nfunction ownKeys(object, enumerableOnly) {\n    var keys = Object.keys(object);\n    if (Object.getOwnPropertySymbols) {\n        var symbols = Object.getOwnPropertySymbols(object);\n        if (enumerableOnly) {\n            symbols = symbols.filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(object, sym).enumerable;\n            });\n        }\n        keys.push.apply(keys, symbols);\n    }\n    return keys;\n}\nfunction _object_spread_props(target, source) {\n    source = source != null ? source : {};\n    if (Object.getOwnPropertyDescriptors) {\n        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));\n    } else {\n        ownKeys(Object(source)).forEach(function(key) {\n            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));\n        });\n    }\n    return target;\n}\n\n\n\nfunction AnnotationEditor({ query, onChange }) {\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        if (query.queryType !== 'Annotations') {\n            onChange(_object_spread_props(_object_spread({}, query), {\n                queryType: 'Annotations'\n            }));\n        }\n    }, [\n        query,\n        onChange\n    ]);\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"div\", {\n        className: \"gf-form\",\n        style: {\n            display: 'flex',\n            flexDirection: 'column'\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"div\", {\n        style: {\n            width: '100%'\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Query\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.TextArea, {\n        value: query.queryText,\n        onChange: (evt)=>onChange(_object_spread_props(_object_spread({}, query), {\n                queryText: evt.target.value\n            })),\n        rows: 10,\n        style: {\n            minWidth: '300px',\n            width: '100%'\n        }\n    }))));\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jb21wb25lbnRzL0Fubm90YXRpb25FZGl0b3IudHN4IiwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBMEI7QUFDMkI7QUFJcEI7QUFLMUIsU0FBU0csaUJBQWlCLEVBQUVDLEtBQUssRUFBRUMsUUFBUSxFQUFTO0lBRXpETCxzREFBZSxDQUFDO1FBQ2QsSUFBSUksTUFBTUcsU0FBUyxLQUFLLGVBQWU7WUFDckNGLFNBQVMsd0NBQUlEO2dCQUFPRyxXQUFXOztRQUNqQztJQUNBLEdBQUc7UUFBQ0g7UUFBT0M7S0FBUztJQUV0QixxQkFDRSwyREFBQ0c7UUFBSUMsV0FBVTtRQUFVQyxPQUFPO1lBQUVDLFNBQVM7WUFBUUMsZUFBZTtRQUFTO3FCQUN6RSwyREFBQ0o7UUFBSUUsT0FBTztZQUFFRyxPQUFPO1FBQU87cUJBQzFCLDJEQUFDWixvREFBV0E7UUFBQ2EsT0FBTTtRQUFRQyxZQUFZO3FCQUNyQywyREFBQ2IsaURBQVFBO1FBQ1BjLE9BQU9aLE1BQU1hLFNBQVM7UUFDdEJaLFVBQVUsQ0FBQ2EsTUFBZ0RiLFNBQVMsd0NBQUlEO2dCQUFPYSxXQUFXQyxJQUFJQyxNQUFNLENBQUNILEtBQUs7O1FBQzFHSSxNQUFNO1FBQ05WLE9BQU87WUFBRVcsVUFBVTtZQUFTUixPQUFPO1FBQU87O0FBT3REIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vY29tcG9uZW50cy9Bbm5vdGF0aW9uRWRpdG9yLnRzeD9iZjRhIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7ICBJbmxpbmVGaWVsZCwgVGV4dEFyZWEgfSBmcm9tICdAZ3JhZmFuYS91aSc7XHJcbmltcG9ydCB7IFF1ZXJ5RWRpdG9yUHJvcHMgfSBmcm9tICdAZ3JhZmFuYS9kYXRhJztcclxuaW1wb3J0IHsgRGF0YVNvdXJjZSB9IGZyb20gJy4uL2RhdGFzb3VyY2UnO1xyXG5pbXBvcnQgeyBNeURhdGFTb3VyY2VPcHRpb25zLCBNeVF1ZXJ5IH0gZnJvbSAnLi4vdHlwZXMnO1xyXG5pbXBvcnQgXCIuLi9jc3MvcXVlcnktZWRpdG9yLmNzc1wiO1xyXG5cclxudHlwZSBQcm9wcyA9IFF1ZXJ5RWRpdG9yUHJvcHM8RGF0YVNvdXJjZSwgTXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucz47XHJcblxyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIEFubm90YXRpb25FZGl0b3IoeyBxdWVyeSwgb25DaGFuZ2UgfTogUHJvcHMpIHtcclxuXHJcbiAgUmVhY3QudXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGlmIChxdWVyeS5xdWVyeVR5cGUgIT09ICdBbm5vdGF0aW9ucycpIHtcclxuICAgICAgb25DaGFuZ2Uoey4uLnF1ZXJ5LCBxdWVyeVR5cGU6ICdBbm5vdGF0aW9ucyd9KVxyXG4gICAgfVxyXG4gICAgfSwgW3F1ZXJ5LCBvbkNoYW5nZV0pXHJcblxyXG4gIHJldHVybiAoXHJcbiAgICA8ZGl2IGNsYXNzTmFtZT1cImdmLWZvcm1cIiBzdHlsZT17eyBkaXNwbGF5OiAnZmxleCcsIGZsZXhEaXJlY3Rpb246ICdjb2x1bW4nIH19PlxyXG4gICAgICA8ZGl2IHN0eWxlPXt7IHdpZHRoOiAnMTAwJScgfX0+XHJcbiAgICAgICAgPElubGluZUZpZWxkIGxhYmVsPVwiUXVlcnlcIiBsYWJlbFdpZHRoPXsxMn0+XHJcbiAgICAgICAgICA8VGV4dEFyZWFcclxuICAgICAgICAgICAgdmFsdWU9e3F1ZXJ5LnF1ZXJ5VGV4dH1cclxuICAgICAgICAgICAgb25DaGFuZ2U9eyhldnQ6IFJlYWN0LkNoYW5nZUV2ZW50PEhUTUxUZXh0QXJlYUVsZW1lbnQ+KSA9PiBvbkNoYW5nZSh7Li4ucXVlcnksIHF1ZXJ5VGV4dDogZXZ0LnRhcmdldC52YWx1ZX0pfVxyXG4gICAgICAgICAgICByb3dzPXsxMH0gXHJcbiAgICAgICAgICAgIHN0eWxlPXt7IG1pbldpZHRoOiAnMzAwcHgnLCB3aWR0aDogJzEwMCUnIH19XHJcbiAgICAgICAgICAvPlxyXG4gICAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgPC9kaXY+XHJcbiAgKTtcclxuICBcclxufVxyXG5cclxuIl0sIm5hbWVzIjpbIlJlYWN0IiwiSW5saW5lRmllbGQiLCJUZXh0QXJlYSIsIkFubm90YXRpb25FZGl0b3IiLCJxdWVyeSIsIm9uQ2hhbmdlIiwidXNlRWZmZWN0IiwicXVlcnlUeXBlIiwiZGl2IiwiY2xhc3NOYW1lIiwic3R5bGUiLCJkaXNwbGF5IiwiZmxleERpcmVjdGlvbiIsIndpZHRoIiwibGFiZWwiLCJsYWJlbFdpZHRoIiwidmFsdWUiLCJxdWVyeVRleHQiLCJldnQiLCJ0YXJnZXQiLCJyb3dzIiwibWluV2lkdGgiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/AnnotationEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./components/CommandLevelSelection.tsx":
+/*!**********************************************!*\
+  !*** ./components/CommandLevelSelection.tsx ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   CommandLevelSelector: () => (/* binding */ CommandLevelSelector)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n\n\n\nconst CommandLevelSelector = (props)=>{\n    var _props_query, _props_query1, _props_query2, _props_query3, _props_query4, _props_query5, _props_query6;\n    const getInitialUpdatedValue = (query)=>{\n        return query !== null && query !== void 0 ? query : {\n            DropEmpty: false,\n            IncludePeaks: false,\n            FullResolution: false,\n            RadialDistribution: false,\n            Radius: 1.5,\n            Zoom: 2.0\n        };\n    };\n    const onChange = (event, setting)=>{\n        let updated = getInitialUpdatedValue(props.query);\n        updated[setting] = !updated[setting];\n        props.onChange(updated);\n    };\n    function onRadiusChange(val) {\n        let updated = getInitialUpdatedValue(props.query);\n        updated.Radius = parseFloat(val.toString());\n        props.onChange(updated);\n    }\n    function onZoomChange(val) {\n        let updated = getInitialUpdatedValue(props.query);\n        updated.Zoom = parseFloat(val.toString());\n        props.onChange(updated);\n    }\n    var _props_query_DropEmpty, _props_query_IncludePeaks, _props_query_FullResolution, _props_query_RadialDistribution, _props_query_RadialDistribution1, _props_query_Radius, _props_query_Zoom;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Drop Empty Series',\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineSwitch, {\n        disabled: false,\n        value: (_props_query_DropEmpty = (_props_query = props.query) === null || _props_query === void 0 ? void 0 : _props_query.DropEmpty) !== null && _props_query_DropEmpty !== void 0 ? _props_query_DropEmpty : false,\n        onChange: (e)=>onChange(e, 'DropEmpty')\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Include Peaks',\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineSwitch, {\n        disabled: false,\n        value: (_props_query_IncludePeaks = (_props_query1 = props.query) === null || _props_query1 === void 0 ? void 0 : _props_query1.IncludePeaks) !== null && _props_query_IncludePeaks !== void 0 ? _props_query_IncludePeaks : false,\n        onChange: (e)=>onChange(e, 'IncludePeaks')\n    }))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Get Full Resolution Data',\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineSwitch, {\n        disabled: false,\n        value: (_props_query_FullResolution = (_props_query2 = props.query) === null || _props_query2 === void 0 ? void 0 : _props_query2.FullResolution) !== null && _props_query_FullResolution !== void 0 ? _props_query_FullResolution : false,\n        onChange: (e)=>onChange(e, 'FullResolution')\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Distribute Radially',\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineSwitch, {\n        disabled: false,\n        value: (_props_query_RadialDistribution = (_props_query3 = props.query) === null || _props_query3 === void 0 ? void 0 : _props_query3.RadialDistribution) !== null && _props_query_RadialDistribution !== void 0 ? _props_query_RadialDistribution : false,\n        onChange: (e)=>onChange(e, 'RadialDistribution')\n    }))), ((_props_query_RadialDistribution1 = (_props_query4 = props.query) === null || _props_query4 === void 0 ? void 0 : _props_query4.RadialDistribution) !== null && _props_query_RadialDistribution1 !== void 0 ? _props_query_RadialDistribution1 : false) ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Radius'\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'number',\n        value: ((_props_query_Radius = (_props_query5 = props.query) === null || _props_query5 === void 0 ? void 0 : _props_query5.Radius) !== null && _props_query_Radius !== void 0 ? _props_query_Radius : 1.5).toString(),\n        onChange: onRadiusChange\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: 'Zoom'\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'number',\n        value: ((_props_query_Zoom = (_props_query6 = props.query) === null || _props_query6 === void 0 ? void 0 : _props_query6.Zoom) !== null && _props_query_Zoom !== void 0 ? _props_query_Zoom : 2.0).toString(),\n        onChange: onZoomChange\n    }))) : null);\n};\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,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QUNsQiwyREFBQ3BCLDhDQUFLQTtRQUFDeUIsTUFBTTtRQUNYRixPQUFPLENBQUNyQixDQUFBQSx1QkFBQUEsZ0JBQUFBLE1BQU1FLEtBQUssY0FBWEYsb0NBQUFBLGNBQWFPLE1BQU0sY0FBbkJQLGlDQUFBQSxzQkFBdUIsR0FBRSxFQUFHZ0IsUUFBUTtRQUM1Q1AsVUFBVUk7dUJBR2QsMkRBQUNsQixvREFBV0E7UUFBQ3VCLE9BQU87cUJBQ2xCLDJEQUFDcEIsOENBQUtBO1FBQUN5QixNQUFNO1FBQ1hGLE9BQU8sQ0FBQ3JCLENBQUFBLHFCQUFBQSxnQkFBQUEsTUFBTUUsS0FBSyxjQUFYRixvQ0FBQUEsY0FBYVEsSUFBSSxjQUFqQlIsK0JBQUFBLG9CQUFxQixHQUFFLEVBQUdnQixRQUFRO1FBQzFDUCxVQUFVUTtXQUdJO0FBRXhCLEVBQUMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0NvbW1hbmRMZXZlbFNlbGVjdGlvbi50c3g/ZjE3NSJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnO1xyXG5pbXBvcnQgeyBGaWVsZFNldCwgSW5saW5lRmllbGQsIElubGluZUZpZWxkUm93LCBJbmxpbmVTd2l0Y2gsIElucHV0IH0gZnJvbSAnQGdyYWZhbmEvdWknO1xyXG5pbXBvcnQgXCIuLi9jc3MvcXVlcnktZWRpdG9yLmNzc1wiO1xyXG5pbXBvcnQgeyBDb21tYW5kTGV2ZWxGbGFncyB9IGZyb20gJy4uL3R5cGVzJztcclxuXHJcblxyXG5pbnRlcmZhY2UgQ29tbWFuZExldmVsU2VsZWN0b3JQcm9wcyB7IG9uQ2hhbmdlOiAodmFsdWU6IENvbW1hbmRMZXZlbEZsYWdzKSA9PiB2b2lkLCBxdWVyeT86IENvbW1hbmRMZXZlbEZsYWdzIH1cclxuXHJcbmV4cG9ydCBjb25zdCBDb21tYW5kTGV2ZWxTZWxlY3RvciA9IChwcm9wczogQ29tbWFuZExldmVsU2VsZWN0b3JQcm9wcykgPT4ge1xyXG5cclxuICBjb25zdCBnZXRJbml0aWFsVXBkYXRlZFZhbHVlID0gKHF1ZXJ5OiBDb21tYW5kTGV2ZWxGbGFncyB8IHVuZGVmaW5lZCk6IENvbW1hbmRMZXZlbEZsYWdzID0+IHtcclxuICAgIHJldHVybiBxdWVyeSA/PyB7XHJcbiAgICAgIERyb3BFbXB0eTogZmFsc2UsXHJcbiAgICAgIEluY2x1ZGVQZWFrczogZmFsc2UsXHJcbiAgICAgIEZ1bGxSZXNvbHV0aW9uOiBmYWxzZSxcclxuICAgICAgUmFkaWFsRGlzdHJpYnV0aW9uOiBmYWxzZSxcclxuICAgICAgUmFkaXVzOiAxLjUsXHJcbiAgICAgIFpvb206IDIuMFxyXG4gICAgfTtcclxuICB9O1xyXG5cclxuICBjb25zdCBvbkNoYW5nZSA9IChldmVudDogUmVhY3QuRm9ybUV2ZW50PEhUTUxJbnB1dEVsZW1lbnQ+LCBzZXR0aW5nOiAnRHJvcEVtcHR5JyB8ICdJbmNsdWRlUGVha3MnIHwgJ0Z1bGxSZXNvbHV0aW9uJyB8ICdSYWRpYWxEaXN0cmlidXRpb24nKSA9PiB7XHJcbiAgICBsZXQgdXBkYXRlZDogQ29tbWFuZExldmVsRmxhZ3MgPSBnZXRJbml0aWFsVXBkYXRlZFZhbHVlKHByb3BzLnF1ZXJ5KTtcclxuICAgIHVwZGF0ZWRbc2V0dGluZ10gPSAhdXBkYXRlZFtzZXR0aW5nXTtcclxuICAgIHByb3BzLm9uQ2hhbmdlKHVwZGF0ZWQpO1xyXG4gIH07XHJcblxyXG4gIGZ1bmN0aW9uIG9uUmFkaXVzQ2hhbmdlKHZhbDogYW55KSB7XHJcbiAgICBsZXQgdXBkYXRlZDogQ29tbWFuZExldmVsRmxhZ3MgPSBnZXRJbml0aWFsVXBkYXRlZFZhbHVlKHByb3BzLnF1ZXJ5KTtcclxuICAgIHVwZGF0ZWQuUmFkaXVzID0gcGFyc2VGbG9hdCh2YWwudG9TdHJpbmcoKSk7XHJcbiAgICBwcm9wcy5vbkNoYW5nZSh1cGRhdGVkKTtcclxuICB9XHJcblxyXG4gIGZ1bmN0aW9uIG9uWm9vbUNoYW5nZSh2YWw6IGFueSkge1xyXG4gICAgbGV0IHVwZGF0ZWQ6IENvbW1hbmRMZXZlbEZsYWdzID0gZ2V0SW5pdGlhbFVwZGF0ZWRWYWx1ZShwcm9wcy5xdWVyeSk7XHJcbiAgICB1cGRhdGVkLlpvb20gPSBwYXJzZUZsb2F0KHZhbC50b1N0cmluZygpKTtcclxuICAgIHByb3BzLm9uQ2hhbmdlKHVwZGF0ZWQpO1xyXG4gIH1cclxuXHJcbiAgcmV0dXJuIDxGaWVsZFNldD5cclxuICAgIDxJbmxpbmVGaWVsZFJvdz5cclxuICAgICAgPElubGluZUZpZWxkIGxhYmVsPXsnRHJvcCBFbXB0eSBTZXJpZXMnfSBsYWJlbFdpZHRoPXsyNH0+XHJcbiAgICAgICAgPElubGluZVN3aXRjaFxyXG4gICAgICAgICAgZGlzYWJsZWQ9e2ZhbHNlfVxyXG4gICAgICAgICAgdmFsdWU9e3Byb3BzLnF1ZXJ5Py5Ecm9wRW1wdHkgPz8gZmFsc2V9XHJcbiAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IG9uQ2hhbmdlKGUsICdEcm9wRW1wdHknKX1cclxuICAgICAgICAvPlxyXG4gICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgICA8SW5saW5lRmllbGQgbGFiZWw9eydJbmNsdWRlIFBlYWtzJ30gbGFiZWxXaWR0aD17MjR9PlxyXG4gICAgICAgIDxJbmxpbmVTd2l0Y2hcclxuICAgICAgICAgIGRpc2FibGVkPXtmYWxzZX1cclxuICAgICAgICAgIHZhbHVlPXtwcm9wcy5xdWVyeT8uSW5jbHVkZVBlYWtzID8/IGZhbHNlfVxyXG4gICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBvbkNoYW5nZShlLCAnSW5jbHVkZVBlYWtzJyl9XHJcbiAgICAgICAgLz5cclxuICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICA8SW5saW5lRmllbGRSb3c+XHJcbiAgICAgIDxJbmxpbmVGaWVsZCBsYWJlbD17J0dldCBGdWxsIFJlc29sdXRpb24gRGF0YSd9IGxhYmVsV2lkdGg9ezI0fT5cclxuICAgICAgICA8SW5saW5lU3dpdGNoXHJcbiAgICAgICAgICBkaXNhYmxlZD17ZmFsc2V9XHJcbiAgICAgICAgICB2YWx1ZT17cHJvcHMucXVlcnk/LkZ1bGxSZXNvbHV0aW9uID8/IGZhbHNlfVxyXG4gICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBvbkNoYW5nZShlLCAnRnVsbFJlc29sdXRpb24nKX1cclxuICAgICAgICAvPlxyXG4gICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgICA8SW5saW5lRmllbGQgbGFiZWw9eydEaXN0cmlidXRlIFJhZGlhbGx5J30gbGFiZWxXaWR0aD17MjR9PlxyXG4gICAgICAgIDxJbmxpbmVTd2l0Y2hcclxuICAgICAgICAgIGRpc2FibGVkPXtmYWxzZX1cclxuICAgICAgICAgIHZhbHVlPXtwcm9wcy5xdWVyeT8uUmFkaWFsRGlzdHJpYnV0aW9uID8/IGZhbHNlfVxyXG4gICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBvbkNoYW5nZShlLCAnUmFkaWFsRGlzdHJpYnV0aW9uJyl9XHJcbiAgICAgICAgLz5cclxuICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICB7KHByb3BzLnF1ZXJ5Py5SYWRpYWxEaXN0cmlidXRpb24gPz8gZmFsc2UpID8gPElubGluZUZpZWxkUm93PlxyXG4gICAgICA8SW5saW5lRmllbGQgbGFiZWw9eydSYWRpdXMnfT5cclxuICAgICAgICA8SW5wdXQgdHlwZT17J251bWJlcid9XHJcbiAgICAgICAgICB2YWx1ZT17KHByb3BzLnF1ZXJ5Py5SYWRpdXMgPz8gMS41KS50b1N0cmluZygpfVxyXG4gICAgICAgICAgb25DaGFuZ2U9e29uUmFkaXVzQ2hhbmdlfVxyXG4gICAgICAgIC8+XHJcbiAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgIDxJbmxpbmVGaWVsZCBsYWJlbD17J1pvb20nfT5cclxuICAgICAgICA8SW5wdXQgdHlwZT17J251bWJlcid9XHJcbiAgICAgICAgICB2YWx1ZT17KHByb3BzLnF1ZXJ5Py5ab29tID8/IDIuMCkudG9TdHJpbmcoKX1cclxuICAgICAgICAgIG9uQ2hhbmdlPXtvblpvb21DaGFuZ2V9XHJcbiAgICAgICAgLz5cclxuICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgIDwvSW5saW5lRmllbGRSb3c+IDogbnVsbH1cclxuICA8L0ZpZWxkU2V0PjtcclxufVxyXG5cclxuIl0sIm5hbWVzIjpbIlJlYWN0IiwiRmllbGRTZXQiLCJJbmxpbmVGaWVsZCIsIklubGluZUZpZWxkUm93IiwiSW5saW5lU3dpdGNoIiwiSW5wdXQiLCJDb21tYW5kTGV2ZWxTZWxlY3RvciIsInByb3BzIiwiZ2V0SW5pdGlhbFVwZGF0ZWRWYWx1ZSIsInF1ZXJ5IiwiRHJvcEVtcHR5IiwiSW5jbHVkZVBlYWtzIiwiRnVsbFJlc29sdXRpb24iLCJSYWRpYWxEaXN0cmlidXRpb24iLCJSYWRpdXMiLCJab29tIiwib25DaGFuZ2UiLCJldmVudCIsInNldHRpbmciLCJ1cGRhdGVkIiwib25SYWRpdXNDaGFuZ2UiLCJ2YWwiLCJwYXJzZUZsb2F0IiwidG9TdHJpbmciLCJvblpvb21DaGFuZ2UiLCJsYWJlbCIsImxhYmVsV2lkdGgiLCJkaXNhYmxlZCIsInZhbHVlIiwiZSIsInR5cGUiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/CommandLevelSelection.tsx\n");
+
+/***/ }),
+
+/***/ "./components/ConfigEditor.tsx":
+/*!*************************************!*\
+  !*** ./components/ConfigEditor.tsx ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   ConfigEditor: () => (/* binding */ ConfigEditor)\n/* harmony export */ });\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _js_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../js/constants */ \"./js/constants.ts\");\n/* harmony import */ var _css_config_editor_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../css/config-editor.css */ \"./css/config-editor.css\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @grafana/runtime */ \"@grafana/runtime\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_grafana_runtime__WEBPACK_IMPORTED_MODULE_4__);\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\nfunction _object_spread(target) {\n    for(var i = 1; i < arguments.length; i++){\n        var source = arguments[i] != null ? arguments[i] : {};\n        var ownKeys = Object.keys(source);\n        if (typeof Object.getOwnPropertySymbols === \"function\") {\n            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n            }));\n        }\n        ownKeys.forEach(function(key) {\n            _define_property(target, key, source[key]);\n        });\n    }\n    return target;\n}\nfunction ownKeys(object, enumerableOnly) {\n    var keys = Object.keys(object);\n    if (Object.getOwnPropertySymbols) {\n        var symbols = Object.getOwnPropertySymbols(object);\n        if (enumerableOnly) {\n            symbols = symbols.filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(object, sym).enumerable;\n            });\n        }\n        keys.push.apply(keys, symbols);\n    }\n    return keys;\n}\nfunction _object_spread_props(target, source) {\n    source = source != null ? source : {};\n    if (Object.getOwnPropertyDescriptors) {\n        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));\n    } else {\n        ownKeys(Object(source)).forEach(function(key) {\n            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));\n        });\n    }\n    return target;\n}\n\n\n\n\n\nfunction ConfigEditor(props) {\n    const { onOptionsChange, options } = props;\n    const [dataSourceTypes, setDataSourceTypes] = react__WEBPACK_IMPORTED_MODULE_1___default().useState([]);\n    const dataSourceTypeOptions = react__WEBPACK_IMPORTED_MODULE_1___default().useMemo(()=>dataSourceTypes.map((s)=>({\n                value: s.index.toString(),\n                label: s.name\n            })), [\n        dataSourceTypes\n    ]);\n    const url = react__WEBPACK_IMPORTED_MODULE_1___default().useMemo(()=>{\n        var _options_jsonData_http, _options_jsonData;\n        var _options_jsonData_http_url;\n        return (_options_jsonData_http_url = options === null || options === void 0 ? void 0 : (_options_jsonData = options.jsonData) === null || _options_jsonData === void 0 ? void 0 : (_options_jsonData_http = _options_jsonData.http) === null || _options_jsonData_http === void 0 ? void 0 : _options_jsonData_http.url) !== null && _options_jsonData_http_url !== void 0 ? _options_jsonData_http_url : '';\n    }, [\n        options\n    ]);\n    //const [isInitialLoad, setIsInitialLoad] = React.useState(true);\n    //.then(() => {\n    //  if (isInitialLoad && options.jsonData.valueTypeIndex === undefined) {\n    //    onTypeChange({ value: '0' });\n    //  }\n    //  setIsInitialLoad(false);\n    //});\n    // Fetch data source value types when URL changes\n    react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(()=>{\n        if (url.length < 1) {\n            return;\n        }\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_4__.getBackendSrv)().post(url + \"/GetValueTypes\", {}).then((d)=>setDataSourceTypes(d));\n    }, [\n        url\n    ]);\n    const onHttpChange = (config)=>{\n        const jsonData = _object_spread_props(_object_spread({}, options.jsonData), {\n            flags: options.jsonData.flags || {},\n            http: config\n        });\n        onOptionsChange(_object_spread_props(_object_spread({}, options), {\n            jsonData\n        }));\n    };\n    const onFlagsChange = (event)=>{\n        const input = event.target;\n        const { name, checked } = input;\n        let updatedFlags = {};\n        // Select All\n        if (name === \"Select All\") {\n            const selectAllState = !options.jsonData.flags || !options.jsonData.flags[\"Select All\"];\n            // Set all flags to the selectAllState\n            updatedFlags = Object.keys(_js_constants__WEBPACK_IMPORTED_MODULE_2__.DefaultFlags).reduce((acc, flag)=>{\n                acc[flag] = selectAllState;\n                return acc;\n            }, {});\n        } else {\n            // If individual flag is toggled, update its value\n            updatedFlags = _object_spread_props(_object_spread({}, options.jsonData.flags), {\n                [name]: checked\n            });\n            // If any individual flag is unchecked, uncheck the \"Select All\" flag\n            if (!checked) {\n                updatedFlags[\"Select All\"] = false;\n            }\n        }\n        const jsonData = _object_spread_props(_object_spread({}, options.jsonData), {\n            flags: updatedFlags\n        });\n        onOptionsChange(_object_spread_props(_object_spread({}, options), {\n            jsonData\n        }));\n    };\n    const onTypeChange = (val)=>{\n        var _dataSource_timeSeriesDefinition;\n        var _val_value;\n        const index = ((_val_value = val.value) !== null && _val_value !== void 0 ? _val_value : '0').toString();\n        const dataSource = dataSourceTypes.find((d)=>d.index.toString() === index);\n        var _dataSource_name, _dataSource_timeSeriesDefinition_split, _dataSource_metadataTableName;\n        const jsonData = _object_spread_props(_object_spread({}, options.jsonData), {\n            valueTypeIndex: index,\n            valueTypeName: (_dataSource_name = dataSource === null || dataSource === void 0 ? void 0 : dataSource.name) !== null && _dataSource_name !== void 0 ? _dataSource_name : '',\n            timeSeriesDefinitions: (_dataSource_timeSeriesDefinition_split = dataSource === null || dataSource === void 0 ? void 0 : (_dataSource_timeSeriesDefinition = dataSource.timeSeriesDefinition) === null || _dataSource_timeSeriesDefinition === void 0 ? void 0 : _dataSource_timeSeriesDefinition.split(',')) !== null && _dataSource_timeSeriesDefinition_split !== void 0 ? _dataSource_timeSeriesDefinition_split : [\n                ''\n            ],\n            metadataTableName: (_dataSource_metadataTableName = dataSource === null || dataSource === void 0 ? void 0 : dataSource.metadataTableName) !== null && _dataSource_metadataTableName !== void 0 ? _dataSource_metadataTableName : ''\n        });\n        onOptionsChange(_object_spread_props(_object_spread({}, options), {\n            jsonData\n        }));\n    };\n    var _options_jsonData_timeSeriesDefinitions;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.DataSourceHttpSettings, {\n        defaultUrl: '../api/grafana',\n        dataSourceConfig: options.jsonData.http ? options.jsonData.http : options,\n        showAccessOptions: true,\n        onChange: onHttpChange\n    }), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"h3\", {\n        className: \"page-heading\"\n    }, \"Excluded Data Flags\", /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Tooltip, {\n        content: \"Mark flags which you want excluded\"\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"span\", {\n        style: {\n            cursor: \"help\"\n        }\n    }, \" 🛈\"))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.InlineFieldRow, null, Object.keys(_js_constants__WEBPACK_IMPORTED_MODULE_2__.DefaultFlags).map((element, index)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.InlineField, {\n            key: index,\n            label: element,\n            labelWidth: 16\n        }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"div\", {\n            className: \"dark-box\"\n        }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Switch, {\n            name: element,\n            disabled: false,\n            value: options.jsonData.flags && options.jsonData.flags[element] ? options.jsonData.flags[element] : false,\n            onChange: onFlagsChange\n        })))))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"h3\", {\n        className: \"page-heading\"\n    }, \"Data Source Type\", /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Tooltip, {\n        content: \"Determines the type of data that is being queried\"\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"span\", {\n        style: {\n            cursor: \"help\"\n        }\n    }, \" 🛈\"))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.InlineField, {\n        label: \"Data Type\",\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Select, {\n        value: options.jsonData.valueTypeIndex,\n        options: dataSourceTypeOptions,\n        onChange: onTypeChange,\n        isLoading: dataSourceTypeOptions.length === 0,\n        invalid: options.jsonData.valueTypeIndex === undefined\n    })))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Card, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Card.Heading, null, options.jsonData.valueTypeName), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.Card.Description, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(\"p\", null, \"This type includes the following elements: \"), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_0__.TagList, {\n        className: \"pull-left\",\n        tags: (_options_jsonData_timeSeriesDefinitions = options.jsonData.timeSeriesDefinitions) !== null && _options_jsonData_timeSeriesDefinitions !== void 0 ? _options_jsonData_timeSeriesDefinitions : [\n            ''\n        ]\n    })))));\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,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RWRpdG9yLnRzeD9iZWRjIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7XHJcbiAgRGF0YVNvdXJjZUh0dHBTZXR0aW5ncyxcclxuICBGaWVsZFNldCxcclxuICBJbmxpbmVGaWVsZFJvdyxcclxuICBJbmxpbmVGaWVsZCxcclxuICBTd2l0Y2gsXHJcbiAgVG9vbHRpcCxcclxuICBTZWxlY3QsXHJcbiAgQ2FyZCxcclxuICBUYWdMaXN0LFxyXG59IGZyb20gXCJAZ3JhZmFuYS91aVwiO1xyXG5cclxuaW1wb3J0IFJlYWN0IGZyb20gXCJyZWFjdFwiO1xyXG5pbXBvcnQgeyBEYXRhU291cmNlUGx1Z2luT3B0aW9uc0VkaXRvclByb3BzLCBEYXRhU291cmNlU2V0dGluZ3MsIFNlbGVjdGFibGVWYWx1ZSB9IGZyb20gXCJAZ3JhZmFuYS9kYXRhXCI7XHJcbmltcG9ydCB7IERhdGFTb3VyY2VWYWx1ZVR5cGUsIE15RGF0YVNvdXJjZU9wdGlvbnMgfSBmcm9tIFwiLi4vdHlwZXNcIjtcclxuaW1wb3J0IHsgRGVmYXVsdEZsYWdzIH0gZnJvbSBcIi4uL2pzL2NvbnN0YW50c1wiO1xyXG5pbXBvcnQgXCIuLi9jc3MvY29uZmlnLWVkaXRvci5jc3NcIjtcclxuaW1wb3J0IHsgZ2V0QmFja2VuZFNydiB9IGZyb20gXCJAZ3JhZmFuYS9ydW50aW1lXCI7XHJcblxyXG5pbnRlcmZhY2UgUHJvcHNcclxuICBleHRlbmRzIERhdGFTb3VyY2VQbHVnaW5PcHRpb25zRWRpdG9yUHJvcHM8TXlEYXRhU291cmNlT3B0aW9ucz4geyB9XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gQ29uZmlnRWRpdG9yKHByb3BzOiBQcm9wcykge1xyXG4gIGNvbnN0IHsgb25PcHRpb25zQ2hhbmdlLCBvcHRpb25zIH0gPSBwcm9wcztcclxuICBjb25zdCBbZGF0YVNvdXJjZVR5cGVzLCBzZXREYXRhU291cmNlVHlwZXNdID0gUmVhY3QudXNlU3RhdGU8RGF0YVNvdXJjZVZhbHVlVHlwZVtdPihbXSlcclxuICBjb25zdCBkYXRhU291cmNlVHlwZU9wdGlvbnMgPSBSZWFjdC51c2VNZW1vKCgpID0+IGRhdGFTb3VyY2VUeXBlcy5tYXAocyA9PiAoeyB2YWx1ZTogcy5pbmRleC50b1N0cmluZygpLCBsYWJlbDogcy5uYW1lIH0pKSwgW2RhdGFTb3VyY2VUeXBlc10pO1xyXG4gIGNvbnN0IHVybCA9IFJlYWN0LnVzZU1lbW8oKCkgPT4gKG9wdGlvbnM/Lmpzb25EYXRhPy5odHRwPy51cmwgPz8gJycpLCBbb3B0aW9uc10pXHJcblxyXG4gIC8vY29uc3QgW2lzSW5pdGlhbExvYWQsIHNldElzSW5pdGlhbExvYWRdID0gUmVhY3QudXNlU3RhdGUodHJ1ZSk7XHJcbiAgLy8udGhlbigoKSA9PiB7XHJcbiAgLy8gIGlmIChpc0luaXRpYWxMb2FkICYmIG9wdGlvbnMuanNvbkRhdGEudmFsdWVUeXBlSW5kZXggPT09IHVuZGVmaW5lZCkge1xyXG4gIC8vICAgIG9uVHlwZUNoYW5nZSh7IHZhbHVlOiAnMCcgfSk7XHJcbiAgLy8gIH1cclxuICAvLyAgc2V0SXNJbml0aWFsTG9hZChmYWxzZSk7XHJcbiAgLy99KTtcclxuXHJcbiAgLy8gRmV0Y2ggZGF0YSBzb3VyY2UgdmFsdWUgdHlwZXMgd2hlbiBVUkwgY2hhbmdlc1xyXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBpZiAodXJsLmxlbmd0aCA8IDEpIHtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIGdldEJhY2tlbmRTcnYoKS5wb3N0KHVybCArIFwiL0dldFZhbHVlVHlwZXNcIiwge30pLnRoZW4oKGQ6IERhdGFTb3VyY2VWYWx1ZVR5cGVbXSkgPT4gc2V0RGF0YVNvdXJjZVR5cGVzKGQpKVxyXG4gIH0sIFt1cmxdKTtcclxuXHJcbiAgY29uc3Qgb25IdHRwQ2hhbmdlID0gKGNvbmZpZzogRGF0YVNvdXJjZVNldHRpbmdzPE15RGF0YVNvdXJjZU9wdGlvbnM+KSA9PiB7XHJcbiAgICBjb25zdCBqc29uRGF0YSA9IHtcclxuICAgICAgLi4ub3B0aW9ucy5qc29uRGF0YSxcclxuICAgICAgZmxhZ3M6IG9wdGlvbnMuanNvbkRhdGEuZmxhZ3MgfHwge30sXHJcbiAgICAgIGh0dHA6IGNvbmZpZyxcclxuICAgIH07XHJcblxyXG4gICAgb25PcHRpb25zQ2hhbmdlKHsgLi4ub3B0aW9ucywganNvbkRhdGEgfSk7XHJcbiAgfTtcclxuXHJcbiAgY29uc3Qgb25GbGFnc0NoYW5nZSA9IChldmVudDogUmVhY3QuRm9ybUV2ZW50PEhUTUxJbnB1dEVsZW1lbnQ+KSA9PiB7XHJcbiAgICBjb25zdCBpbnB1dCA9IGV2ZW50LnRhcmdldCBhcyBIVE1MSW5wdXRFbGVtZW50O1xyXG4gICAgY29uc3QgeyBuYW1lLCBjaGVja2VkIH0gPSBpbnB1dDtcclxuXHJcbiAgICBsZXQgdXBkYXRlZEZsYWdzOiB7IFtrZXk6IHN0cmluZ106IGJvb2xlYW4gfSA9IHt9O1xyXG5cclxuICAgIC8vIFNlbGVjdCBBbGxcclxuICAgIGlmIChuYW1lID09PSBcIlNlbGVjdCBBbGxcIikge1xyXG4gICAgICBjb25zdCBzZWxlY3RBbGxTdGF0ZSA9ICFvcHRpb25zLmpzb25EYXRhLmZsYWdzIHx8ICFvcHRpb25zLmpzb25EYXRhLmZsYWdzW1wiU2VsZWN0IEFsbFwiXTtcclxuXHJcbiAgICAgIC8vIFNldCBhbGwgZmxhZ3MgdG8gdGhlIHNlbGVjdEFsbFN0YXRlXHJcbiAgICAgIHVwZGF0ZWRGbGFncyA9IE9iamVjdC5rZXlzKERlZmF1bHRGbGFncykucmVkdWNlKChhY2M6IHsgW2tleTogc3RyaW5nXTogYm9vbGVhbiB9LCBmbGFnKSA9PiB7XHJcbiAgICAgICAgYWNjW2ZsYWddID0gc2VsZWN0QWxsU3RhdGU7XHJcbiAgICAgICAgcmV0dXJuIGFjYztcclxuICAgICAgfSwge30gYXMgeyBba2V5OiBzdHJpbmddOiBib29sZWFuIH0pO1xyXG4gICAgfSBlbHNlIHtcclxuICAgICAgLy8gSWYgaW5kaXZpZHVhbCBmbGFnIGlzIHRvZ2dsZWQsIHVwZGF0ZSBpdHMgdmFsdWVcclxuICAgICAgdXBkYXRlZEZsYWdzID0ge1xyXG4gICAgICAgIC4uLm9wdGlvbnMuanNvbkRhdGEuZmxhZ3MsXHJcbiAgICAgICAgW25hbWVdOiBjaGVja2VkLFxyXG4gICAgICB9O1xyXG5cclxuICAgICAgLy8gSWYgYW55IGluZGl2aWR1YWwgZmxhZyBpcyB1bmNoZWNrZWQsIHVuY2hlY2sgdGhlIFwiU2VsZWN0IEFsbFwiIGZsYWdcclxuICAgICAgaWYgKCFjaGVja2VkKSB7XHJcbiAgICAgICAgdXBkYXRlZEZsYWdzW1wiU2VsZWN0IEFsbFwiXSA9IGZhbHNlO1xyXG4gICAgICB9XHJcbiAgICB9XHJcblxyXG4gICAgY29uc3QganNvbkRhdGEgPSB7XHJcbiAgICAgIC4uLm9wdGlvbnMuanNvbkRhdGEsXHJcbiAgICAgIGZsYWdzOiB1cGRhdGVkRmxhZ3MsXHJcbiAgICB9O1xyXG5cclxuICAgIG9uT3B0aW9uc0NoYW5nZSh7IC4uLm9wdGlvbnMsIGpzb25EYXRhIH0pO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IG9uVHlwZUNoYW5nZSA9ICh2YWw6IFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+KSA9PiB7XHJcbiAgICBjb25zdCBpbmRleDogc3RyaW5nID0gKHZhbC52YWx1ZSA/PyAnMCcpLnRvU3RyaW5nKCk7XHJcbiAgICBjb25zdCBkYXRhU291cmNlOiBEYXRhU291cmNlVmFsdWVUeXBlIHwgdW5kZWZpbmVkID0gZGF0YVNvdXJjZVR5cGVzLmZpbmQoZCA9PiBkLmluZGV4LnRvU3RyaW5nKCkgPT09IGluZGV4KTtcclxuXHJcbiAgICBjb25zdCBqc29uRGF0YSA9IHtcclxuICAgICAgLi4ub3B0aW9ucy5qc29uRGF0YSxcclxuICAgICAgdmFsdWVUeXBlSW5kZXg6IGluZGV4LFxyXG4gICAgICB2YWx1ZVR5cGVOYW1lOiBkYXRhU291cmNlPy5uYW1lID8/ICcnLFxyXG4gICAgICB0aW1lU2VyaWVzRGVmaW5pdGlvbnM6IGRhdGFTb3VyY2U/LnRpbWVTZXJpZXNEZWZpbml0aW9uPy5zcGxpdCgnLCcpID8/IFsnJ10sXHJcbiAgICAgIG1ldGFkYXRhVGFibGVOYW1lOiBkYXRhU291cmNlPy5tZXRhZGF0YVRhYmxlTmFtZSA/PyAnJyxcclxuICAgIH07XHJcblxyXG4gICAgb25PcHRpb25zQ2hhbmdlKHsgLi4ub3B0aW9ucywganNvbkRhdGEgfSk7XHJcbiAgfTtcclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxGaWVsZFNldD5cclxuICAgICAgPERhdGFTb3VyY2VIdHRwU2V0dGluZ3NcclxuICAgICAgICBkZWZhdWx0VXJsPXsnLi4vYXBpL2dyYWZhbmEnfVxyXG4gICAgICAgIGRhdGFTb3VyY2VDb25maWc9e29wdGlvbnMuanNvbkRhdGEuaHR0cCA/IG9wdGlvbnMuanNvbkRhdGEuaHR0cCA6IG9wdGlvbnN9XHJcbiAgICAgICAgc2hvd0FjY2Vzc09wdGlvbnM9e3RydWV9XHJcbiAgICAgICAgb25DaGFuZ2U9e29uSHR0cENoYW5nZX1cclxuICAgICAgLz5cclxuICAgICAgPEZpZWxkU2V0PlxyXG4gICAgICAgIDxoMyBjbGFzc05hbWU9XCJwYWdlLWhlYWRpbmdcIj5cclxuICAgICAgICAgIEV4Y2x1ZGVkIERhdGEgRmxhZ3NcclxuICAgICAgICAgIDxUb29sdGlwIGNvbnRlbnQ9XCJNYXJrIGZsYWdzIHdoaWNoIHlvdSB3YW50IGV4Y2x1ZGVkXCI+XHJcbiAgICAgICAgICAgIDxzcGFuIHN0eWxlPXt7IGN1cnNvcjogXCJoZWxwXCIgfX0+IPCfm4g8L3NwYW4+XHJcbiAgICAgICAgICA8L1Rvb2x0aXA+XHJcbiAgICAgICAgPC9oMz5cclxuICAgICAgICA8SW5saW5lRmllbGRSb3c+XHJcbiAgICAgICAgICB7T2JqZWN0LmtleXMoRGVmYXVsdEZsYWdzKS5tYXAoKGVsZW1lbnQsIGluZGV4KSA9PiAoXHJcbiAgICAgICAgICAgIDxJbmxpbmVGaWVsZCBrZXk9e2luZGV4fSBsYWJlbD17ZWxlbWVudH0gbGFiZWxXaWR0aD17MTZ9PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZGFyay1ib3hcIj5cclxuICAgICAgICAgICAgICAgIDxTd2l0Y2hcclxuICAgICAgICAgICAgICAgICAgbmFtZT17ZWxlbWVudH1cclxuICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2ZhbHNlfVxyXG4gICAgICAgICAgICAgICAgICB2YWx1ZT17XHJcbiAgICAgICAgICAgICAgICAgICAgb3B0aW9ucy5qc29uRGF0YS5mbGFncyAmJiBvcHRpb25zLmpzb25EYXRhLmZsYWdzW2VsZW1lbnRdXHJcbiAgICAgICAgICAgICAgICAgICAgICA/IG9wdGlvbnMuanNvbkRhdGEuZmxhZ3NbZWxlbWVudF1cclxuICAgICAgICAgICAgICAgICAgICAgIDogZmFsc2VcclxuICAgICAgICAgICAgICAgICAgfVxyXG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17b25GbGFnc0NoYW5nZX1cclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgICAgICApKX1cclxuICAgICAgICA8L0lubGluZUZpZWxkUm93PlxyXG4gICAgICA8L0ZpZWxkU2V0PlxyXG4gICAgICA8RmllbGRTZXQ+XHJcbiAgICAgICAgPGgzIGNsYXNzTmFtZT1cInBhZ2UtaGVhZGluZ1wiPlxyXG4gICAgICAgICAgRGF0YSBTb3VyY2UgVHlwZVxyXG4gICAgICAgICAgPFRvb2x0aXAgY29udGVudD1cIkRldGVybWluZXMgdGhlIHR5cGUgb2YgZGF0YSB0aGF0IGlzIGJlaW5nIHF1ZXJpZWRcIj5cclxuICAgICAgICAgICAgPHNwYW4gc3R5bGU9e3sgY3Vyc29yOiBcImhlbHBcIiB9fT4g8J+biDwvc3Bhbj5cclxuICAgICAgICAgIDwvVG9vbHRpcD5cclxuICAgICAgICA8L2gzPlxyXG4gICAgICAgIDxGaWVsZFNldD5cclxuICAgICAgICAgIDxJbmxpbmVGaWVsZFJvdz5cclxuICAgICAgICAgICAgPElubGluZUZpZWxkIGxhYmVsPVwiRGF0YSBUeXBlXCIgbGFiZWxXaWR0aD17MjR9PlxyXG4gICAgICAgICAgICAgIDxTZWxlY3RcclxuICAgICAgICAgICAgICAgIHZhbHVlPXtvcHRpb25zLmpzb25EYXRhLnZhbHVlVHlwZUluZGV4fVxyXG4gICAgICAgICAgICAgICAgb3B0aW9ucz17ZGF0YVNvdXJjZVR5cGVPcHRpb25zfVxyXG4gICAgICAgICAgICAgICAgb25DaGFuZ2U9e29uVHlwZUNoYW5nZX1cclxuICAgICAgICAgICAgICAgIGlzTG9hZGluZz17ZGF0YVNvdXJjZVR5cGVPcHRpb25zLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICAgIGludmFsaWQ9e29wdGlvbnMuanNvbkRhdGEudmFsdWVUeXBlSW5kZXggPT09IHVuZGVmaW5lZH1cclxuICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgICAgICAgPC9JbmxpbmVGaWVsZFJvdz5cclxuICAgICAgICA8L0ZpZWxkU2V0PlxyXG4gICAgICAgIDxDYXJkPlxyXG4gICAgICAgICAgPENhcmQuSGVhZGluZz57b3B0aW9ucy5qc29uRGF0YS52YWx1ZVR5cGVOYW1lfTwvQ2FyZC5IZWFkaW5nPlxyXG4gICAgICAgICAgPENhcmQuRGVzY3JpcHRpb24+XHJcbiAgICAgICAgICAgIDxwPlRoaXMgdHlwZSBpbmNsdWRlcyB0aGUgZm9sbG93aW5nIGVsZW1lbnRzOiA8L3A+XHJcbiAgICAgICAgICAgIDxUYWdMaXN0IGNsYXNzTmFtZT1cInB1bGwtbGVmdFwiIHRhZ3M9e29wdGlvbnMuanNvbkRhdGEudGltZVNlcmllc0RlZmluaXRpb25zID8/IFsnJ119IC8+XHJcbiAgICAgICAgICA8L0NhcmQuRGVzY3JpcHRpb24+XHJcbiAgICAgICAgPC9DYXJkPlxyXG4gICAgICA8L0ZpZWxkU2V0PlxyXG4gICAgPC9GaWVsZFNldD5cclxuICApO1xyXG59XHJcbiJdLCJuYW1lcyI6WyJEYXRhU291cmNlSHR0cFNldHRpbmdzIiwiRmllbGRTZXQiLCJJbmxpbmVGaWVsZFJvdyIsIklubGluZUZpZWxkIiwiU3dpdGNoIiwiVG9vbHRpcCIsIlNlbGVjdCIsIkNhcmQiLCJUYWdMaXN0IiwiUmVhY3QiLCJEZWZhdWx0RmxhZ3MiLCJnZXRCYWNrZW5kU3J2IiwiQ29uZmlnRWRpdG9yIiwicHJvcHMiLCJvbk9wdGlvbnNDaGFuZ2UiLCJvcHRpb25zIiwiZGF0YVNvdXJjZVR5cGVzIiwic2V0RGF0YVNvdXJjZVR5cGVzIiwidXNlU3RhdGUiLCJkYXRhU291cmNlVHlwZU9wdGlvbnMiLCJ1c2VNZW1vIiwibWFwIiwicyIsInZhbHVlIiwiaW5kZXgiLCJ0b1N0cmluZyIsImxhYmVsIiwibmFtZSIsInVybCIsImpzb25EYXRhIiwiaHR0cCIsInVzZUVmZmVjdCIsImxlbmd0aCIsInBvc3QiLCJ0aGVuIiwiZCIsIm9uSHR0cENoYW5nZSIsImNvbmZpZyIsImZsYWdzIiwib25GbGFnc0NoYW5nZSIsImV2ZW50IiwiaW5wdXQiLCJ0YXJnZXQiLCJjaGVja2VkIiwidXBkYXRlZEZsYWdzIiwic2VsZWN0QWxsU3RhdGUiLCJPYmplY3QiLCJrZXlzIiwicmVkdWNlIiwiYWNjIiwiZmxhZyIsIm9uVHlwZUNoYW5nZSIsInZhbCIsImRhdGFTb3VyY2UiLCJmaW5kIiwidmFsdWVUeXBlSW5kZXgiLCJ2YWx1ZVR5cGVOYW1lIiwidGltZVNlcmllc0RlZmluaXRpb25zIiwidGltZVNlcmllc0RlZmluaXRpb24iLCJzcGxpdCIsIm1ldGFkYXRhVGFibGVOYW1lIiwiZGVmYXVsdFVybCIsImRhdGFTb3VyY2VDb25maWciLCJzaG93QWNjZXNzT3B0aW9ucyIsIm9uQ2hhbmdlIiwiaDMiLCJjbGFzc05hbWUiLCJjb250ZW50Iiwic3BhbiIsInN0eWxlIiwiY3Vyc29yIiwiZWxlbWVudCIsImtleSIsImxhYmVsV2lkdGgiLCJkaXYiLCJkaXNhYmxlZCIsImlzTG9hZGluZyIsImludmFsaWQiLCJ1bmRlZmluZWQiLCJIZWFkaW5nIiwiRGVzY3JpcHRpb24iLCJwIiwidGFncyJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/ConfigEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./components/ElementQueryEditor.tsx":
+/*!*******************************************!*\
+  !*** ./components/ElementQueryEditor.tsx ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   ElementQuery: () => (/* binding */ ElementQuery),\n/* harmony export */   QueryEditorWizard: () => (/* binding */ QueryEditorWizard)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @grafana/runtime */ \"@grafana/runtime\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash */ \"lodash\");\n/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_4__);\nfunction asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {\n    try {\n        var info = gen[key](arg);\n        var value = info.value;\n    } catch (error) {\n        reject(error);\n        return;\n    }\n    if (info.done) {\n        resolve(value);\n    } else {\n        Promise.resolve(value).then(_next, _throw);\n    }\n}\nfunction _async_to_generator(fn) {\n    return function() {\n        var self = this, args = arguments;\n        return new Promise(function(resolve, reject) {\n            var gen = fn.apply(self, args);\n            function _next(value) {\n                asyncGeneratorStep(gen, resolve, reject, _next, _throw, \"next\", value);\n            }\n            function _throw(err) {\n                asyncGeneratorStep(gen, resolve, reject, _next, _throw, \"throw\", err);\n            }\n            _next(undefined);\n        });\n    };\n}\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\nfunction _object_spread(target) {\n    for(var i = 1; i < arguments.length; i++){\n        var source = arguments[i] != null ? arguments[i] : {};\n        var ownKeys = Object.keys(source);\n        if (typeof Object.getOwnPropertySymbols === \"function\") {\n            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n            }));\n        }\n        ownKeys.forEach(function(key) {\n            _define_property(target, key, source[key]);\n        });\n    }\n    return target;\n}\nfunction ownKeys(object, enumerableOnly) {\n    var keys = Object.keys(object);\n    if (Object.getOwnPropertySymbols) {\n        var symbols = Object.getOwnPropertySymbols(object);\n        if (enumerableOnly) {\n            symbols = symbols.filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(object, sym).enumerable;\n            });\n        }\n        keys.push.apply(keys, symbols);\n    }\n    return keys;\n}\nfunction _object_spread_props(target, source) {\n    source = source != null ? source : {};\n    if (Object.getOwnPropertyDescriptors) {\n        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));\n    } else {\n        ownKeys(Object(source)).forEach(function(key) {\n            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));\n        });\n    }\n    return target;\n}\n\n\n\n\n\nconst QueryEditorWizard = (props)=>{\n    var _props_query_parsedQuery, _props_query_parsedQuery1, _props_query_parsedQuery2;\n    var _props_query_parsedQuery_Elements;\n    const [elements, setElements] = react__WEBPACK_IMPORTED_MODULE_0___default().useState((_props_query_parsedQuery_Elements = (_props_query_parsedQuery = props.query.parsedQuery) === null || _props_query_parsedQuery === void 0 ? void 0 : _props_query_parsedQuery.Elements) !== null && _props_query_parsedQuery_Elements !== void 0 ? _props_query_parsedQuery_Elements : []);\n    var _props_query_parsedQuery_Functions;\n    const [functions, setFunctions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState((_props_query_parsedQuery_Functions = (_props_query_parsedQuery1 = props.query.parsedQuery) === null || _props_query_parsedQuery1 === void 0 ? void 0 : _props_query_parsedQuery1.Functions) !== null && _props_query_parsedQuery_Functions !== void 0 ? _props_query_parsedQuery_Functions : []);\n    const [availableFunctions, setAvailableFunctions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    const [tableOptions, setTableOptions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    var _props_query_parsedQuery_Filters;\n    const [filters, setFilters] = react__WEBPACK_IMPORTED_MODULE_0___default().useState((_props_query_parsedQuery_Filters = (_props_query_parsedQuery2 = props.query.parsedQuery) === null || _props_query_parsedQuery2 === void 0 ? void 0 : _props_query_parsedQuery2.Filters) !== null && _props_query_parsedQuery_Filters !== void 0 ? _props_query_parsedQuery_Filters : []);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        var _props_includeFunctions;\n        if (!((_props_includeFunctions = props.includeFunctions) !== null && _props_includeFunctions !== void 0 ? _props_includeFunctions : true)) {\n            setAvailableFunctions([]);\n            return;\n        }\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/GetValueTypeFunctions\", {\n            dataTypeIndex: props.datasource.valueTypeIndex,\n            expression: \"\"\n        }).then((d)=>{\n            setAvailableFunctions(d);\n        });\n    }, [\n        props.datasource.url,\n        props.includeFunctions,\n        props.datasource.valueTypeIndex\n    ]);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/GetValueTypeTables\", {\n            dataTypeIndex: props.datasource.valueTypeIndex,\n            expression: \"\"\n        }).then((d)=>{\n            setTableOptions(d);\n        });\n    }, [\n        props.datasource.url,\n        props.datasource.valueTypeIndex\n    ]);\n    function onElementChange(e, fx, filter) {\n        setElements(e);\n        if (fx !== undefined) {\n            setFunctions((f)=>{\n                var _availableFunctions_find;\n                let u = lodash__WEBPACK_IMPORTED_MODULE_4___default().clone(f);\n                var _availableFunctions_find_parameters_map;\n                u.push({\n                    Function: fx,\n                    Parameters: (_availableFunctions_find_parameters_map = (_availableFunctions_find = availableFunctions.find((f)=>f.name === fx)) === null || _availableFunctions_find === void 0 ? void 0 : _availableFunctions_find.parameters.map((p)=>({\n                            type: p,\n                            value: p.type.includes(\"IAsyncEnumerable\") ? {\n                                Elements: [],\n                                Functions: [],\n                                Filters: []\n                            } : p.default\n                        }))) !== null && _availableFunctions_find_parameters_map !== void 0 ? _availableFunctions_find_parameters_map : []\n                });\n                return u;\n            });\n        }\n        const u = _object_spread({}, props.query);\n        if (u.parsedQuery === undefined) {\n            u.parsedQuery = {\n                Elements: [],\n                Functions: [],\n                Filters: []\n            };\n        }\n        u.parsedQuery.Elements = e;\n        if (filter) {\n            u.parsedQuery.Filters.push({\n                Table: '',\n                Condition: '',\n                Number: 10,\n                NumberMode: 'TOP'\n            });\n            setFilters(u.parsedQuery.Filters);\n        }\n        props.onChange(u);\n    }\n    function onFilterChange(f, index) {\n        const u = _object_spread({}, props.query);\n        if (u.parsedQuery === undefined) {\n            u.parsedQuery = {\n                Elements: [],\n                Functions: [],\n                Filters: []\n            };\n        }\n        if (f === undefined) {\n            u.parsedQuery.Filters.splice(index, 1);\n        } else {\n            u.parsedQuery.Filters[index] = f;\n        }\n        setFilters(u.parsedQuery.Filters);\n        props.onChange(u);\n    }\n    function onFunctionChange(f, index) {\n        const u = _object_spread({}, props.query);\n        if (u.parsedQuery === undefined) {\n            u.parsedQuery = {\n                Elements: [],\n                Functions: [],\n                Filters: []\n            };\n        }\n        if (f === undefined) {\n            u.parsedQuery.Functions.splice(index, 1);\n        } else {\n            u.parsedQuery.Functions[index] = f;\n        }\n        setFunctions(u.parsedQuery.Functions);\n        props.onChange(u);\n    }\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"div\", {\n        style: {\n            width: '100%'\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ElementQuery, {\n        datasource: props.datasource,\n        elements: elements,\n        update: onElementChange,\n        availableFunctions: availableFunctions\n    }), functions === null || functions === void 0 ? void 0 : functions.map((f, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FunctionQueryUI, {\n            key: f.Function,\n            update: (f)=>onFunctionChange(f, i),\n            func: f,\n            availableFunctions: availableFunctions,\n            availableTables: tableOptions,\n            datasource: props.datasource\n        })), filters === null || filters === void 0 ? void 0 : filters.map((f, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FilterQueryUI, {\n            key: i,\n            availableTables: tableOptions,\n            update: (f)=>onFilterChange(f, i),\n            filter: f\n        })));\n};\nconst ElementQuery = (props)=>{\n    const selectedOptions = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>props.elements.map((d)=>({\n                value: d,\n                label: d\n            })), [\n        props.elements\n    ]);\n    const loadOptions = function() {\n        var _ref = _async_to_generator(function*(inputValue) {\n            const d = yield (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/Search\", {\n                dataTypeIndex: props.datasource.valueTypeIndex,\n                expression: inputValue\n            });\n            const r = d.map((p)=>({\n                    value: p,\n                    label: p\n                }));\n            if ('filter'.includes(inputValue.toLocaleLowerCase())) {\n                r.push({\n                    value: 'FILTER',\n                    label: 'FILTER'\n                });\n            }\n            props.availableFunctions.filter((f)=>{\n                var _f_aliases;\n                var _f_aliases_some;\n                return f.name.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase()) || ((_f_aliases_some = (_f_aliases = f.aliases) === null || _f_aliases === void 0 ? void 0 : _f_aliases.some((a)=>a.toLocaleLowerCase().includes(inputValue.toLocaleLowerCase()))) !== null && _f_aliases_some !== void 0 ? _f_aliases_some : false);\n            }).forEach((f)=>{\n                r.push({\n                    label: f.name,\n                    value: 'fx-' + f.name\n                });\n            });\n            return r;\n        });\n        return function loadOptions(inputValue) {\n            return _ref.apply(this, arguments);\n        };\n    }();\n    const onElementsChange = (selected)=>{\n        const selectedValues = selected.map((item)=>item.value);\n        let hasFilter = selectedValues.includes('FILTER');\n        const fx = selectedValues.filter((s)=>s.startsWith('fx-'));\n        let func = undefined;\n        if (fx.length > 0) {\n            func = fx[0].substring(3);\n        }\n        props.update(selectedValues.filter((i)=>i !== 'FILTER' && !i.startsWith('fx-')), func, hasFilter);\n    };\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Query\",\n        labelWidth: 'auto'\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.AsyncMultiSelect, {\n        loadOptions: loadOptions,\n        defaultOptions: true,\n        value: selectedOptions,\n        onChange: onElementsChange,\n        isSearchable: true\n    }));\n};\nconst FilterQueryUI = (props)=>{\n    const numberOptions = [\n        {\n            label: 'TOP',\n            value: 'TOP'\n        },\n        {\n            label: 'ALL',\n            value: ''\n        }\n    ];\n    const tableOptions = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>props.availableTables.map((t)=>({\n                label: t,\n                value: t\n            })), [\n        props.availableTables\n    ]);\n    const selectedOptions = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>props.filter.Table === '' ? [] : [\n            {\n                value: props.filter.Table,\n                label: props.filter.Table\n            }\n        ], [\n        props.filter.Table\n    ]);\n    function onNumberModeChange(val) {\n        props.update(_object_spread_props(_object_spread({}, props.filter), {\n            NumberMode: val.value\n        }));\n    }\n    function OnNumberChange(val) {\n        const n = val.target.value;\n        props.update(_object_spread_props(_object_spread({}, props.filter), {\n            Number: parseInt(n, 10)\n        }));\n    }\n    function onTableChange(t) {\n        var _t_value;\n        props.update(_object_spread_props(_object_spread({}, props.filter), {\n            Table: (_t_value = t.value) !== null && _t_value !== void 0 ? _t_value : ''\n        }));\n    }\n    function onConditionChange(val) {\n        props.update(_object_spread_props(_object_spread({}, props.filter), {\n            Condition: val.target.value\n        }));\n    }\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.IconButton, {\n        name: 'trash-alt',\n        size: \"xl\",\n        iconType: \"default\",\n        variant: \"destructive\",\n        style: {\n            marginTop: 4,\n            marginRight: 0\n        },\n        onClick: ()=>props.update(undefined)\n    }), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineLabel, {\n            style: {\n                flexShrink: 1\n            }\n        }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.IconButton, {\n            name: 'filter',\n            size: \"md\",\n            iconType: \"default\",\n            variant: \"secondary\",\n            style: {\n                marginLeft: -2\n            }\n        }), \"FILTER\"),\n        labelWidth: 'auto'\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: props.filter.NumberMode,\n        options: numberOptions,\n        onChange: onNumberModeChange\n    })), props.filter.NumberMode !== '' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'number',\n        min: 0,\n        max: 99999,\n        value: props.filter.Number,\n        onChange: OnNumberChange,\n        width: 10\n    }) : null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"\",\n        labelWidth: 1,\n        transparent: true,\n        style: {\n            marginLeft: -16\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: selectedOptions,\n        options: tableOptions,\n        isLoading: tableOptions.length === 0,\n        onChange: onTableChange,\n        isSearchable: true,\n        width: 'auto'\n    }))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"WHERE\",\n        grow: true\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        value: props.filter.Condition,\n        onChange: onConditionChange,\n        placeholder: \"SignalType = 'FREQ'\"\n    }))));\n};\nconst FunctionQueryUI = (props)=>{\n    const [isOpen, setIsOpen] = react__WEBPACK_IMPORTED_MODULE_0___default().useState(true);\n    const fxDescription = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>props.availableFunctions.find((f)=>f.name === props.func.Function), [\n        props.func,\n        props.availableFunctions\n    ]);\n    const fxOptions = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>props.availableFunctions.map((f)=>({\n                value: f.name,\n                label: f.name\n            })), [\n        props.availableFunctions\n    ]);\n    function onFunctionChange(val) {\n        const fx = props.availableFunctions.find((f)=>f.name === val.value);\n        if (fx === null) {\n            return;\n        }\n        var _val_value, _fx_parameters_map;\n        props.update({\n            Function: (_val_value = val.value) !== null && _val_value !== void 0 ? _val_value : 'AbsoluteValue',\n            Parameters: (_fx_parameters_map = fx === null || fx === void 0 ? void 0 : fx.parameters.map((p)=>{\n                const param = {\n                    type: p,\n                    value: p.type.includes(\"IAsyncEnumerable\") ? {\n                        Elements: [],\n                        Functions: [],\n                        Filters: []\n                    } : p.default\n                };\n                return param;\n            })) !== null && _fx_parameters_map !== void 0 ? _fx_parameters_map : []\n        });\n        setIsOpen(true);\n    }\n    function onValueChange(val, index) {\n        const u = lodash__WEBPACK_IMPORTED_MODULE_4___default().cloneDeep(props.func);\n        u.Parameters[index] = val;\n        props.update(u);\n    }\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Collapse, {\n        collapsible: true,\n        label: /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.IconButton, {\n            name: 'trash-alt',\n            size: \"xl\",\n            iconType: \"default\",\n            variant: \"destructive\",\n            style: {\n                marginTop: 4,\n                marginRight: 6\n            },\n            onClick: ()=>props.update(undefined)\n        }), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"span\", {\n            style: {\n                marginTop: 5,\n                marginRight: 4,\n                fontSize: 'small'\n            }\n        }, \"ƒ(x)\"), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n            value: props.func.Function,\n            options: fxOptions,\n            onChange: onFunctionChange,\n            isSearchable: true,\n            tabSelectsValue: true,\n            width: 'auto'\n        }), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"div\", {\n            style: {\n                marginTop: 5,\n                marginLeft: 10\n            }\n        }, getCategory(fxDescription), \" \", fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.returnType.toLowerCase(), getGroupOperation(fxDescription), \" function\", extractGroupOperations(fxDescription), \".\")),\n        isOpen: isOpen,\n        onToggle: ()=>setIsOpen((x)=>!x)\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"p\", null, fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.description), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"ul\", null, props.func.Parameters.map((p, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"li\", {\n            key: p.type.name\n        }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ParameterUI, {\n            update: (val)=>onValueChange(val, i),\n            param: p,\n            availableFunctions: props.availableFunctions,\n            availableTables: props.availableTables,\n            datasource: props.datasource\n        })))));\n};\nconst ParameterUI = (props)=>{\n    var _props_param_type_default, _props_param_value, _props_param, _props_param_value_Functions, _props_param_value1, _props_param1, _props_param_value_Filters, _props_param_value2, _props_param2, _props_param3, _props_param4, _props_param5, _props_param6, _props_param7, _props_param8;\n    const AngleOptions = [\n        {\n            value: 'Radians',\n            label: 'Radians'\n        },\n        {\n            value: 'Degrees',\n            label: 'Degrees'\n        },\n        {\n            value: 'Grads',\n            label: 'Grads'\n        },\n        {\n            value: 'ArcMinutes',\n            label: 'ArcMinutes'\n        },\n        {\n            value: 'ArcSeconds',\n            label: 'ArcSeconds'\n        },\n        {\n            value: 'AngularMil',\n            label: 'AngularMil'\n        }\n    ];\n    const TimeOption = [\n        {\n            value: 'Seconds',\n            label: 'Seconds'\n        },\n        {\n            value: 'Nanoseconds',\n            label: 'Nanoseconds'\n        },\n        {\n            value: 'Microseconds',\n            label: 'Microseconds'\n        },\n        {\n            value: 'Milliseconds',\n            label: 'Milliseconds'\n        },\n        {\n            value: 'Minutes',\n            label: 'Minutes'\n        },\n        {\n            value: 'Hours',\n            label: 'Hours'\n        },\n        {\n            value: 'Days',\n            label: 'Days'\n        },\n        {\n            value: 'Weeks',\n            label: 'Weeks'\n        },\n        {\n            value: 'Ke',\n            label: 'Ke (traditional Chinese)'\n        },\n        {\n            value: 'Ticks',\n            label: 'Ticks'\n        },\n        {\n            value: 'PlanckTime',\n            label: 'PlanckTime'\n        },\n        {\n            value: 'AtomicUnitsOfTime',\n            label: 'AtomicUnitsOfTime'\n        }\n    ];\n    const BooleanOption = [\n        {\n            value: '1',\n            label: 'True'\n        },\n        {\n            value: '0',\n            label: 'False'\n        }\n    ];\n    function onElementChange(e, fx, filter) {\n        let u = lodash__WEBPACK_IMPORTED_MODULE_4___default().cloneDeep(props.param);\n        if (u === undefined) {\n            u = {\n                type: props.param.type,\n                value: {\n                    Elements: [],\n                    Functions: [],\n                    Filters: []\n                }\n            };\n        }\n        if (fx !== undefined) {\n            var _u_value;\n            (_u_value = u.value) === null || _u_value === void 0 ? void 0 : _u_value.Functions.push({\n                Function: fx,\n                Parameters: []\n            });\n        }\n        u.value.Elements = e;\n        if (filter) {\n            var _u_value1;\n            (_u_value1 = u.value) === null || _u_value1 === void 0 ? void 0 : _u_value1.Filters.push({\n                Table: '',\n                Condition: '',\n                Number: 10,\n                NumberMode: 'TOP'\n            });\n        }\n        props.update(u);\n    }\n    function onFilterChange(f, index) {\n        let u = lodash__WEBPACK_IMPORTED_MODULE_4___default().cloneDeep(props.param);\n        if (u === undefined) {\n            u = {\n                type: props.param.type,\n                value: {\n                    Elements: [],\n                    Functions: [],\n                    Filters: []\n                }\n            };\n        }\n        if (f === undefined) {\n            var _u_value;\n            (_u_value = u.value) === null || _u_value === void 0 ? void 0 : _u_value.Filters.splice(index, 1);\n        } else {\n            u.value.Filters[index] = f;\n        }\n        props.update(u);\n    }\n    function onFunctionChange(f, index) {\n        let u = lodash__WEBPACK_IMPORTED_MODULE_4___default().cloneDeep(props.param);\n        if (u === undefined) {\n            u = {\n                type: props.param.type,\n                value: {\n                    Elements: [],\n                    Functions: [],\n                    Filters: []\n                }\n            };\n        }\n        if (f === undefined) {\n            var _u_value;\n            (_u_value = u.value) === null || _u_value === void 0 ? void 0 : _u_value.Functions.splice(index, 1);\n        } else {\n            u.value.Functions[index] = f;\n        }\n        props.update(u);\n    }\n    function onStringChange(val) {\n        props.update({\n            type: props.param.type,\n            value: val.target.value\n        });\n    }\n    function onSelectChange(val) {\n        props.update({\n            type: props.param.type,\n            value: val.value\n        });\n    }\n    var _props_param_value_Elements, _props_param_value3, _props_param_value4, _props_param_value5, _props_param_value6, _props_param_value7, _props_param_value8;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Card, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Card.Heading, null, props.param.type.name, \" (\", props.param.type.required ? 'required' : 'optional', \")\"), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Card.Description, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"p\", null, props.param.type.description, \" (\", props.param.type.type, !props.param.type.required && ((_props_param_type_default = props.param.type.default) === null || _props_param_type_default === void 0 ? void 0 : _props_param_type_default.length) > 0 ? `: default = ${props.param.type.default}` : '', \")\"), props.param.type.type.includes(\"IAsyncEnumerable\") ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ElementQuery, {\n        datasource: props.datasource,\n        elements: (_props_param_value_Elements = (_props_param = props.param) === null || _props_param === void 0 ? void 0 : (_props_param_value = _props_param.value) === null || _props_param_value === void 0 ? void 0 : _props_param_value.Elements) !== null && _props_param_value_Elements !== void 0 ? _props_param_value_Elements : [],\n        update: onElementChange,\n        availableFunctions: props.availableFunctions\n    }), (_props_param1 = props.param) === null || _props_param1 === void 0 ? void 0 : (_props_param_value1 = _props_param1.value) === null || _props_param_value1 === void 0 ? void 0 : (_props_param_value_Functions = _props_param_value1.Functions) === null || _props_param_value_Functions === void 0 ? void 0 : _props_param_value_Functions.map((f, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FunctionQueryUI, {\n            key: f.Function,\n            update: (f)=>onFunctionChange(f, i),\n            func: f,\n            availableFunctions: props.availableFunctions,\n            availableTables: props.availableTables,\n            datasource: props.datasource\n        })), (_props_param2 = props.param) === null || _props_param2 === void 0 ? void 0 : (_props_param_value2 = _props_param2.value) === null || _props_param_value2 === void 0 ? void 0 : (_props_param_value_Filters = _props_param_value2.Filters) === null || _props_param_value_Filters === void 0 ? void 0 : _props_param_value_Filters.map((f, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FilterQueryUI, {\n            key: i,\n            availableTables: props.availableTables,\n            update: (f)=>onFilterChange(f, i),\n            filter: f\n        }))) : null, props.param.type.type === 'Double' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'number',\n        value: (_props_param_value3 = (_props_param3 = props.param) === null || _props_param3 === void 0 ? void 0 : _props_param3.value) !== null && _props_param_value3 !== void 0 ? _props_param_value3 : '1.0',\n        onChange: onStringChange,\n        width: 20\n    }) : null, props.param.type.type === 'String' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'text',\n        value: (_props_param_value4 = (_props_param4 = props.param) === null || _props_param4 === void 0 ? void 0 : _props_param4.value) !== null && _props_param_value4 !== void 0 ? _props_param_value4 : '',\n        onChange: onStringChange,\n        width: 20\n    }) : null, props.param.type.type === 'Int32' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        type: 'number',\n        min: 0,\n        max: 99999,\n        value: (_props_param_value5 = (_props_param5 = props.param) === null || _props_param5 === void 0 ? void 0 : _props_param5.value) !== null && _props_param_value5 !== void 0 ? _props_param_value5 : '1',\n        onChange: onStringChange,\n        width: 20\n    }) : null, props.param.type.type === 'AngleUnit' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: (_props_param_value6 = (_props_param6 = props.param) === null || _props_param6 === void 0 ? void 0 : _props_param6.value) !== null && _props_param_value6 !== void 0 ? _props_param_value6 : 'Degrees',\n        options: AngleOptions,\n        onChange: onSelectChange,\n        isSearchable: true\n    }) : null, props.param.type.type === 'TargetTimeUnit' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: (_props_param_value7 = (_props_param7 = props.param) === null || _props_param7 === void 0 ? void 0 : _props_param7.value) !== null && _props_param_value7 !== void 0 ? _props_param_value7 : 'Seconds',\n        options: TimeOption,\n        onChange: onSelectChange,\n        isSearchable: true\n    }) : null, props.param.type.type === 'Boolean' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: (_props_param_value8 = (_props_param8 = props.param) === null || _props_param8 === void 0 ? void 0 : _props_param8.value) !== null && _props_param_value8 !== void 0 ? _props_param_value8 : '1',\n        options: BooleanOption,\n        onChange: onSelectChange,\n        isSearchable: true\n    }) : null)));\n};\nconst getCategory = (fxDescription)=>{\n    var _fxDescription_category;\n    return ((_fxDescription_category = fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.category) !== null && _fxDescription_category !== void 0 ? _fxDescription_category : 'BuiltIn') === 'BuiltIn' ? 'Built-in' : 'Custom';\n};\nconst getGroupOperation = (fxDescription)=>{\n    var _fxDescription_name;\n    const functionName = (_fxDescription_name = fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.name) !== null && _fxDescription_name !== void 0 ? _fxDescription_name : '';\n    if (functionName.startsWith('Slice')) {\n        return ' slice';\n    } else if (functionName.startsWith('Set')) {\n        return ' set';\n    }\n    return '';\n};\nconst extractGroupOperations = (fxDescription)=>{\n    var _fxDescription_allowedGroupOperations_split_map;\n    const allowedGroupOperations = (_fxDescription_allowedGroupOperations_split_map = fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.allowedGroupOperations.split(',').map((operation)=>operation.trim())) !== null && _fxDescription_allowedGroupOperations_split_map !== void 0 ? _fxDescription_allowedGroupOperations_split_map : [];\n    var _fxDescription_publishedGroupOperations_split_map;\n    let publishedGroupOperations = (_fxDescription_publishedGroupOperations_split_map = fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.publishedGroupOperations.split(',').map((operation)=>operation.trim())) !== null && _fxDescription_publishedGroupOperations_split_map !== void 0 ? _fxDescription_publishedGroupOperations_split_map : [];\n    if (publishedGroupOperations.length === 0) {\n        return '';\n    }\n    const allowedGroupOperationsSet = new Set(allowedGroupOperations);\n    var _fxDescription_name;\n    let functionName = (_fxDescription_name = fxDescription === null || fxDescription === void 0 ? void 0 : fxDescription.name) !== null && _fxDescription_name !== void 0 ? _fxDescription_name : '';\n    // If published group operations are not a subset of allowed group operations,\n    // use the allowed group operations as the published group operations\n    if (!publishedGroupOperations.every((element)=>allowedGroupOperationsSet.has(element))) {\n        functionName = allowedGroupOperations[0];\n        publishedGroupOperations = allowedGroupOperations;\n    }\n    const publishedGroupOperationsSet = new Set(publishedGroupOperations);\n    const supportedGroupOperations = [];\n    let supportsNonGroupedOperation = false;\n    if (functionName.startsWith('Slice')) {\n        // If slice-type function is selected, show possible support for 'None' and 'Set' group operations\n        if (publishedGroupOperationsSet.has('None')) {\n            supportsNonGroupedOperation = true;\n        }\n        if (publishedGroupOperationsSet.has('Set')) {\n            supportedGroupOperations.push('set');\n        }\n    } else if (functionName.startsWith('Set')) {\n        // If set-type function is selected, show possible support for 'None' and 'Slice' group operations\n        if (publishedGroupOperationsSet.has('None')) {\n            supportsNonGroupedOperation = true;\n        }\n        if (publishedGroupOperationsSet.has('Slice')) {\n            supportedGroupOperations.push('slice');\n        }\n    } else {\n        // If standard non-grouped function is selected, show possible support for 'Slice' and 'Set' group operations\n        if (publishedGroupOperationsSet.has('Slice')) {\n            supportedGroupOperations.push('slice');\n        }\n        if (publishedGroupOperationsSet.has('Set')) {\n            supportedGroupOperations.push('set');\n        }\n    }\n    if (!supportsNonGroupedOperation && supportedGroupOperations.length === 0) {\n        return '';\n    }\n    const groupOperationsDisplay = [];\n    if (supportsNonGroupedOperation) {\n        groupOperationsDisplay.push('standard non-grouped');\n    }\n    if (supportedGroupOperations.length > 0) {\n        if (groupOperationsDisplay.length > 0) {\n            groupOperationsDisplay.push(' and ');\n        }\n        groupOperationsDisplay.push(supportedGroupOperations.join(' and '));\n        groupOperationsDisplay.push(' group');\n        if (supportedGroupOperations.length > 1) {\n            groupOperationsDisplay.push('ed');\n        }\n    }\n    groupOperationsDisplay.push(' operation');\n    if ((supportsNonGroupedOperation ? 1 : 0) + supportedGroupOperations.length > 1) {\n        groupOperationsDisplay.push('s');\n    }\n    return `, also supports ${groupOperationsDisplay.join('')}`;\n};\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,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TUFBTTJFLHlCQUFtQyxFQUFFO0lBRTNDLElBQUlELDZCQUE2QjtRQUMvQkMsdUJBQXVCN0gsSUFBSSxDQUFDO0lBQzlCO0lBRUEsSUFBSTJILHlCQUF5QnpFLE1BQU0sR0FBRyxHQUFHO1FBQ3ZDLElBQUkyRSx1QkFBdUIzRSxNQUFNLEdBQUcsR0FBRztZQUNyQzJFLHVCQUF1QjdILElBQUksQ0FBQztRQUM5QjtRQUVBNkgsdUJBQXVCN0gsSUFBSSxDQUFDMkgseUJBQXlCRyxJQUFJLENBQUM7UUFDMURELHVCQUF1QjdILElBQUksQ0FBQztRQUU1QixJQUFJMkgseUJBQXlCekUsTUFBTSxHQUFHLEdBQUc7WUFDdkMyRSx1QkFBdUI3SCxJQUFJLENBQUM7UUFDOUI7SUFDRjtJQUVBNkgsdUJBQXVCN0gsSUFBSSxDQUFDO0lBRTVCLElBQUksQ0FBQzRILDhCQUE4QixJQUFJLEtBQUtELHlCQUF5QnpFLE1BQU0sR0FBRyxHQUFHO1FBQy9FMkUsdUJBQXVCN0gsSUFBSSxDQUFDO0lBQzlCO0lBRUEsT0FBTyxDQUFDLGdCQUFnQixFQUFFNkgsdUJBQXVCQyxJQUFJLENBQUMsSUFBSSxDQUFDO0FBQzdEIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vY29tcG9uZW50cy9FbGVtZW50UXVlcnlFZGl0b3IudHN4P2ZmZmMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0IHsgSW5saW5lRmllbGQsIEFzeW5jTXVsdGlTZWxlY3QsIFNlbGVjdCwgSW5wdXQsIElubGluZUZpZWxkUm93LCBDb2xsYXBzZSwgRmllbGRTZXQsIEljb25CdXR0b24sIENhcmQsIElubGluZUxhYmVsIH0gZnJvbSAnQGdyYWZhbmEvdWknO1xyXG5pbXBvcnQgeyBTZWxlY3RhYmxlVmFsdWUgfSBmcm9tICdAZ3JhZmFuYS9kYXRhJztcclxuaW1wb3J0IHsgRGF0YVNvdXJjZSB9IGZyb20gJy4uL2RhdGFzb3VyY2UnO1xyXG5pbXBvcnQgeyBGaWx0ZXJRdWVyeSwgRnVuY3Rpb25EZXNjcmlwdGlvbiwgRnVuY3Rpb25RdWVyeSwgUGFyYW1ldGVyVHlwZSwgUGFyc2VkUXVlcnksIFF1ZXJ5QmFzZSB9IGZyb20gJy4uL3R5cGVzJztcclxuaW1wb3J0IFwiLi4vY3NzL3F1ZXJ5LWVkaXRvci5jc3NcIjtcclxuaW1wb3J0IHsgZ2V0QmFja2VuZFNydiB9IGZyb20gXCJAZ3JhZmFuYS9ydW50aW1lXCI7XHJcbmltcG9ydCBfIGZyb20gJ2xvZGFzaCc7XHJcblxyXG5pbnRlcmZhY2UgUHJvcHMgeyBvbkNoYW5nZTogKHZhbHVlOiBRdWVyeUJhc2UpID0+IHZvaWQsIHF1ZXJ5OiBRdWVyeUJhc2UsIGRhdGFzb3VyY2U6IERhdGFTb3VyY2UsIGluY2x1ZGVGdW5jdGlvbnM/OiBib29sZWFuIH1cclxuXHJcbmV4cG9ydCBjb25zdCBRdWVyeUVkaXRvcldpemFyZCA9IChwcm9wczogUHJvcHMpID0+IHtcclxuICBjb25zdCBbZWxlbWVudHMsIHNldEVsZW1lbnRzXSA9IFJlYWN0LnVzZVN0YXRlPHN0cmluZ1tdPihwcm9wcy5xdWVyeS5wYXJzZWRRdWVyeT8uRWxlbWVudHMgPz8gW10pO1xyXG4gIGNvbnN0IFtmdW5jdGlvbnMsIHNldEZ1bmN0aW9uc10gPSBSZWFjdC51c2VTdGF0ZTxGdW5jdGlvblF1ZXJ5W10+KHByb3BzLnF1ZXJ5LnBhcnNlZFF1ZXJ5Py5GdW5jdGlvbnMgPz8gW10pO1xyXG4gIGNvbnN0IFthdmFpbGFibGVGdW5jdGlvbnMsIHNldEF2YWlsYWJsZUZ1bmN0aW9uc10gPSBSZWFjdC51c2VTdGF0ZTxGdW5jdGlvbkRlc2NyaXB0aW9uW10+KFtdKTtcclxuICBjb25zdCBbdGFibGVPcHRpb25zLCBzZXRUYWJsZU9wdGlvbnNdID0gUmVhY3QudXNlU3RhdGU8c3RyaW5nW10+KFtdKTtcclxuICBjb25zdCBbZmlsdGVycywgc2V0RmlsdGVyc10gPSBSZWFjdC51c2VTdGF0ZTxGaWx0ZXJRdWVyeVtdPihwcm9wcy5xdWVyeS5wYXJzZWRRdWVyeT8uRmlsdGVycyA/PyBbXSk7XHJcblxyXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBpZiAoIShwcm9wcy5pbmNsdWRlRnVuY3Rpb25zID8/IHRydWUpKSB7XHJcbiAgICAgIHNldEF2YWlsYWJsZUZ1bmN0aW9ucyhbXSk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuXHJcbiAgICBnZXRCYWNrZW5kU3J2KCkucG9zdChwcm9wcy5kYXRhc291cmNlLnVybCArIFwiL0dldFZhbHVlVHlwZUZ1bmN0aW9uc1wiLCB7XHJcbiAgICAgIGRhdGFUeXBlSW5kZXg6IHByb3BzLmRhdGFzb3VyY2UudmFsdWVUeXBlSW5kZXgsXHJcbiAgICAgIGV4cHJlc3Npb246IFwiXCJcclxuICAgIH0pLnRoZW4oKGQpID0+IHtcclxuICAgICAgc2V0QXZhaWxhYmxlRnVuY3Rpb25zKGQpO1xyXG4gICAgfSk7XHJcbiAgfSwgW3Byb3BzLmRhdGFzb3VyY2UudXJsLCBwcm9wcy5pbmNsdWRlRnVuY3Rpb25zLCBwcm9wcy5kYXRhc291cmNlLnZhbHVlVHlwZUluZGV4XSlcclxuXHJcbiAgUmVhY3QudXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGdldEJhY2tlbmRTcnYoKS5wb3N0KHByb3BzLmRhdGFzb3VyY2UudXJsICsgXCIvR2V0VmFsdWVUeXBlVGFibGVzXCIsIHsgZGF0YVR5cGVJbmRleDogcHJvcHMuZGF0YXNvdXJjZS52YWx1ZVR5cGVJbmRleCwgZXhwcmVzc2lvbjogXCJcIiB9KVxyXG4gICAgICAudGhlbigoZDogc3RyaW5nW10pID0+IHsgc2V0VGFibGVPcHRpb25zKGQpOyB9KVxyXG4gIH0sIFtwcm9wcy5kYXRhc291cmNlLnVybCwgcHJvcHMuZGF0YXNvdXJjZS52YWx1ZVR5cGVJbmRleF0pXHJcblxyXG5cclxuICBmdW5jdGlvbiBvbkVsZW1lbnRDaGFuZ2UoZTogc3RyaW5nW10sIGZ4OiBzdHJpbmcgfCB1bmRlZmluZWQsIGZpbHRlcjogYm9vbGVhbikge1xyXG4gICAgc2V0RWxlbWVudHMoZSk7XHJcbiAgICBpZiAoZnggIT09IHVuZGVmaW5lZCkge1xyXG4gICAgICBzZXRGdW5jdGlvbnMoZiA9PiB7XHJcbiAgICAgICAgbGV0IHUgPSBfLmNsb25lKGYpOyB1LnB1c2goe1xyXG4gICAgICAgICAgRnVuY3Rpb246IGZ4LFxyXG4gICAgICAgICAgUGFyYW1ldGVyczogYXZhaWxhYmxlRnVuY3Rpb25zLmZpbmQoZiA9PiBmLm5hbWUgPT09IGZ4KT8ucGFyYW1ldGVycy5tYXAocCA9PiAoeyB0eXBlOiBwLCB2YWx1ZTogcC50eXBlLmluY2x1ZGVzKFwiSUFzeW5jRW51bWVyYWJsZVwiKSA/IHsgRWxlbWVudHM6IFtdLCBGdW5jdGlvbnM6IFtdLCBGaWx0ZXJzOiBbXSB9IDogcC5kZWZhdWx0IH0gYXMgUGFyYW1ldGVyVHlwZSkpID8/IFtdLFxyXG4gICAgICAgIH0pOyByZXR1cm4gdTtcclxuICAgICAgfSlcclxuICAgIH1cclxuICAgIGNvbnN0IHUgPSB7IC4uLnByb3BzLnF1ZXJ5IH07XHJcbiAgICBpZiAodS5wYXJzZWRRdWVyeSA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkgPSB7IEVsZW1lbnRzOiBbXSwgRnVuY3Rpb25zOiBbXSwgRmlsdGVyczogW10gfVxyXG4gICAgfVxyXG4gICAgdS5wYXJzZWRRdWVyeS5FbGVtZW50cyA9IGU7XHJcbiAgICBpZiAoZmlsdGVyKSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkuRmlsdGVycy5wdXNoKHsgVGFibGU6ICcnLCBDb25kaXRpb246ICcnLCBOdW1iZXI6IDEwLCBOdW1iZXJNb2RlOiAnVE9QJyB9KTtcclxuICAgICAgc2V0RmlsdGVycyh1LnBhcnNlZFF1ZXJ5LkZpbHRlcnMpO1xyXG4gICAgfVxyXG4gICAgcHJvcHMub25DaGFuZ2UodSk7XHJcbiAgfVxyXG5cclxuICBmdW5jdGlvbiBvbkZpbHRlckNoYW5nZShmOiBGaWx0ZXJRdWVyeSB8IHVuZGVmaW5lZCwgaW5kZXg6IG51bWJlcikge1xyXG4gICAgY29uc3QgdSA9IHsgLi4ucHJvcHMucXVlcnkgfTtcclxuICAgIGlmICh1LnBhcnNlZFF1ZXJ5ID09PSB1bmRlZmluZWQpIHtcclxuICAgICAgdS5wYXJzZWRRdWVyeSA9IHsgRWxlbWVudHM6IFtdLCBGdW5jdGlvbnM6IFtdLCBGaWx0ZXJzOiBbXSB9XHJcbiAgICB9XHJcbiAgICBpZiAoZiA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkuRmlsdGVycy5zcGxpY2UoaW5kZXgsIDEpO1xyXG4gICAgfVxyXG4gICAgZWxzZSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkuRmlsdGVyc1tpbmRleF0gPSBmO1xyXG4gICAgfVxyXG4gICAgc2V0RmlsdGVycyh1LnBhcnNlZFF1ZXJ5LkZpbHRlcnMpO1xyXG4gICAgcHJvcHMub25DaGFuZ2UodSk7XHJcbiAgfVxyXG5cclxuICBmdW5jdGlvbiBvbkZ1bmN0aW9uQ2hhbmdlKGY6IEZ1bmN0aW9uUXVlcnkgfCB1bmRlZmluZWQsIGluZGV4OiBudW1iZXIpIHtcclxuICAgIGNvbnN0IHUgPSB7IC4uLnByb3BzLnF1ZXJ5IH07XHJcbiAgICBpZiAodS5wYXJzZWRRdWVyeSA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkgPSB7IEVsZW1lbnRzOiBbXSwgRnVuY3Rpb25zOiBbXSwgRmlsdGVyczogW10gfVxyXG4gICAgfVxyXG4gICAgaWYgKGYgPT09IHVuZGVmaW5lZCkge1xyXG4gICAgICB1LnBhcnNlZFF1ZXJ5LkZ1bmN0aW9ucy5zcGxpY2UoaW5kZXgsIDEpO1xyXG4gICAgfVxyXG4gICAgZWxzZSB7XHJcbiAgICAgIHUucGFyc2VkUXVlcnkuRnVuY3Rpb25zW2luZGV4XSA9IGY7XHJcbiAgICB9XHJcbiAgICBzZXRGdW5jdGlvbnModS5wYXJzZWRRdWVyeS5GdW5jdGlvbnMpO1xyXG4gICAgcHJvcHMub25DaGFuZ2UodSk7XHJcbiAgfVxyXG5cclxuXHJcbiAgcmV0dXJuIDxkaXYgc3R5bGU9e3sgd2lkdGg6ICcxMDAlJyB9fT5cclxuICAgIDxFbGVtZW50UXVlcnlcclxuICAgICAgZGF0YXNvdXJjZT17cHJvcHMuZGF0YXNvdXJjZX1cclxuICAgICAgZWxlbWVudHM9e2VsZW1lbnRzfSB1cGRhdGU9e29uRWxlbWVudENoYW5nZX1cclxuICAgICAgYXZhaWxhYmxlRnVuY3Rpb25zPXthdmFpbGFibGVGdW5jdGlvbnN9XHJcbiAgICAvPlxyXG4gICAge2Z1bmN0aW9ucz8ubWFwKChmLCBpKSA9PiA8RnVuY3Rpb25RdWVyeVVJIGtleT17Zi5GdW5jdGlvbn1cclxuICAgICAgdXBkYXRlPXsoZikgPT4gb25GdW5jdGlvbkNoYW5nZShmLCBpKX1cclxuICAgICAgZnVuYz17Zn0gYXZhaWxhYmxlRnVuY3Rpb25zPXthdmFpbGFibGVGdW5jdGlvbnN9XHJcbiAgICAgIGF2YWlsYWJsZVRhYmxlcz17dGFibGVPcHRpb25zfVxyXG4gICAgICBkYXRhc291cmNlPXtwcm9wcy5kYXRhc291cmNlfVxyXG4gICAgLz4pfVxyXG4gICAge2ZpbHRlcnM/Lm1hcCgoZiwgaSkgPT4gPEZpbHRlclF1ZXJ5VUlcclxuICAgICAga2V5PXtpfVxyXG4gICAgICBhdmFpbGFibGVUYWJsZXM9e3RhYmxlT3B0aW9uc31cclxuICAgICAgdXBkYXRlPXsoZikgPT4gb25GaWx0ZXJDaGFuZ2UoZiwgaSl9IGZpbHRlcj17Zn0gLz4pfVxyXG4gIDwvZGl2PjtcclxufVxyXG5cclxuaW50ZXJmYWNlIEVsZW1lbnRRdWVyeVByb3BzIHtcclxuICBkYXRhc291cmNlOiBEYXRhU291cmNlLFxyXG4gIHVwZGF0ZTogKGVsZW1lbnRzOiBzdHJpbmdbXSwgZng6IHN0cmluZyB8IHVuZGVmaW5lZCwgZmlsdGVyOiBib29sZWFuKSA9PiB2b2lkLFxyXG4gIGVsZW1lbnRzOiBzdHJpbmdbXSxcclxuICBhdmFpbGFibGVGdW5jdGlvbnM6IEZ1bmN0aW9uRGVzY3JpcHRpb25bXVxyXG59XHJcblxyXG5leHBvcnQgY29uc3QgRWxlbWVudFF1ZXJ5ID0gKHByb3BzOiBFbGVtZW50UXVlcnlQcm9wcykgPT4ge1xyXG4gIGNvbnN0IHNlbGVjdGVkT3B0aW9ucyA9IFJlYWN0LnVzZU1lbW8oKCkgPT4gcHJvcHMuZWxlbWVudHMubWFwKChkKSA9PiAoeyB2YWx1ZTogZCwgbGFiZWw6IGQgfSkpLCBbcHJvcHMuZWxlbWVudHNdKTtcclxuXHJcbiAgY29uc3QgbG9hZE9wdGlvbnMgPSBhc3luYyAoaW5wdXRWYWx1ZTogc3RyaW5nKSA9PiB7XHJcbiAgICBjb25zdCBkID0gYXdhaXQgZ2V0QmFja2VuZFNydigpLnBvc3QocHJvcHMuZGF0YXNvdXJjZS51cmwgKyBcIi9TZWFyY2hcIiwge1xyXG4gICAgICBkYXRhVHlwZUluZGV4OiBwcm9wcy5kYXRhc291cmNlLnZhbHVlVHlwZUluZGV4LFxyXG4gICAgICBleHByZXNzaW9uOiBpbnB1dFZhbHVlXHJcbiAgICB9KVxyXG4gICAgY29uc3QgcjogYW55W10gPSBkLm1hcCgocDogc3RyaW5nKSA9PiAoeyB2YWx1ZTogcCwgbGFiZWw6IHAgfSkpO1xyXG4gICAgaWYgKCdmaWx0ZXInLmluY2x1ZGVzKGlucHV0VmFsdWUudG9Mb2NhbGVMb3dlckNhc2UoKSkpIHtcclxuICAgICAgci5wdXNoKHsgdmFsdWU6ICdGSUxURVInLCBsYWJlbDogJ0ZJTFRFUicgfSk7XHJcbiAgICB9XHJcbiAgICBwcm9wcy5hdmFpbGFibGVGdW5jdGlvbnMuZmlsdGVyKChmKSA9PiBmLm5hbWUudG9Mb2NhbGVMb3dlckNhc2UoKS5pbmNsdWRlcyhpbnB1dFZhbHVlLnRvTG9jYWxlTG93ZXJDYXNlKCkpIHx8XHJcbiAgICAgIChmLmFsaWFzZXM/LnNvbWUoKGEpID0+IGEudG9Mb2NhbGVMb3dlckNhc2UoKS5pbmNsdWRlcyhpbnB1dFZhbHVlLnRvTG9jYWxlTG93ZXJDYXNlKCkpKSA/PyBmYWxzZSkpXHJcbiAgICAgIC5mb3JFYWNoKChmKSA9PiB7XHJcbiAgICAgICAgci5wdXNoKHsgbGFiZWw6IGYubmFtZSwgdmFsdWU6ICdmeC0nICsgZi5uYW1lIH0pXHJcbiAgICAgIH0pXHJcbiAgICByZXR1cm4gcjtcclxuICB9O1xyXG5cclxuICBjb25zdCBvbkVsZW1lbnRzQ2hhbmdlID0gKHNlbGVjdGVkOiBBcnJheTxTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPj4pID0+IHtcclxuICAgIGNvbnN0IHNlbGVjdGVkVmFsdWVzID0gc2VsZWN0ZWQubWFwKChpdGVtKSA9PiBpdGVtLnZhbHVlKSBhcyBzdHJpbmdbXTtcclxuICAgIGxldCBoYXNGaWx0ZXIgPSBzZWxlY3RlZFZhbHVlcy5pbmNsdWRlcygnRklMVEVSJyk7XHJcbiAgICBjb25zdCBmeCA9IHNlbGVjdGVkVmFsdWVzLmZpbHRlcihzID0+IHMuc3RhcnRzV2l0aCgnZngtJykpO1xyXG4gICAgbGV0IGZ1bmM6IHN0cmluZyB8IHVuZGVmaW5lZCA9IHVuZGVmaW5lZDtcclxuICAgIGlmIChmeC5sZW5ndGggPiAwKSB7XHJcbiAgICAgIGZ1bmMgPSBmeFswXS5zdWJzdHJpbmcoMyk7XHJcbiAgICB9XHJcblxyXG4gICAgcHJvcHMudXBkYXRlKHNlbGVjdGVkVmFsdWVzLmZpbHRlcihpID0+IGkgIT09ICdGSUxURVInICYmICFpLnN0YXJ0c1dpdGgoJ2Z4LScpKSwgZnVuYywgaGFzRmlsdGVyKTtcclxuICB9O1xyXG5cclxuXHJcbiAgcmV0dXJuIDxJbmxpbmVGaWVsZCBsYWJlbD1cIlF1ZXJ5XCIgbGFiZWxXaWR0aD17J2F1dG8nfT5cclxuICAgIDxBc3luY011bHRpU2VsZWN0XHJcbiAgICAgIGxvYWRPcHRpb25zPXtsb2FkT3B0aW9uc31cclxuICAgICAgZGVmYXVsdE9wdGlvbnM9e3RydWV9XHJcbiAgICAgIHZhbHVlPXtzZWxlY3RlZE9wdGlvbnN9XHJcbiAgICAgIG9uQ2hhbmdlPXtvbkVsZW1lbnRzQ2hhbmdlfVxyXG4gICAgICBpc1NlYXJjaGFibGVcclxuICAgIC8+XHJcbiAgPC9JbmxpbmVGaWVsZD5cclxufVxyXG5cclxuaW50ZXJmYWNlIEZpbHRlclF1ZXJ5UHJvcHMge1xyXG4gIHVwZGF0ZTogKGZpbHRlcjogRmlsdGVyUXVlcnkgfCB1bmRlZmluZWQpID0+IHZvaWQsXHJcbiAgZmlsdGVyOiBGaWx0ZXJRdWVyeSxcclxuICBhdmFpbGFibGVUYWJsZXM6IHN0cmluZ1tdXHJcbn1cclxuXHJcbmNvbnN0IEZpbHRlclF1ZXJ5VUkgPSAocHJvcHM6IEZpbHRlclF1ZXJ5UHJvcHMpID0+IHtcclxuICBjb25zdCBudW1iZXJPcHRpb25zID0gW1xyXG4gICAgeyBsYWJlbDogJ1RPUCcsIHZhbHVlOiAnVE9QJyB9LFxyXG4gICAgeyBsYWJlbDogJ0FMTCcsIHZhbHVlOiAnJyB9XVxyXG5cclxuICBjb25zdCB0YWJsZU9wdGlvbnM6IEFycmF5PFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+PiA9IFJlYWN0LnVzZU1lbW8oKCkgPT4gcHJvcHMuYXZhaWxhYmxlVGFibGVzLm1hcCgodCkgPT4gKHsgbGFiZWw6IHQsIHZhbHVlOiB0IH0pKSwgW3Byb3BzLmF2YWlsYWJsZVRhYmxlc10pXHJcbiAgY29uc3Qgc2VsZWN0ZWRPcHRpb25zOiBBcnJheTxTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPj4gPSBSZWFjdC51c2VNZW1vKCgpID0+IHByb3BzLmZpbHRlci5UYWJsZSA9PT0gJycgPyBbXSA6IFt7IHZhbHVlOiBwcm9wcy5maWx0ZXIuVGFibGUsIGxhYmVsOiBwcm9wcy5maWx0ZXIuVGFibGUgfV0sIFtwcm9wcy5maWx0ZXIuVGFibGVdKTtcclxuXHJcbiAgZnVuY3Rpb24gb25OdW1iZXJNb2RlQ2hhbmdlKHZhbDogU2VsZWN0YWJsZVZhbHVlPHN0cmluZz4pIHtcclxuICAgIHByb3BzLnVwZGF0ZSh7IC4uLnByb3BzLmZpbHRlciwgTnVtYmVyTW9kZTogdmFsLnZhbHVlIGFzICgnVE9QJyB8ICcnKSB9KVxyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gT25OdW1iZXJDaGFuZ2UodmFsOiBhbnkpIHtcclxuICAgIGNvbnN0IG4gPSB2YWwudGFyZ2V0LnZhbHVlO1xyXG4gICAgcHJvcHMudXBkYXRlKHsgLi4ucHJvcHMuZmlsdGVyLCBOdW1iZXI6IHBhcnNlSW50KG4sIDEwKSB9KVxyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gb25UYWJsZUNoYW5nZSh0OiBTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPikge1xyXG4gICAgcHJvcHMudXBkYXRlKHsgLi4ucHJvcHMuZmlsdGVyLCBUYWJsZTogdC52YWx1ZSA/PyAnJyB9KVxyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gb25Db25kaXRpb25DaGFuZ2UodmFsOiBhbnkpIHtcclxuICAgIHByb3BzLnVwZGF0ZSh7IC4uLnByb3BzLmZpbHRlciwgQ29uZGl0aW9uOiB2YWwudGFyZ2V0LnZhbHVlIH0pXHJcbiAgfVxyXG5cclxuICByZXR1cm4gPEZpZWxkU2V0PlxyXG4gICAgPElubGluZUZpZWxkUm93PlxyXG4gICAgICA8SWNvbkJ1dHRvbiBuYW1lPXsndHJhc2gtYWx0J30gc2l6ZT0neGwnIGljb25UeXBlPSdkZWZhdWx0JyB2YXJpYW50PSdkZXN0cnVjdGl2ZScgc3R5bGU9e3sgbWFyZ2luVG9wOiA0LCBtYXJnaW5SaWdodDogMCB9fSBvbkNsaWNrPXsoKSA9PiBwcm9wcy51cGRhdGUodW5kZWZpbmVkKX0gLz5cclxuICAgICAgPElubGluZUZpZWxkIGxhYmVsPXtcclxuICAgICAgICA8SW5saW5lTGFiZWwgc3R5bGU9e3sgZmxleFNocmluazogMSB9fT48SWNvbkJ1dHRvbiBuYW1lPXsnZmlsdGVyJ30gc2l6ZT0nbWQnIGljb25UeXBlPSdkZWZhdWx0JyB2YXJpYW50PSdzZWNvbmRhcnknIHN0eWxlPXt7IG1hcmdpbkxlZnQ6IC0yIH19IC8+RklMVEVSPC9JbmxpbmVMYWJlbD5cclxuICAgICAgfSBsYWJlbFdpZHRoPXsnYXV0byd9PlxyXG4gICAgICAgIDxTZWxlY3RcclxuICAgICAgICAgIHZhbHVlPXtwcm9wcy5maWx0ZXIuTnVtYmVyTW9kZX1cclxuICAgICAgICAgIG9wdGlvbnM9e251bWJlck9wdGlvbnN9XHJcbiAgICAgICAgICBvbkNoYW5nZT17b25OdW1iZXJNb2RlQ2hhbmdlfVxyXG4gICAgICAgIC8+XHJcbiAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgIHtwcm9wcy5maWx0ZXIuTnVtYmVyTW9kZSAhPT0gJycgPyA8SW5wdXQgdHlwZT17J251bWJlcid9XHJcbiAgICAgICAgbWluPXswfSBtYXg9ezk5OTk5fVxyXG4gICAgICAgIHZhbHVlPXtwcm9wcy5maWx0ZXIuTnVtYmVyfVxyXG4gICAgICAgIG9uQ2hhbmdlPXtPbk51bWJlckNoYW5nZX1cclxuICAgICAgICB3aWR0aD17MTB9XHJcbiAgICAgIC8+IDogbnVsbH1cclxuICAgICAgPElubGluZUZpZWxkIGxhYmVsPVwiXCIgbGFiZWxXaWR0aD17MX0gdHJhbnNwYXJlbnQ9e3RydWV9IHN0eWxlPXt7IG1hcmdpbkxlZnQ6IC0xNiB9fT5cclxuICAgICAgICA8U2VsZWN0XHJcbiAgICAgICAgICB2YWx1ZT17c2VsZWN0ZWRPcHRpb25zfVxyXG4gICAgICAgICAgb3B0aW9ucz17dGFibGVPcHRpb25zfVxyXG4gICAgICAgICAgaXNMb2FkaW5nPXt0YWJsZU9wdGlvbnMubGVuZ3RoID09PSAwfVxyXG4gICAgICAgICAgb25DaGFuZ2U9e29uVGFibGVDaGFuZ2V9XHJcbiAgICAgICAgICBpc1NlYXJjaGFibGVcclxuICAgICAgICAgIHdpZHRoPXsnYXV0byd9XHJcbiAgICAgICAgLz5cclxuICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICA8SW5saW5lRmllbGRSb3c+XHJcbiAgICAgIDxJbmxpbmVGaWVsZCBsYWJlbD1cIldIRVJFXCIgZ3Jvdz5cclxuICAgICAgICA8SW5wdXRcclxuICAgICAgICAgIHZhbHVlPXtwcm9wcy5maWx0ZXIuQ29uZGl0aW9ufVxyXG4gICAgICAgICAgb25DaGFuZ2U9e29uQ29uZGl0aW9uQ2hhbmdlfVxyXG4gICAgICAgICAgcGxhY2Vob2xkZXI9XCJTaWduYWxUeXBlID0gJ0ZSRVEnXCJcclxuICAgICAgICAvPlxyXG4gICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgPC9JbmxpbmVGaWVsZFJvdz5cclxuICA8L0ZpZWxkU2V0PlxyXG59XHJcblxyXG5pbnRlcmZhY2UgRnVuY3Rpb25RdWVyeVByb3BzIHtcclxuICB1cGRhdGU6IChmdW5jOiBGdW5jdGlvblF1ZXJ5IHwgdW5kZWZpbmVkKSA9PiB2b2lkLFxyXG4gIGZ1bmM6IEZ1bmN0aW9uUXVlcnksXHJcbiAgYXZhaWxhYmxlRnVuY3Rpb25zOiBGdW5jdGlvbkRlc2NyaXB0aW9uW10sXHJcbiAgYXZhaWxhYmxlVGFibGVzOiBzdHJpbmdbXSxcclxuICBkYXRhc291cmNlOiBEYXRhU291cmNlXHJcbn1cclxuXHJcblxyXG5jb25zdCBGdW5jdGlvblF1ZXJ5VUkgPSAocHJvcHM6IEZ1bmN0aW9uUXVlcnlQcm9wcykgPT4ge1xyXG4gIGNvbnN0IFtpc09wZW4sIHNldElzT3Blbl0gPSBSZWFjdC51c2VTdGF0ZTxib29sZWFuPih0cnVlKTtcclxuICBjb25zdCBmeERlc2NyaXB0aW9uID0gUmVhY3QudXNlTWVtbygoKSA9PiBwcm9wcy5hdmFpbGFibGVGdW5jdGlvbnMuZmluZChmID0+IGYubmFtZSA9PT0gcHJvcHMuZnVuYy5GdW5jdGlvbiksIFtwcm9wcy5mdW5jLCBwcm9wcy5hdmFpbGFibGVGdW5jdGlvbnNdKTtcclxuICBjb25zdCBmeE9wdGlvbnMgPSBSZWFjdC51c2VNZW1vKCgpID0+IHByb3BzLmF2YWlsYWJsZUZ1bmN0aW9ucy5tYXAoKGYpID0+ICh7IHZhbHVlOiBmLm5hbWUsIGxhYmVsOiBmLm5hbWUgfSkpLCBbcHJvcHMuYXZhaWxhYmxlRnVuY3Rpb25zXSlcclxuXHJcbiAgZnVuY3Rpb24gb25GdW5jdGlvbkNoYW5nZSh2YWw6IFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+KSB7XHJcbiAgICBjb25zdCBmeCA9IHByb3BzLmF2YWlsYWJsZUZ1bmN0aW9ucy5maW5kKGYgPT4gZi5uYW1lID09PSB2YWwudmFsdWUpXHJcbiAgICBpZiAoZnggPT09IG51bGwpIHtcclxuICAgICAgcmV0dXJuXHJcbiAgICB9XHJcbiAgICBwcm9wcy51cGRhdGUoe1xyXG4gICAgICBGdW5jdGlvbjogdmFsLnZhbHVlID8/ICdBYnNvbHV0ZVZhbHVlJywgUGFyYW1ldGVyczogZng/LnBhcmFtZXRlcnMubWFwKChwKSA9PiB7XHJcbiAgICAgICAgY29uc3QgcGFyYW06IFBhcmFtZXRlclR5cGUgPSB7IHR5cGU6IHAsIHZhbHVlOiBwLnR5cGUuaW5jbHVkZXMoXCJJQXN5bmNFbnVtZXJhYmxlXCIpID8geyBFbGVtZW50czogW10sIEZ1bmN0aW9uczogW10sIEZpbHRlcnM6IFtdIH0gOiBwLmRlZmF1bHQgfTtcclxuICAgICAgICByZXR1cm4gcGFyYW07XHJcbiAgICAgIH0pID8/IFtdXHJcbiAgICB9KTtcclxuXHJcbiAgICBzZXRJc09wZW4odHJ1ZSk7XHJcbiAgfVxyXG5cclxuICBmdW5jdGlvbiBvblZhbHVlQ2hhbmdlKHZhbDogUGFyYW1ldGVyVHlwZSwgaW5kZXg6IG51bWJlcikge1xyXG4gICAgY29uc3QgdSA9IF8uY2xvbmVEZWVwKHByb3BzLmZ1bmMpO1xyXG4gICAgdS5QYXJhbWV0ZXJzW2luZGV4XSA9IHZhbDtcclxuICAgIHByb3BzLnVwZGF0ZSh1KTtcclxuICB9XHJcblxyXG4gIHJldHVybiA8Q29sbGFwc2UgY29sbGFwc2libGU9e3RydWV9IGxhYmVsPXtcclxuICAgIDxJbmxpbmVGaWVsZFJvdz5cclxuICAgICAgPEljb25CdXR0b24gbmFtZT17J3RyYXNoLWFsdCd9IHNpemU9J3hsJyBpY29uVHlwZT0nZGVmYXVsdCcgdmFyaWFudD0nZGVzdHJ1Y3RpdmUnIHN0eWxlPXt7IG1hcmdpblRvcDogNCwgbWFyZ2luUmlnaHQ6IDYgfX0gb25DbGljaz17KCkgPT4gcHJvcHMudXBkYXRlKHVuZGVmaW5lZCl9IC8+XHJcbiAgICAgIDxzcGFuIHN0eWxlPXt7IG1hcmdpblRvcDogNSwgbWFyZ2luUmlnaHQ6IDQsIGZvbnRTaXplOiAnc21hbGwnIH19PsaSKHgpPC9zcGFuPlxyXG4gICAgICA8U2VsZWN0XHJcbiAgICAgICAgdmFsdWU9e3Byb3BzLmZ1bmMuRnVuY3Rpb259XHJcbiAgICAgICAgb3B0aW9ucz17ZnhPcHRpb25zfVxyXG4gICAgICAgIG9uQ2hhbmdlPXtvbkZ1bmN0aW9uQ2hhbmdlfVxyXG4gICAgICAgIGlzU2VhcmNoYWJsZVxyXG4gICAgICAgIHRhYlNlbGVjdHNWYWx1ZT17dHJ1ZX1cclxuICAgICAgICB3aWR0aD17J2F1dG8nfVxyXG4gICAgICAvPlxyXG4gICAgICA8ZGl2IHN0eWxlPXt7IG1hcmdpblRvcDogNSwgbWFyZ2luTGVmdDogMTAgfX0+e2dldENhdGVnb3J5KGZ4RGVzY3JpcHRpb24pfSB7ZnhEZXNjcmlwdGlvbj8ucmV0dXJuVHlwZS50b0xvd2VyQ2FzZSgpfXtnZXRHcm91cE9wZXJhdGlvbihmeERlc2NyaXB0aW9uKX0gZnVuY3Rpb257ZXh0cmFjdEdyb3VwT3BlcmF0aW9ucyhmeERlc2NyaXB0aW9uKX0uPC9kaXY+XHJcbiAgICA8L0lubGluZUZpZWxkUm93PlxyXG4gIH0gaXNPcGVuPXtpc09wZW59IG9uVG9nZ2xlPXsoKSA9PiBzZXRJc09wZW4oKHgpID0+ICF4KX0+XHJcbiAgICA8cD57ZnhEZXNjcmlwdGlvbj8uZGVzY3JpcHRpb259PC9wPlxyXG4gICAgPHVsPlxyXG5cclxuICAgICAge3Byb3BzLmZ1bmMuUGFyYW1ldGVycy5tYXAoKHAsIGkpID0+IDxsaSBrZXk9e3AudHlwZS5uYW1lfT5cclxuICAgICAgICA8UGFyYW1ldGVyVUkgdXBkYXRlPXsodmFsKSA9PiBvblZhbHVlQ2hhbmdlKHZhbCwgaSl9XHJcbiAgICAgICAgICBwYXJhbT17cH1cclxuICAgICAgICAgIGF2YWlsYWJsZUZ1bmN0aW9ucz17cHJvcHMuYXZhaWxhYmxlRnVuY3Rpb25zfVxyXG4gICAgICAgICAgYXZhaWxhYmxlVGFibGVzPXtwcm9wcy5hdmFpbGFibGVUYWJsZXN9XHJcbiAgICAgICAgICBkYXRhc291cmNlPXtwcm9wcy5kYXRhc291cmNlfSAvPlxyXG4gICAgICA8L2xpPil9XHJcblxyXG4gICAgPC91bD5cclxuICA8L0NvbGxhcHNlPjtcclxufVxyXG5cclxuaW50ZXJmYWNlIFBhcmFtZXRlclF1ZXJ5UHJvcHMge1xyXG4gIHVwZGF0ZTogKHA6IFBhcmFtZXRlclR5cGUpID0+IHZvaWQsXHJcbiAgcGFyYW06IFBhcmFtZXRlclR5cGUsXHJcbiAgYXZhaWxhYmxlRnVuY3Rpb25zOiBGdW5jdGlvbkRlc2NyaXB0aW9uW10sXHJcbiAgYXZhaWxhYmxlVGFibGVzOiBzdHJpbmdbXSxcclxuICBkYXRhc291cmNlOiBEYXRhU291cmNlLFxyXG59XHJcbmNvbnN0IFBhcmFtZXRlclVJID0gKHByb3BzOiBQYXJhbWV0ZXJRdWVyeVByb3BzKSA9PiB7XHJcblxyXG4gIGNvbnN0IEFuZ2xlT3B0aW9uczogQXJyYXk8U2VsZWN0YWJsZVZhbHVlPHN0cmluZz4+ID0gW3sgdmFsdWU6ICdSYWRpYW5zJywgbGFiZWw6ICdSYWRpYW5zJyB9LCB7IHZhbHVlOiAnRGVncmVlcycsIGxhYmVsOiAnRGVncmVlcycgfVxyXG4gICAgLCB7IHZhbHVlOiAnR3JhZHMnLCBsYWJlbDogJ0dyYWRzJyB9LCB7IHZhbHVlOiAnQXJjTWludXRlcycsIGxhYmVsOiAnQXJjTWludXRlcycgfSxcclxuICB7IHZhbHVlOiAnQXJjU2Vjb25kcycsIGxhYmVsOiAnQXJjU2Vjb25kcycgfSwgeyB2YWx1ZTogJ0FuZ3VsYXJNaWwnLCBsYWJlbDogJ0FuZ3VsYXJNaWwnIH1dO1xyXG5cclxuICBjb25zdCBUaW1lT3B0aW9uID0gW1xyXG4gICAgeyB2YWx1ZTogJ1NlY29uZHMnLCBsYWJlbDogJ1NlY29uZHMnIH0sXHJcbiAgICB7IHZhbHVlOiAnTmFub3NlY29uZHMnLCBsYWJlbDogJ05hbm9zZWNvbmRzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ01pY3Jvc2Vjb25kcycsIGxhYmVsOiAnTWljcm9zZWNvbmRzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ01pbGxpc2Vjb25kcycsIGxhYmVsOiAnTWlsbGlzZWNvbmRzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ01pbnV0ZXMnLCBsYWJlbDogJ01pbnV0ZXMnIH0sXHJcbiAgICB7IHZhbHVlOiAnSG91cnMnLCBsYWJlbDogJ0hvdXJzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ0RheXMnLCBsYWJlbDogJ0RheXMnIH0sXHJcbiAgICB7IHZhbHVlOiAnV2Vla3MnLCBsYWJlbDogJ1dlZWtzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ0tlJywgbGFiZWw6ICdLZSAodHJhZGl0aW9uYWwgQ2hpbmVzZSknIH0sXHJcbiAgICB7IHZhbHVlOiAnVGlja3MnLCBsYWJlbDogJ1RpY2tzJyB9LFxyXG4gICAgeyB2YWx1ZTogJ1BsYW5ja1RpbWUnLCBsYWJlbDogJ1BsYW5ja1RpbWUnIH0sXHJcbiAgICB7IHZhbHVlOiAnQXRvbWljVW5pdHNPZlRpbWUnLCBsYWJlbDogJ0F0b21pY1VuaXRzT2ZUaW1lJyB9XTtcclxuXHJcbiAgY29uc3QgQm9vbGVhbk9wdGlvbiA9IFt7IHZhbHVlOiAnMScsIGxhYmVsOiAnVHJ1ZScgfSwgeyB2YWx1ZTogJzAnLCBsYWJlbDogJ0ZhbHNlJyB9LF1cclxuXHJcblxyXG4gIGZ1bmN0aW9uIG9uRWxlbWVudENoYW5nZShlOiBzdHJpbmdbXSwgZng6IHN0cmluZyB8IHVuZGVmaW5lZCwgZmlsdGVyOiBib29sZWFuKSB7XHJcbiAgICBsZXQgdSA9IF8uY2xvbmVEZWVwKHByb3BzLnBhcmFtKSBhcyBQYXJhbWV0ZXJUeXBlO1xyXG4gICAgaWYgKHUgPT09IHVuZGVmaW5lZCkge1xyXG4gICAgICB1ID0geyB0eXBlOiBwcm9wcy5wYXJhbS50eXBlLCB2YWx1ZTogeyBFbGVtZW50czogW10sIEZ1bmN0aW9uczogW10sIEZpbHRlcnM6IFtdIH0gfVxyXG4gICAgfVxyXG4gICAgaWYgKGZ4ICE9PSB1bmRlZmluZWQpIHtcclxuICAgICAgKHUudmFsdWUgYXMgUGFyc2VkUXVlcnkpPy5GdW5jdGlvbnMucHVzaCh7XHJcbiAgICAgICAgRnVuY3Rpb246IGZ4LFxyXG4gICAgICAgIFBhcmFtZXRlcnM6IFtdLFxyXG4gICAgICB9KVxyXG4gICAgfVxyXG5cclxuICAgICh1LnZhbHVlIGFzIFBhcnNlZFF1ZXJ5KS5FbGVtZW50cyA9IGU7XHJcbiAgICBpZiAoZmlsdGVyKSB7XHJcbiAgICAgICh1LnZhbHVlIGFzIFBhcnNlZFF1ZXJ5KT8uRmlsdGVycy5wdXNoKHsgVGFibGU6ICcnLCBDb25kaXRpb246ICcnLCBOdW1iZXI6IDEwLCBOdW1iZXJNb2RlOiAnVE9QJyB9KTtcclxuICAgIH1cclxuICAgIHByb3BzLnVwZGF0ZSh1KTtcclxuICB9XHJcblxyXG4gIGZ1bmN0aW9uIG9uRmlsdGVyQ2hhbmdlKGY6IEZpbHRlclF1ZXJ5IHwgdW5kZWZpbmVkLCBpbmRleDogbnVtYmVyKSB7XHJcbiAgICBsZXQgdSA9IF8uY2xvbmVEZWVwKHByb3BzLnBhcmFtKSBhcyBQYXJhbWV0ZXJUeXBlO1xyXG4gICAgaWYgKHUgPT09IHVuZGVmaW5lZCkge1xyXG4gICAgICB1ID0geyB0eXBlOiBwcm9wcy5wYXJhbS50eXBlLCB2YWx1ZTogeyBFbGVtZW50czogW10sIEZ1bmN0aW9uczogW10sIEZpbHRlcnM6IFtdIH0gfVxyXG4gICAgfVxyXG4gICAgaWYgKGYgPT09IHVuZGVmaW5lZCkge1xyXG4gICAgICAodS52YWx1ZSBhcyBQYXJzZWRRdWVyeSk/LkZpbHRlcnMuc3BsaWNlKGluZGV4LCAxKVxyXG4gICAgfSBlbHNlIHtcclxuICAgICAgKHUudmFsdWUgYXMgUGFyc2VkUXVlcnkpLkZpbHRlcnNbaW5kZXhdID0gZjtcclxuICAgIH1cclxuICAgIHByb3BzLnVwZGF0ZSh1KTtcclxuICB9XHJcblxyXG4gIGZ1bmN0aW9uIG9uRnVuY3Rpb25DaGFuZ2UoZjogRnVuY3Rpb25RdWVyeSB8IHVuZGVmaW5lZCwgaW5kZXg6IG51bWJlcikge1xyXG4gICAgbGV0IHUgPSBfLmNsb25lRGVlcChwcm9wcy5wYXJhbSkgYXMgUGFyYW1ldGVyVHlwZTtcclxuICAgIGlmICh1ID09PSB1bmRlZmluZWQpIHtcclxuICAgICAgdSA9IHsgdHlwZTogcHJvcHMucGFyYW0udHlwZSwgdmFsdWU6IHsgRWxlbWVudHM6IFtdLCBGdW5jdGlvbnM6IFtdLCBGaWx0ZXJzOiBbXSB9IH1cclxuICAgIH1cclxuICAgIGlmIChmID09PSB1bmRlZmluZWQpIHtcclxuICAgICAgKHUudmFsdWUgYXMgUGFyc2VkUXVlcnkpPy5GdW5jdGlvbnMuc3BsaWNlKGluZGV4LCAxKTtcclxuICAgIH0gZWxzZSB7XHJcbiAgICAgICh1LnZhbHVlIGFzIFBhcnNlZFF1ZXJ5KS5GdW5jdGlvbnNbaW5kZXhdID0gZjtcclxuICAgIH1cclxuICAgIHByb3BzLnVwZGF0ZSh1KTtcclxuICB9XHJcblxyXG4gIGZ1bmN0aW9uIG9uU3RyaW5nQ2hhbmdlKHZhbDogYW55KSB7XHJcbiAgICBwcm9wcy51cGRhdGUoeyB0eXBlOiBwcm9wcy5wYXJhbS50eXBlLCB2YWx1ZTogdmFsLnRhcmdldC52YWx1ZSB9KVxyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gb25TZWxlY3RDaGFuZ2UodmFsOiBTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPikge1xyXG4gICAgcHJvcHMudXBkYXRlKHsgdHlwZTogcHJvcHMucGFyYW0udHlwZSwgdmFsdWU6IHZhbC52YWx1ZSBhcyBzdHJpbmcgfSlcclxuICB9XHJcblxyXG4gIHJldHVybiA8Q2FyZD5cclxuICAgIDxDYXJkLkhlYWRpbmc+e3Byb3BzLnBhcmFtLnR5cGUubmFtZX0gKHtwcm9wcy5wYXJhbS50eXBlLnJlcXVpcmVkID8gJ3JlcXVpcmVkJyA6ICdvcHRpb25hbCd9KTwvQ2FyZC5IZWFkaW5nPlxyXG4gICAgPENhcmQuRGVzY3JpcHRpb24+XHJcbiAgICAgIDw+XHJcbiAgICAgICAgPHA+e3Byb3BzLnBhcmFtLnR5cGUuZGVzY3JpcHRpb259ICh7cHJvcHMucGFyYW0udHlwZS50eXBlfXshcHJvcHMucGFyYW0udHlwZS5yZXF1aXJlZCAmJiBwcm9wcy5wYXJhbS50eXBlLmRlZmF1bHQ/Lmxlbmd0aCA+IDAgPyBgOiBkZWZhdWx0ID0gJHtwcm9wcy5wYXJhbS50eXBlLmRlZmF1bHR9YCA6ICcnfSk8L3A+XHJcblxyXG4gICAgICAgIHtwcm9wcy5wYXJhbS50eXBlLnR5cGUuaW5jbHVkZXMoXCJJQXN5bmNFbnVtZXJhYmxlXCIpID8gPD5cclxuICAgICAgICAgIDxFbGVtZW50UXVlcnlcclxuICAgICAgICAgICAgZGF0YXNvdXJjZT17cHJvcHMuZGF0YXNvdXJjZX1cclxuICAgICAgICAgICAgZWxlbWVudHM9eyhwcm9wcy5wYXJhbT8udmFsdWUgYXMgUGFyc2VkUXVlcnkpPy5FbGVtZW50cyA/PyBbXX1cclxuICAgICAgICAgICAgdXBkYXRlPXtvbkVsZW1lbnRDaGFuZ2V9XHJcbiAgICAgICAgICAgIGF2YWlsYWJsZUZ1bmN0aW9ucz17cHJvcHMuYXZhaWxhYmxlRnVuY3Rpb25zfVxyXG4gICAgICAgICAgLz5cclxuICAgICAgICAgIHsocHJvcHMucGFyYW0/LnZhbHVlIGFzIFBhcnNlZFF1ZXJ5KT8uRnVuY3Rpb25zPy5tYXAoKGYsIGkpID0+IDxGdW5jdGlvblF1ZXJ5VUkga2V5PXtmLkZ1bmN0aW9ufVxyXG4gICAgICAgICAgICB1cGRhdGU9eyhmKSA9PiBvbkZ1bmN0aW9uQ2hhbmdlKGYsIGkpfVxyXG4gICAgICAgICAgICBmdW5jPXtmfSBhdmFpbGFibGVGdW5jdGlvbnM9e3Byb3BzLmF2YWlsYWJsZUZ1bmN0aW9uc31cclxuICAgICAgICAgICAgYXZhaWxhYmxlVGFibGVzPXtwcm9wcy5hdmFpbGFibGVUYWJsZXN9XHJcbiAgICAgICAgICAgIGRhdGFzb3VyY2U9e3Byb3BzLmRhdGFzb3VyY2V9XHJcbiAgICAgICAgICAvPil9XHJcbiAgICAgICAgICB7KHByb3BzLnBhcmFtPy52YWx1ZSBhcyBQYXJzZWRRdWVyeSk/LkZpbHRlcnM/Lm1hcCgoZiwgaSkgPT4gPEZpbHRlclF1ZXJ5VUlcclxuICAgICAgICAgICAga2V5PXtpfVxyXG4gICAgICAgICAgICBhdmFpbGFibGVUYWJsZXM9e3Byb3BzLmF2YWlsYWJsZVRhYmxlc31cclxuICAgICAgICAgICAgdXBkYXRlPXsoZikgPT4gb25GaWx0ZXJDaGFuZ2UoZiwgaSl9IGZpbHRlcj17Zn0gLz4pfVxyXG4gICAgICAgIDwvPiA6IG51bGx9XHJcbiAgICAgICAge3Byb3BzLnBhcmFtLnR5cGUudHlwZSA9PT0gJ0RvdWJsZScgPyA8SW5wdXQgdHlwZT17J251bWJlcid9XHJcbiAgICAgICAgICB2YWx1ZT17KHByb3BzLnBhcmFtPy52YWx1ZSBhcyBzdHJpbmcpID8/ICcxLjAnfVxyXG4gICAgICAgICAgb25DaGFuZ2U9e29uU3RyaW5nQ2hhbmdlfVxyXG4gICAgICAgICAgd2lkdGg9ezIwfVxyXG4gICAgICAgIC8+IDogbnVsbH1cclxuICAgICAgICB7cHJvcHMucGFyYW0udHlwZS50eXBlID09PSAnU3RyaW5nJyA/IDxJbnB1dCB0eXBlPXsndGV4dCd9XHJcbiAgICAgICAgICB2YWx1ZT17KHByb3BzLnBhcmFtPy52YWx1ZSBhcyBzdHJpbmcpID8/ICcnfVxyXG4gICAgICAgICAgb25DaGFuZ2U9e29uU3RyaW5nQ2hhbmdlfVxyXG4gICAgICAgICAgd2lkdGg9ezIwfVxyXG4gICAgICAgIC8+IDogbnVsbH1cclxuICAgICAgICB7cHJvcHMucGFyYW0udHlwZS50eXBlID09PSAnSW50MzInID8gPElucHV0IHR5cGU9eydudW1iZXInfVxyXG4gICAgICAgICAgbWluPXswfSBtYXg9ezk5OTk5fVxyXG4gICAgICAgICAgdmFsdWU9eyhwcm9wcy5wYXJhbT8udmFsdWUgYXMgc3RyaW5nKSA/PyAnMSd9XHJcbiAgICAgICAgICBvbkNoYW5nZT17b25TdHJpbmdDaGFuZ2V9XHJcbiAgICAgICAgICB3aWR0aD17MjB9XHJcbiAgICAgICAgLz4gOiBudWxsfVxyXG4gICAgICAgIHtwcm9wcy5wYXJhbS50eXBlLnR5cGUgPT09ICdBbmdsZVVuaXQnID8gPFNlbGVjdFxyXG4gICAgICAgICAgdmFsdWU9eyhwcm9wcy5wYXJhbT8udmFsdWUgYXMgc3RyaW5nKSA/PyAnRGVncmVlcyd9XHJcbiAgICAgICAgICBvcHRpb25zPXtBbmdsZU9wdGlvbnN9XHJcbiAgICAgICAgICBvbkNoYW5nZT17b25TZWxlY3RDaGFuZ2V9XHJcbiAgICAgICAgICBpc1NlYXJjaGFibGVcclxuICAgICAgICAvPiA6IG51bGx9XHJcbiAgICAgICAge3Byb3BzLnBhcmFtLnR5cGUudHlwZSA9PT0gJ1RhcmdldFRpbWVVbml0JyA/IDxTZWxlY3RcclxuICAgICAgICAgIHZhbHVlPXsocHJvcHMucGFyYW0/LnZhbHVlIGFzIHN0cmluZykgPz8gJ1NlY29uZHMnfVxyXG4gICAgICAgICAgb3B0aW9ucz17VGltZU9wdGlvbn1cclxuICAgICAgICAgIG9uQ2hhbmdlPXtvblNlbGVjdENoYW5nZX1cclxuICAgICAgICAgIGlzU2VhcmNoYWJsZVxyXG4gICAgICAgIC8+IDogbnVsbH1cclxuICAgICAgICB7cHJvcHMucGFyYW0udHlwZS50eXBlID09PSAnQm9vbGVhbicgPyA8U2VsZWN0XHJcbiAgICAgICAgICB2YWx1ZT17KHByb3BzLnBhcmFtPy52YWx1ZSBhcyBzdHJpbmcpID8/ICcxJ31cclxuICAgICAgICAgIG9wdGlvbnM9e0Jvb2xlYW5PcHRpb259XHJcbiAgICAgICAgICBvbkNoYW5nZT17b25TZWxlY3RDaGFuZ2V9XHJcbiAgICAgICAgICBpc1NlYXJjaGFibGVcclxuICAgICAgICAvPiA6IG51bGx9XHJcbiAgICAgIDwvPlxyXG4gICAgPC9DYXJkLkRlc2NyaXB0aW9uPlxyXG4gIDwvQ2FyZD47XHJcbn07XHJcblxyXG5jb25zdCBnZXRDYXRlZ29yeSA9IChmeERlc2NyaXB0aW9uOiBGdW5jdGlvbkRlc2NyaXB0aW9uIHwgdW5kZWZpbmVkKTogc3RyaW5nID0+IHtcclxuICByZXR1cm4gKGZ4RGVzY3JpcHRpb24/LmNhdGVnb3J5ID8/ICdCdWlsdEluJykgPT09ICdCdWlsdEluJyA/ICdCdWlsdC1pbicgOiAnQ3VzdG9tJztcclxufVxyXG5cclxuY29uc3QgZ2V0R3JvdXBPcGVyYXRpb24gPSAoZnhEZXNjcmlwdGlvbjogRnVuY3Rpb25EZXNjcmlwdGlvbiB8IHVuZGVmaW5lZCk6IHN0cmluZyA9PiB7XHJcbiAgY29uc3QgZnVuY3Rpb25OYW1lID0gZnhEZXNjcmlwdGlvbj8ubmFtZSA/PyAnJztcclxuXHJcbiAgaWYgKGZ1bmN0aW9uTmFtZS5zdGFydHNXaXRoKCdTbGljZScpKSB7XHJcbiAgICByZXR1cm4gJyBzbGljZSc7XHJcbiAgfSBlbHNlIGlmIChmdW5jdGlvbk5hbWUuc3RhcnRzV2l0aCgnU2V0JykpIHtcclxuICAgIHJldHVybiAnIHNldCc7XHJcbiAgfVxyXG5cclxuICByZXR1cm4gJyc7XHJcbn1cclxuXHJcbmNvbnN0IGV4dHJhY3RHcm91cE9wZXJhdGlvbnMgPSAoZnhEZXNjcmlwdGlvbjogRnVuY3Rpb25EZXNjcmlwdGlvbiB8IHVuZGVmaW5lZCk6IHN0cmluZyA9PiB7XHJcbiAgY29uc3QgYWxsb3dlZEdyb3VwT3BlcmF0aW9ucyA9IGZ4RGVzY3JpcHRpb24/LmFsbG93ZWRHcm91cE9wZXJhdGlvbnMuc3BsaXQoJywnKS5tYXAob3BlcmF0aW9uID0+IG9wZXJhdGlvbi50cmltKCkpID8/IFtdO1xyXG4gIGxldCBwdWJsaXNoZWRHcm91cE9wZXJhdGlvbnMgPSBmeERlc2NyaXB0aW9uPy5wdWJsaXNoZWRHcm91cE9wZXJhdGlvbnMuc3BsaXQoJywnKS5tYXAob3BlcmF0aW9uID0+IG9wZXJhdGlvbi50cmltKCkpID8/IFtdO1xyXG5cclxuICBpZiAocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zLmxlbmd0aCA9PT0gMCkge1xyXG4gICAgcmV0dXJuICcnO1xyXG4gIH1cclxuXHJcbiAgY29uc3QgYWxsb3dlZEdyb3VwT3BlcmF0aW9uc1NldCA9IG5ldyBTZXQoYWxsb3dlZEdyb3VwT3BlcmF0aW9ucyk7XHJcbiAgbGV0IGZ1bmN0aW9uTmFtZSA9IGZ4RGVzY3JpcHRpb24/Lm5hbWUgPz8gJyc7XHJcblxyXG4gIC8vIElmIHB1Ymxpc2hlZCBncm91cCBvcGVyYXRpb25zIGFyZSBub3QgYSBzdWJzZXQgb2YgYWxsb3dlZCBncm91cCBvcGVyYXRpb25zLFxyXG4gIC8vIHVzZSB0aGUgYWxsb3dlZCBncm91cCBvcGVyYXRpb25zIGFzIHRoZSBwdWJsaXNoZWQgZ3JvdXAgb3BlcmF0aW9uc1xyXG4gIGlmICghcHVibGlzaGVkR3JvdXBPcGVyYXRpb25zLmV2ZXJ5KGVsZW1lbnQgPT4gYWxsb3dlZEdyb3VwT3BlcmF0aW9uc1NldC5oYXMoZWxlbWVudCkpKSB7XHJcbiAgICBmdW5jdGlvbk5hbWUgPSBhbGxvd2VkR3JvdXBPcGVyYXRpb25zWzBdO1xyXG4gICAgcHVibGlzaGVkR3JvdXBPcGVyYXRpb25zID0gYWxsb3dlZEdyb3VwT3BlcmF0aW9ucztcclxuICB9XHJcblxyXG4gIGNvbnN0IHB1Ymxpc2hlZEdyb3VwT3BlcmF0aW9uc1NldCA9IG5ldyBTZXQocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zKTtcclxuICBjb25zdCBzdXBwb3J0ZWRHcm91cE9wZXJhdGlvbnM6IHN0cmluZ1tdID0gW107XHJcbiAgbGV0IHN1cHBvcnRzTm9uR3JvdXBlZE9wZXJhdGlvbiA9IGZhbHNlO1xyXG5cclxuICBpZiAoZnVuY3Rpb25OYW1lLnN0YXJ0c1dpdGgoJ1NsaWNlJykpIHtcclxuICAgIC8vIElmIHNsaWNlLXR5cGUgZnVuY3Rpb24gaXMgc2VsZWN0ZWQsIHNob3cgcG9zc2libGUgc3VwcG9ydCBmb3IgJ05vbmUnIGFuZCAnU2V0JyBncm91cCBvcGVyYXRpb25zXHJcbiAgICBpZiAocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zU2V0LmhhcygnTm9uZScpKSB7XHJcbiAgICAgIHN1cHBvcnRzTm9uR3JvdXBlZE9wZXJhdGlvbiA9IHRydWU7XHJcbiAgICB9XHJcblxyXG4gICAgaWYgKHB1Ymxpc2hlZEdyb3VwT3BlcmF0aW9uc1NldC5oYXMoJ1NldCcpKSB7XHJcbiAgICAgIHN1cHBvcnRlZEdyb3VwT3BlcmF0aW9ucy5wdXNoKCdzZXQnKTtcclxuICAgIH1cclxuICB9IGVsc2UgaWYgKGZ1bmN0aW9uTmFtZS5zdGFydHNXaXRoKCdTZXQnKSkge1xyXG4gICAgLy8gSWYgc2V0LXR5cGUgZnVuY3Rpb24gaXMgc2VsZWN0ZWQsIHNob3cgcG9zc2libGUgc3VwcG9ydCBmb3IgJ05vbmUnIGFuZCAnU2xpY2UnIGdyb3VwIG9wZXJhdGlvbnNcclxuICAgIGlmIChwdWJsaXNoZWRHcm91cE9wZXJhdGlvbnNTZXQuaGFzKCdOb25lJykpIHtcclxuICAgICAgc3VwcG9ydHNOb25Hcm91cGVkT3BlcmF0aW9uID0gdHJ1ZTtcclxuICAgIH1cclxuXHJcbiAgICBpZiAocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zU2V0LmhhcygnU2xpY2UnKSkge1xyXG4gICAgICBzdXBwb3J0ZWRHcm91cE9wZXJhdGlvbnMucHVzaCgnc2xpY2UnKTtcclxuICAgIH1cclxuICB9XHJcbiAgZWxzZSB7XHJcbiAgICAvLyBJZiBzdGFuZGFyZCBub24tZ3JvdXBlZCBmdW5jdGlvbiBpcyBzZWxlY3RlZCwgc2hvdyBwb3NzaWJsZSBzdXBwb3J0IGZvciAnU2xpY2UnIGFuZCAnU2V0JyBncm91cCBvcGVyYXRpb25zXHJcbiAgICBpZiAocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zU2V0LmhhcygnU2xpY2UnKSkge1xyXG4gICAgICBzdXBwb3J0ZWRHcm91cE9wZXJhdGlvbnMucHVzaCgnc2xpY2UnKTtcclxuICAgIH1cclxuXHJcbiAgICBpZiAocHVibGlzaGVkR3JvdXBPcGVyYXRpb25zU2V0LmhhcygnU2V0JykpIHtcclxuICAgICAgc3VwcG9ydGVkR3JvdXBPcGVyYXRpb25zLnB1c2goJ3NldCcpO1xyXG4gICAgfVxyXG4gIH1cclxuXHJcbiAgaWYgKCFzdXBwb3J0c05vbkdyb3VwZWRPcGVyYXRpb24gJiYgc3VwcG9ydGVkR3JvdXBPcGVyYXRpb25zLmxlbmd0aCA9PT0gMCkge1xyXG4gICAgcmV0dXJuICcnO1xyXG4gIH1cclxuXHJcbiAgY29uc3QgZ3JvdXBPcGVyYXRpb25zRGlzcGxheTogc3RyaW5nW10gPSBbXTtcclxuXHJcbiAgaWYgKHN1cHBvcnRzTm9uR3JvdXBlZE9wZXJhdGlvbikge1xyXG4gICAgZ3JvdXBPcGVyYXRpb25zRGlzcGxheS5wdXNoKCdzdGFuZGFyZCBub24tZ3JvdXBlZCcpO1xyXG4gIH1cclxuXHJcbiAgaWYgKHN1cHBvcnRlZEdyb3VwT3BlcmF0aW9ucy5sZW5ndGggPiAwKSB7XHJcbiAgICBpZiAoZ3JvdXBPcGVyYXRpb25zRGlzcGxheS5sZW5ndGggPiAwKSB7XHJcbiAgICAgIGdyb3VwT3BlcmF0aW9uc0Rpc3BsYXkucHVzaCgnIGFuZCAnKTtcclxuICAgIH1cclxuXHJcbiAgICBncm91cE9wZXJhdGlvbnNEaXNwbGF5LnB1c2goc3VwcG9ydGVkR3JvdXBPcGVyYXRpb25zLmpvaW4oJyBhbmQgJykpO1xyXG4gICAgZ3JvdXBPcGVyYXRpb25zRGlzcGxheS5wdXNoKCcgZ3JvdXAnKTtcclxuXHJcbiAgICBpZiAoc3VwcG9ydGVkR3JvdXBPcGVyYXRpb25zLmxlbmd0aCA+IDEpIHtcclxuICAgICAgZ3JvdXBPcGVyYXRpb25zRGlzcGxheS5wdXNoKCdlZCcpO1xyXG4gICAgfVxyXG4gIH1cclxuXHJcbiAgZ3JvdXBPcGVyYXRpb25zRGlzcGxheS5wdXNoKCcgb3BlcmF0aW9uJyk7XHJcblxyXG4gIGlmICgoc3VwcG9ydHNOb25Hcm91cGVkT3BlcmF0aW9uID8gMSA6IDApICsgc3VwcG9ydGVkR3JvdXBPcGVyYXRpb25zLmxlbmd0aCA+IDEpIHtcclxuICAgIGdyb3VwT3BlcmF0aW9uc0Rpc3BsYXkucHVzaCgncycpO1xyXG4gIH1cclxuXHJcbiAgcmV0dXJuIGAsIGFsc28gc3VwcG9ydHMgJHtncm91cE9wZXJhdGlvbnNEaXNwbGF5LmpvaW4oJycpfWA7XHJcbn1cclxuIl0sIm5hbWVzIjpbIlJlYWN0IiwiSW5saW5lRmllbGQiLCJBc3luY011bHRpU2VsZWN0IiwiU2VsZWN0IiwiSW5wdXQiLCJJbmxpbmVGaWVsZFJvdyIsIkNvbGxhcHNlIiwiRmllbGRTZXQiLCJJY29uQnV0dG9uIiwiQ2FyZCIsIklubGluZUxhYmVsIiwiZ2V0QmFja2VuZFNydiIsIl8iLCJRdWVyeUVkaXRvcldpemFyZCIsInByb3BzIiwiZWxlbWVudHMiLCJzZXRFbGVtZW50cyIsInVzZVN0YXRlIiwicXVlcnkiLCJwYXJzZWRRdWVyeSIsIkVsZW1lbnRzIiwiZnVuY3Rpb25zIiwic2V0RnVuY3Rpb25zIiwiRnVuY3Rpb25zIiwiYXZhaWxhYmxlRnVuY3Rpb25zIiwic2V0QXZhaWxhYmxlRnVuY3Rpb25zIiwidGFibGVPcHRpb25zIiwic2V0VGFibGVPcHRpb25zIiwiZmlsdGVycyIsInNldEZpbHRlcnMiLCJGaWx0ZXJzIiwidXNlRWZmZWN0IiwiaW5jbHVkZUZ1bmN0aW9ucyIsInBvc3QiLCJkYXRhc291cmNlIiwidXJsIiwiZGF0YVR5cGVJbmRleCIsInZhbHVlVHlwZUluZGV4IiwiZXhwcmVzc2lvbiIsInRoZW4iLCJkIiwib25FbGVtZW50Q2hhbmdlIiwiZSIsImZ4IiwiZmlsdGVyIiwidW5kZWZpbmVkIiwiZiIsInUiLCJjbG9uZSIsInB1c2giLCJGdW5jdGlvbiIsIlBhcmFtZXRlcnMiLCJmaW5kIiwibmFtZSIsInBhcmFtZXRlcnMiLCJtYXAiLCJwIiwidHlwZSIsInZhbHVlIiwiaW5jbHVkZXMiLCJkZWZhdWx0IiwiVGFibGUiLCJDb25kaXRpb24iLCJOdW1iZXIiLCJOdW1iZXJNb2RlIiwib25DaGFuZ2UiLCJvbkZpbHRlckNoYW5nZSIsImluZGV4Iiwic3BsaWNlIiwib25GdW5jdGlvbkNoYW5nZSIsImRpdiIsInN0eWxlIiwid2lkdGgiLCJFbGVtZW50UXVlcnkiLCJ1cGRhdGUiLCJpIiwiRnVuY3Rpb25RdWVyeVVJIiwia2V5IiwiZnVuYyIsImF2YWlsYWJsZVRhYmxlcyIsIkZpbHRlclF1ZXJ5VUkiLCJzZWxlY3RlZE9wdGlvbnMiLCJ1c2VNZW1vIiwibGFiZWwiLCJsb2FkT3B0aW9ucyIsImlucHV0VmFsdWUiLCJyIiwidG9Mb2NhbGVMb3dlckNhc2UiLCJhbGlhc2VzIiwic29tZSIsImEiLCJmb3JFYWNoIiwib25FbGVtZW50c0NoYW5nZSIsInNlbGVjdGVkIiwic2VsZWN0ZWRWYWx1ZXMiLCJpdGVtIiwiaGFzRmlsdGVyIiwicyIsInN0YXJ0c1dpdGgiLCJsZW5ndGgiLCJzdWJzdHJpbmciLCJsYWJlbFdpZHRoIiwiZGVmYXVsdE9wdGlvbnMiLCJpc1NlYXJjaGFibGUiLCJudW1iZXJPcHRpb25zIiwidCIsIm9uTnVtYmVyTW9kZUNoYW5nZSIsInZhbCIsIk9uTnVtYmVyQ2hhbmdlIiwibiIsInRhcmdldCIsInBhcnNlSW50Iiwib25UYWJsZUNoYW5nZSIsIm9uQ29uZGl0aW9uQ2hhbmdlIiwic2l6ZSIsImljb25UeXBlIiwidmFyaWFudCIsIm1hcmdpblRvcCIsIm1hcmdpblJpZ2h0Iiwib25DbGljayIsImZsZXhTaHJpbmsiLCJtYXJnaW5MZWZ0Iiwib3B0aW9ucyIsIm1pbiIsIm1heCIsInRyYW5zcGFyZW50IiwiaXNMb2FkaW5nIiwiZ3JvdyIsInBsYWNlaG9sZGVyIiwiaXNPcGVuIiwic2V0SXNPcGVuIiwiZnhEZXNjcmlwdGlvbiIsImZ4T3B0aW9ucyIsInBhcmFtIiwib25WYWx1ZUNoYW5nZSIsImNsb25lRGVlcCIsImNvbGxhcHNpYmxlIiwic3BhbiIsImZvbnRTaXplIiwidGFiU2VsZWN0c1ZhbHVlIiwiZ2V0Q2F0ZWdvcnkiLCJyZXR1cm5UeXBlIiwidG9Mb3dlckNhc2UiLCJnZXRHcm91cE9wZXJhdGlvbiIsImV4dHJhY3RHcm91cE9wZXJhdGlvbnMiLCJvblRvZ2dsZSIsIngiLCJkZXNjcmlwdGlvbiIsInVsIiwibGkiLCJQYXJhbWV0ZXJVSSIsIkFuZ2xlT3B0aW9ucyIsIlRpbWVPcHRpb24iLCJCb29sZWFuT3B0aW9uIiwib25TdHJpbmdDaGFuZ2UiLCJvblNlbGVjdENoYW5nZSIsIkhlYWRpbmciLCJyZXF1aXJlZCIsIkRlc2NyaXB0aW9uIiwiY2F0ZWdvcnkiLCJmdW5jdGlvbk5hbWUiLCJhbGxvd2VkR3JvdXBPcGVyYXRpb25zIiwic3BsaXQiLCJvcGVyYXRpb24iLCJ0cmltIiwicHVibGlzaGVkR3JvdXBPcGVyYXRpb25zIiwiYWxsb3dlZEdyb3VwT3BlcmF0aW9uc1NldCIsIlNldCIsImV2ZXJ5IiwiZWxlbWVudCIsImhhcyIsInB1Ymxpc2hlZEdyb3VwT3BlcmF0aW9uc1NldCIsInN1cHBvcnRlZEdyb3VwT3BlcmF0aW9ucyIsInN1cHBvcnRzTm9uR3JvdXBlZE9wZXJhdGlvbiIsImdyb3VwT3BlcmF0aW9uc0Rpc3BsYXkiLCJqb2luIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/ElementQueryEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./components/MetaDataFieldSelector.tsx":
+/*!**********************************************!*\
+  !*** ./components/MetaDataFieldSelector.tsx ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   MetaDataSelector: () => (/* binding */ MetaDataSelector)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @grafana/runtime */ \"@grafana/runtime\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__);\n\n\n\n\nconst MetaDataSelector = (props)=>{\n    var _props_query;\n    const [tableOptions, setTableOptions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/GetValueTypeTables\", {\n            dataTypeIndex: props.datasource.valueTypeIndex,\n            expression: \"\"\n        }).then((d)=>{\n            var _d_map;\n            setTableOptions((_d_map = d === null || d === void 0 ? void 0 : d.map((t)=>({\n                    value: t,\n                    label: t\n                }))) !== null && _d_map !== void 0 ? _d_map : []);\n        });\n    }, [\n        props.datasource.valueTypeIndex,\n        props.datasource.url\n    ]);\n    const onRemoveField = (index)=>{\n        let u = [\n            ...props.query\n        ];\n        u.splice(index, 1);\n        props.onChange(u);\n    };\n    const onAddFld = ()=>{\n        if (props.query === undefined) {\n            props.onChange([\n                {\n                    Table: props.datasource.metadataTableName,\n                    FieldName: \"\"\n                }\n            ]);\n        }\n        props.onChange([\n            ...props.query,\n            {\n                Table: props.datasource.metadataTableName,\n                FieldName: \"\"\n            }\n        ]);\n    };\n    const onUpdateFld = (fld, index)=>{\n        let u = [\n            ...props.query\n        ];\n        u[index] = fld;\n        props.onChange(u);\n    };\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, (_props_query = props.query) === null || _props_query === void 0 ? void 0 : _props_query.map((q, i)=>/*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(MetaDataFieldSelector, {\n            Field: q,\n            key: i,\n            Remove: ()=>onRemoveField(i),\n            Update: (fld)=>onUpdateFld(fld, i),\n            TableOptions: tableOptions,\n            Datasource: props.datasource\n        })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Button, {\n        onClick: ()=>onAddFld()\n    }, \" Add Meta Data Field\"))));\n};\nconst MetaDataFieldSelector = (props)=>{\n    var _props_Field_Table, _props_Field, _props_Field_FieldName, _props_Field1, _props_Field_Table1, _props_Field2;\n    const [fieldOptions, setFieldOptions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        setFieldOptions([]);\n        if (props.Field.Table === undefined) {\n            return;\n        }\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.Datasource.url + \"/GetValueTypeTableFields\", {\n            dataTypeIndex: props.Datasource.valueTypeIndex,\n            expression: props.Field.Table\n        }).then((d)=>{\n            var _d_map;\n            return setFieldOptions((_d_map = d === null || d === void 0 ? void 0 : d.map((fld)=>({\n                    value: fld.name,\n                    label: fld.name\n                }))) !== null && _d_map !== void 0 ? _d_map : []);\n        });\n    }, [\n        props.Field.Table,\n        props.Datasource.url,\n        props.Datasource.valueTypeIndex\n    ]);\n    const updateTable = (val)=>{\n        var _val_value;\n        props.Update({\n            Table: (_val_value = val.value) !== null && _val_value !== void 0 ? _val_value : \"\",\n            FieldName: \"\"\n        });\n    };\n    const updateField = (val)=>{\n        var _val_value;\n        props.Update({\n            Table: props.Field.Table,\n            FieldName: (_val_value = val.value) !== null && _val_value !== void 0 ? _val_value : \"\"\n        });\n    };\n    var _props_Field_Table_length, _props_Field_FieldName_length, _props_Field_Table_length1;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Table\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: props.Field.Table,\n        options: props.TableOptions,\n        onChange: updateTable,\n        isLoading: props.TableOptions.length === 0,\n        invalid: ((_props_Field_Table_length = (_props_Field = props.Field) === null || _props_Field === void 0 ? void 0 : (_props_Field_Table = _props_Field.Table) === null || _props_Field_Table === void 0 ? void 0 : _props_Field_Table.length) !== null && _props_Field_Table_length !== void 0 ? _props_Field_Table_length : 0) === 0\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Field\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: props.Field.FieldName,\n        options: fieldOptions,\n        onChange: updateField,\n        isLoading: fieldOptions.length === 0,\n        invalid: ((_props_Field_FieldName_length = (_props_Field1 = props.Field) === null || _props_Field1 === void 0 ? void 0 : (_props_Field_FieldName = _props_Field1.FieldName) === null || _props_Field_FieldName === void 0 ? void 0 : _props_Field_FieldName.length) !== null && _props_Field_FieldName_length !== void 0 ? _props_Field_FieldName_length : 0) === 0,\n        disabled: ((_props_Field_Table_length1 = (_props_Field2 = props.Field) === null || _props_Field2 === void 0 ? void 0 : (_props_Field_Table1 = _props_Field2.Table) === null || _props_Field_Table1 === void 0 ? void 0 : _props_Field_Table1.length) !== null && _props_Field_Table_length1 !== void 0 ? _props_Field_Table_length1 : 0) === 0\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.IconButton, {\n        name: 'trash-alt',\n        size: \"xl\",\n        iconType: \"default\",\n        variant: \"destructive\",\n        style: {\n            marginTop: 4,\n            marginLeft: 4\n        },\n        onClick: ()=>props.Remove()\n    })));\n};\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jb21wb25lbnRzL01ldGFEYXRhRmllbGRTZWxlY3Rvci50c3giLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFBMEI7QUFDc0U7QUFJL0Q7QUFDZ0I7QUFLMUMsTUFBTVEsbUJBQW1CLENBQUNDO1FBOEIxQkE7SUE3QkwsTUFBTSxDQUFDQyxjQUFjQyxnQkFBZ0IsR0FBR1gscURBQWMsQ0FBaUMsRUFBRTtJQUV6RkEsc0RBQWUsQ0FBQztRQUNkTywrREFBYUEsR0FBR08sSUFBSSxDQUFDTCxNQUFNTSxVQUFVLENBQUNDLEdBQUcsR0FBRyx1QkFBdUI7WUFBRUMsZUFBZVIsTUFBTU0sVUFBVSxDQUFDRyxjQUFjO1lBQUVDLFlBQVk7UUFBRyxHQUNqSUMsSUFBSSxDQUFDLENBQUNDO2dCQUFrQ0E7WUFBaEJWLGdCQUFnQlUsQ0FBQUEsU0FBQUEsY0FBQUEsd0JBQUFBLEVBQUdDLEdBQUcsQ0FBQyxDQUFDQyxJQUFPO29CQUFFQyxPQUFPRDtvQkFBR0UsT0FBT0Y7Z0JBQUUsaUJBQXBDRixvQkFBQUEsU0FBMkMsRUFBRTtRQUFHO0lBQzdGLEdBQUc7UUFBQ1osTUFBTU0sVUFBVSxDQUFDRyxjQUFjO1FBQUVULE1BQU1NLFVBQVUsQ0FBQ0MsR0FBRztLQUFDO0lBRTFELE1BQU1VLGdCQUFnQixDQUFDQztRQUNyQixJQUFJQyxJQUFJO2VBQUluQixNQUFNb0IsS0FBSztTQUFDO1FBQ3hCRCxFQUFFRSxNQUFNLENBQUNILE9BQU87UUFDaEJsQixNQUFNc0IsUUFBUSxDQUFDSDtJQUNqQjtJQUVBLE1BQU1JLFdBQVc7UUFDZixJQUFJdkIsTUFBTW9CLEtBQUssS0FBS0ksV0FBVztZQUM3QnhCLE1BQU1zQixRQUFRLENBQUM7Z0JBQUM7b0JBQUVHLE9BQU96QixNQUFNTSxVQUFVLENBQUNvQixpQkFBaUI7b0JBQUVDLFdBQVc7Z0JBQUc7YUFBRTtRQUMvRTtRQUNBM0IsTUFBTXNCLFFBQVEsQ0FBQztlQUFJdEIsTUFBTW9CLEtBQUs7WUFBRTtnQkFBRUssT0FBT3pCLE1BQU1NLFVBQVUsQ0FBQ29CLGlCQUFpQjtnQkFBRUMsV0FBVztZQUFHO1NBQUU7SUFDL0Y7SUFFQSxNQUFNQyxjQUFjLENBQUNDLEtBQXFCWDtRQUV4QyxJQUFJQyxJQUFJO2VBQUluQixNQUFNb0IsS0FBSztTQUFDO1FBQ3hCRCxDQUFDLENBQUNELE1BQU0sR0FBR1c7UUFDWDdCLE1BQU1zQixRQUFRLENBQUNIO0lBQ2pCO0lBRUEscUJBQ0UsMkRBQUN0QixpREFBUUEsU0FDTkcsZUFBQUEsTUFBTW9CLEtBQUssY0FBWHBCLG1DQUFBQSxhQUFhYSxHQUFHLENBQUMsQ0FBQ2lCLEdBQUdDLGtCQUFNLDJEQUFDQztZQUMzQkMsT0FBT0g7WUFBR0ksS0FBS0g7WUFBR0ksUUFBUSxJQUFNbEIsY0FBY2M7WUFBSUssUUFBUSxDQUFDUCxNQUFRRCxZQUFZQyxLQUFLRTtZQUNwRk0sY0FBY3BDO1lBQWNxQyxZQUFZdEMsTUFBTU0sVUFBVTsyQkFDMUQsMkRBQUNiLHVEQUFjQSxzQkFDYiwyREFBQ0Qsb0RBQVdBLHNCQUNWLDJEQUFDSSwrQ0FBTUE7UUFBQzJDLFNBQVMsSUFBTWhCO09BQVk7QUFJN0MsRUFBQztBQVVELE1BQU1TLHdCQUF3QixDQUFDaEM7UUE2QmJBLG9CQUFBQSxjQVNBQSx3QkFBQUEsZUFDQ0EscUJBQUFBO0lBdENqQixNQUFNLENBQUN3QyxjQUFjQyxnQkFBZ0IsR0FBR2xELHFEQUFjLENBQWlDLEVBQUU7SUFFekZBLHNEQUFlLENBQUM7UUFDZGtELGdCQUFnQixFQUFFO1FBQ2xCLElBQUl6QyxNQUFNaUMsS0FBSyxDQUFDUixLQUFLLEtBQUtELFdBQVc7WUFDbkM7UUFDRjtRQUNBMUIsK0RBQWFBLEdBQUdPLElBQUksQ0FBQ0wsTUFBTXNDLFVBQVUsQ0FBQy9CLEdBQUcsR0FBRyw0QkFBNEI7WUFDdEVDLGVBQWVSLE1BQU1zQyxVQUFVLENBQUM3QixjQUFjO1lBQzlDQyxZQUFZVixNQUFNaUMsS0FBSyxDQUFDUixLQUFLO1FBQy9CLEdBQUdkLElBQUksQ0FBQyxDQUFDQztnQkFBMENBO21CQUFoQjZCLGdCQUFnQjdCLENBQUFBLFNBQUFBLGNBQUFBLHdCQUFBQSxFQUFHQyxHQUFHLENBQUMsQ0FBQ2dCLE1BQVM7b0JBQUVkLE9BQU9jLElBQUlhLElBQUk7b0JBQUUxQixPQUFPYSxJQUFJYSxJQUFJO2dCQUFDLGlCQUFwRDlCLG9CQUFBQSxTQUEyRCxFQUFFO1FBQUE7SUFDbEgsR0FBRztRQUFDWixNQUFNaUMsS0FBSyxDQUFDUixLQUFLO1FBQUV6QixNQUFNc0MsVUFBVSxDQUFDL0IsR0FBRztRQUFFUCxNQUFNc0MsVUFBVSxDQUFDN0IsY0FBYztLQUFDO0lBRTdFLE1BQU1rQyxjQUFjLENBQUNDO1lBQ0dBO1FBQXRCNUMsTUFBTW9DLE1BQU0sQ0FBQztZQUFFWCxPQUFPbUIsQ0FBQUEsYUFBQUEsSUFBSTdCLEtBQUssY0FBVDZCLHdCQUFBQSxhQUFhO1lBQUlqQixXQUFXO1FBQUc7SUFDdkQ7SUFFQSxNQUFNa0IsY0FBYyxDQUFDRDtZQUNpQ0E7UUFBcEQ1QyxNQUFNb0MsTUFBTSxDQUFDO1lBQUVYLE9BQU96QixNQUFNaUMsS0FBSyxDQUFDUixLQUFLO1lBQUVFLFdBQVdpQixDQUFBQSxhQUFBQSxJQUFJN0IsS0FBSyxjQUFUNkIsd0JBQUFBLGFBQWE7UUFBRztJQUN0RTtRQVNnQjVDLDJCQVNBQSwrQkFDQ0E7SUFqQmpCLHFCQUFPLDJEQUFDUCx1REFBY0Esc0JBQ3BCLDJEQUFDRCxvREFBV0E7UUFBQ3dCLE9BQU07UUFBUThCLFlBQVk7cUJBQ3JDLDJEQUFDcEQsK0NBQU1BO1FBQ0xxQixPQUFPZixNQUFNaUMsS0FBSyxDQUFDUixLQUFLO1FBQ3hCc0IsU0FBUy9DLE1BQU1xQyxZQUFZO1FBQzNCZixVQUFVcUI7UUFDVkssV0FBV2hELE1BQU1xQyxZQUFZLENBQUNZLE1BQU0sS0FBSztRQUN6Q0MsU0FBUyxDQUFDbEQsQ0FBQUEsNkJBQUFBLGVBQUFBLE1BQU1pQyxLQUFLLGNBQVhqQyxvQ0FBQUEscUJBQUFBLGFBQWF5QixLQUFLLGNBQWxCekIseUNBQUFBLG1CQUFvQmlELE1BQU0sY0FBMUJqRCx1Q0FBQUEsNEJBQThCLE9BQU87dUJBR25ELDJEQUFDUixvREFBV0E7UUFBQ3dCLE9BQU07UUFBUThCLFlBQVk7cUJBQ3JDLDJEQUFDcEQsK0NBQU1BO1FBQ0xxQixPQUFPZixNQUFNaUMsS0FBSyxDQUFDTixTQUFTO1FBQzVCb0IsU0FBU1A7UUFDVGxCLFVBQVV1QjtRQUNWRyxXQUFXUixhQUFhUyxNQUFNLEtBQUs7UUFDbkNDLFNBQVMsQ0FBQ2xELENBQUFBLGlDQUFBQSxnQkFBQUEsTUFBTWlDLEtBQUssY0FBWGpDLHFDQUFBQSx5QkFBQUEsY0FBYTJCLFNBQVMsY0FBdEIzQiw2Q0FBQUEsdUJBQXdCaUQsTUFBTSxjQUE5QmpELDJDQUFBQSxnQ0FBa0MsT0FBTztRQUNuRG1ELFVBQVUsQ0FBQ25ELENBQUFBLDhCQUFBQSxnQkFBQUEsTUFBTWlDLEtBQUssY0FBWGpDLHFDQUFBQSxzQkFBQUEsY0FBYXlCLEtBQUssY0FBbEJ6QiwwQ0FBQUEsb0JBQW9CaUQsTUFBTSxjQUExQmpELHdDQUFBQSw2QkFBOEIsT0FBTzt1QkFHcEQsMkRBQUNSLG9EQUFXQSxzQkFDViwyREFBQ0csbURBQVVBO1FBQUMrQyxNQUFNO1FBQWFVLE1BQUs7UUFBS0MsVUFBUztRQUFVQyxTQUFRO1FBQWNDLE9BQU87WUFBRUMsV0FBVztZQUFHQyxZQUFZO1FBQUU7UUFBR2xCLFNBQVMsSUFBTXZDLE1BQU1tQyxNQUFNOztBQUkzSiIsInNvdXJjZXMiOlsid2VicGFjazovLy8uL2NvbXBvbmVudHMvTWV0YURhdGFGaWVsZFNlbGVjdG9yLnRzeD9iMDkwIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7IElubGluZUZpZWxkLCBJbmxpbmVGaWVsZFJvdywgU2VsZWN0LCBJY29uQnV0dG9uLCBCdXR0b24sIEZpZWxkU2V0IH0gZnJvbSAnQGdyYWZhbmEvdWknO1xyXG5pbXBvcnQgeyBTZWxlY3RhYmxlVmFsdWUgfSBmcm9tICdAZ3JhZmFuYS9kYXRhJztcclxuaW1wb3J0IHsgRGF0YVNvdXJjZSB9IGZyb20gJy4uL2RhdGFzb3VyY2UnO1xyXG5pbXBvcnQgeyBGaWVsZERlc2NyaXB0aW9uLCBJTWV0YURhdGFGaWVsZCB9IGZyb20gJy4uL3R5cGVzJztcclxuaW1wb3J0IFwiLi4vY3NzL3F1ZXJ5LWVkaXRvci5jc3NcIjtcclxuaW1wb3J0IHsgZ2V0QmFja2VuZFNydiB9IGZyb20gXCJAZ3JhZmFuYS9ydW50aW1lXCI7XHJcbmltcG9ydCBfIGZyb20gJ2xvZGFzaCc7XHJcblxyXG5pbnRlcmZhY2UgTWV0YURhdGFQcm9wcyB7IGRhdGFzb3VyY2U6IERhdGFTb3VyY2UsIG9uQ2hhbmdlOiAodmFsdWU6IElNZXRhRGF0YUZpZWxkW10pID0+IHZvaWQsIHF1ZXJ5OiBJTWV0YURhdGFGaWVsZFtdIH1cclxuXHJcbmV4cG9ydCBjb25zdCBNZXRhRGF0YVNlbGVjdG9yID0gKHByb3BzOiBNZXRhRGF0YVByb3BzKSA9PiB7XHJcbiAgY29uc3QgW3RhYmxlT3B0aW9ucywgc2V0VGFibGVPcHRpb25zXSA9IFJlYWN0LnVzZVN0YXRlPEFycmF5PFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+Pj4oW10pO1xyXG5cclxuICBSZWFjdC51c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgZ2V0QmFja2VuZFNydigpLnBvc3QocHJvcHMuZGF0YXNvdXJjZS51cmwgKyBcIi9HZXRWYWx1ZVR5cGVUYWJsZXNcIiwgeyBkYXRhVHlwZUluZGV4OiBwcm9wcy5kYXRhc291cmNlLnZhbHVlVHlwZUluZGV4LCBleHByZXNzaW9uOiBcIlwiIH0pXHJcbiAgICAgIC50aGVuKChkOiBzdHJpbmdbXSkgPT4geyBzZXRUYWJsZU9wdGlvbnMoZD8ubWFwKCh0KSA9PiAoeyB2YWx1ZTogdCwgbGFiZWw6IHQgfSkpID8/IFtdKTsgfSlcclxuICB9LCBbcHJvcHMuZGF0YXNvdXJjZS52YWx1ZVR5cGVJbmRleCwgcHJvcHMuZGF0YXNvdXJjZS51cmxdKVxyXG5cclxuICBjb25zdCBvblJlbW92ZUZpZWxkID0gKGluZGV4OiBudW1iZXIpID0+IHtcclxuICAgIGxldCB1ID0gWy4uLnByb3BzLnF1ZXJ5XTtcclxuICAgIHUuc3BsaWNlKGluZGV4LCAxKTtcclxuICAgIHByb3BzLm9uQ2hhbmdlKHUpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IG9uQWRkRmxkID0gKCkgPT4ge1xyXG4gICAgaWYgKHByb3BzLnF1ZXJ5ID09PSB1bmRlZmluZWQpIHtcclxuICAgICAgcHJvcHMub25DaGFuZ2UoW3sgVGFibGU6IHByb3BzLmRhdGFzb3VyY2UubWV0YWRhdGFUYWJsZU5hbWUsIEZpZWxkTmFtZTogXCJcIiB9XSk7XHJcbiAgICB9XHJcbiAgICBwcm9wcy5vbkNoYW5nZShbLi4ucHJvcHMucXVlcnksIHsgVGFibGU6IHByb3BzLmRhdGFzb3VyY2UubWV0YWRhdGFUYWJsZU5hbWUsIEZpZWxkTmFtZTogXCJcIiB9XSk7XHJcbiAgfTtcclxuXHJcbiAgY29uc3Qgb25VcGRhdGVGbGQgPSAoZmxkOiBJTWV0YURhdGFGaWVsZCwgaW5kZXg6IG51bWJlcikgPT4ge1xyXG5cclxuICAgIGxldCB1ID0gWy4uLnByb3BzLnF1ZXJ5XTtcclxuICAgIHVbaW5kZXhdID0gZmxkO1xyXG4gICAgcHJvcHMub25DaGFuZ2UodSk7XHJcbiAgfTtcclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxGaWVsZFNldD5cclxuICAgICAge3Byb3BzLnF1ZXJ5Py5tYXAoKHEsIGkpID0+IDxNZXRhRGF0YUZpZWxkU2VsZWN0b3JcclxuICAgICAgICBGaWVsZD17cX0ga2V5PXtpfSBSZW1vdmU9eygpID0+IG9uUmVtb3ZlRmllbGQoaSl9IFVwZGF0ZT17KGZsZCkgPT4gb25VcGRhdGVGbGQoZmxkLCBpKX1cclxuICAgICAgICBUYWJsZU9wdGlvbnM9e3RhYmxlT3B0aW9uc30gRGF0YXNvdXJjZT17cHJvcHMuZGF0YXNvdXJjZX0gLz4pfVxyXG4gICAgICA8SW5saW5lRmllbGRSb3c+XHJcbiAgICAgICAgPElubGluZUZpZWxkPlxyXG4gICAgICAgICAgPEJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBvbkFkZEZsZCgpfT4gQWRkIE1ldGEgRGF0YSBGaWVsZDwvQnV0dG9uPlxyXG4gICAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICA8L0ZpZWxkU2V0PilcclxufVxyXG5cclxuaW50ZXJmYWNlIE1lYXRhRGF0YUZpZWxkU2VsZWN0b3JQcm9wcyB7XHJcbiAgRmllbGQ6IElNZXRhRGF0YUZpZWxkLFxyXG4gIFJlbW92ZTogKCkgPT4gdm9pZCxcclxuICBVcGRhdGU6IChmbGQ6IElNZXRhRGF0YUZpZWxkKSA9PiB2b2lkLFxyXG4gIFRhYmxlT3B0aW9uczogQXJyYXk8U2VsZWN0YWJsZVZhbHVlPHN0cmluZz4+LFxyXG4gIERhdGFzb3VyY2U6IERhdGFTb3VyY2VcclxufVxyXG5cclxuY29uc3QgTWV0YURhdGFGaWVsZFNlbGVjdG9yID0gKHByb3BzOiBNZWF0YURhdGFGaWVsZFNlbGVjdG9yUHJvcHMpID0+IHtcclxuICBjb25zdCBbZmllbGRPcHRpb25zLCBzZXRGaWVsZE9wdGlvbnNdID0gUmVhY3QudXNlU3RhdGU8QXJyYXk8U2VsZWN0YWJsZVZhbHVlPHN0cmluZz4+PihbXSk7XHJcblxyXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBzZXRGaWVsZE9wdGlvbnMoW10pO1xyXG4gICAgaWYgKHByb3BzLkZpZWxkLlRhYmxlID09PSB1bmRlZmluZWQpIHtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG4gICAgZ2V0QmFja2VuZFNydigpLnBvc3QocHJvcHMuRGF0YXNvdXJjZS51cmwgKyBcIi9HZXRWYWx1ZVR5cGVUYWJsZUZpZWxkc1wiLCB7XHJcbiAgICAgIGRhdGFUeXBlSW5kZXg6IHByb3BzLkRhdGFzb3VyY2UudmFsdWVUeXBlSW5kZXgsXHJcbiAgICAgIGV4cHJlc3Npb246IHByb3BzLkZpZWxkLlRhYmxlXHJcbiAgICB9KS50aGVuKChkOiBGaWVsZERlc2NyaXB0aW9uW10pID0+IHNldEZpZWxkT3B0aW9ucyhkPy5tYXAoKGZsZCkgPT4gKHsgdmFsdWU6IGZsZC5uYW1lLCBsYWJlbDogZmxkLm5hbWUgfSkpID8/IFtdKSlcclxuICB9LCBbcHJvcHMuRmllbGQuVGFibGUsIHByb3BzLkRhdGFzb3VyY2UudXJsLCBwcm9wcy5EYXRhc291cmNlLnZhbHVlVHlwZUluZGV4XSlcclxuXHJcbiAgY29uc3QgdXBkYXRlVGFibGUgPSAodmFsOiBTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPikgPT4ge1xyXG4gICAgcHJvcHMuVXBkYXRlKHsgVGFibGU6IHZhbC52YWx1ZSA/PyBcIlwiLCBGaWVsZE5hbWU6IFwiXCIgfSlcclxuICB9O1xyXG5cclxuICBjb25zdCB1cGRhdGVGaWVsZCA9ICh2YWw6IFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+KSA9PiB7XHJcbiAgICBwcm9wcy5VcGRhdGUoeyBUYWJsZTogcHJvcHMuRmllbGQuVGFibGUsIEZpZWxkTmFtZTogdmFsLnZhbHVlID8/IFwiXCIgfSlcclxuICB9O1xyXG5cclxuICByZXR1cm4gPElubGluZUZpZWxkUm93PlxyXG4gICAgPElubGluZUZpZWxkIGxhYmVsPVwiVGFibGVcIiBsYWJlbFdpZHRoPXsxMn0+XHJcbiAgICAgIDxTZWxlY3RcclxuICAgICAgICB2YWx1ZT17cHJvcHMuRmllbGQuVGFibGV9XHJcbiAgICAgICAgb3B0aW9ucz17cHJvcHMuVGFibGVPcHRpb25zfVxyXG4gICAgICAgIG9uQ2hhbmdlPXt1cGRhdGVUYWJsZX1cclxuICAgICAgICBpc0xvYWRpbmc9e3Byb3BzLlRhYmxlT3B0aW9ucy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgaW52YWxpZD17KHByb3BzLkZpZWxkPy5UYWJsZT8ubGVuZ3RoID8/IDApID09PSAwfVxyXG4gICAgICAvPlxyXG4gICAgPC9JbmxpbmVGaWVsZD5cclxuICAgIDxJbmxpbmVGaWVsZCBsYWJlbD1cIkZpZWxkXCIgbGFiZWxXaWR0aD17MTJ9PlxyXG4gICAgICA8U2VsZWN0XHJcbiAgICAgICAgdmFsdWU9e3Byb3BzLkZpZWxkLkZpZWxkTmFtZX1cclxuICAgICAgICBvcHRpb25zPXtmaWVsZE9wdGlvbnN9XHJcbiAgICAgICAgb25DaGFuZ2U9e3VwZGF0ZUZpZWxkfVxyXG4gICAgICAgIGlzTG9hZGluZz17ZmllbGRPcHRpb25zLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICBpbnZhbGlkPXsocHJvcHMuRmllbGQ/LkZpZWxkTmFtZT8ubGVuZ3RoID8/IDApID09PSAwfVxyXG4gICAgICAgIGRpc2FibGVkPXsocHJvcHMuRmllbGQ/LlRhYmxlPy5sZW5ndGggPz8gMCkgPT09IDB9XHJcbiAgICAgIC8+XHJcbiAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgPElubGluZUZpZWxkPlxyXG4gICAgICA8SWNvbkJ1dHRvbiBuYW1lPXsndHJhc2gtYWx0J30gc2l6ZT0neGwnIGljb25UeXBlPSdkZWZhdWx0JyB2YXJpYW50PSdkZXN0cnVjdGl2ZScgc3R5bGU9e3sgbWFyZ2luVG9wOiA0LCBtYXJnaW5MZWZ0OiA0IH19IG9uQ2xpY2s9eygpID0+IHByb3BzLlJlbW92ZSgpfSAvPlxyXG4gICAgPC9JbmxpbmVGaWVsZD5cclxuICA8L0lubGluZUZpZWxkUm93PlxyXG5cclxufVxyXG4iXSwibmFtZXMiOlsiUmVhY3QiLCJJbmxpbmVGaWVsZCIsIklubGluZUZpZWxkUm93IiwiU2VsZWN0IiwiSWNvbkJ1dHRvbiIsIkJ1dHRvbiIsIkZpZWxkU2V0IiwiZ2V0QmFja2VuZFNydiIsIk1ldGFEYXRhU2VsZWN0b3IiLCJwcm9wcyIsInRhYmxlT3B0aW9ucyIsInNldFRhYmxlT3B0aW9ucyIsInVzZVN0YXRlIiwidXNlRWZmZWN0IiwicG9zdCIsImRhdGFzb3VyY2UiLCJ1cmwiLCJkYXRhVHlwZUluZGV4IiwidmFsdWVUeXBlSW5kZXgiLCJleHByZXNzaW9uIiwidGhlbiIsImQiLCJtYXAiLCJ0IiwidmFsdWUiLCJsYWJlbCIsIm9uUmVtb3ZlRmllbGQiLCJpbmRleCIsInUiLCJxdWVyeSIsInNwbGljZSIsIm9uQ2hhbmdlIiwib25BZGRGbGQiLCJ1bmRlZmluZWQiLCJUYWJsZSIsIm1ldGFkYXRhVGFibGVOYW1lIiwiRmllbGROYW1lIiwib25VcGRhdGVGbGQiLCJmbGQiLCJxIiwiaSIsIk1ldGFEYXRhRmllbGRTZWxlY3RvciIsIkZpZWxkIiwia2V5IiwiUmVtb3ZlIiwiVXBkYXRlIiwiVGFibGVPcHRpb25zIiwiRGF0YXNvdXJjZSIsIm9uQ2xpY2siLCJmaWVsZE9wdGlvbnMiLCJzZXRGaWVsZE9wdGlvbnMiLCJuYW1lIiwidXBkYXRlVGFibGUiLCJ2YWwiLCJ1cGRhdGVGaWVsZCIsImxhYmVsV2lkdGgiLCJvcHRpb25zIiwiaXNMb2FkaW5nIiwibGVuZ3RoIiwiaW52YWxpZCIsImRpc2FibGVkIiwic2l6ZSIsImljb25UeXBlIiwidmFyaWFudCIsInN0eWxlIiwibWFyZ2luVG9wIiwibWFyZ2luTGVmdCJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/MetaDataFieldSelector.tsx\n");
+
+/***/ }),
+
+/***/ "./components/QueryEditor.tsx":
+/*!************************************!*\
+  !*** ./components/QueryEditor.tsx ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   QueryEditor: () => (/* binding */ QueryEditor)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _js_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../js/constants */ \"./js/constants.ts\");\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n/* harmony import */ var _ElementQueryEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ElementQueryEditor */ \"./components/ElementQueryEditor.tsx\");\n/* harmony import */ var _MetaDataFieldSelector__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./MetaDataFieldSelector */ \"./components/MetaDataFieldSelector.tsx\");\n/* harmony import */ var _TextQueryEditor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./TextQueryEditor */ \"./components/TextQueryEditor.tsx\");\n/* harmony import */ var _CommandLevelSelection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CommandLevelSelection */ \"./components/CommandLevelSelection.tsx\");\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\nfunction _object_spread(target) {\n    for(var i = 1; i < arguments.length; i++){\n        var source = arguments[i] != null ? arguments[i] : {};\n        var ownKeys = Object.keys(source);\n        if (typeof Object.getOwnPropertySymbols === \"function\") {\n            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n            }));\n        }\n        ownKeys.forEach(function(key) {\n            _define_property(target, key, source[key]);\n        });\n    }\n    return target;\n}\nfunction ownKeys(object, enumerableOnly) {\n    var keys = Object.keys(object);\n    if (Object.getOwnPropertySymbols) {\n        var symbols = Object.getOwnPropertySymbols(object);\n        if (enumerableOnly) {\n            symbols = symbols.filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(object, sym).enumerable;\n            });\n        }\n        keys.push.apply(keys, symbols);\n    }\n    return keys;\n}\nfunction _object_spread_props(target, source) {\n    source = source != null ? source : {};\n    if (Object.getOwnPropertyDescriptors) {\n        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));\n    } else {\n        ownKeys(Object(source)).forEach(function(key) {\n            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));\n        });\n    }\n    return target;\n}\n\n\n\n\n\n\n\n\nfunction QueryEditor({ query, onChange, datasource, onRunQuery }) {\n    const selectedMode = react__WEBPACK_IMPORTED_MODULE_0___default().useMemo(()=>{\n        var _query_queryType;\n        return (_query_queryType = query.queryType) !== null && _query_queryType !== void 0 ? _query_queryType : 'Elements';\n    }, [\n        query\n    ]);\n    const modeChange = react__WEBPACK_IMPORTED_MODULE_0___default().useCallback((selected)=>{\n        var _selected_value;\n        onChange(_object_spread_props(_object_spread({}, query), {\n            queryType: (_selected_value = selected.value) !== null && _selected_value !== void 0 ? _selected_value : 'Elements'\n        }));\n    }, [\n        query,\n        onChange\n    ]);\n    const elementsOnChange = (p)=>{\n        onChange(p);\n        onRunQuery();\n    };\n    const textOnChange = (p)=>{\n        onChange(p);\n    };\n    const onBlur = ()=>{\n        onRunQuery();\n    };\n    var _query_transpose;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, {\n        style: {\n            display: 'flex',\n            flexDirection: 'column'\n        },\n        onBlur: onBlur\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, {\n        style: {\n            marginBottom: 0\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"h3\", {\n        className: \"page-heading\",\n        style: {\n            marginTop: 16\n        }\n    }, \"General Settings\"), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, {\n        style: {\n            marginBottom: 16\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"table\", null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"tr\", null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"td\", null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Data Selection Mode\",\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        options: _js_constants__WEBPACK_IMPORTED_MODULE_2__.QuerySelectOptions,\n        value: selectedMode,\n        onChange: modeChange,\n        allowCustomValue: false\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Transpose Query Results\",\n        labelWidth: 24\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineSwitch, {\n        value: (_query_transpose = query.transpose) !== null && _query_transpose !== void 0 ? _query_transpose : false,\n        onChange: (v)=>{\n            var _query_transpose;\n            return elementsOnChange(_object_spread_props(_object_spread({}, query), {\n                transpose: !((_query_transpose = query.transpose) !== null && _query_transpose !== void 0 ? _query_transpose : false)\n            }));\n        },\n        showLabel: true\n    }))))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"tr\", {\n        style: {\n            height: 16\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"td\", null)), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"tr\", null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"td\", null, selectedMode === 'Elements' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_CommandLevelSelection__WEBPACK_IMPORTED_MODULE_7__.CommandLevelSelector, {\n        query: query.commandLevel,\n        onChange: (q)=>elementsOnChange(_object_spread_props(_object_spread({}, query), {\n                commandLevel: q\n            }))\n    }) : null))))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, {\n        style: {\n            marginBottom: 16\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"h3\", {\n        className: \"page-heading\"\n    }, \"Meta Data\"), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MetaDataFieldSelector__WEBPACK_IMPORTED_MODULE_5__.MetaDataSelector, {\n        datasource: datasource,\n        onChange: (fields)=>elementsOnChange(_object_spread_props(_object_spread({}, query), {\n                metadataOptions: fields\n            })),\n        query: query.metadataOptions\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(\"h3\", {\n        className: \"page-heading\"\n    }, \"Data Selection\"), query.queryType === 'Text' ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_TextQueryEditor__WEBPACK_IMPORTED_MODULE_6__.TextQuery, {\n        onChange: (t)=>textOnChange(_object_spread_props(_object_spread({}, query), {\n                queryText: t\n            })),\n        query: query.queryText\n    }) : null, query.queryType === 'Elements' || query.queryType === undefined ? /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_ElementQueryEditor__WEBPACK_IMPORTED_MODULE_4__.QueryEditorWizard, {\n        onChange: (q)=>elementsOnChange(_object_spread_props(_object_spread({}, query), {\n                queryText: q.queryText,\n                parsedQuery: q.parsedQuery\n            })),\n        query: query,\n        datasource: datasource\n    }) : null));\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,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LHVEQUFTQTtRQUFDSSxVQUFVLENBQUNvQyxJQUFNeEIsYUFBYSx3Q0FBS2I7Z0JBQU9zQyxXQUFXRDs7UUFBTXJDLE9BQU9BLE1BQU1zQyxTQUFTO1NBQU8sTUFDaEl0QyxNQUFNTSxTQUFTLEtBQUssY0FBY04sTUFBTU0sU0FBUyxLQUFLaUMsMEJBQVksMkRBQUM1QyxrRUFBaUJBO1FBQ25GTSxVQUFVLENBQUNpQyxJQUFNdkIsaUJBQWlCLHdDQUFLWDtnQkFBT3NDLFdBQVdKLEVBQUVJLFNBQVM7Z0JBQUVFLGFBQWFOLEVBQUVNLFdBQVc7O1FBQUt4QyxPQUFPQTtRQUM1R0UsWUFBWUE7U0FBaUI7QUFJdkMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL1F1ZXJ5RWRpdG9yLnRzeD8wYTAzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7IElubGluZUZpZWxkUm93LCBJbmxpbmVGaWVsZCwgU2VsZWN0LCBJbmxpbmVTd2l0Y2gsIEZpZWxkU2V0IH0gZnJvbSAnQGdyYWZhbmEvdWknO1xyXG5pbXBvcnQgeyBTZWxlY3RhYmxlVmFsdWUsIFF1ZXJ5RWRpdG9yUHJvcHMgfSBmcm9tICdAZ3JhZmFuYS9kYXRhJztcclxuaW1wb3J0IHsgRGF0YVNvdXJjZSB9IGZyb20gJy4uL2RhdGFzb3VyY2UnO1xyXG5pbXBvcnQgeyBNeURhdGFTb3VyY2VPcHRpb25zLCBNeVF1ZXJ5LCBRdWVyeVR5cGVzIH0gZnJvbSAnLi4vdHlwZXMnO1xyXG5pbXBvcnQgeyBRdWVyeVNlbGVjdE9wdGlvbnMgfSBmcm9tICcuLi9qcy9jb25zdGFudHMnXHJcbmltcG9ydCBcIi4uL2Nzcy9xdWVyeS1lZGl0b3IuY3NzXCI7XHJcbmltcG9ydCB7IFF1ZXJ5RWRpdG9yV2l6YXJkIH0gZnJvbSAnLi9FbGVtZW50UXVlcnlFZGl0b3InO1xyXG5pbXBvcnQgeyBNZXRhRGF0YVNlbGVjdG9yIH0gZnJvbSAnLi9NZXRhRGF0YUZpZWxkU2VsZWN0b3InO1xyXG5pbXBvcnQgeyBUZXh0UXVlcnkgfSBmcm9tICcuL1RleHRRdWVyeUVkaXRvcic7XHJcbmltcG9ydCB7IENvbW1hbmRMZXZlbFNlbGVjdG9yIH0gZnJvbSAnLi9Db21tYW5kTGV2ZWxTZWxlY3Rpb24nO1xyXG5cclxudHlwZSBQcm9wcyA9IFF1ZXJ5RWRpdG9yUHJvcHM8RGF0YVNvdXJjZSwgTXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucz47XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gUXVlcnlFZGl0b3IoeyBxdWVyeSwgb25DaGFuZ2UsIGRhdGFzb3VyY2UsIG9uUnVuUXVlcnkgfTogUHJvcHMpIHtcclxuXHJcbiAgY29uc3Qgc2VsZWN0ZWRNb2RlID0gUmVhY3QudXNlTWVtbygoKSA9PiAocXVlcnkucXVlcnlUeXBlID8/ICdFbGVtZW50cycpLCBbcXVlcnldKVxyXG5cclxuICBjb25zdCBtb2RlQ2hhbmdlID0gUmVhY3QudXNlQ2FsbGJhY2soKHNlbGVjdGVkOiBTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPikgPT4ge1xyXG4gICAgb25DaGFuZ2UoeyAuLi5xdWVyeSwgcXVlcnlUeXBlOiAoKHNlbGVjdGVkLnZhbHVlID8/ICdFbGVtZW50cycpIGFzIFF1ZXJ5VHlwZXMpIH0pXHJcbiAgfSwgW3F1ZXJ5LCBvbkNoYW5nZV0pXHJcblxyXG4gIGNvbnN0IGVsZW1lbnRzT25DaGFuZ2UgPSAocDogTXlRdWVyeSkgPT4ge1xyXG4gICAgb25DaGFuZ2UocCk7XHJcbiAgICBvblJ1blF1ZXJ5KCk7XHJcbiAgfVxyXG5cclxuICBjb25zdCB0ZXh0T25DaGFuZ2UgPSAocDogTXlRdWVyeSkgPT4ge1xyXG4gICAgb25DaGFuZ2UocCk7XHJcbiAgfVxyXG5cclxuICBjb25zdCBvbkJsdXIgPSAoKSA9PiB7XHJcbiAgICBvblJ1blF1ZXJ5KCk7XHJcbiAgfTtcclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxGaWVsZFNldCBzdHlsZT17eyBkaXNwbGF5OiAnZmxleCcsIGZsZXhEaXJlY3Rpb246ICdjb2x1bW4nIH19IG9uQmx1cj17b25CbHVyfT5cclxuICAgICAgPEZpZWxkU2V0IHN0eWxlPXt7IG1hcmdpbkJvdHRvbTogMCB9fT5cclxuICAgICAgICA8aDMgY2xhc3NOYW1lPVwicGFnZS1oZWFkaW5nXCIgc3R5bGU9e3sgbWFyZ2luVG9wOiAxNiB9fT5HZW5lcmFsIFNldHRpbmdzPC9oMz5cclxuICAgICAgICA8RmllbGRTZXQgc3R5bGU9e3sgbWFyZ2luQm90dG9tOiAxNiB9fT5cclxuICAgICAgICAgIDx0YWJsZT5cclxuICAgICAgICAgICAgPHRyPlxyXG4gICAgICAgICAgICAgIDx0ZD5cclxuICAgICAgICAgICAgICAgIDxJbmxpbmVGaWVsZFJvdz5cclxuICAgICAgICAgICAgICAgICAgPElubGluZUZpZWxkIGxhYmVsPVwiRGF0YSBTZWxlY3Rpb24gTW9kZVwiIGxhYmVsV2lkdGg9ezI0fT5cclxuICAgICAgICAgICAgICAgICAgICA8U2VsZWN0IG9wdGlvbnM9e1F1ZXJ5U2VsZWN0T3B0aW9uc30gdmFsdWU9e3NlbGVjdGVkTW9kZX0gb25DaGFuZ2U9e21vZGVDaGFuZ2V9IGFsbG93Q3VzdG9tVmFsdWU9e2ZhbHNlfSAvPlxyXG4gICAgICAgICAgICAgICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgICAgICAgICAgICAgICA8SW5saW5lRmllbGQgbGFiZWw9XCJUcmFuc3Bvc2UgUXVlcnkgUmVzdWx0c1wiIGxhYmVsV2lkdGg9ezI0fT5cclxuICAgICAgICAgICAgICAgICAgICA8SW5saW5lU3dpdGNoIHZhbHVlPXtxdWVyeS50cmFuc3Bvc2UgPz8gZmFsc2V9XHJcbiAgICAgICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KHYpID0+IGVsZW1lbnRzT25DaGFuZ2UoeyAuLi5xdWVyeSwgdHJhbnNwb3NlOiAhKHF1ZXJ5LnRyYW5zcG9zZSA/PyBmYWxzZSkgfSl9XHJcbiAgICAgICAgICAgICAgICAgICAgICBzaG93TGFiZWw9e3RydWV9XHJcbiAgICAgICAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgICAgICAgICAgICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICAgICAgICAgICAgPC90ZD5cclxuICAgICAgICAgICAgPC90cj5cclxuICAgICAgICAgICAgPHRyIHN0eWxlPXt7IGhlaWdodDogMTYgfX0+XHJcbiAgICAgICAgICAgICAgPHRkPjwvdGQ+XHJcbiAgICAgICAgICAgIDwvdHI+XHJcbiAgICAgICAgICAgIDx0cj5cclxuICAgICAgICAgICAgICA8dGQ+XHJcbiAgICAgICAgICAgICAgICB7c2VsZWN0ZWRNb2RlID09PSAnRWxlbWVudHMnID8gPENvbW1hbmRMZXZlbFNlbGVjdG9yIHF1ZXJ5PXtxdWVyeS5jb21tYW5kTGV2ZWx9IG9uQ2hhbmdlPXsocSkgPT4gZWxlbWVudHNPbkNoYW5nZSh7IC4uLnF1ZXJ5LCBjb21tYW5kTGV2ZWw6IHEgfSl9IC8+IDogbnVsbH1cclxuICAgICAgICAgICAgICA8L3RkPlxyXG4gICAgICAgICAgICA8L3RyPlxyXG4gICAgICAgICAgPC90YWJsZT5cclxuICAgICAgICA8L0ZpZWxkU2V0PlxyXG4gICAgICA8L0ZpZWxkU2V0PlxyXG4gICAgICA8RmllbGRTZXQgc3R5bGU9e3sgbWFyZ2luQm90dG9tOiAxNiB9fT5cclxuICAgICAgICA8aDMgY2xhc3NOYW1lPVwicGFnZS1oZWFkaW5nXCI+TWV0YSBEYXRhPC9oMz5cclxuICAgICAgICA8TWV0YURhdGFTZWxlY3RvciBkYXRhc291cmNlPXtkYXRhc291cmNlfSBvbkNoYW5nZT17KGZpZWxkcykgPT4gZWxlbWVudHNPbkNoYW5nZSh7IC4uLnF1ZXJ5LCBtZXRhZGF0YU9wdGlvbnM6IGZpZWxkcyB9KX0gcXVlcnk9e3F1ZXJ5Lm1ldGFkYXRhT3B0aW9uc30gLz5cclxuICAgICAgPC9GaWVsZFNldD5cclxuICAgICAgPEZpZWxkU2V0PlxyXG4gICAgICAgIDxoMyBjbGFzc05hbWU9XCJwYWdlLWhlYWRpbmdcIj5EYXRhIFNlbGVjdGlvbjwvaDM+XHJcbiAgICAgICAge3F1ZXJ5LnF1ZXJ5VHlwZSA9PT0gJ1RleHQnID8gPFRleHRRdWVyeSBvbkNoYW5nZT17KHQpID0+IHRleHRPbkNoYW5nZSh7IC4uLnF1ZXJ5LCBxdWVyeVRleHQ6IHQgfSl9IHF1ZXJ5PXtxdWVyeS5xdWVyeVRleHR9IC8+IDogbnVsbH1cclxuICAgICAgICB7cXVlcnkucXVlcnlUeXBlID09PSAnRWxlbWVudHMnIHx8IHF1ZXJ5LnF1ZXJ5VHlwZSA9PT0gdW5kZWZpbmVkID8gPFF1ZXJ5RWRpdG9yV2l6YXJkXHJcbiAgICAgICAgICBvbkNoYW5nZT17KHEpID0+IGVsZW1lbnRzT25DaGFuZ2UoeyAuLi5xdWVyeSwgcXVlcnlUZXh0OiBxLnF1ZXJ5VGV4dCwgcGFyc2VkUXVlcnk6IHEucGFyc2VkUXVlcnkgfSl9IHF1ZXJ5PXtxdWVyeX1cclxuICAgICAgICAgIGRhdGFzb3VyY2U9e2RhdGFzb3VyY2V9IC8+IDogbnVsbH1cclxuICAgICAgPC9GaWVsZFNldD5cclxuICAgIDwvRmllbGRTZXQgPlxyXG4gICk7XHJcbn1cclxuIl0sIm5hbWVzIjpbIlJlYWN0IiwiSW5saW5lRmllbGRSb3ciLCJJbmxpbmVGaWVsZCIsIlNlbGVjdCIsIklubGluZVN3aXRjaCIsIkZpZWxkU2V0IiwiUXVlcnlTZWxlY3RPcHRpb25zIiwiUXVlcnlFZGl0b3JXaXphcmQiLCJNZXRhRGF0YVNlbGVjdG9yIiwiVGV4dFF1ZXJ5IiwiQ29tbWFuZExldmVsU2VsZWN0b3IiLCJRdWVyeUVkaXRvciIsInF1ZXJ5Iiwib25DaGFuZ2UiLCJkYXRhc291cmNlIiwib25SdW5RdWVyeSIsInNlbGVjdGVkTW9kZSIsInVzZU1lbW8iLCJxdWVyeVR5cGUiLCJtb2RlQ2hhbmdlIiwidXNlQ2FsbGJhY2siLCJzZWxlY3RlZCIsInZhbHVlIiwiZWxlbWVudHNPbkNoYW5nZSIsInAiLCJ0ZXh0T25DaGFuZ2UiLCJvbkJsdXIiLCJzdHlsZSIsImRpc3BsYXkiLCJmbGV4RGlyZWN0aW9uIiwibWFyZ2luQm90dG9tIiwiaDMiLCJjbGFzc05hbWUiLCJtYXJnaW5Ub3AiLCJ0YWJsZSIsInRyIiwidGQiLCJsYWJlbCIsImxhYmVsV2lkdGgiLCJvcHRpb25zIiwiYWxsb3dDdXN0b21WYWx1ZSIsInRyYW5zcG9zZSIsInYiLCJzaG93TGFiZWwiLCJoZWlnaHQiLCJjb21tYW5kTGV2ZWwiLCJxIiwiZmllbGRzIiwibWV0YWRhdGFPcHRpb25zIiwidCIsInF1ZXJ5VGV4dCIsInVuZGVmaW5lZCIsInBhcnNlZFF1ZXJ5Il0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/QueryEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./components/TextQueryEditor.tsx":
+/*!****************************************!*\
+  !*** ./components/TextQueryEditor.tsx ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   TextQuery: () => (/* binding */ TextQuery)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n\n\n\nconst TextQuery = (props)=>{\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Query Editor\",\n        labelWidth: 12,\n        grow: true,\n        shrink: true\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.TextArea, {\n        value: props.query,\n        onChange: (evt)=>props.onChange(evt.target.value),\n        rows: 10,\n        width: 150\n    })));\n};\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jb21wb25lbnRzL1RleHRRdWVyeUVkaXRvci50c3giLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7O0FBQTBCO0FBQ29DO0FBQzdCO0FBSzFCLE1BQU1JLFlBQVksQ0FBQ0M7SUFDeEIscUJBQU8sMkRBQUNKLGlEQUFRQSxzQkFDZCwyREFBQ0Msb0RBQVdBO1FBQUNJLE9BQU07UUFBZUMsWUFBWTtRQUFJQyxNQUFNO1FBQU1DLFFBQVE7cUJBQ3BFLDJEQUFDTixpREFBUUE7UUFDUE8sT0FBT0wsTUFBTU0sS0FBSztRQUNsQkMsVUFBVSxDQUFDQyxNQUFnRFIsTUFBTU8sUUFBUSxDQUFDQyxJQUFJQyxNQUFNLENBQUNKLEtBQUs7UUFDMUZLLE1BQU07UUFDTkMsT0FBTzs7QUFJZixFQUFDIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vY29tcG9uZW50cy9UZXh0UXVlcnlFZGl0b3IudHN4P2ExOGQiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0IHsgRmllbGRTZXQsIElubGluZUZpZWxkLCBUZXh0QXJlYSB9IGZyb20gJ0BncmFmYW5hL3VpJztcclxuaW1wb3J0IFwiLi4vY3NzL3F1ZXJ5LWVkaXRvci5jc3NcIjtcclxuXHJcblxyXG5pbnRlcmZhY2UgVGV4dFF1ZXJ5UHJvcHMgeyBvbkNoYW5nZTogKHZhbHVlOiBzdHJpbmcpID0+IHZvaWQsIHF1ZXJ5OiBzdHJpbmcgfVxyXG5cclxuZXhwb3J0IGNvbnN0IFRleHRRdWVyeSA9IChwcm9wczogVGV4dFF1ZXJ5UHJvcHMpID0+IHtcclxuICByZXR1cm4gPEZpZWxkU2V0PlxyXG4gICAgPElubGluZUZpZWxkIGxhYmVsPVwiUXVlcnkgRWRpdG9yXCIgbGFiZWxXaWR0aD17MTJ9IGdyb3c9e3RydWV9IHNocmluaz17dHJ1ZX0+XHJcbiAgICAgIDxUZXh0QXJlYVxyXG4gICAgICAgIHZhbHVlPXtwcm9wcy5xdWVyeX1cclxuICAgICAgICBvbkNoYW5nZT17KGV2dDogUmVhY3QuQ2hhbmdlRXZlbnQ8SFRNTFRleHRBcmVhRWxlbWVudD4pID0+IHByb3BzLm9uQ2hhbmdlKGV2dC50YXJnZXQudmFsdWUpfVxyXG4gICAgICAgIHJvd3M9ezEwfVxyXG4gICAgICAgIHdpZHRoPXsxNTB9XHJcbiAgICAgIC8+XHJcbiAgICA8L0lubGluZUZpZWxkPlxyXG4gIDwvRmllbGRTZXQ+O1xyXG59XHJcbiJdLCJuYW1lcyI6WyJSZWFjdCIsIkZpZWxkU2V0IiwiSW5saW5lRmllbGQiLCJUZXh0QXJlYSIsIlRleHRRdWVyeSIsInByb3BzIiwibGFiZWwiLCJsYWJlbFdpZHRoIiwiZ3JvdyIsInNocmluayIsInZhbHVlIiwicXVlcnkiLCJvbkNoYW5nZSIsImV2dCIsInRhcmdldCIsInJvd3MiLCJ3aWR0aCJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/TextQueryEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./components/VariableQueryEditor.tsx":
+/*!********************************************!*\
+  !*** ./components/VariableQueryEditor.tsx ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   VariableQueryEditor: () => (/* binding */ VariableQueryEditor)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ \"@grafana/ui\");\n/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _css_query_editor_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/query-editor.css */ \"./css/query-editor.css\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @grafana/runtime */ \"@grafana/runtime\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__);\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\nfunction _object_spread(target) {\n    for(var i = 1; i < arguments.length; i++){\n        var source = arguments[i] != null ? arguments[i] : {};\n        var ownKeys = Object.keys(source);\n        if (typeof Object.getOwnPropertySymbols === \"function\") {\n            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n            }));\n        }\n        ownKeys.forEach(function(key) {\n            _define_property(target, key, source[key]);\n        });\n    }\n    return target;\n}\nfunction ownKeys(object, enumerableOnly) {\n    var keys = Object.keys(object);\n    if (Object.getOwnPropertySymbols) {\n        var symbols = Object.getOwnPropertySymbols(object);\n        if (enumerableOnly) {\n            symbols = symbols.filter(function(sym) {\n                return Object.getOwnPropertyDescriptor(object, sym).enumerable;\n            });\n        }\n        keys.push.apply(keys, symbols);\n    }\n    return keys;\n}\nfunction _object_spread_props(target, source) {\n    source = source != null ? source : {};\n    if (Object.getOwnPropertyDescriptors) {\n        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));\n    } else {\n        ownKeys(Object(source)).forEach(function(key) {\n            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));\n        });\n    }\n    return target;\n}\n\n\n\n\nfunction VariableQueryEditor(props) {\n    var _props_query, _props_query_fieldNames, _props_query1, _props_query_tableName, _props_query2, _props_query3, _props_query_tableName1, _props_query4, _props_query5;\n    const [tableOptions, setTableOptions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    const [fieldOptions, setFieldOptions] = react__WEBPACK_IMPORTED_MODULE_0___default().useState([]);\n    const [isInitialLoad, setIsInitialLoad] = react__WEBPACK_IMPORTED_MODULE_0___default().useState(true);\n    const { onChange, query } = props;\n    // Effect for setting default tableName\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        if (isInitialLoad && !query.tableName) {\n            onChange(_object_spread_props(_object_spread({}, query), {\n                tableName: 'ActiveMeasurements',\n                fieldNames: [\n                    'PointTag'\n                ]\n            }));\n        }\n        setIsInitialLoad(false);\n    }, [\n        isInitialLoad,\n        onChange,\n        query\n    ]);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/GetValueTypeTables\", {\n            dataTypeIndex: -1 /* no restriction */ ,\n            expression: \"\"\n        }).then((d)=>{\n            setTableOptions(d.map((t)=>({\n                    value: t,\n                    label: t\n                })));\n        });\n    }, [\n        props.datasource.url,\n        props.datasource.valueTypeIndex,\n        query.tableName\n    ]);\n    react__WEBPACK_IMPORTED_MODULE_0___default().useEffect(()=>{\n        if (!query.tableName) {\n            return;\n        }\n        (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_3__.getBackendSrv)().post(props.datasource.url + \"/GetValueTypeTableFields\", {\n            dataTypeIndex: -1 /* no restriction */ ,\n            expression: query.tableName\n        }).then((d)=>{\n            setFieldOptions(d.map((t)=>({\n                    value: t.name,\n                    label: t.name\n                })));\n        });\n    }, [\n        props.datasource.url,\n        props.datasource.valueTypeIndex,\n        query.tableName\n    ]);\n    function onTableChange(t) {\n        let newFieldNames = props.query.fieldNames;\n        if (t.value === 'ActiveMeasurements') {\n            if (!newFieldNames.includes('PointTag')) {\n                newFieldNames = [\n                    'PointTag'\n                ];\n            }\n        } else {\n            newFieldNames = [\n                '*'\n            ];\n        }\n        var _t_value;\n        props.onChange(_object_spread_props(_object_spread({}, props.query), {\n            tableName: (_t_value = t.value) !== null && _t_value !== void 0 ? _t_value : '',\n            fieldNames: newFieldNames\n        }));\n    }\n    function onFieldChange(t) {\n        let newFieldNames = t.map((sv)=>{\n            var _sv_value;\n            var _sv_value_toString;\n            return (_sv_value_toString = (_sv_value = sv.value) === null || _sv_value === void 0 ? void 0 : _sv_value.toString()) !== null && _sv_value_toString !== void 0 ? _sv_value_toString : '';\n        });\n        // Handle special case for ActiveMeasurements (allows 'PointTag` field to be deselected)\n        if (props.query.tableName === 'ActiveMeasurements' && newFieldNames.length === 0) {\n            newFieldNames = [\n                '*'\n            ];\n        }\n        props.onChange(_object_spread_props(_object_spread({}, props.query), {\n            fieldNames: newFieldNames\n        }));\n    }\n    function onConditionChange(val) {\n        props.onChange(_object_spread_props(_object_spread({}, props.query), {\n            condition: val.target.value\n        }));\n    }\n    var _props_query_fieldNames_length, _props_query_tableName_length, _props_query_tableName_length1;\n    return /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, {\n        style: {\n            display: 'flex',\n            flexDirection: 'column'\n        }\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.FieldSet, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"Select\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.MultiSelect, {\n        value: (_props_query = props.query) === null || _props_query === void 0 ? void 0 : _props_query.fieldNames,\n        options: fieldOptions,\n        isLoading: fieldOptions.length === 0,\n        onChange: onFieldChange,\n        isSearchable: true,\n        invalid: ((_props_query_fieldNames_length = (_props_query1 = props.query) === null || _props_query1 === void 0 ? void 0 : (_props_query_fieldNames = _props_query1.fieldNames) === null || _props_query_fieldNames === void 0 ? void 0 : _props_query_fieldNames.length) !== null && _props_query_fieldNames_length !== void 0 ? _props_query_fieldNames_length : 0) === 0,\n        disabled: ((_props_query_tableName_length = (_props_query2 = props.query) === null || _props_query2 === void 0 ? void 0 : (_props_query_tableName = _props_query2.tableName) === null || _props_query_tableName === void 0 ? void 0 : _props_query_tableName.length) !== null && _props_query_tableName_length !== void 0 ? _props_query_tableName_length : 0) === 0\n    })), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"FROM\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Select, {\n        value: (_props_query3 = props.query) === null || _props_query3 === void 0 ? void 0 : _props_query3.tableName,\n        options: tableOptions,\n        isLoading: tableOptions.length === 0,\n        onChange: onTableChange,\n        isSearchable: true,\n        invalid: ((_props_query_tableName_length1 = (_props_query4 = props.query) === null || _props_query4 === void 0 ? void 0 : (_props_query_tableName1 = _props_query4.tableName) === null || _props_query_tableName1 === void 0 ? void 0 : _props_query_tableName1.length) !== null && _props_query_tableName_length1 !== void 0 ? _props_query_tableName_length1 : 0) === 0\n    }))), /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineFieldRow, null, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.InlineField, {\n        label: \"WHERE\",\n        labelWidth: 12\n    }, /*#__PURE__*/ react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__.Input, {\n        value: (_props_query5 = props.query) === null || _props_query5 === void 0 ? void 0 : _props_query5.condition,\n        onChange: onConditionChange\n    })))));\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jb21wb25lbnRzL1ZhcmlhYmxlUXVlcnlFZGl0b3IudHN4IiwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUEwQjtBQUNzRTtBQUcvRDtBQUVnQjtBQVExQyxTQUFTUSxvQkFBb0JDLEtBQXlCO1FBcUV4Q0EsY0FLR0EseUJBQUFBLGVBQ0NBLHdCQUFBQSxlQUtKQSxlQUtHQSx5QkFBQUEsZUFPSEE7SUEzRm5CLE1BQU0sQ0FBQ0MsY0FBY0MsZ0JBQWdCLEdBQUdYLHFEQUFjLENBQWlDLEVBQUU7SUFDekYsTUFBTSxDQUFDYSxjQUFjQyxnQkFBZ0IsR0FBR2QscURBQWMsQ0FBaUMsRUFBRTtJQUN6RixNQUFNLENBQUNlLGVBQWVDLGlCQUFpQixHQUFHaEIscURBQWMsQ0FBQztJQUN6RCxNQUFNLEVBQUVpQixRQUFRLEVBQUVDLEtBQUssRUFBRSxHQUFHVDtJQUU1Qix1Q0FBdUM7SUFDdkNULHNEQUFlLENBQUM7UUFDZCxJQUFJZSxpQkFBaUIsQ0FBQ0csTUFBTUUsU0FBUyxFQUFFO1lBQ3JDSCxTQUFTLHdDQUFLQztnQkFBT0UsV0FBVztnQkFBc0JDLFlBQVk7b0JBQUM7aUJBQVc7O1FBQ2hGO1FBQ0FMLGlCQUFpQjtJQUNuQixHQUFHO1FBQUNEO1FBQWVFO1FBQVVDO0tBQU07SUFFbkNsQixzREFBZSxDQUFDO1FBQ2RPLCtEQUFhQSxHQUFHZSxJQUFJLENBQUNiLE1BQU1jLFVBQVUsQ0FBQ0MsR0FBRyxHQUFHLHVCQUF1QjtZQUNqRUMsZUFBZSxDQUFDLEVBQUUsa0JBQWtCO1lBQ3BDQyxZQUFZO1FBQ2QsR0FDR0MsSUFBSSxDQUFDLENBQUNDO1lBQWtCakIsZ0JBQWdCaUIsRUFBRUMsR0FBRyxDQUFDQyxDQUFBQSxJQUFNO29CQUFFQyxPQUFPRDtvQkFBR0UsT0FBT0Y7Z0JBQUU7UUFBTTtJQUNwRixHQUFHO1FBQUNyQixNQUFNYyxVQUFVLENBQUNDLEdBQUc7UUFB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TUFBTSxjQUE5QmhDLDJDQUFBQSxnQ0FBa0MsT0FBTzt1QkFHeEQsMkRBQUNQLG9EQUFXQTtRQUFDOEIsT0FBTTtRQUFPaUIsWUFBWTtxQkFDcEMsMkRBQUMzQywrQ0FBTUE7UUFDTHlCLEtBQUssR0FBRXRCLGdCQUFBQSxNQUFNUyxLQUFLLGNBQVhULG9DQUFBQSxjQUFhVyxTQUFTO1FBQzdCOEIsU0FBU3hDO1FBQ1R5QyxXQUFXekMsYUFBYStCLE1BQU0sS0FBSztRQUNuQ3hCLFVBQVVrQjtRQUNWaUIsY0FBQUE7UUFDQUMsU0FBUyxDQUFDNUMsQ0FBQUEsa0NBQUFBLGdCQUFBQSxNQUFNUyxLQUFLLGNBQVhULHFDQUFBQSwwQkFBQUEsY0FBYVcsU0FBUyxjQUF0QlgsOENBQUFBLHdCQUF3QmdDLE1BQU0sY0FBOUJoQyw0Q0FBQUEsaUNBQWtDLE9BQU87d0JBSXpELDJEQUFDTix1REFBY0Esc0JBQ2IsMkRBQUNELG9EQUFXQTtRQUFDOEIsT0FBTTtRQUFRaUIsWUFBWTtxQkFDckMsMkRBQUM3Qyw4Q0FBS0E7UUFDSjJCLEtBQUssR0FBRXRCLGdCQUFBQSxNQUFNUyxLQUFLLGNBQVhULG9DQUFBQSxjQUFhbUMsU0FBUztRQUM3QjNCLFVBQVV5Qjs7QUFPeEIiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL1ZhcmlhYmxlUXVlcnlFZGl0b3IudHN4P2U1ODMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0IHsgRmllbGRTZXQsIElubGluZUZpZWxkLCBJbmxpbmVGaWVsZFJvdywgSW5wdXQsIE11bHRpU2VsZWN0LCBTZWxlY3QgfSBmcm9tICdAZ3JhZmFuYS91aSc7XHJcbmltcG9ydCB7IERhdGFTb3VyY2UgfSBmcm9tICcuLi9kYXRhc291cmNlJztcclxuaW1wb3J0IHsgRmllbGREZXNjcmlwdGlvbiwgTXlWYXJpYWJsZVF1ZXJ5IH0gZnJvbSAnLi4vdHlwZXMnO1xyXG5pbXBvcnQgXCIuLi9jc3MvcXVlcnktZWRpdG9yLmNzc1wiO1xyXG5pbXBvcnQgeyBTZWxlY3RhYmxlVmFsdWUgfSBmcm9tICdAZ3JhZmFuYS9kYXRhJztcclxuaW1wb3J0IHsgZ2V0QmFja2VuZFNydiB9IGZyb20gJ0BncmFmYW5hL3J1bnRpbWUnO1xyXG5cclxuaW50ZXJmYWNlIFZhcmlhYmxlUXVlcnlQcm9wcyB7XHJcbiAgcXVlcnk6IE15VmFyaWFibGVRdWVyeTtcclxuICBvbkNoYW5nZTogKHF1ZXJ5OiBNeVZhcmlhYmxlUXVlcnkpID0+IHZvaWQ7XHJcbiAgZGF0YXNvdXJjZTogRGF0YVNvdXJjZVxyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gVmFyaWFibGVRdWVyeUVkaXRvcihwcm9wczogVmFyaWFibGVRdWVyeVByb3BzKSB7XHJcbiAgY29uc3QgW3RhYmxlT3B0aW9ucywgc2V0VGFibGVPcHRpb25zXSA9IFJlYWN0LnVzZVN0YXRlPEFycmF5PFNlbGVjdGFibGVWYWx1ZTxzdHJpbmc+Pj4oW10pO1xyXG4gIGNvbnN0IFtmaWVsZE9wdGlvbnMsIHNldEZpZWxkT3B0aW9uc10gPSBSZWFjdC51c2VTdGF0ZTxBcnJheTxTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPj4+KFtdKTtcclxuICBjb25zdCBbaXNJbml0aWFsTG9hZCwgc2V0SXNJbml0aWFsTG9hZF0gPSBSZWFjdC51c2VTdGF0ZSh0cnVlKTtcclxuICBjb25zdCB7IG9uQ2hhbmdlLCBxdWVyeSB9ID0gcHJvcHM7XHJcblxyXG4gIC8vIEVmZmVjdCBmb3Igc2V0dGluZyBkZWZhdWx0IHRhYmxlTmFtZVxyXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBpZiAoaXNJbml0aWFsTG9hZCAmJiAhcXVlcnkudGFibGVOYW1lKSB7XHJcbiAgICAgIG9uQ2hhbmdlKHsgLi4ucXVlcnksIHRhYmxlTmFtZTogJ0FjdGl2ZU1lYXN1cmVtZW50cycsIGZpZWxkTmFtZXM6IFsnUG9pbnRUYWcnXSB9KTtcclxuICAgIH1cclxuICAgIHNldElzSW5pdGlhbExvYWQoZmFsc2UpO1xyXG4gIH0sIFtpc0luaXRpYWxMb2FkLCBvbkNoYW5nZSwgcXVlcnldKTtcclxuXHJcbiAgUmVhY3QudXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGdldEJhY2tlbmRTcnYoKS5wb3N0KHByb3BzLmRhdGFzb3VyY2UudXJsICsgXCIvR2V0VmFsdWVUeXBlVGFibGVzXCIsIHtcclxuICAgICAgZGF0YVR5cGVJbmRleDogLTEgLyogbm8gcmVzdHJpY3Rpb24gKi8sXHJcbiAgICAgIGV4cHJlc3Npb246IFwiXCJcclxuICAgIH0pXHJcbiAgICAgIC50aGVuKChkOiBzdHJpbmdbXSkgPT4geyBzZXRUYWJsZU9wdGlvbnMoZC5tYXAodCA9PiAoeyB2YWx1ZTogdCwgbGFiZWw6IHQgfSkpKTsgfSlcclxuICB9LCBbcHJvcHMuZGF0YXNvdXJjZS51cmwsIHByb3BzLmRhdGFzb3VyY2UudmFsdWVUeXBlSW5kZXgsIHF1ZXJ5LnRhYmxlTmFtZV0pXHJcblxyXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBpZiAoIXF1ZXJ5LnRhYmxlTmFtZSkge1xyXG4gICAgICByZXR1cm47XHJcbiAgICB9XHJcblxyXG4gICAgZ2V0QmFja2VuZFNydigpLnBvc3QocHJvcHMuZGF0YXNvdXJjZS51cmwgKyBcIi9HZXRWYWx1ZVR5cGVUYWJsZUZpZWxkc1wiLCB7XHJcbiAgICAgIGRhdGFUeXBlSW5kZXg6IC0xIC8qIG5vIHJlc3RyaWN0aW9uICovLFxyXG4gICAgICBleHByZXNzaW9uOiBxdWVyeS50YWJsZU5hbWVcclxuICAgIH0pXHJcbiAgICAgIC50aGVuKChkOiBGaWVsZERlc2NyaXB0aW9uW10pID0+IHsgc2V0RmllbGRPcHRpb25zKGQubWFwKHQgPT4gKHsgdmFsdWU6IHQubmFtZSwgbGFiZWw6IHQubmFtZSB9KSkpOyB9KVxyXG4gIH0sIFtwcm9wcy5kYXRhc291cmNlLnVybCwgcHJvcHMuZGF0YXNvdXJjZS52YWx1ZVR5cGVJbmRleCwgcXVlcnkudGFibGVOYW1lXSlcclxuXHJcbiAgZnVuY3Rpb24gb25UYWJsZUNoYW5nZSh0OiBTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPikge1xyXG4gICAgbGV0IG5ld0ZpZWxkTmFtZXMgPSBwcm9wcy5xdWVyeS5maWVsZE5hbWVzO1xyXG5cclxuICAgIGlmICh0LnZhbHVlID09PSAnQWN0aXZlTWVhc3VyZW1lbnRzJykge1xyXG4gICAgICBpZiAoIW5ld0ZpZWxkTmFtZXMuaW5jbHVkZXMoJ1BvaW50VGFnJykpIHtcclxuICAgICAgICBuZXdGaWVsZE5hbWVzID0gWydQb2ludFRhZyddO1xyXG4gICAgICB9XHJcbiAgICB9IGVsc2Uge1xyXG4gICAgICBuZXdGaWVsZE5hbWVzID0gWycqJ107XHJcbiAgICB9XHJcblxyXG4gICAgcHJvcHMub25DaGFuZ2UoeyAuLi5wcm9wcy5xdWVyeSwgdGFibGVOYW1lOiB0LnZhbHVlID8/ICcnLCBmaWVsZE5hbWVzOiBuZXdGaWVsZE5hbWVzIH0pO1xyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gb25GaWVsZENoYW5nZSh0OiBBcnJheTxTZWxlY3RhYmxlVmFsdWU8c3RyaW5nPj4pIHtcclxuICAgIGxldCBuZXdGaWVsZE5hbWVzID0gdC5tYXAoc3YgPT4gc3YudmFsdWU/LnRvU3RyaW5nKCkgPz8gJycpO1xyXG5cclxuICAgIC8vIEhhbmRsZSBzcGVjaWFsIGNhc2UgZm9yIEFjdGl2ZU1lYXN1cmVtZW50cyAoYWxsb3dzICdQb2ludFRhZ2AgZmllbGQgdG8gYmUgZGVzZWxlY3RlZClcclxuICAgIGlmIChwcm9wcy5xdWVyeS50YWJsZU5hbWUgPT09ICdBY3RpdmVNZWFzdXJlbWVudHMnICYmIG5ld0ZpZWxkTmFtZXMubGVuZ3RoID09PSAwKSB7XHJcbiAgICAgIG5ld0ZpZWxkTmFtZXMgPSBbJyonXTtcclxuICAgIH1cclxuXHJcbiAgICBwcm9wcy5vbkNoYW5nZSh7IC4uLnByb3BzLnF1ZXJ5LCBmaWVsZE5hbWVzOiBuZXdGaWVsZE5hbWVzIH0pO1xyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb24gb25Db25kaXRpb25DaGFuZ2UodmFsOiBhbnkpIHtcclxuICAgIHByb3BzLm9uQ2hhbmdlKHsgLi4ucHJvcHMucXVlcnksIGNvbmRpdGlvbjogdmFsLnRhcmdldC52YWx1ZSB9KVxyXG4gIH1cclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxGaWVsZFNldCBzdHlsZT17eyBkaXNwbGF5OiAnZmxleCcsIGZsZXhEaXJlY3Rpb246ICdjb2x1bW4nIH19PlxyXG4gICAgICA8RmllbGRTZXQ+XHJcbiAgICAgICAgPElubGluZUZpZWxkUm93PlxyXG4gICAgICAgICAgPElubGluZUZpZWxkIGxhYmVsPVwiU2VsZWN0XCIgbGFiZWxXaWR0aD17MTJ9PlxyXG4gICAgICAgICAgICA8TXVsdGlTZWxlY3RcclxuICAgICAgICAgICAgICB2YWx1ZT17cHJvcHMucXVlcnk/LmZpZWxkTmFtZXN9XHJcbiAgICAgICAgICAgICAgb3B0aW9ucz17ZmllbGRPcHRpb25zfVxyXG4gICAgICAgICAgICAgIGlzTG9hZGluZz17ZmllbGRPcHRpb25zLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICBvbkNoYW5nZT17b25GaWVsZENoYW5nZX1cclxuICAgICAgICAgICAgICBpc1NlYXJjaGFibGVcclxuICAgICAgICAgICAgICBpbnZhbGlkPXsocHJvcHMucXVlcnk/LmZpZWxkTmFtZXM/Lmxlbmd0aCA/PyAwKSA9PT0gMH1cclxuICAgICAgICAgICAgICBkaXNhYmxlZD17KHByb3BzLnF1ZXJ5Py50YWJsZU5hbWU/Lmxlbmd0aCA/PyAwKSA9PT0gMH1cclxuICAgICAgICAgICAgLz5cclxuICAgICAgICAgIDwvSW5saW5lRmllbGQ+XHJcbiAgICAgICAgICA8SW5saW5lRmllbGQgbGFiZWw9XCJGUk9NXCIgbGFiZWxXaWR0aD17MTJ9PlxyXG4gICAgICAgICAgICA8U2VsZWN0XHJcbiAgICAgICAgICAgICAgdmFsdWU9e3Byb3BzLnF1ZXJ5Py50YWJsZU5hbWV9XHJcbiAgICAgICAgICAgICAgb3B0aW9ucz17dGFibGVPcHRpb25zfVxyXG4gICAgICAgICAgICAgIGlzTG9hZGluZz17dGFibGVPcHRpb25zLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICBvbkNoYW5nZT17b25UYWJsZUNoYW5nZX1cclxuICAgICAgICAgICAgICBpc1NlYXJjaGFibGVcclxuICAgICAgICAgICAgICBpbnZhbGlkPXsocHJvcHMucXVlcnk/LnRhYmxlTmFtZT8ubGVuZ3RoID8/IDApID09PSAwfVxyXG4gICAgICAgICAgICAvPlxyXG4gICAgICAgICAgPC9JbmxpbmVGaWVsZD5cclxuICAgICAgICA8L0lubGluZUZpZWxkUm93PlxyXG4gICAgICAgIDxJbmxpbmVGaWVsZFJvdz5cclxuICAgICAgICAgIDxJbmxpbmVGaWVsZCBsYWJlbD1cIldIRVJFXCIgbGFiZWxXaWR0aD17MTJ9PlxyXG4gICAgICAgICAgICA8SW5wdXRcclxuICAgICAgICAgICAgICB2YWx1ZT17cHJvcHMucXVlcnk/LmNvbmRpdGlvbn1cclxuICAgICAgICAgICAgICBvbkNoYW5nZT17b25Db25kaXRpb25DaGFuZ2V9XHJcbiAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICA8L0lubGluZUZpZWxkPlxyXG4gICAgICAgIDwvSW5saW5lRmllbGRSb3c+XHJcbiAgICAgIDwvRmllbGRTZXQ+XHJcbiAgICA8L0ZpZWxkU2V0PlxyXG4gICk7XHJcbn1cclxuIl0sIm5hbWVzIjpbIlJlYWN0IiwiRmllbGRTZXQiLCJJbmxpbmVGaWVsZCIsIklubGluZUZpZWxkUm93IiwiSW5wdXQiLCJNdWx0aVNlbGVjdCIsIlNlbGVjdCIsImdldEJhY2tlbmRTcnYiLCJWYXJpYWJsZVF1ZXJ5RWRpdG9yIiwicHJvcHMiLCJ0YWJsZU9wdGlvbnMiLCJzZXRUYWJsZU9wdGlvbnMiLCJ1c2VTdGF0ZSIsImZpZWxkT3B0aW9ucyIsInNldEZpZWxkT3B0aW9ucyIsImlzSW5pdGlhbExvYWQiLCJzZXRJc0luaXRpYWxMb2FkIiwib25DaGFuZ2UiLCJxdWVyeSIsInVzZUVmZmVjdCIsInRhYmxlTmFtZSIsImZpZWxkTmFtZXMiLCJwb3N0IiwiZGF0YXNvdXJjZSIsInVybCIsImRhdGFUeXBlSW5kZXgiLCJleHByZXNzaW9uIiwidGhlbiIsImQiLCJtYXAiLCJ0IiwidmFsdWUiLCJsYWJlbCIsInZhbHVlVHlwZUluZGV4IiwibmFtZSIsIm9uVGFibGVDaGFuZ2UiLCJuZXdGaWVsZE5hbWVzIiwiaW5jbHVkZXMiLCJvbkZpZWxkQ2hhbmdlIiwic3YiLCJ0b1N0cmluZyIsImxlbmd0aCIsIm9uQ29uZGl0aW9uQ2hhbmdlIiwidmFsIiwiY29uZGl0aW9uIiwidGFyZ2V0Iiwic3R5bGUiLCJkaXNwbGF5IiwiZmxleERpcmVjdGlvbiIsImxhYmVsV2lkdGgiLCJvcHRpb25zIiwiaXNMb2FkaW5nIiwiaXNTZWFyY2hhYmxlIiwiaW52YWxpZCIsImRpc2FibGVkIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/VariableQueryEditor.tsx\n");
+
+/***/ }),
+
+/***/ "./datasource.ts":
+/*!***********************!*\
+  !*** ./datasource.ts ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   DataSource: () => (/* binding */ DataSource)\n/* harmony export */ });\n/* harmony import */ var _grafana_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafana/data */ \"@grafana/data\");\n/* harmony import */ var _grafana_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_grafana_data__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/runtime */ \"@grafana/runtime\");\n/* harmony import */ var _grafana_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _js_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/constants */ \"./js/constants.ts\");\n/* harmony import */ var _components_AnnotationEditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/AnnotationEditor */ \"./components/AnnotationEditor.tsx\");\nfunction asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {\n    try {\n        var info = gen[key](arg);\n        var value = info.value;\n    } catch (error) {\n        reject(error);\n        return;\n    }\n    if (info.done) {\n        resolve(value);\n    } else {\n        Promise.resolve(value).then(_next, _throw);\n    }\n}\nfunction _async_to_generator(fn) {\n    return function() {\n        var self = this, args = arguments;\n        return new Promise(function(resolve, reject) {\n            var gen = fn.apply(self, args);\n            function _next(value) {\n                asyncGeneratorStep(gen, resolve, reject, _next, _throw, \"next\", value);\n            }\n            function _throw(err) {\n                asyncGeneratorStep(gen, resolve, reject, _next, _throw, \"throw\", err);\n            }\n            _next(undefined);\n        });\n    };\n}\nfunction _define_property(obj, key, value) {\n    if (key in obj) {\n        Object.defineProperty(obj, key, {\n            value: value,\n            enumerable: true,\n            configurable: true,\n            writable: true\n        });\n    } else {\n        obj[key] = value;\n    }\n    return obj;\n}\n\n\n\n\nclass DataSource extends _grafana_data__WEBPACK_IMPORTED_MODULE_0__.DataSourceApi {\n    // This builds the Variable Query\n    metricFindQuery(query, options) {\n        var _this = this;\n        return _async_to_generator(function*() {\n            var _query_condition;\n            // Retrieve DataQueryResponse based on query.\n            if (query.tableName === undefined || query.fieldNames === undefined) {\n                return;\n            }\n            if (query.tableName.length === 0) {\n                query.tableName = \"ActiveMeasurements\";\n                if (query.fieldNames.length === 0 || query.fieldNames[0] === '*') {\n                    query.fieldNames = [\n                        \"PointTag\"\n                    ];\n                }\n            }\n            if (query.fieldNames.length === 0) {\n                query.fieldNames = [\n                    \"*\"\n                ];\n            }\n            var _query_condition_length;\n            let data = yield (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getBackendSrv)().post(_this.url + \"/Search\", {\n                dataTypeIndex: -1 /* unrestricted search */ ,\n                expression: `SELECT DISTINCT ${query.fieldNames} FROM ${query.tableName} ${((_query_condition_length = (_query_condition = query.condition) === null || _query_condition === void 0 ? void 0 : _query_condition.length) !== null && _query_condition_length !== void 0 ? _query_condition_length : 0 === 0) ? \"\" : ` WHERE ${query.condition}`}`\n            });\n            return data.map((s)=>({\n                    text: s\n                }));\n        })();\n    }\n    //Generate value of excluded flags\n    calculateFlags() {\n        let excludedValue = 0;\n        for (const [key, value] of Object.entries(this.flags)){\n            if (key !== \"Select All\" && key !== \"Normal\" && value === true) {\n                excludedValue ^= _js_constants__WEBPACK_IMPORTED_MODULE_2__.DefaultFlags[key].Flag;\n            }\n        }\n        return excludedValue;\n    }\n    targetToString(target) {\n        if (target === undefined) {\n            return \"\";\n        }\n        if (target.queryType === \"Elements\" || target.queryType === undefined) {\n            return this.parsedQueryToString(target.parsedQuery);\n        } else if (target.queryType === \"Text\") {\n            return target.queryText;\n        } else {\n            return \"\";\n        }\n    }\n    functionToString(fx) {\n        const parameter = fx.Parameters.map((p)=>{\n            if (p.type.type.includes('IAsyncEnumerable')) {\n                return this.parsedQueryToString(p.value);\n            }\n            return p.value.toString();\n        }).join(',');\n        return `${fx.Function}(${parameter})`;\n    }\n    parsedQueryToString(query) {\n        if (query === undefined) {\n            return \"\";\n        }\n        const parts = [];\n        if (query.Elements !== undefined) {\n            parts.push(query.Elements.join(\";\"));\n        }\n        if (query.Filters !== undefined) {\n            parts.push(query.Filters.map((f)=>{\n                var _f_Condition;\n                return `FILTER ${f.NumberMode === '' ? '' : `${f.NumberMode} ${f.Number}`} ${f.Table}${((_f_Condition = f.Condition) === null || _f_Condition === void 0 ? void 0 : _f_Condition.length) > 0 ? ` WHERE ${f.Condition}` : ''}`;\n            }).join(\";\"));\n        }\n        if (query.Functions !== undefined) {\n            parts.push(query.Functions.map((f)=>this.functionToString(f)).join(';'));\n        }\n        return parts.filter((s)=>s.length > 0).join(\";\");\n    }\n    buildQueryParameters(options) {\n        const excludedFlags = this.calculateFlags();\n        var _this_flags_Normal;\n        const excludeNormalFlags = (_this_flags_Normal = this.flags[\"Normal\"]) !== null && _this_flags_Normal !== void 0 ? _this_flags_Normal : false;\n        const targets = options.targets.filter((t)=>{\n            var _t_hide;\n            return !((_t_hide = t.hide) !== null && _t_hide !== void 0 ? _t_hide : false) && t.queryType !== 'Annotations';\n        }).map((t)=>{\n            var _t_commandLevel, _t_commandLevel1, _t_commandLevel2, _t_commandLevel3;\n            const metadataSelections = [];\n            if (t.metadataOptions !== undefined) {\n                t.metadataOptions.forEach((m)=>{\n                    if (metadataSelections.find((t)=>t.tableName === m.Table) !== undefined) {\n                        var _metadataSelections_find;\n                        (_metadataSelections_find = metadataSelections.find((t)=>t.tableName === m.Table)) === null || _metadataSelections_find === void 0 ? void 0 : _metadataSelections_find.fieldNames.push(m.FieldName);\n                    } else {\n                        metadataSelections.push({\n                            tableName: m.Table,\n                            fieldNames: [\n                                m.FieldName\n                            ]\n                        });\n                    }\n                });\n            }\n            let queryExpression = (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getTemplateSrv)().replace(this.targetToString(t), options.scopedVars);\n            var _t_commandLevel_DropEmpty;\n            if ((_t_commandLevel_DropEmpty = (_t_commandLevel = t.commandLevel) === null || _t_commandLevel === void 0 ? void 0 : _t_commandLevel.DropEmpty) !== null && _t_commandLevel_DropEmpty !== void 0 ? _t_commandLevel_DropEmpty : false) {\n                queryExpression = `${queryExpression}; dropEmptySeries`;\n            }\n            var _t_commandLevel_IncludePeaks;\n            if ((_t_commandLevel_IncludePeaks = (_t_commandLevel1 = t.commandLevel) === null || _t_commandLevel1 === void 0 ? void 0 : _t_commandLevel1.IncludePeaks) !== null && _t_commandLevel_IncludePeaks !== void 0 ? _t_commandLevel_IncludePeaks : false) {\n                queryExpression = `${queryExpression}; includePeaks`;\n            }\n            var _t_commandLevel_FullResolution;\n            if ((_t_commandLevel_FullResolution = (_t_commandLevel2 = t.commandLevel) === null || _t_commandLevel2 === void 0 ? void 0 : _t_commandLevel2.FullResolution) !== null && _t_commandLevel_FullResolution !== void 0 ? _t_commandLevel_FullResolution : false) {\n                queryExpression = `${queryExpression}; fullResolutionQuery`;\n            }\n            var _t_commandLevel_RadialDistribution;\n            if ((_t_commandLevel_RadialDistribution = (_t_commandLevel3 = t.commandLevel) === null || _t_commandLevel3 === void 0 ? void 0 : _t_commandLevel3.RadialDistribution) !== null && _t_commandLevel_RadialDistribution !== void 0 ? _t_commandLevel_RadialDistribution : false) {\n                var _t_commandLevel4, _t_commandLevel5;\n                var _t_commandLevel_Radius, _t_commandLevel_Zoom;\n                queryExpression = `${queryExpression}; radialDistribution={radius=${(_t_commandLevel_Radius = (_t_commandLevel4 = t.commandLevel) === null || _t_commandLevel4 === void 0 ? void 0 : _t_commandLevel4.Radius) !== null && _t_commandLevel_Radius !== void 0 ? _t_commandLevel_Radius : 1.5}; zoom=${(_t_commandLevel_Zoom = (_t_commandLevel5 = t.commandLevel) === null || _t_commandLevel5 === void 0 ? void 0 : _t_commandLevel5.Zoom) !== null && _t_commandLevel_Zoom !== void 0 ? _t_commandLevel_Zoom : 2}}`;\n            }\n            return {\n                refID: t.refId,\n                target: queryExpression,\n                metadataSelections: metadataSelections\n            };\n        });\n        var _options_maxDataPoints;\n        return {\n            dataTypeIndex: this.valueTypeIndex,\n            range: {\n                from: options.range.from.toISOString(),\n                to: options.range.to.toISOString()\n            },\n            interval: options.interval,\n            targets: targets,\n            adhocFilters: [],\n            excludedFlags: excludedFlags,\n            excludeNormalFlags: excludeNormalFlags,\n            maxDataPoints: (_options_maxDataPoints = options.maxDataPoints) !== null && _options_maxDataPoints !== void 0 ? _options_maxDataPoints : 1000\n        };\n    }\n    query(options) {\n        var _this = this;\n        return _async_to_generator(function*() {\n            const target = options.targets[0];\n            const hasDataQuery = options.targets.some((t)=>t.queryType !== 'Annotations');\n            const hasAnnotationQuery = options.targets.some((t)=>t.queryType === 'Annotations');\n            let data = [];\n            let error = {};\n            let syntaxErrors = [];\n            // Generate query\n            if (hasDataQuery) {\n                let query = _this.buildQueryParameters(options);\n                // Get Data\n                let pointsData = yield (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getBackendSrv)().post(_this.url + \"/query\", query);\n                const tags = _this.timeSeriesDefinitions;\n                const transposeFrame = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__.MutableDataFrame({\n                    refId: target.refId,\n                    fields: tags.map((s, i)=>({\n                            name: s,\n                            type: i < tags.length - 1 ? _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.number : _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.time\n                        }))\n                });\n                // Add metadata fields\n                const frames = pointsData.map((d)=>{\n                    var _options_targets_find;\n                    // Cumulate any reported syntax errors\n                    if (d.syntaxError) {\n                        syntaxErrors.push(d.syntaxError);\n                    }\n                    const metaData = Object.keys(d.metadata);\n                    var _options_targets_find_transpose;\n                    if ((_options_targets_find_transpose = (_options_targets_find = options.targets.find((item)=>item.refId === d.refID)) === null || _options_targets_find === void 0 ? void 0 : _options_targets_find.transpose) !== null && _options_targets_find_transpose !== void 0 ? _options_targets_find_transpose : false) {\n                        const row = {};\n                        tags.forEach((t, i)=>{\n                            row[t] = d.datapoints[0][i];\n                        });\n                        metaData.forEach((m)=>{\n                            if (!transposeFrame.fields.map((f)=>f.name).includes(m)) {\n                                transposeFrame.addField({\n                                    name: m,\n                                    type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.other\n                                });\n                            }\n                            row[m] = d.metadata[m];\n                        });\n                        transposeFrame.add(row);\n                        return undefined;\n                    } else {\n                        const frame = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__.MutableDataFrame({\n                            refId: target.refId,\n                            fields: metaData.concat(tags).map((s, i)=>({\n                                    name: s,\n                                    type: i < metaData.length ? _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.other : i < metaData.length + tags.length - 1 ? _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.number : _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.time\n                                }))\n                        });\n                        frame.refId = d.refID;\n                        frame.name = d.target;\n                        d.datapoints.forEach((pt)=>{\n                            const row = {};\n                            tags.forEach((t, i)=>{\n                                row[t] = pt[i];\n                            });\n                            metaData.forEach((m)=>{\n                                row[m] = d.metadata[m];\n                            });\n                            frame.add(row);\n                        });\n                        return frame;\n                    }\n                });\n                if (options.targets.some((t)=>t.transpose)) {\n                    frames.push(transposeFrame);\n                }\n                data = frames.filter((f)=>f !== undefined);\n            }\n            if (hasAnnotationQuery) {\n                data.push((yield _this.queryAnnotations(options)));\n            }\n            if (syntaxErrors.length > 0) {\n                error = {\n                    message: syntaxErrors.join('\\n\\n')\n                };\n            }\n            return {\n                data,\n                error\n            };\n        })();\n    }\n    testDatasource() {\n        var _this = this;\n        return _async_to_generator(function*() {\n            return yield (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getBackendSrv)().get(_this.url + \"/\").then(()=>({\n                    status: \"success\",\n                    message: \"Data source is working\",\n                    title: \"Success\"\n                }), ()=>({\n                    status: \"error\",\n                    message: \"Data source is not working\",\n                    title: \"Error\"\n                }));\n        })();\n    }\n    queryAnnotations(options) {\n        var _this = this;\n        return _async_to_generator(function*() {\n            const queyText = options.targets.map((t)=>(0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getTemplateSrv)().replace(t.queryText, options.scopedVars)).join(';');\n            const annotationQuery = {\n                range: options.range,\n                annotationQuery: queyText,\n                rangeRaw: options.rangeRaw\n            };\n            const data = yield (0,_grafana_runtime__WEBPACK_IMPORTED_MODULE_1__.getBackendSrv)().post(_this.url + '/annotations', annotationQuery);\n            if (data.length > 500) {\n                throw Error(`There are ${data.length} annotations. Grafana can not display more than 500.`);\n            }\n            const frame = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__.MutableDataFrame({\n                refId: options.targets[0].refId,\n                fields: [\n                    {\n                        name: \"time\",\n                        type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.time\n                    },\n                    {\n                        name: \"timeEnd\",\n                        type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.time\n                    },\n                    {\n                        name: \"title\",\n                        type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.string\n                    },\n                    {\n                        name: \"text\",\n                        type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.string\n                    },\n                    {\n                        name: \"tags\",\n                        type: _grafana_data__WEBPACK_IMPORTED_MODULE_0__.FieldType.string\n                    }\n                ]\n            });\n            data.forEach((a)=>{\n                frame.add({\n                    \"time\": a[\"time\"],\n                    \"timeEnd\": a[\"endTime\"],\n                    \"title\": a[\"title\"],\n                    \"text\": a[\"text\"],\n                    \"tags\": a[\"tags\"]\n                });\n            });\n            return frame;\n        })();\n    }\n    constructor(instanceSettings){\n        super(instanceSettings);\n        _define_property(this, \"url\", void 0);\n        _define_property(this, \"flags\", void 0);\n        _define_property(this, \"valueTypeIndex\", void 0);\n        _define_property(this, \"valueTypeName\", void 0);\n        _define_property(this, \"timeSeriesDefinitions\", void 0);\n        _define_property(this, \"metadataTableName\", void 0);\n        this.annotations = {\n            QueryEditor: _components_AnnotationEditor__WEBPACK_IMPORTED_MODULE_3__.AnnotationEditor\n        };\n        this.url = instanceSettings.jsonData.http.url || \"\";\n        this.flags = instanceSettings.jsonData.flags || {};\n        this.valueTypeIndex = parseInt(instanceSettings.jsonData.valueTypeIndex || \"0\", 10);\n        this.valueTypeName = instanceSettings.jsonData.valueTypeName || \"\";\n        var _instanceSettings_jsonData_timeSeriesDefinitions;\n        this.timeSeriesDefinitions = (_instanceSettings_jsonData_timeSeriesDefinitions = instanceSettings.jsonData.timeSeriesDefinitions) !== null && _instanceSettings_jsonData_timeSeriesDefinitions !== void 0 ? _instanceSettings_jsonData_timeSeriesDefinitions : [\n            ''\n        ];\n        this.metadataTableName = instanceSettings.jsonData.metadataTableName || \"\";\n    }\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,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QUNxRCxjQUFjLEdBQUcyRCxTQUFTUCxpQkFBaUJLLFFBQVEsQ0FBQ3pELGNBQWMsSUFBSSxLQUFLO1FBQ2hGLElBQUksQ0FBQ3FELGFBQWEsR0FBR0QsaUJBQWlCSyxRQUFRLENBQUNKLGFBQWEsSUFBSTtZQUNuQ0Q7UUFBN0IsSUFBSSxDQUFDckMscUJBQXFCLEdBQUdxQyxDQUFBQSxtREFBQUEsaUJBQWlCSyxRQUFRLENBQUMxQyxxQkFBcUIsY0FBL0NxQyw4REFBQUEsbURBQW1EO1lBQUM7U0FBRztRQUNwRixJQUFJLENBQUNFLGlCQUFpQixHQUFHRixpQkFBaUJLLFFBQVEsQ0FBQ0gsaUJBQWlCLElBQUk7SUFDMUU7QUF3UkYiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9kYXRhc291cmNlLnRzP2VhYjAiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtcclxuICBEYXRhUXVlcnlSZXF1ZXN0LFxyXG4gIERhdGFRdWVyeVJlc3BvbnNlLFxyXG4gIERhdGFRdWVyeUVycm9yLFxyXG4gIERhdGFTb3VyY2VBcGksXHJcbiAgRGF0YVNvdXJjZUluc3RhbmNlU2V0dGluZ3MsXHJcbiAgTXV0YWJsZURhdGFGcmFtZSxcclxuICBGaWVsZFR5cGUsXHJcbn0gZnJvbSBcIkBncmFmYW5hL2RhdGFcIjtcclxuaW1wb3J0IHsgTXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucywgUXVlcnlSZXF1ZXN0LCBUYXJnZXQsIEZ1bmN0aW9uUXVlcnksIFBhcnNlZFF1ZXJ5LCBNeVZhcmlhYmxlUXVlcnksIFF1ZXJ5QmFzZSwgTWV0YURhdGFTZWxlY3Rpb24sIFF1ZXJ5UmVzcG9uc2UgfSBmcm9tIFwiLi90eXBlc1wiO1xyXG5pbXBvcnQgeyBnZXRCYWNrZW5kU3J2LCBnZXRUZW1wbGF0ZVNydiB9IGZyb20gXCJAZ3JhZmFuYS9ydW50aW1lXCI7XHJcbmltcG9ydCBfIGZyb20gXCJsb2Rhc2hcIjtcclxuaW1wb3J0IHsgRGVmYXVsdEZsYWdzIH0gZnJvbSBcIi4vanMvY29uc3RhbnRzXCI7XHJcbmltcG9ydCB7IEFubm90YXRpb25FZGl0b3IgfSBmcm9tIFwiLi9jb21wb25lbnRzL0Fubm90YXRpb25FZGl0b3JcIjtcclxuXHJcblxyXG5leHBvcnQgY2xhc3MgRGF0YVNvdXJjZSBleHRlbmRzIERhdGFTb3VyY2VBcGk8TXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucz4ge1xyXG4gIHVybDogc3RyaW5nO1xyXG4gIGZsYWdzOiB7XHJcbiAgICBba2V5OiBzdHJpbmddOiBib29sZWFuO1xyXG4gIH07XHJcbiAgdmFsdWVUeXBlSW5kZXg6IG51bWJlcjtcclxuICB2YWx1ZVR5cGVOYW1lOiBzdHJpbmc7XHJcbiAgdGltZVNlcmllc0RlZmluaXRpb25zOiBzdHJpbmdbXTtcclxuICBtZXRhZGF0YVRhYmxlTmFtZTogc3RyaW5nO1xyXG5cclxuICBjb25zdHJ1Y3RvcihcclxuICAgIGluc3RhbmNlU2V0dGluZ3M6IERhdGFTb3VyY2VJbnN0YW5jZVNldHRpbmdzPE15RGF0YVNvdXJjZU9wdGlvbnM+XHJcbiAgKSB7XHJcbiAgICBzdXBlcihpbnN0YW5jZVNldHRpbmdzKTtcclxuXHJcbiAgICB0aGlzLmFubm90YXRpb25zID0ge1xyXG4gICAgICBRdWVyeUVkaXRvcjogQW5ub3RhdGlvbkVkaXRvclxyXG4gICAgfVxyXG4gICAgdGhpcy51cmwgPSBpbnN0YW5jZVNldHRpbmdzLmpzb25EYXRhLmh0dHAudXJsIHx8IFwiXCI7XHJcbiAgICB0aGlzLmZsYWdzID0gaW5zdGFuY2VTZXR0aW5ncy5qc29uRGF0YS5mbGFncyB8fCB7fTtcclxuICAgIHRoaXMudmFsdWVUeXBlSW5kZXggPSBwYXJzZUludChpbnN0YW5jZVNldHRpbmdzLmpzb25EYXRhLnZhbHVlVHlwZUluZGV4IHx8IFwiMFwiLCAxMCk7XHJcbiAgICB0aGlzLnZhbHVlVHlwZU5hbWUgPSBpbnN0YW5jZVNldHRpbmdzLmpzb25EYXRhLnZhbHVlVHlwZU5hbWUgfHwgXCJcIjtcclxuICAgIHRoaXMudGltZVNlcmllc0RlZmluaXRpb25zID0gaW5zdGFuY2VTZXR0aW5ncy5qc29uRGF0YS50aW1lU2VyaWVzRGVmaW5pdGlvbnMgPz8gWycnXTtcclxuICAgIHRoaXMubWV0YWRhdGFUYWJsZU5hbWUgPSBpbnN0YW5jZVNldHRpbmdzLmpzb25EYXRhLm1ldGFkYXRhVGFibGVOYW1lIHx8IFwiXCI7XHJcbiAgfVxyXG5cclxuICAvLyBUaGlzIGJ1aWxkcyB0aGUgVmFyaWFibGUgUXVlcnlcclxuICBhc3luYyBtZXRyaWNGaW5kUXVlcnkocXVlcnk6IE15VmFyaWFibGVRdWVyeSwgb3B0aW9ucz86IGFueSkge1xyXG4gICAgLy8gUmV0cmlldmUgRGF0YVF1ZXJ5UmVzcG9uc2UgYmFzZWQgb24gcXVlcnkuXHJcbiAgICBpZiAocXVlcnkudGFibGVOYW1lID09PSB1bmRlZmluZWQgfHwgcXVlcnkuZmllbGROYW1lcyA9PT0gdW5kZWZpbmVkKSB7IHJldHVybjsgfVxyXG5cclxuICAgIGlmIChxdWVyeS50YWJsZU5hbWUubGVuZ3RoID09PSAwKSB7XHJcbiAgICAgIHF1ZXJ5LnRhYmxlTmFtZSA9IFwiQWN0aXZlTWVhc3VyZW1lbnRzXCI7XHJcblxyXG4gICAgICBpZiAocXVlcnkuZmllbGROYW1lcy5sZW5ndGggPT09IDAgfHwgcXVlcnkuZmllbGROYW1lc1swXSA9PT0gJyonKSB7XHJcbiAgICAgICAgcXVlcnkuZmllbGROYW1lcyA9IFtcIlBvaW50VGFnXCJdO1xyXG4gICAgICB9XHJcbiAgICB9XHJcblxyXG4gICAgaWYgKHF1ZXJ5LmZpZWxkTmFtZXMubGVuZ3RoID09PSAwKSB7XHJcbiAgICAgIHF1ZXJ5LmZpZWxkTmFtZXMgPSBbXCIqXCJdO1xyXG4gICAgfVxyXG5cclxuICAgIGxldCBkYXRhID0gYXdhaXQgZ2V0QmFja2VuZFNydigpLnBvc3QodGhpcy51cmwgKyBcIi9TZWFyY2hcIiwge1xyXG4gICAgICBkYXRhVHlwZUluZGV4OiAtMSAvKiB1bnJlc3RyaWN0ZWQgc2VhcmNoICovLFxyXG4gICAgICBleHByZXNzaW9uOiBgU0VMRUNUIERJU1RJTkNUICR7cXVlcnkuZmllbGROYW1lc30gRlJPTSAke3F1ZXJ5LnRhYmxlTmFtZX0gJHtxdWVyeS5jb25kaXRpb24/Lmxlbmd0aCA/PyAwID09PSAwID8gXCJcIiA6IGAgV0hFUkUgJHtxdWVyeS5jb25kaXRpb259YH1gXHJcbiAgICB9KVxyXG4gICAgcmV0dXJuIGRhdGEubWFwKChzOiBzdHJpbmcpID0+ICh7IHRleHQ6IHMgfSkpO1xyXG4gIH1cclxuXHJcbiAgLy9HZW5lcmF0ZSB2YWx1ZSBvZiBleGNsdWRlZCBmbGFnc1xyXG4gIGNhbGN1bGF0ZUZsYWdzKCkge1xyXG4gICAgbGV0IGV4Y2x1ZGVkVmFsdWUgPSAwO1xyXG5cclxuICAgIGZvciAoY29uc3QgW2tleSwgdmFsdWVdIG9mIE9iamVjdC5lbnRyaWVzKHRoaXMuZmxhZ3MpKSB7XHJcbiAgICAgIGlmIChrZXkgIT09IFwiU2VsZWN0IEFsbFwiICYmIGtleSAhPT0gXCJOb3JtYWxcIiAmJiB2YWx1ZSA9PT0gdHJ1ZSkge1xyXG4gICAgICAgIGV4Y2x1ZGVkVmFsdWUgXj0gRGVmYXVsdEZsYWdzW2tleSBhcyBrZXlvZiB0eXBlb2YgRGVmYXVsdEZsYWdzXS5GbGFnO1xyXG4gICAgICB9XHJcbiAgICB9XHJcblxyXG4gICAgcmV0dXJuIGV4Y2x1ZGVkVmFsdWU7XHJcbiAgfVxyXG5cclxuICB0YXJnZXRUb1N0cmluZyh0YXJnZXQ6IFF1ZXJ5QmFzZSkge1xyXG4gICAgaWYgKHRhcmdldCA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHJldHVybiBcIlwiO1xyXG4gICAgfVxyXG5cclxuICAgIGlmICh0YXJnZXQucXVlcnlUeXBlID09PSBcIkVsZW1lbnRzXCIgfHwgdGFyZ2V0LnF1ZXJ5VHlwZSA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHJldHVybiB0aGlzLnBhcnNlZFF1ZXJ5VG9TdHJpbmcodGFyZ2V0LnBhcnNlZFF1ZXJ5KVxyXG4gICAgfVxyXG4gICAgZWxzZSBpZiAodGFyZ2V0LnF1ZXJ5VHlwZSA9PT0gXCJUZXh0XCIpIHtcclxuICAgICAgcmV0dXJuIHRhcmdldC5xdWVyeVRleHRcclxuICAgIH1cclxuICAgIGVsc2Uge1xyXG4gICAgICByZXR1cm4gXCJcIlxyXG4gICAgfVxyXG4gIH1cclxuXHJcbiAgZnVuY3Rpb25Ub1N0cmluZyhmeDogRnVuY3Rpb25RdWVyeSkge1xyXG4gICAgY29uc3QgcGFyYW1ldGVyID0gZnguUGFyYW1ldGVycy5tYXAoKHApID0+IHtcclxuICAgICAgaWYgKHAudHlwZS50eXBlLmluY2x1ZGVzKCdJQXN5bmNFbnVtZXJhYmxlJykpIHtcclxuICAgICAgICByZXR1cm4gdGhpcy5wYXJzZWRRdWVyeVRvU3RyaW5nKHAudmFsdWUgYXMgUGFyc2VkUXVlcnkpXHJcbiAgICAgIH1cclxuICAgICAgcmV0dXJuIHAudmFsdWUudG9TdHJpbmcoKVxyXG4gICAgfSkuam9pbignLCcpXHJcbiAgICByZXR1cm4gYCR7ZnguRnVuY3Rpb259KCR7cGFyYW1ldGVyfSlgO1xyXG4gIH1cclxuXHJcbiAgcGFyc2VkUXVlcnlUb1N0cmluZyhxdWVyeTogUGFyc2VkUXVlcnkpIHtcclxuICAgIGlmIChxdWVyeSA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHJldHVybiBcIlwiO1xyXG4gICAgfVxyXG4gICAgY29uc3QgcGFydHM6IHN0cmluZ1tdID0gW107XHJcbiAgICBpZiAocXVlcnkuRWxlbWVudHMgIT09IHVuZGVmaW5lZCkge1xyXG4gICAgICBwYXJ0cy5wdXNoKHF1ZXJ5LkVsZW1lbnRzLmpvaW4oXCI7XCIpKTtcclxuICAgIH1cclxuICAgIGlmIChxdWVyeS5GaWx0ZXJzICE9PSB1bmRlZmluZWQpIHtcclxuICAgICAgcGFydHMucHVzaChxdWVyeS5GaWx0ZXJzLm1hcChmID0+IGBGSUxURVIgJHtmLk51bWJlck1vZGUgPT09ICcnID8gJycgOiBgJHtmLk51bWJlck1vZGV9ICR7Zi5OdW1iZXJ9YH0gJHtmLlRhYmxlfSR7Zi5Db25kaXRpb24/Lmxlbmd0aCA+IDAgPyBgIFdIRVJFICR7Zi5Db25kaXRpb259YCA6ICcnfWApLmpvaW4oXCI7XCIpKVxyXG4gICAgfVxyXG4gICAgaWYgKHF1ZXJ5LkZ1bmN0aW9ucyAhPT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgIHBhcnRzLnB1c2gocXVlcnkuRnVuY3Rpb25zLm1hcChmID0+IHRoaXMuZnVuY3Rpb25Ub1N0cmluZyhmKSkuam9pbignOycpKVxyXG4gICAgfVxyXG4gICAgcmV0dXJuIHBhcnRzLmZpbHRlcihzID0+IHMubGVuZ3RoID4gMCkuam9pbihcIjtcIik7XHJcbiAgfVxyXG5cclxuICBidWlsZFF1ZXJ5UGFyYW1ldGVycyhvcHRpb25zOiBEYXRhUXVlcnlSZXF1ZXN0PE15UXVlcnk+KTogUXVlcnlSZXF1ZXN0IHtcclxuICAgIGNvbnN0IGV4Y2x1ZGVkRmxhZ3MgPSB0aGlzLmNhbGN1bGF0ZUZsYWdzKCk7XHJcbiAgICBjb25zdCBleGNsdWRlTm9ybWFsRmxhZ3MgPSB0aGlzLmZsYWdzW1wiTm9ybWFsXCJdID8/IGZhbHNlO1xyXG5cclxuICAgIGNvbnN0IHRhcmdldHM6IFRhcmdldFtdID0gb3B0aW9ucy50YXJnZXRzLmZpbHRlcih0ID0+ICEodC5oaWRlID8/IGZhbHNlKSAmJiB0LnF1ZXJ5VHlwZSAhPT0gJ0Fubm90YXRpb25zJykubWFwKCh0KSA9PiB7XHJcblxyXG4gICAgICBjb25zdCBtZXRhZGF0YVNlbGVjdGlvbnM6IE1ldGFEYXRhU2VsZWN0aW9uW10gPSBbXTtcclxuXHJcbiAgICAgIGlmICh0Lm1ldGFkYXRhT3B0aW9ucyAhPT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgICAgdC5tZXRhZGF0YU9wdGlvbnMuZm9yRWFjaCgobSkgPT4ge1xyXG4gICAgICAgICAgaWYgKG1ldGFkYXRhU2VsZWN0aW9ucy5maW5kKHQgPT4gdC50YWJsZU5hbWUgPT09IG0uVGFibGUpICE9PSB1bmRlZmluZWQpIHtcclxuICAgICAgICAgICAgbWV0YWRhdGFTZWxlY3Rpb25zLmZpbmQodCA9PiB0LnRhYmxlTmFtZSA9PT0gbS5UYWJsZSk/LmZpZWxkTmFtZXMucHVzaChtLkZpZWxkTmFtZSk7XHJcbiAgICAgICAgICB9XHJcbiAgICAgICAgICBlbHNlIHtcclxuICAgICAgICAgICAgbWV0YWRhdGFTZWxlY3Rpb25zLnB1c2goeyB0YWJsZU5hbWU6IG0uVGFibGUsIGZpZWxkTmFtZXM6IFttLkZpZWxkTmFtZV0gfSlcclxuICAgICAgICAgIH1cclxuICAgICAgICB9KVxyXG4gICAgICB9XHJcblxyXG4gICAgICBsZXQgcXVlcnlFeHByZXNzaW9uID0gZ2V0VGVtcGxhdGVTcnYoKS5yZXBsYWNlKHRoaXMudGFyZ2V0VG9TdHJpbmcodCksIG9wdGlvbnMuc2NvcGVkVmFycyk7XHJcblxyXG4gICAgICBpZiAodC5jb21tYW5kTGV2ZWw/LkRyb3BFbXB0eSA/PyBmYWxzZSkge1xyXG4gICAgICAgIHF1ZXJ5RXhwcmVzc2lvbiA9IGAke3F1ZXJ5RXhwcmVzc2lvbn07IGRyb3BFbXB0eVNlcmllc2A7XHJcbiAgICAgIH1cclxuXHJcbiAgICAgIGlmICh0LmNvbW1hbmRMZXZlbD8uSW5jbHVkZVBlYWtzID8/IGZhbHNlKSB7XHJcbiAgICAgICAgcXVlcnlFeHByZXNzaW9uID0gYCR7cXVlcnlFeHByZXNzaW9ufTsgaW5jbHVkZVBlYWtzYDtcclxuICAgICAgfVxyXG5cclxuICAgICAgaWYgKHQuY29tbWFuZExldmVsPy5GdWxsUmVzb2x1dGlvbiA/PyBmYWxzZSkge1xyXG4gICAgICAgIHF1ZXJ5RXhwcmVzc2lvbiA9IGAke3F1ZXJ5RXhwcmVzc2lvbn07IGZ1bGxSZXNvbHV0aW9uUXVlcnlgO1xyXG4gICAgICB9XHJcblxyXG4gICAgICBpZiAodC5jb21tYW5kTGV2ZWw/LlJhZGlhbERpc3RyaWJ1dGlvbiA/PyBmYWxzZSkge1xyXG4gICAgICAgIHF1ZXJ5RXhwcmVzc2lvbiA9IGAke3F1ZXJ5RXhwcmVzc2lvbn07IHJhZGlhbERpc3RyaWJ1dGlvbj17cmFkaXVzPSR7KHQuY29tbWFuZExldmVsPy5SYWRpdXMgPz8gMS41KX07IHpvb209JHsodC5jb21tYW5kTGV2ZWw/Llpvb20gPz8gMil9fWA7XHJcbiAgICAgIH1cclxuXHJcbiAgICAgIHJldHVybiAoe1xyXG4gICAgICAgIHJlZklEOiB0LnJlZklkLFxyXG4gICAgICAgIHRhcmdldDogcXVlcnlFeHByZXNzaW9uLFxyXG4gICAgICAgIG1ldGFkYXRhU2VsZWN0aW9uczogbWV0YWRhdGFTZWxlY3Rpb25zLFxyXG4gICAgICB9KVxyXG4gICAgfSk7XHJcblxyXG4gICAgcmV0dXJuIHtcclxuICAgICAgZGF0YVR5cGVJbmRleDogdGhpcy52YWx1ZVR5cGVJbmRleCxcclxuICAgICAgcmFuZ2U6IHsgZnJvbTogb3B0aW9ucy5yYW5nZS5mcm9tLnRvSVNPU3RyaW5nKCksIHRvOiBvcHRpb25zLnJhbmdlLnRvLnRvSVNPU3RyaW5nKCkgfSxcclxuICAgICAgaW50ZXJ2YWw6IG9wdGlvbnMuaW50ZXJ2YWwsXHJcbiAgICAgIHRhcmdldHM6IHRhcmdldHMsXHJcbiAgICAgIGFkaG9jRmlsdGVyczogW10sXHJcbiAgICAgIGV4Y2x1ZGVkRmxhZ3M6IGV4Y2x1ZGVkRmxhZ3MsXHJcbiAgICAgIGV4Y2x1ZGVOb3JtYWxGbGFnczogZXhjbHVkZU5vcm1hbEZsYWdzLFxyXG4gICAgICBtYXhEYXRhUG9pbnRzOiBvcHRpb25zLm1heERhdGFQb2ludHMgPz8gMTAwMFxyXG4gICAgfTtcclxuICB9XHJcblxyXG4gIGFzeW5jIHF1ZXJ5KG9wdGlvbnM6IERhdGFRdWVyeVJlcXVlc3Q8TXlRdWVyeT4pOiBQcm9taXNlPERhdGFRdWVyeVJlc3BvbnNlPiB7XHJcbiAgICBjb25zdCB0YXJnZXQgPSBvcHRpb25zLnRhcmdldHNbMF07XHJcblxyXG4gICAgY29uc3QgaGFzRGF0YVF1ZXJ5ID0gb3B0aW9ucy50YXJnZXRzLnNvbWUodCA9PiB0LnF1ZXJ5VHlwZSAhPT0gJ0Fubm90YXRpb25zJyk7XHJcbiAgICBjb25zdCBoYXNBbm5vdGF0aW9uUXVlcnkgPSBvcHRpb25zLnRhcmdldHMuc29tZSh0ID0+IHQucXVlcnlUeXBlID09PSAnQW5ub3RhdGlvbnMnKTs7XHJcblxyXG4gICAgbGV0IGRhdGE6IEFycmF5PChNdXRhYmxlRGF0YUZyYW1lPGFueT4gfCB1bmRlZmluZWQpPiA9IFtdO1xyXG4gICAgbGV0IGVycm9yOiBEYXRhUXVlcnlFcnJvciA9IHt9O1xyXG4gICAgbGV0IHN5bnRheEVycm9yczogc3RyaW5nW10gPSBbXTtcclxuXHJcbiAgICAvLyBHZW5lcmF0ZSBxdWVyeVxyXG4gICAgaWYgKGhhc0RhdGFRdWVyeSkge1xyXG4gICAgICBsZXQgcXVlcnk6IFF1ZXJ5UmVxdWVzdCA9IHRoaXMuYnVpbGRRdWVyeVBhcmFtZXRlcnMob3B0aW9ucyk7XHJcblxyXG4gICAgICAvLyBHZXQgRGF0YVxyXG4gICAgICBsZXQgcG9pbnRzRGF0YTogUXVlcnlSZXNwb25zZVtdID0gYXdhaXQgZ2V0QmFja2VuZFNydigpLnBvc3QodGhpcy51cmwgKyBcIi9xdWVyeVwiLCBxdWVyeSk7XHJcblxyXG4gICAgICBjb25zdCB0YWdzID0gdGhpcy50aW1lU2VyaWVzRGVmaW5pdGlvbnM7XHJcblxyXG4gICAgICBjb25zdCB0cmFuc3Bvc2VGcmFtZSA9IG5ldyBNdXRhYmxlRGF0YUZyYW1lKHtcclxuICAgICAgICByZWZJZDogdGFyZ2V0LnJlZklkLFxyXG4gICAgICAgIGZpZWxkczogdGFncy5tYXAoKHMsIGkpID0+ICh7XHJcbiAgICAgICAgICBuYW1lOiBzLFxyXG4gICAgICAgICAgdHlwZTogKGkgPCAodGFncy5sZW5ndGggLSAxKSA/IEZpZWxkVHlwZS5udW1iZXIgOiBGaWVsZFR5cGUudGltZSlcclxuICAgICAgICB9KSksXHJcbiAgICAgIH0pO1xyXG5cclxuICAgICAgLy8gQWRkIG1ldGFkYXRhIGZpZWxkc1xyXG4gICAgICBjb25zdCBmcmFtZXMgPSBwb2ludHNEYXRhLm1hcCgoZCkgPT4ge1xyXG4gICAgICAgIC8vIEN1bXVsYXRlIGFueSByZXBvcnRlZCBzeW50YXggZXJyb3JzXHJcbiAgICAgICAgaWYgKGQuc3ludGF4RXJyb3IpIHtcclxuICAgICAgICAgIHN5bnRheEVycm9ycy5wdXNoKGQuc3ludGF4RXJyb3IpO1xyXG4gICAgICAgIH1cclxuXHJcbiAgICAgICAgY29uc3QgbWV0YURhdGE6IHN0cmluZ1tdID0gT2JqZWN0LmtleXMoZC5tZXRhZGF0YSk7XHJcblxyXG4gICAgICAgIGlmIChvcHRpb25zLnRhcmdldHMuZmluZChpdGVtID0+IGl0ZW0ucmVmSWQgPT09IGQucmVmSUQpPy50cmFuc3Bvc2UgPz8gZmFsc2UpIHtcclxuICAgICAgICAgIGNvbnN0IHJvdzogeyBbazogc3RyaW5nXTogYW55IH0gPSB7fTtcclxuICAgICAgICAgIHRhZ3MuZm9yRWFjaCgodCwgaSkgPT4geyByb3dbdF0gPSBkLmRhdGFwb2ludHNbMF1baV0gfSk7XHJcbiAgICAgICAgICBtZXRhRGF0YS5mb3JFYWNoKChtKSA9PiB7XHJcbiAgICAgICAgICAgIGlmICghdHJhbnNwb3NlRnJhbWUuZmllbGRzLm1hcChmID0+IGYubmFtZSkuaW5jbHVkZXMobSkpIHtcclxuICAgICAgICAgICAgICB0cmFuc3Bvc2VGcmFtZS5hZGRGaWVsZCh7IG5hbWU6IG0sIHR5cGU6IEZpZWxkVHlwZS5vdGhlciB9KVxyXG4gICAgICAgICAgICB9XHJcbiAgICAgICAgICAgIHJvd1ttXSA9IGQubWV0YWRhdGFbbV07XHJcbiAgICAgICAgICB9KVxyXG5cclxuICAgICAgICAgIHRyYW5zcG9zZUZyYW1lLmFkZChyb3cpO1xyXG4gICAgICAgICAgcmV0dXJuIHVuZGVmaW5lZDtcclxuICAgICAgICB9XHJcbiAgICAgICAgZWxzZSB7XHJcblxyXG4gICAgICAgICAgY29uc3QgZnJhbWUgPSBuZXcgTXV0YWJsZURhdGFGcmFtZSh7XHJcbiAgICAgICAgICAgIHJlZklkOiB0YXJnZXQucmVmSWQsXHJcbiAgICAgICAgICAgIGZpZWxkczogbWV0YURhdGEuY29uY2F0KHRhZ3MpLm1hcCgocywgaSkgPT4gKHtcclxuICAgICAgICAgICAgICBuYW1lOiBzLFxyXG4gICAgICAgICAgICAgIHR5cGU6IChpIDwgbWV0YURhdGEubGVuZ3RoID8gRmllbGRUeXBlLm90aGVyIDogKGkgPCAobWV0YURhdGEubGVuZ3RoICsgdGFncy5sZW5ndGggLSAxKSA/IEZpZWxkVHlwZS5udW1iZXIgOiBGaWVsZFR5cGUudGltZSkpXHJcbiAgICAgICAgICAgIH0pKSxcclxuICAgICAgICAgIH0pO1xyXG5cclxuICAgICAgICAgIGZyYW1lLnJlZklkID0gZC5yZWZJRDtcclxuICAgICAgICAgIGZyYW1lLm5hbWUgPSBkLnRhcmdldDtcclxuXHJcbiAgICAgICAgICBkLmRhdGFwb2ludHMuZm9yRWFjaCgocHQpID0+IHtcclxuICAgICAgICAgICAgY29uc3Qgcm93OiB7IFtrOiBzdHJpbmddOiBhbnkgfSA9IHt9O1xyXG4gICAgICAgICAgICB0YWdzLmZvckVhY2goKHQsIGkpID0+IHsgcm93W3RdID0gcHRbaV0gfSk7XHJcbiAgICAgICAgICAgIG1ldGFEYXRhLmZvckVhY2goKG0pID0+IHsgcm93W21dID0gZC5tZXRhZGF0YVttXSB9KVxyXG4gICAgICAgICAgICBmcmFtZS5hZGQocm93KTtcclxuICAgICAgICAgIH0pXHJcblxyXG4gICAgICAgICAgcmV0dXJuIGZyYW1lO1xyXG4gICAgICAgIH1cclxuICAgICAgfSlcclxuXHJcbiAgICAgIGlmIChvcHRpb25zLnRhcmdldHMuc29tZSh0ID0+IHQudHJhbnNwb3NlKSkge1xyXG4gICAgICAgIGZyYW1lcy5wdXNoKHRyYW5zcG9zZUZyYW1lKTtcclxuICAgICAgfVxyXG4gICAgICBkYXRhID0gZnJhbWVzLmZpbHRlcihmID0+IGYgIT09IHVuZGVmaW5lZCk7XHJcbiAgICB9XHJcbiAgICBpZiAoaGFzQW5ub3RhdGlvblF1ZXJ5KSB7XHJcbiAgICAgIGRhdGEucHVzaChhd2FpdCB0aGlzLnF1ZXJ5QW5ub3RhdGlvbnMob3B0aW9ucykpXHJcbiAgICB9XHJcblxyXG4gICAgaWYgKHN5bnRheEVycm9ycy5sZW5ndGggPiAwKSB7XHJcbiAgICAgIGVycm9yID0ge1xyXG4gICAgICAgIG1lc3NhZ2U6IHN5bnRheEVycm9ycy5qb2luKCdcXG5cXG4nKVxyXG4gICAgICB9XHJcbiAgICB9XHJcblxyXG4gICAgcmV0dXJuIHsgZGF0YSwgZXJyb3IgfTtcclxuICB9XHJcblxyXG4gIGFzeW5jIHRlc3REYXRhc291cmNlKCkge1xyXG4gICAgcmV0dXJuIGF3YWl0IGdldEJhY2tlbmRTcnYoKS5nZXQodGhpcy51cmwgKyBcIi9cIilcclxuICAgICAgLnRoZW4oKCkgPT4gKHtcclxuICAgICAgICBzdGF0dXM6IFwic3VjY2Vzc1wiLFxyXG4gICAgICAgIG1lc3NhZ2U6IFwiRGF0YSBzb3VyY2UgaXMgd29ya2luZ1wiLFxyXG4gICAgICAgIHRpdGxlOiBcIlN1Y2Nlc3NcIixcclxuICAgICAgfSksICgpID0+ICh7XHJcbiAgICAgICAgc3RhdHVzOiBcImVycm9yXCIsXHJcbiAgICAgICAgbWVzc2FnZTogXCJEYXRhIHNvdXJjZSBpcyBub3Qgd29ya2luZ1wiLFxyXG4gICAgICAgIHRpdGxlOiBcIkVycm9yXCIsXHJcbiAgICAgIH0pKVxyXG4gIH1cclxuXHJcbiAgYXN5bmMgcXVlcnlBbm5vdGF0aW9ucyhvcHRpb25zOiBEYXRhUXVlcnlSZXF1ZXN0PE15UXVlcnk+KTogUHJvbWlzZTxNdXRhYmxlRGF0YUZyYW1lPGFueT4+IHtcclxuXHJcbiAgICBjb25zdCBxdWV5VGV4dCA9IG9wdGlvbnMudGFyZ2V0c1xyXG4gICAgICAubWFwKCh0KSA9PiBnZXRUZW1wbGF0ZVNydigpLnJlcGxhY2UodC5xdWVyeVRleHQsIG9wdGlvbnMuc2NvcGVkVmFycykpXHJcbiAgICAgIC5qb2luKCc7Jyk7XHJcblxyXG4gICAgY29uc3QgYW5ub3RhdGlvblF1ZXJ5ID0ge1xyXG4gICAgICByYW5nZTogb3B0aW9ucy5yYW5nZSxcclxuICAgICAgYW5ub3RhdGlvblF1ZXJ5OiBxdWV5VGV4dCxcclxuICAgICAgcmFuZ2VSYXc6IG9wdGlvbnMucmFuZ2VSYXdcclxuICAgIH07XHJcblxyXG4gICAgY29uc3QgZGF0YSA9IGF3YWl0IGdldEJhY2tlbmRTcnYoKS5wb3N0KHRoaXMudXJsICsgJy9hbm5vdGF0aW9ucycsIGFubm90YXRpb25RdWVyeSk7XHJcbiAgICBpZiAoZGF0YS5sZW5ndGggPiA1MDApIHtcclxuICAgICAgdGhyb3cgRXJyb3IoYFRoZXJlIGFyZSAke2RhdGEubGVuZ3RofSBhbm5vdGF0aW9ucy4gR3JhZmFuYSBjYW4gbm90IGRpc3BsYXkgbW9yZSB0aGFuIDUwMC5gKVxyXG4gICAgfVxyXG4gICAgY29uc3QgZnJhbWUgPSBuZXcgTXV0YWJsZURhdGFGcmFtZSh7XHJcbiAgICAgIHJlZklkOiBvcHRpb25zLnRhcmdldHNbMF0ucmVmSWQsXHJcbiAgICAgIGZpZWxkczogW1xyXG4gICAgICAgIHsgbmFtZTogXCJ0aW1lXCIsIHR5cGU6IEZpZWxkVHlwZS50aW1lIH0sXHJcbiAgICAgICAgeyBuYW1lOiBcInRpbWVFbmRcIiwgdHlwZTogRmllbGRUeXBlLnRpbWUgfSxcclxuICAgICAgICB7IG5hbWU6IFwidGl0bGVcIiwgdHlwZTogRmllbGRUeXBlLnN0cmluZyB9LFxyXG4gICAgICAgIHsgbmFtZTogXCJ0ZXh0XCIsIHR5cGU6IEZpZWxkVHlwZS5zdHJpbmcgfSxcclxuICAgICAgICB7IG5hbWU6IFwidGFnc1wiLCB0eXBlOiBGaWVsZFR5cGUuc3RyaW5nIH0sXHJcbiAgICAgIF0sXHJcbiAgICB9KTtcclxuICAgIGRhdGEuZm9yRWFjaCgoYTogYW55KSA9PiB7XHJcbiAgICAgIGZyYW1lLmFkZChcclxuICAgICAgICB7XHJcbiAgICAgICAgICBcInRpbWVcIjogYVtcInRpbWVcIl0sXHJcbiAgICAgICAgICBcInRpbWVFbmRcIjogYVtcImVuZFRpbWVcIl0sXHJcbiAgICAgICAgICBcInRpdGxlXCI6IGFbXCJ0aXRsZVwiXSxcclxuICAgICAgICAgIFwidGV4dFwiOiBhW1widGV4dFwiXSxcclxuICAgICAgICAgIFwidGFnc1wiOiBhW1widGFnc1wiXVxyXG4gICAgICAgIH0pXHJcbiAgICB9KVxyXG4gICAgcmV0dXJuIGZyYW1lO1xyXG4gIH1cclxufVxyXG5cclxuIl0sIm5hbWVzIjpbIkRhdGFTb3VyY2VBcGkiLCJNdXRhYmxlRGF0YUZyYW1lIiwiRmllbGRUeXBlIiwiZ2V0QmFja2VuZFNydiIsImdldFRlbXBsYXRlU3J2IiwiRGVmYXVsdEZsYWdzIiwiQW5ub3RhdGlvbkVkaXRvciIsIkRhdGFTb3VyY2UiLCJtZXRyaWNGaW5kUXVlcnkiLCJxdWVyeSIsIm9wdGlvbnMiLCJ0YWJsZU5hbWUiLCJ1bmRlZmluZWQiLCJmaWVsZE5hbWVzIiwibGVuZ3RoIiwiZGF0YSIsInBvc3QiLCJ1cmwiLCJkYXRhVHlwZUluZGV4IiwiZXhwcmVzc2lvbiIsImNvbmRpdGlvbiIsIm1hcCIsInMiLCJ0ZXh0IiwiY2FsY3VsYXRlRmxhZ3MiLCJleGNsdWRlZFZhbHVlIiwia2V5IiwidmFsdWUiLCJPYmplY3QiLCJlbnRyaWVzIiwiZmxhZ3MiLCJGbGFnIiwidGFyZ2V0VG9TdHJpbmciLCJ0YXJnZXQiLCJxdWVyeVR5cGUiLCJwYXJzZWRRdWVyeVRvU3RyaW5nIiwicGFyc2VkUXVlcnkiLCJxdWVyeVRleHQiLCJmdW5jdGlvblRvU3RyaW5nIiwiZngiLCJwYXJhbWV0ZXIiLCJQYXJhbWV0ZXJzIiwicCIsInR5cGUiLCJpbmNsdWRlcyIsInRvU3RyaW5nIiwiam9pbiIsIkZ1bmN0aW9uIiwicGFydHMiLCJFbGVtZW50cyIsInB1c2giLCJGaWx0ZXJzIiwiZiIsIk51bWJlck1vZGUiLCJOdW1iZXIiLCJUYWJsZSIsIkNvbmRpdGlvbiIsIkZ1bmN0aW9ucyIsImZpbHRlciIsImJ1aWxkUXVlcnlQYXJhbWV0ZXJzIiwiZXhjbHVkZWRGbGFncyIsImV4Y2x1ZGVOb3JtYWxGbGFncyIsInRhcmdldHMiLCJ0IiwiaGlkZSIsIm1ldGFkYXRhU2VsZWN0aW9ucyIsIm1ldGFkYXRhT3B0aW9ucyIsImZvckVhY2giLCJtIiwiZmluZCIsIkZpZWxkTmFtZSIsInF1ZXJ5RXhwcmVzc2lvbiIsInJlcGxhY2UiLCJzY29wZWRWYXJzIiwiY29tbWFuZExldmVsIiwiRHJvcEVtcHR5IiwiSW5jbHVkZVBlYWtzIiwiRnVsbFJlc29sdXRpb24iLCJSYWRpYWxEaXN0cmlidXRpb24iLCJSYWRpdXMiLCJab29tIiwicmVmSUQiLCJyZWZJZCIsInZhbHVlVHlwZUluZGV4IiwicmFuZ2UiLCJmcm9tIiwidG9JU09TdHJpbmciLCJ0byIsImludGVydmFsIiwiYWRob2NGaWx0ZXJzIiwibWF4RGF0YVBvaW50cyIsImhhc0RhdGFRdWVyeSIsInNvbWUiLCJoYXNBbm5vdGF0aW9uUXVlcnkiLCJlcnJvciIsInN5bnRheEVycm9ycyIsInBvaW50c0RhdGEiLCJ0YWdzIiwidGltZVNlcmllc0RlZmluaXRpb25zIiwidHJhbnNwb3NlRnJhbWUiLCJmaWVsZHMiLCJpIiwibmFtZSIsIm51bWJlciIsInRpbWUiLCJmcmFtZXMiLCJkIiwic3ludGF4RXJyb3IiLCJtZXRhRGF0YSIsImtleXMiLCJtZXRhZGF0YSIsIml0ZW0iLCJ0cmFuc3Bvc2UiLCJyb3ciLCJkYXRhcG9pbnRzIiwiYWRkRmllbGQiLCJvdGhlciIsImFkZCIsImZyYW1lIiwiY29uY2F0IiwicHQiLCJxdWVyeUFubm90YXRpb25zIiwibWVzc2FnZSIsInRlc3REYXRhc291cmNlIiwiZ2V0IiwidGhlbiIsInN0YXR1cyIsInRpdGxlIiwicXVleVRleHQiLCJhbm5vdGF0aW9uUXVlcnkiLCJyYW5nZVJhdyIsIkVycm9yIiwic3RyaW5nIiwiYSIsImNvbnN0cnVjdG9yIiwiaW5zdGFuY2VTZXR0aW5ncyIsInZhbHVlVHlwZU5hbWUiLCJtZXRhZGF0YVRhYmxlTmFtZSIsImFubm90YXRpb25zIiwiUXVlcnlFZGl0b3IiLCJqc29uRGF0YSIsImh0dHAiLCJwYXJzZUludCJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./datasource.ts\n");
+
+/***/ }),
+
+/***/ "./js/constants.ts":
+/*!*************************!*\
+  !*** ./js/constants.ts ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   AngleUnits: () => (/* binding */ AngleUnits),\n/* harmony export */   Booleans: () => (/* binding */ Booleans),\n/* harmony export */   DefaultFlags: () => (/* binding */ DefaultFlags),\n/* harmony export */   DefaultTimeUnits: () => (/* binding */ DefaultTimeUnits),\n/* harmony export */   QuerySelectOptions: () => (/* binding */ QuerySelectOptions),\n/* harmony export */   TimeUnits: () => (/* binding */ TimeUnits),\n/* harmony export */   VariableQuerySelectOptions: () => (/* binding */ VariableQuerySelectOptions),\n/* harmony export */   WhereOperators: () => (/* binding */ WhereOperators)\n/* harmony export */ });\nconst QuerySelectOptions = [\n    {\n        label: 'Query Wizard',\n        value: 'Elements'\n    },\n    {\n        label: 'Text Editor',\n        value: 'Text'\n    }\n];\nconst VariableQuerySelectOptions = [\n    {\n        label: 'All Points',\n        value: 'All'\n    },\n    {\n        label: 'Elements',\n        value: 'Elements'\n    },\n    {\n        label: 'Text Editor',\n        value: 'Text'\n    }\n];\nconst DefaultFlags = {\n    'Select All': {\n        Value: false,\n        Order: -1,\n        Flag: 0\n    },\n    Normal: {\n        Value: false,\n        Order: 0,\n        Flag: 0\n    },\n    BadData: {\n        Value: false,\n        Order: 1,\n        Flag: 1 << 0\n    },\n    SuspectData: {\n        Value: false,\n        Order: 2,\n        Flag: 1 << 1\n    },\n    OverRangeError: {\n        Value: false,\n        Order: 3,\n        Flag: 1 << 2\n    },\n    UnderRangeError: {\n        Value: false,\n        Order: 4,\n        Flag: 1 << 3\n    },\n    AlarmHigh: {\n        Value: false,\n        Order: 5,\n        Flag: 1 << 4\n    },\n    AlarmLow: {\n        Value: false,\n        Order: 6,\n        Flag: 1 << 5\n    },\n    WarningHigh: {\n        Value: false,\n        Order: 7,\n        Flag: 1 << 6\n    },\n    WarningLow: {\n        Value: false,\n        Order: 8,\n        Flag: 1 << 7\n    },\n    FlatlineAlarm: {\n        Value: false,\n        Order: 9,\n        Flag: 1 << 8\n    },\n    ComparisonAlarm: {\n        Value: false,\n        Order: 10,\n        Flag: 1 << 9\n    },\n    ROCAlarm: {\n        Value: false,\n        Order: 11,\n        Flag: 1 << 10\n    },\n    ReceivedAsBad: {\n        Value: false,\n        Order: 12,\n        Flag: 1 << 11\n    },\n    CalculatedValue: {\n        Value: false,\n        Order: 13,\n        Flag: 1 << 12\n    },\n    CalculationError: {\n        Value: false,\n        Order: 14,\n        Flag: 1 << 13\n    },\n    CalculationWarning: {\n        Value: false,\n        Order: 15,\n        Flag: 1 << 14\n    },\n    ReservedQualityFlag: {\n        Value: false,\n        Order: 16,\n        Flag: 1 << 15\n    },\n    BadTime: {\n        Value: false,\n        Order: 17,\n        Flag: 1 << 16\n    },\n    SuspectTime: {\n        Value: false,\n        Order: 18,\n        Flag: 1 << 17\n    },\n    LateTimeAlarm: {\n        Value: false,\n        Order: 19,\n        Flag: 1 << 18\n    },\n    FutureTimeAlarm: {\n        Value: false,\n        Order: 20,\n        Flag: 1 << 19\n    },\n    UpSampled: {\n        Value: false,\n        Order: 21,\n        Flag: 1 << 20\n    },\n    DownSampled: {\n        Value: false,\n        Order: 22,\n        Flag: 1 << 21\n    },\n    DiscardedValue: {\n        Value: false,\n        Order: 23,\n        Flag: 1 << 22\n    },\n    ReservedTimeFlag: {\n        Value: false,\n        Order: 24,\n        Flag: 1 << 23\n    },\n    UserDefinedFlag1: {\n        Value: false,\n        Order: 25,\n        Flag: 1 << 24\n    },\n    UserDefinedFlag2: {\n        Value: false,\n        Order: 26,\n        Flag: 1 << 25\n    },\n    UserDefinedFlag3: {\n        Value: false,\n        Order: 27,\n        Flag: 1 << 26\n    },\n    UserDefinedFlag4: {\n        Value: false,\n        Order: 28,\n        Flag: 1 << 27\n    },\n    UserDefinedFlag5: {\n        Value: false,\n        Order: 29,\n        Flag: 1 << 28\n    },\n    SystemError: {\n        Value: false,\n        Order: 30,\n        Flag: 1 << 29\n    },\n    SystemWarning: {\n        Value: false,\n        Order: 31,\n        Flag: 1 << 30\n    },\n    MeasurementError: {\n        Value: false,\n        Order: 32,\n        Flag: 1 << 31\n    }\n};\nconst WhereOperators = [\n    '=',\n    '<>',\n    '<',\n    '<=',\n    '>',\n    '>=',\n    'LIKE',\n    'NOT LIKE',\n    'IN',\n    'NOT IN',\n    'IS',\n    'IS NOT'\n];\nconst Booleans = [\n    'true',\n    'false'\n];\nconst AngleUnits = [\n    'Radians',\n    'Degrees',\n    'Grads',\n    'ArcMinutes',\n    'ArcSeconds',\n    'AngularMil'\n];\nconst TimeUnits = [\n    'Weeks',\n    'Days',\n    'Hours',\n    'Minutes',\n    'Seconds',\n    'Milliseconds',\n    'Microseconds',\n    'Nanoseconds',\n    'Ticks',\n    'PlankTime',\n    'AtomicUnitsOfTime',\n    'Ke'\n];\nconst DefaultTimeUnits = [\n    'Seconds',\n    'Minutes',\n    'Hours',\n    'Days',\n    'Weeks',\n    'Ticks',\n    'AtomicUnitsOfTime',\n    'PlanckTime',\n    'Ke'\n];\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9qcy9jb25zdGFudHMudHMiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFBTyxNQUFNQSxxQkFBcUI7SUFDOUI7UUFBRUMsT0FBTztRQUFnQkMsT0FBTztJQUFXO0lBQzNDO1FBQUVELE9BQU87UUFBZUMsT0FBTztJQUFPO0NBQ3pDLENBQUM7QUFFSyxNQUFNQyw2QkFBNkI7SUFDdEM7UUFBRUYsT0FBTztRQUFjQyxPQUFPO0lBQU07SUFDcEM7UUFBRUQsT0FBTztRQUFZQyxPQUFPO0lBQVc7SUFDdkM7UUFBRUQsT0FBTztRQUFlQyxPQUFPO0lBQU87Q0FDekMsQ0FBQztBQUdLLE1BQU1FLGVBQWU7SUFDeEIsY0FBYztRQUFFQyxPQUFPO1FBQU9DLE9BQU8sQ0FBQztRQUFHQyxNQUFNO0lBQUU7SUFDakRDLFFBQVE7UUFBRUgsT0FBTztRQUFPQyxPQUFPO1FBQUdDLE1BQU07SUFBRztJQUMzQ0UsU0FBUztRQUFFSixPQUFPO1FBQU9DLE9BQU87UUFBR0MsTUFBTSxLQUFLO0lBQUc7SUFDakRHLGFBQWE7UUFBRUwsT0FBTztRQUFPQyxPQUFPO1FBQUdDLE1BQU0sS0FBSztJQUFFO0lBQ3BESSxnQkFBZ0I7UUFBRU4sT0FBTztRQUFPQyxPQUFPO1FBQUdDLE1BQU0sS0FBSztJQUFFO0lBQ3ZESyxpQkFBaUI7UUFBRVAsT0FBTztRQUFPQyxPQUFPO1FBQUdDLE1BQU0sS0FBSztJQUFFO0lBQ3hETSxXQUFXO1FBQUVSLE9BQU87UUFBT0MsT0FBTztRQUFHQyxNQUFNLEtBQUs7SUFBRTtJQUNsRE8sVUFBVTtRQUFFVCxPQUFPO1FBQU9DLE9BQU87UUFBR0MsTUFBTSxLQUFLO0lBQUU7SUFDakRRLGFBQWE7UUFBRVYsT0FBTztRQUFPQyxPQUFPO1FBQUdDLE1BQU0sS0FBSztJQUFFO0lBQ3BEUyxZQUFZO1FBQUVYLE9BQU87UUFBT0MsT0FBTztRQUFHQyxNQUFNLEtBQUs7SUFBRTtJQUNuRFUsZUFBZTtRQUFFWixPQUFPO1FBQU9DLE9BQU87UUFBR0MsTUFBTSxLQUFLO0lBQUU7SUFDdERXLGlCQUFpQjtRQUFFYixPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUU7SUFDekRZLFVBQVU7UUFBRWQsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQ25EYSxlQUFlO1FBQUVmLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUN4RGMsaUJBQWlCO1FBQUVoQixPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDMURlLGtCQUFrQjtRQUFFakIsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQzNEZ0Isb0JBQW9CO1FBQUVsQixPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDN0RpQixxQkFBcUI7UUFBRW5CLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUM5RGtCLFNBQVM7UUFBRXBCLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUNsRG1CLGFBQWE7UUFBRXJCLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUN0RG9CLGVBQWU7UUFBRXRCLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUN4RHFCLGlCQUFpQjtRQUFFdkIsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQzFEc0IsV0FBVztRQUFFeEIsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQ3BEdUIsYUFBYTtRQUFFekIsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQ3REd0IsZ0JBQWdCO1FBQUUxQixPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDekR5QixrQkFBa0I7UUFBRTNCLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUMzRDBCLGtCQUFrQjtRQUFFNUIsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQzNEMkIsa0JBQWtCO1FBQUU3QixPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDM0Q0QixrQkFBa0I7UUFBRTlCLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztJQUMzRDZCLGtCQUFrQjtRQUFFL0IsT0FBTztRQUFPQyxPQUFPO1FBQUlDLE1BQU0sS0FBSztJQUFHO0lBQzNEOEIsa0JBQWtCO1FBQUVoQyxPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDM0QrQixhQUFhO1FBQUVqQyxPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDdERnQyxlQUFlO1FBQUVsQyxPQUFPO1FBQU9DLE9BQU87UUFBSUMsTUFBTSxLQUFLO0lBQUc7SUFDeERpQyxrQkFBa0I7UUFBRW5DLE9BQU87UUFBT0MsT0FBTztRQUFJQyxNQUFNLEtBQUs7SUFBRztBQUMvRCxFQUFDO0FBRU0sTUFBTWtDLGlCQUFpQjtJQUFDO0lBQUs7SUFBTTtJQUFLO0lBQU07SUFBSztJQUFNO0lBQVE7SUFBWTtJQUFNO0lBQVU7SUFBTTtDQUFTLENBQUM7QUFFN0csTUFBTUMsV0FBVztJQUFDO0lBQVE7Q0FBUSxDQUFDO0FBRW5DLE1BQU1DLGFBQWE7SUFBQztJQUFXO0lBQVc7SUFBUztJQUFjO0lBQWM7Q0FBYTtBQUU1RixNQUFNQyxZQUFZO0lBQUM7SUFBUztJQUFRO0lBQVM7SUFBVztJQUFXO0lBQWdCO0lBQWdCO0lBQWU7SUFBUztJQUFhO0lBQXFCO0NBQUs7QUFFbEssTUFBTUMsbUJBQW1CO0lBQUM7SUFBVztJQUFXO0lBQVM7SUFBUTtJQUFTO0lBQVM7SUFBcUI7SUFBYztDQUFLIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vanMvY29uc3RhbnRzLnRzPzIyMjYiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNvbnN0IFF1ZXJ5U2VsZWN0T3B0aW9ucyA9IFtcclxuICAgIHsgbGFiZWw6ICdRdWVyeSBXaXphcmQnLCB2YWx1ZTogJ0VsZW1lbnRzJyB9LFxyXG4gICAgeyBsYWJlbDogJ1RleHQgRWRpdG9yJywgdmFsdWU6ICdUZXh0JyB9LFxyXG5dO1xyXG5cclxuZXhwb3J0IGNvbnN0IFZhcmlhYmxlUXVlcnlTZWxlY3RPcHRpb25zID0gW1xyXG4gICAgeyBsYWJlbDogJ0FsbCBQb2ludHMnLCB2YWx1ZTogJ0FsbCcgfSxcclxuICAgIHsgbGFiZWw6ICdFbGVtZW50cycsIHZhbHVlOiAnRWxlbWVudHMnIH0sXHJcbiAgICB7IGxhYmVsOiAnVGV4dCBFZGl0b3InLCB2YWx1ZTogJ1RleHQnIH0sXHJcbl07XHJcblxyXG5cclxuZXhwb3J0IGNvbnN0IERlZmF1bHRGbGFncyA9IHtcclxuICAgICdTZWxlY3QgQWxsJzogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAtMSwgRmxhZzogMCB9LFxyXG4gICAgTm9ybWFsOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDAsIEZsYWc6IDAgIH0sXHJcbiAgICBCYWREYXRhOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDEsIEZsYWc6IDEgPDwgMCAgfSxcclxuICAgIFN1c3BlY3REYXRhOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDIsIEZsYWc6IDEgPDwgMSB9LFxyXG4gICAgT3ZlclJhbmdlRXJyb3I6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMywgRmxhZzogMSA8PCAyIH0sXHJcbiAgICBVbmRlclJhbmdlRXJyb3I6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogNCwgRmxhZzogMSA8PCAzIH0sXHJcbiAgICBBbGFybUhpZ2g6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogNSwgRmxhZzogMSA8PCA0IH0sXHJcbiAgICBBbGFybUxvdzogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiA2LCBGbGFnOiAxIDw8IDUgfSxcclxuICAgIFdhcm5pbmdIaWdoOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDcsIEZsYWc6IDEgPDwgNiB9LFxyXG4gICAgV2FybmluZ0xvdzogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiA4LCBGbGFnOiAxIDw8IDcgfSxcclxuICAgIEZsYXRsaW5lQWxhcm06IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogOSwgRmxhZzogMSA8PCA4IH0sXHJcbiAgICBDb21wYXJpc29uQWxhcm06IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMTAsIEZsYWc6IDEgPDwgOSB9LFxyXG4gICAgUk9DQWxhcm06IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMTEsIEZsYWc6IDEgPDwgMTAgfSxcclxuICAgIFJlY2VpdmVkQXNCYWQ6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMTIsIEZsYWc6IDEgPDwgMTEgfSxcclxuICAgIENhbGN1bGF0ZWRWYWx1ZTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAxMywgRmxhZzogMSA8PCAxMiB9LFxyXG4gICAgQ2FsY3VsYXRpb25FcnJvcjogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAxNCwgRmxhZzogMSA8PCAxMyB9LFxyXG4gICAgQ2FsY3VsYXRpb25XYXJuaW5nOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDE1LCBGbGFnOiAxIDw8IDE0IH0sXHJcbiAgICBSZXNlcnZlZFF1YWxpdHlGbGFnOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDE2LCBGbGFnOiAxIDw8IDE1IH0sXHJcbiAgICBCYWRUaW1lOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDE3LCBGbGFnOiAxIDw8IDE2IH0sXHJcbiAgICBTdXNwZWN0VGltZTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAxOCwgRmxhZzogMSA8PCAxNyB9LFxyXG4gICAgTGF0ZVRpbWVBbGFybTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAxOSwgRmxhZzogMSA8PCAxOCB9LFxyXG4gICAgRnV0dXJlVGltZUFsYXJtOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDIwLCBGbGFnOiAxIDw8IDE5IH0sXHJcbiAgICBVcFNhbXBsZWQ6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMjEsIEZsYWc6IDEgPDwgMjAgfSxcclxuICAgIERvd25TYW1wbGVkOiB7IFZhbHVlOiBmYWxzZSwgT3JkZXI6IDIyLCBGbGFnOiAxIDw8IDIxIH0sXHJcbiAgICBEaXNjYXJkZWRWYWx1ZTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyMywgRmxhZzogMSA8PCAyMiB9LFxyXG4gICAgUmVzZXJ2ZWRUaW1lRmxhZzogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyNCwgRmxhZzogMSA8PCAyMyB9LFxyXG4gICAgVXNlckRlZmluZWRGbGFnMTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyNSwgRmxhZzogMSA8PCAyNCB9LFxyXG4gICAgVXNlckRlZmluZWRGbGFnMjogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyNiwgRmxhZzogMSA8PCAyNSB9LFxyXG4gICAgVXNlckRlZmluZWRGbGFnMzogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyNywgRmxhZzogMSA8PCAyNiB9LFxyXG4gICAgVXNlckRlZmluZWRGbGFnNDogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyOCwgRmxhZzogMSA8PCAyNyB9LFxyXG4gICAgVXNlckRlZmluZWRGbGFnNTogeyBWYWx1ZTogZmFsc2UsIE9yZGVyOiAyOSwgRmxhZzogMSA8PCAyOCB9LFxyXG4gICAgU3lzdGVtRXJyb3I6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMzAsIEZsYWc6IDEgPDwgMjkgfSxcclxuICAgIFN5c3RlbVdhcm5pbmc6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMzEsIEZsYWc6IDEgPDwgMzAgfSxcclxuICAgIE1lYXN1cmVtZW50RXJyb3I6IHsgVmFsdWU6IGZhbHNlLCBPcmRlcjogMzIsIEZsYWc6IDEgPDwgMzEgfVxyXG59XHJcblxyXG5leHBvcnQgY29uc3QgV2hlcmVPcGVyYXRvcnMgPSBbJz0nLCAnPD4nLCAnPCcsICc8PScsICc+JywgJz49JywgJ0xJS0UnLCAnTk9UIExJS0UnLCAnSU4nLCAnTk9UIElOJywgJ0lTJywgJ0lTIE5PVCddO1xyXG5cclxuZXhwb3J0IGNvbnN0IEJvb2xlYW5zID0gWyd0cnVlJywgJ2ZhbHNlJ107XHJcblxyXG5leHBvcnQgY29uc3QgQW5nbGVVbml0cyA9IFsnUmFkaWFucycsICdEZWdyZWVzJywgJ0dyYWRzJywgJ0FyY01pbnV0ZXMnLCAnQXJjU2Vjb25kcycsICdBbmd1bGFyTWlsJ11cclxuXHJcbmV4cG9ydCBjb25zdCBUaW1lVW5pdHMgPSBbJ1dlZWtzJywgJ0RheXMnLCAnSG91cnMnLCAnTWludXRlcycsICdTZWNvbmRzJywgJ01pbGxpc2Vjb25kcycsICdNaWNyb3NlY29uZHMnLCAnTmFub3NlY29uZHMnLCAnVGlja3MnLCAnUGxhbmtUaW1lJywgJ0F0b21pY1VuaXRzT2ZUaW1lJywgJ0tlJ11cclxuXHJcbmV4cG9ydCBjb25zdCBEZWZhdWx0VGltZVVuaXRzID0gWydTZWNvbmRzJywgJ01pbnV0ZXMnLCAnSG91cnMnLCAnRGF5cycsICdXZWVrcycsICdUaWNrcycsICdBdG9taWNVbml0c09mVGltZScsICdQbGFuY2tUaW1lJywgJ0tlJ11cclxuIl0sIm5hbWVzIjpbIlF1ZXJ5U2VsZWN0T3B0aW9ucyIsImxhYmVsIiwidmFsdWUiLCJWYXJpYWJsZVF1ZXJ5U2VsZWN0T3B0aW9ucyIsIkRlZmF1bHRGbGFncyIsIlZhbHVlIiwiT3JkZXIiLCJGbGFnIiwiTm9ybWFsIiwiQmFkRGF0YSIsIlN1c3BlY3REYXRhIiwiT3ZlclJhbmdlRXJyb3IiLCJVbmRlclJhbmdlRXJyb3IiLCJBbGFybUhpZ2giLCJBbGFybUxvdyIsIldhcm5pbmdIaWdoIiwiV2FybmluZ0xvdyIsIkZsYXRsaW5lQWxhcm0iLCJDb21wYXJpc29uQWxhcm0iLCJST0NBbGFybSIsIlJlY2VpdmVkQXNCYWQiLCJDYWxjdWxhdGVkVmFsdWUiLCJDYWxjdWxhdGlvbkVycm9yIiwiQ2FsY3VsYXRpb25XYXJuaW5nIiwiUmVzZXJ2ZWRRdWFsaXR5RmxhZyIsIkJhZFRpbWUiLCJTdXNwZWN0VGltZSIsIkxhdGVUaW1lQWxhcm0iLCJGdXR1cmVUaW1lQWxhcm0iLCJVcFNhbXBsZWQiLCJEb3duU2FtcGxlZCIsIkRpc2NhcmRlZFZhbHVlIiwiUmVzZXJ2ZWRUaW1lRmxhZyIsIlVzZXJEZWZpbmVkRmxhZzEiLCJVc2VyRGVmaW5lZEZsYWcyIiwiVXNlckRlZmluZWRGbGFnMyIsIlVzZXJEZWZpbmVkRmxhZzQiLCJVc2VyRGVmaW5lZEZsYWc1IiwiU3lzdGVtRXJyb3IiLCJTeXN0ZW1XYXJuaW5nIiwiTWVhc3VyZW1lbnRFcnJvciIsIldoZXJlT3BlcmF0b3JzIiwiQm9vbGVhbnMiLCJBbmdsZVVuaXRzIiwiVGltZVVuaXRzIiwiRGVmYXVsdFRpbWVVbml0cyJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./js/constants.ts\n");
+
+/***/ }),
+
+/***/ "./module.ts":
+/*!*******************!*\
+  !*** ./module.ts ***!
+  \*******************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   plugin: () => (/* binding */ plugin)\n/* harmony export */ });\n/* harmony import */ var _grafana_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @grafana/data */ \"@grafana/data\");\n/* harmony import */ var _grafana_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_grafana_data__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _datasource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datasource */ \"./datasource.ts\");\n/* harmony import */ var _components_ConfigEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/ConfigEditor */ \"./components/ConfigEditor.tsx\");\n/* harmony import */ var _components_QueryEditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/QueryEditor */ \"./components/QueryEditor.tsx\");\n/* harmony import */ var components_VariableQueryEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! components/VariableQueryEditor */ \"./components/VariableQueryEditor.tsx\");\n\n\n\n\n\nconst plugin = new _grafana_data__WEBPACK_IMPORTED_MODULE_0__.DataSourcePlugin(_datasource__WEBPACK_IMPORTED_MODULE_1__.DataSource).setConfigEditor(_components_ConfigEditor__WEBPACK_IMPORTED_MODULE_2__.ConfigEditor).setQueryEditor(_components_QueryEditor__WEBPACK_IMPORTED_MODULE_3__.QueryEditor).setVariableQueryEditor(components_VariableQueryEditor__WEBPACK_IMPORTED_MODULE_4__.VariableQueryEditor);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9tb2R1bGUudHMiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUFpRDtBQUNQO0FBQ2U7QUFDRjtBQUVjO0FBRzlELE1BQU1LLFNBQVMsSUFBSUwsMkRBQWdCQSxDQUEyQ0MsbURBQVVBLEVBQzVGSyxlQUFlLENBQUNKLGtFQUFZQSxFQUM1QkssY0FBYyxDQUFDSixnRUFBV0EsRUFDMUJLLHNCQUFzQixDQUFDSiwrRUFBbUJBLEVBQzFDIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vbW9kdWxlLnRzP2MyMTQiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRGF0YVNvdXJjZVBsdWdpbiB9IGZyb20gJ0BncmFmYW5hL2RhdGEnO1xyXG5pbXBvcnQgeyBEYXRhU291cmNlIH0gZnJvbSAnLi9kYXRhc291cmNlJztcclxuaW1wb3J0IHsgQ29uZmlnRWRpdG9yIH0gZnJvbSAnLi9jb21wb25lbnRzL0NvbmZpZ0VkaXRvcic7XHJcbmltcG9ydCB7IFF1ZXJ5RWRpdG9yIH0gZnJvbSAnLi9jb21wb25lbnRzL1F1ZXJ5RWRpdG9yJztcclxuaW1wb3J0IHsgTXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucyB9IGZyb20gJy4vdHlwZXMnO1xyXG5pbXBvcnQgeyBWYXJpYWJsZVF1ZXJ5RWRpdG9yIH0gZnJvbSAnY29tcG9uZW50cy9WYXJpYWJsZVF1ZXJ5RWRpdG9yJztcclxuXHJcblxyXG5leHBvcnQgY29uc3QgcGx1Z2luID0gbmV3IERhdGFTb3VyY2VQbHVnaW48RGF0YVNvdXJjZSwgTXlRdWVyeSwgTXlEYXRhU291cmNlT3B0aW9ucz4oRGF0YVNvdXJjZSlcclxuICAuc2V0Q29uZmlnRWRpdG9yKENvbmZpZ0VkaXRvcilcclxuICAuc2V0UXVlcnlFZGl0b3IoUXVlcnlFZGl0b3IpXHJcbiAgLnNldFZhcmlhYmxlUXVlcnlFZGl0b3IoVmFyaWFibGVRdWVyeUVkaXRvcilcclxuICA7XHJcbiJdLCJuYW1lcyI6WyJEYXRhU291cmNlUGx1Z2luIiwiRGF0YVNvdXJjZSIsIkNvbmZpZ0VkaXRvciIsIlF1ZXJ5RWRpdG9yIiwiVmFyaWFibGVRdWVyeUVkaXRvciIsInBsdWdpbiIsInNldENvbmZpZ0VkaXRvciIsInNldFF1ZXJ5RWRpdG9yIiwic2V0VmFyaWFibGVRdWVyeUVkaXRvciJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./module.ts\n");
+
+/***/ }),
+
+/***/ "@grafana/data":
+/*!********************************!*\
+  !*** external "@grafana/data" ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = require("@grafana/data");
+
+/***/ }),
+
+/***/ "@grafana/runtime":
+/*!***********************************!*\
+  !*** external "@grafana/runtime" ***!
+  \***********************************/
+/***/ ((module) => {
+
+module.exports = require("@grafana/runtime");
+
+/***/ }),
+
+/***/ "@grafana/ui":
+/*!******************************!*\
+  !*** external "@grafana/ui" ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = require("@grafana/ui");
+
+/***/ }),
+
+/***/ "lodash":
+/*!*************************!*\
+  !*** external "lodash" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("lodash");
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "react" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = require("react");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
 /******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
-/******/ })
+/******/ 	
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultFlags = {
-    'Select All': { Value: false, Order: -1, Flag: 0 },
-    Normal: { Value: false, Order: 0, Flag: 0 },
-    BadData: { Value: false, Order: 1, Flag: 1 << 0 },
-    SuspectData: { Value: false, Order: 2, Flag: 1 << 1 },
-    OverRangeError: { Value: false, Order: 3, Flag: 1 << 2 },
-    UnderRangeError: { Value: false, Order: 4, Flag: 1 << 3 },
-    AlarmHigh: { Value: false, Order: 5, Flag: 1 << 4 },
-    AlarmLow: { Value: false, Order: 6, Flag: 1 << 5 },
-    WarningHigh: { Value: false, Order: 7, Flag: 1 << 6 },
-    WarningLow: { Value: false, Order: 8, Flag: 1 << 7 },
-    FlatlineAlarm: { Value: false, Order: 9, Flag: 1 << 8 },
-    ComparisonAlarm: { Value: false, Order: 10, Flag: 1 << 9 },
-    ROCAlarm: { Value: false, Order: 11, Flag: 1 << 10 },
-    ReceivedAsBad: { Value: false, Order: 12, Flag: 1 << 11 },
-    CalculatedValue: { Value: false, Order: 13, Flag: 1 << 12 },
-    CalculationError: { Value: false, Order: 14, Flag: 1 << 13 },
-    CalculationWarning: { Value: false, Order: 15, Flag: 1 << 14 },
-    ReservedQualityFlag: { Value: false, Order: 16, Flag: 1 << 15 },
-    BadTime: { Value: false, Order: 17, Flag: 1 << 16 },
-    SuspectTime: { Value: false, Order: 18, Flag: 1 << 17 },
-    LateTimeAlarm: { Value: false, Order: 19, Flag: 1 << 18 },
-    FutureTimeAlarm: { Value: false, Order: 20, Flag: 1 << 19 },
-    UpSampled: { Value: false, Order: 21, Flag: 1 << 20 },
-    DownSampled: { Value: false, Order: 22, Flag: 1 << 21 },
-    DiscardedValue: { Value: false, Order: 23, Flag: 1 << 22 },
-    ReservedTimeFlag: { Value: false, Order: 24, Flag: 1 << 23 },
-    UserDefinedFlag1: { Value: false, Order: 25, Flag: 1 << 24 },
-    UserDefinedFlag2: { Value: false, Order: 26, Flag: 1 << 25 },
-    UserDefinedFlag3: { Value: false, Order: 27, Flag: 1 << 26 },
-    UserDefinedFlag4: { Value: false, Order: 28, Flag: 1 << 27 },
-    UserDefinedFlag5: { Value: false, Order: 29, Flag: 1 << 28 },
-    SystemError: { Value: false, Order: 30, Flag: 1 << 29 },
-    SystemWarning: { Value: false, Order: 31, Flag: 1 << 30 },
-    MeasurementError: { Value: false, Order: 32, Flag: 1 << 31 }
-};
-exports.FunctionList = {
-    Set: { Function: 'Set', Parameters: [] },
-    Slice: { Function: 'Slice', Parameters: [{ Default: 1, Type: 'double', Description: 'A floating-point value that must be greater than or equal to zero that represents the desired time tolerance, in seconds, for the time slice.' }] },
-    Average: { Function: 'Average', Parameters: [] },
-    Minimum: { Function: 'Minimum', Parameters: [] },
-    Maximum: { Function: 'Maximum', Parameters: [] },
-    Total: { Function: 'Total', Parameters: [] },
-    Range: { Function: 'Range', Parameters: [] },
-    Count: { Function: 'Count', Parameters: [] },
-    Distinct: { Function: 'Distinct', Parameters: [] },
-    AbsoluteValute: { Function: 'AbsoluteValue', Parameters: [] },
-    Add: { Function: 'Add', Parameters: [{ Default: 0, Type: 'string', Description: 'A floating point value representing an additive offset to be applied to each value the source series.' }] },
-    Subtract: { Function: 'Subtract', Parameters: [{ Default: 0, Type: 'string', Description: 'A floating point value representing an additive offset to be applied to each value the source series.' }] },
-    Multiply: { Function: 'Multiply', Parameters: [{ Default: 1, Type: 'string', Description: 'A floating point value representing an additive offset to be applied to each value the source series.' }] },
-    Divide: { Function: 'Multiply', Parameters: [{ Default: 1, Type: 'string', Description: 'A floating point value representing an additive offset to be applied to each value the source series.' }] },
-    Round: { Function: 'Round', Parameters: [{ Default: 0, Type: 'double', Description: 'A positive integer value representing the number of decimal places in the return value - defaults to 0.' }] },
-    Floor: { Function: 'Floor', Parameters: [] },
-    Ceiling: { Function: 'Ceiling', Parameters: [] },
-    Truncate: { Function: 'Truncate', Parameters: [] },
-    StandardDeviation: { Function: 'StandardDeviation', Parameters: [{ Default: false, Type: 'boolean', Description: 'A boolean flag representing if the sample based calculation should be used - defaults to false, which means the population based calculation should be used.' }] },
-    Median: { Function: 'Median', Parameters: [] },
-    Mode: { Function: 'Mode', Parameters: [] },
-    Top: { Function: 'Top', Parameters: [{ Default: '100%', Type: 'string', Description: 'A positive integer value, representing a total, that is greater than zero - or - a floating point value, suffixed with \' %\' representing a percentage, that must range from greater than 0 to less than or equal to 100.' }, { Default: true, Type: 'boolean', Description: 'A boolean flag representing if time in dataset should be normalized - defaults to true.' }] },
-    Bottom: { Function: 'Bottom', Parameters: [{ Default: '100%', Type: 'string', Description: 'A positive integer value, representing a total, that is greater than zero - or - a floating point value, suffixed with \' %\' representing a percentage, that must range from greater than 0 to less than or equal to 100.' }, { Default: true, Type: 'boolean', Description: 'A boolean flag representing if time in dataset should be normalized - defaults to true.' }] },
-    Random: { Function: 'Random', Parameters: [{ Default: '100%', Type: 'string', Description: 'A positive integer value, representing a total, that is greater than zero - or - a floating point value, suffixed with \' %\' representing a percentage, that must range from greater than 0 to less than or equal to 100.' }, { Default: true, Type: 'boolean', Description: 'A boolean flag representing if time in dataset should be normalized - defaults to true.' }] },
-    First: { Function: 'First', Parameters: [{ Default: '1', Type: 'string', Description: 'A positive integer value, representing a total, that is greater than zero - or - a floating point value, suffixed with \' %\' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.' }] },
-    Last: { Function: 'Last', Parameters: [{ Default: '1', Type: 'string', Description: 'A positive integer value, representing a total, that is greater than zero - or - a floating point value, suffixed with \' %\' representing a percentage, that must range from greater than 0 to less than or equal to 100 - defaults to 1.' }] },
-    Percentile: { Function: 'Percentile', Parameters: [{ Default: '100%', Type: 'string', Description: 'A floating point value, representing a percentage, that must range from 0 to 100.' }] },
-    Difference: { Function: 'Difference', Parameters: [] },
-    TimeDifference: { Function: 'TimeDifference', Parameters: [{ Default: 'Seconds', Type: 'time', Description: 'Specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Seconds.' }] },
-    Derivative: { Function: 'Derivative', Parameters: [{ Default: 'Seconds', Type: 'time', Description: 'Specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Seconds.' }] },
-    TimeIntegration: { Function: 'TimeIntegration', Parameters: [{ Default: 'Hours', Type: 'time', Description: 'Specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Hours.' }] },
-    Interval: { Function: 'Interval', Parameters: [{ Default: 0, Type: 'double', Description: 'A floating-point value that must be greater than or equal to zero that represents the desired time interval, in time units, for the returned data. ' }, { Default: 'Seconds', Type: 'time', Description: 'Specifies the type of time units and must be one of the following: Seconds, Nanoseconds, Microseconds, Milliseconds, Minutes, Hours, Days, Weeks, Ke (i.e., traditional Chinese unit of decimal time), Ticks (i.e., 100-nanosecond intervals), PlanckTime or AtomicUnitsOfTime - defaults to Seconds.' }] },
-    IncludeRange: { Function: 'IncludeRange', Parameters: [{ Default: 0, Type: 'double', Description: 'Floating-point number that represents the low range of values allowed in the return series.' }, { Default: 0, Type: 'double', Description: 'Floating-point number that represents the high range of values allowed in the return series.' }, { Default: false, Type: 'boolean', Description: 'A boolean flag that determines if range values are inclusive, i.e., allowed values are >= low and <= high - defaults to false, which means values are exclusive, i.e., allowed values are > low and < high.' }, { Default: false, Type: 'boolean', Description: 'A boolean flag - when four parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.' }] },
-    ExcludeRange: { Function: 'ExcludeRange', Parameters: [{ Default: 0, Type: 'double', Description: 'Floating-point number that represents the low range of values allowed in the return series.' }, { Default: 0, Type: 'double', Description: 'Floating-point number that represents the high range of values allowed in the return series.' }, { Default: false, Type: 'boolean', Description: 'A boolean flag that determines if range values are inclusive, i.e., allowed values are >= low and <= high - defaults to false, which means values are exclusive, i.e., allowed values are > low and < high.' }, { Default: false, Type: 'boolean', Description: 'A boolean flag - when four parameters are provided, third parameter determines if low value is inclusive and forth parameter determines if high value is inclusive.' }] },
-    FilterNaN: { Function: 'FilterNaN', Parameters: [{ Default: true, Type: 'boolean', Description: 'A boolean flag that determines if infinite values should also be excluded - defaults to true.' }] },
-    UnwrapAngle: { Function: 'UnwrapAngle', Parameters: [{ Default: 'Degrees', Type: 'angleUnits', Description: 'Specifies the type of angle units and must be one of the following: Degrees, Radians, Grads, ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.' }] },
-    WrapAngle: { Function: 'WrapAngle', Parameters: [{ Default: 'Degrees', Type: 'angleUnits', Description: 'Specifies the type of angle units and must be one of the following: Degrees, Radians, Grads, ArcMinutes, ArcSeconds or AngularMil - defaults to Degrees.' }] },
-    Label: { Function: 'Label', Parameters: [{ Default: 'Name', Type: 'string', Description: 'Renames a series with the specified label value.' }] }
-};
-exports.WhereOperators = ['=', '<>', '<', '<=', '>', '>=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS', 'IS NOT'];
-exports.Booleans = ['true', 'false'];
-exports.AngleUnits = ['Degrees', 'Radians', 'Grads', 'ArcMinutes', 'ArcSeconds', 'AngularMil'];
-exports.TimeUnits = ['Weeks', 'Days', 'Hours', 'Minutes', 'Seconds', 'Milliseconds', 'Microseconds', 'Nanoseconds', 'Ticks', 'PlankTime', 'AtomicUnitsOfTime', 'Ke'];
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var PanelCtrl = function () {
-    function PanelCtrl($scope, $injector) {
-        _classCallCheck(this, PanelCtrl);
-    }
-
-    _createClass(PanelCtrl, [{
-        key: "init",
-        value: function init() {}
-    }, {
-        key: "renderingCompleted",
-        value: function renderingCompleted() {}
-    }, {
-        key: "refresh",
-        value: function refresh() {}
-    }, {
-        key: "publishAppEvent",
-        value: function publishAppEvent(evtName, evt) {}
-    }, {
-        key: "changeView",
-        value: function changeView(fullscreen, edit) {}
-    }, {
-        key: "viewPanel",
-        value: function viewPanel() {
-            this.changeView(true, false);
-        }
-    }, {
-        key: "editPanel",
-        value: function editPanel() {
-            this.changeView(true, true);
-        }
-    }, {
-        key: "exitFullscreen",
-        value: function exitFullscreen() {
-            this.changeView(false, false);
-        }
-    }, {
-        key: "initEditMode",
-        value: function initEditMode() {}
-    }, {
-        key: "changeTab",
-        value: function changeTab(newIndex) {}
-    }, {
-        key: "addEditorTab",
-        value: function addEditorTab(title, directiveFn, index) {}
-    }, {
-        key: "getMenu",
-        value: function getMenu() {
-            return [];
-        }
-    }, {
-        key: "getExtendedMenu",
-        value: function getExtendedMenu() {
-            return [];
-        }
-    }, {
-        key: "otherPanelInFullscreenMode",
-        value: function otherPanelInFullscreenMode() {
-            return false;
-        }
-    }, {
-        key: "calculatePanelHeight",
-        value: function calculatePanelHeight() {}
-    }, {
-        key: "render",
-        value: function render(payload) {}
-    }, {
-        key: "toggleEditorHelp",
-        value: function toggleEditorHelp(index) {}
-    }, {
-        key: "duplicate",
-        value: function duplicate() {}
-    }, {
-        key: "updateColumnSpan",
-        value: function updateColumnSpan(span) {}
-    }, {
-        key: "removePanel",
-        value: function removePanel() {}
-    }, {
-        key: "editPanelJson",
-        value: function editPanelJson() {}
-    }, {
-        key: "replacePanel",
-        value: function replacePanel(newPanel, oldPanel) {}
-    }, {
-        key: "sharePanel",
-        value: function sharePanel() {}
-    }, {
-        key: "getInfoMode",
-        value: function getInfoMode() {}
-    }, {
-        key: "getInfoContent",
-        value: function getInfoContent(options) {}
-    }, {
-        key: "openInspector",
-        value: function openInspector() {}
-    }]);
-
-    return PanelCtrl;
-}();
-
-exports.PanelCtrl = PanelCtrl;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var openHistorianDatasource_1 = __webpack_require__(4);
-exports.Datasource = openHistorianDatasource_1.default;
-var openHistorianQuery_ctrl_1 = __webpack_require__(5);
-exports.QueryCtrl = openHistorianQuery_ctrl_1.default;
-var openHistorianConfig_ctrl_1 = __webpack_require__(13);
-exports.ConfigCtrl = openHistorianConfig_ctrl_1.default;
-var openHistorianQueryOptions_ctrl_1 = __webpack_require__(14);
-exports.QueryOptionsCtrl = openHistorianQueryOptions_ctrl_1.default;
-var openHistorianAnnotations_ctrl_1 = __webpack_require__(15);
-exports.AnnotationsQueryCtrl = openHistorianAnnotations_ctrl_1.default;
-var openHistorianElementPicker_ctrl_1 = __webpack_require__(16);
-var openHistorianTextEditor_ctrl_1 = __webpack_require__(17);
-var openHistorianFilterExpression_ctrl_1 = __webpack_require__(18);
-angular.module('grafana.directives').directive("queryOptions", function () {
-    return {
-        templateUrl: 'public/plugins/gridprotectionalliance-openhistorian-datasource/partial/query.options.html',
-        restrict: 'E',
-        controller: openHistorianQueryOptions_ctrl_1.default,
-        controllerAs: 'queryOptionCtrl',
-        scope: {
-            flags: "=",
-            return: "="
-        }
-    };
-});
-angular.module('grafana.directives').directive("elementPicker", function () {
-    return {
-        templateUrl: 'public/plugins/gridprotectionalliance-openhistorian-datasource/partial/query.elementPicker.html',
-        restrict: 'E',
-        controller: openHistorianElementPicker_ctrl_1.default,
-        controllerAs: 'openHistorianElementPickerCtrl',
-        scope: {
-            target: "=",
-            datasource: "=",
-            panel: "="
-        }
-    };
-});
-angular.module('grafana.directives').directive("textEditor", function () {
-    return {
-        templateUrl: 'public/plugins/gridprotectionalliance-openhistorian-datasource/partial/query.textEditor.html',
-        restrict: 'E',
-        controller: openHistorianTextEditor_ctrl_1.default,
-        controllerAs: 'openHistorianTextEditorCtrl',
-        scope: {
-            target: "=",
-            datasource: "=",
-            panel: "="
-        }
-    };
-});
-angular.module('grafana.directives').directive("filterExpression", function () {
-    return {
-        templateUrl: 'public/plugins/gridprotectionalliance-openhistorian-datasource/partial/query.filterExpression.html',
-        restrict: 'E',
-        controller: openHistorianFilterExpression_ctrl_1.default,
-        controllerAs: 'openHistorianFilterExpressionCtrl',
-        scope: {
-            target: "=",
-            datasource: "=",
-            panel: "="
-        }
-    };
-});
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var OpenHistorianDataSource = function () {
-    function OpenHistorianDataSource(instanceSettings, $q, backendSrv, templateSrv, uiSegmentSrv) {
-        _classCallCheck(this, OpenHistorianDataSource);
-
-        this.backendSrv = backendSrv;
-        this.templateSrv = templateSrv;
-        this.uiSegmentSrv = uiSegmentSrv;
-        this.type = instanceSettings.type;
-        this.url = instanceSettings.url;
-        this.name = instanceSettings.name;
-        this.q = $q;
-        this.backendSrv = backendSrv;
-        this.templateSrv = templateSrv;
-        this.uiSegmentSrv = uiSegmentSrv;
-        this.dataFlags = instanceSettings.jsonData.flags;
-        this.options = {
-            excludedDataFlags: instanceSettings.jsonData.Excluded == undefined ? 0 : instanceSettings.jsonData.Excluded,
-            excludeNormalData: instanceSettings.jsonData.Normal == undefined ? false : instanceSettings.jsonData.Normal,
-            updateAlarms: instanceSettings.jsonData.Alarms == undefined ? false : instanceSettings.jsonData.Alarms
-        };
-    }
-
-    _createClass(OpenHistorianDataSource, [{
-        key: "query",
-        value: function query(options) {
-            var query = this.buildQueryParameters(options);
-            query.targets = query.targets.filter(function (t) {
-                return !t.hide;
-            });
-            query.options = JSON.parse(JSON.stringify(this.options));
-            if (query.targets.length <= 0) {
-                return Promise.resolve({ data: [] });
-            }
-            var ctrl = this;
-            if (this.options.updateAlarms) {
-                this.backendSrv.datasourceRequest({
-                    url: this.url + '/GetAlarms',
-                    data: query,
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).then(function (data) {
-                    ctrl.GetDashboard(data.data, query, ctrl);
-                }).catch(function (data) {});
-            }
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/query',
-                data: query,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "testDatasource",
-        value: function testDatasource() {
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/',
-                method: 'GET'
-            }).then(function (response) {
-                if (response.status === 200) {
-                    return { status: "success", message: "Data source is working", title: "Success" };
-                }
-            });
-        }
-    }, {
-        key: "annotationQuery",
-        value: function annotationQuery(options) {
-            var query = this.templateSrv.replace(options.annotation.query, {}, 'glob');
-            var annotationQuery = {
-                range: options.range,
-                annotation: {
-                    name: options.annotation.name,
-                    datasource: options.annotation.datasource,
-                    enable: options.annotation.enable,
-                    iconColor: options.annotation.iconColor,
-                    query: query
-                },
-                rangeRaw: options.rangeRaw
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/annotations',
-                method: 'POST',
-                data: annotationQuery
-            }).then(function (result) {
-                return result.data;
-            });
-        }
-    }, {
-        key: "metricFindQuery",
-        value: function metricFindQuery(options, optionalOptions) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/search',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(this.mapToTextValue);
-        }
-    }, {
-        key: "whereFindQuery",
-        value: function whereFindQuery(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/SearchFields',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(this.mapToTextValue);
-        }
-    }, {
-        key: "mapToTextValue",
-        value: function mapToTextValue(result) {
-            return _.map(result.data, function (d, i) {
-                return { text: d, value: d };
-            });
-        }
-    }, {
-        key: "buildQueryParameters",
-        value: function buildQueryParameters(options) {
-            var _this = this;
-            options.targets = _.filter(options.targets, function (target) {
-                return target.target !== 'select metric';
-            });
-            var targets = _.map(options.targets, function (target) {
-                return {
-                    target: _this.fixTemplates(target),
-                    refId: target.refId,
-                    hide: target.hide,
-                    excludedFlags: ((target || {}).queryOptions || {}).Excluded || 0,
-                    excludeNormalFlags: ((target || {}).queryOptions || {}).Normal || false,
-                    queryType: target.queryType,
-                    queryOptions: target.queryOptions
-                };
-            });
-            options.targets = targets;
-            return options;
-        }
-    }, {
-        key: "filterFindQuery",
-        value: function filterFindQuery() {
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/SearchFilters',
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(this.mapToTextValue);
-        }
-    }, {
-        key: "orderByFindQuery",
-        value: function orderByFindQuery(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/SearchOrderBys',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(this.mapToTextValue);
-        }
-    }, {
-        key: "getMetaData",
-        value: function getMetaData(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/GetMetadata',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "getAlarmStates",
-        value: function getAlarmStates(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/GetAlarmState',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "getPossibleAlarmStates",
-        value: function getPossibleAlarmStates(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/GetDeviceAlarms',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "getDeviceGroups",
-        value: function getDeviceGroups(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/GetDeviceGroups',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "getDataAvailability",
-        value: function getDataAvailability(options) {
-            var interpolated = {
-                target: this.templateSrv.replace(options, null, 'regex')
-            };
-            return this.backendSrv.datasourceRequest({
-                url: this.url + '/GetDataAvailability',
-                data: interpolated,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "fixTemplates",
-        value: function fixTemplates(target) {
-            if (target.target == undefined) return '';
-            var ctrl = this;
-            var sep = ' ';
-            if (target.queryType == 'Element List') sep = ';';
-            return target.target.split(sep).map(function (a) {
-                if (ctrl.templateSrv.variableExists(a)) {
-                    return ctrl.templateSrv.replaceWithText(a);
-                } else return a;
-            }).join(sep);
-        }
-    }, {
-        key: "queryLocation",
-        value: function queryLocation(target) {
-            if (target.target == null || target.target == undefined) {
-                target.target = {};
-            }
-            if (target.radius == null || target.radius == undefined || target.zoom == null || target.zoom == undefined) {
-                return this.backendSrv.datasourceRequest({
-                    method: "POST",
-                    url: this.url + '/GetLocationData',
-                    data: JSON.stringify(target.target),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            }
-            return this.backendSrv.datasourceRequest({
-                method: "POST",
-                url: this.url + '/GetLocationData?radius=' + target.radius + '&zoom=' + target.zoom,
-                data: JSON.stringify(target.target),
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-    }, {
-        key: "GetDashboard",
-        value: function GetDashboard(alarms, query, ctrl) {
-            ctrl.backendSrv.datasourceRequest({
-                url: ctrl.url + '/QueryAlarms',
-                method: 'POST',
-                data: query,
-                headers: { 'Content-Type': 'application/json' }
-            }).then(function (data) {}).catch(function (data) {});
-            ctrl.backendSrv.datasourceRequest({
-                url: 'api/search?dashboardIds=' + query.dashboardId,
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(function (data) {
-                ctrl.backendSrv.datasourceRequest({
-                    url: 'api/dashboards/uid/' + data.data[0]["uid"],
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                }).then(function (data) {
-                    ctrl.CheckPanel(alarms, query, data.data, ctrl);
-                });
-            });
-        }
-    }, {
-        key: "CheckPanel",
-        value: function CheckPanel(alarms, query, dashboard, ctrl) {
-            var alerts = dashboard.dashboard.panels;
-            if (alerts === undefined) return;
-            alerts = alerts.find(function (item) {
-                return item.id == query.panelId;
-            });
-            if (alerts == undefined || alerts == null) return;
-            alerts = alerts.thresholds;
-            if ((alerts == undefined || alerts == null || alerts.length == 0) && alarms.length == 0) return;
-            if ((alerts == undefined || alerts == null || alerts.length == 0) && alarms.length > 0) {
-                ctrl.UpdateAlarms(alarms, dashboard.dashboard.uid, query, ctrl);
-                return;
-            }
-            var threshholds = [];
-            try {
-                threshholds = alerts.map(function (item) {
-                    return item.value;
-                });
-            } catch (_a) {
-                return;
-            }
-            var needsUpdate = false;
-            alarms.forEach(function (item) {
-                if (!threshholds.includes(item.SetPoint)) needsUpdate = true;
-            });
-            if (needsUpdate) {
-                ctrl.UpdateAlarms(alarms, dashboard.dashboard.uid, query, ctrl);
-            }
-        }
-    }, {
-        key: "UpdateAlarms",
-        value: function UpdateAlarms(alarms, dashboardUid, query, ctrl) {
-            ctrl.backendSrv.datasourceRequest({
-                url: 'api/dashboards/uid/' + dashboardUid,
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(function (data) {
-                var dashboard = data.data.dashboard;
-                var panelIndex = dashboard.panels.findIndex(function (item) {
-                    return item.id == query.panelId;
-                });
-                dashboard.panels[panelIndex].thresholds = alarms.map(function (item) {
-                    var op = "gt";
-                    if (item.Operation == 21 || item.Operation == 22) op = "lt";
-                    var fill = true;
-                    if (item.Operation == 1 || item.Operation == 2) fill = false;
-                    return {
-                        colorMode: "critical",
-                        fill: fill,
-                        line: true,
-                        op: op,
-                        value: item.SetPoint
-                    };
-                });
-                ctrl.backendSrv.datasourceRequest({
-                    url: 'api/dashboards/db',
-                    method: 'POST',
-                    data: { overwrite: true, dashboard: dashboard },
-                    headers: { 'Content-Type': 'application/json' }
-                }).catch(function (data) {
-                    console.log(data);
-                });
-            });
-        }
-    }]);
-
-    return OpenHistorianDataSource;
-}();
-
-exports.default = OpenHistorianDataSource;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var sdk_1 = __webpack_require__(6);
-__webpack_require__(9);
-
-var OpenHistorianDataSourceQueryCtrl = function (_sdk_1$QueryCtrl) {
-    _inherits(OpenHistorianDataSourceQueryCtrl, _sdk_1$QueryCtrl);
-
-    function OpenHistorianDataSourceQueryCtrl($scope, $injector, uiSegmentSrv, templateSrv, $compile) {
-        _classCallCheck(this, OpenHistorianDataSourceQueryCtrl);
-
-        var _this = _possibleConstructorReturn(this, (OpenHistorianDataSourceQueryCtrl.__proto__ || Object.getPrototypeOf(OpenHistorianDataSourceQueryCtrl)).call(this, $scope, $injector));
-
-        _this.uiSegmentSrv = uiSegmentSrv;
-        _this.templateSrv = templateSrv;
-        _this.$compile = $compile;
-        _this.$scope = $scope;
-        _this.$compile = $compile;
-        var ctrl = _this;
-        _this.uiSegmentSrv = uiSegmentSrv;
-        _this.queryTypes = ["Element List", "Filter Expression", "Text Editor"];
-        _this.queryType = _this.target.queryType == undefined ? "Element List" : _this.target.queryType;
-        _this.queryOptionsOpen = false;
-        if (ctrl.target.queryOptions == undefined) ctrl.target.queryOptions = { Excluded: ctrl.datasource.options.excludedDataFlags, Normal: ctrl.datasource.options.excludeNormalData };
-        return _this;
-    }
-
-    _createClass(OpenHistorianDataSourceQueryCtrl, [{
-        key: "toggleQueryOptions",
-        value: function toggleQueryOptions() {
-            this.queryOptionsOpen = !this.queryOptionsOpen;
-        }
-    }, {
-        key: "onChangeInternal",
-        value: function onChangeInternal() {
-            this.panelCtrl.refresh();
-        }
-    }, {
-        key: "changeQueryType",
-        value: function changeQueryType() {
-            if (this.queryType == 'Text Editor') {
-                this.target.targetText = this.target.target;
-            } else {
-                this.target.target = '';
-                delete this.target.functionSegments;
-            }
-        }
-    }]);
-
-    return OpenHistorianDataSourceQueryCtrl;
-}(sdk_1.QueryCtrl);
-
-exports.default = OpenHistorianDataSourceQueryCtrl;
-OpenHistorianDataSourceQueryCtrl.templateUrl = 'partial/query.editor.html';
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var panel_ctrl_1 = __webpack_require__(1);
-exports.PanelCtrl = panel_ctrl_1.PanelCtrl;
-var metrics_panel_ctrl_1 = __webpack_require__(7);
-exports.MetricsPanelCtrl = metrics_panel_ctrl_1.MetricsPanelCtrl;
-var query_ctrl_1 = __webpack_require__(8);
-exports.QueryCtrl = query_ctrl_1.QueryCtrl;
-function loadPluginCss(options) {}
-exports.loadPluginCss = loadPluginCss;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var panel_ctrl_1 = __webpack_require__(1);
-
-var MetricsPanelCtrl = function (_panel_ctrl_1$PanelCt) {
-    _inherits(MetricsPanelCtrl, _panel_ctrl_1$PanelCt);
-
-    function MetricsPanelCtrl($scope, $injector) {
-        _classCallCheck(this, MetricsPanelCtrl);
-
-        var _this = _possibleConstructorReturn(this, (MetricsPanelCtrl.__proto__ || Object.getPrototypeOf(MetricsPanelCtrl)).call(this, $scope, $injector));
-
-        _this.editorTabIndex = 1;
-        if (!_this.panel.targets) {
-            _this.panel.targets = [{}];
-        }
-        return _this;
-    }
-
-    _createClass(MetricsPanelCtrl, [{
-        key: "onPanelTearDown",
-        value: function onPanelTearDown() {}
-    }, {
-        key: "onInitMetricsPanelEditMode",
-        value: function onInitMetricsPanelEditMode() {}
-    }, {
-        key: "onMetricsPanelRefresh",
-        value: function onMetricsPanelRefresh() {}
-    }, {
-        key: "setTimeQueryStart",
-        value: function setTimeQueryStart() {}
-    }, {
-        key: "setTimeQueryEnd",
-        value: function setTimeQueryEnd() {}
-    }, {
-        key: "updateTimeRange",
-        value: function updateTimeRange(datasource) {}
-    }, {
-        key: "calculateInterval",
-        value: function calculateInterval() {}
-    }, {
-        key: "applyPanelTimeOverrides",
-        value: function applyPanelTimeOverrides() {}
-    }, {
-        key: "issueQueries",
-        value: function issueQueries(datasource) {}
-    }, {
-        key: "handleQueryResult",
-        value: function handleQueryResult(result) {}
-    }, {
-        key: "handleDataStream",
-        value: function handleDataStream(stream) {}
-    }, {
-        key: "setDatasource",
-        value: function setDatasource(datasource) {}
-    }, {
-        key: "addQuery",
-        value: function addQuery(target) {}
-    }, {
-        key: "removeQuery",
-        value: function removeQuery(target) {}
-    }, {
-        key: "moveQuery",
-        value: function moveQuery(target, direction) {}
-    }]);
-
-    return MetricsPanelCtrl;
-}(panel_ctrl_1.PanelCtrl);
-
-exports.MetricsPanelCtrl = MetricsPanelCtrl;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var QueryCtrl = function () {
-    function QueryCtrl($scope, $injector) {
-        _classCallCheck(this, QueryCtrl);
-
-        this.$scope = $scope;
-        this.$injector = $injector;
-        this.panelCtrl = this.panelCtrl || { panel: {} };
-        this.target = this.target || { target: '' };
-        this.panel = this.panelCtrl.panel;
-    }
-
-    _createClass(QueryCtrl, [{
-        key: "refresh",
-        value: function refresh() {}
-    }]);
-
-    return QueryCtrl;
-}();
-
-exports.QueryCtrl = QueryCtrl;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var content = __webpack_require__(10);
-
-if (typeof content === 'string') {
-  content = [[module.i, content, '']];
-}
-
-var options = {}
-
-options.insert = "head";
-options.singleton = false;
-
-var update = __webpack_require__(12)(content, options);
-
-if (content.locals) {
-  module.exports = content.locals;
-}
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(11)(false);
-// Module
-exports.push([module.i, ".generic-datasource-query-row .query-keyword {\n  width: 75px;\n}", ""]);
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-// eslint-disable-next-line func-names
-module.exports = function (useSourceMap) {
-  var list = []; // return the list of modules as css string
-
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = cssWithMappingToString(item, useSourceMap);
-
-      if (item[2]) {
-        return "@media ".concat(item[2], "{").concat(content, "}");
-      }
-
-      return content;
-    }).join('');
-  }; // import a list of modules into the list
-  // eslint-disable-next-line func-names
-
-
-  list.i = function (modules, mediaQuery) {
-    if (typeof modules === 'string') {
-      // eslint-disable-next-line no-param-reassign
-      modules = [[null, modules, '']];
-    }
-
-    var alreadyImportedModules = {};
-
-    for (var i = 0; i < this.length; i++) {
-      // eslint-disable-next-line prefer-destructuring
-      var id = this[i][0];
-
-      if (id != null) {
-        alreadyImportedModules[id] = true;
-      }
-    }
-
-    for (var _i = 0; _i < modules.length; _i++) {
-      var item = modules[_i]; // skip already imported module
-      // this implementation is not 100% perfect for weird media query combinations
-      // when a module is imported multiple times with different media queries.
-      // I hope this will never occur (Hey this way we have smaller bundles)
-
-      if (item[0] == null || !alreadyImportedModules[item[0]]) {
-        if (mediaQuery && !item[2]) {
-          item[2] = mediaQuery;
-        } else if (mediaQuery) {
-          item[2] = "(".concat(item[2], ") and (").concat(mediaQuery, ")");
-        }
-
-        list.push(item);
-      }
-    }
-  };
-
-  return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-  var content = item[1] || ''; // eslint-disable-next-line prefer-destructuring
-
-  var cssMapping = item[3];
-
-  if (!cssMapping) {
-    return content;
-  }
-
-  if (useSourceMap && typeof btoa === 'function') {
-    var sourceMapping = toComment(cssMapping);
-    var sourceURLs = cssMapping.sources.map(function (source) {
-      return "/*# sourceURL=".concat(cssMapping.sourceRoot).concat(source, " */");
-    });
-    return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-  }
-
-  return [content].join('\n');
-} // Adapted from convert-source-map (MIT)
-
-
-function toComment(sourceMap) {
-  // eslint-disable-next-line no-undef
-  var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-  var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
-  return "/*# ".concat(data, " */");
-}
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var stylesInDom = {};
-
-var isOldIE = function isOldIE() {
-  var memo;
-  return function memorize() {
-    if (typeof memo === 'undefined') {
-      // Test for IE <= 9 as proposed by Browserhacks
-      // @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-      // Tests for existence of standard globals is to allow style-loader
-      // to operate correctly into non-standard environments
-      // @see https://github.com/webpack-contrib/style-loader/issues/177
-      memo = Boolean(window && document && document.all && !window.atob);
-    }
-
-    return memo;
-  };
-}();
-
-var getTarget = function getTarget() {
-  var memo = {};
-  return function memorize(target) {
-    if (typeof memo[target] === 'undefined') {
-      var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
-
-      if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-        try {
-          // This will throw an exception if access to iframe is blocked
-          // due to cross-origin restrictions
-          styleTarget = styleTarget.contentDocument.head;
-        } catch (e) {
-          // istanbul ignore next
-          styleTarget = null;
-        }
-      }
-
-      memo[target] = styleTarget;
-    }
-
-    return memo[target];
-  };
-}();
-
-function listToStyles(list, options) {
-  var styles = [];
-  var newStyles = {};
-
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var id = options.base ? item[0] + options.base : item[0];
-    var css = item[1];
-    var media = item[2];
-    var sourceMap = item[3];
-    var part = {
-      css: css,
-      media: media,
-      sourceMap: sourceMap
-    };
-
-    if (!newStyles[id]) {
-      styles.push(newStyles[id] = {
-        id: id,
-        parts: [part]
-      });
-    } else {
-      newStyles[id].parts.push(part);
-    }
-  }
-
-  return styles;
-}
-
-function addStylesToDom(styles, options) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i];
-    var domStyle = stylesInDom[item.id];
-    var j = 0;
-
-    if (domStyle) {
-      domStyle.refs++;
-
-      for (; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j]);
-      }
-
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j], options));
-      }
-    } else {
-      var parts = [];
-
-      for (; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j], options));
-      }
-
-      stylesInDom[item.id] = {
-        id: item.id,
-        refs: 1,
-        parts: parts
-      };
-    }
-  }
-}
-
-function insertStyleElement(options) {
-  var style = document.createElement('style');
-
-  if (typeof options.attributes.nonce === 'undefined') {
-    var nonce =  true ? __webpack_require__.nc : undefined;
-
-    if (nonce) {
-      options.attributes.nonce = nonce;
-    }
-  }
-
-  Object.keys(options.attributes).forEach(function (key) {
-    style.setAttribute(key, options.attributes[key]);
-  });
-
-  if (typeof options.insert === 'function') {
-    options.insert(style);
-  } else {
-    var target = getTarget(options.insert || 'head');
-
-    if (!target) {
-      throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-    }
-
-    target.appendChild(style);
-  }
-
-  return style;
-}
-
-function removeStyleElement(style) {
-  // istanbul ignore if
-  if (style.parentNode === null) {
-    return false;
-  }
-
-  style.parentNode.removeChild(style);
-}
-/* istanbul ignore next  */
-
-
-var replaceText = function replaceText() {
-  var textStore = [];
-  return function replace(index, replacement) {
-    textStore[index] = replacement;
-    return textStore.filter(Boolean).join('\n');
-  };
-}();
-
-function applyToSingletonTag(style, index, remove, obj) {
-  var css = remove ? '' : obj.css; // For old IE
-
-  /* istanbul ignore if  */
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = replaceText(index, css);
-  } else {
-    var cssNode = document.createTextNode(css);
-    var childNodes = style.childNodes;
-
-    if (childNodes[index]) {
-      style.removeChild(childNodes[index]);
-    }
-
-    if (childNodes.length) {
-      style.insertBefore(cssNode, childNodes[index]);
-    } else {
-      style.appendChild(cssNode);
-    }
-  }
-}
-
-function applyToTag(style, options, obj) {
-  var css = obj.css;
-  var media = obj.media;
-  var sourceMap = obj.sourceMap;
-
-  if (media) {
-    style.setAttribute('media', media);
-  }
-
-  if (sourceMap && btoa) {
-    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
-  } // For old IE
-
-  /* istanbul ignore if  */
-
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    while (style.firstChild) {
-      style.removeChild(style.firstChild);
-    }
-
-    style.appendChild(document.createTextNode(css));
-  }
-}
-
-var singleton = null;
-var singletonCounter = 0;
-
-function addStyle(obj, options) {
-  var style;
-  var update;
-  var remove;
-
-  if (options.singleton) {
-    var styleIndex = singletonCounter++;
-    style = singleton || (singleton = insertStyleElement(options));
-    update = applyToSingletonTag.bind(null, style, styleIndex, false);
-    remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-  } else {
-    style = insertStyleElement(options);
-    update = applyToTag.bind(null, style, options);
-
-    remove = function remove() {
-      removeStyleElement(style);
-    };
-  }
-
-  update(obj);
-  return function updateStyle(newObj) {
-    if (newObj) {
-      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap) {
-        return;
-      }
-
-      update(obj = newObj);
-    } else {
-      remove();
-    }
-  };
-}
-
-module.exports = function (list, options) {
-  options = options || {};
-  options.attributes = typeof options.attributes === 'object' ? options.attributes : {}; // Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-  // tags it will allow on a page
-
-  if (!options.singleton && typeof options.singleton !== 'boolean') {
-    options.singleton = isOldIE();
-  }
-
-  var styles = listToStyles(list, options);
-  addStylesToDom(styles, options);
-  return function update(newList) {
-    var mayRemove = [];
-
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i];
-      var domStyle = stylesInDom[item.id];
-
-      if (domStyle) {
-        domStyle.refs--;
-        mayRemove.push(domStyle);
-      }
-    }
-
-    if (newList) {
-      var newStyles = listToStyles(newList, options);
-      addStylesToDom(newStyles, options);
-    }
-
-    for (var _i = 0; _i < mayRemove.length; _i++) {
-      var _domStyle = mayRemove[_i];
-
-      if (_domStyle.refs === 0) {
-        for (var j = 0; j < _domStyle.parts.length; j++) {
-          _domStyle.parts[j]();
-        }
-
-        delete stylesInDom[_domStyle.id];
-      }
-    }
-  };
-};
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var OpenHistorianConfigCtrl = function OpenHistorianConfigCtrl($scope) {
-    _classCallCheck(this, OpenHistorianConfigCtrl);
-
-    var ctrl = this;
-    ctrl.current.jsonData.Excluded = this.current.jsonData.Excluded || 0;
-    ctrl.current.jsonData.Normal = this.current.jsonData.Normal || false;
-    ctrl.current.jsonData.Alarms = this.current.jsonData.Alarms || false;
-};
-
-exports.default = OpenHistorianConfigCtrl;
-OpenHistorianConfigCtrl.templateUrl = 'partial/config.html';
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var openHistorianConstants_1 = __webpack_require__(0);
-
-var OpenHistorianQueryOptionsCtrl = function () {
-    function OpenHistorianQueryOptionsCtrl($scope, $compile) {
-        var _this = this;
-
-        _classCallCheck(this, OpenHistorianQueryOptionsCtrl);
-
-        this.$scope = $scope;
-        this.$compile = $compile;
-        this.$scope = $scope;
-        var value = JSON.parse(JSON.stringify($scope.return));
-        this.dataFlags = this.hex2flags(parseInt(value.Excluded));
-        this.dataFlags['Normal'].Value = value.Normal;
-        this.includeAlarm = value.Alarms;
-        this.return = $scope.return;
-        this.flagArray = _.map(Object.keys(this.dataFlags), function (a) {
-            return { key: a, order: _this.dataFlags[a].Order };
-        }).sort(function (a, b) {
-            return a.order - b.order;
-        });
-    }
-
-    _createClass(OpenHistorianQueryOptionsCtrl, [{
-        key: "calculateFlags",
-        value: function calculateFlags(flag) {
-            var ctrl = this;
-            var flagVarExcluded = ctrl.return.Excluded;
-            if (flag == 'Select All') {
-                _.each(Object.keys(ctrl.dataFlags), function (key, index, list) {
-                    if (key == "Normal") ctrl.dataFlags[key].Value = false;else ctrl.dataFlags[key].Value = ctrl.dataFlags['Select All'].Value;
-                });
-                if (ctrl.dataFlags['Select All'].Value) flagVarExcluded = 0xFFFFFFFF;else flagVarExcluded = 0;
-            } else {
-                ctrl.dataFlags['Select All'].Value = false;
-                flagVarExcluded ^= ctrl.dataFlags[flag].Flag;
-            }
-            ctrl.return.Excluded = flagVarExcluded;
-            ctrl.return.Normal = ctrl.dataFlags['Normal'].Value;
-        }
-    }, {
-        key: "changeAlarms",
-        value: function changeAlarms() {
-            var ctrl = this;
-            ctrl.return.Alarms = ctrl.includeAlarm;
-        }
-    }, {
-        key: "hex2flags",
-        value: function hex2flags(hex) {
-            var ctrl = this;
-            var flag = hex;
-            var flags = JSON.parse(JSON.stringify(openHistorianConstants_1.DefaultFlags));
-            _.each(Object.keys(flags), function (key, index, list) {
-                if (key == 'Select All') return;
-                flags[key].Value = (flags[key].Flag & flag) != 0;
-            });
-            return flags;
-        }
-    }]);
-
-    return OpenHistorianQueryOptionsCtrl;
-}();
-
-exports.default = OpenHistorianQueryOptionsCtrl;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var OpenHistorianAnnotationsQueryCtrl = function OpenHistorianAnnotationsQueryCtrl() {
-  _classCallCheck(this, OpenHistorianAnnotationsQueryCtrl);
-};
-
-exports.default = OpenHistorianAnnotationsQueryCtrl;
-OpenHistorianAnnotationsQueryCtrl.templateUrl = 'partial/annotations.editor.html';
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var openHistorianConstants_1 = __webpack_require__(0);
-
-var OpenHistorianElementPickerCtrl = function () {
-    function OpenHistorianElementPickerCtrl($scope, uiSegmentSrv) {
-        _classCallCheck(this, OpenHistorianElementPickerCtrl);
-
-        this.$scope = $scope;
-        this.uiSegmentSrv = uiSegmentSrv;
-        var ctrl = this;
-        this.$scope = $scope;
-        this.uiSegmentSrv = uiSegmentSrv;
-        this.segments = this.$scope.target.segments == undefined ? [] : this.$scope.target.segments.map(function (a) {
-            return ctrl.uiSegmentSrv.newSegment({ value: a.text, expandable: true });
-        });
-        this.functionSegments = this.$scope.target.functionSegments == undefined ? [] : this.$scope.target.functionSegments;
-        this.functions = [];
-        this.elementSegment = this.uiSegmentSrv.newPlusButton();
-        this.functionSegment = this.uiSegmentSrv.newPlusButton();
-        this.buildFunctionArray();
-        this.setTargetWithElements();
-        delete $scope.target.wheres;
-        delete $scope.target.topNSegment;
-        delete $scope.target.orderBys;
-        delete $scope.target.whereSegment;
-        delete $scope.target.filterSegment;
-        delete $scope.target.orderBySegment;
-        delete $scope.target.targetText;
-    }
-
-    _createClass(OpenHistorianElementPickerCtrl, [{
-        key: "getElementSegments",
-        value: function getElementSegments(newSegment) {
-            var ctrl = this;
-            var option = null;
-            if (event.target['value'] != "") option = event.target['value'];
-            return ctrl.$scope.datasource.metricFindQuery(option).then(function (data) {
-                var altSegments = _.map(data, function (item) {
-                    return ctrl.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                });
-                altSegments.sort(function (a, b) {
-                    if (a.value < b.value) return -1;
-                    if (a.value > b.value) return 1;
-                    return 0;
-                });
-                _.each(ctrl.$scope.datasource.templateSrv.variables, function (item, index, list) {
-                    if (item.type == "query") altSegments.unshift(ctrl.uiSegmentSrv.newCondition('$' + item.name));
-                });
-                if (!newSegment) altSegments.unshift(ctrl.uiSegmentSrv.newSegment('-REMOVE-'));
-                return _.filter(altSegments, function (segment) {
-                    return _.find(ctrl.segments, function (x) {
-                        return x.value == segment.value;
-                    }) == undefined;
-                });
-            });
-        }
-    }, {
-        key: "addElementSegment",
-        value: function addElementSegment() {
-            if (event.target['text'] != null) {
-                this.segments.push(this.uiSegmentSrv.newSegment({ value: event.target['text'], expandable: true }));
-                this.setTargetWithElements();
-            }
-            var plusButton = this.uiSegmentSrv.newPlusButton();
-            this.elementSegment.value = plusButton.value;
-            this.elementSegment.html = plusButton.html;
-            this.$scope.panel.refresh();
-        }
-    }, {
-        key: "segmentValueChanged",
-        value: function segmentValueChanged(segment, index) {
-            if (segment.value == "-REMOVE-") {
-                this.segments.splice(index, 1);
-            } else {
-                this.segments[index] = segment;
-            }
-            this.setTargetWithElements();
-        }
-    }, {
-        key: "setTargetWithElements",
-        value: function setTargetWithElements() {
-            var functions = '';
-            var ctrl = this;
-            _.each(ctrl.functions, function (element, index, list) {
-                if (element.value == 'QUERY') functions += ctrl.segments.map(function (a) {
-                    return a.value;
-                }).join(';');else functions += element.value;
-            });
-            ctrl.$scope.target.target = functions != "" ? functions : ctrl.segments.map(function (a) {
-                return a.value;
-            }).join(';');
-            ctrl.$scope.target.functionSegments = ctrl.functionSegments;
-            ctrl.$scope.target.segments = ctrl.segments;
-            ctrl.$scope.target.queryType = 'Element List';
-            this.$scope.panel.refresh();
-        }
-    }, {
-        key: "getFunctionsToAddNew",
-        value: function getFunctionsToAddNew() {
-            var _this = this;
-
-            var ctrl = this;
-            var array = [];
-            _.each(Object.keys(openHistorianConstants_1.FunctionList), function (element, index, list) {
-                array.push(ctrl.uiSegmentSrv.newSegment(element));
-            });
-            if (this.functions.length == 0) array = array.slice(2, array.length);
-            array.sort(function (a, b) {
-                var nameA = a.value.toUpperCase();
-                var nameB = b.value.toUpperCase();
-                if (nameA < nameB) {
-                    return -1;
-                }
-                if (nameA > nameB) {
-                    return 1;
-                }
-                return 0;
-            });
-            return Promise.resolve(_.filter(array, function (segment) {
-                return _.find(_this.functions, function (x) {
-                    return x.value == segment.value;
-                }) == undefined;
-            }));
-        }
-    }, {
-        key: "getFunctionsToEdit",
-        value: function getFunctionsToEdit(func, index) {
-            var ctrl = this;
-            var remove = [this.uiSegmentSrv.newSegment('-REMOVE-')];
-            if (func.type == 'Operator') return Promise.resolve();else if (func.value == 'Set') return Promise.resolve(remove);
-            return Promise.resolve(remove);
-        }
-    }, {
-        key: "functionValueChanged",
-        value: function functionValueChanged(func, index) {
-            var funcSeg = openHistorianConstants_1.FunctionList[func.Function];
-            if (func.value == "-REMOVE-") {
-                var l = 1;
-                var fi = _.findIndex(this.functionSegments, function (segment) {
-                    return segment.Function == func.Function;
-                });
-                if (func.Function == 'Slice') this.functionSegments[fi + 1].Parameters = this.functionSegments[fi + 1].Parameters.slice(1, this.functionSegments[fi + 1].Parameters.length);else if (fi > 0 && (this.functionSegments[fi - 1].Function == 'Set' || this.functionSegments[fi - 1].Function == 'Slice')) {
-                    --fi;
-                    ++l;
-                }
-                this.functionSegments.splice(fi, l);
-            } else if (func.Type != 'Function') {
-                var fi = _.findIndex(this.functionSegments, function (segment) {
-                    return segment.Function == func.Function;
-                });
-                this.functionSegments[fi].Parameters[func.Index].Default = func.value;
-            }
-            this.buildFunctionArray();
-            this.setTargetWithElements();
-        }
-    }, {
-        key: "addFunctionSegment",
-        value: function addFunctionSegment() {
-            var func = openHistorianConstants_1.FunctionList[event.target['text']];
-            if (func.Function == 'Slice') {
-                this.functionSegments[0].Parameters.unshift(func.Parameters[0]);
-            }
-            this.functionSegments.unshift(JSON.parse(JSON.stringify(func)));
-            this.buildFunctionArray();
-            var plusButton = this.uiSegmentSrv.newPlusButton();
-            this.functionSegment.value = plusButton.value;
-            this.functionSegment.html = plusButton.html;
-            this.setTargetWithElements();
-        }
-    }, {
-        key: "buildFunctionArray",
-        value: function buildFunctionArray() {
-            var ctrl = this;
-            ctrl.functions = [];
-            if (this.functionSegments.length == 0) return;
-            _.each(ctrl.functionSegments, function (element, index, list) {
-                var newElement = ctrl.uiSegmentSrv.newSegment(element.Function);
-                newElement.Type = 'Function';
-                newElement.Function = element.Function;
-                ctrl.functions.push(newElement);
-                if (newElement.value == 'Set' || newElement.value == 'Slice') return;
-                var operator = ctrl.uiSegmentSrv.newOperator('(');
-                operator.Type = 'Operator';
-                ctrl.functions.push(operator);
-                _.each(element.Parameters, function (param, i, j) {
-                    var d = ctrl.uiSegmentSrv.newFake(param.Default.toString());
-                    d.Type = param.Type;
-                    d.Function = element.Function;
-                    d.Description = param.Description;
-                    d.Index = i;
-                    ctrl.functions.push(d);
-                    var operator = ctrl.uiSegmentSrv.newOperator(',');
-                    operator.Type = 'Operator';
-                    ctrl.functions.push(operator);
-                });
-            });
-            var query = ctrl.uiSegmentSrv.newCondition('QUERY');
-            query.Type = 'Query';
-            ctrl.functions.push(query);
-            for (var i in ctrl.functionSegments) {
-                if (ctrl.functionSegments[i].Function != 'Set' && ctrl.functionSegments[i].Function != 'Slice') {
-                    var operator = ctrl.uiSegmentSrv.newOperator(')');
-                    operator.Type = 'Operator';
-                    ctrl.functions.push(operator);
-                }
-            }
-        }
-    }, {
-        key: "getBooleans",
-        value: function getBooleans() {
-            var _this2 = this;
-
-            return Promise.resolve(openHistorianConstants_1.Booleans.map(function (value) {
-                return _this2.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "getAngleUnits",
-        value: function getAngleUnits() {
-            var _this3 = this;
-
-            return Promise.resolve(openHistorianConstants_1.AngleUnits.map(function (value) {
-                return _this3.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "getTimeSelect",
-        value: function getTimeSelect() {
-            var _this4 = this;
-
-            return Promise.resolve(openHistorianConstants_1.TimeUnits.map(function (value) {
-                return _this4.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "inputChange",
-        value: function inputChange(func, index) {
-            var ctrl = this;
-            clearTimeout(this.typingTimer);
-            this.typingTimer = global.setTimeout(function () {
-                ctrl.functionValueChanged(func, index);
-            }, 3000);
-            event.target['focus']();
-        }
-    }]);
-
-    return OpenHistorianElementPickerCtrl;
-}();
-
-exports.default = OpenHistorianElementPickerCtrl;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var OpenHistorianTextEditorCtrl = function () {
-    function OpenHistorianTextEditorCtrl($scope, templateSrv) {
-        _classCallCheck(this, OpenHistorianTextEditorCtrl);
-
-        this.$scope = $scope;
-        this.templateSrv = templateSrv;
-        this.$scope = $scope;
-        this.targetText = $scope.target.targetText == undefined ? '' : $scope.target.targetText;
-        this.setTargetWithText();
-        delete $scope.target.segments;
-        delete $scope.target.functionSegments;
-        delete $scope.target.wheres;
-        delete $scope.target.topNSegment;
-        delete $scope.target.functions;
-        delete $scope.target.orderBys;
-        delete $scope.target.whereSegment;
-        delete $scope.target.filterSegment;
-        delete $scope.target.orderBySegment;
-        delete $scope.target.functionSegment;
-    }
-
-    _createClass(OpenHistorianTextEditorCtrl, [{
-        key: "setTargetWithText",
-        value: function setTargetWithText() {
-            this.$scope.target.targetText = this.targetText;
-            this.$scope.target.target = this.targetText;
-            this.$scope.target.queryType = 'Text Editor';
-            this.$scope.panel.refresh();
-        }
-    }]);
-
-    return OpenHistorianTextEditorCtrl;
-}();
-
-exports.default = OpenHistorianTextEditorCtrl;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var openHistorianConstants_1 = __webpack_require__(0);
-
-var OpenHistorianFilterExpressionCtrl = function () {
-    function OpenHistorianFilterExpressionCtrl($scope, $injector, uiSegmentSrv) {
-        _classCallCheck(this, OpenHistorianFilterExpressionCtrl);
-
-        this.uiSegmentSrv = uiSegmentSrv;
-        this.uiSegmentSrv = uiSegmentSrv;
-        this.$scope = $scope;
-        this.target = $scope.target;
-        this.datasource = $scope.datasource;
-        this.panelCtrl = $scope.panel;
-        var ctrl = this;
-        this.wheres = this.target.wheres == undefined ? [] : this.target.wheres.map(function (a) {
-            if (a.type == 'operator') return ctrl.uiSegmentSrv.newOperator(a.text);else if (a.type == 'condition') return ctrl.uiSegmentSrv.newCondition(a.text);else return ctrl.uiSegmentSrv.newSegment(a.value);
-        });
-        this.functionSegments = this.target.functionSegments == undefined ? [] : this.target.functionSegments;
-        this.topNSegment = this.target.topNSegment == undefined ? null : this.target.topNSegment;
-        this.functions = [];
-        this.orderBys = this.target.orderBys == undefined ? [] : this.target.orderBys.map(function (a) {
-            if (a.type == 'condition') return ctrl.uiSegmentSrv.newCondition(a.value);else return ctrl.uiSegmentSrv.newSegment(a.value);
-        });
-        this.whereSegment = this.uiSegmentSrv.newPlusButton();
-        this.filterSegment = this.target.filterSegment == undefined ? this.uiSegmentSrv.newSegment('ActiveMeasurements') : this.uiSegmentSrv.newSegment(this.target.filterSegment.value);
-        this.orderBySegment = this.uiSegmentSrv.newPlusButton();
-        this.functionSegment = this.uiSegmentSrv.newPlusButton();
-        this.typingTimer;
-        delete $scope.target.segments;
-        delete $scope.target.targetText;
-        this.setTargetWithQuery();
-    }
-
-    _createClass(OpenHistorianFilterExpressionCtrl, [{
-        key: "setTargetWithQuery",
-        value: function setTargetWithQuery() {
-            if (this.wheres.length == 0) {
-                this.target.target = '';
-                this.panelCtrl.refresh();
-                return;
-            }
-            var filter = this.filterSegment.value + ' ';
-            var topn = this.topNSegment ? 'TOP ' + this.topNSegment + ' ' : '';
-            var where = 'WHERE ';
-            _.each(this.wheres, function (element, index, list) {
-                where += element.value + ' ';
-            });
-            var orderby = '';
-            _.each(this.orderBys, function (element, index, list) {
-                orderby += (index == 0 ? 'ORDER BY ' : '') + element.value + (element.type == 'condition' && index < list.length - 1 ? ',' : '') + ' ';
-            });
-            var query = 'FILTER ' + topn + filter + where + orderby;
-            var functions = '';
-            _.each(this.functions, function (element, index, list) {
-                if (element.value == 'QUERY') functions += query;else functions += element.value;
-            });
-            this.target.target = functions != "" ? functions : query;
-            this.target.topNSegment = this.topNSegment;
-            this.target.filterSegment = this.filterSegment;
-            this.target.orderBys = this.orderBys;
-            this.target.wheres = this.wheres;
-            this.target.functionSegments = this.functionSegments;
-            this.target.queryType = 'Filter Expression';
-            this.panelCtrl.refresh();
-        }
-    }, {
-        key: "topNValueChanged",
-        value: function topNValueChanged() {
-            var ctrl = this;
-            clearTimeout(ctrl.typingTimer);
-            ctrl.typingTimer = global.setTimeout(function () {
-                ctrl.setTargetWithQuery();
-            }, 1000);
-            event.target['focus']();
-        }
-    }, {
-        key: "getWheresToEdit",
-        value: function getWheresToEdit(where, index) {
-            var _this = this;
-
-            if (where.type === 'operator') {
-                return Promise.resolve(this.uiSegmentSrv.newOperators(openHistorianConstants_1.WhereOperators));
-            } else if (where.type === 'value') {
-                return Promise.resolve(null);
-            } else if (where.type === 'condition') {
-                return Promise.resolve([this.uiSegmentSrv.newCondition('AND'), this.uiSegmentSrv.newCondition('OR')]);
-            } else {
-                return this.datasource.whereFindQuery(this.filterSegment.value).then(function (data) {
-                    var altSegments = _.map(data, function (item) {
-                        return _this.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                    });
-                    altSegments.sort(function (a, b) {
-                        if (a.value < b.value) return -1;
-                        if (a.value > b.value) return 1;
-                        return 0;
-                    });
-                    altSegments.unshift(_this.uiSegmentSrv.newSegment('-REMOVE-'));
-                    return altSegments;
-                });
-            }
-        }
-    }, {
-        key: "whereValueChanged",
-        value: function whereValueChanged(where, index) {
-            if (where.value == "-REMOVE-") {
-                if (index == 0 && this.wheres.length > 3 && this.wheres[index + 3].type == 'condition') this.wheres.splice(index, 4);else if (index > 0 && this.wheres[index - 1].type == 'condition') this.wheres.splice(index - 1, 4);else this.wheres.splice(index, 3);
-            }
-            if (where.type == 'operator') this.wheres[index] = this.uiSegmentSrv.newOperator(where.value);else if (where.type == 'condition') this.wheres[index] = this.uiSegmentSrv.newCondition(where.value);else if (where.type == 'value' && !$.isNumeric(where.value) && where.value.toUpperCase() != 'NULL') this.wheres[index] = this.uiSegmentSrv.newSegment("'" + where.value + "'");
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "getWheresToAddNew",
-        value: function getWheresToAddNew() {
-            var ctrl = this;
-            return this.datasource.whereFindQuery(ctrl.filterSegment.value).then(function (data) {
-                var altSegments = _.map(data, function (item) {
-                    return ctrl.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                });
-                altSegments.sort(function (a, b) {
-                    if (a.value < b.value) return -1;
-                    if (a.value > b.value) return 1;
-                    return 0;
-                });
-                return altSegments;
-            });
-        }
-    }, {
-        key: "addWhere",
-        value: function addWhere() {
-            if (this.wheres.length > 0) this.wheres.push(this.uiSegmentSrv.newCondition('AND'));
-            this.wheres.push(this.uiSegmentSrv.newSegment(event.target['text']));
-            this.wheres.push(this.uiSegmentSrv.newOperator('NOT LIKE'));
-            this.wheres.push(this.uiSegmentSrv.newFake("''", 'value', 'query-segment-value'));
-            var plusButton = this.uiSegmentSrv.newPlusButton();
-            this.whereSegment.value = plusButton.value;
-            this.whereSegment.html = plusButton.html;
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "getFilterToEdit",
-        value: function getFilterToEdit() {
-            var ctrl = this;
-            return this.datasource.filterFindQuery().then(function (data) {
-                var altSegments = _.map(data, function (item) {
-                    return ctrl.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                });
-                altSegments.sort(function (a, b) {
-                    if (a.value < b.value) return -1;
-                    if (a.value > b.value) return 1;
-                    return 0;
-                });
-                return altSegments;
-            });
-        }
-    }, {
-        key: "filterValueChanged",
-        value: function filterValueChanged() {
-            this.orderBySegment = this.uiSegmentSrv.newPlusButton();
-            this.wheres = [];
-            this.setTargetWithQuery();
-            this.panelCtrl.refresh();
-        }
-    }, {
-        key: "getOrderBysToAddNew",
-        value: function getOrderBysToAddNew() {
-            var ctrl = this;
-            return this.datasource.orderByFindQuery(ctrl.filterSegment.value).then(function (data) {
-                var altSegments = _.map(data, function (item) {
-                    return ctrl.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                });
-                altSegments.sort(function (a, b) {
-                    if (a.value < b.value) return -1;
-                    if (a.value > b.value) return 1;
-                    return 0;
-                });
-                return _.filter(altSegments, function (segment) {
-                    return _.find(ctrl.orderBys, function (x) {
-                        return x.value == segment.value;
-                    }) == undefined;
-                });
-            });
-        }
-    }, {
-        key: "getOrderBysToEdit",
-        value: function getOrderBysToEdit(orderBy) {
-            var _this2 = this;
-
-            var ctrl = this;
-            if (orderBy.type == 'condition') return Promise.resolve([this.uiSegmentSrv.newCondition('ASC'), this.uiSegmentSrv.newCondition('DESC')]);
-            if (orderBy.type == 'condition') return Promise.resolve([this.uiSegmentSrv.newCondition('ASC'), this.uiSegmentSrv.newCondition('DESC')]);
-            return this.datasource.orderByFindQuery(ctrl.filterSegment.value).then(function (data) {
-                var altSegments = _.map(data, function (item) {
-                    return ctrl.uiSegmentSrv.newSegment({ value: item.text, expandable: item.expandable });
-                });
-                altSegments.sort(function (a, b) {
-                    if (a.value < b.value) return -1;
-                    if (a.value > b.value) return 1;
-                    return 0;
-                });
-                if (orderBy.type !== 'plus-button') altSegments.unshift(_this2.uiSegmentSrv.newSegment('-REMOVE-'));
-                return _.filter(altSegments, function (segment) {
-                    return _.find(ctrl.orderBys, function (x) {
-                        return x.value == segment.value;
-                    }) == undefined;
-                });
-            });
-        }
-    }, {
-        key: "addOrderBy",
-        value: function addOrderBy() {
-            this.orderBys.push(this.uiSegmentSrv.newSegment(event.target['text']));
-            this.orderBys.push(this.uiSegmentSrv.newCondition('ASC'));
-            var plusButton = this.uiSegmentSrv.newPlusButton();
-            this.orderBySegment.value = plusButton.value;
-            this.orderBySegment.html = plusButton.html;
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "orderByValueChanged",
-        value: function orderByValueChanged(orderBy, index) {
-            if (event.target['text'] == "-REMOVE-") this.orderBys.splice(index, 2);else {
-                if (orderBy.type == 'condition') this.orderBys[index] = this.uiSegmentSrv.newCondition(event.target['text']);else this.orderBys[index] = this.uiSegmentSrv.newSegment(event.target['text']);
-            }
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "getFunctionsToAddNew",
-        value: function getFunctionsToAddNew() {
-            var _this3 = this;
-
-            var ctrl = this;
-            var array = [];
-            _.each(Object.keys(openHistorianConstants_1.FunctionList), function (element, index, list) {
-                array.push(ctrl.uiSegmentSrv.newSegment(element));
-            });
-            if (this.functions.length == 0) array = array.slice(2, array.length);
-            array.sort(function (a, b) {
-                var nameA = a.value.toUpperCase();
-                var nameB = b.value.toUpperCase();
-                if (nameA < nameB) {
-                    return -1;
-                }
-                if (nameA > nameB) {
-                    return 1;
-                }
-                return 0;
-            });
-            return Promise.resolve(_.filter(array, function (segment) {
-                return _.find(_this3.functions, function (x) {
-                    return x.value == segment.value;
-                }) == undefined;
-            }));
-        }
-    }, {
-        key: "getFunctionsToEdit",
-        value: function getFunctionsToEdit(func, index) {
-            var ctrl = this;
-            var remove = [this.uiSegmentSrv.newSegment('-REMOVE-')];
-            if (func.type == 'Operator') return Promise.resolve();else if (func.value == 'Set') return Promise.resolve(remove);
-            return Promise.resolve(remove);
-        }
-    }, {
-        key: "functionValueChanged",
-        value: function functionValueChanged(func, index) {
-            var funcSeg = openHistorianConstants_1.FunctionList[func.Function];
-            if (func.value == "-REMOVE-") {
-                var l = 1;
-                var fi = _.findIndex(this.functionSegments, function (segment) {
-                    return segment.Function == func.Function;
-                });
-                if (func.Function == 'Slice') this.functionSegments[fi + 1].Parameters = this.functionSegments[fi + 1].Parameters.slice(1, this.functionSegments[fi + 1].Parameters.length);else if (fi > 0 && (this.functionSegments[fi - 1].Function == 'Set' || this.functionSegments[fi - 1].Function == 'Slice')) {
-                    --fi;
-                    ++l;
-                }
-                this.functionSegments.splice(fi, l);
-            } else if (func.Type != 'Function') {
-                var fi = _.findIndex(this.functionSegments, function (segment) {
-                    return segment.Function == func.Function;
-                });
-                this.functionSegments[fi].Parameters[func.Index].Default = func.value;
-            }
-            this.buildFunctionArray();
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "addFunctionSegment",
-        value: function addFunctionSegment() {
-            var func = openHistorianConstants_1.FunctionList[event.target['text']];
-            if (func.Function == 'Slice') {
-                this.functionSegments[0].Parameters.unshift(func.Parameters[0]);
-            }
-            this.functionSegments.unshift(JSON.parse(JSON.stringify(func)));
-            this.buildFunctionArray();
-            var plusButton = this.uiSegmentSrv.newPlusButton();
-            this.functionSegment.value = plusButton.value;
-            this.functionSegment.html = plusButton.html;
-            this.setTargetWithQuery();
-        }
-    }, {
-        key: "buildFunctionArray",
-        value: function buildFunctionArray() {
-            var ctrl = this;
-            ctrl.functions = [];
-            if (this.functionSegments.length == 0) return;
-            _.each(ctrl.functionSegments, function (element, index, list) {
-                var newElement = ctrl.uiSegmentSrv.newSegment(element.Function);
-                newElement.Type = 'Function';
-                newElement.Function = element.Function;
-                ctrl.functions.push(newElement);
-                if (newElement.value == 'Set' || newElement.value == 'Slice') return;
-                var operator = ctrl.uiSegmentSrv.newOperator('(');
-                operator.Type = 'Operator';
-                ctrl.functions.push(operator);
-                _.each(element.Parameters, function (param, i, j) {
-                    var d = ctrl.uiSegmentSrv.newFake(param.Default.toString());
-                    d.Type = param.Type;
-                    d.Function = element.Function;
-                    d.Description = param.Description;
-                    d.Index = i;
-                    ctrl.functions.push(d);
-                    var operator = ctrl.uiSegmentSrv.newOperator(',');
-                    operator.Type = 'Operator';
-                    ctrl.functions.push(operator);
-                });
-            });
-            var query = ctrl.uiSegmentSrv.newCondition('QUERY');
-            query.Type = 'Query';
-            ctrl.functions.push(query);
-            for (var i in ctrl.functionSegments) {
-                if (ctrl.functionSegments[i].Function != 'Set' && ctrl.functionSegments[i].Function != 'Slice') {
-                    var operator = ctrl.uiSegmentSrv.newOperator(')');
-                    operator.Type = 'Operator';
-                    ctrl.functions.push(operator);
-                }
-            }
-        }
-    }, {
-        key: "getBooleans",
-        value: function getBooleans() {
-            var _this4 = this;
-
-            return Promise.resolve(openHistorianConstants_1.Booleans.map(function (value) {
-                return _this4.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "getAngleUnits",
-        value: function getAngleUnits() {
-            var _this5 = this;
-
-            return Promise.resolve(openHistorianConstants_1.AngleUnits.map(function (value) {
-                return _this5.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "getTimeSelect",
-        value: function getTimeSelect() {
-            var _this6 = this;
-
-            return Promise.resolve(openHistorianConstants_1.TimeUnits.map(function (value) {
-                return _this6.uiSegmentSrv.newSegment(value);
-            }));
-        }
-    }, {
-        key: "inputChange",
-        value: function inputChange(func, index) {
-            var ctrl = this;
-            clearTimeout(this.typingTimer);
-            this.typingTimer = global.setTimeout(function () {
-                ctrl.functionValueChanged(func, index);
-            }, 3000);
-            event.target['focus']();
-        }
-    }]);
-
-    return OpenHistorianFilterExpressionCtrl;
-}();
-
-exports.default = OpenHistorianFilterExpressionCtrl;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
-
-/***/ })
-/******/ ])));
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module can't be inlined because the eval-source-map devtool is used.
+/******/ 	var __webpack_exports__ = __webpack_require__("./module.ts");
+/******/ 	var __webpack_export_target__ = exports;
+/******/ 	for(var i in __webpack_exports__) __webpack_export_target__[i] = __webpack_exports__[i];
+/******/ 	if(__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, "__esModule", { value: true });
+/******/ 	
+/******/ })()
+;
