@@ -3173,6 +3173,9 @@
             Gets or sets the factor by which to scale the base time unit.
             </summary>
         </member>
+        <member name="M:GrafanaAdapters.Functions.TargetTimeUnit.ToString">
+            <inheritdoc />
+        </member>
         <member name="M:GrafanaAdapters.Functions.TargetTimeUnit.Parse(System.String)">
             <summary>
             Tries to parse a string representation of a time unit to a <see cref="T:GrafanaAdapters.Functions.TargetTimeUnit"/>.
