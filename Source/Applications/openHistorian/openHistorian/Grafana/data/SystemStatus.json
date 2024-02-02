@@ -1,0 +1,1002 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "datasource",
+                    "uid": "grafana"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 4,
+    "links": [
+        {
+            "asDropdown": false,
+            "icon": "dashboard",
+            "tags": [
+            ],
+            "title": "Grafana Home",
+            "tooltip": "",
+            "type": "link",
+            "url": "/grafana/"
+        },
+        {
+            "icon": "external link",
+            "tags": [
+            ],
+            "targetBlank": true,
+            "title": "openHistorian  Home",
+            "tooltip": "",
+            "type": "link",
+            "url": "../"
+        }
+    ],
+    "liveNow": true,
+    "panels": [
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "decimals": 1,
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "text": "N/A"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "#299c46",
+                                "value": null
+                            },
+                            {
+                                "color": "rgba(237, 129, 40, 0.89)",
+                                "value": 60
+                            },
+                            {
+                                "color": "#d44a3a",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": [
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 4,
+                "x": 0,
+                "y": 0
+            },
+            "hideTimeOverride": true,
+            "id": 3,
+            "links": [
+            ],
+            "maxDataPoints": 100,
+            "options": {
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "max"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": true,
+                "showThresholdMarkers": true
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%DEFAULT!SYSTEM:ST1' ",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "20s",
+            "title": "openHistorian CPU",
+            "type": "gauge"
+        },
+        {
+            "aliasColors": {
+            },
+            "bars": false,
+            "dashes": false,
+            "dashLength": 10,
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 7,
+                "w": 16,
+                "x": 4,
+                "y": 0
+            },
+            "hiddenSeries": false,
+            "hideTimeOverride": true,
+            "id": 4,
+            "legend": {
+                "alignAsTable": false,
+                "avg": false,
+                "current": true,
+                "max": true,
+                "min": true,
+                "rightSide": false,
+                "show": true,
+                "total": false,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+            ],
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.5.1",
+            "pointradius": 2,
+            "points": true,
+            "renderer": "flot",
+            "seriesOverrides": [
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Label('openHistorian process memory', FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%DEFAULT!SYSTEM:ST3')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [
+            ],
+            "timeRegions": [
+            ],
+            "timeShift": "10s",
+            "title": "openHistorian Memory",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "mode": "time",
+                "show": true,
+                "values": [
+                ]
+            },
+            "yaxes": [
+                {
+                    "format": "decmbytes",
+                    "label": "",
+                    "logBase": 1,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "logBase": 1,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false
+            }
+        },
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "description": "",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "decimals": 0,
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "index": 0,
+                                    "text": "N/A"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "m"
+                },
+                "overrides": [
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 4,
+                "x": 20,
+                "y": 0
+            },
+            "hideTimeOverride": true,
+            "id": 5,
+            "links": [
+            ],
+            "maxDataPoints": 100,
+            "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "text": {
+                    "valueSize": 70
+                },
+                "textMode": "value"
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Scale(0.01667, FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%DEFAULT!SYSTEM:ST15')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "20s",
+            "title": "openHistorian Up Time",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "decimals": 1,
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "text": "N/A"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "#299c46",
+                                "value": null
+                            },
+                            {
+                                "color": "rgba(237, 129, 40, 0.89)",
+                                "value": 60
+                            },
+                            {
+                                "color": "#d44a3a",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": [
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 4,
+                "x": 0,
+                "y": 7
+            },
+            "hideTimeOverride": true,
+            "id": 2,
+            "links": [
+            ],
+            "maxDataPoints": 100,
+            "options": {
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "max"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": true,
+                "showThresholdMarkers": true
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%GRAFANA!PROCESS!PROC:ST1' ",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "20s",
+            "title": "Grafana CPU",
+            "type": "gauge"
+        },
+        {
+            "aliasColors": {
+            },
+            "bars": false,
+            "dashes": false,
+            "dashLength": 10,
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 7,
+                "w": 16,
+                "x": 4,
+                "y": 7
+            },
+            "hiddenSeries": false,
+            "hideTimeOverride": true,
+            "id": 1,
+            "legend": {
+                "alignAsTable": false,
+                "avg": false,
+                "current": true,
+                "max": true,
+                "min": true,
+                "rightSide": false,
+                "show": true,
+                "total": false,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+            ],
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.5.1",
+            "pointradius": 2,
+            "points": true,
+            "renderer": "flot",
+            "seriesOverrides": [
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Label('Grafana process memory', FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%GRAFANA!PROCESS!PROC:ST2')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [
+            ],
+            "timeRegions": [
+            ],
+            "timeShift": "10s",
+            "title": "Grafana Memory",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "mode": "time",
+                "show": true,
+                "values": [
+                ]
+            },
+            "yaxes": [
+                {
+                    "format": "decmbytes",
+                    "label": "",
+                    "logBase": 1,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "logBase": 1,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false
+            }
+        },
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "decimals": 0,
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "text": "N/A"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "m"
+                },
+                "overrides": [
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 4,
+                "x": 20,
+                "y": 7
+            },
+            "hideTimeOverride": true,
+            "id": 6,
+            "links": [
+            ],
+            "maxDataPoints": 100,
+            "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "text": {
+                    "valueSize": 70
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Scale(0.01667, FILTER TOP 1 ActiveMeasurements WHERE PointTag LIKE '%GRAFANA!PROCESS!PROC:ST3')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "20s",
+            "title": "Grafana Up Time",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [
+                        {
+                            "options": {
+                                "pattern": "^System statistic for (.*)$",
+                                "result": {
+                                    "index": 0,
+                                    "text": "$1"
+                                }
+                            },
+                            "type": "regex"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Metric"
+                        },
+                        "properties": [
+                            {
+                                "id": "displayName",
+                                "value": "Statistic"
+                            },
+                            {
+                                "id": "unit",
+                                "value": "string"
+                            },
+                            {
+                                "id": "custom.align",
+                                "value": "left"
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Value"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "locale"
+                            },
+                            {
+                                "id": "decimals",
+                                "value": 2
+                            },
+                            {
+                                "id": "custom.align",
+                                "value": "center"
+                            },
+                            {
+                                "id": "custom.width",
+                                "value": 200
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 12,
+                "x": 0,
+                "y": 14
+            },
+            "hideTimeOverride": true,
+            "id": 7,
+            "links": [
+            ],
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "desc": true,
+                        "displayName": "Statistic"
+                    }
+                ]
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Label('{Description}', FILTER ActiveMeasurements WHERE PointTag LiKE '%DEFAULT!SYSTEM:ST%' AND Description NOT LIKE '%Average%' AND Description NOT LIKE '%CPU%' AND Description NOT LIKE '%memory%' AND Description NOT LIKE '%running%')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "10s",
+            "timeShift": "10s",
+            "title": "openHistorian System Statistics",
+            "transformations": [
+                {
+                    "id": "seriesToRows",
+                    "options": {
+                        "reducers": [
+                        ]
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "Metric": false,
+                            "Time": true
+                        },
+                        "indexByName": {
+                            "Metric": 1,
+                            "Time": 0,
+                            "Value": 2
+                        },
+                        "renameByName": {
+                            "Metric": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "text": "N/A"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": [
+                ]
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 4,
+                "x": 12,
+                "y": 14
+            },
+            "hideTimeOverride": true,
+            "id": 8,
+            "links": [
+            ],
+            "maxDataPoints": 100,
+            "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.5.1",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "SetSum(FILTER ActiveMeasurements WHERE PointTag LIKE '%!IS:ST8')",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": "20s",
+            "title": "Active Input Connections",
+            "type": "stat"
+        },
+        {
+            "aliasColors": {
+            },
+            "bars": false,
+            "dashes": false,
+            "dashLength": 10,
+            "datasource": {
+                "type": "gridprotectionalliance-openhistorian-datasource",
+                "uid": "000000002"
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 16,
+                "y": 14
+            },
+            "hiddenSeries": false,
+            "hideTimeOverride": true,
+            "id": 9,
+            "legend": {
+                "alignAsTable": false,
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "rightSide": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 2,
+            "links": [
+            ],
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.5.1",
+            "pointradius": 5,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+                {
+                    "alias": "Received",
+                    "fill": 2
+                },
+                {
+                    "alias": "Expected",
+                    "fillBelowTo": "Received"
+                },
+                {
+                    "alias": "Expected",
+                    "fill": 0
+                }
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "gridprotectionalliance-openhistorian-datasource",
+                        "uid": "000000002"
+                    },
+                    "queryOptions": {
+                        "Excluded": 0,
+                        "Normal": false
+                    },
+                    "queryText": "Label('Received', SliceAvg(10, FILTER ActiveMeasurements WHERE PointTag LIKE '%!PMU:ST4'));  Label('Expected', SliceAvg(10, FILTER ActiveMeasurements WHERE PointTag LIKE '%!PMU:ST5'))",
+                    "queryType": "Text",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [
+            ],
+            "timeRegions": [
+            ],
+            "timeShift": "10s",
+            "title": "Input Data Completeness",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "mode": "time",
+                "show": true,
+                "values": [
+                ]
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "logBase": 1,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "logBase": 1,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false
+            }
+        }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [
+    ],
+    "templating": {
+        "list": [
+        ]
+    },
+    "time": {
+        "from": "now-10m",
+        "to": "now-10s"
+    },
+    "timepicker": {
+        "nowDelay": "10s",
+        "refresh_intervals": [
+            "2s",
+            "5s",
+            "10s",
+            "30s",
+            "1m"
+        ],
+        "time_options": [
+            "5m",
+            "15m",
+            "1h",
+            "6h",
+            "12h",
+            "24h",
+            "2d",
+            "7d",
+            "30d"
+        ]
+    },
+    "timezone": "",
+    "title": "System Status",
+    "uid": "000000002",
+    "version": 8,
+    "weekStart": ""
+}
