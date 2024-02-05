@@ -154,6 +154,20 @@ namespace openHistorian
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
+            // Map service API controller
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "ServiceAPI",
+                    routeTemplate: "Service/{action}/{command}",
+                    defaults: new { action = "Index", Controller = "Service" }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
+            }
+
             // Map specific historian instance API controllers
             try
             {

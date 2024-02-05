@@ -781,17 +781,20 @@ namespace openHistorian
         /// <param name="clientID">Client ID of sender.</param>
         /// <param name="principal">The principal used for role-based security.</param>
         /// <param name="userInput">Request string.</param>
-        public void SendRequest(Guid clientID, IPrincipal principal, string userInput)
+        /// <returns>
+        /// A string representing the response to the request.
+        /// </returns>
+        public (bool success, string message) SendRequest(Guid clientID, IPrincipal principal, string userInput)
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
             if (request is null)
-                return;
+                return (false, "Request not recognized.");
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
-                return;
+                return (false, $"Access to \"{request.Command}\" is denied.");
             }
 
             ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
@@ -799,7 +802,7 @@ namespace openHistorian
             if (requestHandler is null)
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
-                return;
+                return (false, $"Command \"{request.Command}\" is not supported.");
             }
 
             ClientInfo clientInfo = new()
@@ -811,6 +814,8 @@ namespace openHistorian
 
             ClientRequestInfo requestInfo = new(clientInfo, request);
             requestHandler.HandlerMethod(requestInfo);
+
+            return (true, "Request succeeded.");
         }
 
         public void DisconnectClient(Guid clientID)
