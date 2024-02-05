@@ -41,6 +41,7 @@ using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
+using GSF.Web.Security;
 using openHistorian.Snap;
 using System;
 using System.Collections.Generic;
@@ -525,7 +526,7 @@ namespace openHistorian.Adapters
         /// data source value type without restarting host.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [AuthorizeControllerRole("Administrator")]
         public virtual void ReloadValueTypes()
         {
             DataSource?.ReloadDataSourceValueTypes();
@@ -540,7 +541,7 @@ namespace openHistorian.Adapters
         /// without restarting host.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [AuthorizeControllerRole("Administrator")]
         public virtual void ReloadGrafanaFunctions()
         {
             DataSource?.ReloadGrafanaFunctions();
