@@ -44,6 +44,7 @@ using GSF.TimeSeries;
 using GSF.Web.Security;
 using openHistorian.Snap;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -289,27 +290,24 @@ namespace openHistorian.Adapters
                 m_archiveReader?.Dispose();
             }
 
-            private static readonly Dictionary<string, string> s_archiveFileNames = new();
+            private static readonly ConcurrentDictionary<string, string> s_archiveFileNames = new();
 
             private static string GetArchiveFileName(string instanceName)
             {
                 instanceName = instanceName.ToLowerInvariant();
 
-                lock (s_archiveFileNames)
-                {
-                    if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
-                        return archiveFileName;
-
-                    CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
-                    archiveFileName = settings?["FileName"]?.Value;
-
-                    if (string.IsNullOrWhiteSpace(archiveFileName))
-                        archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
-
-                    s_archiveFileNames[instanceName] = archiveFileName;
-
+                if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
                     return archiveFileName;
-                }
+
+                CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
+                archiveFileName = settings?["FileName"]?.Value;
+
+                if (string.IsNullOrWhiteSpace(archiveFileName))
+                    archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
+
+                s_archiveFileNames[instanceName] = archiveFileName;
+
+                return archiveFileName;
             }
         }
 
