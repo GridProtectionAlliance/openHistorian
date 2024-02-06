@@ -72,7 +72,7 @@ public class ServiceController : ApiController
             AuthorizationCache.UserIDs.TryGetValue(securityPrincipal.Identity.Name, out Guid clientID);
 
             // AuthorizeControllerRole verifies user is authenticated and
-            // SendRequest verifies user has permission to send command:
+            // SendCommand verifies user has permission to send command:
             (HttpStatusCode statusCode, string response) = Program.Host.SendCommand(clientID, securityPrincipal, command, expectsReturnValue, returnValueTimeout);
 
             return Content(statusCode, response, new JsonMediaTypeFormatter());
