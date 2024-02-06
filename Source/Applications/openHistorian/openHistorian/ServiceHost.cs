@@ -61,6 +61,7 @@ using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
+using WindowsServiceController = System.ServiceProcess.ServiceController;
 
 namespace openHistorian
 {
