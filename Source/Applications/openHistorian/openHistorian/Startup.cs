@@ -159,8 +159,8 @@ namespace openHistorian
             {
                 httpConfig.Routes.MapHttpRoute(
                     name: "ServiceAPI",
-                    routeTemplate: "Service/{action}/{command}",
-                    defaults: new { action = "Index", Controller = "Service" }
+                    routeTemplate: "Service/{action}/{command}/{returnValueTimeout}",
+                    defaults: new { action = "Index", Controller = "Service", returnValueTimeout = RouteParameter.Optional }
                 );
             }
             catch (Exception ex)

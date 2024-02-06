@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 using System;
+using System.Net;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using GSF.Security;
 using GSF.Web.Security;
@@ -42,6 +44,23 @@ public class ServiceController : ApiController
     [AuthorizeControllerRole("Administrator, Editor, Viewer")]
     public IHttpActionResult SendCommand(string command)
     {
+        return SendCommand(command, false, 0);
+    }
+
+    /// <summary>
+    /// Sends a command to the host service that expects a return value.
+    /// </summary>
+    /// <param name="command">Command to send to the host service.</param>
+    /// <param name="returnValueTimeout">Timeout for return value response.</param>
+    [HttpGet]
+    [AuthorizeControllerRole("Administrator, Editor, Viewer")]
+    public IHttpActionResult SendCommandWithReturnValue(string command, int returnValueTimeout = 5000)
+    {
+        return SendCommand(command, true, returnValueTimeout);
+    }
+
+    private IHttpActionResult SendCommand(string command, bool expectsReturnValue, int returnValueTimeout)
+    {
         try
         {
             // Get authenticated user from OWIN context
@@ -54,12 +73,9 @@ public class ServiceController : ApiController
 
             // AuthorizeControllerRole verifies user is authenticated and
             // SendRequest verifies user has permission to send command:
-            (bool success, string message) = Program.Host.SendRequest(clientID, securityPrincipal, command);
+            (HttpStatusCode statusCode, string response) = Program.Host.SendCommand(clientID, securityPrincipal, command, expectsReturnValue, returnValueTimeout);
 
-            if (success)
-                return Ok(message);
-
-            return BadRequest(message);
+            return Content(statusCode, response, new JsonMediaTypeFormatter());
         }
         catch (Exception ex)
         {

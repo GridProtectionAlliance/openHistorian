@@ -44,6 +44,7 @@ using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -85,6 +86,7 @@ namespace openHistorian
         public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
 
         // Fields
+        private readonly ConcurrentDictionary<Guid, (ManualResetEventSlim waitHandle, string[] returnValue)> m_returnValueStates;
         private IDisposable m_webAppHost;
         private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
@@ -124,6 +126,8 @@ namespace openHistorian
             SetupGrafanaHostingAdapter();
 
             RestoreEmbeddedResources();
+
+            m_returnValueStates = new ConcurrentDictionary<Guid, (ManualResetEventSlim waitHandle, string[] returnValue)>();
         }
 
         #endregion
@@ -781,20 +785,26 @@ namespace openHistorian
         /// <param name="clientID">Client ID of sender.</param>
         /// <param name="principal">The principal used for role-based security.</param>
         /// <param name="userInput">Request string.</param>
+        /// <param name="expectsReturnValue">Flag that determines if a command return value is expected.</param>
+        /// <param name="returnValueTimeout">Timeout for return value response.</param>
         /// <returns>
-        /// A string representing the response to the request.
+        /// A tuple representing the response to the request.
         /// </returns>
-        public (bool success, string message) SendRequest(Guid clientID, IPrincipal principal, string userInput)
+        /// <remarks>
+        /// Setting <paramref name="expectsReturnValue"/> to <c>true</c> will block the calling thread
+        /// until a response is received or the timeout is reached.
+        /// </remarks>
+        public (HttpStatusCode statusCode, string response) SendCommand(Guid clientID, IPrincipal principal, string userInput, bool expectsReturnValue = false, int returnValueTimeout = 5000)
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
             if (request is null)
-                return (false, "Request not recognized.");
+                return (HttpStatusCode.BadRequest, "Request not recognized.");
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
-                return (false, $"Access to \"{request.Command}\" is denied.");
+                return (HttpStatusCode.Unauthorized, $"Access to \"{request.Command}\" is denied.");
             }
 
             ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
@@ -802,20 +812,74 @@ namespace openHistorian
             if (requestHandler is null)
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
-                return (false, $"Command \"{request.Command}\" is not supported.");
+                return (HttpStatusCode.NotFound, $"Command \"{request.Command}\" is not supported.");
             }
 
-            ClientInfo clientInfo = new()
-            {
-                ClientID = clientID
-            };
-
+            // Establish client info for the current user
+            ClientInfo clientInfo = new() { ClientID = clientID };
             clientInfo.SetClientUser(principal);
 
+            // Set up request info
             ClientRequestInfo requestInfo = new(clientInfo, request);
-            requestHandler.HandlerMethod(requestInfo);
+            string response = null;
 
-            return (true, "Request succeeded.");
+            // If expecting a return value, set up a wait handle to wait for response
+            if (expectsReturnValue)
+            {
+                // Establish wait handle and result array for return value state
+                // using an array to allow for reference type behavior in tuple
+                // to hold updated return value
+                (ManualResetEventSlim waitHandle, string[] returnValue) result = 
+                    (new ManualResetEventSlim(false), new string[] { null });
+
+                bool signaled;
+
+                try
+                {
+                    // Track per client return value state
+                    m_returnValueStates[clientID] = result;
+
+                    // Execute command request (return value expected)
+                    requestHandler.HandlerMethod(requestInfo);
+
+                    // Wait for command return value
+                    signaled = result.waitHandle.Wait(returnValueTimeout);
+                }
+                finally
+                {
+                    m_returnValueStates.TryRemove(clientID, out _);
+                }
+
+                if (!signaled)
+                    return (HttpStatusCode.RequestTimeout, "Command return value request timed out.");
+
+                response = result.returnValue[0];
+            }
+            else
+            {
+                // Execute command request (no return value expected)
+                requestHandler.HandlerMethod(requestInfo);
+            }
+
+            return (HttpStatusCode.OK, response ?? (expectsReturnValue ? "" : "Request succeeded."));
+        }
+
+        // Intercept responses to client requests to capture return value
+        protected override void SendResponseWithAttachment(ClientRequestInfo requestInfo, bool success, object attachment, string status, params object[] args)
+        {
+            if (m_returnValueStates.TryGetValue(requestInfo.Sender.ClientID, out (ManualResetEventSlim waitHandle, string[] returnValue) result))
+            {
+                if (result.returnValue is not null && result.returnValue.Length > 0 && attachment is not null)
+                {
+                    result.returnValue[0] = attachment is Array array ? 
+                        string.Join(",", array.OfType<object>().Select(val => val.ToString())) : 
+                        attachment.ToString();
+                }
+
+                result.waitHandle?.Set();
+            }
+
+            base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);
         }
 
         public void DisconnectClient(Guid clientID)
