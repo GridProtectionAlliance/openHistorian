@@ -56,6 +56,9 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using Microsoft.Win32;
+using System.Net.Http;
+using System.Diagnostics;
+using System.ServiceProcess;
 
 namespace openHistorian
 {
@@ -111,7 +114,11 @@ namespace openHistorian
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
             if (FailoverPreventStartup())
+            {
+                
                 Environment.Exit(0);
+            }
+                
 
             try
             {
@@ -944,8 +951,8 @@ namespace openHistorian
         {
             bool enableFailover = false;
             bool isPrimary = false;
-            IEnumerable<string> endpoints;
-            int delay;
+            IEnumerable<string> nodes = new string[0];
+            int delay = DefaultFailoverRestartDelay;
             try
             {
                 // Assign default minification exclusion early (well before web server static initialization)
@@ -979,9 +986,9 @@ namespace openHistorian
                     if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out delay))
                         delay = DefaultFailoverRestartDelay;
                     if (string.IsNullOrWhiteSpace(failoverSettings["FailoverEndpoint"].Value))
-                       endpoints = new string[] { DefaultFailoverURL };
+                        nodes = new string[] { DefaultFailoverURL };
                     else
-                        endpoints = failoverSettings["FailoverEndpoint"].Value.Split(';');
+                        nodes = failoverSettings["FailoverEndpoint"].Value.Split(';');
                 }
             }
             catch (Exception ex)
@@ -990,22 +997,123 @@ namespace openHistorian
                 return false;
             }
 
+            if (!enableFailover)
+                return false;
+
+            LogStatusMessage("Failover Mode Enabled. Starting Node Polling", UpdateType.Information);
             
-            // Check if FailOver mode is enabled
-            // Check If mode is secondary
-            //      Ping Primary
-            //      if Response initiate delayed restart and shut down
-            //      if no response override Connection Log Files with Failover Log Files
-            // If mode is Primary
-            //      Ping Secondary
-            //      if Response initiate shutdown and small delayed restarts
-            //      if no response override Connection Log Files with Failover Log Files
+            foreach (string node in nodes)
+            {
+                string[] settings = node.Split('&');
+                string url = settings[0];
+
+                if (PingNode(url))
+                {
+                    if (isPrimary)
+                    {
+                        if (settings.Count() != 2)
+                        {
+                            LogStatusMessage($"No Host specified for {url} - System will not be able to shut down the node", UpdateType.Alarm);
+                            continue;
+                        }
+                        LogStatusMessage($"Failover Logic Detected {url} is Active - Stopping node on {settings[1]}", UpdateType.Information);
+                        StopRemoteSevice(settings[1]);
+                        //      if no response override Connection Log Files with Failover Log Files
+
+                        throw new NotImplementedException();
+                    }
+                   
+                    LogStatusMessage($"Failover Logic Detected {url} is Active - Restarting in {delay} seconds.", UpdateType.Warning);
+                    // Update Failover Cache File
+                    DelayedRestart(delay);
+                    return true;
+                    
+                }
+            }
+            LogStatusMessage($"Failover Logic Detected no active node.", UpdateType.Warning);
+            // Update Connection Cache File
+            return false;
+
             // Note a PING without repsonse will need a retry to ensure it's not a short temporary condition If success on retry it is counted as success.
             // From a Config Standpoint it is important Retry Time < Small Delay in Startup < delayed restart time
-            return false;
         }
 
-        internal static void RestoreEmbeddedResources()
+        private bool PingNode(string endpoint)
+        {
+            try
+            {
+
+                using (HttpRequestMessage request = new HttpRequestMessage())
+                {
+                    request.Method = HttpMethod.Get;
+                    request.RequestUri = new Uri(endpoint);
+                    HttpResponseMessage response = HttpClient.SendAsync(request).Result;
+                    if (response == null) return false;
+                    if (response.StatusCode == HttpStatusCode.OK) return true;
+                    if (response.StatusCode == HttpStatusCode.Unauthorized) return true;
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                return false;
+            }
+        }
+
+        private void DelayedRestart(int delay)
+        {
+            if (GSF.Common.IsPosixEnvironment)
+            {
+                using Process shell = new();
+
+                shell.StartInfo = new ProcessStartInfo(ConsoleApplicationName)
+                {
+                    CreateNoWindow = true,
+                    Arguments = $"{ServiceName} -restartDelay={delay}"
+                };
+
+                shell.Start();
+            }
+            else
+            {
+                string batchFileName = FilePath.GetAbsolutePath("DelayedRestartService.cmd");
+                File.WriteAllText(batchFileName, $@"@ECHO OFF{Environment.NewLine}{ConsoleApplicationName} {ServiceName} -restartDelay={delay}");
+
+                // This is the only .NET call that will spawn an independent, non-child, process on Windows
+                Process.Start(batchFileName);
+            }
+        }
+
+        private void StopRemoteSevice(string host)
+        {
+            ServiceController serviceController = ServiceController.GetServices(host).SingleOrDefault(svc => string.Compare(svc.ServiceName, ServiceName, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if (serviceController is not null)
+            {
+                try
+                {
+                    if (serviceController.Status == ServiceControllerStatus.Running)
+                    {
+                        serviceController.Stop();
+
+                        // Can't wait forever for service to stop, so we time-out after 20 seconds
+                        serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20.0D));
+
+                        if (serviceController.Status == ServiceControllerStatus.Stopped)
+                            LogStatusMessage($"Failover Logic Succesfully Stoped Service on {host}.", UpdateType.Information);
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.SwallowException(ex);
+                }
+            }
+        }
+
+            internal static void RestoreEmbeddedResources()
         {
             try
             {
@@ -1084,7 +1192,8 @@ namespace openHistorian
 
         // Static Fields
         private static int s_virtualProtocolID;
-
+        private static HttpClient HttpClient { get; }
+            = new HttpClient();
         #endregion
     }
 }
