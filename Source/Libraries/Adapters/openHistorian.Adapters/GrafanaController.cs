@@ -315,7 +315,6 @@ namespace openHistorian.Adapters
 
         // Fields
         private GrafanaDataSourceBase m_dataSource;
-        private string m_defaultAPIPath;
 
         #endregion
 
@@ -328,17 +327,17 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if (!string.IsNullOrEmpty(m_defaultAPIPath))
-                    return m_defaultAPIPath;
+                if (!string.IsNullOrEmpty(s_defaultAPIPath))
+                    return s_defaultAPIPath;
 
                 string controllerName = GetType().Name.ToLowerInvariant();
 
                 if (controllerName.EndsWith("controller") && controllerName.Length > 10)
                     controllerName = controllerName.Substring(0, controllerName.Length - 10);
 
-                m_defaultAPIPath = $"/api/{controllerName}";
+                s_defaultAPIPath = $"/api/{controllerName}";
 
-                return m_defaultAPIPath;
+                return s_defaultAPIPath;
             }
         }
 
@@ -638,6 +637,8 @@ namespace openHistorian.Adapters
 
             return LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance) ? adapterInstance : null;
         }
+
+        private static string s_defaultAPIPath;
 
         #endregion
     }
