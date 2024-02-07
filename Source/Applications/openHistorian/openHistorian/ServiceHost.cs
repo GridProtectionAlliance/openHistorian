@@ -32,6 +32,7 @@ using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
 using GSF.TimeSeries;
+using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
@@ -40,6 +41,7 @@ using GSF.Web.Shared;
 using GSF.Web.Shared.Model;
 using Microsoft.Ajax.Utilities;
 using Microsoft.Owin.Hosting;
+using Microsoft.Win32;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
@@ -56,7 +58,6 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using Microsoft.Win32;
 
 namespace openHistorian
 {
@@ -1046,6 +1047,21 @@ namespace openHistorian
 
         internal static void RestoreEmbeddedResources()
         {
+            try
+            {
+                // Access GSF.Web so its embedded resources can be restored on assembly load via the ModuleInitializer,
+                // then ensure that NUglify.dll is loaded into the application domain in advance of web hosting startup
+                // so it can be referenced by the Login.cshtml page during RazorEngine compilation - this corrects an
+                // order of operations issue where NUglify.dll is not yet loaded when the Login.cshtml page is compiled
+                if (WebExtensions.EmbeddedResourceExists("GSF.Web.NUglify.dll"))
+                    Assembly.LoadFrom(FilePath.GetAbsolutePath("NUglify.dll"));
+            }
+            catch (Exception ex)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+                log.Publish(MessageLevel.Error, "Error Message", "Failed to pre-load NUglify embedded resource assembly", null, ex);
+            }
+
             try
             {
                 HashSet<string> textTypes = new(new[] { ".TagTemplate" }, StringComparer.OrdinalIgnoreCase);
