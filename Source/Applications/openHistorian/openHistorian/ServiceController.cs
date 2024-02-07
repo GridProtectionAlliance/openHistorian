@@ -24,6 +24,7 @@
 using System;
 using System.Net;
 using System.Net.Http.Formatting;
+using System.Threading.Tasks;
 using System.Web.Http;
 using GSF.Security;
 using GSF.Web.Security;
@@ -41,7 +42,7 @@ public class ServiceController : ApiController
     /// <param name="command">Command to send to the host service.</param>
     [HttpGet]
     [AuthorizeControllerRole("Administrator, Editor, Viewer")]
-    public IHttpActionResult SendCommand(string command)
+    public Task<IHttpActionResult> SendCommand(string command)
     {
         return SendCommand(command, false, 0);
     }
@@ -53,12 +54,12 @@ public class ServiceController : ApiController
     /// <param name="returnValueTimeout">Timeout for return value response.</param>
     [HttpGet]
     [AuthorizeControllerRole("Administrator, Editor, Viewer")]
-    public IHttpActionResult SendCommandWithReturnValue(string command, int returnValueTimeout = 5000)
+    public Task<IHttpActionResult> SendCommandWithReturnValue(string command, int returnValueTimeout = 5000)
     {
         return SendCommand(command, true, returnValueTimeout);
     }
 
-    private IHttpActionResult SendCommand(string command, bool expectsReturnValue, int returnValueTimeout)
+    private async Task<IHttpActionResult> SendCommand(string command, bool expectsReturnValue, int returnValueTimeout)
     {
         try
         {
@@ -66,13 +67,16 @@ public class ServiceController : ApiController
             if (RequestContext.Principal is not SecurityPrincipal securityPrincipal)
                 return Unauthorized();
 
-            AuthorizationCache.UserIDs.TryGetValue(securityPrincipal.Identity.Name, out Guid clientID);
+            return await Task.Run(() =>
+            {
+                AuthorizationCache.UserIDs.TryGetValue(securityPrincipal.Identity.Name, out Guid clientID);
 
-            // AuthorizeControllerRole verifies user is authenticated and
-            // SendCommand verifies user has permission to send command:
-            (HttpStatusCode statusCode, string response) = Program.Host.SendCommand(clientID, securityPrincipal, command, expectsReturnValue, returnValueTimeout);
+                // AuthorizeControllerRole verifies user is authenticated and
+                // SendCommand verifies user has permission to send command:
+                (HttpStatusCode statusCode, string response) = Program.Host.SendCommand(clientID, securityPrincipal, command, expectsReturnValue, returnValueTimeout);
 
-            return Content(statusCode, response, new JsonMediaTypeFormatter());
+                return Content(statusCode, response, new JsonMediaTypeFormatter());
+            });
         }
         catch (Exception ex)
         {

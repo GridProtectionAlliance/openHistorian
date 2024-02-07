@@ -65,6 +65,13 @@ namespace openHistorian
     {
         #region [ Members ]
 
+        // Nested Types
+        private class ReturnValueState
+        {
+            public readonly ManualResetEventSlim WaitHandle = new(false);
+            public string ReturnValue;
+        }
+
         // Constants
         private const int DefaultMaximumDiagnosticLogSize = 10;
         private const string DefaultMinifyJavascriptExclusionExpression = @"^/?Scripts/force\-graph\.js$";
@@ -87,7 +94,7 @@ namespace openHistorian
         public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
 
         // Fields
-        private readonly ConcurrentDictionary<int, (ManualResetEventSlim waitHandle, string[] returnValue)> m_returnValueStates;
+        private readonly ConcurrentDictionary<ClientRequestInfo, ReturnValueState> m_returnValueStates;
         private IDisposable m_webAppHost;
         private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
@@ -128,7 +135,7 @@ namespace openHistorian
 
             RestoreEmbeddedResources();
 
-            m_returnValueStates = new ConcurrentDictionary<int, (ManualResetEventSlim waitHandle, string[] returnValue)>();
+            m_returnValueStates = new ConcurrentDictionary<ClientRequestInfo, ReturnValueState>();
         }
 
         #endregion
@@ -827,36 +834,30 @@ namespace openHistorian
             // If expecting a return value, set up a wait handle to wait for response
             if (expectsReturnValue)
             {
-                // Establish wait handle and result array for return value state.
-                // Using a single element array to hold return value to allow for
-                // updateable reference type behavior in value tuple:
-                (ManualResetEventSlim waitHandle, string[] returnValue) state = 
-                    (new ManualResetEventSlim(false), new string[] { null });
-
-                // Generate hash code for request based on client ID, command and time of request
-                int hashCode = GetReturnValueStateHashCode(requestInfo);
+                // Establish wait handle and result array for return value state
+                ReturnValueState state = new();
                 bool signaled;
 
                 try
                 {
                     // Track per client + command return value state
-                    m_returnValueStates[hashCode] = state;
+                    m_returnValueStates[requestInfo] = state;
 
                     // Execute command request (return value expected)
                     requestHandler.HandlerMethod(requestInfo);
 
                     // Wait for command return value
-                    signaled = state.waitHandle.Wait(returnValueTimeout);
+                    signaled = state.WaitHandle.Wait(returnValueTimeout);
                 }
                 finally
                 {
-                    m_returnValueStates.TryRemove(hashCode, out _);
+                    m_returnValueStates.TryRemove(requestInfo, out _);
                 }
 
                 if (!signaled)
                     return (HttpStatusCode.RequestTimeout, "Command return value request timed out.");
 
-                response = state.returnValue[0];
+                response = state.ReturnValue;
             }
             else
             {
@@ -867,59 +868,20 @@ namespace openHistorian
             return (HttpStatusCode.OK, response ?? (expectsReturnValue ? "" : "Request succeeded."));
         }
 
-        private static int GetReturnValueStateHashCode(ClientRequestInfo requestInfo)
-        {
-            const int SentinelValue = -1;
-
-            // Combine hash codes avoiding SentinelValue 
-            static int combineHashCodes(int seed, int hash)
-            {
-                unchecked
-                {
-                    int combined = seed * 23 + hash;
-                    return combined == SentinelValue ? seed : combined;
-                }
-            }
-
-            try
-            {
-                // Overflow fine, just wrap
-                unchecked
-                {
-                    int hashCode = 17;
-
-                    // Combine the hash codes for client ID, command and time of request
-                    hashCode = combineHashCodes(hashCode, requestInfo.Sender.ClientID.GetHashCode());
-                    hashCode = combineHashCodes(hashCode, requestInfo.Request.Command?.GetHashCode() ?? 0);
-                    hashCode = combineHashCodes(hashCode, requestInfo.ReceivedAt.GetHashCode());
-
-                    return hashCode;
-                }
-            }
-            catch (Exception ex)
-            {
-                // For our local use case, sender and request, with a command, are expected,
-                // so any exceptions here would likely be from responses with attachments that
-                // were not requested locally, so we just return SentinelValue in this case
-                Logger.SwallowException(ex, "Error calculating return value state hash code");
-                return SentinelValue;
-            }
-        }
-
         // Intercept responses to client requests to capture return value
         protected override void SendResponseWithAttachment(ClientRequestInfo requestInfo, bool success, object attachment, string status, params object[] args)
         {
             // Look for requests that were generated locally
-            if (m_returnValueStates.TryGetValue(GetReturnValueStateHashCode(requestInfo), out (ManualResetEventSlim waitHandle, string[] returnValue) state))
+            if (m_returnValueStates.TryGetValue(requestInfo, out ReturnValueState state) && state is not null)
             {
-                if (state.returnValue is not null && state.returnValue.Length > 0 && attachment is not null)
+                if (attachment is not null)
                 {
-                    state.returnValue[0] = attachment is Array array ? 
-                        string.Join(",", array.OfType<object>().Select(val => val.ToString())) : 
+                    state.ReturnValue = attachment is Array array ?
+                        string.Join(",", array.OfType<object>().Select(val => val.ToString())) :
                         attachment.ToString();
                 }
 
-                state.waitHandle?.Set();
+                state.WaitHandle?.Set();
             }
 
             base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);
