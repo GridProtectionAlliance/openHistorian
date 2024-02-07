@@ -22,11 +22,28 @@
 //       Updated to avoid issues with accessing panel json directly for alarm setup.
 //
 //******************************************************************************************************
+// ReSharper disable ClassNeverInstantiated.Local
+// ReSharper disable InconsistentNaming
+// ReSharper disable NotAccessedField.Local
 
+#pragma warning disable 169, 414, 649
+
+using GSF;
+using GSF.Collections;
+using GSF.Configuration;
+using GSF.Data;
+using GSF.Data.Model;
+using GSF.Diagnostics;
+using GSF.IO;
+using GSF.Security;
+using GSF.Security.Cryptography;
+using GSF.Security.Model;
+using GSF.Threading;
+using GSF.Web.Hosting;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -38,24 +55,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using GSF;
-using GSF.Collections;
-using GSF.Configuration;
-using GSF.Data;
-using GSF.Data.Model;
-using GSF.Diagnostics;
-using GSF.Security;
-using GSF.Security.Cryptography;
-using GSF.Security.Model;
-using GSF.Threading;
-using Newtonsoft.Json.Linq;
 using CancellationToken = System.Threading.CancellationToken;
 using Http = System.Net.WebRequestMethods.Http;
 
-#pragma warning disable 169, 414, 649
-// ReSharper disable ClassNeverInstantiated.Local
-// ReSharper disable InconsistentNaming
-// ReSharper disable NotAccessedField.Local
 namespace openHistorian.Adapters
 {
     /// <summary>
@@ -133,7 +135,6 @@ namespace openHistorian.Adapters
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyRoot(CancellationToken cancellationToken)
         {
             return await ProxyPage("", cancellationToken);
@@ -147,7 +148,6 @@ namespace openHistorian.Adapters
         /// <returns>Proxied response.</returns>
         [AcceptVerbs(Http.Get, Http.Head, Http.Post, Http.Put, Http.MkCol), HttpDelete, HttpPatch]
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [SuppressMessage("Security", "SG0016", Justification = "CSRF vulnerability handled by Grafana")]
         public async Task<HttpResponseMessage> ProxyPage(string url, CancellationToken cancellationToken)
         {
             // Handle special URL commands
@@ -294,6 +294,8 @@ namespace openHistorian.Adapters
         private static readonly string s_adminUser;
         private static readonly string s_logoutResource;
         private static readonly string s_avatarResource;
+        private static byte[] s_avatarResourceContent;
+        private static MediaTypeHeaderValue s_avatarResourceMediaType;
         private static readonly int s_organizationID;
         private static readonly string s_lastDashboardCookieName;
         private static readonly ShortSynchronizedOperation s_synchronizeUsers;
@@ -792,7 +794,7 @@ namespace openHistorian.Adapters
         {
             string variableValue = "NaN";
 
-            if (!(GlobalSettings is null))
+            if (GlobalSettings is not null)
             {
                 string[] parts = request.RequestUri.AbsolutePath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -975,12 +977,33 @@ namespace openHistorian.Adapters
 
         private static HttpResponseMessage HandleGrafanaAvatarRequest(HttpRequestMessage request)
         {
-            HttpResponseMessage response = new(HttpStatusCode.MovedPermanently) { RequestMessage = request };
-            Uri uri = request.RequestUri;
+            // Statically cache avatar image content and media type
+            if (s_avatarResourceContent is null)
+            {
+                string imagePath = $"{WebServer.Default.Options.PhysicalWebRootPath}/{s_avatarResource}";
 
-            response.Headers.Location = new Uri($"{uri.Scheme}://{uri.Host}:{uri.Port}/{s_avatarResource}");
+                if (!File.Exists(imagePath))
+                    return new HttpResponseMessage(HttpStatusCode.NotFound) { RequestMessage = request };
 
-            return response;
+                string fileExtension = FilePath.GetExtension(imagePath);
+                fileExtension = string.IsNullOrWhiteSpace(fileExtension) ? "png" : fileExtension.Substring(1).ToLowerInvariant();
+
+                // Read the file into a byte array
+                s_avatarResourceContent = File.ReadAllBytes(imagePath);
+                s_avatarResourceMediaType = new MediaTypeHeaderValue($"image/{fileExtension}");
+            }
+
+            // Return new response with image content
+            HttpResponseMessage result = new(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new ByteArrayContent(s_avatarResourceContent)
+                {
+                    Headers = { ContentType = s_avatarResourceMediaType }
+                }
+            };
+
+            return result;
         }
 
         private static string GetExceptionMessage(Exception ex)
