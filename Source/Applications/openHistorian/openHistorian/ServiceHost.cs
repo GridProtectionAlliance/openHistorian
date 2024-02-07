@@ -887,7 +887,7 @@ namespace openHistorian
                 {
                     int hashCode = 17;
 
-                    // Combine the hash codes, ensuring none is the SentinelValue
+                    // Combine the hash codes for client ID, command and time of request
                     hashCode = combineHashCodes(hashCode, requestInfo.Sender.ClientID.GetHashCode());
                     hashCode = combineHashCodes(hashCode, requestInfo.Request.Command?.GetHashCode() ?? 0);
                     hashCode = combineHashCodes(hashCode, requestInfo.ReceivedAt.GetHashCode());
