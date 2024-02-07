@@ -868,25 +868,40 @@ namespace openHistorian
 
         private static int GetReturnValueStateHashCode(ClientRequestInfo requestInfo)
         {
+            const int SentinelValue = -1;
+
+            // Combine hash codes avoiding SentinelValue 
+            static int combineHashCodes(int seed, int hash)
+            {
+                unchecked
+                {
+                    int combined = seed * 23 + hash;
+                    return combined == SentinelValue ? seed : combined;
+                }
+            }
+
             try
             {
                 // Overflow fine, just wrap
                 unchecked
                 {
                     int hashCode = 17;
-                    hashCode = hashCode * 23 + requestInfo.Sender.ClientID.GetHashCode();
-                    hashCode = hashCode * 23 + requestInfo.Request.Command?.GetHashCode() ?? 0;
-                    hashCode = hashCode * 23 + requestInfo.ReceivedAt.GetHashCode();
+
+                    // Combine the hash codes, ensuring none is the SentinelValue
+                    hashCode = combineHashCodes(hashCode, requestInfo.Sender.ClientID.GetHashCode());
+                    hashCode = combineHashCodes(hashCode, requestInfo.Request.Command?.GetHashCode() ?? 0);
+                    hashCode = combineHashCodes(hashCode, requestInfo.ReceivedAt.GetHashCode());
+
                     return hashCode;
                 }
             }
             catch (Exception ex)
             {
                 // For our local use case, sender and request, with a command, are expected,
-                // so any exceptions here would likely be from responses with attachments
-                // that were not requested locally, so just return zero in this case
-                Logger.SwallowException(ex);
-                return 0;
+                // so any exceptions here would likely be from responses with attachments that
+                // were not requested locally, so we just return SentinelValue in this case
+                Logger.SwallowException(ex, "Error calculating return value state hash code");
+                return SentinelValue;
             }
         }
 
