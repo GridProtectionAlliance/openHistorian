@@ -86,7 +86,7 @@ namespace openHistorian
         public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
 
         // Fields
-        private readonly ConcurrentDictionary<Guid, (ManualResetEventSlim waitHandle, string[] returnValue)> m_returnValueStates;
+        private readonly ConcurrentDictionary<int, (ManualResetEventSlim waitHandle, string[] returnValue)> m_returnValueStates;
         private IDisposable m_webAppHost;
         private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
@@ -127,7 +127,7 @@ namespace openHistorian
 
             RestoreEmbeddedResources();
 
-            m_returnValueStates = new ConcurrentDictionary<Guid, (ManualResetEventSlim waitHandle, string[] returnValue)>();
+            m_returnValueStates = new ConcurrentDictionary<int, (ManualResetEventSlim waitHandle, string[] returnValue)>();
         }
 
         #endregion
@@ -803,7 +803,7 @@ namespace openHistorian
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
             {
-                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
+                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied for user \"{principal?.Identity?.Name}\".\r\n\r\n");
                 return (HttpStatusCode.Unauthorized, $"Access to \"{request.Command}\" is denied.");
             }
 
@@ -826,34 +826,36 @@ namespace openHistorian
             // If expecting a return value, set up a wait handle to wait for response
             if (expectsReturnValue)
             {
-                // Establish wait handle and result array for return value state
-                // using an array to allow for reference type behavior in tuple
-                // to hold updated return value
-                (ManualResetEventSlim waitHandle, string[] returnValue) result = 
+                // Establish wait handle and result array for return value state.
+                // Using a single element array to hold return value to allow for
+                // updateable reference type behavior in value tuple:
+                (ManualResetEventSlim waitHandle, string[] returnValue) state = 
                     (new ManualResetEventSlim(false), new string[] { null });
 
+                // Generate hash code for request based on client ID, command and time of request
+                int hashCode = GetReturnValueStateHashCode(requestInfo);
                 bool signaled;
 
                 try
                 {
-                    // Track per client return value state
-                    m_returnValueStates[clientID] = result;
+                    // Track per client + command return value state
+                    m_returnValueStates[hashCode] = state;
 
                     // Execute command request (return value expected)
                     requestHandler.HandlerMethod(requestInfo);
 
                     // Wait for command return value
-                    signaled = result.waitHandle.Wait(returnValueTimeout);
+                    signaled = state.waitHandle.Wait(returnValueTimeout);
                 }
                 finally
                 {
-                    m_returnValueStates.TryRemove(clientID, out _);
+                    m_returnValueStates.TryRemove(hashCode, out _);
                 }
 
                 if (!signaled)
                     return (HttpStatusCode.RequestTimeout, "Command return value request timed out.");
 
-                response = result.returnValue[0];
+                response = state.returnValue[0];
             }
             else
             {
@@ -864,19 +866,44 @@ namespace openHistorian
             return (HttpStatusCode.OK, response ?? (expectsReturnValue ? "" : "Request succeeded."));
         }
 
+        private static int GetReturnValueStateHashCode(ClientRequestInfo requestInfo)
+        {
+            try
+            {
+                // Overflow fine, just wrap
+                unchecked
+                {
+                    int hashCode = 17;
+                    hashCode = hashCode * 23 + requestInfo.Sender.ClientID.GetHashCode();
+                    hashCode = hashCode * 23 + requestInfo.Request.Command?.GetHashCode() ?? 0;
+                    hashCode = hashCode * 23 + requestInfo.ReceivedAt.GetHashCode();
+                    return hashCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                // For our local use case, sender and request, with a command, are expected,
+                // so any exceptions here would likely be from responses with attachments
+                // that were not requested locally, so just return zero in this case
+                Logger.SwallowException(ex);
+                return 0;
+            }
+        }
+
         // Intercept responses to client requests to capture return value
         protected override void SendResponseWithAttachment(ClientRequestInfo requestInfo, bool success, object attachment, string status, params object[] args)
         {
-            if (m_returnValueStates.TryGetValue(requestInfo.Sender.ClientID, out (ManualResetEventSlim waitHandle, string[] returnValue) result))
+            // Look for requests that were generated locally
+            if (m_returnValueStates.TryGetValue(GetReturnValueStateHashCode(requestInfo), out (ManualResetEventSlim waitHandle, string[] returnValue) state))
             {
-                if (result.returnValue is not null && result.returnValue.Length > 0 && attachment is not null)
+                if (state.returnValue is not null && state.returnValue.Length > 0 && attachment is not null)
                 {
-                    result.returnValue[0] = attachment is Array array ? 
+                    state.returnValue[0] = attachment is Array array ? 
                         string.Join(",", array.OfType<object>().Select(val => val.ToString())) : 
                         attachment.ToString();
                 }
 
-                result.waitHandle?.Set();
+                state.waitHandle?.Set();
             }
 
             base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);

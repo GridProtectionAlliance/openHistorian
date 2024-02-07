@@ -27,7 +27,6 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using GSF.Security;
 using GSF.Web.Security;
-using Microsoft.Owin;
 
 namespace openHistorian;
 
@@ -63,10 +62,8 @@ public class ServiceController : ApiController
     {
         try
         {
-            // Get authenticated user from OWIN context
-            IOwinContext context = Request.GetOwinContext();
-
-            if (context.Request.User is not SecurityPrincipal securityPrincipal)
+            // Get authenticated user principal
+            if (RequestContext.Principal is not SecurityPrincipal securityPrincipal)
                 return Unauthorized();
 
             AuthorizationCache.UserIDs.TryGetValue(securityPrincipal.Identity.Name, out Guid clientID);
