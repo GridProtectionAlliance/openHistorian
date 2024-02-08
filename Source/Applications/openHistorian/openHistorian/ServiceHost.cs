@@ -834,7 +834,7 @@ namespace openHistorian
             // If expecting a return value, set up a wait handle to wait for response
             if (expectsReturnValue)
             {
-                // Establish wait handle and result array for return value state
+                // Establish wait handle and result for return value state
                 ReturnValueState state = new();
                 bool signaled;
 
