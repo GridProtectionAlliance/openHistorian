@@ -448,198 +448,49 @@
             <param name="syntaxError">Exception message.</param>
             <returns>New <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> for an exception.</returns>
         </member>
-        <member name="T:GrafanaAdapters.Metadata.DataSetAdapter">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1">
             <summary>
-            Represents an adapter that holds the Grafana data source's metadata
-            and is used to augment data source on demand.
+            Returns a single value selected using the first series of a slice of values as the zero-based index from the remaining series.
+            The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to 0.001 that represents the
+            desired time tolerance, in seconds, for the time slice.
             </summary>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet``1">
-            <summary>
-            Gets the Grafana data source metadata, augmented as needed for the target data
-            source value type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">Data source value type for metadata augmentation.</typeparam>
-            <returns>
-            Grafana data source metadata, augmented as needed for the target data source
-            value type <typeparamref name="T"/>.
-            </returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet(GrafanaAdapters.DataSources.IDataSourceValue)">
-            <summary>
-            Gets the Grafana data source metadata, augmented as needed for the target data
-            source value type instance <paramref name="value"/>.
-            </summary>
-            <param name="value">Instance of data source value type to use for metadata augmentation.</param>
-            <returns>
-            Grafana data source metadata, augmented as needed for the target data source
-            </returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.op_Implicit(System.Data.DataSet)~GrafanaAdapters.Metadata.DataSetAdapter">
-            <summary>
-            Implicitly converts a <see cref="T:System.Data.DataSet"/> to a <see cref="T:GrafanaAdapters.Metadata.DataSetAdapter"/>.
-            </summary>
-            <param name="source">Source <see cref="T:System.Data.DataSet"/> to convert.</param>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitAlias(System.String,System.String@)">
-            <summary>
-            Splits any defined alias from a point tag expression.
-            </summary>
-            <param name="tagExpression">Source point tag expression that can contain an alias.</param>
-            <param name="alias">Alias, if defined.</param>
-            <returns>Point tag name without any alias.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.TagFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet,System.String,System.String,System.String)">
-            <summary>
-            Looks up point tag from measurement <paramref name="key"/> value.
-            </summary>
-            <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
-            <param name="metadata">Source metadata.</param>
-            <param name="table">Table to search.</param>
-            <param name="pointTagField">Point tag field name.</param>
-            <param name="idField">Measurement key-based ID field name.</param>
-            <returns>Point tag name from source metadata.</returns>
             <remarks>
-            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
-            search algorithm that can be slow for large data sets, it is recommended that any results
-            for calls to this function be cached to improve performance.
+            Signature: <c>Switch(sliceTolerance, expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Switch(IndexSeriesTag; FILTER ActiveMeasurements WHERE SignalType='IPHM')</c><br/>
+            Variants: Switch, Select<br/>
+            Execution: Immediate enumeration.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.RecordFromTag(System.String,System.Data.DataSet,System.String,System.String)">
-            <summary>
-            Looks up metadata record from point tag.
-            </summary>
-            <param name="pointTag">Point tag to lookup.</param>
-            <param name="metadata">Source metadata.</param>
-            <param name="table">Table to search.</param>
-            <param name="pointTagField">Point tag field name.</param>
-            <returns>Metadata record from source metadata for provided point tag.</returns>
-            <remarks>
-            <para>
-            Use "table.pointTag" format to specify which table to pull point tag from.
-            </para>
-            <para>
-            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
-            search algorithm that can be slow for large data sets, it is recommended that any results
-            for calls to this function be cached to improve performance.
-            </para>
-            </remarks>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.Name">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.RecordFromKey(System.String,System.Data.DataSet,System.String,System.String)">
-            <summary>
-            Looks up metadata record from measurement key.
-            </summary>
-            <param name="keyName">Measurement key, as string, to lookup.</param>
-            <param name="metadata">Source metadata.</param>
-            <param name="table">Table to search.</param>
-            <param name="idField">Measurement key-based ID field name.</param>
-            <returns>Metadata record from source metadata for provided measurement key.</returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.Description">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadata(System.Data.DataSet,System.String,System.String)">
-            <summary>
-            Gets metadata record from source metadata.
-            </summary>
-            <param name="metadata">Source metadata.</param>
-            <param name="table">Table to search.</param>
-            <param name="expression">Expression to filter metadata.</param>
-            <returns>Metadata record from source metadata, if expression is found; otherwise <c>null</c>.</returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.Aliases">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.KeyFromSignalID(System.String)">
-            <summary>
-            Gets measurement key from signal ID.
-            </summary>
-            <param name="signalID">Signal ID to lookup.</param>
-            <returns>
-            Measurement key associated with specified signal ID, if found; otherwise <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
-            </returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.ReturnType">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SignalIDFromRecord(System.Data.DataRow,System.String)">
-            <summary>
-            Gets signal ID from metadata record.
-            </summary>
-            <param name="record">Source metadata record.</param>
-            <param name="signalIDField">Signal ID field name.</param>
-            <returns>Signal ID from metadata record.</returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.AllowedGroupOperations">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.KeyFromRecord(System.Data.DataRow,System.String,System.String)">
-            <summary>
-            Gets measurement key from metadata record.
-            </summary>
-            <param name="record">Source metadata record.</param>
-            <param name="idField">ID field name.</param>
-            <param name="signalIDField">Signal ID field name.</param>
-            <returns>Mapped measurement key from metadata record.</returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Switch`1.PublishedGroupOperations">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.ParseAsTableAndField``1(System.String)">
-            <summary>
-            Parses target as table and field name.
-            </summary>
-            <param name="target">Target to parse.</param>
-            <returns>Target parsed as table and field name.</returns>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Switch`1.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.MetadataTableIsValid(GrafanaAdapters.DataSources.IDataSourceValue,System.Data.DataSet,System.String)">
-            <summary>
-            Determines if metadata table is valid for the specified data source value type instance.
-            </summary>
-            <param name="instance">Data source value type instance.</param>
-            <param name="metadata">Source metadata.</param>
-            <param name="tableName">Target table name.</param>
-            <returns><c>true</c> if metadata table is valid for the specified data source value type instance; otherwise, <c>false</c>.</returns>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadataMap``1(System.Data.DataSet,System.String,GrafanaAdapters.Functions.QueryParameters)">
-            <summary>
-            Gets metadata map for the specified target and selections.
-            </summary>
-            <param name="metadata">Source metadata.</param>
-            <param name="rootTarget">Root target to use for metadata lookup.</param>
-            <param name="queryParameters">Query parameters.</param>
-            <returns>Mapped metadata for the specified target and selections.</returns>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputeDataSourceValue">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.FirstTarget(System.String)">
-            <summary>
-            Gets first target from a target expression.
-            </summary>
-            <param name="target">Source target expression.</param>
-            <returns>Fist target from target expression.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Lookup``1(System.Data.DataSet,System.String,System.String)">
-            <summary>
-            Looks up metadata record for the specified target.
-            </summary>
-            <param name="metadata">Metadata data set.</param>
-            <param name="tableName">Table name to search.</param>
-            <param name="target">Target to lookup.</param>
-            <returns>Filtered metadata row for the specified target.</returns>
-            <remarks>
-            Implementations should cache metadata lookups for performance.
-            </remarks>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadataMap``1(System.Data.DataSet,System.String,System.Collections.Generic.IList{System.ValueTuple{System.String,System.String[]}})">
-            <summary>
-            Gets metadata map for the specified target and selections.
-            </summary>
-            <param name="metadata">Source metadata.</param>
-            <param name="rootTarget">Root target to use for metadata lookup.</param>
-            <param name="metadataSelections">Metadata selections.</param>
-            <returns>Mapped metadata for the specified target and selections.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Parse``1(System.String,System.Data.DataSet)">
-            <summary>
-            Parses a user provided target expression which could contain point tags, measurement keys, Guid-based signal IDs,
-            or filter expressions, then returning the set of measurement key and point tag identifiers associated with the
-            target along with any defined alias for the target.
-            </summary>
-            <param name="target">Target expression to parse.</param>
-            <param name="metadata">Source metadata.</param>
-            <returns>Tuple representing set of target and associated IDs, as parsed from expression, and any defined alias.</returns>
-        </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitComponents(System.String)">
-            <summary>
-            Splits a combined target into a point tag and target.
-            </summary>
-            <param name="target">Combined target of point tag and target.</param>
-            <returns>Tuple of point tag and target.</returns>
-            <exception cref="T:System.InvalidOperationException">Invalid combined target encountered.</exception>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputePhasorValue">
+            <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Sqrt`1">
             <summary>
@@ -754,7 +605,7 @@
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Evaluate`1">
             <summary>
             Returns a single value that represents the evaluation of an expression over a slice of the values in the source series.
-            The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to zero that represents
+            The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to 0.001 that represents
             the desired time tolerance, in seconds, for the time slice. The <c>evalExpression</c> parameter must always be expressed
             in braces, e.g., <c>{ expression }</c>; expression is strongly typed, but not case sensitive; expression is expected to
             return a value that can be evaluated as a floating-point number. Aliases of target tag names are used as variable names
@@ -3206,6 +3057,199 @@
             <param name="value">The time, in seconds, to convert.</param>
             <param name="units">The target time units, which includes scaling factor, for the conversion.</param>
             <returns>A double value that represents the converted and scaled time, in the specified units.</returns>
+        </member>
+        <member name="T:GrafanaAdapters.Metadata.DataSetAdapter">
+            <summary>
+            Represents an adapter that holds the Grafana data source's metadata
+            and is used to augment data source on demand.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet``1">
+            <summary>
+            Gets the Grafana data source metadata, augmented as needed for the target data
+            source value type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Data source value type for metadata augmentation.</typeparam>
+            <returns>
+            Grafana data source metadata, augmented as needed for the target data source
+            value type <typeparamref name="T"/>.
+            </returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet(GrafanaAdapters.DataSources.IDataSourceValue)">
+            <summary>
+            Gets the Grafana data source metadata, augmented as needed for the target data
+            source value type instance <paramref name="value"/>.
+            </summary>
+            <param name="value">Instance of data source value type to use for metadata augmentation.</param>
+            <returns>
+            Grafana data source metadata, augmented as needed for the target data source
+            </returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.op_Implicit(System.Data.DataSet)~GrafanaAdapters.Metadata.DataSetAdapter">
+            <summary>
+            Implicitly converts a <see cref="T:System.Data.DataSet"/> to a <see cref="T:GrafanaAdapters.Metadata.DataSetAdapter"/>.
+            </summary>
+            <param name="source">Source <see cref="T:System.Data.DataSet"/> to convert.</param>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitAlias(System.String,System.String@)">
+            <summary>
+            Splits any defined alias from a point tag expression.
+            </summary>
+            <param name="tagExpression">Source point tag expression that can contain an alias.</param>
+            <param name="alias">Alias, if defined.</param>
+            <returns>Point tag name without any alias.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.TagFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet,System.String,System.String,System.String)">
+            <summary>
+            Looks up point tag from measurement <paramref name="key"/> value.
+            </summary>
+            <param name="key"><see cref="T:GSF.TimeSeries.MeasurementKey"/> to lookup.</param>
+            <param name="metadata">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <param name="pointTagField">Point tag field name.</param>
+            <param name="idField">Measurement key-based ID field name.</param>
+            <returns>Point tag name from source metadata.</returns>
+            <remarks>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.RecordFromTag(System.String,System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Looks up metadata record from point tag.
+            </summary>
+            <param name="pointTag">Point tag to lookup.</param>
+            <param name="metadata">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <param name="pointTagField">Point tag field name.</param>
+            <returns>Metadata record from source metadata for provided point tag.</returns>
+            <remarks>
+            <para>
+            Use "table.pointTag" format to specify which table to pull point tag from.
+            </para>
+            <para>
+            This function uses the <see cref="M:System.Data.DataTable.Select(System.String)"/> function which uses a linear
+            search algorithm that can be slow for large data sets, it is recommended that any results
+            for calls to this function be cached to improve performance.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.RecordFromKey(System.String,System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Looks up metadata record from measurement key.
+            </summary>
+            <param name="keyName">Measurement key, as string, to lookup.</param>
+            <param name="metadata">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <param name="idField">Measurement key-based ID field name.</param>
+            <returns>Metadata record from source metadata for provided measurement key.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadata(System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Gets metadata record from source metadata.
+            </summary>
+            <param name="metadata">Source metadata.</param>
+            <param name="table">Table to search.</param>
+            <param name="expression">Expression to filter metadata.</param>
+            <returns>Metadata record from source metadata, if expression is found; otherwise <c>null</c>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.KeyFromSignalID(System.String)">
+            <summary>
+            Gets measurement key from signal ID.
+            </summary>
+            <param name="signalID">Signal ID to lookup.</param>
+            <returns>
+            Measurement key associated with specified signal ID, if found; otherwise <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SignalIDFromRecord(System.Data.DataRow,System.String)">
+            <summary>
+            Gets signal ID from metadata record.
+            </summary>
+            <param name="record">Source metadata record.</param>
+            <param name="signalIDField">Signal ID field name.</param>
+            <returns>Signal ID from metadata record.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.KeyFromRecord(System.Data.DataRow,System.String,System.String)">
+            <summary>
+            Gets measurement key from metadata record.
+            </summary>
+            <param name="record">Source metadata record.</param>
+            <param name="idField">ID field name.</param>
+            <param name="signalIDField">Signal ID field name.</param>
+            <returns>Mapped measurement key from metadata record.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.ParseAsTableAndField``1(System.String)">
+            <summary>
+            Parses target as table and field name.
+            </summary>
+            <param name="target">Target to parse.</param>
+            <returns>Target parsed as table and field name.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.MetadataTableIsValid(GrafanaAdapters.DataSources.IDataSourceValue,System.Data.DataSet,System.String)">
+            <summary>
+            Determines if metadata table is valid for the specified data source value type instance.
+            </summary>
+            <param name="instance">Data source value type instance.</param>
+            <param name="metadata">Source metadata.</param>
+            <param name="tableName">Target table name.</param>
+            <returns><c>true</c> if metadata table is valid for the specified data source value type instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadataMap``1(System.Data.DataSet,System.String,GrafanaAdapters.Functions.QueryParameters)">
+            <summary>
+            Gets metadata map for the specified target and selections.
+            </summary>
+            <param name="metadata">Source metadata.</param>
+            <param name="rootTarget">Root target to use for metadata lookup.</param>
+            <param name="queryParameters">Query parameters.</param>
+            <returns>Mapped metadata for the specified target and selections.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.FirstTarget(System.String)">
+            <summary>
+            Gets first target from a target expression.
+            </summary>
+            <param name="target">Source target expression.</param>
+            <returns>Fist target from target expression.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Lookup``1(System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Looks up metadata record for the specified target.
+            </summary>
+            <param name="metadata">Metadata data set.</param>
+            <param name="tableName">Table name to search.</param>
+            <param name="target">Target to lookup.</param>
+            <returns>Filtered metadata row for the specified target.</returns>
+            <remarks>
+            Implementations should cache metadata lookups for performance.
+            </remarks>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.GetMetadataMap``1(System.Data.DataSet,System.String,System.Collections.Generic.IList{System.ValueTuple{System.String,System.String[]}})">
+            <summary>
+            Gets metadata map for the specified target and selections.
+            </summary>
+            <param name="metadata">Source metadata.</param>
+            <param name="rootTarget">Root target to use for metadata lookup.</param>
+            <param name="metadataSelections">Metadata selections.</param>
+            <returns>Mapped metadata for the specified target and selections.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.Parse``1(System.String,System.Data.DataSet)">
+            <summary>
+            Parses a user provided target expression which could contain point tags, measurement keys, Guid-based signal IDs,
+            or filter expressions, then returning the set of measurement key and point tag identifiers associated with the
+            target along with any defined alias for the target.
+            </summary>
+            <param name="target">Target expression to parse.</param>
+            <param name="metadata">Source metadata.</param>
+            <returns>Tuple representing set of target and associated IDs, as parsed from expression, and any defined alias.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitComponents(System.String)">
+            <summary>
+            Splits a combined target into a point tag and target.
+            </summary>
+            <param name="target">Combined target of point tag and target.</param>
+            <returns>Tuple of point tag and target.</returns>
+            <exception cref="T:System.InvalidOperationException">Invalid combined target encountered.</exception>
         </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
