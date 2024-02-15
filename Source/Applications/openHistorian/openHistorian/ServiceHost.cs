@@ -1016,25 +1016,18 @@ namespace openHistorian
                     
                     LogStatusMessage($"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
                     StopRemoteService(remoteHost);
-                    
-                    // if no response override Connection Log Files with Failover Log Files
-                    throw new NotImplementedException();
+                    continue;
                 }
                    
                 LogStatusMessage($"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.", UpdateType.Warning);
-                
-                // Update failover cache file
                 DelayedRestart(delay);
                 
                 return true;
             }
 
-            LogStatusMessage($"Failover logic detected: no active node.", UpdateType.Warning);
+            LogStatusMessage($"Failover logic detected: no remianing active node.", UpdateType.Warning);
 
             return false;
-
-            // Note a PING without response will need a retry to ensure it's not a short temporary condition If success on retry it is counted as success.
-            // From a Config Standpoint it is important Retry Time < Small Delay in Startup < delayed restart time
         }
 
         private static bool PingNode(string endpoint)
