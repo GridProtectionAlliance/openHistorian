@@ -975,7 +975,7 @@ namespace openHistorian
                 if (enableFailover)
                 {
                     failoverSettings.Add("FailoverEndpoint", DefaultFailoverURL, "Defines the URL of the other node(s) in the failover system. This may include multiple URLs separated by semi-colons.");
-                    failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay, in milliseconds, before the node will attempt to start again.");
+                    failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay, in seconds, before the node will attempt to start again.");
 
                     if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out delay))
                         delay = DefaultFailoverRestartDelay;
