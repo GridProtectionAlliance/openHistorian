@@ -49,15 +49,19 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
+using WindowsServiceController = System.ServiceProcess.ServiceController;
 
 namespace openHistorian
 {
@@ -75,6 +79,9 @@ namespace openHistorian
         // Constants
         private const int DefaultMaximumDiagnosticLogSize = 10;
         private const string DefaultMinifyJavascriptExclusionExpression = @"^/?Scripts/force\-graph\.js$";
+        private const string DefaultFailoverNodeType = "None";
+        private const string DefaultFailoverURL = "http://localhost:8180";
+        private const int DefaultFailoverRestartDelay = 3600;
 
         // Events
 
@@ -116,6 +123,9 @@ namespace openHistorian
             m_logSubscriber.SubscribeToAssembly(typeof(HistorianKey).Assembly, VerboseLevel.High);
             m_logSubscriber.NewLogMessage += m_logSubscriber_Log;
 
+            if (PreventFailoverStartup())
+                Environment.Exit(0);
+            
             try
             {
                 // Assign default minification exclusion early (well before web server static initialization)
@@ -652,12 +662,12 @@ namespace openHistorian
                 LogException(new InvalidOperationException($"Service stopping handler exception: {ex.Message}", ex));
             }
 
-            if (helper != null)
-            {
-                helper.SendingClientResponse -= SendingClientResponseHandler;
-                helper.UpdatedStatus -= UpdatedStatusHandler;
-                helper.LoggedException -= LoggedExceptionHandler;
-            }
+            if (helper is null)
+                return;
+            
+            helper.SendingClientResponse -= SendingClientResponseHandler;
+            helper.UpdatedStatus -= UpdatedStatusHandler;
+            helper.LoggedException -= LoggedExceptionHandler;
         }
 
         protected override bool PropagateDataSource(DataSet dataSource)
@@ -1007,6 +1017,180 @@ namespace openHistorian
             }
         }
 
+        private bool PreventFailoverStartup()
+        {
+            bool enableFailover = false;
+            bool isPrimary = false;
+            int delay = DefaultFailoverRestartDelay;
+            IEnumerable<string> nodes = Array.Empty<string>();
+
+            try
+            {
+                CategorizedSettingsElementCollection failoverSettings = ConfigurationFile.Current.Settings["failoverSettings"];
+                failoverSettings.Add("NodeType", DefaultFailoverNodeType, "Defines the type of failover node. Options are 'None', 'Primary' or 'Secondary'. Any invalid value will be interpreted as none.");
+                string nodeType = failoverSettings["NodeType"].Value?.ToLowerInvariant().Trim();
+
+                if (!string.IsNullOrWhiteSpace(nodeType))
+                {
+                    switch (nodeType)
+                    {
+                        case "primary":
+                            enableFailover = true;
+                            isPrimary = true;
+                            break;
+                        case "secondary":
+                            enableFailover = true;
+                            break;
+                        default:
+                            LogStatusMessage($"Encountered invalid failover 'NodeType' setting \"{nodeType}\". Disabling failover node.", UpdateType.Warning);
+                            break;
+                    }
+                }
+
+                if (enableFailover)
+                {
+                    failoverSettings.Add("FailoverEndpoint", DefaultFailoverURL, "Defines the URL of the other node(s) in the failover system. This may include multiple URLs separated by semi-colons.");
+                    failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay, in seconds, before the node will attempt to start again.");
+
+                    if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out delay))
+                        delay = DefaultFailoverRestartDelay;
+                    
+                    nodes = string.IsNullOrWhiteSpace(failoverSettings["FailoverEndpoint"].Value) ?
+                        [ DefaultFailoverURL ] : 
+                        failoverSettings["FailoverEndpoint"].Value.Split(';');
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                return false;
+            }
+
+            if (!enableFailover)
+                return false;
+
+            LogStatusMessage("Failover mode enabled, starting node polling...");
+            
+            foreach (string node in nodes)
+            {
+                try
+                {
+                    string[] settings = node.Split('&');
+                    string url = settings[0];
+
+                    if (!PingNode(url))
+                        continue;
+
+                    if (isPrimary)
+                    {
+                        if (settings.Length == 1)
+                        {
+                            LogStatusMessage($"No host specified for \"{url}\" - system will not be able to shut down the node", UpdateType.Alarm);
+                            continue;
+                        }
+
+                        string remoteHost = settings[1];
+
+                        LogStatusMessage($"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
+                        StopRemoteService(remoteHost);
+                        continue;
+                    }
+
+                    LogStatusMessage($"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.", UpdateType.Warning);
+                    DelayedRestart(delay);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.SwallowException(new InvalidOperationException($"Failed while checking failover logic for \"{node}\": {ex.Message}", ex));
+                }
+            }
+
+            LogStatusMessage("Failover logic detected: no remaining active node.", UpdateType.Warning);
+
+            return false;
+        }
+
+        private static bool PingNode(string endpoint)
+        {
+            try
+            {
+                using HttpRequestMessage request = new();
+                
+                request.Method = HttpMethod.Get;
+                request.RequestUri = new Uri(endpoint);
+                
+                HttpResponseMessage response = s_httpClient.SendAsync(request).Result;
+                
+                if (response is null) 
+                    return false;
+
+                return response.StatusCode switch
+                {
+                    HttpStatusCode.OK => true,
+                    HttpStatusCode.Unauthorized => true,
+                    _ => false
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+                return false;
+            }
+        }
+
+        private void DelayedRestart(int delay)
+        {
+            if (Common.IsPosixEnvironment)
+            {
+                using Process shell = new();
+
+                shell.StartInfo = new ProcessStartInfo(ConsoleApplicationName)
+                {
+                    CreateNoWindow = true,
+                    Arguments = $"{ServiceName} -restartDelay={delay}"
+                };
+
+                shell.Start();
+            }
+            else
+            {
+                string batchFileName = FilePath.GetAbsolutePath("DelayedRestartService.cmd");
+                File.WriteAllText(batchFileName, $@"@ECHO OFF{Environment.NewLine}{ConsoleApplicationName} {ServiceName} -restartDelay={delay}");
+
+                // This is the only .NET call that will spawn an independent, non-child, process on Windows
+                Process.Start(batchFileName);
+            }
+        }
+
+        private void StopRemoteService(string host)
+        {
+            WindowsServiceController serviceController = WindowsServiceController.GetServices(host).SingleOrDefault(controller => 
+                string.Compare(controller.ServiceName, ServiceName, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if (serviceController is null)
+                return;
+            
+            try
+            {
+                if (serviceController.Status != ServiceControllerStatus.Running)
+                    return;
+                
+                serviceController.Stop();
+
+                // Can't wait forever for service to stop, so we time out after 20 seconds
+                serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20.0D));
+
+                if (serviceController.Status == ServiceControllerStatus.Stopped)
+                    LogStatusMessage($"Failover logic successfully stopped service on \"{host}\".");
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+            }
+        }
+
         internal static void RestoreEmbeddedResources()
         {
             try
@@ -1038,12 +1222,12 @@ namespace openHistorian
                     if (resourceStream is null)
                         continue;
 
-                    string sourceNamespace = $"{nameof(openHistorian)}.";
+                    const string SourceNamespace = $"{nameof(openHistorian)}.";
                     string filePath = name;
 
                     // Remove namespace prefix from resource file name
-                    if (filePath.StartsWith(sourceNamespace))
-                        filePath = filePath.Substring(sourceNamespace.Length);
+                    if (filePath.StartsWith(SourceNamespace))
+                        filePath = filePath.Substring(SourceNamespace.Length);
 
                     string targetFileName = Path.Combine(targetPath, filePath);
                     bool restoreFile = true;
@@ -1101,6 +1285,7 @@ namespace openHistorian
 
         // Static Fields
         private static int s_virtualProtocolID;
+        private static readonly HttpClient s_httpClient = new();
 
         #endregion
     }
