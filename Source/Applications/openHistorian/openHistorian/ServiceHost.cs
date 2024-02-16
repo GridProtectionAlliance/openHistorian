@@ -1166,7 +1166,7 @@ namespace openHistorian
 
         private void StopRemoteService(string host)
         {
-            ServiceController serviceController = ServiceController.GetServices(host).SingleOrDefault(controller => 
+            WindowsServiceController serviceController = WindowsServiceController.GetServices(host).SingleOrDefault(controller => 
                 string.Compare(controller.ServiceName, ServiceName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (serviceController is null)
