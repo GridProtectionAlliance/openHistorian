@@ -998,34 +998,41 @@ namespace openHistorian
             
             foreach (string node in nodes)
             {
-                string[] settings = node.Split('&');
-                string url = settings[0];
-
-                if (!PingNode(url))
-                    continue;
-                
-                if (isPrimary)
+                try
                 {
-                    if (settings.Length == 1)
+                    string[] settings = node.Split('&');
+                    string url = settings[0];
+
+                    if (!PingNode(url))
+                        continue;
+
+                    if (isPrimary)
                     {
-                        LogStatusMessage($"No host specified for \"{url}\" - system will not be able to shut down the node", UpdateType.Alarm);
+                        if (settings.Length == 1)
+                        {
+                            LogStatusMessage($"No host specified for \"{url}\" - system will not be able to shut down the node", UpdateType.Alarm);
+                            continue;
+                        }
+
+                        string remoteHost = settings[1];
+
+                        LogStatusMessage($"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
+                        StopRemoteService(remoteHost);
                         continue;
                     }
 
-                    string remoteHost = settings[1];
-                    
-                    LogStatusMessage($"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
-                    StopRemoteService(remoteHost);
-                    continue;
+                    LogStatusMessage($"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.", UpdateType.Warning);
+                    DelayedRestart(delay);
+
+                    return true;
                 }
-                   
-                LogStatusMessage($"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.", UpdateType.Warning);
-                DelayedRestart(delay);
-                
-                return true;
+                catch (Exception ex)
+                {
+                    Logger.SwallowException(new InvalidOperationException($"Failed while checking failover logic for \"{node}\": {ex.Message}", ex));
+                }
             }
 
-            LogStatusMessage($"Failover logic detected: no remianing active node.", UpdateType.Warning);
+            LogStatusMessage("Failover logic detected: no remaining active node.", UpdateType.Warning);
 
             return false;
         }
