@@ -41,8 +41,10 @@ using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
+using GSF.Web.Security;
 using openHistorian.Snap;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -288,33 +290,29 @@ namespace openHistorian.Adapters
                 m_archiveReader?.Dispose();
             }
 
-            private static readonly Dictionary<string, string> s_archiveFileNames = new();
+            private static readonly ConcurrentDictionary<string, string> s_archiveFileNames = new();
 
             private static string GetArchiveFileName(string instanceName)
             {
                 instanceName = instanceName.ToLowerInvariant();
 
-                lock (s_archiveFileNames)
-                {
-                    if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
-                        return archiveFileName;
-
-                    CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
-                    archiveFileName = settings?["FileName"]?.Value;
-
-                    if (string.IsNullOrWhiteSpace(archiveFileName))
-                        archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
-
-                    s_archiveFileNames[instanceName] = archiveFileName;
-
+                if (s_archiveFileNames.TryGetValue(instanceName, out string archiveFileName))
                     return archiveFileName;
-                }
+
+                CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
+                archiveFileName = settings?["FileName"]?.Value;
+
+                if (string.IsNullOrWhiteSpace(archiveFileName))
+                    archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
+
+                s_archiveFileNames[instanceName] = archiveFileName;
+
+                return archiveFileName;
             }
         }
 
         // Fields
         private GrafanaDataSourceBase m_dataSource;
-        private string m_defaultAPIPath;
 
         #endregion
 
@@ -327,17 +325,17 @@ namespace openHistorian.Adapters
         {
             get
             {
-                if (!string.IsNullOrEmpty(m_defaultAPIPath))
-                    return m_defaultAPIPath;
+                if (!string.IsNullOrEmpty(s_defaultAPIPath))
+                    return s_defaultAPIPath;
 
                 string controllerName = GetType().Name.ToLowerInvariant();
 
                 if (controllerName.EndsWith("controller") && controllerName.Length > 10)
                     controllerName = controllerName.Substring(0, controllerName.Length - 10);
 
-                m_defaultAPIPath = $"/api/{controllerName}";
+                s_defaultAPIPath = $"/api/{controllerName}";
 
-                return m_defaultAPIPath;
+                return s_defaultAPIPath;
             }
         }
 
@@ -525,7 +523,7 @@ namespace openHistorian.Adapters
         /// data source value type without restarting host.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [AuthorizeControllerRole("Administrator")]
         public virtual void ReloadValueTypes()
         {
             DataSource?.ReloadDataSourceValueTypes();
@@ -540,7 +538,7 @@ namespace openHistorian.Adapters
         /// without restarting host.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [AuthorizeControllerRole("Administrator")]
         public virtual void ReloadGrafanaFunctions()
         {
             DataSource?.ReloadGrafanaFunctions();
@@ -637,6 +635,8 @@ namespace openHistorian.Adapters
 
             return LocalOutputAdapter.Instances.TryGetValue(instanceName, out LocalOutputAdapter adapterInstance) ? adapterInstance : null;
         }
+
+        private static string s_defaultAPIPath;
 
         #endregion
     }

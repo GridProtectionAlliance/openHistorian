@@ -32,6 +32,7 @@ using GSF.Security;
 using GSF.Security.Model;
 using GSF.ServiceProcess;
 using GSF.TimeSeries;
+using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
 using GSF.Web.Model.Handlers;
@@ -40,10 +41,12 @@ using GSF.Web.Shared;
 using GSF.Web.Shared.Model;
 using Microsoft.Ajax.Utilities;
 using Microsoft.Owin.Hosting;
+using Microsoft.Win32;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -53,18 +56,23 @@ using System.Reflection;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
-using Microsoft.Win32;
 using System.Net.Http;
-using System.Diagnostics;
-using System.ServiceProcess;
 
 namespace openHistorian
 {
     public class ServiceHost : ServiceHostBase
     {
         #region [ Members ]
+
+        // Nested Types
+        private class ReturnValueState
+        {
+            public readonly ManualResetEventSlim WaitHandle = new(false);
+            public string ReturnValue;
+        }
 
         // Constants
         private const int DefaultMaximumDiagnosticLogSize = 10;
@@ -91,6 +99,7 @@ namespace openHistorian
         public event EventHandler<EventArgs<Guid, ServiceResponse, bool>> SendingClientResponse;
 
         // Fields
+        private readonly ConcurrentDictionary<ClientRequestInfo, ReturnValueState> m_returnValueStates;
         private IDisposable m_webAppHost;
         private bool m_serviceStopping;
         private readonly LogSubscriber m_logSubscriber;
@@ -133,6 +142,8 @@ namespace openHistorian
             SetupGrafanaHostingAdapter();
 
             RestoreEmbeddedResources();
+
+            m_returnValueStates = new ConcurrentDictionary<ClientRequestInfo, ReturnValueState>();
         }
 
         #endregion
@@ -790,17 +801,26 @@ namespace openHistorian
         /// <param name="clientID">Client ID of sender.</param>
         /// <param name="principal">The principal used for role-based security.</param>
         /// <param name="userInput">Request string.</param>
-        public void SendRequest(Guid clientID, IPrincipal principal, string userInput)
+        /// <param name="expectsReturnValue">Flag that determines if a command return value is expected.</param>
+        /// <param name="returnValueTimeout">Timeout for return value response.</param>
+        /// <returns>
+        /// A tuple representing the response to the request.
+        /// </returns>
+        /// <remarks>
+        /// Setting <paramref name="expectsReturnValue"/> to <c>true</c> will block the calling thread
+        /// until a response is received or the timeout is reached.
+        /// </remarks>
+        public (HttpStatusCode statusCode, string response) SendCommand(Guid clientID, IPrincipal principal, string userInput, bool expectsReturnValue = false, int returnValueTimeout = 5000)
         {
             ClientRequest request = ClientRequest.Parse(userInput);
 
             if (request is null)
-                return;
+                return (HttpStatusCode.BadRequest, "Request not recognized.");
 
             if (SecurityProviderUtility.IsResourceSecurable(request.Command) && !SecurityProviderUtility.IsResourceAccessible(request.Command, principal))
             {
-                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied.\r\n\r\n");
-                return;
+                ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Access to \"{request.Command}\" is denied for user \"{principal?.Identity?.Name}\".\r\n\r\n");
+                return (HttpStatusCode.Unauthorized, $"Access to \"{request.Command}\" is denied.");
             }
 
             ClientRequestHandler requestHandler = ServiceHelper.FindClientRequestHandler(request.Command);
@@ -808,18 +828,71 @@ namespace openHistorian
             if (requestHandler is null)
             {
                 ServiceHelper.UpdateStatus(clientID, UpdateType.Alarm, $"Command \"{request.Command}\" is not supported.\r\n\r\n");
-                return;
+                return (HttpStatusCode.NotFound, $"Command \"{request.Command}\" is not supported.");
             }
 
-            ClientInfo clientInfo = new()
-            {
-                ClientID = clientID
-            };
-
+            // Establish client info for the current user
+            ClientInfo clientInfo = new() { ClientID = clientID };
             clientInfo.SetClientUser(principal);
 
+            // Set up request info
             ClientRequestInfo requestInfo = new(clientInfo, request);
-            requestHandler.HandlerMethod(requestInfo);
+            string response = null;
+
+            // If expecting a return value, set up a wait handle to wait for response
+            if (expectsReturnValue)
+            {
+                // Establish wait handle and result array for return value state
+                ReturnValueState state = new();
+                bool signaled;
+
+                try
+                {
+                    // Track per client + command return value state
+                    m_returnValueStates[requestInfo] = state;
+
+                    // Execute command request (return value expected)
+                    requestHandler.HandlerMethod(requestInfo);
+
+                    // Wait for command return value
+                    signaled = state.WaitHandle.Wait(returnValueTimeout);
+                }
+                finally
+                {
+                    m_returnValueStates.TryRemove(requestInfo, out _);
+                }
+
+                if (!signaled)
+                    return (HttpStatusCode.RequestTimeout, "Command return value request timed out.");
+
+                response = state.ReturnValue;
+            }
+            else
+            {
+                // Execute command request (no return value expected)
+                requestHandler.HandlerMethod(requestInfo);
+            }
+
+            return (HttpStatusCode.OK, response ?? (expectsReturnValue ? "" : "Request succeeded."));
+        }
+
+        // Intercept responses to client requests to capture return value
+        protected override void SendResponseWithAttachment(ClientRequestInfo requestInfo, bool success, object attachment, string status, params object[] args)
+        {
+            // Look for requests that were generated locally
+            if (m_returnValueStates.TryGetValue(requestInfo, out ReturnValueState state) && state is not null)
+            {
+                if (attachment is not null)
+                {
+                    state.ReturnValue = attachment is Array array ?
+                        string.Join(",", array.OfType<object>().Select(val => val.ToString())) :
+                        attachment.ToString();
+                }
+
+                state.WaitHandle?.Set();
+            }
+
+            base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);
         }
 
         public void DisconnectClient(Guid clientID)
@@ -1118,6 +1191,21 @@ namespace openHistorian
 
         internal static void RestoreEmbeddedResources()
         {
+            try
+            {
+                // Access GSF.Web so its embedded resources can be restored on assembly load via the ModuleInitializer,
+                // then ensure that NUglify.dll is loaded into the application domain in advance of web hosting startup
+                // so it can be referenced by the Login.cshtml page during RazorEngine compilation - this corrects an
+                // order of operations issue where NUglify.dll is not yet loaded when the Login.cshtml page is compiled
+                if (WebExtensions.EmbeddedResourceExists("GSF.Web.NUglify.dll"))
+                    Assembly.LoadFrom(FilePath.GetAbsolutePath("NUglify.dll"));
+            }
+            catch (Exception ex)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+                log.Publish(MessageLevel.Error, "Error Message", "Failed to pre-load NUglify embedded resource assembly", null, ex);
+            }
+
             try
             {
                 HashSet<string> textTypes = new(new[] { ".TagTemplate" }, StringComparer.OrdinalIgnoreCase);

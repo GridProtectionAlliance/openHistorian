@@ -41557,9 +41557,9 @@
             This method will return a C#-compatible proper type name, resolving generic type names using reflection, which creates a valid,
             useable type name versus what <see cref="P:System.Type.FullName"/> returns. For example, <see cref="P:System.Type.FullName"/> will return something like:
             <c>System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]</c>
-            with a backtick (`) to indicate a generic type and noisy assembly info. Even <see cref="!:Type.Name"/> returns <c>List`1</c> with a backtick (`).
-            For the same type, this method would instead return: <c>System.Collections.Generic.List&lt;System.String&gt;</c> which is a valid, usable C# type
-            name. You can also set the <paramref name="includeNamespaces"/> parameter to <c>false</c> to remove namespaces from the type name, which yields:
+            with a backtick (`) to indicate a generic type and noisy assembly info. Even <c>Type.Name</c> returns <c>List`1</c> with a backtick (`). For the
+            same type, this method would instead return: <c>System.Collections.Generic.List&lt;System.String&gt;</c> which is a valid, usable C# type name.
+            You can also set the <paramref name="includeNamespaces"/> parameter to <c>false</c> to remove namespaces from the type name, which yields:
             <c>List&lt;String&gt;</c> for the same example.
             </remarks>
         </member>

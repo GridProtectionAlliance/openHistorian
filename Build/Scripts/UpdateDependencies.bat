@@ -48,8 +48,8 @@ SET sourcetools=%source%\Tools
 SET targettools=%target%\Source\Applications\openHistorian\openHistorianSetup
 
 ::Grafana Panels
-SET GrafanaSource=\\GPAWEB\NightlyBuilds\GrafanaPanels\Binaries
-SET GrafanaTarget=%target%\Source\Applications\openHistorian\openHistorian\Grafana\data\plugins
+::SET GrafanaSource=\\GPAWEB\NightlyBuilds\GrafanaPanels\Binaries
+::SET GrafanaTarget=%target%\Source\Applications\openHistorian\openHistorian\Grafana\data\plugins
 
 ECHO.
 ECHO Entering working directory...
@@ -97,11 +97,11 @@ COPY /Y "%sourcetools%\GEPDataExtractor\GEPDataExtractor.exe" "%targettools%\GEP
 COPY /Y "%sourcetools%\CreateOutputStream\CreateOutputStream.exe" "%targettools%\CreateOutputStream.exe"
 COPY /Y "%sourcetools%\BulkCalculationState\BulkCalculationState.exe" "%targettools%\BulkCalculationState.exe"
 COPY /Y "%sourcetools%\AdapterExplorer\AdapterExplorer.exe" "%targettools%\AdapterExplorer.exe"
-ECHO Updating Grafana Panels...
-XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
-XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
-XCOPY "%GrafanaSource%\openHistorianGrafanaAlarmPanel" "%GrafanaTarget%\openHistorianGrafanaAlarmPanel\" /Y /E /U
-XCOPY "%GrafanaSource%\openHistorian-grafana" "%GrafanaTarget%\gridprotectionalliance-openhistorian-datasource\" /Y /E /U
+::ECHO Updating Grafana Panels...
+::XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
+::XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
+::XCOPY "%GrafanaSource%\openHistorianGrafanaAlarmPanel" "%GrafanaTarget%\openHistorianGrafanaAlarmPanel\" /Y /E /U
+::XCOPY "%GrafanaSource%\openHistorian-grafana" "%GrafanaTarget%\gridprotectionalliance-openhistorian-datasource\" /Y /E /U
 
 :UpdateDbScripts
 ECHO.

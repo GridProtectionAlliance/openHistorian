@@ -95,7 +95,7 @@ namespace openHistorian
         {
             // Note that rights of current thread principle will be used to determine service command rights...
             if (Guid.TryParse(ConnectionID, out Guid clientID))
-                Program.Host.SendRequest(clientID, HubInstance.Context.User, command);
+                Program.Host.SendCommand(clientID, HubInstance.Context.User, command);
         }
 
         private void m_serviceHost_UpdatedStatus(object sender, EventArgs<Guid, string, UpdateType> e)
