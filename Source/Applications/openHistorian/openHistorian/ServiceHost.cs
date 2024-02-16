@@ -784,7 +784,23 @@ namespace openHistorian
         /// <param name="type">Type of message to log.</param>
         public void LogStatusMessage(string message, UpdateType type = UpdateType.Information)
         {
-            DisplayStatusMessage(message, type);
+            try
+            {
+                DisplayStatusMessage(message, type);
+            }
+            catch (Exception ex)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+                
+                MessageLevel level = type switch
+                {
+                    UpdateType.Alarm => MessageLevel.Warning,
+                    UpdateType.Warning => MessageLevel.Warning,
+                    _ => MessageLevel.Info
+                };
+                
+                log.Publish(level, nameof(LogStatusMessage), $"[{type}]: {message}" , $"Backup log operation due to exception during normal {nameof(LogStatusMessage)} processing", ex);
+            }
         }
 
         /// <summary>
@@ -793,8 +809,16 @@ namespace openHistorian
         /// <param name="ex">Exception to log.</param>
         public new void LogException(Exception ex)
         {
-            base.LogException(ex);
-            DisplayStatusMessage($"{ex.Message}", UpdateType.Alarm);
+            try
+            {
+                base.LogException(ex);
+                DisplayStatusMessage($"{ex.Message}", UpdateType.Alarm);
+            }
+            catch (Exception ex2)
+            {
+                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+                log.Publish(MessageLevel.Error, nameof(LogStatusMessage), $"[ERROR]: {ex.Message}", $"Backup log operation due to exception during normal {nameof(LogException)} processing", ex2);
+            }
         }
 
         /// <summary>
