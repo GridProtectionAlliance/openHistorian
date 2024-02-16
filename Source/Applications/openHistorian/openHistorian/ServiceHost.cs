@@ -1056,7 +1056,7 @@ namespace openHistorian
                         delay = DefaultFailoverRestartDelay;
                     
                     nodes = string.IsNullOrWhiteSpace(failoverSettings["FailoverEndpoint"].Value) ?
-                        [ DefaultFailoverURL ] : 
+                        new[] { DefaultFailoverURL } : 
                         failoverSettings["FailoverEndpoint"].Value.Split(';');
                 }
             }
