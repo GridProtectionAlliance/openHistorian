@@ -790,8 +790,6 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-                
                 MessageLevel level = type switch
                 {
                     UpdateType.Alarm => MessageLevel.Warning,
@@ -799,7 +797,7 @@ namespace openHistorian
                     _ => MessageLevel.Info
                 };
                 
-                log.Publish(level, nameof(LogStatusMessage), $"[{type}]: {message}" , $"Backup log operation due to exception during normal {nameof(LogStatusMessage)} processing", ex);
+                LogMessage(level, nameof(LogStatusMessage), $"[{type}]: {message}" , $"Backup log operation due to exception during normal {nameof(LogStatusMessage)} processing", ex);
             }
         }
 
@@ -816,8 +814,7 @@ namespace openHistorian
             }
             catch (Exception ex2)
             {
-                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-                log.Publish(MessageLevel.Error, nameof(LogStatusMessage), $"[ERROR]: {ex.Message}", $"Backup log operation due to exception during normal {nameof(LogException)} processing", ex2);
+                LogMessage(MessageLevel.Error, nameof(LogException), $"[ERROR]: {ex.Message}", $"Backup log operation due to exception during normal {nameof(LogException)} processing", ex2);
             }
         }
 
@@ -1036,8 +1033,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-                log.Publish(MessageLevel.Error, "Error Message", "Failed to setup Grafana hosting adapter", null, ex);
+                LogMessage(MessageLevel.Error, nameof(SetupGrafanaHostingAdapter), "Failed to setup Grafana hosting adapter", null, ex);
             }
         }
 
@@ -1066,7 +1062,7 @@ namespace openHistorian
                             enableFailover = true;
                             break;
                         default:
-                            LogStatusMessage($"Encountered invalid failover 'NodeType' setting \"{nodeType}\". Disabling failover node.", UpdateType.Warning);
+                            LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), $"Encountered invalid failover 'NodeType' setting \"{nodeType}\". Disabling failover node.");
                             break;
                     }
                 }
@@ -1093,7 +1089,7 @@ namespace openHistorian
             if (!enableFailover)
                 return false;
 
-            LogStatusMessage("Failover mode enabled, starting node polling...");
+            LogMessage(MessageLevel.Info, nameof(PreventFailoverStartup), "Failover mode enabled, starting node polling...");
             
             foreach (string node in nodes)
             {
@@ -1109,18 +1105,18 @@ namespace openHistorian
                     {
                         if (settings.Length == 1)
                         {
-                            LogStatusMessage($"No host specified for \"{url}\" - system will not be able to shut down the node", UpdateType.Alarm);
+                            LogMessage(MessageLevel.Error, nameof(PreventFailoverStartup), $"No host specified for \"{url}\" - system will not be able to shut down the node");
                             continue;
                         }
 
                         string remoteHost = settings[1];
 
-                        LogStatusMessage($"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
+                        LogMessage(MessageLevel.Info, nameof(PreventFailoverStartup), $"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
                         StopRemoteService(remoteHost);
                         continue;
                     }
 
-                    LogStatusMessage($"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.", UpdateType.Warning);
+                    LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), $"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.");
                     DelayedRestart(delay);
 
                     return true;
@@ -1131,7 +1127,7 @@ namespace openHistorian
                 }
             }
 
-            LogStatusMessage("Failover logic detected: no remaining active node.", UpdateType.Warning);
+            LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), "Failover logic detected: no remaining active node.");
 
             return false;
         }
@@ -1207,7 +1203,7 @@ namespace openHistorian
                 serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20.0D));
 
                 if (serviceController.Status == ServiceControllerStatus.Stopped)
-                    LogStatusMessage($"Failover logic successfully stopped service on \"{host}\".");
+                    LogMessage(MessageLevel.Info, nameof(StopRemoteService), $"Failover logic successfully stopped service on \"{host}\".");
             }
             catch (Exception ex)
             {
@@ -1228,8 +1224,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-                log.Publish(MessageLevel.Error, "Error Message", "Failed to pre-load NUglify embedded resource assembly", null, ex);
+                LogMessage(MessageLevel.Error, nameof(RestoreEmbeddedResources), "Failed to pre-load NUglify embedded resource assembly", null, ex);
             }
 
             try
@@ -1286,8 +1281,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-                log.Publish(MessageLevel.Error, "Error Message", "Failed to restore embedded resources", null, ex);
+                LogMessage(MessageLevel.Error, nameof(RestoreEmbeddedResources), "Failed to restore embedded resources", null, ex);
             }
         }
 
@@ -1301,6 +1295,12 @@ namespace openHistorian
         {
             using MD5 md5 = MD5.Create();
             return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", string.Empty);
+        }
+
+        private static void LogMessage(MessageLevel level, string eventName, string message, string details = null, Exception ex = null)
+        {
+            LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
+            log.Publish(MessageLevel.Error, eventName, message, null, ex);
         }
 
         #endregion
