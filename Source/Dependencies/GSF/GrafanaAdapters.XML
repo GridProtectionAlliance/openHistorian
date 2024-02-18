@@ -4,26 +4,26 @@
         <name>GrafanaAdapters</name>
     </assembly>
     <members>
-        <member name="T:GrafanaAdapters.DataSources.DataSourceValueCache">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.DataSourceValueTypeCache">
             <summary>
             Represents a cache of all defined data source value types and their default instances.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueCache.DefaultInstances">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.DataSourceValueTypeCache.DefaultInstances">
             <summary>
             Gets default instance list of all the defined data source value type implementations.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueCache.LoadedTypes">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.DataSourceValueTypeCache.LoadedTypes">
             <summary>
             Gets cache of defined data source value types loaded from local assemblies.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.DataSourceValueCache.GetDefaultInstance(System.Int32)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.DataSourceValueTypeCache.GetDefaultInstance(System.Int32)">
             <summary>
             Gets a default instance of the specified data source value type (by index).
             </summary>
-            <param name="dataTypeIndex">Index of target <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue"/> to lookup.</param>
+            <param name="dataTypeIndex">Index of target <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType"/> to lookup.</param>
             <returns>Default instance of the specified data source value type, found by index.</returns>
             <exception cref="T:System.IndexOutOfRangeException">Invalid data type index provided.</exception>
             <remarks>
@@ -31,100 +31,100 @@
             data source value type is specified that is not found.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.DataSourceValueCache.GetTypeIndex(System.String)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.DataSourceValueTypeCache.GetTypeIndex(System.String)">
             <summary>
             Gets type index for the specified data source value type; or, -1 if not found
             </summary>
-            <param name="dataTypeName">Type name of target <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue"/> to lookup.</param>
+            <param name="dataTypeName">Type name of target <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType"/> to lookup.</param>
             <returns>Index of specified data source value type; or, -1 if not found.</returns>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue">
             <summary>
-            Represents an individual time-series value from a data source.
+            Represents a default target for a standard time-series value.
             </summary>
             <remarks>
             This is the standard data source value structure for common time-series
             values used by Grafana.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.ValueIndex">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.ValueIndex">
             <summary>
             Data point index for value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.TimeIndex">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.TimeIndex">
             <summary>
             Data point index for time.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.CompareTo(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.CompareTo(GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue)">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.Equals(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.Equals(GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue)">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.TransposeCompute(System.Func{System.Double,System.Double})">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.TransposeCompute(System.Func{System.Double,System.Double})">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.TypeIndex">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.TypeIndex">
             <summary>
-            Gets the type index for <see cref="T:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue"/>.
+            Gets the type index for <see cref="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.MetadataTableName">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.MetadataTableName">
             <summary>
-            Defines the primary metadata table name for a <see cref="T:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue"/>.
+            Defines the primary metadata table name for a <see cref="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.Target">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.Target">
             <summary>
             Query target, e.g., a point-tag.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.Value">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.Value">
             <summary>
-            Queried value.
+            Queried measurement value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.Time">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.Time">
             <summary>
             Timestamp, in Unix epoch milliseconds, of queried value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.DataSourceValue.Flags">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue.Flags">
             <summary>
             Flags for queried value.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.BuiltIn.PhasorValueTarget">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValueTarget">
             <summary>
-            Defines a default target for a phasor value.
+            Represents a default target for a phasor value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValueTarget.Magnitude">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValueTarget.Magnitude">
             <summary>
             Target the magnitude components of the phasor value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValueTarget.Angle">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValueTarget.Angle">
             <summary>
             Target the angle components of the phasor value.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.BuiltIn.PhasorValue">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue">
             <summary>
             Represents an individual time-series phasor value from a data source.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.MetadataTableName">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.MetadataTableName">
             <summary>
-            Defines the primary metadata table name for a <see cref="T:GrafanaAdapters.DataSources.BuiltIn.PhasorValue"/>.
+            Defines the primary metadata table name for a <see cref="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue"/>.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Target">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Target">
             <summary>
             Query target, i.e., a point-tag representing the phasor.
             </summary>
@@ -132,111 +132,111 @@
             This commonly represents the overlapping point-tag name from the magnitude and angle measurements.
             </remarks>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.MagnitudeTarget">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.MagnitudeTarget">
             <summary>
             Query magnitude target, i.e., point-tag for the magnitude measurement.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.AngleTarget">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.AngleTarget">
             <summary>
             Query angle target, e.g., point-tag for the angle measurement.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Magnitude">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Magnitude">
             <summary>
             Queried magnitude value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Angle">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Angle">
             <summary>
             Queried angle value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Time">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Time">
             <summary>
             Timestamp, in Unix epoch milliseconds, of queried value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Flags">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Flags">
             <summary>
             Flags for queried value.
             </summary>
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.PrimaryValueTarget">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.PrimaryValueTarget">
             <summary>
             Gets or sets the primary target for the phasor value.
             </summary>
             <remarks>
             This property is used to determine which value field of the phasor value to use when using the data
-            source as an <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue`1"/>. This is useful in default function computations that
+            source as an <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1"/>. This is useful in default function computations that
             do not need to operate on both the magnitude and angle values of the phasor value struct. For example,
             see <see cref="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1"/> and <see cref="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1"/> functions that only operate on magnitudes.
-            Primary target value defaults to <see cref="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValueTarget.Magnitude"/> but can be overridden to
-            <see cref="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValueTarget.Angle"/> if the function only needs to operate on the angle values.
+            Primary target value defaults to <see cref="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValueTarget.Magnitude"/> but can be overridden to
+            <see cref="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValueTarget.Angle"/> if the function only needs to operate on the angle values.
             See <see cref="T:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1"/> for example of using only angle values.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.CompareTo(GrafanaAdapters.DataSources.BuiltIn.PhasorValue)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.CompareTo(GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue)">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.Equals(GrafanaAdapters.DataSources.BuiltIn.PhasorValue)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.Equals(GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue)">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.TransposeCompute(System.Func{System.Double,System.Double})">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.TransposeCompute(System.Func{System.Double,System.Double})">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="F:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.TypeIndex">
+        <member name="F:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.TypeIndex">
             <summary>
-            Gets the type index for <see cref="T:GrafanaAdapters.DataSources.BuiltIn.PhasorValue"/>.
+            Gets the type index for <see cref="T:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue"/>.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.BuiltIn.PhasorValue.AngleAsTarget(GrafanaAdapters.DataSources.BuiltIn.PhasorValue)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue.AngleAsTarget(GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue)">
             <summary>
             Update phasor value primary target to operate on angle values.
             </summary>
             <param name="dataValue">Source phasor value.</param>
             <returns>Phasor value updated to operate on angle values.</returns>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.IDataSourceValue">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType">
             <summary>
-            Defines an interface for a data source value.
+            Defines an interface for a data source value type.
             </summary>
             <remarks>
             Implementations of this interface must be structs.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.Target">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.Target">
             <summary>
             Gets the query target, e.g., a point-tag.
             </summary>
             <remarks>
-            If data source value has multiple targets, this should be the primary target.
+            If data source value type has multiple targets, this should be the primary target.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.Value">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.Value">
             <summary>
-            Gets the value of data source value.
+            Gets the value of data source value type.
             </summary>
             <remarks>
             If data source has more than one value, this should be the primary value.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.Time">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.Time">
             <summary>
-            Gets timestamp, in Unix epoch milliseconds, of data source value.
+            Gets timestamp, in Unix epoch milliseconds, of data source value type.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.Flags">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.Flags">
             <summary>
-            Gets measurement state and quality flags of data source value.
+            Gets measurement state and quality flags of data source value type.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValue">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.TimeSeriesValue">
             <summary>
-            Gets time-series array values of data source value, e.g., [Value, Time].
+            Gets time-series array values of the data source value type, e.g., [Value, Time].
             </summary>
             <remarks>
             To ensure data will work with Grafana data source, all values should
@@ -244,24 +244,24 @@
             Time value should be in Unix epoch milliseconds.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValueDefinition">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.TimeSeriesValueDefinition">
             <summary>
             Gets the format definition of a time-series array value, e.g., ["Value", "Time"].
             </summary>
             <remarks>
             These string values are used to define field value names that are used in
-            a <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValue"/> result.
+            a <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.TimeSeriesValue"/> result.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.ValueIndex">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.ValueIndex">
             <summary>
-            Gets the index of the value within the <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.TimeSeriesValue"/> array.
+            Gets the index of the value within the <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.TimeSeriesValue"/> array.
             </summary>
             <remarks>
-            If data source value has multiple targets, this should be the value index of the primary target.
+            If data source value type has multiple targets, this should be the value index of the primary target.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.LoadOrder">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.LoadOrder">
             <summary>
             Gets the desired load order for the data source value type.
             </summary>
@@ -273,12 +273,12 @@
             as unique as possible to avoid any secondary sorting.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.MetadataTableName">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.MetadataTableName">
             <summary>
             Gets the name of the primary metadata table for the data source.
             </summary>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.RequiredMetadataFieldNames">
             <summary>
             Gets the names of the required metadata fields for the data source.
             </summary>
@@ -286,24 +286,24 @@
             <para>
             This defines a list of the required metadata fields for a table in the data source. If any of
             these are missing, the data source table will not be available for use. This list should at
-            least include key field names for the <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.MetadataTableName"/> that may be needed by
-            the <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue.GetTargetIDSet(System.Data.DataRow)"/> or <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(System.String,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)"/>
+            least include key field names for the <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.MetadataTableName"/> that may be needed by
+            the <see cref="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.GetTargetIDSet(System.Data.DataRow)"/> or <see cref="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1.AssignToTimeValueMap(GrafanaAdapters.Model.Common.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)"/>
             functions. For example, in order to use a table named 'ActiveMeasurements', the required
             metadata field names might be: 'ID', 'SignalID', and 'PointTag'.
             </para>
             <para>
-            Note that system generally assumes that the fields 'PointTag', a unique string-based alpha-numeric
+            Note that system generally assumes that the fields 'PointTag', a unique string-based alphanumeric
             identifier for a measurement, 'ID', a unique string-based measurement key formatted identifier
             (e.g., PPA:101), and 'SignalID', a unique Guid-based identifier, all exist in the metadata table.
             However, these fields do not have to be included as required metadata field names. The 'PointTag'
             field is used to lookup records in the metadata. The 'ID' and 'SignalID' fields are used by
             'AdapterBase.ParseFilterExpression' for direct parsing of measurement key and signal ID when
             expression is not a filter expression. Direct parsing always uses the primary metadata table
-            name for lookups, see <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.MetadataTableName"/> property.
+            name for lookups, see <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.MetadataTableName"/> property.
             </para>
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.AugmentMetadata">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.AugmentMetadata">
             <summary>
             Gets function that augments metadata for the data source, or <c>null</c>
             if metadata augmentation is not needed.
@@ -316,7 +316,7 @@
             first step should be to check if table already exists.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.LookupMetadata(System.Data.DataSet,System.String,System.String)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.LookupMetadata(System.Data.DataSet,System.String,System.String)">
             <summary>
             Looks up metadata record for the specified target.
             </summary>
@@ -328,7 +328,7 @@
             Implementations should cache metadata lookups for performance.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.GetTargetIDSet(System.Data.DataRow)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.GetTargetIDSet(System.Data.DataRow)">
             <summary>
             Gets the set of measurement key and point tag identifiers associated with a target.
             </summary>
@@ -336,11 +336,11 @@
             <returns>set of measurement key and point tag identifiers associated with a target.</returns>
             <remarks>
             A single target will be associated with a measurement key and point tag for each value
-            in the data source value. The target will be a common name for the group of values in
-            the data source value structure.
+            in the data source value type. The target will be a common name for the group of values in
+            the data source value type structure.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue.RecordFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.RecordFromKey(GSF.TimeSeries.MeasurementKey,System.Data.DataSet)">
             <summary>
             Gets the metadata record for the specified measurement key.
             </summary>
@@ -348,105 +348,123 @@
             <param name="metadata">Source metadata.</param>
             <returns>The metadata record for the specified measurement key.</returns>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.IDataSourceValue.DataTypeIndex">
+        <member name="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.DataTypeIndex">
             <summary>
             Gets the data source value type index.
             </summary>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.IDataSourceValue`1">
+        <member name="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1">
             <summary>
             Defines an interface for a typed data source value.
             </summary>
-            <typeparam name="T">Target <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue"/> type.</typeparam>
+            <typeparam name="T">Target <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType"/> type.</typeparam>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue`1.AssignToTimeValueMap(System.String,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1.AssignToTimeValueMap(GrafanaAdapters.Model.Common.DataSourceValue,System.Collections.Generic.SortedList{System.Double,`0},System.Data.DataSet)">
             <summary>
             Assign queried data source value to time-value map.
             </summary>
-            <param name="pointTag">Measurement point tag.</param>
-            <param name="dataValue">Queried data source value.</param>
-            <param name="timeValueMap">Time-value map for specified <paramref name="dataValue"/>.</param>
+            <param name="dataSourceValue">Queried data source value type.</param>
+            <param name="timeValueMap">Time-value map for specified <paramref name="dataSourceValue"/>.</param>
             <param name="metadata">Source metadata.</param>
             <remarks>
-            Provided time-value map is specific to the queried data source value, by target, and is keyed by Unix
-            epoch milliseconds timestamp. This function is used to assign the queried data source value to the
+            Provided time-value map is specific to the queried data source value type, by target, and is keyed by Unix
+            epoch milliseconds timestamp. This function is used to assign the queried data source value type to the
             time-value map. If the data source value type has multiple fields, this function will be called once
-            per each field in the data source value for a given timestamp.
+            per each field in the data source value type for a given timestamp.
             </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.IDataSourceValue`1.TransposeCompute(System.Func{System.Double,System.Double})">
+        <member name="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1.TransposeCompute(System.Func{System.Double,System.Double})">
             <summary>
             Executes provided function for data source fields, applying the results
-            to a copy of the data source value and returns the new result.
+            to a copy of the data source value type and returns the new result.
             </summary>
             <param name="function">Function to compute.</param>
             <returns>Computed result.</returns>
             <remarks>
-            This function is used to compute a new data source value, applying the
+            This function is used to compute a new data source value type, applying the
             specified function operation to all value fields in the data source.
             </remarks>
         </member>
-        <member name="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Clamp`1">
             <summary>
-            Defines a class that represents an enumeration of T for a given target.
+            Returns a series of values that represent each of the values in the source series clamped to the inclusive range of <c>min</c> and <c>max</c>.
+            <c>min</c> is lower bound of the result and <c>max</c> is the upper bound of the result.
             </summary>
             <remarks>
-            This is a group construct keyed on <see cref="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Target"/> for data source value enumerations.
+            Signature: <c>Clap(min, max, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>Clamp(49.95, 50.05, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: Clamp, Limit<br/>
+            Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Target">
-            <summary>
-            Gets or sets target, e.g., a point-tag, representative of all <see cref="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Source"/> values.
-            </summary>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Clamp`1.Name">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.RootTarget">
-            <summary>
-            Gets or sets the root target expression, without any referenced series functions.
-            </summary>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Clamp`1.Description">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.SourceTarget">
-            <summary>
-            Gets a reference to the original target that was the source of these results.
-            </summary>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Clamp`1.Aliases">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Source">
-            <summary>
-            Gets or sets data source values enumerable.
-            </summary>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Clamp`1.ReturnType">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.DropEmptySeries">
-            <summary>
-            Gets flag that determines if empty series are produced.
-            </summary>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Clamp`1.ParameterDefinitions">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.RefID">
-            <summary>
-            Gets a query name identifier, assigned by Grafana, used to identify a specific query.
-            </summary>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Clamp`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.MetadataMap">
-            <summary>
-            Gets user selected metadata associated with the query.
-            </summary>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Clamp`1.ComputeMeasurementValue">
+            <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.DataSources.DataSourceValueGroup`1.SyntaxError">
-            <summary>
-            Gets or sets a an error message that indicates a syntax error in the query request.
-            </summary>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Clamp`1.ComputePhasorValue">
+            <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.DataSources.DataSourceValueGroup`1.Clone">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1">
             <summary>
-            Creates a new <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> from this instance.
+            Returns a phasor referenced to the first series of a slice of values.
+            The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to 0.001 that represents the
+            desired time tolerance, in seconds, for the time slice.
             </summary>
-            <returns></returns>
+            <remarks>
+            Signature: <c>Reference(sliceTolerance, expression)</c><br/>
+            Returns: Single value.<br/>
+            Example: <c>Reference(ReferencePhasor; FILTER PhasorValues WHERE SignalType='IPHM')</c><br/>
+            Variants: Reference, Ref<br/>
+            Execution: Immediate enumeration.
+            </remarks>
         </member>
-        <member name="M:GrafanaAdapters.DataSources.DataSourceValueGroup`1.FromException(GrafanaAdapters.Functions.QueryParameters,System.String)">
-            <summary>
-            Creates a new <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> for an exception.
-            </summary>
-            <param name="queryParameters">Source query parameters.</param>
-            <param name="syntaxError">Exception message.</param>
-            <returns>New <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> for an exception.</returns>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.AllowedGroupOperations">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1">
             <summary>
@@ -486,7 +504,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1.ComputePhasorValue">
@@ -516,7 +534,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Sqrt`1.ComputePhasorValue">
@@ -551,7 +569,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Pow`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Pow`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Pow`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Pow`1.ComputePhasorValue">
@@ -596,7 +614,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.RollingAverage`1.ComputePhasorValue">
@@ -607,7 +625,7 @@
             Returns a single value that represents the evaluation of an expression over a slice of the values in the source series.
             The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to 0.001 that represents
             the desired time tolerance, in seconds, for the time slice. The <c>evalExpression</c> parameter must always be expressed
-            in braces, e.g., <c>{ expression }</c>; expression is strongly typed, but not case sensitive; expression is expected to
+            in braces, e.g., <c>{ expression }</c>; expression is strongly typed, but not case-sensitive; expression is expected to
             return a value that can be evaluated as a floating-point number. Aliases of target tag names are used as variable names
             in the <c>evalExpression</c>  when defined. If no alias is defined, all non-valid characters will be removed from target
             tag name, for example, variable name for tag <c>PMU.032-PZR_CI:ANG</c> would be <c>PMU032PZR_CIANG</c>. All targets are
@@ -631,7 +649,7 @@
             This command adds custom .NET type imports that can be used with the <c>Evaluate</c> function. <c>expr</c>defines a
             key-value pair definition of assembly name, i.e., <c>AssemblyName</c> = DLL filename without suffix, and type name, i.e.,
             <c>TypeName</c> = fully qualified case-sensitive type name, to be imported. Key-value pairs are separated with commas and
-            multiple imports are by separated semi-colons. <c>expr</c> must be surrounded by braces. Example:
+            multiple imports are by separated semicolons. <c>expr</c> must be surrounded by braces. Example:
             <c>; imports={AssemblyName=mscorlib, TypeName=System.TimeSpan; AssemblyName=MyCode, TypeName=MyCode.MyClass}</c>
             </para>
             </remarks>
@@ -672,7 +690,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.FormatTargetName(GrafanaAdapters.Functions.GroupOperations,System.String,System.String[])">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Evaluate`1.ComputePhasorValue">
@@ -705,7 +723,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.AbsoluteValue`1.ComputePhasorValue">
@@ -735,10 +753,10 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Average`1.ReturnType">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputeDataSourceValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Average`1.ComputePhasorValue">
@@ -788,7 +806,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Bottom`1.ComputePhasorValue">
@@ -821,7 +839,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Ceiling`1.ComputePhasorValue">
@@ -854,7 +872,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Count`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Count`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Count`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Count`1.ComputePhasorValue">
@@ -899,7 +917,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Derivative`1.ComputePhasorValue">
@@ -943,16 +961,16 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputeDataSourceValue.TransposeCompute(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputeMeasurementValue.TransposeCompute(GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue,GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputePhasorValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputePhasorValue.TransposeCompute(GrafanaAdapters.DataSources.BuiltIn.PhasorValue,GrafanaAdapters.DataSources.BuiltIn.PhasorValue)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Difference`1.ComputePhasorValue.TransposeCompute(GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue,GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Distinct`1">
@@ -985,7 +1003,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Distinct`1.ComputePhasorValue">
@@ -1026,7 +1044,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.ExcludeRange`1.ComputePhasorValue">
@@ -1060,7 +1078,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterNaN`1.ComputePhasorValue">
@@ -1100,7 +1118,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.First`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.First`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.First`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.First`1.ComputePhasorValue">
@@ -1130,7 +1148,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Floor`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Floor`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Floor`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Floor`1.ComputePhasorValue">
@@ -1171,7 +1189,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.IncludeRange`1.ComputePhasorValue">
@@ -1214,7 +1232,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Interval`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Interval`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Interval`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Interval`1.ComputePhasorValue">
@@ -1273,7 +1291,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Label`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Label`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Label`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Label`1.ComputePhasorValue">
@@ -1313,7 +1331,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Last`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Last`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Last`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Last`1.ComputePhasorValue">
@@ -1349,7 +1367,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Maximum`1.ComputePhasorValue">
@@ -1382,10 +1400,10 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Median`1.ResultIsSetTargetSeries">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Median`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Median`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Median`1.ComputeDataSourceValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Median`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Median`1.ComputePhasorValue">
@@ -1424,7 +1442,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Minimum`1.ComputePhasorValue">
@@ -1468,7 +1486,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Mode`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Mode`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Mode`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Mode`1.ComputePhasorValue">
@@ -1506,7 +1524,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Modulo`1.ComputePhasorValue">
@@ -1551,7 +1569,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.MovingAverage`1.ComputePhasorValue">
@@ -1590,7 +1608,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Scale`1.ComputePhasorValue">
@@ -1627,7 +1645,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Percentile`1.ComputePhasorValue">
@@ -1683,16 +1701,16 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputeDataSourceValue.TransposeCompute(GrafanaAdapters.DataSources.BuiltIn.DataSourceValue,GrafanaAdapters.DataSources.BuiltIn.DataSourceValue[],System.Int32)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputeMeasurementValue.TransposeCompute(GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue,GrafanaAdapters.DataSourceValueTypes.BuiltIn.MeasurementValue[],System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputePhasorValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputePhasorValue.TransposeCompute(GrafanaAdapters.DataSources.BuiltIn.PhasorValue,GrafanaAdapters.DataSources.BuiltIn.PhasorValue[],System.Int32)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Random`1.ComputePhasorValue.TransposeCompute(GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue,GrafanaAdapters.DataSourceValueTypes.BuiltIn.PhasorValue[],System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Range`1">
@@ -1722,7 +1740,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Range`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Range`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Range`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Range`1.ComputePhasorValue">
@@ -1756,7 +1774,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Round`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Round`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Round`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Round`1.ComputePhasorValue">
@@ -1791,10 +1809,10 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ParameterDefinitions">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputeDataSourceValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.StandardDeviation`1.ComputePhasorValue">
@@ -1833,7 +1851,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Shift`1.ComputePhasorValue">
@@ -1878,7 +1896,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeDifference`1.ComputePhasorValue">
@@ -1923,7 +1941,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.TimeIntegration`1.ComputePhasorValue">
@@ -1970,7 +1988,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Top`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Top`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Top`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Top`1.ComputePhasorValue">
@@ -2000,10 +2018,10 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Total`1.ReturnType">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputeDataSourceValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Total`1.ComputePhasorValue">
@@ -2039,7 +2057,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Truncate`1.ComputePhasorValue">
@@ -2078,7 +2096,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.UnwrapAngle`1.ComputePhasorValue">
@@ -2119,7 +2137,7 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ComputeDataSourceValue">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.WrapAngle`1.ComputePhasorValue">
@@ -2431,10 +2449,10 @@
             <param name="parameters">Input parameters.</param>
             <returns>Deferred enumeration of computed values.</returns>
             <remarks>
-            This method uses the <see cref="M:GrafanaAdapters.DataSources.IDataSourceValue`1.TransposeCompute(System.Func{System.Double,System.Double})"/> method to execute the specified
+            This method uses the <see cref="M:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1.TransposeCompute(System.Func{System.Double,System.Double})"/> method to execute the specified
             function against each data source value in the provided enumeration operating on all the values in the
-            in the target data source value type. For example, if the target data source value type is a phasor,
-            this method will execute the function against both the magnitude and angle of each phasor value.
+            target data source value type. For example, if the target data source value type is a phasor, this method
+            will execute the function against both the magnitude and angle of each phasor value.
             </remarks>
         </member>
         <member name="T:GrafanaAdapters.Functions.IParameter">
@@ -2600,7 +2618,7 @@
         </member>
         <member name="M:GrafanaAdapters.Functions.ParameterDefinitions.IndexOf(System.String)">
             <summary>
-            Searches for the parameter with the specified <paramref name="name"/> and returns it's zero-based index.
+            Searches for the parameter with the specified <paramref name="name"/> and returns its zero-based index.
             </summary>
             <param name="name">The name of the parameter to locate in the <see cref="T:GrafanaAdapters.Functions.ParameterDefinitions" />.</param>
             <returns>
@@ -2750,7 +2768,7 @@
         </member>
         <member name="T:GrafanaAdapters.Functions.ReturnType">
             <summary>
-            Represents the return type of a Grafana function.
+            Represents the return type of Grafana function.
             </summary>
         </member>
         <member name="F:GrafanaAdapters.Functions.ReturnType.Scalar">
@@ -2881,7 +2899,7 @@
             <remarks>
             Operations that are not allowed should be taken to mean that the use of the group operation for a function is an
             error. Implementors should carefully consider which group operations that a function exposes as not allowed since
-            when a user selects an group operation that is not allowed, this results in an exception. Groups operations can
+            when a user selects a group operation that is not allowed, this results in an exception. Groups operations can
             be hidden from the user by overriding the <see cref="P:GrafanaAdapters.Functions.IGrafanaFunction.PublishedGroupOperations"/>. Additionally, a group operation
             that is not supported can be ignored, instead of throwing an exception, by forcing supported operations. This is
             handled by overriding the <see cref="M:GrafanaAdapters.Functions.IGrafanaFunction.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)"/> method. See <see cref="T:GrafanaAdapters.Functions.BuiltIn.Label`1"/> function
@@ -3075,7 +3093,7 @@
             value type <typeparamref name="T"/>.
             </returns>
         </member>
-        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet(GrafanaAdapters.DataSources.IDataSourceValue)">
+        <member name="M:GrafanaAdapters.Metadata.DataSetAdapter.GetAugmentedDataSet(GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType)">
             <summary>
             Gets the Grafana data source metadata, augmented as needed for the target data
             source value type instance <paramref name="value"/>.
@@ -3187,7 +3205,7 @@
             <param name="target">Target to parse.</param>
             <returns>Target parsed as table and field name.</returns>
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.MetadataTableIsValid(GrafanaAdapters.DataSources.IDataSourceValue,System.Data.DataSet,System.String)">
+        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.MetadataTableIsValid(GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType,System.Data.DataSet,System.String)">
             <summary>
             Determines if metadata table is valid for the specified data source value type instance.
             </summary>
@@ -3243,14 +3261,6 @@
             <param name="metadata">Source metadata.</param>
             <returns>Tuple representing set of target and associated IDs, as parsed from expression, and any defined alias.</returns>
         </member>
-        <member name="M:GrafanaAdapters.Metadata.MetadataExtensions.SplitComponents(System.String)">
-            <summary>
-            Splits a combined target into a point tag and target.
-            </summary>
-            <param name="target">Combined target of point tag and target.</param>
-            <returns>Tuple of point tag and target.</returns>
-            <exception cref="T:System.InvalidOperationException">Invalid combined target encountered.</exception>
-        </member>
         <member name="T:GrafanaAdapters.GrafanaDataSourceBase">
             <summary>
             Represents a base implementation for Grafana data sources.
@@ -3258,14 +3268,14 @@
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetValueTypes">
             <summary>
-            Gets the data source value types, i.e., any type that has implemented <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue"/>,
+            Gets the data source value types, i.e., any type that has implemented <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType"/>,
             that have been loaded into the application domain.
             </summary>
         </member>
         <member name="M:GrafanaAdapters.GrafanaDataSourceBase.GetValueTypeTables(GrafanaAdapters.Model.Common.SearchRequest,System.Threading.CancellationToken)">
             <summary>
             Gets the table names that, at a minimum, contain all the fields that the value type has defined as required,
-            see <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames"/> when <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/>
+            see <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.RequiredMetadataFieldNames"/> when <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/>
             is a valid index in the data source value cache. When <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is -1, all
             table names are returned.
             </summary>
@@ -3276,7 +3286,7 @@
             <summary>
             Gets the field names for a given table when <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is a valid index in the data
             source value cache and selected table name contains all the fields that the value type has defined as required, see
-            <see cref="P:GrafanaAdapters.DataSources.IDataSourceValue.RequiredMetadataFieldNames"/> . When <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is -1,
+            <see cref="P:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType.RequiredMetadataFieldNames"/> . When <see cref="P:GrafanaAdapters.Model.Common.SearchRequest.dataTypeIndex"/> is -1,
             fields for any valid metadata table name are returned.
             </summary>
             <param name="request">Search request.</param>
@@ -3356,7 +3366,7 @@
             Gets or sets maximum number of annotations to return during an annotations query.
             </summary>
         </member>
-        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(GrafanaAdapters.Functions.QueryParameters,System.Collections.Generic.Dictionary{System.UInt64,System.String},System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.GrafanaDataSourceBase.QueryDataSourceValues(GrafanaAdapters.Functions.QueryParameters,GSF.Collections.OrderedDictionary{System.UInt64,System.ValueTuple{System.String,System.String}},System.Threading.CancellationToken)">
             <summary>
             Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
             </summary>
@@ -3422,6 +3432,98 @@
             <summary>
             Gets or sets request value.
             </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Model.Common.DataSourceValue">
+            <summary>
+            Represents an individual time-series value as queried from a data source.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Model.Common.DataSourceValue.ID">
+            <summary>
+            Point-tag and target ID for the query.
+            </summary>
+            <remarks>
+            <c>pointTag</c> is a specific name for a data point to be queried
+            from the data source. <c>target</c> is a more general name that
+            can represent multiple point-tags, e.g., a tuple of point-tags.
+            </remarks>
+        </member>
+        <member name="F:GrafanaAdapters.Model.Common.DataSourceValue.Value">
+            <summary>
+            Queried data source value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Model.Common.DataSourceValue.Time">
+            <summary>
+            Timestamp, in Unix epoch milliseconds, of queried value.
+            </summary>
+        </member>
+        <member name="F:GrafanaAdapters.Model.Common.DataSourceValue.Flags">
+            <summary>
+            Flags for queried value.
+            </summary>
+        </member>
+        <member name="T:GrafanaAdapters.Model.Common.DataSourceValueGroup`1">
+            <summary>
+            Defines a class that represents an enumeration of T for a given target.
+            </summary>
+            <remarks>
+            This is a group construct keyed on <see cref="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.Target"/> for data source value enumerations.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.Target">
+            <summary>
+            Gets or sets target, e.g., a point-tag, representative of all <see cref="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.Source"/> values.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.RootTarget">
+            <summary>
+            Gets or sets the root target expression, without any referenced series functions.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.SourceTarget">
+            <summary>
+            Gets a reference to the original target that was the source of these results.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.Source">
+            <summary>
+            Gets or sets data source values enumerable.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.DropEmptySeries">
+            <summary>
+            Gets flag that determines if empty series are produced.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.RefID">
+            <summary>
+            Gets a query name identifier, assigned by Grafana, used to identify a specific query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.MetadataMap">
+            <summary>
+            Gets user selected metadata associated with the query.
+            </summary>
+        </member>
+        <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.SyntaxError">
+            <summary>
+            Gets or sets an error message that indicates a syntax error in the query request.
+            </summary>
+        </member>
+        <member name="M:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.Clone">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.Model.Common.DataSourceValueGroup`1"/> from this instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.FromException(GrafanaAdapters.Functions.QueryParameters,System.String)">
+            <summary>
+            Creates a new <see cref="T:GrafanaAdapters.Model.Common.DataSourceValueGroup`1"/> for an exception.
+            </summary>
+            <param name="queryParameters">Source query parameters.</param>
+            <param name="syntaxError">Exception message.</param>
+            <returns>New <see cref="T:GrafanaAdapters.Model.Common.DataSourceValueGroup`1"/> for an exception.</returns>
         </member>
         <member name="T:GrafanaAdapters.Model.Common.MetadataSelections">
             <summary>
@@ -4158,7 +4260,7 @@
         </member>
         <member name="T:GrafanaAdapters.TimeSliceScannerAsync`1">
             <summary>
-            Reads series of <see cref="T:GrafanaAdapters.DataSources.IDataSourceValue`1"/> instances for the same time interval.
+            Reads series of <see cref="T:GrafanaAdapters.DataSourceValueTypes.IDataSourceValueType`1"/> instances for the same time interval.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.TimeSliceScannerAsync`1.DataReadComplete">
@@ -4177,11 +4279,11 @@
             </summary>
             <returns>Next time slice.</returns>
         </member>
-        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.Create(GrafanaAdapters.DataSources.DataSourceValueGroup{`0}[],System.Double,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.TimeSliceScannerAsync`1.Create(GrafanaAdapters.Model.Common.DataSourceValueGroup{`0}[],System.Double,System.Threading.CancellationToken)">
             <summary>
             Creates a new <see cref="T:GrafanaAdapters.TimeSliceScannerAsync`1"/>.
             </summary>
-            <param name="dataSources">Set of <see cref="T:GrafanaAdapters.DataSources.DataSourceValueGroup`1"/> series to scan.</param>
+            <param name="dataSources">Set of <see cref="T:GrafanaAdapters.Model.Common.DataSourceValueGroup`1"/> series to scan.</param>
             <param name="tolerance">Time tolerance for data slices in Unix epoch milliseconds.</param>
             <param name="cancellationToken">Cancellation token.</param>
         </member>
