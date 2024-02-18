@@ -22,8 +22,7 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GrafanaAdapters.DataSources;
-using GrafanaAdapters.DataSources.BuiltIn;
+using GrafanaAdapters.DataSourceValueTypes;
 using GrafanaAdapters.Functions;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
@@ -119,8 +118,7 @@ namespace openHistorian.Adapters
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            //protected override IEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, CancellationToken cancellationToken)
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, OrderedDictionary<ulong, (string , string)> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 SnapServer server = GetAdapterInstance(InstanceName)?.Server?.Host;
 
@@ -205,7 +203,7 @@ namespace openHistorian.Adapters
                         continue;
 
                     // New value is ready for publication
-                    string target = targetMap[pointID];
+                    (string, string) id = targetMap[pointID];
 
                     if (includePeaks)
                     {
@@ -213,7 +211,7 @@ namespace openHistorian.Adapters
                         {
                             yield return new DataSourceValue
                             {
-                                Target = target,
+                                ID = id,
                                 Value = peak.Min,
                                 Time = (peak.MinTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
                                 Flags = (MeasurementStateFlags)peak.MinFlags
@@ -224,7 +222,7 @@ namespace openHistorian.Adapters
                         {
                             yield return new DataSourceValue
                             {
-                                Target = target,
+                                ID = id,
                                 Value = peak.Max,
                                 Time = (peak.MaxTimestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
                                 Flags = (MeasurementStateFlags)peak.MaxFlags
@@ -237,7 +235,7 @@ namespace openHistorian.Adapters
                     {
                         yield return new DataSourceValue
                         {
-                            Target = target,
+                            ID = id,
                             Value = pointValue,
                             Time = (timestamp - m_baseTicks) / (double)Ticks.PerMillisecond,
                             Flags = (MeasurementStateFlags)value.Value3
@@ -271,13 +269,13 @@ namespace openHistorian.Adapters
                 InstanceName = instanceName;
             }
 
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, OrderedDictionary<ulong, (string, string)> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 await foreach (IDataPoint dataPoint in m_archiveReader.ReadData(targetMap.Keys.Select(pointID => (int)pointID), queryParameters.StartTime, queryParameters.StopTime, false).ToAsyncEnumerable().WithCancellation(cancellationToken))
                 {
                     yield return new DataSourceValue
                     {
-                        Target = targetMap[(ulong)dataPoint.HistorianID],
+                        ID = targetMap[(ulong)dataPoint.HistorianID],
                         Value = dataPoint.Value,
                         Time = (dataPoint.Time.ToDateTime().Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
                         Flags = dataPoint.Quality.MeasurementQuality()
@@ -454,7 +452,7 @@ namespace openHistorian.Adapters
         }
 
         /// <summary>
-        /// Gets the data source value types, i.e., any type that has implemented <see cref="IDataSourceValue"/>,
+        /// Gets the data source value types, i.e., any type that has implemented <see cref="IDataSourceValueType"/>,
         /// that have been loaded into the application domain.
         /// </summary>
         [HttpPost]
@@ -465,7 +463,7 @@ namespace openHistorian.Adapters
 
         /// <summary>
         /// Gets the table names that, at a minimum, contain all the fields that the value type has defined as
-        /// required, see <see cref="IDataSourceValue.RequiredMetadataFieldNames"/>.
+        /// required, see <see cref="IDataSourceValueType.RequiredMetadataFieldNames"/>.
         /// </summary>
         /// <param name="request">Search request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>

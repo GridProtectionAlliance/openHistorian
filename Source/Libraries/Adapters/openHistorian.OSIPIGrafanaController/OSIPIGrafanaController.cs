@@ -22,8 +22,12 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GrafanaAdapters.DataSources;
+using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
+using GrafanaAdapters.Functions;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
 using GSF;
+using GSF.Collections;
 using GSF.TimeSeries;
 using Newtonsoft.Json;
 using OSIsoft.AF.Asset;
@@ -42,10 +46,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using GrafanaAdapters.DataSources.BuiltIn;
-using GrafanaAdapters.Functions;
-using GrafanaAdapters.Model.Annotations;
-using GrafanaAdapters.Model.Common;
 
 namespace openHistorian.OSIPIGrafanaController
 {
@@ -115,16 +115,16 @@ namespace openHistorian.OSIPIGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, OrderedDictionary<ulong, (string, string)> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 Dictionary<int, ulong> idMap = new();
                 PIPointList points = new();
-                DataSet metadata = Metadata.GetAugmentedDataSet<DataSourceValue>();
-
-                foreach (KeyValuePair<ulong, string> target in targetMap)
+                DataSet metadata = Metadata.GetAugmentedDataSet<MeasurementValue>();
+                
+                foreach (KeyValuePair<ulong, (string pointTag, string)> target in targetMap)
                 {
                     ulong metadataID = target.Key;
-                    string pointTag = target.Value;
+                    string pointTag = target.Value.pointTag;
 
                     if (!MetadataIDToPIPoint.TryGetValue(metadataID, out PIPoint point))
                         if (TryFindPIPoint(Connection, metadata, GetPITagName(pointTag, PrefixRemoveCount), out point))
@@ -145,7 +145,7 @@ namespace openHistorian.OSIPIGrafanaController
 
                     yield return new DataSourceValue
                     {
-                        Target = targetMap[idMap[currentPoint.PIPoint.ID]],
+                        ID = targetMap[idMap[currentPoint.PIPoint.ID]],
                         Time = (currentPoint.Timestamp.UtcTime.Ticks - m_baseTicks) / (double)Ticks.PerMillisecond,
                         Value = Convert.ToDouble(currentPoint.Value),
                         Flags = ConvertStatusFlags(currentPoint.Status)
@@ -250,7 +250,7 @@ namespace openHistorian.OSIPIGrafanaController
                 if (string.IsNullOrWhiteSpace(request.target))
                     return string.Empty;
 
-                DataSet metadata = DataSource(instanceName, serverName)?.Metadata.GetAugmentedDataSet<DataSourceValue>();
+                DataSet metadata = DataSource(instanceName, serverName)?.Metadata.GetAugmentedDataSet<MeasurementValue>();
                 DataTable table = new();
                 DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
 

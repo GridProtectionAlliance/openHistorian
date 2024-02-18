@@ -22,7 +22,10 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
 using GrafanaAdapters.Functions;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -43,9 +46,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using GrafanaAdapters.DataSources.BuiltIn;
-using GrafanaAdapters.Model.Annotations;
-using GrafanaAdapters.Model.Common;
 using eDNAMetaData = eDNAAdapters.Metadata;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -90,9 +90,9 @@ namespace openHistorian.eDNAGrafanaController
             /// <param name="targetMap">Set of IDs with associated targets to query.</param>
             /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
             /// <returns>Queried data source data in terms of value and time.</returns>
-            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, Dictionary<ulong, string> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
+            protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, OrderedDictionary<ulong, (string, string)> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
-                foreach (string point in targetMap.Values)
+                foreach ((string pointTag, string _) id in targetMap.Values)
                 {
                     int[] expectedResults =
                     {
@@ -100,7 +100,7 @@ namespace openHistorian.eDNAGrafanaController
                         (int)eDNAHistoryReturnStatus.NO_HISTORY_FOR_TIME
                     };
 
-                    int result = History.DnaGetHistRaw(point, queryParameters.StartTime.ToLocalTime(), queryParameters.StopTime.ToLocalTime(), out uint key);
+                    int result = History.DnaGetHistRaw(id.pointTag, queryParameters.StartTime.ToLocalTime(), queryParameters.StopTime.ToLocalTime(), out uint key);
 
                     while (result == 0)
                     {
@@ -110,7 +110,7 @@ namespace openHistorian.eDNAGrafanaController
                         if (result == 0)
                             yield return new DataSourceValue()
                             {
-                                Target = point,
+                                ID = id,
                                 Time = time.Subtract(epoch).TotalMilliseconds,
                                 Value = value,
                                 Flags = MeasurementStateFlags.Normal
@@ -411,7 +411,7 @@ namespace openHistorian.eDNAGrafanaController
                 if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                     RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-                DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+                DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
                 DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
 
                 if (rows.Length > 0)
@@ -435,7 +435,7 @@ namespace openHistorian.eDNAGrafanaController
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
             return metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
         }
 
@@ -452,7 +452,7 @@ namespace openHistorian.eDNAGrafanaController
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
             return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
@@ -469,7 +469,7 @@ namespace openHistorian.eDNAGrafanaController
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
             return metadata.Tables.Cast<DataTable>().Where(table => new[] { "ID", "SignalID", "PointTag", "Adder", "Multiplier" }.All(fieldName => table.Columns.Contains(fieldName))).Select(table => table.TableName).ToArray();
         }
 
@@ -486,7 +486,7 @@ namespace openHistorian.eDNAGrafanaController
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<DataSourceValue>();
+            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
             return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
         }
 
