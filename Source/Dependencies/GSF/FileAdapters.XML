@@ -354,6 +354,21 @@
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.ForceKillOnDispose"/> property.
             </summary>
         </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultChildProcessTarget">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ChildProcessTarget"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultChildProcessQueryTimeout">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ChildProcessQueryTimeout"/> property.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.ProcessLauncher.DefaultShowChildProcesses">
+            <summary>
+            Default value for the <see cref="P:FileAdapters.ProcessLauncher.ShowChildProcesses"/> property.
+            </summary>
+        </member>
         <member name="F:FileAdapters.ProcessLauncher.DefaultTrackProcessStatistics">
             <summary>
             Default value for the <see cref="P:FileAdapters.ProcessLauncher.TrackProcessStatistics"/> property.
@@ -469,6 +484,21 @@
             Gets or sets flag that determines if launched process should be forcibly terminated when adapter is disposed.
             </summary>
         </member>
+        <member name="P:FileAdapters.ProcessLauncher.ChildProcessTarget">
+            <summary>
+            Gets or sets the name of the child process to target for additional monitoring and termination when adapter is disposed.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.ChildProcessQueryTimeout">
+            <summary>
+            Gets or sets the maximum processing time allowed, in milliseconds, for querying for available associated child processes.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.ProcessLauncher.ShowChildProcesses">
+            <summary>
+            Gets or sets flag that determines if child processes should be shown during initialization for configuration purposes.
+            </summary>
+        </member>
         <member name="P:FileAdapters.ProcessLauncher.UtilizationUpdateInterval">
             <summary>
             Gets or sets the interval over which to calculate lunched process utilization.
@@ -534,16 +564,22 @@
             <summary>
             Sends specified value as input to launched process, new line will be automatically appended to text.
             </summary>
+            <remarks>
+            This only sends input to the parent process.
+            </remarks>
             <param name="value">Input string to send to launched process.</param>
         </member>
         <member name="M:FileAdapters.ProcessLauncher.Refresh">
             <summary>
             Clears any cached information associated with the launched process.
             </summary>
+            <remarks>
+            If child process is defined, this will also clear any cached information associated with the child process.
+            </remarks>
         </member>
         <member name="M:FileAdapters.ProcessLauncher.Kill">
             <summary>
-            Stops the launched process.
+            Stops the launched process and and associated child processes.
             </summary>
         </member>
         <member name="T:FileAdapters.RetransmissionStatPicker">

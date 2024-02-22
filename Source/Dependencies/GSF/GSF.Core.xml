@@ -15483,13 +15483,21 @@
         </member>
         <member name="T:GSF.Diagnostics.ProcessUtilizationCalculator">
             <summary>
-            Represents a utilization calculator for a <see cref="T:System.Diagnostics.Process"/>.
+            Represents a utilization calculator for a related <see cref="T:System.Diagnostics.Process"/> set.
             </summary>
         </member>
         <member name="F:GSF.Diagnostics.ProcessUtilizationCalculator.DefaultUpdateInterval">
             <summary>
             Default value for the <see cref="P:GSF.Diagnostics.ProcessUtilizationCalculator.UpdateInterval"/> property.
             </summary>
+        </member>
+        <member name="E:GSF.Diagnostics.ProcessUtilizationCalculator.StatusMessage">
+            <summary>
+            Provides status messages to consumer.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is new status message.
+            </remarks>
         </member>
         <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.#ctor">
             <summary>
@@ -15498,7 +15506,7 @@
         </member>
         <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.Utilization">
             <summary>
-            Gets the current processor utilization of the associated <see cref="T:System.Diagnostics.Process"/>.
+            Gets the current processor utilization, percent between 0.0 and 1.0, of the associated <see cref="T:System.Diagnostics.Process"/> set.
             </summary>
         </member>
         <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.UpdateInterval">
@@ -15506,25 +15514,32 @@
             Gets or sets the interval, in milliseconds, over which <see cref="P:GSF.Diagnostics.ProcessUtilizationCalculator.Utilization"/> will be calculated.
             </summary>
         </member>
-        <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.AssociatedProcess">
+        <member name="P:GSF.Diagnostics.ProcessUtilizationCalculator.AssociatedProcesses">
             <summary>
-            Gets associated process for this <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/>.
+            Gets associated processes for this <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/>.
             </summary>
-            <remarks>
-            The <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/> maintains a <see cref="T:System.WeakReference`1"/> to the associated
-            <see cref="T:System.Diagnostics.Process"/> so this property can be <c>null</c> if the process is no longer available.
-            </remarks>
         </member>
         <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Dispose">
             <summary>
             Releases all the resources used by the <see cref="T:GSF.Diagnostics.ProcessUtilizationCalculator"/> object.
             </summary>
         </member>
-        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Initialize(System.Diagnostics.Process)">
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Initialize(System.Diagnostics.Process[])">
             <summary>
-            Starts calculating the processor utilization of the specified <paramref name="process"/>.
+            Starts calculating the total processor utilization of the specified <paramref name="processes"/>.
             </summary>
-            <param name="process">The <see cref="T:System.Diagnostics.Process"/> to monitor for processor utilization.</param>
+            <param name="processes">The <see cref="T:System.Diagnostics.Process"/> set, e.g., parent and child processes, to monitor for total processor utilization.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Initialize(System.Collections.Generic.IEnumerable{System.Diagnostics.Process})">
+            <summary>
+            Starts calculating the total processor utilization of the specified <paramref name="processes"/>.
+            </summary>
+            <param name="processes">The <see cref="T:System.Diagnostics.Process"/> set, e.g., parent and child processes, to monitor for total processor utilization.</param>
+        </member>
+        <member name="M:GSF.Diagnostics.ProcessUtilizationCalculator.Refresh">
+            <summary>
+            Refreshes the processor utilization of the associated <see cref="T:System.Diagnostics.Process"/> set.
+            </summary>
         </member>
         <member name="T:GSF.Diagnostics.SystemPerformanceMonitor">
             <summary>
