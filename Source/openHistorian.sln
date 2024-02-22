@@ -359,13 +359,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GSF", "GSF", "{230319E6-0FC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft", "Microsoft", "{649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WiX", "WiX", "{26B86E5B-F713-40BF-BA2D-FBA3BFC5BAF3}"
-	ProjectSection(SolutionItems) = preProject
-		Dependencies\WiX\WixNetFxExtension.dll = Dependencies\WiX\WixNetFxExtension.dll
-		Dependencies\WiX\WixUIExtension.dll = Dependencies\WiX\WixUIExtension.dll
-		Dependencies\WiX\WixUtilExtension.dll = Dependencies\WiX\WixUtilExtension.dll
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "D3", "D3", "{A2385602-4822-421F-A6E9-1A749F097D23}"
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\Microsoft\D3\DynamicDataDisplay.dll = Dependencies\Microsoft\D3\DynamicDataDisplay.dll
@@ -1209,7 +1202,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{230319E6-0FCB-4C31-A6CD-90161BEF5949} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
 		{649B771A-7A3F-48AA-83F1-6A21BCC1D4EE} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
-		{26B86E5B-F713-40BF-BA2D-FBA3BFC5BAF3} = {9C3A3ABA-9618-49B0-9104-60678B4F3D71}
 		{A2385602-4822-421F-A6E9-1A749F097D23} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
 		{2B538111-F7EB-4A28-AB4E-93204A5FB0EE} = {649B771A-7A3F-48AA-83F1-6A21BCC1D4EE}
 		{6735399A-CF7B-4585-8EE6-BC333C7D6EDF} = {D080F7B6-902F-44C0-A93E-69FFAFA9EEE0}

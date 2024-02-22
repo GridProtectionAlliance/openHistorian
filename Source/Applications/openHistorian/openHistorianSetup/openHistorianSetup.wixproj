@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props" Condition="Exists('..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props')" />
+  <Import Project="..\..\..\Dependencies\NuGet Packages\wix.3.14.0\build\wix.props" Condition="Exists('..\..\..\Dependencies\NuGet Packages\wix.3.14.0\build\wix.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -38,15 +38,15 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixNetFxExtension">
-      <HintPath>..\..\..\Dependencies\WiX\WixNetFxExtension.dll</HintPath>
+      <HintPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.14.0\tools\WixNetFxExtension.dll</HintPath>
       <Name>WixNetFxExtension</Name>
     </WixExtension>
     <WixExtension Include="WixUtilExtension">
-      <HintPath>..\..\..\Dependencies\WiX\WixUtilExtension.dll</HintPath>
+      <HintPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.14.0\tools\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
     </WixExtension>
     <WixExtension Include="WixUIExtension">
-      <HintPath>..\..\..\Dependencies\WiX\WixUIExtension.dll</HintPath>
+      <HintPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.14.0\tools\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
     </WixExtension>
   </ItemGroup>
@@ -300,8 +300,8 @@
     <Content Include="WebFolders.wxi" />
   </ItemGroup>
   <PropertyGroup>
-    <WixInstallPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.11.1\tools\</WixInstallPath>
-    <WixToolPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.11.1\tools\</WixToolPath>
+    <WixInstallPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.14.0\tools\</WixInstallPath>
+    <WixToolPath>$(SolutionDir)Dependencies\NuGet Packages\WiX.3.14.0\tools\</WixToolPath>
     <WixTargetsPath>$(WixToolPath)wix.targets</WixTargetsPath>
     <WixTasksPath>$(WixToolPath)WixTasks.dll</WixTasksPath>
   </PropertyGroup>
@@ -354,7 +354,7 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\Dependencies\NuGet Packages\WiX.3.11.1\build\wix.props'))" />
+    <Error Condition="!Exists('..\..\..\Dependencies\NuGet Packages\wix.3.14.0\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\Dependencies\NuGet Packages\wix.3.14.0\build\wix.props'))" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
