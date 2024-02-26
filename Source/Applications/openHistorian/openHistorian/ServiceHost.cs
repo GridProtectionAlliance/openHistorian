@@ -21,6 +21,22 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading;
 using GSF;
 using GSF.ComponentModel;
 using GSF.Configuration;
@@ -45,22 +61,6 @@ using Microsoft.Win32;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Security;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading;
 using WindowsServiceController = System.ServiceProcess.ServiceController;
 
 namespace openHistorian
@@ -1300,7 +1300,7 @@ namespace openHistorian
         private static void LogMessage(MessageLevel level, string eventName, string message, string details = null, Exception ex = null)
         {
             LogPublisher log = Logger.CreatePublisher(typeof(ServiceHost), MessageClass.Application);
-            log.Publish(MessageLevel.Error, eventName, message, null, ex);
+            log.Publish(level, eventName, message, details, ex);
         }
 
         #endregion
