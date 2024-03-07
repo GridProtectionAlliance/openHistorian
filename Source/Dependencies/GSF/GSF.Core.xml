@@ -23450,11 +23450,12 @@
             </summary>
             <returns>The text read from the <see cref="T:GSF.IO.LogFile"/>.</returns>
         </member>
-        <member name="M:GSF.IO.LogFile.ReadLines">
+        <member name="M:GSF.IO.LogFile.ReadLines(System.Boolean)">
             <summary>
             Reads text from the <see cref="T:GSF.IO.LogFile"/> and returns a list of lines created by separating the text by the "newline"
             characters if and where present.
             </summary>
+            <param name="removeEmptyLines"><c>true</c>, if empty lines are to be removed from the list; otherwise, <c>false</c>>.</param>
             <returns>A list of lines from the text read from the <see cref="T:GSF.IO.LogFile"/>.</returns>
         </member>
         <member name="M:GSF.IO.LogFile.OnFileFull">

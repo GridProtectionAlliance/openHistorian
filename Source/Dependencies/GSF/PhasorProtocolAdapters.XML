@@ -104,6 +104,36 @@
             Initializes <see cref="T:PhasorProtocolAdapters.CalculatedMeasurementBase"/>.
             </summary>
         </member>
+        <member name="T:PhasorProtocolAdapters.StringMatchingMode">
+            <summary>
+            Defines a set of string matching modes.
+            </summary>
+        </member>
+        <member name="F:PhasorProtocolAdapters.StringMatchingMode.Exact">
+            <summary>
+            Exact string matching.
+            </summary>
+        </member>
+        <member name="F:PhasorProtocolAdapters.StringMatchingMode.StartsWith">
+            <summary>
+            String starts with matching.
+            </summary>
+        </member>
+        <member name="F:PhasorProtocolAdapters.StringMatchingMode.EndsWith">
+            <summary>
+            String ends with matching.
+            </summary>
+        </member>
+        <member name="F:PhasorProtocolAdapters.StringMatchingMode.Contains">
+            <summary>
+            String contains matching.
+            </summary>
+        </member>
+        <member name="F:PhasorProtocolAdapters.StringMatchingMode.Regex">
+            <summary>
+            Regular expression string matching.
+            </summary>
+        </member>
         <member name="T:PhasorProtocolAdapters.CommonPhasorServices">
             <summary>
             Provides common phasor services.
@@ -161,6 +191,45 @@
             Removes file from local folder.
             </summary>
             <param name="fileName">File name to remove.</param>
+        </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetFilteredStatusMessages(PhasorProtocolAdapters.StringMatchingMode,System.String,System.Boolean,System.Double,System.String)">
+            <summary>
+            Gets a filtered list of status messages.
+            </summary>
+            <param name="matchMode">
+            Matching mode to apply to status messages. One of:
+            'Exact', 'StartsWith', 'EndsWith', 'Contains', or 'Regex'.
+            </param>
+            <param name="filter">Filter to apply to status messages, if any.</param>
+            <param name="caseSensitive">Determines if matching should be case-sensitive.</param>
+            <param name="range">Time range, in minutes, to track filtered status messages.</param>
+            <param name="newLine">New line delimiter to use for filtered status messages.</param>
+            <returns>Filtered list of status messages.</returns>
+            <remarks>
+            Initial call will load status messages from the log and cache them for the specified range. Cached
+            status messages for the specified filter will continue to be updated with matching active status
+            messages for up to one minute over the specified range. If cached status messages are not accessed
+            within one minute, they will be removed from the cache. Subsequent calls for the same filter and
+            range after expiration will reload messages from the log again which may be shorter than the
+            specified range and loading from the log is slower than accessing the cache, so it is recommended
+            to query at intervals more frequent than one minute to keep the cache active.
+            </remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetCurrentMeasurementValue(System.String)">
+            <summary>
+            Gets the current measurement value for the specified measurement.
+            </summary>
+            <param name="measurementID">Measurement identifier, e.g., filter expression, measurement key, Guid-based signal ID, or point tag.</param>
+            <returns>Current measurement value for the specified measurement; otherwise <c>NaN</c> if not available.</returns>
+            <remarks>
+            Initial call will attempt to load latest measurement value from the service host cache. Specified
+            measurement will be cached and continue to be updated with matching active new measurements for up
+            to one minute. If cached measurement values are not queried within one minute, they will be removed
+            from the cache. Subsequent calls for measurement after cache expiration will attempt to reload latest
+            measurement from the service host cache again, however, only statistic values are commonly cached by
+            the service host. As such it is recommended to query for measurement updates at intervals that are
+            more frequent than one minute to keep the measurement value updated from newly received measurements.
+            </remarks>
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.SendCommand(GSF.PhasorProtocols.DeviceCommand)">
             <summary>
@@ -1713,6 +1782,30 @@
             <param name="other">The <see cref="T:GSF.TimeSeries.ITimeSeriesValue"/> to compare with the current <see cref="T:PhasorProtocolAdapters.SignalReferenceMeasurement"/>.</param>
             <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
             <remarks>Measurement implementations should compare by hash code.</remarks>
+        </member>
+        <member name="M:PhasorProtocolAdapters.MemoryCache`1.TryGet(System.String,`0@)">
+            <summary>
+            Try to get a value from the memory cache.
+            </summary>
+            <param name="cacheName">Name to use as cache key -- this should be unique per <typeparamref name="T"/>.</param>
+            <param name="value">Value from cache if already cached; otherwise, default value for <typeparamref name="T"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.MemoryCache`1.GetOrAdd(System.String,System.Func{`0})">
+            <summary>
+            Gets or adds a value, based on result of <paramref name="valueFactory"/>, to the memory cache.
+            </summary>
+            <param name="cacheName">Name to use as cache key -- this should be unique per <typeparamref name="T"/>.</param>
+            <param name="valueFactory">Function to generate value to add to cache -- only called if value is not already cached.</param>
+            <returns>
+            Value from cache if already cached; otherwise, new value generated by <paramref name="valueFactory"/>.
+            </returns>
+        </member>
+        <member name="M:PhasorProtocolAdapters.MemoryCache`1.Remove(System.String)">
+            <summary>
+            Removes a value from the memory cache.
+            </summary>
+            <param name="cacheName">Specific named memory cache instance to remove from cache.</param>
         </member>
     </members>
 </doc>
