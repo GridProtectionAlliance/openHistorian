@@ -165,7 +165,7 @@ namespace openHistorian
             }
             catch (Exception ex)
             {
-                Program.Host.LogException(new InvalidOperationException($"Failed to initialize instance API controllers: {ex.Message}", ex));
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize service controller: {ex.Message}", ex));
             }
 
             // Map specific historian instance API controllers
