@@ -368,3 +368,4 @@ cython_debug/
 # Virtualenv
 /Source/Libraries/PythonAPIModule/**/Scripts
 pyvenv.cfg
+/Source/Applications/openHistorian/openHistorian/Grafana/data/plugins/gridprotectionalliance-openhistorian-datasource/img/Thumbs.db
