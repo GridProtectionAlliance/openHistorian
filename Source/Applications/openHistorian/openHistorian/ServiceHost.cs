@@ -34,9 +34,9 @@ using System.Reflection;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Principal;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using GSF;
 using GSF.ComponentModel;
 using GSF.Configuration;
@@ -61,7 +61,6 @@ using Microsoft.Win32;
 using openHistorian.Adapters;
 using openHistorian.Model;
 using openHistorian.Snap;
-using WindowsServiceController = System.ServiceProcess.ServiceController;
 
 namespace openHistorian
 {
@@ -77,6 +76,8 @@ namespace openHistorian
         }
 
         // Constants
+        public const string FailOverRequestPath = "/Service/SendCommand/FailOver";
+
         private const int DefaultMaximumDiagnosticLogSize = 10;
         private const string DefaultMinifyJavascriptExclusionExpression = @"^/?Scripts/force\-graph\.js$";
         private const string DefaultFailoverNodeType = "None";
@@ -922,6 +923,21 @@ namespace openHistorian
             base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);
         }
 
+        public bool TryFailOver(string source)
+        {
+            LogMessage(MessageLevel.Info, nameof(TryFailOver), $"Failover requested by {source} - attempting failover");
+
+            if (!PreventFailoverStartup())
+                return false;
+
+            // Add a delay to hopefully give enough time
+            // for the primary node to receive our response
+            const int Delay = 2;
+            LogMessage(MessageLevel.Info, nameof(TryFailOver), $"Failing over to {source} in {Delay} seconds");
+            Task.Delay(Delay * 1000).ContinueWith(_ => Environment.Exit(0));
+            return true;
+        }
+
         public void DisconnectClient(Guid clientID)
         {
             ServiceHelper.DisconnectClient(clientID);
@@ -1099,28 +1115,17 @@ namespace openHistorian
             {
                 try
                 {
-                    string[] settings = node.Split('&');
-                    string url = settings[0];
-
-                    if (!PingNode(url))
+                    if (!PingNode(node))
                         continue;
 
                     if (isPrimary)
                     {
-                        if (settings.Length == 1)
-                        {
-                            LogMessage(MessageLevel.Error, nameof(PreventFailoverStartup), $"No host specified for \"{url}\" - system will not be able to shut down the node");
-                            continue;
-                        }
-
-                        string remoteHost = settings[1];
-
-                        LogMessage(MessageLevel.Info, nameof(PreventFailoverStartup), $"Failover logic detected: \"{url}\" is active - stopping node on {remoteHost}");
-                        StopRemoteService(remoteHost);
+                        LogMessage(MessageLevel.Info, nameof(PreventFailoverStartup), $"Failover logic detected: \"{node}\" is active - issuing command to stop active node");
+                        StopRemoteService(node);
                         continue;
                     }
 
-                    LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), $"Failover logic detected: \"{url}\" is active - restarting in {delay:N0} seconds.");
+                    LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), $"Failover logic detected: \"{node}\" is active - restarting in {delay:N0} seconds.");
                     DelayedRestart(delay);
 
                     return true;
@@ -1145,7 +1150,10 @@ namespace openHistorian
                 request.Method = HttpMethod.Get;
                 request.RequestUri = new Uri(endpoint);
                 
-                HttpResponseMessage response = s_httpClient.SendAsync(request).Result;
+                using HttpResponseMessage response = s_httpClient
+                    .SendAsync(request)
+                    .GetAwaiter()
+                    .GetResult();
                 
                 if (response is null) 
                     return false;
@@ -1173,7 +1181,7 @@ namespace openHistorian
                 shell.StartInfo = new ProcessStartInfo(ConsoleApplicationName)
                 {
                     CreateNoWindow = true,
-                    Arguments = $"{ServiceName} -restartDelay={delay}"
+                    Arguments = $"{ServiceName} -restartWithDelay={delay}"
                 };
 
                 shell.Start();
@@ -1181,33 +1189,30 @@ namespace openHistorian
             else
             {
                 string batchFileName = FilePath.GetAbsolutePath("DelayedRestartService.cmd");
-                File.WriteAllText(batchFileName, $@"@ECHO OFF{Environment.NewLine}{ConsoleApplicationName} {ServiceName} -restartDelay={delay}");
+                string consoleApplicationName = FilePath.GetAbsolutePath(ConsoleApplicationName);
+                File.WriteAllText(batchFileName, $@"@ECHO OFF{Environment.NewLine}START """" ""{consoleApplicationName}"" {ServiceName} -restartWithDelay={delay}");
 
                 // This is the only .NET call that will spawn an independent, non-child, process on Windows
-                Process.Start(batchFileName);
+                using (Process.Start(batchFileName)) { }
             }
         }
 
         private void StopRemoteService(string host)
         {
-            WindowsServiceController serviceController = WindowsServiceController.GetServices(host).SingleOrDefault(controller => 
-                string.Compare(controller.ServiceName, ServiceName, StringComparison.OrdinalIgnoreCase) == 0);
-
-            if (serviceController is null)
-                return;
-            
             try
             {
-                if (serviceController.Status != ServiceControllerStatus.Running)
-                    return;
-                
-                serviceController.Stop();
+                using HttpRequestMessage request = new();
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri($"{host.TrimEnd('/')}{FailOverRequestPath}");
 
-                // Can't wait forever for service to stop, so we time out after 20 seconds
-                serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20.0D));
+                using HttpResponseMessage response = s_httpClient
+                    .SendAsync(request)
+                    .GetAwaiter()
+                    .GetResult();
 
-                if (serviceController.Status == ServiceControllerStatus.Stopped)
-                    LogMessage(MessageLevel.Info, nameof(StopRemoteService), $"Failover logic successfully stopped service on \"{host}\".");
+                response.EnsureSuccessStatusCode();
+
+                LogMessage(MessageLevel.Info, nameof(StopRemoteService), $"Failover logic successfully stopped service on \"{host}\".");
             }
             catch (Exception ex)
             {
@@ -1313,7 +1318,7 @@ namespace openHistorian
 
         // Static Fields
         private static int s_virtualProtocolID;
-        private static readonly HttpClient s_httpClient = new();
+        private static readonly HttpClient s_httpClient = new(new HttpClientHandler() { UseDefaultCredentials = true });
 
         #endregion
     }

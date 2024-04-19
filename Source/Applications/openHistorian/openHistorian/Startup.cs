@@ -21,6 +21,11 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.Security;
+using System.Web.Http;
+using System.Web.Http.Cors;
+using System.Web.Http.ExceptionHandling;
 using GSF;
 using GSF.Configuration;
 using GSF.IO;
@@ -35,11 +40,7 @@ using Newtonsoft.Json;
 using openHistorian.Model;
 using Owin;
 using PhasorWebUI;
-using System;
-using System.Security;
-using System.Web.Http;
-using System.Web.Http.Cors;
-using System.Web.Http.ExceptionHandling;
+using StartupEvent = System.Action<Owin.IAppBuilder>;
 
 namespace openHistorian
 {
@@ -52,10 +53,21 @@ namespace openHistorian
         }
     }
 
+    internal class StartupEvents(Action<StartupEvent> register)
+    {
+        public static string Key { get; } = typeof(StartupEvents).FullName;
+        public void Register(StartupEvent startupEvent) => register(startupEvent);
+    }
+
     public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
+            void Register(StartupEvent startupEvent) =>
+                Configured += (sender, args) => startupEvent(app);
+
+            app.Properties[StartupEvents.Key] = new StartupEvents(Register);
+
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
             bool osiPIGrafanaControllerEnabled = systemSettings["OSIPIGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
             bool eDNAGrafanaControllerEnabled = systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true;
@@ -134,6 +146,9 @@ namespace openHistorian
 
             // Enable GSF session management
             httpConfig.EnableSessions(AuthenticationOptions);
+
+            // Enable failover requests
+            app.UseFailover(ServiceHost.FailOverRequestPath);
 
             // Enable GSF role-based security authentication
             app.UseAuthentication(AuthenticationOptions);
@@ -272,7 +287,12 @@ namespace openHistorian
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
+
+            OnConfigured();
         }
+
+        private void OnConfigured() =>
+            Configured?.Invoke(this, EventArgs.Empty);
 
         private void Load_ModbusAssembly()
         {
@@ -349,6 +369,7 @@ namespace openHistorian
             }
         }
 
+        private event EventHandler<EventArgs> Configured;
 
         // Static Properties
 
@@ -388,5 +409,16 @@ namespace openHistorian
         //}
 
         #endregion
+    }
+
+    public static partial class AppBuilderExtensions
+    {
+        public static IAppBuilder Defer(this IAppBuilder app, StartupEvent configure)
+        {
+            if (app.Properties.TryGetValue(StartupEvents.Key, out object value) && value is StartupEvents startupEvents)
+                startupEvents.Register(configure);
+
+            return app;
+        }
     }
 }
