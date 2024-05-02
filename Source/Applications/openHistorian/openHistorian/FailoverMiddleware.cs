@@ -51,7 +51,7 @@ namespace openHistorian
             if (string.IsNullOrEmpty(host))
                 host = context.Request.RemoteIpAddress;
 
-            if (!Program.Host.TryFailOver(host))
+            if (!Program.Host.FailOver(host))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ReasonPhrase = "Bad Request";

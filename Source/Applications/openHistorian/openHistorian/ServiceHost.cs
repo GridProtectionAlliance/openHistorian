@@ -923,17 +923,30 @@ namespace openHistorian
             base.SendResponseWithAttachment(requestInfo, success, attachment, status, args);
         }
 
-        public bool TryFailOver(string source)
+        public bool FailOver(string source)
         {
-            LogMessage(MessageLevel.Info, nameof(TryFailOver), $"Failover requested by {source} - attempting failover");
+            LogMessage(MessageLevel.Info, nameof(FailOver), $"Failover requested by {source} - attempting failover");
 
-            if (!PreventFailoverStartup())
+            ConfigurationFile configurationFile = ConfigurationFile.Current;
+            string nodeType = GetFailoverNodeType(configurationFile);
+
+            if (nodeType != "secondary")
+            {
+                // Primary nodes send failover requests to secondary nodes when they come online;
+                // therefore, primary nodes and nodes that are not members of a cluster should not
+                // expect to receive any valid failover requests
+                LogMessage(MessageLevel.Info, nameof(FailOver), $"Failover request rejected - only secondary nodes can act on a failover request");
                 return false;
+            }
+
+            int delay = GetFailoverDelay(configurationFile);
+            LogMessage(MessageLevel.Warning, nameof(PreventFailoverStartup), $"Failover request accepted - restarting in {delay:N0} seconds.");
+            DelayedRestart(delay);
 
             // Add a delay to hopefully give enough time
             // for the primary node to receive our response
             const int Delay = 2;
-            LogMessage(MessageLevel.Info, nameof(TryFailOver), $"Failing over to {source} in {Delay} seconds");
+            LogMessage(MessageLevel.Info, nameof(FailOver), $"Failing over to {source} in {Delay} seconds");
             Task.Delay(Delay * 1000).ContinueWith(_ => Environment.Exit(0));
             return true;
         }
@@ -1057,6 +1070,27 @@ namespace openHistorian
             }
         }
 
+        private CategorizedSettingsElementCollection GetFailoverSection(ConfigurationFile configurationFile) =>
+            configurationFile.Settings["failoverSettings"];
+
+        private string GetFailoverNodeType(ConfigurationFile configurationFile)
+        {
+            CategorizedSettingsElementCollection failoverSettings = GetFailoverSection(configurationFile);
+            failoverSettings.Add("NodeType", DefaultFailoverNodeType, "Defines the type of failover node. Options are 'None', 'Primary' or 'Secondary'. Any invalid value will be interpreted as none.");
+            return failoverSettings["NodeType"].Value?.ToLowerInvariant().Trim();
+        }
+
+        private int GetFailoverDelay(ConfigurationFile configurationFile)
+        {
+            CategorizedSettingsElementCollection failoverSettings = GetFailoverSection(configurationFile);
+            failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay, in seconds, before the node will attempt to start again.");
+
+            if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out int delay))
+                delay = DefaultFailoverRestartDelay;
+
+            return delay;
+        }
+
         private bool PreventFailoverStartup()
         {
             bool enableFailover = false;
@@ -1066,9 +1100,8 @@ namespace openHistorian
 
             try
             {
-                CategorizedSettingsElementCollection failoverSettings = ConfigurationFile.Current.Settings["failoverSettings"];
-                failoverSettings.Add("NodeType", DefaultFailoverNodeType, "Defines the type of failover node. Options are 'None', 'Primary' or 'Secondary'. Any invalid value will be interpreted as none.");
-                string nodeType = failoverSettings["NodeType"].Value?.ToLowerInvariant().Trim();
+                ConfigurationFile configurationFile = ConfigurationFile.Current;
+                string nodeType = GetFailoverNodeType(configurationFile);
 
                 if (!string.IsNullOrWhiteSpace(nodeType))
                 {
@@ -1089,12 +1122,11 @@ namespace openHistorian
 
                 if (enableFailover)
                 {
+                    CategorizedSettingsElementCollection failoverSettings = GetFailoverSection(configurationFile);
                     failoverSettings.Add("FailoverEndpoint", DefaultFailoverURL, "Defines the URL of the other node(s) in the failover system. This may include multiple URLs separated by semi-colons.");
-                    failoverSettings.Add("RestartDelay", DefaultFailoverRestartDelay, "Defines the delay, in seconds, before the node will attempt to start again.");
 
-                    if (string.IsNullOrWhiteSpace(failoverSettings["RestartDelay"].Value) || !int.TryParse(failoverSettings["RestartDelay"].Value, out delay))
-                        delay = DefaultFailoverRestartDelay;
-                    
+                    delay = GetFailoverDelay(configurationFile);
+
                     nodes = string.IsNullOrWhiteSpace(failoverSettings["FailoverEndpoint"].Value) ?
                         new[] { DefaultFailoverURL } : 
                         failoverSettings["FailoverEndpoint"].Value.Split(';');
