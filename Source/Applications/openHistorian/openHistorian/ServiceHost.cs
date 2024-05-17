@@ -227,10 +227,11 @@ namespace openHistorian
             // Define set of default anonymous web resources for this site
             const string AnonymousApiFeedBackExpression = "^/api/Feedback/";
             const string AnonymousGrafanaKeyCoordinatesExpression = "^/grafana/keycoordinates";
+            const string AnonymousGrafanaGetValueTypesExpression = "^/api/grafana/GetValueTypes";
             const string OldGrafanaAuthFailExcludeExpression = "^/grafana(?!/api/).*$";
             const string NewGrafanaAuthFailExcludeExpression = "^/grafana(?!/(api/|keycoordinates)).*$";
-            const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|" + AnonymousApiFeedBackExpression + "|^/favicon.ico$";
-            const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|" + NewGrafanaAuthFailExcludeExpression;
+            const string DefaultAnonymousResourceExpression = $"^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|{AnonymousApiFeedBackExpression}|{AnonymousGrafanaKeyCoordinatesExpression}|{AnonymousGrafanaGetValueTypesExpression}|^/favicon.ico$";
+            const string DefaultAuthFailureRedirectResourceExpression = $"{AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression}|{NewGrafanaAuthFailExcludeExpression}";
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
@@ -283,6 +284,12 @@ namespace openHistorian
             if (allowGrafanaKeyCoordinates && !anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousGrafanaKeyCoordinatesExpression.ToLowerInvariant()))
             {
                 anonymousResourceExpression = $"{AnonymousGrafanaKeyCoordinatesExpression}|{anonymousResourceExpression}";
+                anonymousResourceExpressionUpdated = true;
+            }
+
+            if (!anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousGrafanaGetValueTypesExpression.ToLowerInvariant()))
+            {
+                anonymousResourceExpression = $"{AnonymousGrafanaGetValueTypesExpression}|{anonymousResourceExpression}";
                 anonymousResourceExpressionUpdated = true;
             }
 
