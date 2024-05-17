@@ -1041,7 +1041,7 @@ namespace openHistorian
 
                 // Define default adapter connection string if none is defined
                 if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
-                    actionAdapter.ConnectionString = actionAdapter.ConnectionString =
+                    actionAdapter.ConnectionString =
                         $"FileName={DefaultGrafanaServerPath}; " +
                         "WorkingDirectory=Grafana; " +
                         "ForceKillOnDispose=True; " +
