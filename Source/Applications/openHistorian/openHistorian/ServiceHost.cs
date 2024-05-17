@@ -227,10 +227,11 @@ namespace openHistorian
             // Define set of default anonymous web resources for this site
             const string AnonymousApiFeedBackExpression = "^/api/Feedback/";
             const string AnonymousGrafanaKeyCoordinatesExpression = "^/grafana/keycoordinates";
+            const string AnonymousGrafanaGetValueTypesExpression = "^/api/grafana/GetValueTypes";
             const string OldGrafanaAuthFailExcludeExpression = "^/grafana(?!/api/).*$";
             const string NewGrafanaAuthFailExcludeExpression = "^/grafana(?!/(api/|keycoordinates)).*$";
-            const string DefaultAnonymousResourceExpression = "^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|" + AnonymousApiFeedBackExpression + "|^/favicon.ico$";
-            const string DefaultAuthFailureRedirectResourceExpression = AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression + "|" + NewGrafanaAuthFailExcludeExpression;
+            const string DefaultAnonymousResourceExpression = $"^/@|^/Scripts/|^/Content/|^/Images/|^/fonts/|{AnonymousApiFeedBackExpression}|{AnonymousGrafanaKeyCoordinatesExpression}|{AnonymousGrafanaGetValueTypesExpression}|^/favicon.ico$";
+            const string DefaultAuthFailureRedirectResourceExpression = $"{AuthenticationOptions.DefaultAuthFailureRedirectResourceExpression}|{NewGrafanaAuthFailExcludeExpression}";
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
@@ -283,6 +284,12 @@ namespace openHistorian
             if (allowGrafanaKeyCoordinates && !anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousGrafanaKeyCoordinatesExpression.ToLowerInvariant()))
             {
                 anonymousResourceExpression = $"{AnonymousGrafanaKeyCoordinatesExpression}|{anonymousResourceExpression}";
+                anonymousResourceExpressionUpdated = true;
+            }
+
+            if (!anonymousResourceExpression.ToLowerInvariant().Contains(AnonymousGrafanaGetValueTypesExpression.ToLowerInvariant()))
+            {
+                anonymousResourceExpression = $"{AnonymousGrafanaGetValueTypesExpression}|{anonymousResourceExpression}";
                 anonymousResourceExpressionUpdated = true;
             }
 
@@ -1034,14 +1041,7 @@ namespace openHistorian
 
                 // Define default adapter connection string if none is defined
                 if (string.IsNullOrWhiteSpace(actionAdapter.ConnectionString))
-                    actionAdapter.ConnectionString =
-                        $"FileName={DefaultGrafanaServerPath}; " +
-                        "WorkingDirectory=Grafana; " +
-                        "ForceKillOnDispose=True; " +
-                        "ProcessOutputAsLogMessages=True; " +
-                        "LogMessageTextExpression={(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)subUrl\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
-                        "LogMessageLevelExpression={(?<=.*lvl\\s*\\=\\s*)[^\\s]*(?=\\s|$)}; " +
-                        "LogMessageLevelMappings={info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}";
+                    actionAdapter.ConnectionString = $"FileName={DefaultGrafanaServerPath}; WorkingDirectory=Grafana; ForceKillOnDispose=True; ProcessOutputAsLogMessages=True; LogMessageTextExpression={{(?<=.*msg\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*file\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*path\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*path\\s*\\=\\s*)[^\\s]*(?=s|$)|(?<=.*error\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*reason\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*id\\s*\\=\\s*\\\")[^\\\"]*(?=\\\")|(?<=.*version\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*dbtype\\s*\\=\\s*)[^\\s]*(?=\\s|$)|(?<=.*)commit\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)compiled\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)address\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)protocol\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)subUrl\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*)code\\s*\\=\\s*[^\\s]*(?=\\s|$)|(?<=.*name\\s*\\=\\s*)[^\\s]*(?=\\s|$)}}; LogMessageLevelExpression={{(?<=.*lvl\\s*\\=\\s*)[^\\s]*(?=\\s|$)}}; LogMessageLevelMappings={{info=Info; warn=Waning; error=Error; critical=Critical; debug=Debug}}";
 
                 // Preserve connection string on existing records except for Grafana server executable path that comes from configuration file
                 Dictionary<string, string> settings = actionAdapter.ConnectionString.ParseKeyValuePairs();
