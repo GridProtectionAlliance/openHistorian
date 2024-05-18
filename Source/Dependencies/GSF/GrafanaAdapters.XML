@@ -385,6 +385,51 @@
             specified function operation to all value fields in the data source.
             </remarks>
         </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1">
+            <summary>
+            Returns a series of values that are passed though a Kalman filter which predicts the next state based on the current estimate useful
+            for filtering out noise or reducing variance from a series of values. Optional parameters include <c>processNoise</c> which represents
+            how much the system state is expected to change between measurements, <c>measurementNoise</c> which represents the confidence in the
+            measurements, and <c>estimatedError</c> which represents the initial guess about the error in the state estimate.
+            </summary>
+            <remarks>
+            Signature: <c>KalmanFilter([processNoise = 1e-5], [measurementNoise = 1e-3], [estimatedError = 1], expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>LQE(FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: KalmanFilter, LQE, LinearQuadraticEstimate<br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.PublishedGroupOperations">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.ParameterDefinitions">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Clamp`1">
             <summary>
             Returns a series of values that represent each of the values in the source series clamped to the inclusive range of <c>min</c> and <c>max</c>.

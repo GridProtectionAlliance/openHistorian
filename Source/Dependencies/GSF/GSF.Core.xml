@@ -31865,6 +31865,71 @@
             <param name="b">the out b coefficient</param>
             <param name="c">the out c coefficient</param>
         </member>
+        <member name="T:GSF.NumericalAnalysis.KalmanFilter">
+            <summary>
+            Predicts the next state based on the current estimate.
+            </summary>
+        </member>
+        <member name="F:GSF.NumericalAnalysis.KalmanFilter.DefaultProcessNoise">
+            <summary>
+            Default process noise covariance.
+            </summary>
+        </member>
+        <member name="F:GSF.NumericalAnalysis.KalmanFilter.DefaultMeasurementNoise">
+            <summary>
+            Default measurement noise covariance.
+            </summary>
+        </member>
+        <member name="F:GSF.NumericalAnalysis.KalmanFilter.DefaultEstimateError">
+            <summary>
+            Default estimate error.
+            </summary>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.KalmanFilter.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a new Kalman filter.
+            </summary>
+            <param name="processNoise">
+            <para>
+            Determines how much the system state is expected to change between measurements.
+            </para>
+            <para>
+            Start with a very small value (e.g., 1e-5) and gradually increase it. Too small a value can
+            make the filter slow to adapt to changes, while too large can make it over-responsive to noise.
+            </para>
+            </param>
+            <param name="measurementNoise">
+            <para>
+            Reflects the confidence in the measurements. A lower value gives more weight to the measurements.
+            </para>
+            <para>
+            If your measurements are accurate, set R to a small value (e.g., 1e-3). Increase it if the
+            measurements are noisy.
+            </para>
+            </param>
+            <param name="estimatedError">
+            <para>
+            Represents the initial guess about the error in the state estimate.
+            </para>
+            <para>
+            </para>
+            Start with a value that reflects the expected variability in the initial state.
+            </param>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.KalmanFilter.Update(System.Double)">
+            <summary>
+            Updates the filter with a new measurement.
+            </summary>
+            <param name="measurement">New measurement value.</param>
+            <returns>Predicted next state.</returns>
+        </member>
+        <member name="M:GSF.NumericalAnalysis.KalmanFilter.Filter(System.Collections.Generic.IReadOnlyList{System.Double})">
+            <summary>
+            Filters a set of measurements.
+            </summary>
+            <param name="measurements">Signals to filter.</param>
+            <returns>Measurements with Kalman filter applied.</returns>
+        </member>
         <member name="T:GSF.NumericalAnalysis.RealTimeSlope">
             <summary>Calculates slope for a real-time continuous data stream.</summary>
         </member>
