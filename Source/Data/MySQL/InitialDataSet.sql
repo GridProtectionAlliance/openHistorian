@@ -35,7 +35,7 @@ INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('FEN', 'FEN', 
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('Fingrid', 'Fingrid', 'Fingrid', 33);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('FPL', 'FPL', 'Florida Power & Light Company', 34);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('GEAS', 'GEAS', 'German Hosting Entity of "ENTSO-E Awareness System"', 35);
-INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HEC', 'HEC', 'Hawaiian Electric Company', 36);GO
+INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HEC', 'HEC', 'Hawaiian Electric Company', 36);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HOPS', 'HOPS', 'Croatian Transmission System Operator', 37);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('HQC', 'HQC', 'Hydro Quebec', 38);
 INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES ('IPTO', 'IPTO', 'Independent Power Transmission Operator', 39);
