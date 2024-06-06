@@ -1625,6 +1625,145 @@
             <param name="sender">the sender object</param>
             <param name="measurements">the event arguments</param>
         </member>
+        <member name="T:GSF.TimeSeries.Adapters.MetadataHelpers">
+            <summary>
+            Represents functionality to manage device and measurement metadata for adapters.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.MetadataHelpers.DefaultMeasurementTable">
+            <summary>
+            Defines the default measurement table name.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.MetadataHelpers.DefaultConfigurationReloadWaitTimeout">
+            <summary>
+            Defines the default value for the configuration reload wait timeout.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.MetadataHelpers.DefaultConfigurationReloadWaitAttempts">
+            <summary>
+            Defines the default value for the configuration reload wait attempts.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.GetParentDevice(GSF.TimeSeries.Adapters.IAdapter,System.String)">
+            <summary>
+            Gets ID of parent device, creating or updating record if needed, for the current <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="parentDeviceAcronymTemplate">Parent device acronym template. Use '{0}' to reference <see cref="P:GSF.TimeSeries.Adapters.IAdapter.Name"/>.</param>
+            <returns>ID of parent device; or, <c>null</c> on failure.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.LookupPointTag(GSF.TimeSeries.Adapters.IAdapter,System.Guid,System.String)">
+            <summary>
+            Looks up point tag name from provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Point tag name, if found; otherwise, string representation of provided signal ID.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.LookupSignalReference(GSF.TimeSeries.Adapters.IAdapter,System.Guid,System.String)">
+            <summary>
+            Looks up signal reference from provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Signal reference name, if found; otherwise, string representation of provided signal ID.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.LookupMeasurementKey(GSF.TimeSeries.Adapters.IAdapter,System.Guid,System.UInt64,System.String,System.String)">
+            <summary>
+            Looks up or creates measurement key based on provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="id">Measurement ID to use for creating new measurement key.</param>
+            <param name="source">Source name used for meta-data lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Found or newly created measurement key. Failure to create key results in <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.</returns>
+            <remarks>
+            This is a metadata first lookup operation.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.LookupDevice(GSF.TimeSeries.Adapters.IAdapter,System.Guid,System.String)">
+            <summary>
+            Looks up associated device acronym and ID from provided <paramref name="signalID"/>.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns>Device acronym and ID tuple, if found; otherwise, string representation of associated point tag and ID of zero.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.SignalIDExists(GSF.TimeSeries.Adapters.IAdapter,System.Guid,System.String)">
+            <summary>
+            Determines if <paramref name="signalID"/> exists in local configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalID">Signal ID to find.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><c>true</c>, if <paramref name="signalID"/> is found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.PointTagExists(GSF.TimeSeries.Adapters.IAdapter,System.String,System.Guid@,System.String)">
+            <summary>
+            Determines if <paramref name="pointTag"/> exists in local configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="pointTag">Point tag to find./</param>
+            <param name="signalID">Signal ID of measurement with specified point tag.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><c>true</c>, if <paramref name="pointTag"/> is found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.SignalReferenceExists(GSF.TimeSeries.Adapters.IAdapter,System.String,System.Guid@,System.String)">
+            <summary>
+            Determines if <paramref name="signalReference"/> exists in local configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="signalReference">Point tag to find./</param>
+            <param name="signalID">Signal ID of measurement with specified point tag.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><c>true</c>, if <paramref name="signalReference"/> is found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.GetMeasurementRecord(GSF.TimeSeries.Adapters.IAdapter,System.Nullable{System.Int32},System.String,System.String,System.String,System.String,GSF.Units.EE.SignalType,System.String,System.Boolean)">
+            <summary>
+            Gets measurement record, creating it if needed.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="currentDeviceID">Device ID associated with current adapter, or zero if none.</param>
+            <param name="pointTag">Point tag of measurement.</param>
+            <param name="alternateTag">Alternate tag of measurement.</param>
+            <param name="signalReference">Signal reference of measurement.</param>
+            <param name="description">Description of measurement.</param>
+            <param name="signalType">Signal type of measurement.</param>
+            <param name="targetHistorianAcronym">Acronym of target historian for measurement.</param>
+            <param name="sendChangedNotification">Flag that determines if host system should be notified of configuration changes.</param>
+            <returns>Measurement record.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.OnConfigurationChanged(GSF.TimeSeries.Adapters.IAdapter)">
+            <summary>
+            Notifies host system of configuration changes.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.WaitForSignalsToLoad(GSF.TimeSeries.Adapters.IAdapter,System.Threading.ManualResetEventSlim,System.Collections.Generic.IReadOnlyList{System.Guid},System.Int32,System.Int32,System.String)">
+            <summary>
+            Waits for <paramref name="signalIDs"/> to be loaded in system configuration.
+            </summary>
+            <param name="instance">Target <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance.</param>
+            <param name="configurationReloadedWaitHandle">Wait handle to signal when configuration has been reloaded.</param>
+            <param name="signalIDs">Signal IDs to wait for.</param>
+            <param name="configurationReloadWaitTimeout">Configuration reload wait timeout.</param>
+            <param name="configurationReloadWaitAttempts">Configuration reload wait attempts.</param>
+            <param name="measurementTable">Measurement table name used for meta-data lookup.</param>
+            <returns><c>true</c> if <paramref name="signalIDs"/> are loaded; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.MetadataHelpers.ElapsedWaitTimeString(System.Int32,System.Int32)">
+            <summary>
+            Gets string representation of elapsed wait time for <paramref name="configurationReloadWaitTimeout"/> and <paramref name="configurationReloadWaitAttempts"/>.
+            </summary>
+            <param name="configurationReloadWaitTimeout">Configuration reload wait timeout.</param>
+            <param name="configurationReloadWaitAttempts">Configuration reload wait attempts.</param>
+            <returns>String representation of elapsed wait time.</returns>
+        </member>
         <member name="T:GSF.TimeSeries.Adapters.OneSecondDataWindowAdapterBase">
             <summary>
             Represents an adapter base class that provides functionality to operate on a 1-second window of data.
@@ -8849,9 +8988,7 @@
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Statistics.StatisticsEngine.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="P:GSF.TimeSeries.Statistics.StatisticsEngine.Status">
             <summary>
@@ -8900,6 +9037,11 @@
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.#cctor">
             <summary>
             Static initialization of <see cref="T:GSF.TimeSeries.Statistics.StatisticsEngine"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Statistics.StatisticsEngine.CurrentStatistics">
+            <summary>
+            Gets the statistic measurements and latest values that are registered with the active statistics engine.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.Register(GSF.TimeSeries.Adapters.IAdapter,System.String,System.String,System.String)">

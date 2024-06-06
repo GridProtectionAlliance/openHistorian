@@ -180,7 +180,7 @@
         <member name="F:PIAdapters.TagRemovalOperation.LocalOnly">
             <summary>
             Remove any PI tags where the PI point source matches the setting defined in the PI output adapter and
-            the PI tag no longer exists in the local metadata. The is the recommended option when it is desirable
+            the PI tag no longer exists in the local metadata. This is the recommended option when it is desirable
             that any locally defined tags that get removed also get removed from PI.
             </summary>
             <remarks>
@@ -203,6 +203,114 @@
             for removed tags to be inaccessible.
             </remarks>
         </member>
+        <member name="T:PIAdapters.C37118DigitalStateSets">
+            <summary>
+            Defines the available digital state sets for IEEE C37.118 connection states, quality and status word bits.
+            </summary>
+            <remarks>
+            These digital state sets are used to expand the status word bits into individual digital tags as well
+            as other pertinent information related to an IEEE C37.118 connection. These digital state sets are
+            based on, and are compatible with, the digital state sets defined for the IEEE C37.118 Interface to
+            the PI System.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.CompositeQual">
+            <summary>
+            Represents the composite quality status digital state.
+            </summary>
+            <remarks>
+            Digital tag receives a composite status from the Data Valid, PMU Error, Sync Error and Data Sorting flags.
+            If any of these flags are set, the value of this tag will be set to 1. Otherwise, it will be zero.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.ConfigChange">
+            <summary>
+            Represents the configuration change status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag that is set to 1 when the configuration change flag (bit 10) in the STAT word is true.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.ConnectState">
+            <summary>
+            Represents the connect state status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the current connection state.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.DataSorting">
+            <summary>
+            Represents the data sorting status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Data Sorting bit (12) from the STAT word.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.DataValid">
+            <summary>
+            Represents the data valid status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Data Validity bit (15) from the STAT word. 
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.LeapSecond">
+            <summary>
+            Represents the leap second status bits digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Leap Second quality bits (6-4) from the time quality flags. 
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.NominalFreq">
+            <summary>
+            Represents the nominal frequency status bit digital state.
+            </summary>
+            <remarks>
+            Nominal line frequency (FNOM) from last CONFIG block.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.PMUError">
+            <summary>
+            Represents the PMU error status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the PMU Error bit (14) from the STAT word.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.SyncError">
+            <summary>
+            Represents the time sync error status bit digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the PMU Sync Error bit (13) from the STAT word. 
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.Timelock">
+            <summary>
+            Represents the timelock status bits digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Unlocked Time quality bits (5-4) from the STAT word.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.TimeQuality">
+            <summary>
+            Represents the time quality status bits digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Time Quality bits (3-0) from the time quality flags.
+            </remarks>
+        </member>
+        <member name="F:PIAdapters.C37118DigitalStateSets.Trigger">
+            <summary>
+            Represents the trigger status bits digital state.
+            </summary>
+            <remarks>
+            Digital tag receives the Trigger Reason bits (3-0) from the STAT word
+            </remarks>
+        </member>
         <member name="T:PIAdapters.PIOutputAdapter">
             <summary>
             Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
@@ -213,6 +321,21 @@
             Creates a new <see cref="T:PIAdapters.PIOutputAdapter"/>
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:PIAdapters.PIOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:PIAdapters.PIOutputAdapter"/> expects.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.InputMeasurementKeyTypes">
+            <summary>
+            Gets or sets input measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
+            </summary>
+        </member>
         <member name="P:PIAdapters.PIOutputAdapter.OutputIsForArchive">
             <summary>
             Returns true to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> is sending measurements to a historian, OSIsoft PI.
@@ -220,7 +343,7 @@
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.UseAsyncConnect">
             <summary>
-            Returns false to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> will connect synchronously
+            Returns false to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> will connect synchronously.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.ServerName">
@@ -240,27 +363,27 @@
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.ConnectTimeout">
             <summary>
-            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.RunMetadataSync">
             <summary>
-            Gets or sets whether or not this adapter should automatically manage metadata for PI points.
+            Gets or sets whether this adapter should automatically manage metadata for PI points.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.AutoCreateTags">
             <summary>
-            Gets or sets whether or not this adapter should automatically create new tags when managing metadata for PI points.
+            Gets or sets whether this adapter should automatically create new tags when managing metadata for PI points.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.AutoUpdateTags">
             <summary>
-            Gets or sets whether or not this adapter should automatically update existing tags when managing metadata for PI points.
+            Gets or sets whether this adapter should automatically update existing tags when managing metadata for PI points.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.AutoRemoveTags">
             <summary>
-            Gets or sets whether or not this adapter should automatically remove PI tags that no longer exist locally in metadata.
+            Gets or sets whether this adapter should automatically remove PI tags that no longer exist locally in metadata.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.SyncAlternateTagOnly">
@@ -271,6 +394,11 @@
         <member name="P:PIAdapters.PIOutputAdapter.SkipDigitalAlternateTagSync">
             <summary>
             Gets or sets flag that determines if tag synchronization should skip digitals when alternate tag field is being used.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.SkipAnalogAlternateTagSync">
+            <summary>
+            Gets or sets flag that determines if tag synchronization should skip analogs when alternate tag field is being used.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagNamePrefixRemoveCount">
@@ -290,17 +418,75 @@
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.UseCompression">
             <summary>
-            Gets or sets flag that determines if defined point compression will be used during archiving.
+            Gets or sets the flag that determines if compression will be used during archiving when compression is configured for tag. If disabled, configured tag compression and ReplaceValues setting are ignored.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ReplaceValues">
+            <summary>
+            Gets or sets flag that determines if existing PI values should be replaced when UseCompression is enabled.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.BadDataValueStatus">
+            <summary>
+            Gets or sets the PI AF value status to use when storing measurements that have been marked as having bad data.
+            </summary>
+            <remarks>
+            This defaults to <see cref="F:OSIsoft.AF.Asset.AFValueStatus.Good"/> meaning values are stored with normal status quality in PI.
+            </remarks>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.BadTimeValueStatus">
+            <summary>
+            Gets or sets the PI AF value status to use when storing measurements that have been marked as having bad time.
+            </summary>
+            <remarks>
+            This defaults to <see cref="F:OSIsoft.AF.Asset.AFValueStatus.Good"/> meaning values are stored with normal status quality in PI.
+            </remarks>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.UpdateExistingDescriptorState">
+            <summary>
+            Gets or sets the flag that determines if the descriptor state should be updated for existing tags.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.AddTagCompressionState">
+            <summary>
+            Gets or sets the flag that determines if the compression enabled state should be added for new tags.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.UpdateExistingTagCompressionState">
             <summary>
-            Gets or sets the flag that determines if the compression enabled state, per UseCompression flag, should be adjusted for existing tags.
+            Gets or sets the flag that determines if the compression enabled state, per UseCompression flag, should be adjusted for existing tags, overriding existing configuration.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.CompDevDataTypeMap">
+            <summary>
+            Gets or sets the defined compression deviations for data types used when AddTagCompressionState or UpdateExistingTagCompressionState is enabled.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.SpanDataTypeMap">
+            <summary>
+            Gets or sets the defined value spans for data types used when AddTagCompressionState or UpdateExistingTagCompressionState is enabled.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.StepEnabledDataTypeMap">
+            <summary>
+            Gets or sets the defined step enabled for values for data types used when AddTagCompressionState or UpdateExistingTagCompressionState is enabled.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ZeroValueDataTypeMap">
+            <summary>
+            Gets or sets the defined zero values for data types used when AddTagCompressionState or UpdateExistingTagCompressionState is enabled.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ArchiveFilterDataTypes">
+            <summary>
+            Gets or sets the data types to archive. Value of <c>*</c> (or empty string) means all values archived, <c>DIGI</c> means only archive digital values.
+            Separate multiple values with a comma, for example: <c>DIGI,VPHM,FREQ</c>.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.ArchiveOnChangeDataTypes">
             <summary>
-            Gets or sets the data types to only archive on change. Empty string value means all values archived, <c>*</c> means archive all values on change, <c>DIGI</c> means only archive digital values on change. Separate multiple values with a comma, for example: <c>DIGI,VPHM,FREQ</c>.
+            Gets or sets the data types to only archive on change. Empty string value means all values archived, <c>*</c> means archive all values on change,
+            <c>DIGI</c> means only archive digital values on change. Separate multiple values with a comma, for example: <c>DIGI,VPHM,FREQ</c>.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
@@ -310,7 +496,8 @@
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.MaximumPointResolution">
             <summary>
-            Gets or sets the maximum time resolution, in seconds, for data points being archived, e.g., a value 1.0 would mean that data would be archived no more than once per second. A zero value indicates that all data should be archived.
+            Gets or sets the maximum time resolution, in seconds, for data points being archived, e.g., a value 1.0 would mean that data would be archived no
+            more than once per second. A zero value indicates that all data should be archived.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.EnableTimeReasonabilityCheck">
@@ -326,6 +513,68 @@
         <member name="P:PIAdapters.PIOutputAdapter.FutureTimeReasonabilityLimit">
             <summary>
             Gets or sets the maximum number of seconds that a future timestamp, as compared to local clock, will be considered valid.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ExpandStatusBitsToTags">
+            <summary>
+            Gets or sets flag that determines if IEEE C37.118 status bits should be expanded to tags.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.WriteStatusWord">
+            <summary>
+            Gets or sets flag that determines if status word should be written to PI as a separate tag. Commonly disabled if IEEE C37.118 status bits are expanded to tags, see <see cref="P:PIAdapters.PIOutputAdapter.ExpandStatusBitsToTags"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ExpandQualityBitsToTags">
+            <summary>
+            Gets or sets flag that determines if IEEE C37.118 quality bits should be expanded to tags.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.WriteQualityWord">
+            <summary>
+            Gets or sets flag that determines if quality word should be written to PI as a separate tag. Commonly disabled if IEEE C37.118 quality bits are expanded to tags, see <see cref="P:PIAdapters.PIOutputAdapter.ExpandQualityBitsToTags"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.IEEEC37118DigitalStates">
+            <summary>
+            Gets or sets the comma separated digital state set names for IEEE C37.118 status states. Specify digital state set name for each of the following digital states using value of 'X' (without quotes)
+            as the name to indicate state is not mapped: CompositeQual, ConfigChange, ConnectState, DataSorting, DataValid, LeapSecond, NominalFreq, PMUError, SyncError, Timelock, TimeQuality, and Trigger.
+            If digital state sets are predefined, state values are expected to be zero based and incremented by one for each value. If specified digital set name does not exist, it will be created.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.IEEEC37118TagNameExpressions">
+            <summary>
+            Gets or sets the semicolon separated tag naming expressions for IEEE C37.118 status states. Specify tag naming expression for each of the following digital states:
+            CompositeQual, ConfigChange, ConnectState, DataSorting, DataValid, LeapSecond, NominalFreq, PMUError, SyncError, Timelock, TimeQuality, and Trigger.
+            Expression can be left blank if no digital state name is mapped for the corresponding state in <see cref="P:PIAdapters.PIOutputAdapter.IEEEC37118DigitalStates"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ExpandDigitalBitsToTags">
+            <summary>
+            Gets or sets flag that determines if digital bits should be expanded to tags.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.WriteDigitalWord">
+            <summary>
+            Gets or sets flag that determines if digital word should be written to PI as a separate tag. Commonly disabled if digital bits are expanded to tags, see <see cref="P:PIAdapters.PIOutputAdapter.ExpandDigitalBitsToTags"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.DigitalBitStateExpressionMap">
+            <summary>
+            Gets or sets the semicolon separated pre-existing digital bit state set names mapped to a regular expression for matching digital labels.
+            Use format "DigitalStateName=Expression;DigitalStateName=Expression;...". Use "*" for default expression.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.DigitalBitTagNameExpressionMap">
+            <summary>
+            Gets or sets the semicolon separated digital state set name to tag name expression map. One expression should
+            exist for each state defined in <see cref="P:PIAdapters.PIOutputAdapter.DigitalBitStateExpressionMap"/>.
+            Use format "DigitalStateName=Expression;DigitalStateName=Expression;...". Use "*" for default expression.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.DigitalBitExcludedExpressions">
+            <summary>
+            Gets or sets the semicolon separated regular expressions for excluding digital labels from being expanded to tags.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.Status">
@@ -349,7 +598,7 @@
             Returns a brief status of this <see cref="T:PIAdapters.PIOutputAdapter"/>
             </summary>
             <param name="maxLength">Maximum number of characters in the status string</param>
-            <returns>Status</returns>
+            <returns>Short status.</returns>
         </member>
         <member name="M:PIAdapters.PIOutputAdapter.Initialize">
             <summary>
@@ -386,6 +635,12 @@
         <member name="F:PIAdapters.PIOutputAdapter.Instances">
             <summary>
             Accesses local output adapter instances (normally only one).
+            </summary>
+        </member>
+        <member name="F:PIAdapters.PIOutputAdapter.C37118DigitalStateSetValues">
+            <summary>
+            Predefined digital state set AF enumeration values for IEEE C37.118 connection states, quality and status word bits,
+            see <see cref="T:PIAdapters.C37118DigitalStateSets"/>.
             </summary>
         </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
@@ -469,7 +724,7 @@
             Gets or sets the desired processing interval, in milliseconds, for the adapter.
             </summary>
             <remarks>
-            With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
+            Except for the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
             basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
             interval while a value of 0 means to process data as fast as possible.
             </remarks>
