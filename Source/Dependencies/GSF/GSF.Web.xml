@@ -4864,6 +4864,12 @@
              </code>
              </remarks>
         </member>
+        <member name="M:GSF.Web.Hosting.IWebPageControllerBuilder.UseSinglePage">
+            <summary>
+            Map all routes to the default web page instead of 404 Not Found.
+            </summary>
+            <returns>The web page controller builder.</returns>
+        </member>
         <member name="T:GSF.Web.Hosting.WebPageControllerAppBuilderExtensions">
             <summary>
             Defines extension function for registering <see cref="T:GSF.Web.Hosting.WebPageController"/> in web server pipeline.
