@@ -362,6 +362,11 @@
             Creates a new instance of the <see cref="T:DynamicCalculator.EmailNotifier"/>.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.EmailNotifier.MultiTriggerPrevention">
+            <summary>
+            Gets or sets flag that determines if the trigger continuously being met will send multiple emails or should be prevented.
+            </summary>
+        </member>
         <member name="P:DynamicCalculator.EmailNotifier.ExpressionText">
             <summary>
             Gets or sets the textual representation of the boolean expression.
