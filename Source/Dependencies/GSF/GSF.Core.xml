@@ -51382,6 +51382,16 @@
             1100 kV.
             </summary>
         </member>
+        <member name="T:GSF.Units.EE.CommonVoltageLevels">
+            <summary>
+            Defines common transmission voltage levels.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.CommonVoltageLevels.Values">
+            <summary>
+            Gets common transmission voltage level values.
+            </summary>
+        </member>
         <member name="T:GSF.Units.EE.VoltageLevelExtensions">
             <summary>
             Defines extension functions related to <see cref="T:GSF.Units.EE.VoltageLevel"/> enumeration.
