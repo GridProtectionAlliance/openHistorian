@@ -37,12 +37,22 @@
 			},
 			{
 				"name": "openHistorian",
-				"url": "http://openHistorian.com"
+				"url": "https://gridprotectionalliance.org/phasor-Historian.html"
 			}
 		],
-		"screenshots": [],
-		"version": "2.0.5",
-		"updated": "2024-02-04"
+		"screenshots": [
+			{"name": "Alarm Annotations", "path": "img/AlarmAnnotations.png"},
+			{"name": "Connection Settings", "path": "img/ConnectionSettings.png"},
+			{"name": "Datasource Types", "path": "img/DataSourceValueType.png"},
+			{"name": "Excluded Data Flag Editor", "path": "img/ExcludedDataFlags.png"},
+			{"name": "Data Filter Wizard", "path": "img/FilterWizard.png"},
+			{"name": "Data Function Wizard", "path": "img/FunctionWizard.png"},
+			{"name": "Metadata Editor", "path": "img/Metadata.png"},
+			{"name": "Query Wizard", "path": "img/QueryWizardMode.png"},
+			{"name": "Text Editor Mode", "path": "img/TextEditorMode.png"}
+		  ],
+		"version": "2.1.0",
+		"updated": "2024-05-28"
 	},
 	"dependencies": {
 		"grafanaDependency": ">=9.3.8",

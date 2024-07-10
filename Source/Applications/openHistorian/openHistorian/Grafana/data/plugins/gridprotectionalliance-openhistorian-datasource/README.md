@@ -18,13 +18,13 @@ Building a metric query using the openHistorian Grafana data source begins with 
 
 The _Query Wizard_ mode is used to select series to trend. This guided wizard allows crafting metric selection queries by direct tag selection or using FILTER expressions with a user-friendly interface, with options to control the granularity and specifics of the data being queried. Behavioral query settings include `Drop Empty Series`, `Include Peaks`, `Full Resolution Data`, and `Radial Geo Distribution`. Additionally, the wizard allows the selection of avaliable functions, with detailed descriptions for all the required and optional parameters.
 
-![Query Wizard Mode](img/QueryWizardMode.png)
+![Query Wizard Mode](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/QueryWizardMode.png?raw=true)
 
 ### Text Editor Mode
 
 For a more hands-on approach, the _Text Editor_ mode allows direct entry of query expressions, with the freedom to write and edit queries in raw form.
 
-![Text Editor Mode](img/TextEditorMode.png)
+![Text Editor Mode](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/TextEditorMode.png?raw=true)
 
 > Note: The transition between `Query Wizard` and `Text Editor` modes is seamless, retaining your expressions as you switch. However, manual edits made in `Text Editor` mode won't be reflected back in `Query Wizard` mode.
 
@@ -44,7 +44,7 @@ FILTER TOP 5 ActiveMeasurements WHERE Device LIKE 'SHELBY%'
 
 ### Filter Builder from the Query Wizard
 
-![Filter Wizard](img/FilterWizard.png)
+![Filter Wizard](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/FilterWizard.png?raw=true)
 
 ## Series Functions
 
@@ -54,19 +54,19 @@ See [GSF Grafana Functions](https://github.com/GridProtectionAlliance/gsf/blob/m
 
 ### Function Selection from the Query Wizard
 
-![Function Wizard](img/FunctionWizard.png)
+![Function Wizard](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/FunctionWizard.png?raw=true)
 
 ## Metadata Selections
 
 Query results can easily now be combined with metadata. For example, selecting `Longitude` and `Latitude` metadata will provide geo-coordinates for maps:
 
-![Metadata](img/Metadata.png)
+![Metadata](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/Metadata.png?raw=true)
 
 ## Alarm Annotations
 
 Time-series alarms can be visualized with annotation queries for immediate insight into `#ClearedAlarms` and `#RaisedAlarms` (or just `#Alarms` for both cleared and raised), providing insights into series data quality.
 
-![Alarm Annotations](img/AlarmAnnotations.png)
+![Alarm Annotations](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/AlarmAnnotations.png?raw=true)
 
 Filter expressions of the configured time-series alarms are also supported, e.g.:
 
@@ -88,23 +88,23 @@ See `Alarms` [table definition](https://github.com/GridProtectionAlliance/gsf/bl
 
 Configuring your data source is straightforward, with support for openHistorian 2.0 and up. Seamless integration with Grafana allows for easy setup, authentication, and data flag exclusions for desired data quality in visualizations.
 
-The openHistorian Grafana data source works both for the standalone [openHistorian 2.0](http://www.openHistorian.com/) and the openHistorian 1.0 which is embedded into products like the [openPDC](http://www.openPDC.com/).
+The openHistorian Grafana data source works both for the standalone [openHistorian 2.0](https://gridprotectionalliance.org/phasor-Historian.html) and the openHistorian 1.0 which is embedded into products like the [openPDC](https://gridprotectionalliance.org/phasor-PDC.html).
 
 Configuration of an openHistorian Grafana data source is normally as simple as specification of a URL and proper authentication options. The required authentication options depend on the configuration of the openHistorian web API which can be set as anonymous or require authentication and/or SSL.
 
-![Connection Settings](img/ConnectionSettings.png)
+![Connection Settings](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/ConnectionSettings.png?raw=true)
 
 ### Excluded Data Flags
 
 All time-series data stored in the openHistorian includes [measurement state flags](https://github.com/GridProtectionAlliance/gsf/blob/master/Source/Libraries/GSF.TimeSeries/IMeasurement.cs#L46) that describe the data quality state of an archived value. The openHistorian Grafana data source includes the ability to filter queried data to the desired data quality states by excluding specified data flags.
 
-![Excluded Data Flags](img/ExcludedDataFlags.png)
+![Excluded Data Flags](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/ExcludedDataFlags.png?raw=true)
 
 ### Data Source Type
 
 As part of a data source configuration, selection of the data source value type is now an option:
 
-![Data Source Value Type](img/DataSourceValueType.png)
+![Data Source Value Type](https://github.com/GridProtectionAlliance/openHistorian-grafana/blob/master/src/img/DataSourceValueType.png?raw=true)
 
 ## Installation
 
