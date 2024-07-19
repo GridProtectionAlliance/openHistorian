@@ -38,7 +38,7 @@ USE openHistorian;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 15 AS VersionNumber;
+SELECT 16 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -628,6 +628,7 @@ CREATE TABLE AccessLog (
     ID INT(11) NOT NULL AUTO_INCREMENT,
     UserName VARCHAR(200) NOT NULL,
     AccessGranted TINYINT NOT NULL,
+    NodeID NCHAR(36) NOT NULL,
     CreatedOn DATETIME NULL,
     CONSTRAINT PK_AccessLog PRIMARY KEY (ID ASC)
 );
@@ -1867,39 +1868,6 @@ SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDev
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID; 
--- *******************************************************************************************
--- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
--- *******************************************************************************************
-CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber;
-
-CREATE TABLE CompressionSetting(
-    PointID INT NOT NULL,
-    CompressionMinTime BIGINT NOT NULL DEFAULT 0,
-    CompressionMaxTime BIGINT NOT NULL DEFAULT 0,
-    CompressionLimit DOUBLE NOT NULL DEFAULT 0.0,
- CONSTRAINT PK_CompressionSetting PRIMARY KEY (PointID ASC) 
-);
-
-CREATE VIEW NodeCompressionSetting AS
-SELECT
-    Node.ID AS NodeID,
-    CompressionSetting.PointID,
-    CompressionSetting.CompressionMinTime,
-    CompressionSetting.CompressionMaxTime,
-    CompressionSetting.CompressionLimit
-FROM CompressionSetting CROSS JOIN Node;
-
-CREATE TABLE EventMarker(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    ParentID INTEGER NULL,
-    Source VARCHAR(200) NULL,
-    StartTime DATETIME NULL,
-    StopTime DATETIME NULL,
-    Notes VARCHAR(max) NULL,
-    CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
- 
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************

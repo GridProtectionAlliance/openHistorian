@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 15 AS VersionNumber;
+SELECT 16 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -642,6 +642,7 @@ CREATE TABLE AccessLog (
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     UserName VARCHAR(200) NOT NULL,
     AccessGranted BOOLEAN NOT NULL,	
+    NodeID NCHAR(36) NOT NULL,
     CreatedOn DATETIME NOT NULL DEFAULT ''
 );
 
@@ -1757,27 +1758,6 @@ FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID;
  
--- *******************************************************************************************
--- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
--- *******************************************************************************************
-CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber;
-
-CREATE TABLE CompressionSetting(
-    PointID INTEGER PRIMARY KEY NOT NULL,
-    CompressionMinTime INTEGER NOT NULL DEFAULT 0,
-    CompressionMaxTime INTEGER NOT NULL DEFAULT 0,
-    CompressionLimit REAL NOT NULL DEFAULT 0.0
- );
-
-CREATE VIEW NodeCompressionSetting AS
-SELECT
-    Node.ID AS NodeID,
-    CompressionSetting.PointID,
-    CompressionSetting.CompressionMinTime,
-    CompressionSetting.CompressionMaxTime,
-    CompressionSetting.CompressionLimit
-FROM CompressionSetting CROSS JOIN Node; 
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************

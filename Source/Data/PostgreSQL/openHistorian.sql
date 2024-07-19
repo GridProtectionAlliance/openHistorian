@@ -36,7 +36,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 15 AS VersionNumber;
+SELECT 16 AS VersionNumber;
 
 CREATE EXTENSION "uuid-ossp";
 
@@ -651,6 +651,7 @@ CREATE TABLE AccessLog (
     ID SERIAL NOT NULL PRIMARY KEY,
     UserName VARCHAR(200) NOT NULL,
     AccessGranted SMALLINT NOT NULL,	
+    NodeID NCHAR(36) NOT NULL,
     CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -1897,38 +1898,6 @@ SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDev
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID; 
--- *******************************************************************************************
--- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
--- *******************************************************************************************
-CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber;
-
-CREATE TABLE CompressionSetting(
-    PointID INTEGER NOT NULL PRIMARY KEY,
-    CompressionMinTime BIGINT NOT NULL DEFAULT 0,
-    CompressionMaxTime BIGINT NOT NULL DEFAULT 0,
-    CompressionLimit DOUBLE PRECISION NOT NULL DEFAULT 0.0
-);
-
-CREATE VIEW NodeCompressionSetting AS
-SELECT
-    Node.ID AS NodeID,
-    CompressionSetting.PointID,
-    CompressionSetting.CompressionMinTime,
-    CompressionSetting.CompressionMaxTime,
-    CompressionSetting.CompressionLimit
-FROM CompressionSetting CROSS JOIN Node;
-
-CREATE TABLE EventMarker(
-    ID SERIAL NOT NULL PRIMARY KEY,
-    ParentID INTEGER NULL,
-    Source VARCHAR(200) NULL,
-    StartTime TIMESTAMP NULL,
-    StopTime TIMESTAMP NULL,
-    Notes VARCHAR(max) NULL,
-    CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
- 
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************

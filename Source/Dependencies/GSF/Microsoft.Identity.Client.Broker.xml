@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Identity.Client.Broker</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Identity.Client.Broker.BrokerExtension">
+            <summary>
+            MSAL Broker Extension for WAM support
+            </summary>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.BrokerExtension.WithBrokerPreview(Microsoft.Identity.Client.PublicClientApplicationBuilder,System.Boolean)">
+            <summary>
+            Enables MSAL to use Broker flows, which are more secure than browsers. 
+            For details about Windows broker, see https://aka.ms/msal-net-wam
+            </summary>
+            <remarks>
+            No broker integration exists on Mac and Linux yet. 
+            Windows broker does not work on Win 8, Win Server 2016 and lower.         
+            If a broker does not exist or cannot be used, MSAL will fallback to a browser. 
+            Make sure browser auth is enabled (e.g. if using system browser, register the "http://localhost" redirect uri etc.)
+            </remarks>
+        </member>
+        <member name="F:Microsoft.Identity.Client.Broker.RuntimeBroker.s_lazyCore">
+            <summary>
+            Being a C API, MSAL runtime uses a "global init" and "global shutdown" approach. 
+            It is recommended to initialize the runtime once and to clean it up only once. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.RuntimeBroker.OnProcessExit(System.Object,System.EventArgs)">
+            <summary>
+            Do not execute too much logic here. All "on process" handlers should execute in under 2s on Windows.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.RuntimeBroker.#ctor(Microsoft.Identity.Client.UI.CoreUIParent,Microsoft.Identity.Client.ApplicationConfiguration,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Ctor. Only call if on Win10, otherwise a TypeLoadException occurs. See DesktopOsHelper.IsWin10
+            </summary>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.ThrowExceptionFromWamError(Microsoft.Identity.Client.NativeInterop.AuthResult,Microsoft.Identity.Client.Internal.Requests.AuthenticationRequestParameters,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Create WAM AuthResult Error Response
+            </summary>
+            <param name="authResult"></param>
+            <param name="authenticationRequestParameters"></param>
+            <param name="logger"></param>
+            <exception cref="T:Microsoft.Identity.Client.MsalClientException"></exception>
+            <exception cref="T:Microsoft.Identity.Client.MsalUiRequiredException"></exception>
+            <exception cref="T:Microsoft.Identity.Client.MsalServiceException"></exception>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.ThrowExceptionFromWamError(Microsoft.Identity.Client.NativeInterop.SignOutResult,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Create WAM SignOutResult Error Response
+            </summary>
+            <param name="signoutResult"></param>
+            <param name="logger"></param>
+            <exception cref="T:Microsoft.Identity.Client.MsalServiceException"></exception>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.GetCommonAuthParameters(Microsoft.Identity.Client.Internal.Requests.AuthenticationRequestParameters,System.Boolean,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Gets the Common Auth Parameters to be passed to Native Interop
+            </summary>
+            <param name="authenticationRequestParameters"></param>
+            <param name="isMsaPassthrough"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.AddPopParams(Microsoft.Identity.Client.Internal.Requests.AuthenticationRequestParameters,Microsoft.Identity.Client.NativeInterop.AuthParameters)">
+            <summary>
+            Configures the MSAL Runtime authentication request to use proof of possession .
+            </summary>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.ParseRuntimeResponse(Microsoft.Identity.Client.NativeInterop.AuthResult,Microsoft.Identity.Client.Internal.Requests.AuthenticationRequestParameters,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Parse Native Interop AuthResult Response to MSAL Token Response
+            </summary>
+            <param name="authResult"></param>
+            <param name="authenticationRequestParameters"></param>
+            <param name="logger"></param>
+            <exception cref="T:Microsoft.Identity.Client.MsalServiceException"></exception>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.GetExpectedRedirectUri(System.String)">
+            <summary>
+            Get WAM Application Redirect URI
+            </summary>
+            <param name="clientId"></param>
+        </member>
+        <member name="M:Microsoft.Identity.Client.Broker.WamAdapters.ValidateAuthParams(Microsoft.Identity.Client.Internal.Requests.AuthenticationRequestParameters,Microsoft.Identity.Client.Core.ILoggerAdapter)">
+            <summary>
+            Validate common auth params
+            </summary>
+            <param name="authenticationRequestParameters"></param>
+            <param name="logger"></param>
+            <exception cref="T:Microsoft.Identity.Client.MsalClientException"></exception>
+        </member>
+    </members>
+</doc>

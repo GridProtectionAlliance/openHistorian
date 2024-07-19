@@ -692,6 +692,11 @@
             Access granted flag field.
             </summary>
         </member>
+        <member name="P:GSF.Security.Model.AccessLog.NodeID">
+            <summary>
+            Node ID of the Application.
+            </summary>
+        </member>
         <member name="P:GSF.Security.Model.AccessLog.CreatedOn">
             <summary>
             Created on field.

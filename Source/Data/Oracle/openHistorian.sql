@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 15 AS VersionNumber
+SELECT 16 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -948,6 +948,7 @@ CREATE TABLE AccessLog (
     ID NUMBER NOT NULL,
     UserName VARCHAR2(200) NOT NULL,
     AccessGranted NUMBER NOT NULL,
+    NodeID VARCHAR2(36) NOT NULL,
     CreatedOn DATE NOT NULL
 );
 
@@ -2813,51 +2814,6 @@ SELECT AlarmDevice.ID, Device.Name, AlarmState.State, AlarmState.Color, AlarmDev
 FROM AlarmDevice
     INNER JOIN AlarmState ON AlarmDevice.StateID = AlarmState.ID
     INNER JOIN Device ON AlarmDevice.DeviceID = Device.ID;
- 
--- *******************************************************************************************
--- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
--- *******************************************************************************************
-CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber
-FROM dual;
-
-CREATE TABLE CompressionSetting(
-    PointID NUMBER NOT NULL,
-    CompressionMinTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
-    CompressionMaxTime NUMBER(19, 0) DEFAULT 0 NOT NULL,
-    CompressionLimit NUMBER(9, 6) DEFAULT 0.0 NOT NULL
-);
-
-CREATE UNIQUE INDEX IX_CompressionSetting_PointID ON CompressionSetting (PointID ASC) TABLESPACE openHistorian_INDEX;
-
-CREATE VIEW NodeCompressionSetting AS
-SELECT
-    Node.ID AS NodeID,
-    CompressionSetting.PointID,
-    CompressionSetting.CompressionMinTime,
-    CompressionSetting.CompressionMaxTime,
-    CompressionSetting.CompressionLimit
-FROM CompressionSetting CROSS JOIN Node;
-
-CREATE TABLE EventMarker(
-    ID NUMBER NOT NULL,
-    ParentID Number NULL,
-    Source VARCHAR2(200) NULL,
-    StartTime DATE NULL,
-    StopTime DATE NULL,
-    Notes VARCHAR2(4000) NULL
-);
-
-CREATE UNIQUE INDEX IX_EventMarker_ID ON EventMarker (ID ASC) TABLESPACE openHistorian_INDEX;
-
-ALTER TABLE EventMarker ADD CONSTRAINT PK_EventMarker PRIMARY KEY (ID);
-
-CREATE SEQUENCE SEQ_EventMarker START WITH 1 INCREMENT BY 1;
-
-CREATE TRIGGER AI_EventMarker BEFORE INSERT ON EventMarker
-    FOR EACH ROW BEGIN SELECT SEQ_EventMarker.nextval INTO :NEW.ID FROM dual;
-END;
-
  
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
