@@ -30,15 +30,35 @@
             Gets or sets the name of the XML file from which the measurement mapping is read.
             </summary>
         </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.PollingInterval">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.MapQualityToStateFlags">
             <summary>
-            Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
+            Gets or sets flag that determines if DNP3 quality flags should be mapped to measurement state flags.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.PublishFlagsAsSeparateMeasurements">
+            <summary>
+            Gets or sets flag that determines if DNP3 quality flags should be published as separate measurement outputs.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.TagMatchPattern">
+            <summary>
+            Gets or sets the regular expression pattern used to match tag names for quality flag outputs.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.QualityTagSuffix">
+            <summary>
+            Gets or sets the suffix to append to the tag name for DNP3 quality flag measurement outputs.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.TimestampDifferentiation">
             <summary>
             Gets or sets the time interval, in milliseconds, to insert between consecutive
             data points for a given signal that were received at the exact same time.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.PollingInterval">
+            <summary>
+            Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
@@ -97,12 +117,12 @@
         </member>
         <member name="F:DNP3Adapters.MasterConfiguration.client">
             <summary>
-            All of the settings for the connection
+            All the settings for the connection
             </summary>
         </member>
         <member name="F:DNP3Adapters.MasterConfiguration.master">
             <summary>
-            All of the settings for the master
+            All the settings for the master
             </summary>
         </member>
         <member name="T:DNP3Adapters.TcpClientConfig">
@@ -219,6 +239,11 @@
             </summary>
         </member>
         <member name="T:DNP3Adapters.TimeSeriesSOEHandler">
+            <summary>
+            This is the data adapter that converts data from the dnp3 world to the Time Series Framework.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.TimeSeriesSOEHandler.#ctor(DNP3Adapters.MeasurementLookup)">
             <summary>
             This is the data adapter that converts data from the dnp3 world to the Time Series Framework.
             </summary>
