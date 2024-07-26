@@ -5021,7 +5021,7 @@
             <summary>
             Reads <see cref="T:GSF.Historian.Files.MetadataRecord"/>s that matches the <paramref name="searchPattern"/>.
             </summary>
-            <param name="searchPattern">Comma or semi-colon delimited list of IDs or text for which the matching <see cref="T:GSF.Historian.Files.MetadataRecord"/>s are to be retrieved.</param>
+            <param name="searchPattern">Comma or semicolon delimited list of IDs or text for which the matching <see cref="T:GSF.Historian.Files.MetadataRecord"/>s are to be retrieved.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> object of <see cref="T:GSF.Historian.Files.MetadataRecord"/>.</returns>
         </member>
         <member name="M:GSF.Historian.Files.MetadataFile.Open">
@@ -5061,7 +5061,7 @@
             </summary>
             <param name="records">Records to be written.</param>
             <remarks>
-            This operation will causes existing records to be deleted and replaced with the ones specified.
+            This operation will cause existing records to be deleted and replaced with the ones specified.
             </remarks>
         </member>
         <member name="M:GSF.Historian.Files.MetadataFile.Write(System.Int32,GSF.Historian.Files.MetadataRecord)">
@@ -5168,7 +5168,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.Name">
             <summary>
-            Gets or sets a alpha-numeric name for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
+            Gets or sets an alphanumeric name for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
             Maximum length for <see cref="P:GSF.Historian.Files.MetadataRecord.Name"/> is 40 characters.
@@ -5233,7 +5233,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecord.SystemName">
             <summary>
-            Gets or sets the alpha-numeric system identifier for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
+            Gets or sets the alphanumeric system identifier for the <see cref="P:GSF.Historian.Files.MetadataRecord.HistorianID"/>.
             </summary>
             <remarks>
             Maximum length for <see cref="P:GSF.Historian.Files.MetadataRecord.SystemName"/> is 24 characters.

@@ -205,8 +205,7 @@
         </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.AutoRefreshMetadata">
             <summary>
-            Gets or sets a boolean indicating whether or not metadata is
-            refreshed when the adapter attempts to connect to the archive.
+            Gets or sets a boolean indicating whether metadata is refreshed when the adapter attempts to connect to the archive.
             </summary>
         </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.InputMeasurementKeys">
