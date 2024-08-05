@@ -393,6 +393,7 @@
     private static double s_defaultCalculationLeadTime;
     private static int s_nominalFrequency;
     private static string s_systemName;
+    private static string s_commonVoltageLevels;
 
     // Quasi-Static Properties
     private Dictionary<string, object> AppModelGlobal
@@ -492,6 +493,22 @@
         return Thread.CurrentPrincipal.Identity.Name;
     }
 
+    private string CommonVoltageLevels
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(s_commonVoltageLevels))
+            {
+                List<string> voltageLevels = new List<string>();
+                foreach (string voltageLevel in GSF.Units.EE.CommonVoltageLevels.Values)
+                {
+                    voltageLevels.Add("\"" + voltageLevel + "\"");
+                }
+                s_commonVoltageLevels = string.Join(", ", voltageLevels);
+            }
+            return s_commonVoltageLevels;
+        }
+    }
     // This function simply limits access to UI elements that the user does not have access to, server-side
     // functions will further validate user rights even if UI restriction was somehow bypassed
     private bool UserIsEditor()
@@ -732,7 +749,7 @@
             if (!isEmpty(nominalVoltage) && nominalVoltage !== 0)
                 return nominalVoltage;
 
-            const commonVoltageLevels = [ "44", "69", "115", "138", "161", "169", "230", "345", "500", "765", "1100" ];
+            const commonVoltageLevels = [ @Raw(CommonVoltageLevels) ];
 
             // Check phasor label before device
             for (let i = 0; i < commonVoltageLevels.length; i++) {
@@ -1377,8 +1394,8 @@
                             ID: cell.ID,
                             ParentID: cell.ParentID,
                             UniqueID: cell.UniqueID,
-                            //Longitude: cell.Longitude,
-                            //Latitude: cell.Latitude,
+                            Longitude: cell.Longitude,
+                            Latitude: cell.Latitude,
                             IDCode: cell.IDCode,
                             StationName: self.configFrame().Cells.length === 1 ? self.deviceName() : cell.IDLabel(),
                             IDLabel: cell.IDLabel(),
@@ -2556,8 +2573,8 @@
                 if (lineCurrentExists(lines, current))
                     continue;
 
-                // Strategy for finding matching line phases is to remove any A, B or C phase designations from label
-                const match = current.Label().trim().toUpperCase().replace(/[ABC]/gi, "");
+                // Strategy for finding matching line phases is to remove any (A/B/C or R/Y/B) phase designations from label
+                const match = current.Label().trim().toUpperCase().replace(/[ABCRYB]/gi, "");
 
                 if (isEmpty(match))
                     continue;
@@ -2588,7 +2605,7 @@
                         continue;
 
                     // See if this next current is for matching line based on label minus phase designations
-                    if (match === nextCurrent.Label().trim().toUpperCase().replace(/[ABC]/gi, "")) {
+                    if (match === nextCurrent.Label().trim().toUpperCase().replace(/[ABCRYB]/gi, "")) {
                         line[nextPhase] = {
                             current: nextCurrent,
                             voltage: nextVoltage
@@ -3650,8 +3667,10 @@
                                 return saveDeviceRecords(deviceID).then(function () {
                                     enableUIButtons("Save complete.");
 
-                                    serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                    return phasorHub.markConfigurationAsSynchronized(device.Acronym).then(function () {
+                                        return serviceHub.sendCommand("initialize " + deviceID).done(function () {
                                         window.location = "GraphMeasurements.cshtml";
+                                        });
                                     });
                                 });
                             })
@@ -3672,10 +3691,12 @@
                             return saveDeviceRecords(device.ID).then(function () {
                                 enableUIButtons("Save complete.");
 
+                                return phasorHub.markConfigurationAsSynchronized(device.Acronym).then(function () {
                                 const connectionID = device.ParentID ? device.ParentID : device.ID;
 
-                                serviceHub.sendCommand("initialize " + connectionID).done(function () {
+                                    return serviceHub.sendCommand("initialize " + connectionID).done(function () {
                                     window.location = "GraphMeasurements.cshtml";
+                                    });
                                 });
                             });
                         })
@@ -3710,6 +3731,8 @@
                 setTimeout(function () {
                     showInfoMessage("Loading existing configuration...");
                     loadDeviceConfiguration(device.Acronym).done(function (mapping) {
+                        // TODO: If loading from a mapping, need to determine which information from database should be
+                        // used to override the mapping - e.g., device name, longitude, latitude, etc.
                         if (mapping && mapping.length > 0)
                             viewModel.loadConfiguration(new Blob([mapping], { type: "application/json" }), false);
                         else
