@@ -1,0 +1,473 @@
+﻿@*******************************************************************************************************
+//  BulkTagTemplate.cshtml - Gbtc
+//
+//  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/05/2024 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+//  To use in ASP.NET project, include a AddSynchrophasorDevice.cshtml view with the following:
+//
+//  @using GSF.Web
+//  @section StyleSheets{@Html.Raw(ViewBag.StyleSheetsSection?.ToString())}
+//  @Html.RenderResource("PhasorWebUI.Views.BulkTagTemplate.cshtml")
+//  @section Scripts{@Html.Raw(ViewBag.ScriptsSection?.ToString())}
+//
+//******************************************************************************************************
+//  To use in self-hosted web project, include a AddSynchrophasorDevice.cshtml view with the following:
+//
+//  @using GSF.Web.Model
+//  @using <MyAppNameSpace>.Model
+//  @inherits ExtendedTemplateBase<AppModel>
+//  @section StyleSheets{@Html.Raw(ViewBag.StyleSheetsSection.ToString())}
+//  @{Layout = "Layout.cshtml";}
+//  @Html.RenderResource("PhasorWebUI.BulkTagTemplate.cshtml")
+//  @section Scripts{@Html.Raw(ViewBag.ScriptsSection.ToString())}
+//*****************************************************************************************************@
+@* ReSharper disable UnknownCssClass *@
+@* ReSharper disable Html.PathError *@
+@* ReSharper disable InlineOutVariableDeclaration *@
+@* ReSharper disable ArrangeAccessorOwnerBody *@
+@using System
+@using System.Collections.Generic
+@using System.ComponentModel
+@using System.Net.Http
+@using System.Text.RegularExpressions
+@using System.Threading
+@using GSF.ComponentModel
+@using GSF.ComponentModel.DataAnnotations
+@using GSF.Identity
+@using GSF.Security
+@using GSF.Web
+@using GSF.Web.Model
+@using GSF.Web.Shared
+@inherits ExtendedTemplateBase<openHistorian.Model.AppModel>
+@{
+    ViewBag.Title = "Bulk Tag Template Application";
+
+    Layout = "Layout.cshtml";
+
+    bool userIsEditor = UserIsEditor();
+}
+@section StyleSheets {
+    <link href="@Resources.Root/Shared/Content/jquery-ui.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #deviceWizardContainer {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            padding-bottom: 20px;
+            padding-top: 20px;
+            background: white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #contentWell {
+            padding-bottom: 20px;
+        }
+    </style>
+}
+@functions {
+    private static Dictionary<string, object> s_appModelGlobal;
+    private static Guid s_nodeID;
+
+    // Quasi-Static Properties
+    private Dictionary<string, object> AppModelGlobal
+    {
+        get
+        {
+            if (s_appModelGlobal != null)
+                return s_appModelGlobal;
+
+            s_appModelGlobal = new Dictionary<string, object>();
+            ExpressionEvaluator.ValueType global = ValueExpressionParser.DefaultTypeRegistry["Global"] as ExpressionEvaluator.ValueType;
+
+            if (global == null)
+                return s_appModelGlobal;
+
+            foreach (PropertyDescriptor propertyDescriptor in TypeDescriptor.GetProperties(global.Value))
+            {
+                s_appModelGlobal.Add(propertyDescriptor.Name, propertyDescriptor.GetValue(global.Value));
+            }
+
+            return s_appModelGlobal;
+        }
+    }
+
+    private Guid NodeID
+    {
+        get
+        {
+            return s_nodeID != default(Guid) ? s_nodeID : s_nodeID = (Guid)AppModelGlobal["NodeID"];
+        }
+    }
+
+    // This function simply limits access to UI elements that the user does not have access to, server-side
+    // functions will further validate user rights even if UI restriction was somehow bypassed
+    private bool UserIsEditor()
+    {
+        SecurityPrincipal securityPrincipal = ViewBag.SecurityPrincipal as SecurityPrincipal;
+
+        if (securityPrincipal == null)
+            return false;
+
+        return securityPrincipal.IsInRole("Administrator") || securityPrincipal.IsInRole("Editor");
+    }
+}
+@section Scripts {
+    <script src="@Resources.Root/Model/Scripts/bootstrap-toolkit.js"></script>
+    <script>
+        "use strict";
+
+        var phasorHub, phasorHubClient;
+        var firstConnect = true;
+        var deviceIDs = [];
+        var operationStartTime = performance.now();
+
+        function resizePageElements() {
+            $("#contentWell").height(calculateRemainingBodyHeight() - 30);
+            $("#deviceWizardContainer").height($("#contentWell").outerHeight(true) - $("#headerArea").outerHeight(true) - 115);
+            $("#editDevicesFrame").height($("#contentWell").outerHeight(true) - 200);
+        }
+
+        function setSelectedDeviceIDs(selectedIDs) {
+            deviceIDs = selectedIDs;
+
+            if (deviceIDs.length === 0) {
+                showErrorMessage("No enabled devices available for bulk tag template application.", 0, true);
+                disableApplyButton();
+            }
+            else {
+                enableApplyButton();
+            }
+
+            dataHub.queryEnabledDeviceCount("@NodeID", null).done(function(count) {
+                if (deviceIDs.length >= count && deviceIDs.length > 0)
+                    $("#selectedDeviceCount").html(`${deviceIDs.length} (<em>all&nbsp;devices&nbsp;selected</em>)`);
+                else
+                    $("#selectedDeviceCount").html(`${deviceIDs.length}`);
+            })
+            .fail(function(ex) {
+                $("#selectedDeviceCount").html(`${deviceIDs.length}`);
+            });
+        }
+
+        function selectAllDeviceIDs() {
+            dataHub.queryEnabledDevices("@NodeID", -1, null).done(function(devices) {
+                setSelectedDeviceIDs(devices.map(device => device.ID));
+            })
+            .fail(function(ex) {
+                showErrorMessage(`Failed to query enabled devices: ${ex}`, 0, true);
+            });
+        }
+
+        function enableApplyButton() {
+            $("#startBulkApply").prop("disabled", false);
+        }
+
+        function disableApplyButton() {
+            $("#startBulkApply").prop("disabled", true);
+        }
+
+        $(function() {
+            $("#editDevicesDialog").modal({ show: false, backdrop: "static", keyboard: false });
+
+            var currentDeviceIndex = 0;
+
+            $("#showSelectedDevices").click(function() {
+                openDeviceSelector();
+            });
+
+            $("#selectDevices").click(function() {
+                const contentWindow = document.getElementById("editDevicesFrame").contentWindow;
+                const selectedDeviceIDs = contentWindow.viewModel.selectedDevices().map(device => device.id);
+
+                if (selectedDeviceIDs.length === 0) {
+                    showInfoMessage("No devices were selected, defaulting to all devices.");
+                    selectAllDeviceIDs();
+                    return;
+                }
+
+                setSelectedDeviceIDs(selectedDeviceIDs);
+            });
+
+            $("#startBulkApply").click(function() {
+                operationStartTime = performance.now();
+                hideInfoMessage({ closeHeaderPanel: true });
+                hideErrorMessage({ closeHeaderPanel: true });
+
+                const selectedTemplate = $("#templateType").val();
+
+                if (!selectedTemplate) {
+                    alert("Please select a tag template.");
+                    return;
+                }
+
+                disableApplyButton();
+                currentDeviceIndex = 0;
+
+                if (selectedTemplate === "REMOVE") {
+                    dataHub.queryEnabledDeviceCount("@NodeID", null).done(function(count) {
+                        if (deviceIDs.length >= count) {
+                            if (confirm("All devices selected! Are you sure you want to remove all dynamic calculation adapters and calculated measurements?")) {
+                                operationStartTime = performance.now();
+
+                                dataHub.removeAllDeviceCalculations().done(function() {
+                                    showInfoMessage(`<b>All device calculation adapters and measurements removed in ${((performance.now() - operationStartTime) / 1000).toFixed(4)} seconds.</b>`, 0, true);
+                                    serviceHub.sendCommand("reloadconfig");
+                                    enableApplyButton();
+                                })
+                                .fail(function(ex) {
+                                    showErrorMessage(`Failed to remove all dynamic calculation adapters and measurements: ${ex}`, 0, true);
+                                    enableApplyButton();
+                                });
+                            }
+                            else { 
+                                enableApplyButton();
+                            }
+                        } else {
+                            applyTemplateToDevice(selectedTemplate, deviceIDs[currentDeviceIndex]);
+                        }
+                    })
+                    .fail(function(ex) {
+                        showErrorMessage(`Failed to query enabled device count: ${ex}`, 0, true);
+                        enableApplyButton();
+                    });
+                } else {
+                    applyTemplateToDevice(selectedTemplate, deviceIDs[currentDeviceIndex]);
+                }
+            });
+
+            function moveToNextDevice(templateID) {
+                hideErrorMessage({ closeHeaderPanel: true });
+
+                currentDeviceIndex++;
+
+                if (currentDeviceIndex < deviceIDs.length) {
+                    applyTemplateToDevice(templateID, deviceIDs[currentDeviceIndex]);
+                }
+                else {
+                    showInfoMessage(`<b>Bulk template ${templateID === "REMOVE" ? "removal" : "application"} completed in ${((performance.now() - operationStartTime) / 1000).toFixed(4)} seconds.</b>`, 0, true);
+                    enableApplyButton();
+                }
+            }
+
+            function applyTemplateToDevice(templateID, deviceID) {
+                phasorHub.queryDeviceByID(deviceID).done(function(device) {
+                    if (device.ID === 0) {
+                        showErrorMessage(`Device with ID ${deviceID} not found, moving to next device...`);
+                        moveToNextDevice(templateID);
+                        return;
+                    }
+
+                    const deviceAcronym = device.Acronym;
+
+                    if (templateID === "REMOVE") {
+                        dataHub.removeDeviceCalculations(deviceID).done(function() {
+                            showInfoMessage(`<b><i>Removed all dynamic calculation adapters and measurements for device <span style="color: #f21e1e">\"${deviceAcronym}\"</span>.</i></b>`, 0, true);
+
+                            serviceHub.sendCommand("initialize " + deviceID).done(function () {
+                                moveToNextDevice(templateID);
+                            })
+                            .fail(function(ex) {
+                                showErrorMessage(`Failed to reinitialize \"${deviceAcronym}\": ${ex}`);
+                                moveToNextDevice(templateID);
+                            });
+                        })
+                        .fail(function(ex) {
+                            showErrorMessage(`Failed to remove dynamic calculation adapters and measurements for device \"${deviceAcronym}\": ${ex}`);
+                            moveToNextDevice(templateID);
+                        });
+                    } else {
+                        const deviceWizardFrame = $("#deviceWizardFrame");
+                        const url = `/AddSynchrophasorDeviceDev.cshtml?deviceID=${deviceID}&templateID=${templateID}&showMenu=false&saveOnLoad=true`;
+
+                        deviceWizardFrame.attr("src", url);
+                        showInfoMessage(`<b><i>Applying template to device <span style="color: #f21e1e">\"${deviceAcronym}\"</span>, please wait...</i></b>`, 0, true);
+
+                        const contentWindow = deviceWizardFrame[0].contentWindow;
+
+                        function checkForCompletion() {
+                            const viewModel = contentWindow.viewModel;
+
+                            // Check model for save operation completion
+                            if (viewModel && viewModel.saveComplete && viewModel.saveComplete()) {
+                                if (viewModel.saveError()) {
+                                    hideInfoMessage({ closeHeaderPanel: true });
+                                    showErrorMessage(`<b>Please complete the operation for device \"${deviceAcronym}\" manually.</b>`, 0, true);
+                                } else {
+                                    moveToNextDevice(templateID);
+                                }
+
+                                return;
+                            }
+
+                            // Also check if the operation is completed by detecting navigation to a new page
+                            if (contentWindow.location.pathname === '/GraphMeasurements.cshtml') {
+                                moveToNextDevice(templateID);
+                                return;
+                            }
+
+                            setTimeout(checkForCompletion, 500);
+                        }
+
+                        deviceWizardFrame.off("load").on("load", function() {
+                            checkForCompletion();
+                        });
+                    }
+                })
+                .fail(function(ex) {
+                    showErrorMessage(`Failed to query device with ID ${deviceID}: ${ex}`, 0, true);
+                });
+            }
+
+            // Connect to phasor hub
+            phasorHub = $.connection.phasorHub.server;
+            phasorHubClient = $.connection.phasorHub.client;
+
+            // Create hub client functions for message control
+            function encodeInfoMessage(message, timeout) {
+                // Html encode message
+                const encodedMessage = $("<div />").text(message).html();
+                showInfoMessage(encodedMessage, timeout, true);
+            }
+
+            function encodeErrorMessage(message, timeout) {
+                // Html encode message
+                const encodedMessage = $("<div />").text(message).html();
+                showErrorMessage(encodedMessage, timeout, true);
+            }
+
+            // Register info and error message handlers for each hub client
+            phasorHubClient.sendInfoMessage = encodeInfoMessage;
+            phasorHubClient.sendErrorMessage = encodeErrorMessage;
+
+            $("#bodyContainer").addClass("fill-height");
+
+            $(window).on("messageVisibiltyChanged", function() {
+                resizePageElements();
+            });
+
+            $(window).resize(function() {
+                resizePageElements();
+            });
+
+            // Let view model know about hub connectivity changes
+            $(window).on("hubConnected", function() {
+                if (!firstConnect)
+                    return;
+
+                firstConnect = false;
+                const templateTypeSelect = $("#templateType");
+
+                // Load available calculation templates, if not already loaded
+                if (templateTypeSelect.children("option").length === 0) {
+                    phasorHub.getTemplateTypes().done(function(names) {
+                        for (let i = 0; i < names.length; i++) {
+                            const value = names[i];
+
+                            if (value.toUpperCase().startsWith("NONE:"))
+                                continue;
+
+                            templateTypeSelect.append($("<option>", { value: value, text: value }));
+                        }
+
+                        templateTypeSelect.append($("<option>", { value: "REMOVE", text: "REMOVE: Remove All Calculations" }));
+
+                        // Select last value
+                        var lastTemplateType = Cookies.get("templateType");
+
+                        if (lastTemplateType === undefined)
+                            lastTemplateType = templateTypeSelect.eq(0).val();
+
+                        templateTypeSelect.val(lastTemplateType);
+                    })
+                    .fail(function(ex) {
+                        showErrorMessage(`Failed to query available tag templates: ${ex}`, 0, true);
+                    });
+                }
+
+                selectAllDeviceIDs();
+            });
+
+            $(window).on("unload", function() {
+                Cookies.set("templateType", $("#templateType").val(), { expires: 365 });
+            });
+
+            resizePageElements();
+        });
+
+        function openDeviceSelector() {
+            $("#editDevicesFrame").attr({
+                "src": `SelectGroupDevices.cshtml?ID=0&Acronym=${encodeURIComponent("Bulk Tag Template")}&timestamp=${Date.now()}`,
+                "height": `${$("#contentWell").outerHeight(true)}px`,
+                "width": "100%"
+            });
+
+            $("#editDevicesDialog").modal("show");
+        }
+    </script>
+}
+<div id="contentWell" class="well well-dynamic-content">
+    <div id="headerArea">
+        <table style="table-layout: auto; width: 100%; border-collapse: collapse; margin-bottom: 10px">
+            <tr>
+                <td style="width: 100px" class="input-label">
+                    <label for="templateType" data-bind="css: { 'disabled': forwardOnly }">Tag Template:</label>
+                </td>
+                <td style="width: 360px">
+                    <div class="input-group">
+                        <select class="form-control" id="templateType" style="border: 1px solid #ccc"></select>
+                    </div>
+                </td>
+                <td style="text-align: center">
+                    Selected Device Count: <span id="selectedDeviceCount">0</span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default pull-left" id="showSelectedDevices" hub-dependent>&nbsp;Select Devices&nbsp;</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary pull-right" id="startBulkApply" hub-dependent>Start Bulk Apply</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="deviceWizardContainer">
+        <iframe id="deviceWizardFrame"></iframe>
+    </div>
+</div>
+<div id="editDevicesDialog" class="modal modal-wide fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <iframe style="border: none" id="editDevicesFrame"></iframe>
+                <button id="selectDevices" type="button" class="btn btn-default pull-right popup-ok-button" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -352,6 +352,7 @@
     <Content Include="wwwroot\AddSynchrophasorDevice.cshtml" />
     <Content Include="wwwroot\AddDevice.cshtml" />
     <Content Include="wwwroot\AddSynchrophasorDeviceDev.cshtml" />
+    <Content Include="wwwroot\BulkTagTemplate.cshtml" />
     <None Include="wwwroot\Companies.cshtml" />
     <Content Include="wwwroot\ExportDataHandler.ashx" />
     <Content Include="wwwroot\DeviceGroups.cshtml" />

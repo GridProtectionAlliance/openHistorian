@@ -20,10 +20,25 @@
 //       Generated original version of source code.
 //
 //*****************************************************************************************************@
+@using System.Collections.Generic
+@using System.Net.Http
+@using GSF
+@using GSF.Web
 @using GSF.Web.Model
 @using openHistorian.Model
 @inherits ExtendedTemplateBase<AppModel>
 @section StyleSheets{@Html.Raw(ViewBag.StyleSheetsSection.ToString())}
-@{Layout = "Layout.cshtml";}
+@{
+    Layout = "Layout.cshtml";
+    
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string parameter;
+
+    if (parameters.TryGetValue("showMenu", out parameter)) {
+        ViewBag.ShowMenu = parameter.ParseBoolean();
+        ViewBag.BackgroundUnset = true;
+    }
+}
 @Html.RenderResource("GSF.Web.Shared.Views.GraphMeasurements.cshtml")
 @section Scripts{@Html.Raw(ViewBag.ScriptsSection.ToString())}

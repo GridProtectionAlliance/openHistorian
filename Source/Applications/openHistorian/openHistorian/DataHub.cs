@@ -113,6 +113,7 @@ namespace openHistorian
         private static int s_ieeeC37_118ID;
         private static int s_virtualProtocolID;
         //private static int s_vphmSignalTypeID;
+        private static int s_calcSignalTypeID;
         private static string s_dateTimeFormat;
 
         // Static Constructor
@@ -243,6 +244,19 @@ namespace openHistorian
 
             return deviceTable.QueryRecords(sortField, ascending, page, pageSize, restriction);
         }
+        
+        public int QueryEnabledDeviceCount(Guid nodeID, string filterText)
+        {
+            TableOperations<Device> deviceTable = DataContext.Table<Device>();
+
+            RecordRestriction restriction =
+                new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("Acronym NOT LIKE 'SYSTEM!%'") +
+                new RecordRestriction("Enabled <> 0") +
+                deviceTable.GetSearchRestriction(filterText);
+
+            return deviceTable.QueryRecordCount(restriction);
+        }
 
         public IEnumerable<Device> QueryEnabledDevices(Guid nodeID, int limit, string filterText)
         {
@@ -250,6 +264,7 @@ namespace openHistorian
 
             RecordRestriction restriction =
                 new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
+                new RecordRestriction("Acronym NOT LIKE 'SYSTEM!%'") +
                 new RecordRestriction("Enabled <> 0") +
                 deviceTable.GetSearchRestriction(filterText);
 
@@ -321,6 +336,23 @@ namespace openHistorian
         public void AddNewOrUpdateDevice(Device device)
         {
             DataContext.Table<Device>().AddNewOrUpdateRecord(device);
+        }
+
+        public void RemoveDeviceCalculations(int deviceID)
+        {
+            Device device = QueryDeviceByID(deviceID);
+
+            if (device is null || device.ID == 0)
+                return;
+
+            DataContext.Connection.ExecuteNonQuery($"DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator' AND AdapterName LIKE '{device.Acronym}%'");
+            DataContext.Connection.ExecuteNonQuery($"DELETE FROM Measurement WHERE DeviceID = {device.ID} AND SignalTypeID = {CalcSignalTypeID}");
+        }
+
+        public void RemoveAllDeviceCalculations()
+        {
+            DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator'");
+            DataContext.Connection.ExecuteNonQuery($"DELETE FROM Measurement WHERE SignalTypeID = {CalcSignalTypeID}");
         }
 
         #endregion
@@ -1161,6 +1193,8 @@ namespace openHistorian
         private int VirtualProtocolID => s_virtualProtocolID != 0 ? s_virtualProtocolID : s_virtualProtocolID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM Protocol WHERE Acronym='VirtualInput'");
 
         //private int VphmSignalTypeID => s_vphmSignalTypeID != 0 ? s_vphmSignalTypeID : (s_vphmSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='VPHM'"));
+
+        private int CalcSignalTypeID => s_calcSignalTypeID != 0 ? s_calcSignalTypeID : s_calcSignalTypeID = DataContext.Connection.ExecuteScalar<int>("SELECT ID FROM SignalType WHERE Acronym='CALC'");
 
         private static string DateTimeFormat => s_dateTimeFormat ??= Program.Host.Model.Global.DateTimeFormat;
 
