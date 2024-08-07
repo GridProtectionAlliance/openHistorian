@@ -1,16 +1,16 @@
 <Include>
 <ComponentGroup Id="Grafana_Components" Directory="GRAFANAFOLDER">
   <Component Id="LICENSE">
-    <File Id="LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\LICENSE" />
+    <File Id="._LICENSE" Name="LICENSE" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\LICENSE" />
   </Component>
   <Component Id="NOTICE_md">
-    <File Id="NOTICE.md" Name="NOTICE.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\NOTICE.md" />
+    <File Id="._NOTICE.md" Name="NOTICE.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\NOTICE.md" />
   </Component>
   <Component Id="README_md">
-    <File Id="README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\README.md" />
+    <File Id="._README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\README.md" />
   </Component>
   <Component Id="VERSION">
-    <File Id="VERSION" Name="VERSION" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\VERSION" />
+    <File Id="._VERSION" Name="VERSION" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\VERSION" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="Grafana_bin_Components" Directory="BINFOLDER">
