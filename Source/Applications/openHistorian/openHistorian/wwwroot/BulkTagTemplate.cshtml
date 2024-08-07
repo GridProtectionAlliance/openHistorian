@@ -125,6 +125,14 @@
         }
     }
 
+    private string GetCurrentUserID()
+    {
+        if (Thread.CurrentPrincipal.Identity == null)
+            return UserInfo.CurrentUserID;
+
+        return Thread.CurrentPrincipal.Identity.Name;
+    }
+
     // This function simply limits access to UI elements that the user does not have access to, server-side
     // functions will further validate user rights even if UI restriction was somehow bypassed
     private bool UserIsEditor()
@@ -443,6 +451,8 @@
                         <select class="form-control" id="templateType" style="border: 1px solid #ccc"></select>
                     </div>
                 </td>
+            @if (userIsEditor)
+            {
                 <td style="text-align: center">
                     Selected Device Count: <span id="selectedDeviceCount">0</span>
                 </td>
@@ -452,6 +462,15 @@
                 <td>
                     <button type="button" class="btn btn-primary pull-right" id="startBulkApply" hub-dependent>Start Bulk Apply</button>
                 </td>
+            }
+            else
+            {
+                <td>
+                    <div class="label label-danger label-md no-access pull-right" style="">
+                        User "@GetCurrentUserID()" does not have rights<br /> to add or modify device data.
+                    </div>
+                </td>
+            }
             </tr>
         </table>
     </div>
