@@ -72,6 +72,9 @@ namespace WiXFolderGen
             bool dupClearAndTrim = true,
             bool trackIdentifiers = true)
         {
+            if (path.StartsWith(".\\"))
+                path = path.Substring(2);
+
             if (replaceDot)
                 path = path.Replace('.', '_');
 
