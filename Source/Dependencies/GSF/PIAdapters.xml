@@ -593,6 +593,33 @@
             Gets full archive queue status.
             </summary>
         </member>
+        <member name="M:PIAdapters.PIOutputAdapter.LookupPITag(System.String)">
+            <summary>
+            Attempts to lookup PI tag in PI server metadata.
+            </summary>
+            <param name="tagName">PI tag name to lookup in PI server.</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.TraceMeasurement(System.String)">
+            <summary>
+            Queues a point tag for value tracing.
+            </summary>
+            <param name="pointTag">Point tag name to trace.</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ClearTracedMeasurements">
+            <summary>
+            Clears any point tags queued for value tracing.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ShowStatusWordMeasurements">
+            <summary>
+            Show configured status word measurements and related bit measurements.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ShowQualityWordMeasurements">
+            <summary>
+            Show configured quality word measurements and related bit measurements.
+            </summary>
+        </member>
         <member name="M:PIAdapters.PIOutputAdapter.GetShortStatus(System.Int32)">
             <summary>
             Returns a brief status of this <see cref="T:PIAdapters.PIOutputAdapter"/>
