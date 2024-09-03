@@ -2,7 +2,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber;
+SELECT 2 AS VersionNumber;
 
 CREATE TABLE CompressionSetting(
     PointID INTEGER NOT NULL PRIMARY KEY,
@@ -26,6 +26,6 @@ CREATE TABLE EventMarker(
     Source VARCHAR(200) NULL,
     StartTime TIMESTAMP NULL,
     StopTime TIMESTAMP NULL,
-    Notes VARCHAR(max) NULL,
-    CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID) ON DELETE CASCADE ON UPDATE CASCADE
+    Notes TEXT NULL,
+    CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID)
 );
