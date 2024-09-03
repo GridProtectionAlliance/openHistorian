@@ -42,4 +42,4 @@ CREATE TRIGGER AI_EventMarker BEFORE INSERT ON EventMarker
     FOR EACH ROW BEGIN SELECT SEQ_EventMarker.nextval INTO :NEW.ID FROM dual;
 END;
 
-ALTER TABLE EventMarker ADD CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES Device (ID);
+ALTER TABLE EventMarker ADD CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID);
