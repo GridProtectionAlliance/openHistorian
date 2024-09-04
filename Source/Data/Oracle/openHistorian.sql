@@ -2819,7 +2819,7 @@ FROM AlarmDevice
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW LocalSchemaVersion AS
-SELECT 1 AS VersionNumber
+SELECT 2 AS VersionNumber
 FROM dual;
 
 CREATE TABLE CompressionSetting(
@@ -2842,7 +2842,7 @@ FROM CompressionSetting CROSS JOIN Node;
 
 CREATE TABLE EventMarker(
     ID NUMBER NOT NULL,
-    ParentID Number NULL,
+    ParentID NUMBER NULL,
     Source VARCHAR2(200) NULL,
     StartTime DATE NULL,
     StopTime DATE NULL,
@@ -2859,3 +2859,4 @@ CREATE TRIGGER AI_EventMarker BEFORE INSERT ON EventMarker
     FOR EACH ROW BEGIN SELECT SEQ_EventMarker.nextval INTO :NEW.ID FROM dual;
 END;
 
+ALTER TABLE EventMarker ADD CONSTRAINT FK_EventMarker_EventMarker FOREIGN KEY(ParentID) REFERENCES EventMarker (ID);

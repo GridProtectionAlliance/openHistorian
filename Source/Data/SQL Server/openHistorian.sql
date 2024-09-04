@@ -3155,7 +3155,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[LocalSchemaVersion] AS
-SELECT 1 AS VersionNumber
+SELECT 2 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
