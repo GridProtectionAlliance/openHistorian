@@ -2781,6 +2781,11 @@
             Gets or sets any defined radial distribution request parameters defined in the query.
             </summary>
         </member>
+        <member name="P:GrafanaAdapters.Functions.QueryParameters.SquareDistribution">
+            <summary>
+            Gets or sets any defined rectangular distribution request parameters defined in the query
+            </summary>
+        </member>
         <member name="P:GrafanaAdapters.Functions.QueryParameters.MetadataSelections">
             <summary>
             Gets or sets metadata selections for the query.
