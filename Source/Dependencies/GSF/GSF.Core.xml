@@ -3393,6 +3393,18 @@
             <param name="source">An enumeration over which to find the median element(s).</param>
             <returns>The median item(s) from an enumeration, or <c>null</c> if <paramref name="source"/> is <c>null</c>.</returns>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.Middle``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Gets the middle item(s) from an enumeration, i.e., one return item for odd lengths, two for even lengths.
+            </summary>
+            <remarks>
+            If enumeration length is even, two items will be returned representing the items in the middle of the set;
+            otherwise, if the enumeration length is odd, one item will be returned from exactly the middle of the set.
+            </remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> of elements in the <paramref name="source"/></typeparam>
+            <param name="source">An enumeration over which to find the middle element(s).</param>
+            <returns>The middle item(s) from an enumeration, or <c>null</c> if <paramref name="source"/> is <c>null</c>.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.MajorityBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Boolean,System.Collections.Generic.IEqualityComparer{``1})">
             <summary>
             Returns the majority value in the collection, or default type value if no item represents the majority.
@@ -12926,6 +12938,25 @@
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
+        <member name="M:GSF.Data.AdoDataConnection.TryRetrieveRow(System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.TryRetrieveRow(System.Int32,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>.
+            </summary>
+            <param name="sqlFormat">Format string for the SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
         <member name="M:GSF.Data.AdoDataConnection.RetrieveData(System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="P:GSF.Data.AdoDataConnection.Connection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
@@ -13991,7 +14022,7 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
@@ -14001,9 +14032,32 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbConnection"/>.
+            </summary>
+            <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Int32,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbConnection"/>.
+            </summary>
+            <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
@@ -14120,7 +14174,7 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
@@ -14130,9 +14184,32 @@
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbCommand"/>.
+            </summary>
+            <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
+            <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
+        </member>
+        <member name="M:GSF.Data.DataExtensions.TryRetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Int32,System.Data.DataRow@,System.Object[])">
+            <summary>
+            Tries to retrieve the first <see cref="T:System.Data.DataRow"/> in the result set of the SQL statement using <see cref="T:System.Data.IDbCommand"/>.
+            </summary>
+            <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
+            <param name="sql">The SQL statement to be executed.</param>
+            <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
+            <param name="row">The first <see cref="T:System.Data.DataRow"/> in the result set, or <c>null</c>.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
@@ -14274,7 +14351,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
@@ -14285,7 +14362,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14429,7 +14506,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataTable"/> object.</returns>
@@ -14440,7 +14517,7 @@
             of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14584,7 +14661,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
@@ -14595,7 +14672,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
@@ -14739,7 +14816,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
             <returns>A <see cref="T:System.Data.DataSet"/> object.</returns>
@@ -14750,7 +14827,7 @@
             may contain multiple tables, depending on the SQL statement.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
-            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
+            <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retrieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
