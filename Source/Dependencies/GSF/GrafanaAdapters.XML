@@ -511,6 +511,12 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1">
             <summary>
             Returns a single value selected using the first series of a slice of values as the zero-based index from the remaining series.

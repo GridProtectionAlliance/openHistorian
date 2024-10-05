@@ -588,6 +588,19 @@
             Gets or sets the source of the timestamps of the calculated values.
             </summary>
         </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.OutlierOperation">
+            <summary>
+            Gets or sets the operation used to handle measurements which have timestamps that fall outside
+            the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.LagTime"/>/<see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.LeadTime"/> bounds.
+            </summary>
+            <remarks>
+            This parameter only applies when <see cref="P:DynamicCalculator.DynamicCalculator.UseLatestValues"/> is set to <c>true</c>.
+            The recommendation is to use <see cref="F:GSF.TimeSeries.TemporalOutlierOperation.PublishValueAsNan"/>
+            when mixing framerates and <see cref="F:GSF.TimeSeries.TemporalOutlierOperation.PublishWithBadState"/>
+            when using event-based data such as alarms. If you are not mixing framerates, consider
+            changing <see cref="P:DynamicCalculator.DynamicCalculator.UseLatestValues"/> to <c>false</c>.
+            </remarks>
+        </member>
         <member name="P:DynamicCalculator.DynamicCalculator.ExpectsOutputMeasurement">
             <summary>
             Gets flag that determines if the implementation of the <see cref="T:DynamicCalculator.DynamicCalculator"/> requires an output measurement.
