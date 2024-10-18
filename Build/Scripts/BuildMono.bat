@@ -23,5 +23,5 @@ SetLocal
 
 IF NOT "%1" == "" SET logflag=/l:FileLogger,Microsoft.Build.Engine;logfile=%1
 
-ECHO BuildMono: C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe openHistorian.buildproj /p:Configuration=Mono;ForceBuild=true;DoNotPush=true;SkipVersioning=true;SkipUnitTest=true;SkipHelpFiles=true /p:SourceArchiveWorkingDirectory=D:\temp\openHistorianMono\ %logflag%
-"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe" openHistorian.buildproj /p:Configuration=Mono;ForceBuild=true;DoNotPush=true;SkipVersioning=true;SkipUnitTest=true;SkipHelpFiles=true /p:SourceArchiveWorkingDirectory=D:\temp\openHistorianMono\ %logFlag%
+ECHO BuildMono: C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe openHistorian.buildproj /p:BuildFlavor=Mono;ForceBuild=true;DoNotPush=true;SkipVersioning=true;SkipUnitTest=true;SkipHelpFiles=true /p:SourceArchiveWorkingDirectory=D:\temp\openHistorianMono\ %logflag%
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe" openHistorian.buildproj /p:BuildFlavor=Mono;ForceBuild=true;DoNotPush=true;SkipVersioning=true;SkipUnitTest=true;SkipHelpFiles=true /p:SourceArchiveWorkingDirectory=D:\temp\openHistorianMono\ %logFlag%
