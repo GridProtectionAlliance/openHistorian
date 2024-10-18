@@ -586,8 +586,10 @@ namespace openHistorian
 
             CategorizedSettingsElementCollection systemSettings = ConfigurationFile.Current.Settings["systemSettings"];
 
+        #if !MONO
             if (systemSettings["eDNAGrafanaControllerEnabled", true]?.Value.ParseBoolean() ?? true)
                 ServiceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("eDNARefreshMetadata", "Refreshes eDNA metadata.", RefreshMetaDataHandler, new[] { "eDNARefresh", "RefresheDNAMetadata" }));
+        #endif
 
             if (!Model.Global.GrafanaServerInstalled)
                 return;
@@ -611,11 +613,11 @@ namespace openHistorian
                     DateTime startTime = DateTime.UtcNow;
                     bool timeout = false;
 
-                #if DEBUG
+#if DEBUG
                     // Debugging adds run-time overhead, provide more time for initialization
                     initializationTimeout *= 3;
                     int attempts = 0;
-                #endif
+#endif
 
                     // Give initialization - which includes starting Grafana server process - a chance to start
                     while (!GrafanaAuthProxyController.ServerIsResponding())
@@ -629,10 +631,10 @@ namespace openHistorian
 
                         Thread.Sleep(500);
 
-                    #if DEBUG
+#if DEBUG
                         if (++attempts % 4 == 0)
                             DisplayStatusMessage($"DEBUG: Awaiting Grafana initialization, {attempts:N0} attempts so far...", UpdateType.Warning);
-                    #endif
+#endif
                     }
 
                     if (timeout)
@@ -653,7 +655,12 @@ namespace openHistorian
             .Start();
         }
 
-        private void RefreshMetaDataHandler(ClientRequestInfo requestInfo) => eDNAGrafanaController.eDNAGrafanaController.RefreshAllMetaData();
+#if !MONO
+        private void RefreshMetaDataHandler(ClientRequestInfo requestInfo)
+        {
+            eDNAGrafanaController.eDNAGrafanaController.RefreshAllMetaData();
+        }
+#endif
 
         protected override void ServiceStoppingHandler(object sender, EventArgs e)
         {
@@ -1351,7 +1358,7 @@ namespace openHistorian
             log.Publish(level, eventName, message, details, ex);
         }
 
-        #endregion
+#endregion
 
         #region [ Static ]
 
