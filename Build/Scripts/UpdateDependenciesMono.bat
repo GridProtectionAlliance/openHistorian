@@ -62,6 +62,7 @@ ECHO Updating dependencies...
 XCOPY "%libraries%" "%dependencies%\" /Y /E
 XCOPY "%sttplibrary%" "%dependencies%\" /Y
 XCOPY "%sourcemasterbuild%" "%targetmasterbuild%\" /Y
+COPY /Y "%sourcetools%\MonoGenCert\MonoGenCert.exe" "%targetbuildoutput%\MonoGenCert.exe"
 COPY /Y "%sourcetools%\ConfigCrypter\ConfigCrypter.exe" "%targetbuildoutput%\ConfigCrypter.exe"
 COPY /Y "%sourcetools%\ConfigEditor\ConfigEditor.exe" "%targetbuildoutput%\ConfigurationEditor.exe"
 COPY /Y "%sourcetools%\CSVDataManager\CSVDataManager.exe" "%targetbuildoutput%\CSVDataManager.exe"
