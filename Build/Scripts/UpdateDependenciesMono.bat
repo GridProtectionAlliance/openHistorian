@@ -1,7 +1,7 @@
 ::*******************************************************************************************************
 ::  UpdateDependencies.bat - Gbtc
 ::
-::  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+::  Copyright Â© 2013, Grid Protection Alliance.  All Rights Reserved.
 ::
 ::  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 ::  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -31,7 +31,7 @@ SET pwd=%CD%
 IF "%git%" == "" SET git=%PROGRAMFILES(X86)%\Git\cmd\git.exe
 
 SET defaulttarget=%LOCALAPPDATA%\Temp\openHistorian
-IF "%source%" == "" SET source=\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Mono\Libraries
+IF "%source%" == "" SET source=\\GPAWEB\NightlyBuilds\GridSolutionsFramework\Mono
 IF "%sttp%" == "" SET sttp=\\GPAWEB\NightlyBuilds\sttp-gsfapi\Beta
 IF "%target%" == "" SET target=%defaulttarget%
 
