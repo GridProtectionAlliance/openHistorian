@@ -41,7 +41,10 @@ SET dependencies=%target%\Source\Dependencies\GSF
 SET sourcemasterbuild=%source%\Build Scripts\MasterBuild.buildproj
 SET targetmasterbuild=%target%\Build\Scripts
 SET sourcetools=%source%\Tools
-SET targettools=%target%\Source\Applications\openHistorian\openHistorianSetup
+SET targetbuildoutput=%target%\Build\Output\Mono\Applications\openHistorian\
+
+IF NOT EXIST "%targetbuildoutput%" MKDIR "%targetbuildoutput%"
+
 
 ::Grafana Panels
 ::SET GrafanaSource=\\GPAWEB\NightlyBuilds\GrafanaPanels\Binaries
@@ -59,21 +62,21 @@ ECHO Updating dependencies...
 XCOPY "%libraries%" "%dependencies%\" /Y /E
 XCOPY "%sttplibrary%" "%dependencies%\" /Y
 XCOPY "%sourcemasterbuild%" "%targetmasterbuild%\" /Y
-COPY /Y "%sourcetools%\ConfigCrypter\ConfigCrypter.exe" "%targettools%\ConfigCrypter.exe"
-COPY /Y "%sourcetools%\ConfigEditor\ConfigEditor.exe" "%targettools%\ConfigurationEditor.exe"
-COPY /Y "%sourcetools%\CSVDataManager\CSVDataManager.exe" "%targettools%\CSVDataManager.exe"
-COPY /Y "%sourcetools%\DataMigrationUtility\DataMigrationUtility.exe" "%targettools%\DataMigrationUtility.exe"
-COPY /Y "%sourcetools%\HistorianPlaybackUtility\HistorianPlaybackUtility.exe" "%targettools%\HistorianPlaybackUtility.exe"
-COPY /Y "%sourcetools%\HistorianView\HistorianView.exe" "%targettools%\HistorianView.exe"
-COPY /Y "%sourcetools%\StatHistorianReportGenerator\StatHistorianReportGenerator.exe" "%targettools%\StatHistorianReportGenerator.exe"
-COPY /Y "%sourcetools%\NoInetFixUtil\NoInetFixUtil.exe" "%targettools%\NoInetFixUtil.exe"
-COPY /Y "%sourcetools%\DNP3ConfigGenerator\DNP3ConfigGenerator.exe" "%targettools%\DNP3ConfigGenerator.exe"
-COPY /Y "%sourcetools%\LogFileViewer\LogFileViewer.exe" "%targettools%\LogFileViewer.exe"
-COPY /Y "%sourcetools%\UpdateTagNames\UpdateTagNames.exe" "%targettools%\UpdateTagNames.exe"
-COPY /Y "%sourcetools%\GEPDataExtractor\GEPDataExtractor.exe" "%targettools%\GEPDataExtractor.exe"
-COPY /Y "%sourcetools%\CreateOutputStream\CreateOutputStream.exe" "%targettools%\CreateOutputStream.exe"
-COPY /Y "%sourcetools%\BulkCalculationState\BulkCalculationState.exe" "%targettools%\BulkCalculationState.exe"
-COPY /Y "%sourcetools%\AdapterExplorer\AdapterExplorer.exe" "%targettools%\AdapterExplorer.exe"
+COPY /Y "%sourcetools%\ConfigCrypter\ConfigCrypter.exe" "%targetbuildoutput%\ConfigCrypter.exe"
+COPY /Y "%sourcetools%\ConfigEditor\ConfigEditor.exe" "%targetbuildoutput%\ConfigurationEditor.exe"
+COPY /Y "%sourcetools%\CSVDataManager\CSVDataManager.exe" "%targetbuildoutput%\CSVDataManager.exe"
+COPY /Y "%sourcetools%\DataMigrationUtility\DataMigrationUtility.exe" "%targetbuildoutput%\DataMigrationUtility.exe"
+COPY /Y "%sourcetools%\HistorianPlaybackUtility\HistorianPlaybackUtility.exe" "%targetbuildoutput%\HistorianPlaybackUtility.exe"
+COPY /Y "%sourcetools%\HistorianView\HistorianView.exe" "%targetbuildoutput%\HistorianView.exe"
+COPY /Y "%sourcetools%\StatHistorianReportGenerator\StatHistorianReportGenerator.exe" "%targetbuildoutput%\StatHistorianReportGenerator.exe"
+COPY /Y "%sourcetools%\NoInetFixUtil\NoInetFixUtil.exe" "%targetbuildoutput%\NoInetFixUtil.exe"
+COPY /Y "%sourcetools%\DNP3ConfigGenerator\DNP3ConfigGenerator.exe" "%targetbuildoutput%\DNP3ConfigGenerator.exe"
+COPY /Y "%sourcetools%\LogFileViewer\LogFileViewer.exe" "%targetbuildoutput%\LogFileViewer.exe"
+COPY /Y "%sourcetools%\UpdateTagNames\UpdateTagNames.exe" "%targetbuildoutput%\UpdateTagNames.exe"
+COPY /Y "%sourcetools%\GEPDataExtractor\GEPDataExtractor.exe" "%targetbuildoutput%\GEPDataExtractor.exe"
+COPY /Y "%sourcetools%\CreateOutputStream\CreateOutputStream.exe" "%targetbuildoutput%\CreateOutputStream.exe"
+COPY /Y "%sourcetools%\BulkCalculationState\BulkCalculationState.exe" "%targetbuildoutput%\BulkCalculationState.exe"
+COPY /Y "%sourcetools%\AdapterExplorer\AdapterExplorer.exe" "%targetbuildoutput%\AdapterExplorer.exe"
 ::ECHO Updating Grafana Panels...
 ::XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
 ::XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
