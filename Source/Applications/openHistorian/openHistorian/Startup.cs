@@ -124,12 +124,14 @@ namespace openHistorian
             }
 
             Load_ModbusAssembly();
-            
+
+        #if !MONO
             if (osiPIGrafanaControllerEnabled)
                 Load_OSIPIGrafanaController();
 
             if (eDNAGrafanaControllerEnabled)
                 Load_eDNAGrafanaController();
+        #endif
 
             if (trenDAPControllerEnabled)
                 Load_TrenDAPController();
@@ -315,6 +317,7 @@ namespace openHistorian
             }
         }
 
+    #if !MONO
         private void Load_OSIPIGrafanaController()
         {
             // Load external OSIPIGrafanaController so route map can find it
@@ -350,6 +353,7 @@ namespace openHistorian
                 Program.Host.LogStatusMessage($"WARNING: Failed to load eDNA Grafana controller, validate eDNA DLL's exists in program directory: {ex.Message}", UpdateType.Warning);
             }
         }
+    #endif
 
         private void Load_TrenDAPController()
         {

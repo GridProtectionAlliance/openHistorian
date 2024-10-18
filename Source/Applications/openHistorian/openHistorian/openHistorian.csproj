@@ -420,11 +420,11 @@
       <Project>{d170a1d6-834b-47bd-b05f-67dd4bc12f97}</Project>
       <Name>openHistorian.Adapters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.eDNAGrafanaController\openHistorian.eDNAGrafanaController.csproj">
+    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.eDNAGrafanaController\openHistorian.eDNAGrafanaController.csproj" Condition=" '$(Configuration)' != 'Mono' ">
       <Project>{80459642-c42b-4e52-ac5c-bdd1181f6a1e}</Project>
       <Name>openHistorian.eDNAGrafanaController</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.OSIPIGrafanaController\openHistorian.OSIPIGrafanaController.csproj">
+    <ProjectReference Include="..\..\..\Libraries\Adapters\openHistorian.OSIPIGrafanaController\openHistorian.OSIPIGrafanaController.csproj" Condition=" '$(Configuration)' != 'Mono' ">
       <Project>{1cec702b-2ead-4e65-9ead-edfdd23fc806}</Project>
       <Name>openHistorian.OSIPIGrafanaController</Name>
     </ProjectReference>

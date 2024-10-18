@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mono|AnyCPU'">
     <OutputPath>bin\Mono\</OutputPath>
     <DefineConstants>MONO;TRACE</DefineConstants>
-    <DocumentationFile>..\..\..\..\Build\Output\Release\Library\openHistorian.TrenDAPController\openHistorian.TrenDAPController.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\Build\Output\Mono\Library\openHistorian.TrenDAPController\openHistorian.TrenDAPController.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
