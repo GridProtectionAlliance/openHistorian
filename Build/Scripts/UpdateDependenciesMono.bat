@@ -77,7 +77,6 @@ COPY /Y "%sourcetools%\UpdateTagNames\UpdateTagNames.exe" "%targetbuildoutput%\U
 COPY /Y "%sourcetools%\GEPDataExtractor\GEPDataExtractor.exe" "%targetbuildoutput%\GEPDataExtractor.exe"
 COPY /Y "%sourcetools%\CreateOutputStream\CreateOutputStream.exe" "%targetbuildoutput%\CreateOutputStream.exe"
 COPY /Y "%sourcetools%\BulkCalculationState\BulkCalculationState.exe" "%targetbuildoutput%\BulkCalculationState.exe"
-COPY /Y "%sourcetools%\AdapterExplorer\AdapterExplorer.exe" "%targetbuildoutput%\AdapterExplorer.exe"
 ::ECHO Updating Grafana Panels...
 ::XCOPY "%GrafanaSource%\GPA-PhasorMap" "%GrafanaTarget%\grafana-pmumap-panel\" /Y /E /U
 ::XCOPY "%GrafanaSource%\Grafana-oh-datadownload" "%GrafanaTarget%\openhistporian-datadownload-panel\" /Y /E /U
