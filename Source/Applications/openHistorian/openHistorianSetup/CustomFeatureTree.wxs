@@ -16,10 +16,6 @@ Maintenance dialog sequence:
  - WixUI_MaintenanceTypeDlg
  - WixUI_CustomizeDlg
  - WixUI_VerifyReadyDlg
-
-Patch dialog sequence:
- - WixUI_WelcomeDlg
- - WixUI_VerifyReadyDlg
 -->
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
@@ -44,7 +40,6 @@ Patch dialog sequence:
       <Publish Dialog="CustomExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
 
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT Installed</Publish>
-      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
 
       <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
       <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CustomizeDlg">LicenseAccepted = "1"</Publish>
@@ -54,8 +49,7 @@ Patch dialog sequence:
       <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
 
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="1">NOT Installed OR WixUI_InstallMode = "Change"</Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="3">Installed AND PATCH</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT(WixUI_InstallMode = "Change")</Publish>
 
       <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
 
