@@ -134,10 +134,22 @@
       <UIRef Id="WixUI_ErrorProgressText" />
       <DialogRef Id="CompanyInfoDialog" />
       <DialogRef Id="ServiceAccountDialog" />
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ServiceAccountDialog"><![CDATA[&openHistorianFeature=3]]></Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CompanyInfoDialog">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[&openHistorianFeature=3]]></Publish>
-      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Value="1" Order="7"><![CDATA[&openHistorianFeature=3 OR (!openHistorianFeature=3 AND &openHistorianFeature=-1)]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLSERVICEFEATURE" Order="7"><![CDATA[NOT(&openHistorianFeature=3 OR (!openHistorianFeature=3 AND &openHistorianFeature=-1))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLMANAGERFEATURE" Value="1" Order="7"><![CDATA[&openHistorianManagerFeature=3 OR (!openHistorianManagerFeature=3 AND &openHistorianManagerFeature=-1)]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLMANAGERFEATURE" Order="7"><![CDATA[NOT(&openHistorianManagerFeature=3 OR (!openHistorianManagerFeature=3 AND &openHistorianManagerFeature=-1))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLCONSOLEFEATURE" Value="1" Order="7"><![CDATA[&openHistorianConsoleFeature=3 OR (!openHistorianConsoleFeature=3 AND &openHistorianConsoleFeature=-1)]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLCONSOLEFEATURE" Order="7"><![CDATA[NOT(&openHistorianConsoleFeature=3 OR (!openHistorianConsoleFeature=3 AND &openHistorianConsoleFeature=-1))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLTOOLSFEATURE" Value="1" Order="7"><![CDATA[&openHistorianToolsFeature=3 OR (!openHistorianToolsFeature=3 AND &openHistorianToolsFeature=-1)]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLTOOLSFEATURE" Order="7"><![CDATA[NOT(&openHistorianToolsFeature=3 OR (!openHistorianToolsFeature=3 AND &openHistorianToolsFeature=-1))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLOPTIONALFEATURE" Value="1" Order="7"><![CDATA[&openHistorianOptionalFeatures=3 OR (!openHistorianOptionalFeatures=3 AND &openHistorianOptionalFeatures=-1)]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Property="INSTALLOPTIONALFEATURE" Order="7"><![CDATA[NOT(&openHistorianOptionalFeatures=3 OR (!openHistorianOptionalFeatures=3 AND &openHistorianOptionalFeatures=-1))]]></Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ServiceAccountDialog" Order="8">INSTALLSERVICEFEATURE</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8">NOT(INSTALLSERVICEFEATURE)</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CompanyInfoDialog">INSTALLSERVICEFEATURE</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">NOT(INSTALLSERVICEFEATURE)</Publish>
       <Publish Dialog="CustomExitDialog" Control="Finish" Event="DoAction" Value="StartCSUProcessAction">WIXUI_CUSTOMEXITDIALOGOPTIONALCHECKBOX = 1</Publish>
     </UI>
 
@@ -158,6 +170,12 @@
     <Icon Id="ArchiveComparisonUtility.ico.exe" SourceFile="$(var.ComparisonUtility.TargetPath)" />
     <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
 
+    <Property Id="INSTALLSERVICEFEATURE" Secure="yes" />
+    <Property Id="INSTALLMANAGERFEATURE" Secure="yes" />
+    <Property Id="INSTALLCONSOLEFEATURE" Secure="yes" />
+    <Property Id="INSTALLTOOLSFEATURE" Secure="yes" />
+    <Property Id="INSTALLOPTIONALFEATURE" Secure="yes" />
+
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
     <Property Id="HTTPSERVICEPORTS" Value="8180,8185,6055,6056,6155,6156,6356,5020" />
@@ -170,12 +188,25 @@
     <Property Id="REGSERVICESTARTVALUE">
       <RegistrySearch Id="ServiceStartRegSearch" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\[SERVICENAME]" Name="Start" Type="raw" />
     </Property>
+    
     <SetProperty Action="SetServiceStartDefault" Id="SERVICESTART" After="AppSearch" Value="#2" Sequence="first"><![CDATA[NOT REGSERVICESTARTVALUE]]></SetProperty>
     <SetProperty Action="SetServiceStartRegistry" Id="SERVICESTART" After="AppSearch" Value="[REGSERVICESTARTVALUE]" Sequence="first"><![CDATA[REGSERVICESTARTVALUE]]></SetProperty>
     <SetProperty Action="SetServiceAccountDefault" Id="SERVICEACCOUNT" After="AppSearch" Value="NT SERVICE\[SERVICENAME]" Sequence="first"><![CDATA[NOT REGSERVICEACCOUNT]]></SetProperty>
     <SetProperty Action="SetServiceAccountRegistry" Id="SERVICEACCOUNT" After="AppSearch" Value="[REGSERVICEACCOUNT]" Sequence="first"><![CDATA[REGSERVICEACCOUNT]]></SetProperty>
     <SetProperty Id="PROCESSSTARTINFO" Value="FileName={[#ConfigurationSetupUtility.exe]};Arguments=-install;UseShellExecute=True;Verb=runas" After="ExecuteAction" Sequence="ui" />
     <SetProperty Id="WEBMANAGERURL" Value="http://localhost:8180/" Before="CreateShortcuts" Sequence="execute" />
+
+    <SetProperty Action="INSTALLSERVICEFEATURE0" Id="INSTALLSERVICEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&openHistorianFeature=3 OR (!openHistorianFeature=3 AND &openHistorianFeature=-1)]]></SetProperty>
+    <SetProperty Action="INSTALLSERVICEFEATURE1" Id="INSTALLSERVICEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&openHistorianFeature=3 OR (!openHistorianFeature=3 AND &openHistorianFeature=-1))]]></SetProperty>
+    <SetProperty Action="INSTALLMANAGERFEATURE0" Id="INSTALLMANAGERFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&openHistorianManagerFeature=3 OR (!openHistorianManagerFeature=3 AND &openHistorianManagerFeature=-1)]]></SetProperty>
+    <SetProperty Action="INSTALLMANAGERFEATURE1" Id="INSTALLMANAGERFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&openHistorianManagerFeature=3 OR (!openHistorianManagerFeature=3 AND &openHistorianManagerFeature=-1))]]></SetProperty>
+    <SetProperty Action="INSTALLCONSOLEFEATURE0" Id="INSTALLCONSOLEFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&openHistorianConsoleFeature=3 OR (!openHistorianConsoleFeature=3 AND &openHistorianConsoleFeature=-1)]]></SetProperty>
+    <SetProperty Action="INSTALLCONSOLEFEATURE1" Id="INSTALLCONSOLEFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&openHistorianConsoleFeature=3 OR (!openHistorianConsoleFeature=3 AND &openHistorianConsoleFeature=-1))]]></SetProperty>
+    <SetProperty Action="INSTALLTOOLSFEATURE0" Id="INSTALLTOOLSFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&openHistorianToolsFeature=3 OR (!openHistorianToolsFeature=3 AND &openHistorianToolsFeature=-1)]]></SetProperty>
+    <SetProperty Action="INSTALLTOOLSFEATURE1" Id="INSTALLTOOLSFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&openHistorianToolsFeature=3 OR (!openHistorianToolsFeature=3 AND &openHistorianToolsFeature=-1))]]></SetProperty>
+    <SetProperty Action="INSTALLOPTIONALFEATURE0" Id="INSTALLOPTIONALFEATURE" Value="1" After="CostFinalize" Sequence="both"><![CDATA[&openHistorianOptionalFeatures=3 OR (!openHistorianOptionalFeatures=3 AND &openHistorianOptionalFeatures=-1)]]></SetProperty>
+    <SetProperty Action="INSTALLOPTIONALFEATURE1" Id="INSTALLOPTIONALFEATURE" Value="" After="CostFinalize" Sequence="both"><![CDATA[NOT(&openHistorianOptionalFeatures=3 OR (!openHistorianOptionalFeatures=3 AND &openHistorianOptionalFeatures=-1))]]></SetProperty>
+    
     <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\openHistorianSetupBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\openHistorianSetupDialog.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
@@ -206,12 +237,12 @@
     </UI>
 
     <InstallExecuteSequence>
-      <Custom Action="CompanyInfoAction.SetProperty" After="InstallFiles">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="CompanyInfoAction" After="CompanyInfoAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
-      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">NOT REMOVE</Custom>
-      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE</Custom>
+      <Custom Action="CompanyInfoAction.SetProperty" After="InstallFiles">INSTALLSERVICEFEATURE</Custom>
+      <Custom Action="CompanyInfoAction" After="CompanyInfoAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
+      <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices"><![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty"><![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">INSTALLSERVICEFEATURE</Custom>
+      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
       <Custom Action="NetFxExecuteNativeImageCommitInstall" After="NetFxExecuteNativeImageUninstall">0</Custom>
       <Custom Action="NetFxExecuteNativeImageInstall" After="NetFxExecuteNativeImageCommitInstall" />
       <!-- Set write registry values sequence after service install but before service start to restore original service start mode -->
