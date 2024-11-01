@@ -11,15 +11,15 @@ docker run -d --name openhistorian-test -p 8180:8180 -p 7175:7175 -p 6175:6175 o
 ```
 
 ### Tag Docker Image
-This tags the `openhistorian` docker image as `gridprotectionalliance/openhistorian:v2.8.421`, creating a copy of the image that can be pushed to [dockerhub](https://hub.docker.com/repository/docker/gridprotectionalliance/openhistorian/general):
+This tags the `openhistorian` docker image as `gridprotectionalliance/openhistorian:v2.8.423`, creating a copy of the image that can be pushed to [dockerhub](https://hub.docker.com/repository/docker/gridprotectionalliance/openhistorian/general):
 ```sh
-docker tag openhistorian gridprotectionalliance/openhistorian:v2.8.421
+docker tag openhistorian gridprotectionalliance/openhistorian:v2.8.423
 ```
 
 ### Push Tagged Docker Image to dockerhub
-This pushes the tagged image `gridprotectionalliance/openhistorian:v2.8.421` to dockerhub:
+This pushes the tagged image `gridprotectionalliance/openhistorian:v2.8.423` to dockerhub:
 ```sh
-docker push gridprotectionalliance/openhistorian:v2.8.421
+docker push gridprotectionalliance/openhistorian:v2.8.423
 ```
 
 ### Open Shell Session Into Running Container

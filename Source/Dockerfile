@@ -2,7 +2,7 @@
 FROM mono:latest
 
 # Set environment variables
-ENV OPENHISTORIAN_VERSION=v2.8.421-beta
+ENV OPENHISTORIAN_VERSION=v2.8.423-beta
 ENV OPENHISTORIAN_GROUP=openhistorian
 ENV OPENHISTORIAN_USER=admin
 ENV OPENHISTORIAN_PASS=admin
@@ -27,7 +27,7 @@ RUN chage -M 99999 $OPENHISTORIAN_USER && \
     chage -W 7 $OPENHISTORIAN_USER
 
 # Download and unzip openHistorian POSIX release
-RUN wget https://github.com/GridProtectionAlliance/openHistorian/releases/download/${OPENHISTORIAN_VERSION}/openHistorian-POSIX.zip
+RUN wget https://github.com/GridProtectionAlliance/openHistorian/releases/download/$OPENHISTORIAN_VERSION/openHistorian-POSIX.zip
 
 # Extract using bsdtar (handles Windows backslashes in zip file)
 RUN bsdtar -xf openHistorian-POSIX.zip -C /opt

@@ -531,6 +531,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.TrenDAPContro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateCOMTRADECounters", "Tools\UpdateCOMTRADECounters\UpdateCOMTRADECounters.csproj", "{7F5BBF4C-A27D-4367-9D1E-95AEA45EC58B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{7F01BED4-DDFF-42FC-81DE-48F8EF2140C6}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		DockerReadMe.md = DockerReadMe.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
