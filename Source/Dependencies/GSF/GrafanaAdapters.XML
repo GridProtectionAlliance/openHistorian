@@ -469,14 +469,20 @@
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1">
             <summary>
-            Returns a phasor referenced to the first series of a slice of values.
-            The <c>sliceTolerance</c> parameter is a floating-point value that must be greater than or equal to 0.001 that represents the
-            desired time tolerance, in seconds, for the time slice.
+            Returns a slice of angle differences to the first angle (i.e., the reference) for a series of angles. The <c>sliceTolerance</c>
+            parameter is a floating-point value that must be greater than or equal to 0.001 that represents the desired time tolerance,
+            in seconds, for the time slice. Parameter <c>adjustCoordinateMidPoint</c>, optional, is a boolean flag that determines if the
+            metadata of the coordinate system, i.e., longitude/latitude values, should be adjusted to the midpoint between reference and
+            the angle values in the slice - defaults to false. Parameter <c>applyWrapOps</c>, optional, is a boolean flag that determines
+            if angles should be unwrapped before computing differences then rewrapped - defaults to true. The <c>units</c>parameter,
+            optional, specifies the type of angle units and must be one of the following: Degrees, Radians, Grads, ArcMinutes, ArcSeconds
+            or AngularMil - defaults to Degrees.
             </summary>
             <remarks>
-            Signature: <c>Reference(sliceTolerance, expression)</c><br/>
+            Signature: <c>Reference(sliceTolerance, [adjustCoordinateMidPoint = false], [applyWrapOps = true], [units = Degrees], expression)</c><br/>
             Returns: Single value.<br/>
-            Example: <c>Reference(ReferencePhasor; FILTER PhasorValues WHERE SignalType='IPHM')</c><br/>
+            Example 1: <c>Reference(true, false, BROWNS_FERRY:BUS1.ANG; FILTER ActiveMeasurements WHERE SignalType='IPHA')</c><br/>
+            Example 2: <c>Reference(BROWNS_FERRY:BUS1; FILTER PhasorValues WHERE SignalType='IPHM')</c><br/>
             Variants: Reference, Ref<br/>
             Execution: Immediate enumeration.
             </remarks>
@@ -493,6 +499,9 @@
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.ReturnType">
             <inheritdoc />
         </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.ParameterDefinitions">
+            <inheritdoc />
+        </member>
         <member name="P:GrafanaAdapters.Functions.BuiltIn.Reference`1.IsSliceSeriesEquivalent">
             <inheritdoc />
         </member>
@@ -505,16 +514,16 @@
         <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.CheckAllowedGroupOperation(GrafanaAdapters.Functions.GroupOperations)">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue">
-            <inheritdoc />
-        </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputeMeasurementValue">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputeMeasurementValue.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Reference`1.ComputePhasorValue.GetDataSourceValues(GrafanaAdapters.Functions.Parameters)">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Switch`1">
@@ -2211,21 +2220,32 @@
             </returns>
             <exception cref="T:System.Data.SyntaxErrorException">Expected parameters did not match those received.</exception>
         </member>
-        <member name="M:GrafanaAdapters.Functions.ParameterParsing.GenerateParametersAsync``1(GrafanaAdapters.Functions.IGrafanaFunction{``0},System.String[],System.Collections.Generic.IAsyncEnumerable{``0},System.String,System.Data.DataSet,System.Threading.CancellationToken)">
+        <member name="M:GrafanaAdapters.Functions.ParameterParsing.GenerateParametersAsync``1(GrafanaAdapters.Functions.IGrafanaFunction{``0},System.String[],System.Collections.Generic.IAsyncEnumerable{``0},System.String,System.Data.DataSet,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.Dictionary{System.String,System.String}},System.Threading.CancellationToken)">
             <summary>
             Generates a typed list of value mutable parameters from parsed parameters.
             </summary>
-            <typeparam name="TDataSourceValue">The type of the data source value.</typeparam>
             <param name="function">Target function.</param>
             <param name="parsedParameters">Parsed parameters.</param>
             <param name="dataSourceValues">Data source values.</param>
             <param name="rootTarget">Root target.</param>
-            <param name="metadata">Metadata.</param>
+            <param name="metadata">Source metadata.</param>
+            <param name="metadataMaps">Set of target user selected metadata associated with the data source values.</param>
             <param name="cancellationToken">Cancellation token.</param>
             <returns>List of value mutable parameters from parsed parameters.</returns>
+            <typeparam name="TDataSourceValue">The type of the data source value.</typeparam>
             <remarks>
-            In case user has requested metadata as a parameter, pass in the root target
-            which has a higher chance of being resolved for associated metadata.
+            <para>
+            In case user has requested metadata as a parameter, pass in the root target which has a higher chance of being
+            resolved for associated metadata.
+            </para>
+            <para>
+            The <paramref name="metadataMaps"/> parameter provides access to the set of outgoing metadata for each query result
+            so that a function can adjust or augment the metadata sets if needed. The set will normally only contain a single
+            map that corresponds to the single root target of the associated <paramref name="dataSourceValues"/>, however, for
+            <see cref="F:GrafanaAdapters.Functions.GroupOperations.Slice"/> or <see cref="F:GrafanaAdapters.Functions.GroupOperations.Set"/> operations, each data source value can
+            represent a separate series that contains its own metadata map, so the <paramref name="metadataMaps"/> parameter
+            will contain multiple maps in these cases.
+            </para>
             </remarks>
         </member>
         <member name="M:GrafanaAdapters.Functions.ParameterParsing.ConvertParsedValueAsync``1(GrafanaAdapters.Functions.IMutableParameter,System.String,System.String,System.Collections.Generic.IAsyncEnumerable{``0},System.Data.DataSet,System.Threading.CancellationToken)">
@@ -2300,6 +2320,15 @@
             Parameter name lookup dictionary is lazy initialized. Using index-based lookups is more efficient.
             </remarks>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Parameter name not found.</exception>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.Parameters.MetadataMaps">
+            <summary>
+            Gets or sets collection of target user selected metadata associated with the data source values.
+            </summary>
+            <remarks>
+            This property provides access to the set of outgoing metadata for each query result so that a
+            function can adjust or augment the metadata sets if needed.
+            </remarks>
         </member>
         <member name="M:GrafanaAdapters.Functions.Parameters.Value(System.Int32)">
             <summary>
@@ -3559,7 +3588,7 @@
         </member>
         <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.MetadataMap">
             <summary>
-            Gets user selected metadata associated with the query.
+            Gets or sets user selected metadata associated with the query.
             </summary>
         </member>
         <member name="P:GrafanaAdapters.Model.Common.DataSourceValueGroup`1.SyntaxError">
