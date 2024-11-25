@@ -230,6 +230,8 @@
     <CustomAction Id="ConfigureServiceAction" BinaryKey="InstallerActions" DllEntry="ConfigureServiceAction" Execute="deferred" Impersonate="no" />
     <CustomAction Id="ServiceAccountAction.SetProperty" Property="ServiceAccountAction" Value="SERVICENAME=[SERVICENAME];SERVICEACCOUNT=[SERVICEACCOUNT];HTTPSERVICEPORTS=[HTTPSERVICEPORTS]" />
     <CustomAction Id="ServiceAccountAction" BinaryKey="InstallerActions" DllEntry="ServiceAccountAction" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="ReadOnlyFolderAction.SetProperty" Property="ReadOnlyFolderAction" Value="SERVICENAME=[SERVICENAME];FOLDERPATH=[WWWROOTFOLDER]" />
+    <CustomAction Id="ReadOnlyFolderAction" BinaryKey="InstallerActions" DllEntry="ReadOnlyFolderAction" Execute="deferred" Impersonate="no" />
 
     <UI>
       <ProgressText Action="ConfigureServiceAction">Configuring service failure recovery operations...</ProgressText>
@@ -244,6 +246,8 @@
       <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty"><![CDATA[&openHistorianFeature=3]]></Custom>
       <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">INSTALLSERVICEFEATURE</Custom>
       <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">INSTALLSERVICEFEATURE</Custom>
+      <Custom Action="ReadOnlyFolderAction.SetProperty" After="InstallFiles">INSTALLSERVICEFEATURE OR INSTALLMANAGERFEATURE OR INSTALLCONSOLEFEATURE OR INSTALLTOOLSFEATURE OR INSTALLOPTIONALFEATURE</Custom>
+      <Custom Action="ReadOnlyFolderAction" After="ReadOnlyFolderAction.SetProperty">INSTALLSERVICEFEATURE OR INSTALLMANAGERFEATURE OR INSTALLCONSOLEFEATURE OR INSTALLTOOLSFEATURE OR INSTALLOPTIONALFEATURE</Custom>
       <Custom Action="NetFxExecuteNativeImageCommitInstall" After="NetFxExecuteNativeImageUninstall">0</Custom>
       <Custom Action="NetFxExecuteNativeImageInstall" After="NetFxExecuteNativeImageCommitInstall" />
       <!-- Set write registry values sequence after service install but before service start to restore original service start mode -->
