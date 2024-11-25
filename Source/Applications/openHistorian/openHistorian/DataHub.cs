@@ -1264,7 +1264,11 @@ namespace openHistorian
         /// </summary>
         /// <param name="targetFilePath">Target directory or file path for JSON file.</param>
         /// <param name="json">JSON file content.</param>
-        /// <exception cref="SecurityException">Cannot save JSON file outside local file path.</exception>
+        /// <exception cref="SecurityException">
+        ///   <para>Cannot save JSON file outside local file path.</para>
+        ///   <para>OR</para>
+        ///   <para>Cannot save JSON files without the .json extension.</para>
+        /// </exception>
         /// <returns>URL to download filename.</returns>
         public string SaveJSONFile(string targetFilePath, string json)
         {
@@ -1281,6 +1285,10 @@ namespace openHistorian
 
             if (string.IsNullOrEmpty(Path.GetFileName(targetFilePath)) || string.IsNullOrEmpty(Path.GetExtension(targetFilePath)))
                 targetFilePath = Path.Combine(targetFilePath, $"{DateTime.Now:s}Merge.json".Replace(':', '.'));
+
+            // Prevent saving files that are not given the .json file extension (helps prevent possible function abuse)
+            if (!string.Equals(Path.GetExtension(targetFilePath), ".json", StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityException("File type error: Cannot save JSON files without the .json extension.");
 
             string directory = Path.GetDirectoryName(targetFilePath);
 
