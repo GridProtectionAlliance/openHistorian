@@ -385,6 +385,72 @@
             specified function operation to all value fields in the data source.
             </remarks>
         </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1">
+            <summary>
+            Returns a series with an extra MetaData Field.
+            </summary>
+            <remarks>
+            Signature: <c>AddMetaData(field, value, expression)</c><br/>
+            Returns: Series of values.<br/>
+            Example: <c>AddMetaData('Company', 'GPA', FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ParameterDefinitions">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1">
+            <summary>
+            Returns a series of values that represent The points at which the input series exceds the given threshold.
+            The <c>threhsold</c> parameter value is a floating-point numbers that represent the threshold to be exceedd.
+            Second parameter optional, is a boolean flag that determines if the Duration of exceeding is returned as value
+            </summary>
+            <remarks>
+            Signature: <c>Exceeds(threshold, [includeDuration = false], expression)</c> -<br/>
+            Returns: Series of values.<br/>
+            Example: <c>Exceeds(60.05, true, FILTER ActiveMeasurements WHERE SignalType LIKE '%FREQ')</c><br/>
+            Execution: Deferred enumeration.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ParameterDefinitions">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1">
             <summary>
             Returns a series of values that are passed though a Kalman filter which predicts the next state based on the current estimate useful
