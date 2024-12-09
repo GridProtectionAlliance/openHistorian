@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useDebounce } from 'react-use';
 
-import { QueryEditorProps, toOption } from '@grafana/data';
+import { QueryEditorProps, getDefaultTimeRange, toOption } from '@grafana/data';
 import { EditorField, EditorRows } from '@grafana/experimental';
 import { Input } from '@grafana/ui';
 
 import CloudMonitoringDatasource from '../datasource';
-import { AnnotationQuery, CloudMonitoringOptions, CloudMonitoringQuery, QueryType } from '../types';
+import { TimeSeriesList, CloudMonitoringQuery, QueryType } from '../types/query';
+import { CloudMonitoringOptions } from '../types/types';
 
 import { MetricQueryEditor, defaultTimeSeriesList } from './MetricQueryEditor';
 
@@ -14,14 +16,14 @@ import { AnnotationsHelp } from './';
 
 export type Props = QueryEditorProps<CloudMonitoringDatasource, CloudMonitoringQuery, CloudMonitoringOptions>;
 
-export const defaultQuery: (datasource: CloudMonitoringDatasource) => AnnotationQuery = (datasource) => ({
+export const defaultQuery: (datasource: CloudMonitoringDatasource) => TimeSeriesList = (datasource) => ({
   ...defaultTimeSeriesList(datasource),
   title: '',
   text: '',
 });
 
 export const AnnotationQueryEditor = (props: Props) => {
-  const { datasource, query, onRunQuery, data, onChange } = props;
+  const { datasource, query, onRunQuery, data, onChange, range } = props;
   const meta = data?.series.length ? data?.series[0].meta : {};
   const customMetaData = meta?.custom ?? {};
   const timeSeriesList = { ...defaultQuery(datasource), ...query.timeSeriesList };
@@ -56,7 +58,7 @@ export const AnnotationQueryEditor = (props: Props) => {
 
   // Use a known query type
   useEffect(() => {
-    if (!Object.values(QueryType).includes(query.queryType)) {
+    if (!query.queryType || !Object.values(QueryType).includes(query.queryType)) {
       onChange({ ...query, queryType: QueryType.TIME_SERIES_LIST });
     }
   });
@@ -72,6 +74,7 @@ export const AnnotationQueryEditor = (props: Props) => {
           onRunQuery={onRunQuery}
           datasource={datasource}
           query={query}
+          range={range || getDefaultTimeRange()}
         />
         <EditorField label="Title" htmlFor="annotation-query-title">
           <Input id="annotation-query-title" value={title} onChange={handleTitleChange} />

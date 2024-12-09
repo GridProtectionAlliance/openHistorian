@@ -4,15 +4,13 @@
 //     public/app/plugins/gen.go
 // Using jennies:
 //     TSTypesJenny
-//     PluginTSTypesJenny
+//     PluginTsTypesJenny
 //
 // Run 'make gen-cue' from repository root to regenerate.
 
 import * as ui from '@grafana/schema';
 
-export const PanelCfgModelVersion = Object.freeze([0, 0]);
-
-export interface PanelOptions extends ui.OptionsWithLegend, ui.OptionsWithTooltip, ui.OptionsWithTimezones {
+export interface Options extends ui.OptionsWithLegend, ui.OptionsWithTooltip, ui.OptionsWithTimezones {
   /**
    * Controls value alignment on the timelines
    */
@@ -21,6 +19,10 @@ export interface PanelOptions extends ui.OptionsWithLegend, ui.OptionsWithToolti
    * Merge equal consecutive values
    */
   mergeValues?: boolean;
+  /**
+   * Enables pagination when > 0
+   */
+  perPage?: number;
   /**
    * Controls the row height
    */
@@ -31,19 +33,20 @@ export interface PanelOptions extends ui.OptionsWithLegend, ui.OptionsWithToolti
   showValue: ui.VisibilityMode;
 }
 
-export const defaultPanelOptions: Partial<PanelOptions> = {
+export const defaultOptions: Partial<Options> = {
   alignValue: 'left',
   mergeValues: true,
+  perPage: 20,
   rowHeight: 0.9,
   showValue: ui.VisibilityMode.Auto,
 };
 
-export interface PanelFieldConfig extends ui.HideableFieldConfig {
+export interface FieldConfig extends ui.HideableFieldConfig {
   fillOpacity?: number;
   lineWidth?: number;
 }
 
-export const defaultPanelFieldConfig: Partial<PanelFieldConfig> = {
+export const defaultFieldConfig: Partial<FieldConfig> = {
   fillOpacity: 70,
   lineWidth: 0,
 };

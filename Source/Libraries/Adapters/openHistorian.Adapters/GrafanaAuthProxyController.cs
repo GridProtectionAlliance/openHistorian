@@ -179,6 +179,8 @@ namespace openHistorian.Adapters
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
             Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
+            //Request.Headers.Authorization = null;
+
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
 
             if (Request.Method == HttpMethod.Get)
@@ -187,27 +189,7 @@ namespace openHistorian.Adapters
             HttpResponseMessage response = await s_http.SendAsync(Request, cancellationToken);
             HttpStatusCode statusCode = response.StatusCode;
 
-            if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
-            {
-                // HACK: Internet Explorer sometimes applies cached authorization headers to concurrent AJAX requests
-                if (Request.Headers.Authorization is not null)
-                {
-                    // Clone request to allow modification
-                    HttpRequestMessage retryRequest = await CloneRequest();
-                    retryRequest.Headers.Authorization = null;
-
-                    HttpResponseMessage retryResponse = await s_http.SendAsync(retryRequest, cancellationToken);
-                    HttpStatusCode retryStatusCode = retryResponse.StatusCode;
-
-                    if (retryStatusCode != HttpStatusCode.NotFound && retryStatusCode != HttpStatusCode.Unauthorized)
-                    {
-                        response = retryResponse;
-                        statusCode = retryStatusCode;
-                    }
-                }
-            }
-
-            if (statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.Unauthorized)
+            if (statusCode is HttpStatusCode.NotFound or HttpStatusCode.Unauthorized)
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {
@@ -238,41 +220,9 @@ namespace openHistorian.Adapters
 
             // Always keep last visited Grafana dashboard in a client session cookie
             if (url.StartsWith("api/dashboards/", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(Request.Headers?.Referrer?.AbsolutePath))
-                response.Headers.AddCookies(new[] { new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" } });
+                response.Headers.AddCookies([new CookieHeaderValue(s_lastDashboardCookieName, $"{Request.Headers.Referrer.AbsolutePath}") { Path = "/" }]);
 
             return response;
-        }
-
-        private async Task<HttpRequestMessage> CloneRequest()
-        {
-            HttpRequestMessage clone = new(Request.Method, Request.RequestUri)
-            {
-                Version = Request.Version
-            };
-
-            foreach (KeyValuePair<string, object> property in Request.Properties)
-                clone.Properties.Add(property);
-
-            foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Headers)
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
-
-            if (Request.Content is not null)
-            {
-                MemoryStream content = new();
-                
-                await Request.Content.CopyToAsync(content);
-                content.Position = 0;
-                
-                clone.Content = new StreamContent(content);
-
-                if (Request.Content.Headers is not null)
-                {
-                    foreach (KeyValuePair<string, IEnumerable<string>> header in Request.Content.Headers)
-                        clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                }
-            }
-
-            return clone;
         }
 
         #endregion
@@ -315,7 +265,7 @@ namespace openHistorian.Adapters
         static GrafanaAuthProxyController()
         {
             // Create a shared HTTP client instance
-            s_http = new HttpClient(new HttpClientHandler { UseCookies = false });
+            s_http = new HttpClient(new HttpClientHandler { UseCookies = false, MaxResponseHeadersLength = 64 });
 
             // Make sure openHistorian specific default service settings exist
             CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];

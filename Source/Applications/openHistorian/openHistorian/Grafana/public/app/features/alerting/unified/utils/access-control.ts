@@ -1,3 +1,4 @@
+import { getConfig } from 'app/core/config';
 import { contextSrv } from 'app/core/services/context_srv';
 import { AccessControlAction } from 'app/types';
 
@@ -47,8 +48,24 @@ export const notificationsPermissions = {
   },
 };
 
+export const silencesPermissions = {
+  read: {
+    grafana: AccessControlAction.AlertingSilenceRead,
+    external: AccessControlAction.AlertingInstanceRead,
+  },
+  create: {
+    grafana: AccessControlAction.AlertingSilenceCreate,
+    external: AccessControlAction.AlertingInstancesExternalWrite,
+  },
+  update: {
+    grafana: AccessControlAction.AlertingSilenceUpdate,
+    external: AccessControlAction.AlertingInstancesExternalWrite,
+  },
+};
+
 export const provisioningPermissions = {
   read: AccessControlAction.AlertingProvisioningRead,
+  readSecrets: AccessControlAction.AlertingProvisioningReadSecrets,
   write: AccessControlAction.AlertingProvisioningWrite,
 };
 
@@ -90,6 +107,7 @@ export function getNotificationsPermissions(rulesSourceName: string) {
     create: notificationsPermissions.create[sourceType],
     update: notificationsPermissions.update[sourceType],
     delete: notificationsPermissions.delete[sourceType],
+    provisioning: provisioningPermissions,
   };
 }
 
@@ -104,25 +122,31 @@ export function getRulesPermissions(rulesSourceName: string) {
   };
 }
 
-export function evaluateAccess(actions: AccessControlAction[], fallBackUserRoles: string[]) {
+export function evaluateAccess(actions: AccessControlAction[]) {
   return () => {
-    return contextSrv.evaluatePermission(() => fallBackUserRoles, actions);
+    return contextSrv.evaluatePermission(actions);
   };
 }
 
 export function getRulesAccess() {
   return {
     canCreateGrafanaRules:
-      contextSrv.hasAccess(AccessControlAction.FoldersRead, contextSrv.hasEditPermissionInFolders) &&
-      contextSrv.hasAccess(rulesPermissions.create.grafana, contextSrv.hasEditPermissionInFolders),
+      contextSrv.hasPermission(AccessControlAction.FoldersRead) &&
+      contextSrv.hasPermission(rulesPermissions.create.grafana),
     canCreateCloudRules:
-      contextSrv.hasAccess(AccessControlAction.DataSourcesRead, contextSrv.isEditor) &&
-      contextSrv.hasAccess(rulesPermissions.create.external, contextSrv.isEditor),
+      contextSrv.hasPermission(AccessControlAction.DataSourcesRead) &&
+      contextSrv.hasPermission(rulesPermissions.create.external),
     canEditRules: (rulesSourceName: string) => {
-      const permissionFallback =
-        rulesSourceName === GRAFANA_RULES_SOURCE_NAME ? contextSrv.hasEditPermissionInFolders : contextSrv.isEditor;
-      return contextSrv.hasAccess(getRulesPermissions(rulesSourceName).update, permissionFallback);
+      return contextSrv.hasPermission(getRulesPermissions(rulesSourceName).update);
     },
-    canReadProvisioning: contextSrv.hasAccess(provisioningPermissions.read, contextSrv.isGrafanaAdmin),
   };
+}
+
+export function getCreateAlertInMenuAvailability() {
+  const { unifiedAlertingEnabled } = getConfig();
+  const hasRuleReadPermissions = contextSrv.hasPermission(getRulesPermissions(GRAFANA_RULES_SOURCE_NAME).read);
+  const hasRuleUpdatePermissions = contextSrv.hasPermission(getRulesPermissions(GRAFANA_RULES_SOURCE_NAME).update);
+  const isAlertingAvailableForRead = unifiedAlertingEnabled && hasRuleReadPermissions;
+
+  return isAlertingAvailableForRead && hasRuleUpdatePermissions;
 }

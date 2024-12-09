@@ -1,42 +1,46 @@
 import { css } from '@emotion/css';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { GrafanaTheme2 } from '@grafana/data';
-import { EditorRow } from '@grafana/experimental';
-import { FetchError } from '@grafana/runtime';
-import { Alert, HorizontalGroup, useStyles2 } from '@grafana/ui';
+import { CoreApp, GrafanaTheme2 } from '@grafana/data';
+import { TemporaryAlert } from '@grafana/o11y-ds-frontend';
+import { config, FetchError, getTemplateSrv, reportInteraction } from '@grafana/runtime';
+import { Alert, Button, HorizontalGroup, Select, useStyles2 } from '@grafana/ui';
 
-import { createErrorNotification } from '../../../../core/copy/appNotification';
-import { notifyApp } from '../../../../core/reducers/appNotification';
-import { dispatch } from '../../../../store/store';
-import { RawQuery } from '../../prometheus/querybuilder/shared/RawQuery';
-import { TraceqlFilter } from '../dataquery.gen';
+import { RawQuery } from '../_importedDependencies/datasources/prometheus/RawQuery';
+import { TraceqlFilter, TraceqlSearchScope } from '../dataquery.gen';
 import { TempoDatasource } from '../datasource';
 import { TempoQueryBuilderOptions } from '../traceql/TempoQueryBuilderOptions';
-import { CompletionProvider } from '../traceql/autocomplete';
 import { traceqlGrammar } from '../traceql/traceql';
 import { TempoQuery } from '../types';
 
 import DurationInput from './DurationInput';
+import { GroupByField } from './GroupByField';
 import InlineSearchField from './InlineSearchField';
 import SearchField from './SearchField';
 import TagsInput from './TagsInput';
-import { filterScopedTag, filterTitle, generateQueryFromFilters, replaceAt } from './utils';
+import { filterScopedTag, filterTitle, generateQueryFromFilters, interpolateFilters, replaceAt } from './utils';
 
 interface Props {
   datasource: TempoDatasource;
   query: TempoQuery;
   onChange: (value: TempoQuery) => void;
   onBlur?: () => void;
+  onClearResults: () => void;
+  app?: CoreApp;
+  addVariablesToOptions?: boolean;
 }
 
-const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
+const hardCodedFilterIds = ['min-duration', 'max-duration', 'status'];
+
+const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVariablesToOptions = true }: Props) => {
   const styles = useStyles2(getStyles);
+  const [alertText, setAlertText] = useState<string>();
   const [error, setError] = useState<Error | FetchError | null>(null);
 
-  const [tags, setTags] = useState<string[]>([]);
   const [isTagsLoading, setIsTagsLoading] = useState(true);
   const [traceQlQuery, setTraceQlQuery] = useState<string>('');
+
+  const templateSrv = getTemplateSrv();
 
   const updateFilter = useCallback(
     (s: TraceqlFilter) => {
@@ -58,9 +62,10 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
     onChange({ ...query, filters: query.filters.filter((f) => f.id !== s.id) });
   };
 
+  const templateVariables = getTemplateSrv().getVariables();
   useEffect(() => {
-    setTraceQlQuery(generateQueryFromFilters(query.filters || []));
-  }, [query]);
+    setTraceQlQuery(generateQueryFromFilters(interpolateFilters(query.filters || [])));
+  }, [query, templateVariables]);
 
   const findFilter = useCallback((id: string) => query.filters?.find((f) => f.id === id), [query.filters]);
 
@@ -68,25 +73,16 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
     const fetchTags = async () => {
       try {
         await datasource.languageProvider.start();
-        const tags = datasource.languageProvider.getTags();
-
-        if (tags) {
-          // This is needed because the /api/v2/search/tag/${tag}/values API expects "status" and the v1 API expects "status.code"
-          // so Tempo doesn't send anything and we inject it here for the autocomplete
-          if (!tags.find((t) => t === 'status')) {
-            tags.push('status');
-          }
-          setTags(tags);
-          setIsTagsLoading(false);
-        }
+        setIsTagsLoading(false);
+        setAlertText(undefined);
       } catch (error) {
         if (error instanceof Error) {
-          dispatch(notifyApp(createErrorNotification('Error', error)));
+          setAlertText(`Error: ${error.message}`);
         }
       }
     };
     fetchTags();
-  }, [datasource]);
+  }, [datasource, setAlertText]);
 
   useEffect(() => {
     // Initialize state with configured static filters that already have a value from the config
@@ -102,42 +98,87 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
   // filter out tags that already exist in the static fields
   const staticTags = datasource.search?.filters?.map((f) => f.tag) || [];
   staticTags.push('duration');
-  const filteredTags = [...CompletionProvider.intrinsics, ...tags].filter((t) => !staticTags.includes(t));
+  staticTags.push('traceDuration');
 
   // Dynamic filters are all filters that don't match the ID of a filter in the datasource configuration
-  // The duration tag is a special case since its selector is hard-coded
+  // The duration and status fields are a special case since its selector is hard-coded
   const dynamicFilters = (query.filters || []).filter(
-    (f) => f.tag !== 'duration' && (datasource.search?.filters?.findIndex((sf) => sf.id === f.id) || 0) === -1
+    (f) =>
+      !hardCodedFilterIds.includes(f.id) &&
+      (datasource.search?.filters?.findIndex((sf) => sf.id === f.id) || 0) === -1 &&
+      f.id !== 'duration-type'
   );
 
   return (
     <>
       <div className={styles.container}>
         <div>
-          {datasource.search?.filters?.map((f) => (
-            <InlineSearchField
-              key={f.id}
-              label={filterTitle(f)}
-              tooltip={`Filter your search by ${filterScopedTag(
-                f
-              )}. To modify the default filters shown for search visit the Tempo datasource configuration page.`}
-            >
-              <SearchField
-                filter={findFilter(f.id) || f}
-                datasource={datasource}
-                setError={setError}
-                updateFilter={updateFilter}
-                tags={[]}
-                hideScope={true}
-                hideTag={true}
-              />
-            </InlineSearchField>
-          ))}
+          {datasource.search?.filters?.map(
+            (f) =>
+              f.tag && (
+                <InlineSearchField
+                  key={f.id}
+                  label={filterTitle(f)}
+                  tooltip={`Filter your search by ${filterScopedTag(
+                    f
+                  )}. To modify the default filters shown for search visit the Tempo datasource configuration page.`}
+                >
+                  <SearchField
+                    filter={findFilter(f.id) || f}
+                    datasource={datasource}
+                    setError={setError}
+                    updateFilter={updateFilter}
+                    tags={[]}
+                    hideScope={true}
+                    hideTag={true}
+                    query={traceQlQuery}
+                    addVariablesToOptions={addVariablesToOptions}
+                  />
+                </InlineSearchField>
+              )
+          )}
+          <InlineSearchField label={'Status'}>
+            <SearchField
+              filter={
+                findFilter('status') || {
+                  id: 'status',
+                  tag: 'status',
+                  scope: TraceqlSearchScope.Intrinsic,
+                  operator: '=',
+                }
+              }
+              datasource={datasource}
+              setError={setError}
+              updateFilter={updateFilter}
+              tags={[]}
+              hideScope={true}
+              hideTag={true}
+              query={traceQlQuery}
+              isMulti={false}
+              allowCustomValue={false}
+              addVariablesToOptions={addVariablesToOptions}
+            />
+          </InlineSearchField>
           <InlineSearchField
             label={'Duration'}
-            tooltip="The span duration, i.e.	end - start time of the span. Accepted units are ns, ms, s, m, h"
+            tooltip="The trace or span duration, i.e. end - start time of the trace/span. Accepted units are ns, ms, s, m, h"
           >
-            <HorizontalGroup spacing={'sm'}>
+            <HorizontalGroup spacing={'none'}>
+              <Select
+                options={[
+                  { label: 'span', value: 'span' },
+                  { label: 'trace', value: 'trace' },
+                ]}
+                value={findFilter('duration-type')?.value ?? 'span'}
+                onChange={(v) => {
+                  const filter = findFilter('duration-type') || {
+                    id: 'duration-type',
+                    value: 'span',
+                  };
+                  updateFilter({ ...filter, value: v?.value });
+                }}
+                aria-label={'duration type'}
+              />
               <DurationInput
                 filter={
                   findFilter('min-duration') || {
@@ -171,15 +212,52 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
               setError={setError}
               updateFilter={updateFilter}
               deleteFilter={deleteFilter}
-              tags={filteredTags}
+              staticTags={staticTags}
               isTagsLoading={isTagsLoading}
+              query={traceQlQuery}
+              requireTagAndValue={true}
+              addVariablesToOptions={addVariablesToOptions}
             />
           </InlineSearchField>
+          {config.featureToggles.metricsSummary && (
+            <GroupByField
+              datasource={datasource}
+              onChange={onChange}
+              query={query}
+              isTagsLoading={isTagsLoading}
+              addVariablesToOptions={addVariablesToOptions}
+            />
+          )}
         </div>
-        <EditorRow>
-          <RawQuery query={traceQlQuery} lang={{ grammar: traceqlGrammar, name: 'traceql' }} />
-        </EditorRow>
-        <TempoQueryBuilderOptions onChange={onChange} query={query} />
+        <div className={styles.rawQueryContainer}>
+          <RawQuery query={templateSrv.replace(traceQlQuery)} lang={{ grammar: traceqlGrammar, name: 'traceql' }} />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              reportInteraction('grafana_traces_copy_to_traceql_clicked', {
+                app: app ?? '',
+                grafana_version: config.buildInfo.version,
+                location: 'search_tab',
+              });
+
+              onClearResults();
+              const traceQlQuery = generateQueryFromFilters(query.filters || []);
+              onChange({
+                ...query,
+                query: traceQlQuery,
+                queryType: 'traceql',
+              });
+            }}
+          >
+            Edit in TraceQL
+          </Button>
+        </div>
+        <TempoQueryBuilderOptions
+          onChange={onChange}
+          query={query}
+          isStreaming={datasource.isStreamingSearchEnabled() ?? false}
+        />
       </div>
       {error ? (
         <Alert title="Unable to connect to Tempo search" severity="info" className={styles.alert}>
@@ -187,6 +265,7 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
           configure it in the <a href={`/datasources/edit/${datasource.uid}`}>datasource settings</a>.
         </Alert>
       ) : null}
+      {alertText && <TemporaryAlert severity={'error'} text={alertText} />}
     </>
   );
 };
@@ -194,14 +273,21 @@ const TraceQLSearch = ({ datasource, query, onChange }: Props) => {
 export default TraceQLSearch;
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  alert: css`
-    max-width: 75ch;
-    margin-top: ${theme.spacing(2)};
-  `,
-  container: css`
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    flex-direction: column;
-  `,
+  alert: css({
+    maxWidth: '75ch',
+    marginTop: theme.spacing(2),
+  }),
+  container: css({
+    display: 'flex',
+    gap: '4px',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+  }),
+  rawQueryContainer: css({
+    alignItems: 'center',
+    backgroundColor: theme.colors.background.secondary,
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+  }),
 });

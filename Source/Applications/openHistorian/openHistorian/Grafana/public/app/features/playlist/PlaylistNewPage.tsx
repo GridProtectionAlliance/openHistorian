@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { NavModelItem } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 import { Page } from 'app/core/components/Page/Page';
 
 import { PlaylistForm } from './PlaylistForm';
-import { createPlaylist, getDefaultPlaylist } from './api';
+import { getPlaylistAPI, getDefaultPlaylist } from './api';
 import { Playlist } from './types';
 
 export const PlaylistNewPage = () => {
   const [playlist] = useState<Playlist>(getDefaultPlaylist());
 
   const onSubmit = async (playlist: Playlist) => {
-    await createPlaylist(playlist);
+    await getPlaylistAPI().createPlaylist(playlist);
     locationService.push('/playlists');
   };
 

@@ -1,14 +1,16 @@
 import { BuildInfo } from '@grafana/data';
-import { BaseTransport } from '@grafana/faro-core';
+import { BaseTransport, defaultInternalLoggerLevel } from '@grafana/faro-core';
 import {
   initializeFaro,
-  defaultMetas,
   BrowserConfig,
   ErrorsInstrumentation,
   ConsoleInstrumentation,
   WebVitalsInstrumentation,
+  SessionInstrumentation,
   FetchTransport,
+  type Instrumentation,
 } from '@grafana/faro-web-sdk';
+import { TracingInstrumentation } from '@grafana/faro-web-tracing';
 import { EchoBackend, EchoEvent, EchoEventType } from '@grafana/runtime';
 
 import { EchoSrvTransport } from './EchoSrvTransport';
@@ -21,6 +23,7 @@ export interface GrafanaJavascriptAgentBackendOptions extends BrowserConfig {
   errorInstrumentalizationEnabled: boolean;
   consoleInstrumentalizationEnabled: boolean;
   webVitalsInstrumentalizationEnabled: boolean;
+  tracingInstrumentalizationEnabled: boolean;
 }
 
 export class GrafanaJavascriptAgentBackend
@@ -28,15 +31,15 @@ export class GrafanaJavascriptAgentBackend
 {
   supportedEvents = [EchoEventType.GrafanaJavascriptAgent];
   private faroInstance;
-  transports: BaseTransport[];
 
   constructor(public options: GrafanaJavascriptAgentBackendOptions) {
-    // configure instrumentalizations
-    const instrumentations = [];
-    this.transports = [];
+    // configure instrumentations.
+    const instrumentations: Instrumentation[] = [];
+
+    const transports: BaseTransport[] = [new EchoSrvTransport()];
 
     if (options.customEndpoint) {
-      this.transports.push(new FetchTransport({ url: options.customEndpoint, apiKey: options.apiKey }));
+      transports.push(new FetchTransport({ url: options.customEndpoint, apiKey: options.apiKey }));
     }
 
     if (options.errorInstrumentalizationEnabled) {
@@ -48,31 +51,37 @@ export class GrafanaJavascriptAgentBackend
     if (options.webVitalsInstrumentalizationEnabled) {
       instrumentations.push(new WebVitalsInstrumentation());
     }
+    if (options.tracingInstrumentalizationEnabled) {
+      instrumentations.push(new TracingInstrumentation());
+    }
+
+    // session instrumentation must be added!
+    instrumentations.push(new SessionInstrumentation());
 
     // initialize GrafanaJavascriptAgent so it can set up its hooks and start collecting errors
     const grafanaJavaScriptAgentOptions: BrowserConfig = {
       globalObjectKey: options.globalObjectKey || 'faro',
       preventGlobalExposure: options.preventGlobalExposure || false,
       app: {
+        name: 'grafana-frontend',
         version: options.buildInfo.version,
         environment: options.buildInfo.env,
       },
       instrumentations,
-      transports: [new EchoSrvTransport()],
+      transports,
       ignoreErrors: [
         'ResizeObserver loop limit exceeded',
         'ResizeObserver loop completed',
         'Non-Error exception captured with keys',
       ],
-      metas: [
-        ...defaultMetas,
-        {
-          session: {
-            // new session id for every page load
-            id: (Math.random() + 1).toString(36).substring(2),
-          },
-        },
-      ],
+      ignoreUrls: [new RegExp(`/*${options.customEndpoint}/`), /frontend-metrics/],
+      sessionTracking: {
+        persistent: true,
+      },
+      batching: {
+        sendTimeout: 1000,
+      },
+      internalLoggerLevel: options.internalLoggerLevel || defaultInternalLoggerLevel,
     };
     this.faroInstance = initializeFaro(grafanaJavaScriptAgentOptions);
 
@@ -86,9 +95,8 @@ export class GrafanaJavascriptAgentBackend
     }
   }
 
-  addEvent = (e: EchoEvent) => {
-    this.transports.forEach((t) => t.send(e.payload));
-  };
+  // noop because the EchoSrvTransport registered in Faro will already broadcast all signals emitted by the Faro API
+  addEvent = (e: EchoEvent) => {};
 
   // backend will log events to stdout, and at least in case of hosted grafana they will be
   // ingested into Loki. Due to Loki limitations logs cannot be backdated,

@@ -1,7 +1,7 @@
 import { getDefaultRelativeTimeRange, RelativeTimeRange } from '@grafana/data';
 import { getDataSourceSrv } from '@grafana/runtime/src/services/__mocks__/dataSourceSrv';
 import { dataSource as expressionDatasource } from 'app/features/expressions/ExpressionDatasource';
-import { ExpressionQuery, ExpressionQueryType, ExpressionDatasourceUID } from 'app/features/expressions/types';
+import { ExpressionDatasourceUID, ExpressionQuery, ExpressionQueryType } from 'app/features/expressions/types';
 import { defaultCondition } from 'app/features/expressions/utils/expressionTypes';
 import { AlertQuery } from 'app/types/unified-alerting-dto';
 
@@ -48,7 +48,7 @@ const expressionQuery: AlertQuery = {
 
 describe('Query and expressions reducer', () => {
   it('should return initial state', () => {
-    expect(queriesAndExpressionsReducer(undefined, { type: undefined })).toEqual({
+    expect(queriesAndExpressionsReducer(undefined, { type: '' })).toEqual({
       queries: [],
     });
   });
@@ -113,7 +113,7 @@ describe('Query and expressions reducer', () => {
       queries: [alertQuery],
     };
 
-    const newState = queriesAndExpressionsReducer(initialState, addNewExpression());
+    const newState = queriesAndExpressionsReducer(initialState, addNewExpression(ExpressionQueryType.math));
     expect(newState.queries).toHaveLength(2);
     expect(newState).toMatchSnapshot();
   });
@@ -123,11 +123,11 @@ describe('Query and expressions reducer', () => {
       queries: [alertQuery, expressionQuery],
     };
 
-    let stateWithoutB = queriesAndExpressionsReducer(initialState, removeExpression('B'));
+    const stateWithoutB = queriesAndExpressionsReducer(initialState, removeExpression('B'));
     expect(stateWithoutB.queries).toHaveLength(1);
     expect(stateWithoutB).toMatchSnapshot();
 
-    let stateWithoutAOrB = queriesAndExpressionsReducer(stateWithoutB, removeExpression('A'));
+    const stateWithoutAOrB = queriesAndExpressionsReducer(stateWithoutB, removeExpression('A'));
     expect(stateWithoutAOrB.queries).toHaveLength(0);
   });
 
@@ -233,19 +233,22 @@ describe('Query and expressions reducer', () => {
     });
   });
 
-  it('Should update time range for all expressions that have this data source when dispatching updateExpressionTimeRange', () => {
-    const expressionQuery: AlertQuery = {
+  it('Should update time range for all resample expressions that have this data source when dispatching updateExpressionTimeRange', () => {
+    const expressionQuery: AlertQuery<ExpressionQuery> = {
       refId: 'B',
       queryType: 'expression',
       datasourceUid: '__expr__',
       model: {
+        datasource: {
+          type: '__expr__',
+          uid: '__expr__',
+        },
         queryType: 'query',
-        datasource: '__expr__',
         refId: 'B',
         expression: 'A',
-        type: ExpressionQueryType.classic,
+        type: ExpressionQueryType.resample,
         window: '10s',
-      } as ExpressionQuery,
+      },
     };
     const customTimeRange: RelativeTimeRange = { from: 900, to: 1000 };
 
@@ -262,7 +265,7 @@ describe('Query and expressions reducer', () => {
     };
 
     const newState = queriesAndExpressionsReducer(initialState, updateExpressionTimeRange());
-    expect(newState).toStrictEqual({
+    expect(newState).toStrictEqual<{ queries: AlertQuery[] }>({
       queries: [
         {
           refId: 'A',
@@ -274,19 +277,19 @@ describe('Query and expressions reducer', () => {
         {
           datasourceUid: '__expr__',
           model: {
-            datasource: '__expr__',
             expression: 'A',
+            datasource: {
+              type: '__expr__',
+              uid: '__expr__',
+            },
             queryType: 'query',
             refId: 'B',
-            type: ExpressionQueryType.classic,
+            type: ExpressionQueryType.resample,
             window: '10s',
           },
           queryType: 'expression',
           refId: 'B',
-          relativeTimeRange: {
-            from: 900,
-            to: 1000,
-          },
+          relativeTimeRange: customTimeRange,
         },
       ],
     });

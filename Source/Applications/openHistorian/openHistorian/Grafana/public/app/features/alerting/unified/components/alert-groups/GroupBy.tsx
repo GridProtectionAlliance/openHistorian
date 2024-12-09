@@ -1,28 +1,40 @@
 import { uniq } from 'lodash';
-import React from 'react';
 
 import { SelectableValue } from '@grafana/data';
-import { Icon, Label, MultiSelect } from '@grafana/ui';
+import { Icon, Label, MultiSelect, Tooltip } from '@grafana/ui';
 import { AlertmanagerGroup } from 'app/plugins/datasource/alertmanager/types';
 
+import { isPrivateLabelKey } from '../../utils/labels';
+
 interface Props {
-  className?: string;
   groups: AlertmanagerGroup[];
   groupBy: string[];
   onGroupingChange: (keys: string[]) => void;
 }
 
-export const GroupBy = ({ className, groups, groupBy, onGroupingChange }: Props) => {
+export const GroupBy = ({ groups, groupBy, onGroupingChange }: Props) => {
   const labelKeyOptions = uniq(groups.flatMap((group) => group.alerts).flatMap(({ labels }) => Object.keys(labels)))
-    .filter((label) => !(label.startsWith('__') && label.endsWith('__'))) // Filter out private labels
+    .filter((label) => !isPrivateLabelKey(label)) // Filter out private labels
     .map<SelectableValue>((key) => ({
       label: key,
       value: key,
     }));
 
   return (
-    <div data-testid={'group-by-container'} className={className}>
-      <Label>Custom group by</Label>
+    <div data-testid={'group-by-container'}>
+      <Label>
+        <span>Custom group by&nbsp;</span>
+        <Tooltip
+          content={
+            <div>
+              Group notifications using a different combination of labels. This option can help validate the grouping
+              settings of your notification policies.
+            </div>
+          }
+        >
+          <Icon name="info-circle" size="sm" />
+        </Tooltip>
+      </Label>
       <MultiSelect
         aria-label={'group by label keys'}
         value={groupBy}
@@ -32,6 +44,7 @@ export const GroupBy = ({ className, groups, groupBy, onGroupingChange }: Props)
           onGroupingChange(items.map(({ value }) => value as string));
         }}
         options={labelKeyOptions}
+        width={34}
       />
     </div>
   );

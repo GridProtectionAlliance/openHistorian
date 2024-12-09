@@ -1,5 +1,5 @@
-import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 
 import { UrlQueryMap } from '@grafana/data';
 
@@ -12,7 +12,7 @@ export type GrafanaRouteComponent<T extends {} = any> = React.ComponentType<Graf
 
 export interface RouteDescriptor {
   path: string;
-  component: GrafanaRouteComponent<any>;
+  component: GrafanaRouteComponent;
   roles?: () => string[];
   pageClass?: string;
   /** Can be used like an id for the route if the same component is used by many routes */

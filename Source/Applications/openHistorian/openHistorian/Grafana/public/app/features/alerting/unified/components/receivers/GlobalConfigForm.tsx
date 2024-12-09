@@ -1,7 +1,6 @@
-import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import { Alert, Button, HorizontalGroup, LinkButton } from '@grafana/ui';
+import { Alert, Button, Stack, LinkButton } from '@grafana/ui';
 import { useCleanup } from 'app/core/hooks/useCleanup';
 import { AlertManagerCortexConfig } from 'app/plugins/datasource/alertmanager/types';
 import { useDispatch } from 'app/types';
@@ -87,11 +86,11 @@ export const GlobalConfigForm = ({ config, alertManagerSourceName }: Props) => {
           />
         ))}
         <div>
-          <HorizontalGroup>
+          <Stack>
             {!readOnly && (
               <>
                 {loading && (
-                  <Button disabled={true} icon="fa fa-spinner" variant="primary">
+                  <Button disabled={true} icon="spinner" variant="primary">
                     Saving...
                   </Button>
                 )}
@@ -106,7 +105,7 @@ export const GlobalConfigForm = ({ config, alertManagerSourceName }: Props) => {
             >
               Cancel
             </LinkButton>
-          </HorizontalGroup>
+          </Stack>
         </div>
       </form>
     </FormProvider>

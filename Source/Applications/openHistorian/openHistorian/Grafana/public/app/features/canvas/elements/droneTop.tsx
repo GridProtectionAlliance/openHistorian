@@ -1,12 +1,12 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, OneClickMode } from '@grafana/data';
+import { ScalarDimensionConfig } from '@grafana/schema';
 import { useStyles2 } from '@grafana/ui';
-import { DimensionContext, ScalarDimensionConfig } from 'app/features/dimensions';
+import { DimensionContext } from 'app/features/dimensions';
 import { ScalarDimensionEditor } from 'app/features/dimensions/editors';
 
-import { CanvasElementItem, CanvasElementProps, defaultBgColor } from '../element';
+import { CanvasElementItem, CanvasElementOptions, CanvasElementProps, defaultBgColor } from '../element';
 
 interface DroneTopData {
   bRightRotorRPM?: number;
@@ -79,7 +79,7 @@ const DroneTopDisplay = ({ data }: CanvasElementProps<DroneTopConfig, DroneTopDa
   );
 };
 
-export const droneTopItem: CanvasElementItem<any, any> = {
+export const droneTopItem: CanvasElementItem = {
   id: 'droneTop',
   name: 'Drone Top',
   description: 'Drone top',
@@ -98,16 +98,28 @@ export const droneTopItem: CanvasElementItem<any, any> = {
         fixed: 'transparent',
       },
     },
+    oneClickMode: options?.oneClickMode ?? OneClickMode.Off,
+    links: options?.links ?? [],
   }),
 
   // Called when data changes
-  prepareData: (ctx: DimensionContext, cfg: DroneTopConfig) => {
+  prepareData: (dimensionContext: DimensionContext, elementOptions: CanvasElementOptions<DroneTopConfig>) => {
+    const droneTopConfig = elementOptions.config;
+
     const data: DroneTopData = {
-      bRightRotorRPM: cfg?.bRightRotorRPM ? ctx.getScalar(cfg.bRightRotorRPM).value() : 0,
-      bLeftRotorRPM: cfg?.bLeftRotorRPM ? ctx.getScalar(cfg.bLeftRotorRPM).value() : 0,
-      fRightRotorRPM: cfg?.fRightRotorRPM ? ctx.getScalar(cfg.fRightRotorRPM).value() : 0,
-      fLeftRotorRPM: cfg?.fLeftRotorRPM ? ctx.getScalar(cfg.fLeftRotorRPM).value() : 0,
-      yawAngle: cfg?.yawAngle ? ctx.getScalar(cfg.yawAngle).value() : 0,
+      bRightRotorRPM: droneTopConfig?.bRightRotorRPM
+        ? dimensionContext.getScalar(droneTopConfig.bRightRotorRPM).value()
+        : 0,
+      bLeftRotorRPM: droneTopConfig?.bLeftRotorRPM
+        ? dimensionContext.getScalar(droneTopConfig.bLeftRotorRPM).value()
+        : 0,
+      fRightRotorRPM: droneTopConfig?.fRightRotorRPM
+        ? dimensionContext.getScalar(droneTopConfig.fRightRotorRPM).value()
+        : 0,
+      fLeftRotorRPM: droneTopConfig?.fLeftRotorRPM
+        ? dimensionContext.getScalar(droneTopConfig.fLeftRotorRPM).value()
+        : 0,
+      yawAngle: droneTopConfig?.yawAngle ? dimensionContext.getScalar(droneTopConfig.yawAngle).value() : 0,
     };
 
     return data;
@@ -155,23 +167,27 @@ export const droneTopItem: CanvasElementItem<any, any> = {
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  propeller: css`
-    transform-origin: 50% 50%;
-    transform-box: fill-box;
-    display: block;
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  `,
-  propellerCW: css`
-    animation-direction: normal;
-  `,
-  propellerCCW: css`
-    animation-direction: reverse;
-  `,
+  propeller: css({
+    transformOrigin: '50% 50%',
+    transformBox: 'fill-box',
+    display: 'block',
+    '@keyframes spin': {
+      from: {
+        transform: 'rotate(0deg)',
+      },
+      to: {
+        transform: 'rotate(360deg)',
+      },
+    },
+  }),
+  propellerCW: css({
+    // TODO: figure out what styles to apply when prefers-reduced-motion is set
+    // eslint-disable-next-line @grafana/no-unreduced-motion
+    animationDirection: 'normal',
+  }),
+  propellerCCW: css({
+    // TODO: figure out what styles to apply when prefers-reduced-motion is set
+    // eslint-disable-next-line @grafana/no-unreduced-motion
+    animationDirection: 'reverse',
+  }),
 });

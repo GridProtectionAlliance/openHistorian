@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { locationService } from '@grafana/runtime';
-import { Page } from 'app/core/components/PageNew/Page';
+import { Page } from 'app/core/components/Page/Page';
 import { SettingsPageProps } from 'app/features/dashboard/components/DashboardSettings/types';
 
 import { StoreState, ThunkDispatch } from '../../../types';
@@ -105,12 +105,14 @@ class VariableEditorContainerUnconnected extends PureComponent<Props, State> {
   };
 
   render() {
-    const { editIndex, variables } = this.props;
+    const { editIndex, variables, sectionNav, toolbar } = this.props;
     const variableToEdit = editIndex != null ? variables[editIndex] : undefined;
-    const subPageNav = variableToEdit ? { text: variableToEdit.name } : undefined;
+    const node = sectionNav.node;
+    const parentItem = node.parentItem;
+    const subPageNav = variableToEdit ? { text: variableToEdit.name, parentItem } : parentItem;
 
     return (
-      <Page navModel={this.props.sectionNav} pageNav={subPageNav}>
+      <Page toolbar={toolbar} navModel={this.props.sectionNav} pageNav={subPageNav}>
         {!variableToEdit && (
           <VariableEditorList
             variables={this.props.variables}

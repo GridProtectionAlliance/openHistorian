@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { ConfirmModal } from '@grafana/ui';
 
@@ -13,7 +13,7 @@ export const RevertDashboardModal = ({ hideModal, version }: RevertDashboardModa
   const { state, onRestoreDashboard } = useDashboardRestore(version);
 
   useEffect(() => {
-    if (state.loading === false && state.value) {
+    if (!state.loading && state.value) {
       hideModal();
     }
   }, [state, hideModal]);

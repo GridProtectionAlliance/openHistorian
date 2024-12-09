@@ -1,10 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { History, Location } from 'history';
-import React from 'react';
 import { TestProvider } from 'test/helpers/TestProvider';
 
-import { RouteDescriptor } from 'app/core/navigation/types';
 import { ApiKey, OrgRole, ServiceAccountDTO } from 'app/types';
 
 import { ServiceAccountPageUnconnected, Props } from './ServiceAccountPage';
@@ -13,9 +10,13 @@ jest.mock('app/core/core', () => ({
   contextSrv: {
     licensedAccessControlEnabled: () => false,
     hasPermission: () => true,
-    hasPermissionInMetadata: () => true,
-    hasAccessInMetadata: () => false,
+    hasPermissionInMetadata: () => false,
   },
+}));
+
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
+  useParams: () => ({ id: '1' }),
 }));
 
 const setup = (propOverrides: Partial<Props>) => {
@@ -30,17 +31,6 @@ const setup = (propOverrides: Partial<Props>) => {
     serviceAccount: {} as ServiceAccountDTO,
     tokens: [],
     isLoading: false,
-    roleOptions: [],
-    match: {
-      params: { id: '1' },
-      isExact: true,
-      path: '/org/serviceaccounts/1',
-      url: 'http://localhost:3000/org/serviceaccounts/1',
-    },
-    history: {} as History,
-    location: {} as Location,
-    queryParams: {},
-    route: {} as RouteDescriptor,
     timezone: '',
     createServiceAccountToken: createServiceAccountTokenMock,
     deleteServiceAccount: deleteServiceAccountMock,

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { SelectableValue } from '@grafana/data';
 import { EditorField, EditorFieldGroup } from '@grafana/experimental';
@@ -6,7 +6,8 @@ import { MultiSelect } from '@grafana/ui';
 
 import { SYSTEM_LABELS } from '../constants';
 import { labelsToGroupedOptions } from '../functions';
-import { MetricDescriptor, TimeSeriesList } from '../types';
+import { TimeSeriesList } from '../types/query';
+import { MetricDescriptor } from '../types/types';
 
 import { Aggregation } from './Aggregation';
 
@@ -39,6 +40,7 @@ export const GroupBy = ({
         tooltip="You can reduce the amount of data returned for a metric by combining different time series. To combine multiple time series, you can specify a grouping and a function. Grouping is done on the basis of labels. The grouping function is used to combine the time series in the group into a single time series."
       >
         <MultiSelect
+          allowCustomValue
           inputId={`${refId}-group-by`}
           width="auto"
           placeholder="Choose label"

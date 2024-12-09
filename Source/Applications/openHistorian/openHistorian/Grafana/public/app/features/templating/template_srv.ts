@@ -1,4 +1,4 @@
-import { escape, isString, property } from 'lodash';
+import { escape, isString } from 'lodash';
 
 import {
   deprecationWarning,
@@ -15,21 +15,19 @@ import {
   TemplateSrv as BaseTemplateSrv,
   VariableInterpolation,
 } from '@grafana/runtime';
-import { sceneGraph, VariableCustomFormatterFn } from '@grafana/scenes';
+import { sceneGraph, VariableCustomFormatterFn, SceneObject } from '@grafana/scenes';
 import { VariableFormatID } from '@grafana/schema';
 
+import { getVariablesCompatibility } from '../dashboard-scene/utils/getVariablesCompatibility';
 import { variableAdapters } from '../variables/adapters';
 import { ALL_VARIABLE_TEXT, ALL_VARIABLE_VALUE } from '../variables/constants';
 import { isAdHoc } from '../variables/guard';
 import { getFilteredVariables, getVariables, getVariableWithName } from '../variables/state/selectors';
 import { variableRegex } from '../variables/utils';
 
+import { getFieldAccessor } from './fieldAccessorCache';
 import { formatVariableValue } from './formatVariableValue';
 import { macroRegistry } from './macroRegistry';
-
-interface FieldAccessorCache {
-  [key: string]: (obj: any) => any;
-}
 
 /**
  * Internal regex replace function
@@ -53,8 +51,8 @@ export class TemplateSrv implements BaseTemplateSrv {
   private regex = variableRegex;
   private index: any = {};
   private grafanaVariables = new Map<string, any>();
-  private timeRange?: TimeRange | null = null;
-  private fieldAccessorCache: FieldAccessorCache = {};
+  private _timeRange?: TimeRange | null = null;
+  private _adhocFiltersDeprecationWarningLogged = new Map<string, boolean>();
 
   constructor(private dependencies: TemplateSrvDependencies = runtimeDependencies) {
     this._variables = [];
@@ -62,7 +60,7 @@ export class TemplateSrv implements BaseTemplateSrv {
 
   init(variables: any, timeRange?: TimeRange) {
     this._variables = variables;
-    this.timeRange = timeRange;
+    this._timeRange = timeRange;
     this.updateIndex();
   }
 
@@ -71,17 +69,32 @@ export class TemplateSrv implements BaseTemplateSrv {
    *
    * Use getVariables function instead
    */
-  get variables(): any[] {
+  get variables(): TypedVariableModel[] {
     deprecationWarning('template_srv.ts', 'variables', 'getVariables');
     return this.getVariables();
   }
 
   getVariables(): TypedVariableModel[] {
+    // For scenes we have this backward compatiblity translation
+    if (window.__grafanaSceneContext) {
+      return getVariablesCompatibility(window.__grafanaSceneContext);
+    }
+
     return this.dependencies.getVariables();
   }
 
+  get timeRange(): TimeRange | null | undefined {
+    if (window.__grafanaSceneContext && window.__grafanaSceneContext.isActive) {
+      const sceneTimeRange = sceneGraph.getTimeRange(window.__grafanaSceneContext);
+
+      return sceneTimeRange.state.value;
+    }
+
+    return this._timeRange;
+  }
+
   updateIndex() {
-    const existsOrEmpty = (value: any) => value || value === '';
+    const existsOrEmpty = (value: unknown) => value || value === '';
 
     this.index = this._variables.reduce((acc, currentValue) => {
       if (currentValue.current && (currentValue.current.isNone || existsOrEmpty(currentValue.current.value))) {
@@ -107,7 +120,7 @@ export class TemplateSrv implements BaseTemplateSrv {
   }
 
   updateTimeRange(timeRange: TimeRange) {
-    this.timeRange = timeRange;
+    this._timeRange = timeRange;
     this.updateIndex();
   }
 
@@ -115,12 +128,28 @@ export class TemplateSrv implements BaseTemplateSrv {
     this.index[variable.name] = variable;
   }
 
-  getAdhocFilters(datasourceName: string): AdHocVariableFilter[] {
-    let filters: any = [];
+  /**
+   * @deprecated
+   * Use filters property on the request (DataQueryRequest) or if this is called from
+   * interpolateVariablesInQueries or applyTemplateVariables it is passed as a new argument
+   **/
+  getAdhocFilters(datasourceName: string, skipDeprecationWarning?: boolean): AdHocVariableFilter[] {
+    let filters: AdHocVariableFilter[] = [];
     let ds = getDataSourceSrv().getInstanceSettings(datasourceName);
 
     if (!ds) {
       return [];
+    }
+
+    if (!skipDeprecationWarning && !this._adhocFiltersDeprecationWarningLogged.get(ds.type)) {
+      if (process.env.NODE_ENV !== 'test') {
+        deprecationWarning(
+          `DataSource ${ds.type}`,
+          'templateSrv.getAdhocFilters',
+          'filters property on the request (DataQueryRequest). Or if this is called from interpolateVariablesInQueries or applyTemplateVariables it is passed as a new argument'
+        );
+      }
+      this._adhocFiltersDeprecationWarningLogged.set(ds.type, true);
     }
 
     for (const variable of this.getAdHocVariables()) {
@@ -129,7 +158,7 @@ export class TemplateSrv implements BaseTemplateSrv {
       if (variableUid === ds.uid) {
         filters = filters.concat(variable.filters);
       } else if (variableUid?.indexOf('$') === 0) {
-        if (this.replace(variableUid) === datasourceName) {
+        if (this.replace(variableUid) === ds.uid) {
           filters = filters.concat(variable.filters);
         }
       }
@@ -206,18 +235,9 @@ export class TemplateSrv implements BaseTemplateSrv {
     return values;
   }
 
-  private getFieldAccessor(fieldPath: string) {
-    const accessor = this.fieldAccessorCache[fieldPath];
-    if (accessor) {
-      return accessor;
-    }
-
-    return (this.fieldAccessorCache[fieldPath] = property(fieldPath));
-  }
-
   private getVariableValue(scopedVar: ScopedVar, fieldPath: string | undefined) {
     if (fieldPath) {
-      return this.getFieldAccessor(fieldPath)(scopedVar.value);
+      return getFieldAccessor(fieldPath)(scopedVar.value);
     }
 
     return scopedVar.value;
@@ -237,12 +257,27 @@ export class TemplateSrv implements BaseTemplateSrv {
     format?: string | Function | undefined,
     interpolations?: VariableInterpolation[]
   ): string {
+    // Scenes compatability (primary method) is via SceneObject inside scopedVars. This way we get a much more accurate "local" scope for the evaluation
     if (scopedVars && scopedVars.__sceneObject) {
+      // We are using valueOf here as __sceneObject can be after scenes 5.6.0 a SafeSerializableSceneObject that overrides valueOf to return the underlying SceneObject
+      const sceneObject: SceneObject = scopedVars.__sceneObject.value.valueOf();
       return sceneGraph.interpolate(
-        scopedVars.__sceneObject.value,
+        sceneObject,
         target,
         scopedVars,
-        format as string | VariableCustomFormatterFn | undefined
+        format as string | VariableCustomFormatterFn | undefined,
+        interpolations
+      );
+    }
+
+    // Scenes compatability: (secondary method) is using the current active scene as the scope for evaluation.
+    if (window.__grafanaSceneContext && window.__grafanaSceneContext.isActive) {
+      return sceneGraph.interpolate(
+        window.__grafanaSceneContext,
+        target,
+        scopedVars,
+        format as string | VariableCustomFormatterFn | undefined,
+        interpolations
       );
     }
 
@@ -284,8 +319,9 @@ export class TemplateSrv implements BaseTemplateSrv {
     }
 
     if (!variable) {
-      if (macroRegistry[variableName]) {
-        return macroRegistry[variableName](match, fieldPath, scopedVars, format);
+      const macro = macroRegistry[variableName];
+      if (macro) {
+        return macro(match, fieldPath, scopedVars, format);
       }
 
       return match;
@@ -338,7 +374,7 @@ export class TemplateSrv implements BaseTemplateSrv {
     });
   }
 
-  isAllValue(value: any) {
+  isAllValue(value: unknown) {
     return value === ALL_VARIABLE_VALUE || (Array.isArray(value) && value[0] === ALL_VARIABLE_VALUE);
   }
 

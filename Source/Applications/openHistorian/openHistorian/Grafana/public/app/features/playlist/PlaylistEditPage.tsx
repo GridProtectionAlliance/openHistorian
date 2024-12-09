@@ -1,40 +1,46 @@
-import React from 'react';
+import { useParams } from 'react-router-dom-v5-compat';
 import { useAsync } from 'react-use';
 
 import { NavModelItem } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 import { Page } from 'app/core/components/Page/Page';
-import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
+import { t, Trans } from 'app/core/internationalization';
 
 import { PlaylistForm } from './PlaylistForm';
-import { getPlaylist, updatePlaylist } from './api';
+import { getPlaylistAPI } from './api';
 import { Playlist } from './types';
 
 export interface RouteParams {
   uid: string;
 }
 
-interface Props extends GrafanaRouteComponentProps<RouteParams> {}
-
-export const PlaylistEditPage = ({ match }: Props) => {
-  const playlist = useAsync(() => getPlaylist(match.params.uid), [match.params]);
+export const PlaylistEditPage = () => {
+  const { uid = '' } = useParams();
+  const api = getPlaylistAPI();
+  const playlist = useAsync(() => api.getPlaylist(uid), [uid]);
 
   const onSubmit = async (playlist: Playlist) => {
-    await updatePlaylist(match.params.uid, playlist);
+    await api.updatePlaylist(playlist);
     locationService.push('/playlists');
   };
 
   const pageNav: NavModelItem = {
-    text: 'Edit playlist',
-    subTitle:
-      'A playlist rotates through a pre-selected list of dashboards. A playlist can be a great way to build situational awareness, or just show off your metrics to your team or visitors.',
+    text: t('playlist-edit.title', 'Edit playlist'),
+    subTitle: t(
+      'playlist-edit.sub-title',
+      'A playlist rotates through a pre-selected list of dashboards. A playlist can be a great way to build situational awareness, or just show off your metrics to your team or visitors.'
+    ),
   };
 
   return (
     <Page navId="dashboards/playlists" pageNav={pageNav}>
       <Page.Contents isLoading={playlist.loading}>
-        {playlist.error && <div>Error loading playlist: {JSON.stringify(playlist.error)}</div>}
-
+        {playlist.error && (
+          <div>
+            <Trans i18nKey="playlist-edit.error-prefix">Error loading playlist:</Trans>
+            {JSON.stringify(playlist.error)}
+          </div>
+        )}
         {playlist.value && <PlaylistForm onSubmit={onSubmit} playlist={playlist.value} />}
       </Page.Contents>
     </Page>

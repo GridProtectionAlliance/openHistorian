@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 import selectEvent from 'react-select-event';
 
 import { ElasticDetails } from './ElasticDetails';
-import { createDefaultConfigOptions } from './mocks';
+import { createDefaultConfigOptions } from './__mocks__/configOptions';
 
 describe('ElasticDetails', () => {
   describe('Max concurrent Shard Requests', () => {
@@ -22,8 +21,7 @@ describe('ElasticDetails', () => {
 
     expect(onChangeMock).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        database: '[logstash-]YYYY.MM.DD',
-        jsonData: expect.objectContaining({ interval: 'Daily' }),
+        jsonData: expect.objectContaining({ interval: 'Daily', index: '[logstash-]YYYY.MM.DD' }),
       })
     );
   });
@@ -39,8 +37,7 @@ describe('ElasticDetails', () => {
 
     expect(onChangeMock).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        database: '[logstash-]YYYY.MM',
-        jsonData: expect.objectContaining({ interval: 'Monthly' }),
+        jsonData: expect.objectContaining({ interval: 'Monthly', index: '[logstash-]YYYY.MM' }),
       })
     );
   });

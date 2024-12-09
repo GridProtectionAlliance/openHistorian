@@ -1,17 +1,13 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import * as React from 'react';
 
 import { FieldNamePickerConfigSettings, StandardEditorProps, StandardEditorsRegistryItem } from '@grafana/data';
+import { ResourceDimensionConfig, ResourceDimensionMode } from '@grafana/schema';
 import { InlineField, InlineFieldRow, RadioButtonGroup } from '@grafana/ui';
 import { FieldNamePicker } from '@grafana/ui/src/components/MatchersUI/FieldNamePicker';
 
 import { getPublicOrAbsoluteUrl, ResourceFolderName } from '..';
-import {
-  MediaType,
-  ResourceDimensionConfig,
-  ResourceDimensionMode,
-  ResourceDimensionOptions,
-  ResourcePickerSize,
-} from '../types';
+import { MediaType, ResourceDimensionOptions, ResourcePickerSize } from '../types';
 
 import { ResourcePicker } from './ResourcePicker';
 
@@ -21,9 +17,9 @@ const resourceOptions = [
   //  { label: 'Mapping', value: ResourceDimensionMode.Mapping, description: 'Map the results of a value to an svg' },
 ];
 
-const dummyFieldSettings: StandardEditorsRegistryItem<string, FieldNamePickerConfigSettings> = {
+const dummyFieldSettings = {
   settings: {},
-} as any;
+} as StandardEditorsRegistryItem<string, FieldNamePickerConfigSettings>;
 
 export const ResourceDimensionEditor = (
   props: StandardEditorProps<ResourceDimensionConfig, ResourceDimensionOptions, unknown>
@@ -70,6 +66,7 @@ export const ResourceDimensionEditor = (
   const showSourceRadio = item.settings?.showSourceRadio ?? true;
   const mediaType = item.settings?.resourceType ?? MediaType.Icon;
   const folderName = item.settings?.folderName ?? ResourceFolderName.Icon;
+  const maxFiles = item.settings?.maxFiles; // undefined leads to backend default
   let srcPath = '';
   if (mediaType === MediaType.Icon) {
     if (value?.fixed) {
@@ -111,6 +108,7 @@ export const ResourceDimensionEditor = (
           mediaType={mediaType}
           folderName={folderName}
           size={ResourcePickerSize.NORMAL}
+          maxFiles={maxFiles}
         />
       )}
       {mode === ResourceDimensionMode.Mapping && (

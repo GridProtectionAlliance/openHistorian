@@ -1,18 +1,18 @@
 import { CoreApp, DashboardLoadedEvent, DataQueryRequest, DataQueryResponse } from '@grafana/data';
+import { QueryEditorMode } from '@grafana/experimental';
 import { reportInteraction, config } from '@grafana/runtime';
-import { variableRegex } from 'app/features/variables/utils';
-
-import { QueryEditorMode } from '../prometheus/querybuilder/shared/types';
 
 import {
   REF_ID_STARTER_ANNOTATION,
   REF_ID_DATA_SAMPLES,
   REF_ID_STARTER_LOG_ROW_CONTEXT,
   REF_ID_STARTER_LOG_VOLUME,
+  REF_ID_STARTER_LOG_SAMPLE,
 } from './datasource';
 import pluginJson from './plugin.json';
-import { getNormalizedLokiQuery, isLogsQuery, obfuscate, parseToNodeNamesArray } from './queryUtils';
-import { LokiQuery, LokiQueryType } from './types';
+import { getNormalizedLokiQuery, isLogsQuery, obfuscate } from './queryUtils';
+import { variableRegex } from './querybuilder/parsingUtils';
+import { LokiGroupedRequest, LokiQuery, LokiQueryType } from './types';
 
 type LokiOnDashboardLoadedTrackingEvent = {
   grafana_version?: string;
@@ -53,14 +53,18 @@ type LokiOnDashboardLoadedTrackingEvent = {
   queries_with_changed_legend_count: number;
 };
 
+export type LokiTrackingSettings = {
+  predefinedOperations?: string;
+};
+
 export const onDashboardLoadedHandler = ({
   payload: { dashboardId, orgId, grafanaVersion, queries },
 }: DashboardLoadedEvent<LokiQuery>) => {
   try {
     // We only want to track visible Loki queries
     const lokiQueries = queries[pluginJson.id]
-      .filter((query) => !query.hide)
-      .map((query) => getNormalizedLokiQuery(query));
+      ?.filter((query) => !query.hide)
+      ?.map((query) => getNormalizedLokiQuery(query));
 
     if (!lokiQueries?.length) {
       return;
@@ -124,26 +128,21 @@ const isQueryWithChangedLegend = (query: LokiQuery): boolean => {
 };
 
 const shouldNotReportBasedOnRefId = (refId: string): boolean => {
-  const starters = [REF_ID_STARTER_ANNOTATION, REF_ID_STARTER_LOG_ROW_CONTEXT, REF_ID_STARTER_LOG_VOLUME];
+  const starters = [
+    REF_ID_STARTER_ANNOTATION,
+    REF_ID_STARTER_LOG_ROW_CONTEXT,
+    REF_ID_STARTER_LOG_VOLUME,
+    REF_ID_STARTER_LOG_SAMPLE,
+    REF_ID_DATA_SAMPLES,
+  ];
 
-  if (refId === REF_ID_DATA_SAMPLES || starters.some((starter) => refId.startsWith(starter))) {
+  if (starters.some((starter) => refId.startsWith(starter))) {
     return true;
   }
   return false;
 };
 
-export function trackQuery(
-  response: DataQueryResponse,
-  request: DataQueryRequest<LokiQuery> & { targets: LokiQuery[] },
-  startTime: Date
-): void {
-  // We only want to track usage for these specific apps
-  const { app, targets: queries } = request;
-
-  if (app === CoreApp.Dashboard || app === CoreApp.PanelViewer) {
-    return;
-  }
-
+const calculateTotalBytes = (response: DataQueryResponse): number => {
   let totalBytes = 0;
   for (const frame of response.data) {
     const byteKey = frame.meta?.custom?.lokiQueryStatKey;
@@ -152,30 +151,77 @@ export function trackQuery(
         frame.meta?.stats?.find((stat: { displayName: string }) => stat.displayName === byteKey)?.value ?? 0;
     }
   }
+  return totalBytes;
+};
+
+export function trackQuery(
+  response: DataQueryResponse,
+  request: DataQueryRequest<LokiQuery>,
+  startTime: Date,
+  trackingSettings: LokiTrackingSettings = {},
+  extraPayload: Record<string, unknown> = {}
+): void {
+  // We only want to track usage for these specific apps
+  const { app, targets: queries } = request;
+
+  if (app !== CoreApp.Explore) {
+    return;
+  }
+
+  let totalBytes = calculateTotalBytes(response);
 
   for (const query of queries) {
     if (shouldNotReportBasedOnRefId(query.refId)) {
       return;
     }
 
-    reportInteraction('grafana_loki_query_executed', {
-      app,
+    reportInteraction('grafana_explore_loki_query_executed', {
       grafana_version: config.buildInfo.version,
       editor_mode: query.editorMode,
       has_data: response.data.some((frame) => frame.length > 0),
       has_error: response.error !== undefined,
       legend: query.legendFormat,
       line_limit: query.maxLines,
-      parsed_query: parseToNodeNamesArray(query.expr).join(','),
       obfuscated_query: obfuscate(query.expr),
       query_type: isLogsQuery(query.expr) ? 'logs' : 'metric',
       query_vector_type: query.queryType,
       resolution: query.resolution,
-      simultaneously_sent_query_count: queries.length,
+      simultaneously_executed_query_count: queries.filter((query) => !query.hide).length,
+      simultaneously_hidden_query_count: queries.filter((query) => query.hide).length,
       time_range_from: request?.range?.from?.toISOString(),
       time_range_to: request?.range?.to?.toISOString(),
       time_taken: Date.now() - startTime.getTime(),
       bytes_processed: totalBytes,
+      is_split: false,
+      predefined_operations_applied: trackingSettings.predefinedOperations
+        ? query.expr.includes(trackingSettings.predefinedOperations)
+        : 'n/a',
+      ...extraPayload,
+    });
+  }
+}
+
+export function trackGroupedQueries(
+  response: DataQueryResponse,
+  groupedRequests: LokiGroupedRequest[],
+  originalRequest: DataQueryRequest<LokiQuery>,
+  startTime: Date,
+  trackingSettings: LokiTrackingSettings = {}
+): void {
+  const splittingPayload = {
+    split_query_group_count: groupedRequests.length,
+    split_query_largest_partition_size: Math.max(...groupedRequests.map(({ partition }) => partition.length)),
+    split_query_total_request_count: groupedRequests.reduce((total, { partition }) => total + partition.length, 0),
+    is_split: true,
+    simultaneously_executed_query_count: originalRequest.targets.filter((query) => !query.hide).length,
+    simultaneously_hidden_query_count: originalRequest.targets.filter((query) => query.hide).length,
+  };
+
+  for (const group of groupedRequests) {
+    const split_query_partition_size = group.partition.length;
+    trackQuery(response, group.request, startTime, trackingSettings, {
+      ...splittingPayload,
+      split_query_partition_size,
     });
   }
 }

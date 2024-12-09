@@ -11,16 +11,17 @@ import {
   UnitPicker,
 } from '@grafana/ui';
 import { react2AngularDirective } from 'app/angular/react2angular';
-import { FolderPicker } from 'app/core/components/Select/FolderPicker';
+import { OldFolderPicker } from 'app/core/components/Select/OldFolderPicker';
 import { TimePickerSettings } from 'app/features/dashboard/components/DashboardSettings/TimePickerSettings';
 import { QueryEditor as CloudMonitoringQueryEditor } from 'app/plugins/datasource/cloud-monitoring/components/QueryEditor';
 
 import EmptyListCTA from '../core/components/EmptyListCTA/EmptyListCTA';
 import { Footer } from '../core/components/Footer/Footer';
-import { PageHeader } from '../core/components/PageHeader/PageHeader';
 import { MetricSelect } from '../core/components/Select/MetricSelect';
 import { TagFilter } from '../core/components/TagFilter/TagFilter';
 import { HelpModal } from '../core/components/help/HelpModal';
+
+import { PageHeader } from './components/PageHeader/PageHeader';
 
 const { SecretFormField } = LegacyForms;
 
@@ -119,7 +120,7 @@ export function registerAngularDirectives() {
     'showForwardOAuthIdentityOption',
     ['onChange', { watchDepth: 'reference', wrapApply: true }],
   ]);
-  react2AngularDirective('folderPicker', FolderPicker, [
+  react2AngularDirective('folderPicker', OldFolderPicker, [
     'labelClass',
     'rootName',
     'enableCreateNew',

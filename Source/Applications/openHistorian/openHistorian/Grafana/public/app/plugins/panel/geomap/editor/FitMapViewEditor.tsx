@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { SelectableValue, StandardEditorContext } from '@grafana/data';
 import { InlineFieldRow, InlineField, RadioButtonGroup, Select } from '@grafana/ui';
 import { NumberInput } from 'app/core/components/OptionsUI/NumberInput';
 
-import { GeomapInstanceState, PanelOptions, MapViewConfig } from '../types';
+import { GeomapInstanceState, Options, MapViewConfig } from '../types';
 
 type Props = {
   labelWidth: number;
   value: MapViewConfig;
   onChange: (value?: MapViewConfig | undefined) => void;
-  context: StandardEditorContext<PanelOptions, GeomapInstanceState>;
+  context: StandardEditorContext<Options, GeomapInstanceState>;
 };
 
 // Data scope options for 'Fit to data'
@@ -79,8 +79,8 @@ export const FitMapViewEditor = ({ labelWidth, value, onChange, context }: Props
   const currentDataScope = value.allLayers
     ? DataScopeValues.all
     : !value.allLayers && value.lastOnly
-    ? DataScopeValues.last
-    : DataScopeValues.layer;
+      ? DataScopeValues.last
+      : DataScopeValues.layer;
 
   const onDataScopeChange = (dataScope: DataScopeValues) => {
     if (dataScope !== DataScopeValues.all && !value.layer) {

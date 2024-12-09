@@ -1,22 +1,22 @@
 import { css } from '@emotion/css';
 import pluralize from 'pluralize';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
+import * as React from 'react';
 import { DropEvent, FileRejection } from 'react-dropzone';
 
 import {
   QueryEditorProps,
   SelectableValue,
-  dataFrameFromJSON,
   rangeUtil,
   DataQueryRequest,
-  DataFrame,
   DataFrameJSON,
   dataFrameToJSON,
   GrafanaTheme2,
   getValueFormat,
   formattedValueToString,
+  Field,
 } from '@grafana/data';
-import { config, getBackendSrv, getDataSourceSrv } from '@grafana/runtime';
+import { config, getDataSourceSrv, reportInteraction } from '@grafana/runtime';
 import {
   InlineField,
   Select,
@@ -29,9 +29,11 @@ import {
   DropzoneFile,
   Themeable2,
   withTheme2,
+  Stack,
 } from '@grafana/ui';
 import { hasAlphaPanels } from 'app/core/config';
 import * as DFImport from 'app/features/dataframe-import';
+import { getManagedChannelInfo } from 'app/features/live/info';
 import { SearchQuery } from 'app/features/search/service';
 
 import { GrafanaDatasource } from '../datasource';
@@ -80,6 +82,13 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
         description: 'Search for grafana resources',
       });
     }
+    if (config.featureToggles.unifiedStorageSearch) {
+      this.queryTypes.push({
+        label: 'Search (experimental)',
+        value: GrafanaQueryType.SearchNext,
+        description: 'Search for grafana resources',
+      });
+    }
     if (config.featureToggles.editPanelCSVDragAndDrop) {
       this.queryTypes.push({
         label: 'Spreadsheet or snapshot',
@@ -90,35 +99,9 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
   }
 
   loadChannelInfo() {
-    getBackendSrv()
-      .fetch({ url: 'api/live/list' })
-      .subscribe({
-        next: (v: any) => {
-          const channelInfo = v.data?.channels as any[];
-          if (channelInfo?.length) {
-            const channelFields: Record<string, Array<SelectableValue<string>>> = {};
-            const channels: Array<SelectableValue<string>> = channelInfo.map((c) => {
-              if (c.data) {
-                const distinctFields = new Set<string>();
-                const frame = dataFrameFromJSON(c.data);
-                for (const f of frame.fields) {
-                  distinctFields.add(f.name);
-                }
-                channelFields[c.channel] = Array.from(distinctFields).map((n) => ({
-                  value: n,
-                  label: n,
-                }));
-              }
-              return {
-                value: c.channel,
-                label: c.channel + ' [' + c.minute_rate + ' msg/min]',
-              };
-            });
-
-            this.setState({ channelFields, channels });
-          }
-        },
-      });
+    getManagedChannelInfo().then((v) => {
+      this.setState(v);
+    });
   }
 
   loadFolderInfo() {
@@ -133,8 +116,8 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
         gds.query(query).subscribe({
           next: (rsp) => {
             if (rsp.data.length) {
-              const names = (rsp.data[0] as DataFrame).fields[0];
-              const folders = names.values.toArray().map((v) => ({
+              const names: Field = rsp.data[0].fields[0];
+              const folders = names.values.map((v) => ({
                 value: v,
                 label: v,
               }));
@@ -220,11 +203,11 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
     if (e.key !== 'Enter') {
       return;
     }
-    this.checkAndUpdateValue('buffer', (e.target as any).value);
+    this.checkAndUpdateValue('buffer', e.currentTarget.value);
   };
 
   handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    this.checkAndUpdateValue('buffer', e.target.value);
+    this.checkAndUpdateValue('buffer', e.currentTarget.value);
   };
 
   renderMeasurementsQuery() {
@@ -241,7 +224,7 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
     }
 
     const distinctFields = new Set<string>();
-    const fields: Array<SelectableValue<string>> = channel ? channelFields[channel] ?? [] : [];
+    const fields: Array<SelectableValue<string>> = channel ? (channelFields[channel] ?? []) : [];
     // if (data && data.series?.length) {
     //   for (const frame of data.series) {
     //     for (const field of frame.fields) {
@@ -277,23 +260,22 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
 
     return (
       <>
-        <div className="gf-form">
-          <InlineField label="Channel" grow={true} labelWidth={labelWidth}>
-            <Select
-              options={channels}
-              value={currentChannel || ''}
-              onChange={this.onChannelChange}
-              allowCustomValue={true}
-              backspaceRemovesValue={true}
-              placeholder="Select measurements channel"
-              isClearable={true}
-              noOptionsMessage="Enter channel name"
-              formatCreateLabel={(input: string) => `Connect to: ${input}`}
-            />
-          </InlineField>
-        </div>
+        <InlineField label="Channel" grow={true} labelWidth={labelWidth}>
+          <Select
+            options={channels}
+            value={currentChannel || ''}
+            onChange={this.onChannelChange}
+            allowCustomValue={true}
+            backspaceRemovesValue={true}
+            placeholder="Select measurements channel"
+            isClearable={true}
+            noOptionsMessage="Enter channel name"
+            formatCreateLabel={(input: string) => `Connect to: ${input}`}
+          />
+        </InlineField>
+
         {channel && (
-          <div className="gf-form">
+          <Stack direction="row" gap={0}>
             <InlineField label="Fields" grow={true} labelWidth={labelWidth}>
               <Select
                 options={fields}
@@ -319,7 +301,7 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
                 spellCheck={false}
               />
             </InlineField>
-          </div>
+          </Stack>
         )}
 
         <Alert title="Grafana Live - Measurements" severity="info">
@@ -391,6 +373,16 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
         snapshot,
       });
       this.props.onRunQuery();
+
+      reportInteraction('grafana_datasource_drop_files', {
+        number_of_files: fileRejections.length + acceptedFiles.length,
+        accepted_files: acceptedFiles.map((a) => {
+          return { type: a.type, size: a.size };
+        }),
+        rejected_files: fileRejections.map((r) => {
+          return { type: r.file.type, size: r.file.size };
+        }),
+      });
     });
   };
 
@@ -419,7 +411,9 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
                 accept: DFImport.acceptedFiles,
               }}
             >
-              <FileDropzoneDefaultChildren primaryText={this.props?.query?.file ? 'Replace file' : 'Upload file'} />
+              <FileDropzoneDefaultChildren
+                primaryText={this.props?.query?.file ? 'Replace file' : 'Drop file here or click to upload'}
+              />
             </FileDropzone>
             {file && (
               <div className={styles.file}>
@@ -441,6 +435,16 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
     onChange({
       ...query,
       search,
+    });
+    onRunQuery();
+  };
+
+  onSearchNextChange = (search: SearchQuery) => {
+    const { query, onChange, onRunQuery } = this.props;
+
+    onChange({
+      ...query,
+      searchNext: search,
     });
     onRunQuery();
   };
@@ -487,6 +491,9 @@ export class UnthemedQueryEditor extends PureComponent<Props, State> {
         {queryType === GrafanaQueryType.Snapshot && this.renderSnapshotQuery()}
         {queryType === GrafanaQueryType.Search && (
           <SearchEditor value={query.search ?? {}} onChange={this.onSearchChange} />
+        )}
+        {queryType === GrafanaQueryType.SearchNext && (
+          <SearchEditor value={query.searchNext ?? {}} onChange={this.onSearchNextChange} />
         )}
       </>
     );

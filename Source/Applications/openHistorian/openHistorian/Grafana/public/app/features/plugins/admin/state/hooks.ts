@@ -1,54 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { PluginError } from '@grafana/data';
+import { PluginError, PluginType } from '@grafana/data';
 import { useDispatch, useSelector } from 'app/types';
 
-import { sortPlugins, Sorters } from '../helpers';
-import { CatalogPlugin, PluginListDisplayMode } from '../types';
+import { sortPlugins, Sorters, isPluginUpdateable } from '../helpers';
+import { CatalogPlugin } from '../types';
 
 import { fetchAll, fetchDetails, fetchRemotePlugins, install, uninstall, fetchAllLocal, unsetInstall } from './actions';
-import { setDisplayMode } from './reducer';
 import {
-  find,
-  selectAll,
+  selectPlugins,
   selectById,
   selectIsRequestPending,
   selectRequestError,
   selectIsRequestNotFetched,
-  selectDisplayMode,
   selectPluginErrors,
+  type PluginFilters,
 } from './selectors';
 
-type Filters = {
-  query?: string; // Note: this will be an escaped regex string as it comes from `FilterInput`
-  filterBy?: string;
-  filterByType?: string;
-  sortBy?: Sorters;
-};
-
-export const useGetAllWithFilters = ({
-  query = '',
-  filterBy = 'installed',
-  filterByType = 'all',
-  sortBy = Sorters.nameAsc,
-}: Filters) => {
+export const useGetAll = (filters: PluginFilters, sortBy: Sorters = Sorters.nameAsc) => {
   useFetchAll();
 
-  const filtered = useSelector(find(query, filterBy, filterByType));
-  const { isLoading, error } = useFetchStatus();
-  const sortedAndFiltered = sortPlugins(filtered, sortBy);
+  const selector = useMemo(() => selectPlugins(filters), [filters]);
+  const plugins = useSelector(selector);
+  // As the locally installed plugins load quicker than the remote ones, we only show a loading state until these are being loaded
+  // (In case the remote ones are not loaded within a reasonable timeout, we will merge those with the locally installed plugins once they are loaded)
+  const { isLoading, error } = useLocalFetchStatus();
+  const sortedPlugins = sortPlugins(plugins, sortBy);
 
   return {
     isLoading,
     error,
-    plugins: sortedAndFiltered,
+    plugins: sortedPlugins,
   };
 };
 
-export const useGetAll = (): CatalogPlugin[] => {
-  useFetchAll();
-
-  return useSelector(selectAll);
+export const useGetUpdatable = () => {
+  const { isLoading } = useFetchStatus();
+  const { plugins: installed } = useGetAll({ isInstalled: true });
+  const updatablePlugins = installed.filter(isPluginUpdateable);
+  return {
+    isLoading,
+    updatablePlugins,
+  };
 };
 
 export const useGetSingle = (id: string): CatalogPlugin | undefined => {
@@ -63,10 +56,10 @@ export const useGetSingleLocalWithoutDetails = (id: string): CatalogPlugin | und
   return useSelector((state) => selectById(state, id));
 };
 
-export const useGetErrors = (): PluginError[] => {
+export const useGetErrors = (filterByPluginType?: PluginType): PluginError[] => {
   useFetchAll();
 
-  return useSelector(selectPluginErrors);
+  return useSelector(selectPluginErrors(filterByPluginType));
 };
 
 export const useInstall = () => {
@@ -91,8 +84,18 @@ export const useIsRemotePluginsAvailable = () => {
   return error === null;
 };
 
+export const useLocalFetchStatus = () => {
+  const isLoading = useSelector(selectIsRequestPending('plugins/fetchLocal'));
+  const error = useSelector(selectRequestError('plugins/fetchLocal'));
+
+  return { isLoading, error };
+};
+
 export const useFetchStatus = () => {
-  const isLoading = useSelector(selectIsRequestPending(fetchAll.typePrefix));
+  const isAllLoading = useSelector(selectIsRequestPending(fetchAll.typePrefix));
+  const isLocalLoading = useSelector(selectIsRequestPending('plugins/fetchLocal'));
+  const isRemoteLoading = useSelector(selectIsRequestPending('plugins/fetchRemote'));
+  const isLoading = isAllLoading || isLocalLoading || isRemoteLoading;
   const error = useSelector(selectRequestError(fetchAll.typePrefix));
 
   return { isLoading, error };
@@ -150,12 +153,8 @@ export const useFetchDetails = (id: string) => {
   }, [plugin]); // eslint-disable-line
 };
 
-export const useDisplayMode = () => {
+export const useFetchDetailsLazy = () => {
   const dispatch = useDispatch();
-  const displayMode = useSelector(selectDisplayMode);
 
-  return {
-    displayMode,
-    setDisplayMode: (v: PluginListDisplayMode) => dispatch(setDisplayMode(v)),
-  };
+  return (id: string) => dispatch(fetchDetails(id));
 };

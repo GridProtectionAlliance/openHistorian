@@ -14,20 +14,15 @@ import (
 	"strings"
 
 	"github.com/grafana/codejen"
-	"github.com/grafana/kindsys"
-
 	corecodegen "github.com/grafana/grafana/pkg/codegen"
-	"github.com/grafana/grafana/pkg/cuectx"
 	"github.com/grafana/grafana/pkg/plugins/codegen"
 	"github.com/grafana/grafana/pkg/plugins/pfs"
 )
 
 var skipPlugins = map[string]bool{
-	"canvas":      true,
-	"candlestick": true,
-	"influxdb":    true, // plugin.json fails validation (defaultMatchFormat)
-	"mixed":       true, // plugin.json fails validation (mixed)
-	"opentsdb":    true, // plugin.json fails validation (defaultMatchFormat)
+	"influxdb": true, // plugin.json fails validation (defaultMatchFormat)
+	"mixed":    true, // plugin.json fails validation (mixed)
+	"opentsdb": true, // plugin.json fails validation (defaultMatchFormat)
 }
 
 const sep = string(filepath.Separator)
@@ -42,24 +37,20 @@ func main() {
 		log.Fatal(fmt.Errorf("could not get working directory: %s", err))
 	}
 	groot := filepath.Clean(filepath.Join(cwd, "../../.."))
-	rt := cuectx.GrafanaThemaRuntime()
 
 	pluginKindGen := codejen.JennyListWithNamer(func(d *pfs.PluginDecl) string {
 		return d.PluginMeta.Id
 	})
 
 	pluginKindGen.Append(
-		codegen.PluginTreeListJenny(),
+		&codegen.PluginRegistryJenny{},
 		codegen.PluginGoTypesJenny("pkg/tsdb"),
-		codegen.PluginTSTypesJenny("public/app/plugins", adaptToPipeline(corecodegen.TSTypesJenny{})),
-		kind2pd(corecodegen.DocsJenny(
-			filepath.Join("docs", "sources", "developers", "kinds", "composable"),
-		)),
+		codegen.PluginTSTypesJenny("public/app/plugins"),
 	)
 
-	pluginKindGen.AddPostprocessors(corecodegen.SlashHeaderMapper("public/app/plugins/gen.go"))
+	pluginKindGen.AddPostprocessors(corecodegen.SlashHeaderMapper("public/app/plugins/gen.go"), splitSchiffer())
 
-	declParser := pfs.NewDeclParser(rt, skipPlugins)
+	declParser := pfs.NewDeclParser(skipPlugins)
 	decls, err := declParser.Parse(os.DirFS(cwd))
 	if err != nil {
 		log.Fatalln(fmt.Errorf("parsing plugins in dir failed %s: %s", cwd, err))
@@ -79,22 +70,17 @@ func main() {
 	}
 }
 
-func adaptToPipeline(j codejen.OneToOne[corecodegen.SchemaForGen]) codejen.OneToOne[*pfs.PluginDecl] {
-	return codejen.AdaptOneToOne(j, func(pd *pfs.PluginDecl) corecodegen.SchemaForGen {
-		return corecodegen.SchemaForGen{
-			Name:    strings.ReplaceAll(pd.PluginMeta.Name, " ", ""),
-			Schema:  pd.Lineage.Latest(),
-			IsGroup: pd.SchemaInterface.IsGroup(),
+func splitSchiffer() codejen.FileMapper {
+	names := []string{"panelcfg", "dataquery"}
+	return func(f codejen.File) (codejen.File, error) {
+		// TODO it's terrible that this has to exist, CODEJEN NEEDS TO BE BETTER
+		path := filepath.ToSlash(f.RelativePath)
+		for _, name := range names {
+			if idx := strings.Index(path, name); idx != -1 {
+				f.RelativePath = fmt.Sprintf("%s/%s", path[:idx], path[idx:])
+				break
+			}
 		}
-	})
-}
-
-func kind2pd(j codejen.OneToOne[kindsys.Kind]) codejen.OneToOne[*pfs.PluginDecl] {
-	return codejen.AdaptOneToOne(j, func(pd *pfs.PluginDecl) kindsys.Kind {
-		kd, err := kindsys.BindComposable(nil, pd.KindDecl)
-		if err != nil {
-			return nil
-		}
-		return kd
-	})
+		return f, nil
+	}
 }

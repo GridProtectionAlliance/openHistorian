@@ -1,7 +1,11 @@
 import { lastValueFrom } from 'rxjs';
 
-import { defaultDashboard } from '@grafana/schema';
+import { VizPanel } from '@grafana/scenes';
+import { LibraryPanel, defaultDashboard } from '@grafana/schema';
 import { DashboardModel } from 'app/features/dashboard/state';
+import { DashboardGridItem } from 'app/features/dashboard-scene/scene/DashboardGridItem';
+import { vizPanelToPanel } from 'app/features/dashboard-scene/serialization/transformSceneToSaveModel';
+import { getLibraryPanelBehavior } from 'app/features/dashboard-scene/utils/utils';
 
 import { getBackendSrv } from '../../../core/services/backend_srv';
 import { DashboardSearchItem } from '../../search/types';
@@ -64,7 +68,13 @@ export async function getLibraryPanel(uid: string, isHandled = false): Promise<L
     schemaVersion: 35, // should be saved in the library panel
     panels: [result.model],
   });
-  const model = dash.panels[0].getSaveModel(); // migrated panel
+  const { scopedVars, ...model } = dash.panels[0].getSaveModel(); // migrated panel
+
+  //These properties should not exist on LibraryPanel.model which is of type Omit<Panel, 'gridPos' | 'id' | 'libraryPanel'>
+  delete model.gridPos;
+  delete model.id;
+  delete model.libraryPanel;
+
   dash.destroy(); // kill event listeners
   return {
     ...result,
@@ -126,4 +136,64 @@ export async function getConnectedDashboards(uid: string): Promise<DashboardSear
   const searchHits = await getBackendSrv().search({ dashboardUIDs: connections.map((c) => c.connectionUid) });
 
   return searchHits;
+}
+
+export function libraryVizPanelToSaveModel(vizPanel: VizPanel) {
+  const libraryPanelBehavior = getLibraryPanelBehavior(vizPanel);
+
+  const { uid, name, _loadedPanel } = libraryPanelBehavior!.state;
+
+  let gridItem = vizPanel.parent;
+
+  if (!gridItem || !(gridItem instanceof DashboardGridItem)) {
+    throw new Error('Trying to save a library panel that does not have a DashboardGridItem parent');
+  }
+
+  // we need all the panel properties to save the library panel,
+  // so we clone it and remove the behaviour to get what we need
+  const saveModel = {
+    ..._loadedPanel,
+    uid,
+    name,
+    type: vizPanel.state.pluginId,
+    model: vizPanelToPanel(
+      vizPanel.clone({ $behaviors: undefined }),
+      {
+        x: gridItem.state.x ?? 0,
+        y: gridItem.state.y ?? 0,
+        w: gridItem.state.width ?? 0,
+        h: gridItem.state.height ?? 0,
+      },
+      false,
+      gridItem
+    ),
+    kind: LibraryElementKind.Panel,
+    version: _loadedPanel?.version || 0,
+  };
+  return saveModel;
+}
+
+export async function updateLibraryVizPanel(vizPanel: VizPanel): Promise<LibraryPanel> {
+  const { uid, folderUid, name, model, version, kind } = libraryVizPanelToSaveModel(vizPanel);
+
+  const { result } = await getBackendSrv().patch(`/api/library-elements/${uid}`, {
+    folderUid,
+    name,
+    model,
+    version,
+    kind,
+  });
+  return result;
+}
+
+export async function saveLibPanel(panel: VizPanel) {
+  const updatedLibPanel = await updateLibraryVizPanel(panel);
+
+  const libPanelBehavior = getLibraryPanelBehavior(panel);
+
+  if (!libPanelBehavior) {
+    throw new Error('Could not find library panel behavior for panel');
+  }
+
+  libPanelBehavior.setPanelFromLibPanel(updatedLibPanel);
 }

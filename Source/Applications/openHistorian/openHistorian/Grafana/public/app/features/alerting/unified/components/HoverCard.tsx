@@ -1,13 +1,12 @@
 import { css } from '@emotion/css';
 import { Placement } from '@popperjs/core';
 import classnames from 'classnames';
-import React, { ReactElement, ReactNode, useRef } from 'react';
+import { cloneElement, ReactElement, ReactNode, useRef } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
-import { Popover as GrafanaPopover, PopoverController, useStyles2 } from '@grafana/ui';
+import { Popover as GrafanaPopover, PopoverController, useStyles2, Stack } from '@grafana/ui';
 
-export interface HoverCardProps {
+export interface PopupCardProps {
   children: ReactElement;
   header?: ReactNode;
   content: ReactElement;
@@ -17,9 +16,10 @@ export interface HoverCardProps {
   disabled?: boolean;
   showAfter?: number;
   arrow?: boolean;
+  showOn?: 'click' | 'hover';
 }
 
-export const HoverCard = ({
+export const PopupCard = ({
   children,
   header,
   content,
@@ -28,8 +28,9 @@ export const HoverCard = ({
   showAfter = 300,
   wrapperClassName,
   disabled = false,
+  showOn = 'hover',
   ...rest
-}: HoverCardProps) => {
+}: PopupCardProps) => {
   const popoverRef = useRef<HTMLElement>(null);
   const styles = useStyles2(getStyles);
 
@@ -37,8 +38,11 @@ export const HoverCard = ({
     return children;
   }
 
+  const showOnHover = showOn === 'hover';
+  const showOnClick = showOn === 'click';
+
   const body = (
-    <Stack direction="column" gap={0}>
+    <Stack direction="column" gap={0} role="tooltip">
       {header && <div className={styles.card.header}>{header}</div>}
       <div className={styles.card.body}>{content}</div>
       {footer && <div className={styles.card.footer}>{footer}</div>}
@@ -48,28 +52,46 @@ export const HoverCard = ({
   return (
     <PopoverController content={body} hideAfter={100}>
       {(showPopper, hidePopper, popperProps) => {
+        // support hover and click interaction
+        const onClickProps = {
+          onClick: showPopper,
+        };
+
+        const onHoverProps = {
+          onMouseLeave: hidePopper,
+          onMouseEnter: showPopper,
+        };
+
+        const blurFocusProps = {
+          onBlur: hidePopper,
+          onFocus: showPopper,
+        };
+
         return (
           <>
             {popoverRef.current && (
               <GrafanaPopover
                 {...popperProps}
                 {...rest}
-                wrapperClassName={classnames(styles.popover(arrow ? 1.25 : 0), wrapperClassName)}
-                onMouseLeave={hidePopper}
-                onMouseEnter={showPopper}
+                wrapperClassName={classnames(styles.popover, wrapperClassName)}
                 referenceElement={popoverRef.current}
-                renderArrow={
-                  arrow
-                    ? ({ arrowProps, placement }) => <div className={styles.arrow(placement)} {...arrowProps} />
-                    : () => <></>
-                }
+                renderArrow={arrow}
+                // @TODO
+                // if we want interaction with the content we should not pass blur / focus handlers but then clicking outside doesn't close the popper
+                {...blurFocusProps}
+                // if we want hover interaction we have to make sure we add the leave / enter handlers
+                {...(showOnHover ? onHoverProps : {})}
               />
             )}
 
-            {React.cloneElement(children, {
+            {cloneElement(children, {
               ref: popoverRef,
-              onMouseEnter: showPopper,
-              onMouseLeave: hidePopper,
+              onFocus: showPopper,
+              onBlur: hidePopper,
+              tabIndex: 0,
+              // make sure we pass the correct interaction handlers here to the element we want to interact with
+              ...(showOnHover ? onHoverProps : {}),
+              ...(showOnClick ? onClickProps : {}),
             })}
           </>
         );
@@ -79,55 +101,25 @@ export const HoverCard = ({
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  popover: (offset: number) => css`
-    border-radius: ${theme.shape.borderRadius()};
-    box-shadow: ${theme.shadows.z3};
-    background: ${theme.colors.background.primary};
-    border: 1px solid ${theme.colors.border.medium};
-
-    margin-bottom: ${theme.spacing(offset)};
-  `,
+  popover: css({
+    borderRadius: theme.shape.radius.default,
+    boxShadow: theme.shadows.z3,
+    background: theme.colors.background.primary,
+    border: `1px solid ${theme.colors.border.weak}`,
+  }),
   card: {
-    body: css`
-      padding: ${theme.spacing(1)};
-    `,
-    header: css`
-      padding: ${theme.spacing(1)};
-      background: ${theme.colors.background.secondary};
-      border-bottom: solid 1px ${theme.colors.border.medium};
-    `,
-    footer: css`
-      padding: ${theme.spacing(0.5)} ${theme.spacing(1)};
-      background: ${theme.colors.background.secondary};
-      border-top: solid 1px ${theme.colors.border.medium};
-    `,
-  },
-  // TODO currently only works with bottom placement
-  arrow: (placement: string) => {
-    const ARROW_SIZE = '9px';
-
-    return css`
-      width: 0;
-      height: 0;
-
-      border-left: ${ARROW_SIZE} solid transparent;
-      border-right: ${ARROW_SIZE} solid transparent;
-      /* using hex colors here because the border colors use alpha transparency */
-      border-top: ${ARROW_SIZE} solid ${theme.isLight ? '#d2d3d4' : '#2d3037'};
-
-      &:after {
-        content: '';
-        position: absolute;
-
-        border: ${ARROW_SIZE} solid ${theme.colors.background.primary};
-        border-bottom: 0;
-        border-left-color: transparent;
-        border-right-color: transparent;
-
-        margin-top: 1px;
-        bottom: 1px;
-        left: -${ARROW_SIZE};
-      }
-    `;
+    body: css({
+      padding: theme.spacing(1),
+    }),
+    header: css({
+      padding: theme.spacing(1),
+      background: theme.colors.background.secondary,
+      borderBottom: `solid 1px ${theme.colors.border.medium}`,
+    }),
+    footer: css({
+      padding: theme.spacing(0.5, 1),
+      background: theme.colors.background.secondary,
+      borderTop: `solid 1px ${theme.colors.border.medium}`,
+    }),
   },
 });

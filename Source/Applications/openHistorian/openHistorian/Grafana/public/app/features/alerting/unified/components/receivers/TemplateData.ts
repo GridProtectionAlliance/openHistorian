@@ -1,6 +1,6 @@
 export interface TemplateDataItem {
   name: string;
-  type: 'string' | '[]Alert' | 'KeyValue' | 'time.Time';
+  type: string;
   notes: string;
 }
 
@@ -56,6 +56,29 @@ export const GlobalTemplateData: TemplateDataItem[] = [
     name: 'ExternalURL',
     type: 'string',
     notes: 'Back link to the Grafana that sent the notification.',
+  },
+];
+
+export const AlertTemplatePreviewData: TemplateDataItem[] = [
+  {
+    name: 'labels',
+    type: 'Object{}',
+    notes: 'Set of labels attached to the alert.',
+  },
+  {
+    name: 'annotations',
+    type: 'Object{}',
+    notes: 'Set of annotations attached to the alert.',
+  },
+  {
+    name: 'startsAt',
+    type: 'string (ISO8601)',
+    notes: 'Time the alert started firing.',
+  },
+  {
+    name: 'endsAt',
+    type: 'string (ISO8601)',
+    notes: 'Time the alert ends firing.',
   },
 ];
 

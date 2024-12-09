@@ -1,14 +1,15 @@
-import React, { useMemo } from 'react';
+import { css } from '@emotion/css';
+import { useMemo } from 'react';
 
-import { PanelData } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
+import { GrafanaTheme2, PanelData } from '@grafana/data';
+import { useStyles2 } from '@grafana/ui';
 import { isExpressionQuery } from 'app/features/expressions/guards';
 import { ExpressionQuery, ExpressionQueryType } from 'app/features/expressions/types';
 import { AlertQuery } from 'app/types/unified-alerting-dto';
 
 import { Expression } from '../expressions/Expression';
 
-import { errorFromSeries, warningFromSeries } from './util';
+import { errorFromPreviewData, warningFromSeries } from './util';
 
 interface Props {
   condition: string | null;
@@ -36,15 +37,16 @@ export const ExpressionsEditor = ({
       return isExpressionQuery(query.model) ? acc.concat(query.model) : acc;
     }, []);
   }, [queries]);
+  const styles = useStyles2(getStyles);
 
   return (
-    <Stack direction="row" alignItems="stretch">
+    <div className={styles.wrapper}>
       {expressionQueries.map((query) => {
         const data = panelData[query.refId];
 
         const isAlertCondition = condition === query.refId;
-        const error = isAlertCondition && data ? errorFromSeries(data.series) : undefined;
-        const warning = isAlertCondition && data ? warningFromSeries(data.series) : undefined;
+        const error = data ? errorFromPreviewData(data) : undefined;
+        const warning = data ? warningFromSeries(data.series) : undefined;
 
         return (
           <Expression
@@ -63,6 +65,14 @@ export const ExpressionsEditor = ({
           />
         );
       })}
-    </Stack>
+    </div>
   );
 };
+const getStyles = (theme: GrafanaTheme2) => ({
+  wrapper: css({
+    display: 'flex',
+    gap: theme.spacing(2),
+    alignContent: 'stretch',
+    flexWrap: 'wrap',
+  }),
+});

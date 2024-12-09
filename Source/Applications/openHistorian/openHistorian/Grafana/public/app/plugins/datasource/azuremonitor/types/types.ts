@@ -1,14 +1,18 @@
+import { ScalarParameter, TabularParameter, Function, EntityGroup } from '@kusto/monaco-kusto';
+
 import {
   DataSourceInstanceSettings,
   DataSourceJsonData,
   DataSourceSettings,
   PanelData,
-  TableData,
+  SelectableValue,
+  TimeRange,
 } from '@grafana/data';
 
 import Datasource from '../datasource';
 
-import { AzureMonitorQuery } from './query';
+import { AzureLogAnalyticsMetadataTable } from './logAnalyticsMetadata';
+import { AzureMonitorQuery, ResultFormat } from './query';
 
 export type AzureDataSourceSettings = DataSourceSettings<AzureDataSourceJsonData, AzureDataSourceSecureJsonData>;
 export type AzureDataSourceInstanceSettings = DataSourceInstanceSettings<AzureDataSourceJsonData>;
@@ -29,7 +33,7 @@ export enum AzureCloud {
   None = '',
 }
 
-export type AzureAuthType = 'msi' | 'clientsecret';
+export type AzureAuthType = 'msi' | 'clientsecret' | 'workloadidentity' | 'currentuser';
 
 export type ConcealedSecret = symbol;
 
@@ -41,6 +45,10 @@ export interface AzureManagedIdentityCredentials extends AzureCredentialsBase {
   authType: 'msi';
 }
 
+export interface AzureWorkloadIdentityCredentials extends AzureCredentialsBase {
+  authType: 'workloadidentity';
+}
+
 export interface AzureClientSecretCredentials extends AzureCredentialsBase {
   authType: 'clientsecret';
   azureCloud?: string;
@@ -48,8 +56,20 @@ export interface AzureClientSecretCredentials extends AzureCredentialsBase {
   clientId?: string;
   clientSecret?: string | ConcealedSecret;
 }
+export interface AadCurrentUserCredentials extends AzureCredentialsBase {
+  authType: 'currentuser';
+  serviceCredentials?:
+    | AzureClientSecretCredentials
+    | AzureManagedIdentityCredentials
+    | AzureWorkloadIdentityCredentials;
+  serviceCredentialsEnabled?: boolean;
+}
 
-export type AzureCredentials = AzureManagedIdentityCredentials | AzureClientSecretCredentials;
+export type AzureCredentials =
+  | AadCurrentUserCredentials
+  | AzureManagedIdentityCredentials
+  | AzureClientSecretCredentials
+  | AzureWorkloadIdentityCredentials;
 
 export interface AzureDataSourceJsonData extends DataSourceJsonData {
   cloudName: string;
@@ -59,6 +79,9 @@ export interface AzureDataSourceJsonData extends DataSourceJsonData {
   tenantId?: string;
   clientId?: string;
   subscriptionId?: string;
+  oauthPassThru?: boolean;
+  azureCredentials?: AzureCredentials;
+  basicLogsEnabled?: boolean;
 
   // logs
   /** @deprecated Azure Logs credentials */
@@ -74,6 +97,8 @@ export interface AzureDataSourceJsonData extends DataSourceJsonData {
 
   // App Insights
   appInsightsAppId?: string;
+
+  enableSecureSocksProxy?: boolean;
 }
 
 export interface AzureDataSourceSecureJsonData {
@@ -100,23 +125,6 @@ export interface AzureMonitorMetricMetadataItem {
   metricAvailabilities?: AzureMonitorMetricAvailabilityMetadata[];
 }
 
-export interface AzureMonitorMetricNamespacesResponse {
-  value: AzureMonitorMetricNamespaceItem[];
-}
-
-export interface AzureMonitorMetricNamespaceItem {
-  name: string;
-  properties: { metricNamespacename: string };
-}
-
-export interface AzureMonitorMetricNamesResponse {
-  value: AzureMonitorMetricNameItem[];
-}
-
-export interface AzureMonitorMetricNameItem {
-  name: { value: string; localizedValue: string };
-}
-
 export interface AzureMonitorMetricAvailabilityMetadata {
   timeGrain: string;
   retention: string;
@@ -127,28 +135,9 @@ export interface AzureMonitorLocalizedValue {
   localizedValue: string;
 }
 
-export interface AzureMonitorResourceGroupsResponse {
-  data: {
-    value: Array<{ name: string }>;
-  };
-  status: number;
-  statusText: string;
-}
-
 export interface AzureLogsVariable {
   text: string;
   value: string;
-}
-
-export interface AzureLogsTableData extends TableData {
-  columns: AzureLogsTableColumn[];
-  rows: any[];
-  type: string;
-}
-
-export interface AzureLogsTableColumn {
-  text: string;
-  type: string;
 }
 
 export interface AzureMonitorOption<T = string> {
@@ -165,9 +154,45 @@ export interface AzureQueryEditorFieldProps {
   datasource: Datasource;
   subscriptionId?: string;
   variableOptionGroup: VariableOptionGroup;
+  schema?: EngineSchema;
+  range?: TimeRange;
 
   onQueryChange: (newQuery: AzureMonitorQuery) => void;
   setError: (source: string, error: AzureMonitorErrorish | undefined) => void;
+}
+
+// To avoid a type issue we redeclare the EngineSchema type from @kusto/monaco-kusto
+export interface EngineSchema {
+  clusterType: 'Engine';
+  cluster: {
+    connectionString: string;
+    databases: Database[];
+  };
+  database: Database | undefined;
+  globalScalarParameters?: ScalarParameter[];
+  globalTabularParameters?: TabularParameter[];
+}
+
+export interface Database {
+  name: string;
+  tables: AzureLogAnalyticsMetadataTable[];
+  functions: Function[];
+  majorVersion: number;
+  minorVersion: number;
+  entityGroups: EntityGroup[];
+}
+
+export interface FormatAsFieldProps extends AzureQueryEditorFieldProps {
+  inputId: string;
+  options: Array<SelectableValue<ResultFormat>>;
+  defaultValue: ResultFormat;
+  setFormatAs: (query: AzureMonitorQuery, formatAs: ResultFormat) => AzureMonitorQuery;
+  resultFormat?: ResultFormat;
+  onLoad: (
+    query: AzureMonitorQuery,
+    defaultValue: ResultFormat,
+    handleChange: (change: SelectableValue<ResultFormat>) => void
+  ) => void;
 }
 
 export interface AzureResourceSummaryItem {
@@ -284,11 +309,17 @@ export interface ProviderResourceType {
   capabilities: string;
 }
 
-export interface AzureMonitorLocationsResponse {
-  value: Location[];
+export interface AzureAPIResponse<T> {
+  value: T[];
+  count?: {
+    type: string;
+    value: number;
+  };
+  status?: number;
+  statusText?: string;
 }
 
-interface Location {
+export interface Location {
   id: string;
   name: string;
   displayName: string;
@@ -310,3 +341,138 @@ interface LocationPairedRegion {
   name: string;
   id: string;
 }
+
+export interface Subscription {
+  id: string;
+  authorizationSource: string;
+  subscriptionId: string;
+  tenantId: string;
+  displayName: string;
+  state: string;
+  subscriptionPolicies: {
+    locationPlacementId: string;
+    quotaId: string;
+    spendingLimit: string;
+  };
+}
+
+export interface Workspace {
+  properties: {
+    customerId: string;
+    provisioningState: string;
+    sku: {
+      name: string;
+    };
+    retentionInDays: number;
+    publicNetworkAccessForQuery: string;
+    publicNetworkAccessForIngestion: string;
+  };
+  id: string;
+  name: string;
+  type: string;
+  location: string;
+  tags: Record<string, string>;
+}
+
+export interface Resource {
+  changedTime: string;
+  createdTime: string;
+  extendedLocation: { name: string; type: string };
+  id: string;
+  identity: { principalId: string; tenantId: string; type: string; userAssignedIdentities: string[] };
+  kind: string;
+  location: string;
+  managedBy: string;
+  name: string;
+  plan: { name: string; product: string; promotionCode: string; publisher: string; version: string };
+  properties: Record<string, string>;
+  provisioningState: string;
+  sku: { capacity: number; family: string; model: string; name: string; size: string; tier: string };
+  tags: Record<string, string>;
+  type: string;
+}
+
+export interface ResourceGroup {
+  id: string;
+  location: string;
+  managedBy: string;
+  name: string;
+  properties: { provisioningState: string };
+  tags: object;
+  type: string;
+}
+
+export interface Namespace {
+  classification: {
+    Custom: string;
+    Platform: string;
+    Qos: string;
+  };
+  id: string;
+  name: string;
+  properties: { metricNamespaceName: string };
+  type: string;
+}
+
+export interface Metric {
+  displayDescription: string;
+  errorCode: string;
+  errorMessage: string;
+  id: string;
+  name: AzureMonitorLocalizedValue;
+  timeseries: Array<{ data: MetricValue[]; metadatavalues: MetricMetadataValue[] }>;
+  type: string;
+  unit: string;
+}
+
+interface MetricValue {
+  average: number;
+  count: number;
+  maximum: number;
+  minimum: number;
+  timeStamp: string;
+  total: number;
+}
+
+interface MetricMetadataValue {
+  name: AzureMonitorLocalizedValue;
+  value: string;
+}
+
+export type Category = {
+  displayName: string;
+  id: string;
+  related: {
+    queries: string[];
+    tables: string[];
+  };
+};
+
+export type CheatsheetQuery = {
+  body: string;
+  description: string;
+  displayName: string;
+  id: string;
+  properties: {
+    ExampleQuery: boolean;
+    QueryAttributes: {
+      isMultiResource: boolean;
+    };
+  };
+  related: {
+    categories: string[];
+    resourceTypes: string[];
+    tables: string[];
+  };
+  tags: {
+    Topic: string[];
+  };
+};
+
+export type CheatsheetQueries = {
+  [key: string]: CheatsheetQuery[];
+};
+
+export type DropdownCategories = {
+  [key: string]: boolean;
+};

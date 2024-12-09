@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import React, { HTMLAttributes, useEffect } from 'react';
+import { HTMLAttributes, useEffect } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { reportExperimentView } from '@grafana/runtime/src';
@@ -25,7 +25,7 @@ export const UpgradeBox = ({
   size = 'md',
   ...htmlProps
 }: Props) => {
-  const styles = useStyles2((theme) => getUpgradeBoxStyles(theme, size));
+  const styles = useStyles2(getUpgradeBoxStyles, size);
 
   useEffect(() => {
     reportExperimentView(`feature-highlights-${featureId}`, 'test', eventVariant);

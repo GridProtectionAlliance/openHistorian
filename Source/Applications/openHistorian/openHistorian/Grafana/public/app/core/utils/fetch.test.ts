@@ -1,6 +1,5 @@
-import 'whatwg-fetch'; // fetch polyfill needed for PhantomJs rendering
 import {
-  isContentTypeApplicationJson,
+  isContentTypeJson,
   parseBody,
   parseCredentials,
   parseHeaders,
@@ -53,7 +52,6 @@ describe('parseInitFromOptions', () => {
 describe('parseHeaders', () => {
   it.each`
     options                                                                                 | expected
-    ${undefined}                                                                            | ${{ map: { accept: 'application/json, text/plain, */*' } }}
     ${{ propKey: 'some prop value' }}                                                       | ${{ map: { accept: 'application/json, text/plain, */*' } }}
     ${{ method: 'GET' }}                                                                    | ${{ map: { accept: 'application/json, text/plain, */*' } }}
     ${{ method: 'POST' }}                                                                   | ${{ map: { accept: 'application/json, text/plain, */*', 'content-type': 'application/json' } }}
@@ -71,12 +69,14 @@ describe('parseHeaders', () => {
     ${{ method: 'PUT', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }}  | ${{ map: { accept: 'application/json, text/plain, */*', 'content-type': 'application/x-www-form-urlencoded' } }}
     ${{ headers: { Accept: 'text/plain' } }}                                                | ${{ map: { accept: 'text/plain' } }}
     ${{ headers: { Auth: 'Basic asdasdasd' } }}                                             | ${{ map: { accept: 'application/json, text/plain, */*', auth: 'Basic asdasdasd' } }}
+    ${{ headers: { Key: '🚀' } }}                                                           | ${{ map: { key: '%F0%9F%9A%80', accept: 'application/json, text/plain, */*' } }}
+    ${{ headers: { '🚀': 'value' } }}                                                       | ${{ map: { '%f0%9f%9a%80': 'value', accept: 'application/json, text/plain, */*' } }}
   `("when called with options: '$options' then the result should be '$expected'", ({ options, expected }) => {
     expect(parseHeaders(options)).toEqual(expected);
   });
 });
 
-describe('isContentTypeApplicationJson', () => {
+describe('isContentTypeJson', () => {
   it.each`
     headers                                                                 | expected
     ${undefined}                                                            | ${false}
@@ -86,21 +86,22 @@ describe('isContentTypeApplicationJson', () => {
     ${new Headers({ 'content-type': 'application/x-www-form-urlencoded' })} | ${false}
     ${new Headers({ auth: 'Basic akdjasdkjalksdjasd' })}                    | ${false}
   `("when called with headers: 'headers' then the result should be '$expected'", ({ headers, expected }) => {
-    expect(isContentTypeApplicationJson(headers)).toEqual(expected);
+    expect(isContentTypeJson(headers)).toEqual(expected);
   });
 });
 
 describe('parseBody', () => {
   it.each`
-    options                  | isAppJson | expected
-    ${undefined}             | ${false}  | ${undefined}
-    ${undefined}             | ${true}   | ${undefined}
-    ${{ data: undefined }}   | ${false}  | ${undefined}
-    ${{ data: undefined }}   | ${true}   | ${undefined}
-    ${{ data: 'some data' }} | ${false}  | ${'some data'}
-    ${{ data: 'some data' }} | ${true}   | ${'some data'}
-    ${{ data: { id: '0' } }} | ${false}  | ${new URLSearchParams({ id: '0' })}
-    ${{ data: { id: '0' } }} | ${true}   | ${'{"id":"0"}'}
+    options                                         | isAppJson | expected
+    ${undefined}                                    | ${false}  | ${undefined}
+    ${undefined}                                    | ${true}   | ${undefined}
+    ${{ data: undefined }}                          | ${false}  | ${undefined}
+    ${{ data: undefined }}                          | ${true}   | ${undefined}
+    ${{ data: 'some data' }}                        | ${false}  | ${'some data'}
+    ${{ data: 'some data' }}                        | ${true}   | ${'some data'}
+    ${{ data: { id: '0' } }}                        | ${false}  | ${new URLSearchParams({ id: '0' })}
+    ${{ data: { id: '0' } }}                        | ${true}   | ${'{"id":"0"}'}
+    ${{ data: new Blob([new Uint8Array([1, 1])]) }} | ${false}  | ${new Blob([new Uint8Array([1, 1])])}
   `(
     "when called with options: '$options' and isAppJson: '$isAppJson' then the result should be '$expected'",
     ({ options, isAppJson, expected }) => {

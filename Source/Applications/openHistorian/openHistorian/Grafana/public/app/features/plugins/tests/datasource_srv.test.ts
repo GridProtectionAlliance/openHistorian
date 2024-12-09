@@ -5,17 +5,25 @@ import {
   DataSourcePluginMeta,
   ScopedVars,
 } from '@grafana/data';
+import { TemplateSrv } from '@grafana/runtime';
 import { ExpressionDatasourceRef } from '@grafana/runtime/src/utils/DataSourceWithBackend';
 import { DatasourceSrv, getNameOrUid } from 'app/features/plugins/datasource_srv';
 
 // Datasource variable $datasource with current value 'BBB'
-const templateSrv: any = {
+const templateSrv = {
   getVariables: () => [
     {
       type: 'datasource',
       name: 'datasource',
       current: {
         value: 'BBB',
+      },
+    },
+    {
+      type: 'datasource',
+      name: 'datasourceByUid',
+      current: {
+        value: 'uid-code-DDDD',
       },
     },
     {
@@ -32,10 +40,11 @@ const templateSrv: any = {
     }
 
     let result = v.replace('${datasource}', 'BBB');
+    result = result.replace('${datasourceByUid}', 'DDDD');
     result = result.replace('${datasourceDefault}', 'default');
     return result;
   },
-};
+} as TemplateSrv;
 
 class TestDataSource {
   constructor(public instanceSettings: DataSourceInstanceSettings) {}
@@ -67,7 +76,7 @@ describe('datasource_srv', () => {
       type: 'test-db',
       name: 'mmm',
       uid: 'uid-code-mmm',
-      meta: { metrics: true, annotations: true } as any,
+      meta: { metrics: true, annotations: true },
     },
     '-- Grafana --': {
       type: 'grafana',
@@ -103,6 +112,12 @@ describe('datasource_srv', () => {
       meta: { metrics: true },
       isDefault: true,
     },
+    DDDD: {
+      type: 'test-db',
+      name: 'DDDD',
+      uid: 'uid-code-DDDD',
+      meta: { metrics: true },
+    },
     Jaeger: {
       type: 'jaeger-db',
       name: 'Jaeger',
@@ -114,6 +129,11 @@ describe('datasource_srv', () => {
       name: 'no-query',
       uid: 'no-query',
       meta: { id: 'no-query' },
+    },
+    TestData: {
+      type: 'grafana-testdata-datasource',
+      name: 'TestData',
+      meta: { metrics: true, id: 'grafana-testdata-datasource', aliasIDs: ['testdata'] },
     },
   };
 
@@ -150,7 +170,7 @@ describe('datasource_srv', () => {
       });
 
       it('Can get by variable', async () => {
-        const ds = (await dataSourceSrv.get('${datasource}')) as any;
+        const ds = await dataSourceSrv.get('${datasource}');
         expect(ds.meta).toBe(dataSourceInit.BBB.meta);
 
         const ds2 = await dataSourceSrv.get('${datasource}', { datasource: { text: 'Prom', value: 'uid-code-aaa' } });
@@ -165,7 +185,7 @@ describe('datasource_srv', () => {
         expect(dataSourceSrv.getInstanceSettings({ uid: 'uid-code-mmm' })).toBe(ds);
       });
 
-      it('should work with variable', () => {
+      it('should work with variable by ds name', () => {
         const ds = dataSourceSrv.getInstanceSettings('${datasource}');
         expect(ds?.name).toBe('${datasource}');
         expect(ds?.uid).toBe('${datasource}');
@@ -173,6 +193,18 @@ describe('datasource_srv', () => {
           {
             "type": "test-db",
             "uid": "uid-code-BBB",
+          }
+        `);
+      });
+
+      it('should work with variable by ds value (uid)', () => {
+        const ds = dataSourceSrv.getInstanceSettings('${datasourceByUid}');
+        expect(ds?.name).toBe('${datasourceByUid}');
+        expect(ds?.uid).toBe('${datasourceByUid}');
+        expect(ds?.rawRef).toMatchInlineSnapshot(`
+          {
+            "type": "test-db",
+            "uid": "uid-code-DDDD",
           }
         `);
       });
@@ -247,7 +279,7 @@ describe('datasource_srv', () => {
     describe('when getting external metric sources', () => {
       it('should return list of explore sources', () => {
         const externalSources = dataSourceSrv.getExternal();
-        expect(externalSources.length).toBe(6);
+        expect(externalSources.length).toBe(8);
       });
     });
 
@@ -260,8 +292,14 @@ describe('datasource_srv', () => {
 
     it('Can get list of data sources with variables: true', () => {
       const list = dataSourceSrv.getList({ metrics: true, variables: true });
-      expect(list[0].name).toBe('${datasourceDefault}');
-      expect(list[1].name).toBe('${datasource}');
+      expect(list[0].name).toBe('${datasourceByUid}');
+      expect(list[1].name).toBe('${datasourceDefault}');
+      expect(list[2].name).toBe('${datasource}');
+    });
+
+    it('Should filter out the -- Grafana -- datasource', () => {
+      const list = dataSourceSrv.getList({ filter: (x) => x.name !== '-- Grafana --' });
+      expect(list.find((x) => x.name === '-- Grafana --')).toBeUndefined();
     });
 
     it('Can get list of data sources with tracing: true', () => {
@@ -277,6 +315,12 @@ describe('datasource_srv', () => {
     it('Can get get list and filter by pluginId', () => {
       const list = dataSourceSrv.getList({ pluginId: 'jaeger' });
       expect(list[0].name).toBe('Jaeger');
+      expect(list.length).toBe(1);
+    });
+
+    it('Can get get list and filter by an alias', () => {
+      const list = dataSourceSrv.getList({ pluginId: 'testdata' });
+      expect(list[0].name).toBe('TestData');
       expect(list.length).toBe(1);
     });
 
@@ -302,12 +346,32 @@ describe('datasource_srv', () => {
           },
           {
             "meta": {
+              "metrics": true,
+            },
+            "name": "DDDD",
+            "type": "test-db",
+            "uid": "uid-code-DDDD",
+          },
+          {
+            "meta": {
               "annotations": true,
               "metrics": true,
             },
             "name": "mmm",
             "type": "test-db",
             "uid": "uid-code-mmm",
+          },
+          {
+            "meta": {
+              "aliasIDs": [
+                "testdata",
+              ],
+              "id": "grafana-testdata-datasource",
+              "metrics": true,
+            },
+            "name": "TestData",
+            "type": "grafana-testdata-datasource",
+            "uid": "TestData",
           },
           {
             "meta": {

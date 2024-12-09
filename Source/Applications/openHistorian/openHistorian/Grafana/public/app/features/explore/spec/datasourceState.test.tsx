@@ -1,11 +1,39 @@
 import { screen, waitFor } from '@testing-library/react';
+import { Props } from 'react-virtualized-auto-sizer';
 
-import { serializeStateToUrlParam } from '@grafana/data';
-import { locationService } from '@grafana/runtime';
+import { EventBusSrv } from '@grafana/data';
 
 import { changeDatasource } from './helper/interactions';
 import { makeLogsQueryResponse } from './helper/query';
 import { setupExplore, tearDown, waitForExplore } from './helper/setup';
+
+const testEventBus = new EventBusSrv();
+
+jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
+  getAppEvents: () => testEventBus,
+}));
+
+jest.mock('react-virtualized-auto-sizer', () => {
+  return ({ children }: Props) =>
+    children({
+      height: 1,
+      scaledHeight: 1,
+      scaledWidth: 1,
+      width: 1,
+    });
+});
+
+jest.mock('app/core/core', () => ({
+  contextSrv: {
+    hasPermission: () => true,
+    getValidIntervals: (defaultIntervals: string[]) => defaultIntervals,
+  },
+}));
+
+jest.mock('../hooks/useExplorePageTitle', () => ({
+  useExplorePageTitle: jest.fn(),
+}));
 
 describe('Explore: handle datasource states', () => {
   afterEach(() => {
@@ -16,7 +44,7 @@ describe('Explore: handle datasource states', () => {
     await waitFor(() => screen.getByText(/Explore requires at least one data source/i));
   });
 
-  it('handles changing the datasource manually', async () => {
+  it('handles datasource changes', async () => {
     const urlParams = { left: JSON.stringify(['now-1h', 'now', 'loki', { expr: '{ label="value"}', refId: 'A' }]) };
     const { datasources } = setupExplore({ urlParams });
     jest.mocked(datasources.loki.query).mockReturnValueOnce(makeLogsQueryResponse());
@@ -25,13 +53,5 @@ describe('Explore: handle datasource states', () => {
 
     await screen.findByText('elastic Editor input:');
     expect(datasources.elastic.query).not.toBeCalled();
-    expect(locationService.getSearchObject()).toEqual({
-      orgId: '1',
-      left: serializeStateToUrlParam({
-        datasource: 'elastic-uid',
-        queries: [{ refId: 'A', datasource: { type: 'logs', uid: 'elastic-uid' } }],
-        range: { from: 'now-1h', to: 'now' },
-      }),
-    });
   });
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { SelectableValue } from '@grafana/data';
 import { InlineField, InlineFieldRow, Input, Select } from '@grafana/ui';
@@ -69,14 +69,14 @@ export const Reduce = ({ labelWidth = 'auto', onChange, refIds, query }: Props) 
   return (
     <>
       <InlineFieldRow>
-        <InlineField label="Function" labelWidth={labelWidth}>
-          <Select options={reducerTypes} value={reducer} onChange={onSelectReducer} width={20} />
-        </InlineField>
         <InlineField label="Input" labelWidth={labelWidth}>
           <Select onChange={onRefIdChange} options={refIds} value={query.expression} width={'auto'} />
         </InlineField>
       </InlineFieldRow>
       <InlineFieldRow>
+        <InlineField label="Function" labelWidth={labelWidth}>
+          <Select options={reducerTypes} value={reducer} onChange={onSelectReducer} width={20} />
+        </InlineField>
         <InlineField label="Mode" labelWidth={labelWidth}>
           <Select onChange={onModeChanged} options={reducerModes} value={mode} width={25} />
         </InlineField>

@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { NavModelItem } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
-import { Page } from 'app/core/components/PageNew/Page';
+import { Page } from 'app/core/components/Page/Page';
+import { NEW_LINK } from 'app/features/dashboard-scene/settings/links/utils';
 
 import { LinkSettingsEdit, LinkSettingsList } from '../LinksSettings';
-import { newLink } from '../LinksSettings/LinkSettingsEdit';
 
 import { SettingsPageProps } from './types';
 
 export type LinkSettingsMode = 'list' | 'new' | 'edit';
 
-export function LinksSettings({ dashboard, sectionNav, editIndex }: SettingsPageProps) {
+export function LinksSettings({ dashboard, sectionNav, editIndex, toolbar }: SettingsPageProps) {
   const [isNew, setIsNew] = useState<boolean>(false);
 
   const onGoBack = () => {
@@ -20,7 +19,7 @@ export function LinksSettings({ dashboard, sectionNav, editIndex }: SettingsPage
   };
 
   const onNew = () => {
-    dashboard.links = [...dashboard.links, { ...newLink }];
+    dashboard.links = [...dashboard.links, { ...NEW_LINK }];
     setIsNew(true);
     locationService.partial({ editIndex: dashboard.links.length - 1 });
   };
@@ -32,18 +31,20 @@ export function LinksSettings({ dashboard, sectionNav, editIndex }: SettingsPage
 
   const isEditing = editIndex !== undefined;
 
-  let pageNav: NavModelItem | undefined;
+  let pageNav = sectionNav.node.parentItem;
+
   if (isEditing) {
     const title = isNew ? 'New link' : 'Edit link';
     const description = isNew ? 'Create a new link on your dashboard' : 'Edit a specific link of your dashboard';
     pageNav = {
       text: title,
       subTitle: description,
+      parentItem: sectionNav.node.parentItem,
     };
   }
 
   return (
-    <Page navModel={sectionNav} pageNav={pageNav}>
+    <Page navModel={sectionNav} pageNav={pageNav} toolbar={toolbar}>
       {!isEditing && <LinkSettingsList dashboard={dashboard} onNew={onNew} onEdit={onEdit} />}
       {isEditing && <LinkSettingsEdit dashboard={dashboard} editLinkIdx={editIndex} onGoBack={onGoBack} />}
     </Page>

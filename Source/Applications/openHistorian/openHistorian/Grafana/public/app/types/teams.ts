@@ -1,11 +1,55 @@
-import { Team as TeamBase } from '@grafana/schema';
+import { Role } from './accessControl';
+import { TeamPermissionLevel } from './acl';
 
-export interface Team extends TeamBase {
-  id: number; // TODO switch to UUID
+export interface TeamDTO {
+  /**
+   * Email of the team.
+   */
+  email?: string;
+  /**
+   * Name of the team.
+   */
+  name: string;
 }
 
-// Represents the data sent via an API to create a team
-export interface TeamDTO extends Pick<TeamBase, 'name' | 'email'> {}
+// This is the team resource with permissions and metadata expanded
+export interface Team {
+  id: number; // TODO switch to UUID
+  uid: string; // Prefer UUID
+
+  /**
+   * AccessControl metadata associated with a given resource.
+   */
+  accessControl?: Record<string, boolean>;
+  /**
+   * AvatarUrl is the team's avatar URL.
+   */
+  avatarUrl?: string;
+  /**
+   * Email of the team.
+   */
+  email?: string;
+  /**
+   * MemberCount is the number of the team members.
+   */
+  memberCount: number;
+  /**
+   * Name of the team.
+   */
+  name: string;
+  /**
+   * OrgId is the ID of an organisation the team belongs to.
+   */
+  orgId: number;
+  /**
+   * TODO - it seems it's a team_member.permission, unlikely it should belong to the team kind
+   */
+  permission: TeamPermissionLevel;
+  /**
+   * RBAC roles assigned to the team.
+   */
+  roles?: Role[];
+}
 
 export interface TeamMember {
   userId: number;
@@ -31,6 +75,8 @@ export interface TeamsState {
   noTeams: boolean;
   totalPages: number;
   hasFetched: boolean;
+  sort?: string;
+  rolesLoading?: boolean;
 }
 
 export interface TeamState {

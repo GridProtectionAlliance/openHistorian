@@ -1,16 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 import { openMenu } from 'react-select-event';
-import { TemplateSrvStub } from 'test/specs/helpers';
 
-import { ValueTypes, MetricKind, MetricDescriptor } from '../types';
+import { MetricKind, ValueTypes } from '../types/query';
+import { MetricDescriptor } from '../types/types';
 
 import { Aggregation, Props } from './Aggregation';
 
 const props: Props = {
   onChange: () => {},
-  // @ts-ignore
-  templateSrv: new TemplateSrvStub(),
   metricDescriptor: {
     valueType: '',
     metricKind: '',
@@ -18,6 +15,7 @@ const props: Props = {
   crossSeriesReducer: '',
   groupBys: [],
   templateVariableOptions: [],
+  refId: 'A',
 };
 
 describe('Aggregation', () => {

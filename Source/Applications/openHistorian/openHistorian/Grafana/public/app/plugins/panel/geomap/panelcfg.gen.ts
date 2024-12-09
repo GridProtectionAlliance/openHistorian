@@ -4,15 +4,13 @@
 //     public/app/plugins/gen.go
 // Using jennies:
 //     TSTypesJenny
-//     PluginTSTypesJenny
+//     PluginTsTypesJenny
 //
 // Run 'make gen-cue' from repository root to regenerate.
 
 import * as ui from '@grafana/schema';
 
-export const PanelCfgModelVersion = Object.freeze([0, 0]);
-
-export interface PanelOptions {
+export interface Options {
   basemap: ui.MapLayerOptions;
   controls: ControlsOptions;
   layers: Array<ui.MapLayerOptions>;
@@ -20,7 +18,7 @@ export interface PanelOptions {
   view: MapViewConfig;
 }
 
-export const defaultPanelOptions: Partial<PanelOptions> = {
+export const defaultOptions: Partial<Options> = {
   layers: [],
 };
 

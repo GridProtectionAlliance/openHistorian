@@ -1,24 +1,26 @@
 import { Action, KBarProvider } from 'kbar';
-import React, { ComponentType } from 'react';
+import { Component, ComponentType } from 'react';
 import { Provider } from 'react-redux';
-import { Router, Route, Redirect, Switch } from 'react-router-dom';
+import { Switch, RouteComponentProps } from 'react-router-dom';
+import { CompatRoute, Navigate } from 'react-router-dom-v5-compat';
 
 import { config, locationService, navigationLogger, reportInteraction } from '@grafana/runtime';
-import { ErrorBoundaryAlert, GlobalStyles, ModalRoot, ModalsProvider, PortalContainer } from '@grafana/ui';
+import { ErrorBoundaryAlert, GlobalStyles, PortalContainer } from '@grafana/ui';
 import { getAppRoutes } from 'app/routes/routes';
 import { store } from 'app/store/store';
 
-import { AngularRoot } from './angular/AngularRoot';
 import { loadAndInitAngularIfEnabled } from './angular/loadAndInitAngularIfEnabled';
 import { GrafanaApp } from './app';
-import { AppChrome } from './core/components/AppChrome/AppChrome';
-import { AppNotificationList } from './core/components/AppNotifications/AppNotificationList';
 import { GrafanaContext } from './core/context/GrafanaContext';
+import { SidecarContext } from './core/context/SidecarContext';
 import { GrafanaRoute } from './core/navigation/GrafanaRoute';
 import { RouteDescriptor } from './core/navigation/types';
+import { sidecarService } from './core/services/SidecarService';
 import { contextSrv } from './core/services/context_srv';
 import { ThemeProvider } from './core/utils/ConfigProvider';
 import { LiveConnectionWarning } from './features/live/LiveConnectionWarning';
+import { ExtensionRegistriesProvider } from './features/plugins/extensions/ExtensionRegistriesContext';
+import { ExperimentalSplitPaneRouterWrapper, RouterWrapper } from './routes/RoutesWrapper';
 
 interface AppWrapperProps {
   app: GrafanaApp;
@@ -40,7 +42,7 @@ export function addPageBanner(fn: ComponentType) {
   pageBanners.push(fn);
 }
 
-export class AppWrapper extends React.Component<AppWrapperProps, AppWrapperState> {
+export class AppWrapper extends Component<AppWrapperProps, AppWrapperState> {
   constructor(props: AppWrapperProps) {
     super(props);
     this.state = {};
@@ -54,23 +56,22 @@ export class AppWrapper extends React.Component<AppWrapperProps, AppWrapperState
 
   renderRoute = (route: RouteDescriptor) => {
     const roles = route.roles ? route.roles() : [];
-
     return (
-      <Route
+      <CompatRoute
         exact={route.exact === undefined ? true : route.exact}
         sensitive={route.sensitive === undefined ? false : route.sensitive}
         path={route.path}
         key={route.path}
-        render={(props) => {
-          navigationLogger('AppWrapper', false, 'Rendering route', route, 'with match', props.location);
+        render={(props: RouteComponentProps) => {
+          const location = locationService.getLocation();
           // TODO[Router]: test this logic
           if (roles?.length) {
             if (!roles.some((r: string) => contextSrv.hasRole(r))) {
-              return <Redirect to="/" />;
+              return <Navigate replace to="/" />;
             }
           }
 
-          return <GrafanaRoute {...props} route={route} />;
+          return <GrafanaRoute {...props} route={route} location={location} />;
         }}
       />
     );
@@ -93,43 +94,40 @@ export class AppWrapper extends React.Component<AppWrapperProps, AppWrapperState
       });
     };
 
+    const routerWrapperProps = {
+      routes: ready && this.renderRoutes(),
+      pageBanners,
+      bodyRenderHooks,
+    };
+
     return (
-      <React.StrictMode>
-        <Provider store={store}>
-          <ErrorBoundaryAlert style="page">
-            <GrafanaContext.Provider value={app.context}>
-              <ThemeProvider value={config.theme2}>
-                <KBarProvider
-                  actions={[]}
-                  options={{ enableHistory: true, callbacks: { onSelectAction: commandPaletteActionSelected } }}
-                >
-                  <ModalsProvider>
-                    <GlobalStyles />
+      <Provider store={store}>
+        <ErrorBoundaryAlert style="page">
+          <GrafanaContext.Provider value={app.context}>
+            <ThemeProvider value={config.theme2}>
+              <KBarProvider
+                actions={[]}
+                options={{ enableHistory: true, callbacks: { onSelectAction: commandPaletteActionSelected } }}
+              >
+                <GlobalStyles />
+                <SidecarContext.Provider value={sidecarService}>
+                  <ExtensionRegistriesProvider registries={app.pluginExtensionsRegistries}>
                     <div className="grafana-app">
-                      <Router history={locationService.getHistory()}>
-                        <AppChrome>
-                          {pageBanners.map((Banner, index) => (
-                            <Banner key={index.toString()} />
-                          ))}
-                          <AngularRoot />
-                          <AppNotificationList />
-                          {ready && this.renderRoutes()}
-                          {bodyRenderHooks.map((Hook, index) => (
-                            <Hook key={index.toString()} />
-                          ))}
-                        </AppChrome>
-                      </Router>
+                      {config.featureToggles.appSidecar ? (
+                        <ExperimentalSplitPaneRouterWrapper {...routerWrapperProps} />
+                      ) : (
+                        <RouterWrapper {...routerWrapperProps} />
+                      )}
+                      <LiveConnectionWarning />
+                      <PortalContainer />
                     </div>
-                    <LiveConnectionWarning />
-                    <ModalRoot />
-                    <PortalContainer />
-                  </ModalsProvider>
-                </KBarProvider>
-              </ThemeProvider>
-            </GrafanaContext.Provider>
-          </ErrorBoundaryAlert>
-        </Provider>
-      </React.StrictMode>
+                  </ExtensionRegistriesProvider>
+                </SidecarContext.Provider>
+              </KBarProvider>
+            </ThemeProvider>
+          </GrafanaContext.Provider>
+        </ErrorBoundaryAlert>
+      </Provider>
     );
   }
 }

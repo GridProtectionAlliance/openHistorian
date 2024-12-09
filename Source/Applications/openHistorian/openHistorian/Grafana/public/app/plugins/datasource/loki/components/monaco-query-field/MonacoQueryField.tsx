@@ -1,20 +1,19 @@
 import { css } from '@emotion/css';
 import { debounce } from 'lodash';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useLatest } from 'react-use';
 import { v4 as uuidv4 } from 'uuid';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { parser } from '@grafana/lezer-logql';
 import { languageConfiguration, monarchlanguage } from '@grafana/monaco-logql';
 import { useTheme2, ReactMonacoEditor, Monaco, monacoTypes, MonacoEditor } from '@grafana/ui';
 
-import { isValidQuery } from '../../queryUtils';
-
 import { Props } from './MonacoQueryFieldProps';
 import { getOverrideServices } from './getOverrideServices';
-import { getCompletionProvider, getSuggestOptions } from './monaco-completion-provider';
 import { CompletionDataProvider } from './monaco-completion-provider/CompletionDataProvider';
+import { getCompletionProvider, getSuggestOptions } from './monaco-completion-provider/completionUtils';
 import { placeHolderScopedVars, validateQuery } from './monaco-completion-provider/validation';
 
 const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
@@ -42,6 +41,7 @@ const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
     verticalScrollbarSize: 8, // used as "padding-right"
     horizontal: 'hidden',
     horizontalScrollbarSize: 0,
+    alwaysConsumeMouseWheel: false,
   },
   scrollBeyondLastLine: false,
   suggest: getSuggestOptions(),
@@ -63,22 +63,32 @@ const LANG_ID = 'logql';
 // we must only run the lang-setup code once
 let LANGUAGE_SETUP_STARTED = false;
 
+export const defaultWordPattern = /(-?\d*\.\d\w*)|([^`~!#%^&*()\-=+\[{\]}\\|;:'",.<>\/?\s]+)/g;
+
 function ensureLogQL(monaco: Monaco) {
   if (LANGUAGE_SETUP_STARTED === false) {
     LANGUAGE_SETUP_STARTED = true;
     monaco.languages.register({ id: LANG_ID });
 
     monaco.languages.setMonarchTokensProvider(LANG_ID, monarchlanguage);
-    monaco.languages.setLanguageConfiguration(LANG_ID, languageConfiguration);
+    monaco.languages.setLanguageConfiguration(LANG_ID, {
+      ...languageConfiguration,
+      wordPattern: /(-?\d*\.\d\w*)|([^`~!#%^&*()+\[{\]}\\|;:',.<>\/?\s]+)/g,
+      // Default:  /(-?\d*\.\d\w*)|([^`~!#%^&*()\-=+\[{\]}\\|;:'",.<>\/?\s]+)/g
+      // Removed `"`, `=`, and `-`, from the exclusion list, so now the completion provider can decide to overwrite any matching words, or just insert text at the cursor
+    });
   }
 }
 
 const getStyles = (theme: GrafanaTheme2, placeholder: string) => {
   return {
     container: css`
-      border-radius: ${theme.shape.borderRadius()};
+      border-radius: ${theme.shape.radius.default};
       border: 1px solid ${theme.components.input.borderColor};
       width: 100%;
+      .monaco-editor .suggest-widget {
+        min-width: 50%;
+      }
     `,
     placeholder: css`
       ::after {
@@ -97,7 +107,8 @@ const MonacoQueryField = ({
   initialValue,
   datasource,
   placeholder,
-  onQueryType,
+  onChange,
+  timeRange,
 }: Props) => {
   const id = uuidv4();
   // we need only one instance of `overrideServices` during the lifetime of the react component
@@ -108,6 +119,7 @@ const MonacoQueryField = ({
   const historyRef = useLatest(history);
   const onRunQueryRef = useLatest(onRunQuery);
   const onBlurRef = useLatest(onBlur);
+  const completionDataProviderRef = useRef<CompletionDataProvider | null>(null);
 
   const autocompleteCleanupCallback = useRef<(() => void) | null>(null);
 
@@ -120,6 +132,12 @@ const MonacoQueryField = ({
       autocompleteCleanupCallback.current?.();
     };
   }, []);
+
+  useEffect(() => {
+    if (completionDataProviderRef.current && timeRange) {
+      completionDataProviderRef.current.setTimeRange(timeRange);
+    }
+  }, [timeRange]);
 
   const setPlaceholder = (monaco: Monaco, editor: MonacoEditor) => {
     const placeholderDecorators = [
@@ -150,16 +168,12 @@ const MonacoQueryField = ({
   };
 
   const onTypeDebounced = debounce(async (query: string) => {
-    if (!onQueryType || (isValidQuery(query) === false && query !== '')) {
-      return;
-    }
-
-    onQueryType(query);
+    onChange(query);
   }, 1000);
 
   return (
     <div
-      aria-label={selectors.components.QueryField.container}
+      data-testid={selectors.components.QueryField.container}
       className={styles.container}
       // NOTE: we will be setting inline-style-width/height on this element
       ref={containerRef}
@@ -190,7 +204,8 @@ const MonacoQueryField = ({
               validateQuery(
                 query,
                 datasource.interpolateString(query, placeHolderScopedVars),
-                model.getLinesContent()
+                model.getLinesContent(),
+                parser
               ) || [];
 
             const markers = errors.map(({ error, ...boundary }) => ({
@@ -204,7 +219,8 @@ const MonacoQueryField = ({
             onTypeDebounced(query);
             monaco.editor.setModelMarkers(model, 'owner', markers);
           });
-          const dataProvider = new CompletionDataProvider(langProviderRef.current, historyRef);
+          const dataProvider = new CompletionDataProvider(langProviderRef.current, historyRef, timeRange);
+          completionDataProviderRef.current = dataProvider;
           const completionProvider = getCompletionProvider(monaco, dataProvider);
 
           // completion-providers in monaco are not registered directly to editor-instances,
@@ -255,6 +271,13 @@ const MonacoQueryField = ({
             },
             'isEditorFocused' + id
           );
+
+          // Fixes Monaco capturing the search key binding and displaying a useless search box within the Editor.
+          // See https://github.com/grafana/grafana/issues/85850
+          monaco.editor.addKeybindingRule({
+            keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF,
+            command: null,
+          });
 
           editor.onDidFocusEditorText(() => {
             isEditorFocused.set(true);

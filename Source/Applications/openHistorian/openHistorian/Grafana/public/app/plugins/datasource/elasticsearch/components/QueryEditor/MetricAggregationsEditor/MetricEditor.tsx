@@ -1,5 +1,5 @@
 import { cx } from '@emotion/css';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { satisfies, SemVer } from 'semver';
 
 import { SelectableValue } from '@grafana/data';
@@ -48,6 +48,7 @@ const getTypeOptions = (
 
   return (
     Object.entries(metricAggregationConfig)
+      .filter(([_, config]) => config.impliedQueryType === 'metrics')
       // Only showing metrics type supported by the version of ES.
       // if we cannot determine the version, we assume it is suitable.
       .filter(([_, { versionRange = '*' }]) => (esVersion != null ? satisfies(esVersion, versionRange) : true))

@@ -4,13 +4,11 @@
 //     public/app/plugins/gen.go
 // Using jennies:
 //     TSTypesJenny
-//     PluginTSTypesJenny
+//     PluginTsTypesJenny
 //
 // Run 'make gen-cue' from repository root to regenerate.
 
 import * as common from '@grafana/schema';
-
-export const DataQueryModelVersion = Object.freeze([0, 0]);
 
 export type BucketAggregation = (DateHistogram | Histogram | Terms | Filters | GeoHashGrid | Nested);
 
@@ -378,7 +376,7 @@ export type PipelineMetricAggregation = (MovingAverage | Derivative | Cumulative
 
 export type MetricAggregationWithSettings = (BucketScript | CumulativeSum | Derivative | SerialDiff | RawData | RawDocument | UniqueCount | Percentiles | ExtendedStats | Min | Max | Sum | Average | MovingAverage | MovingFunction | Logs | Rate | TopMetrics);
 
-export interface Elasticsearch extends common.DataQuery {
+export interface ElasticsearchDataQuery extends common.DataQuery {
   /**
    * Alias pattern
    */
@@ -401,7 +399,7 @@ export interface Elasticsearch extends common.DataQuery {
   timeField?: string;
 }
 
-export const defaultElasticsearch: Partial<Elasticsearch> = {
+export const defaultElasticsearchDataQuery: Partial<ElasticsearchDataQuery> = {
   bucketAggs: [],
   metrics: [],
 };

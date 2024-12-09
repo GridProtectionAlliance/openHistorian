@@ -15,7 +15,7 @@
 import { css } from '@emotion/css';
 import cx from 'classnames';
 import { get as _get } from 'lodash';
-import React from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { Icon, stylesFactory, withTheme2 } from '@grafana/ui';
@@ -24,46 +24,48 @@ import { autoColor } from '../Theme';
 import { TraceSpan } from '../types';
 import spanAncestorIds from '../utils/span-ancestor-ids';
 
-export const getStyles = stylesFactory((theme: GrafanaTheme2) => {
-  return {
-    SpanTreeOffset: css`
-      label: SpanTreeOffset;
-      color: ${autoColor(theme, '#000')};
-      position: relative;
-    `,
-    SpanTreeOffsetParent: css`
-      label: SpanTreeOffsetParent;
-      &:hover {
-        cursor: pointer;
-      }
-    `,
-    indentGuide: css`
-      label: indentGuide;
-      /* The size of the indentGuide is based off of the iconWrapper */
-      padding-right: calc(0.5rem + 12px);
-      height: 100%;
-      border-left: 3px solid transparent;
-      display: inline-flex;
-      &::before {
-        content: '';
-        padding-left: 1px;
-        background-color: ${autoColor(theme, 'lightgrey')};
-      }
-    `,
-    indentGuideActive: css`
-      label: indentGuideActive;
-      border-color: ${autoColor(theme, 'darkgrey')};
-      &::before {
-        background-color: transparent;
-      }
-    `,
-    iconWrapper: css`
-      label: iconWrapper;
-      position: absolute;
-      right: 0.25rem;
-    `,
-  };
-});
+export const getStyles = stylesFactory((theme: GrafanaTheme2) => ({
+  SpanTreeOffset: css({
+    label: 'SpanTreeOffset',
+    color: autoColor(theme, '#000'),
+    position: 'relative',
+  }),
+  SpanTreeOffsetParent: css({
+    label: 'SpanTreeOffsetParent',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  }),
+  indentGuide: css({
+    label: 'indentGuide',
+    /* The size of the indentGuide is based off of the iconWrapper */
+    paddingRight: '1rem',
+    height: '100%',
+    display: 'inline-flex',
+    [theme.transitions.handleMotion('no-preference')]: {
+      transition: 'padding 300ms ease-out',
+    },
+    '&::before': {
+      content: '""',
+      paddingLeft: '1px',
+      backgroundColor: autoColor(theme, 'lightgrey'),
+    },
+  }),
+  indentGuideActive: css({
+    label: 'indentGuideActive',
+    '&::before': {
+      backgroundColor: autoColor(theme, '#777'),
+    },
+  }),
+  indentGuideThin: css({
+    paddingRight: '0.3rem',
+  }),
+  iconWrapper: css({
+    label: 'iconWrapper',
+    position: 'absolute',
+    right: 0,
+  }),
+}));
 
 export type TProps = {
   childrenVisible?: boolean;
@@ -75,6 +77,7 @@ export type TProps = {
   addHoverIndentGuideId: (spanID: string) => void;
   removeHoverIndentGuideId: (spanID: string) => void;
   theme: GrafanaTheme2;
+  visibleSpanIds: string[];
 };
 
 export class UnthemedSpanTreeOffset extends React.PureComponent<TProps> {
@@ -133,25 +136,28 @@ export class UnthemedSpanTreeOffset extends React.PureComponent<TProps> {
   };
 
   render() {
-    const { childrenVisible, onClick, showChildrenIcon, span, theme } = this.props;
+    const { childrenVisible, onClick, showChildrenIcon, span, theme, visibleSpanIds } = this.props;
     const { hasChildren, spanID } = span;
     const wrapperProps = hasChildren ? { onClick, role: 'switch', 'aria-checked': childrenVisible } : null;
     const icon =
       showChildrenIcon &&
       hasChildren &&
       (childrenVisible ? (
-        <Icon name={'angle-down'} data-testid="icon-arrow-down" />
+        <Icon name={'angle-down'} data-testid="icon-arrow-down" size={'sm'} />
       ) : (
-        <Icon name={'angle-right'} data-testid="icon-arrow-right" />
+        <Icon name={'angle-right'} data-testid="icon-arrow-right" size={'sm'} />
       ));
     const styles = getStyles(theme);
+
     return (
       <span className={cx(styles.SpanTreeOffset, { [styles.SpanTreeOffsetParent]: hasChildren })} {...wrapperProps}>
-        {this.ancestorIds.map((ancestorId) => (
+        {this.ancestorIds.map((ancestorId, index) => (
           <span
             key={ancestorId}
             className={cx(styles.indentGuide, {
               [styles.indentGuideActive]: this.props.hoverIndentGuideIds.has(ancestorId),
+              [styles.indentGuideThin]:
+                index !== this.ancestorIds.length - 1 && ancestorId !== 'root' && !visibleSpanIds.includes(ancestorId),
             })}
             data-ancestor-id={ancestorId}
             data-testid="SpanTreeOffset--indentGuide"

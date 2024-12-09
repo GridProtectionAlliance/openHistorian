@@ -1,22 +1,12 @@
-import type { PluginExtension, PluginExtensionLink, PluginExtensionLinkConfig } from '@grafana/data';
+import type { PluginExtensionAddedLinkConfig, PluginExtension, PluginExtensionLink } from '@grafana/data';
+import { PluginAddedLinksConfigureFunc, PluginExtensionPoints } from '@grafana/data/src/types/pluginExtensions';
 import { isPluginExtensionLink } from '@grafana/runtime';
-
-import { isPluginExtensionLinkConfig, logWarning } from './utils';
 
 export function assertPluginExtensionLink(
   extension: PluginExtension | undefined,
   errorMessage = 'extension is not a link extension'
 ): asserts extension is PluginExtensionLink {
   if (!isPluginExtensionLink(extension)) {
-    throw new Error(errorMessage);
-  }
-}
-
-export function assertPluginExtensionLinkConfig(
-  extension: PluginExtensionLinkConfig,
-  errorMessage = 'extension is not a command extension config'
-): asserts extension is PluginExtensionLinkConfig {
-  if (!isPluginExtensionLinkConfig(extension)) {
     throw new Error(errorMessage);
   }
 }
@@ -29,18 +19,16 @@ export function assertLinkPathIsValid(pluginId: string, path: string) {
   }
 }
 
-export function assertExtensionPointIdIsValid(extension: PluginExtensionLinkConfig) {
-  if (!isExtensionPointIdValid(extension)) {
-    throw new Error(
-      `Invalid extension "${extension.title}". The extensionPointId should start with either "grafana/" or "plugins/" (currently: "${extension.extensionPointId}"). Skipping the extension.`
-    );
+export function assertIsReactComponent(component: React.ComponentType) {
+  if (!isReactComponent(component)) {
+    throw new Error(`Invalid component extension, the "component" property needs to be a valid React component.`);
   }
 }
 
-export function assertConfigureIsValid(extension: PluginExtensionLinkConfig) {
-  if (!isConfigureFnValid(extension)) {
+export function assertConfigureIsValid(config: PluginExtensionAddedLinkConfig) {
+  if (!isConfigureFnValid(config.configure)) {
     throw new Error(
-      `Invalid extension "${extension.title}". The "configure" property must be a function. Skipping the extension.`
+      `Invalid extension "${config.title}". The "configure" property must be a function. Skipping the extension.`
     );
   }
 }
@@ -65,49 +53,53 @@ export function isLinkPathValid(pluginId: string, path: string) {
   return Boolean(typeof path === 'string' && path.length > 0 && path.startsWith(`/a/${pluginId}/`));
 }
 
-export function isExtensionPointIdValid(extension: PluginExtensionLinkConfig) {
-  return Boolean(
-    extension.extensionPointId?.startsWith('grafana/') || extension.extensionPointId?.startsWith('plugins/')
-  );
+export function isExtensionPointIdValid({
+  extensionPointId,
+  pluginId,
+}: {
+  extensionPointId: string;
+  pluginId: string;
+}) {
+  if (extensionPointId.startsWith('grafana/')) {
+    return true;
+  }
+
+  return Boolean(extensionPointId.startsWith(`plugins/${pluginId}/`) || extensionPointId.startsWith(`${pluginId}/`));
 }
 
-export function isConfigureFnValid(extension: PluginExtensionLinkConfig) {
-  return extension.configure ? typeof extension.configure === 'function' : true;
+export function extensionPointEndsWithVersion(extensionPointId: string) {
+  return extensionPointId.match(/.*\/v\d+$/);
+}
+
+export function isGrafanaCoreExtensionPoint(extensionPointId: string) {
+  return Object.values(PluginExtensionPoints)
+    .map((v) => v.toString())
+    .includes(extensionPointId);
+}
+
+export function isConfigureFnValid(configure?: PluginAddedLinksConfigureFunc<object> | undefined) {
+  return configure ? typeof configure === 'function' : true;
 }
 
 export function isStringPropValid(prop: unknown) {
   return typeof prop === 'string' && prop.length > 0;
 }
 
-export function isPluginExtensionConfigValid(pluginId: string, extension: PluginExtensionLinkConfig): boolean {
-  try {
-    assertStringProps(extension, ['title', 'description', 'extensionPointId']);
-    assertExtensionPointIdIsValid(extension);
-    assertConfigureIsValid(extension);
-
-    if (isPluginExtensionLinkConfig(extension)) {
-      if (!extension.path && !extension.onClick) {
-        logWarning(`Invalid extension "${extension.title}". Either "path" or "onClick" is required.`);
-        return false;
-      }
-
-      if (extension.path) {
-        assertLinkPathIsValid(pluginId, extension.path);
-      }
-    }
-
-    return true;
-  } catch (error) {
-    if (error instanceof Error) {
-      logWarning(error.message);
-    }
-
-    return false;
-  }
-}
-
 export function isPromise(value: unknown): value is Promise<unknown> {
   return (
     value instanceof Promise || (typeof value === 'object' && value !== null && 'then' in value && 'catch' in value)
   );
+}
+
+export function isReactComponent(component: unknown): component is React.ComponentType {
+  const hasReactTypeProp = (obj: unknown): obj is { $$typeof: Symbol } =>
+    typeof obj === 'object' && obj !== null && '$$typeof' in obj;
+
+  // The sandbox wraps the plugin components with React.memo.
+  const isReactMemoObject = (obj: unknown): boolean =>
+    hasReactTypeProp(obj) && obj.$$typeof === Symbol.for('react.memo');
+
+  // We currently don't have any strict runtime-checking for this.
+  // (The main reason is that we don't want to start depending on React implementation details.)
+  return typeof component === 'function' || isReactMemoObject(component);
 }

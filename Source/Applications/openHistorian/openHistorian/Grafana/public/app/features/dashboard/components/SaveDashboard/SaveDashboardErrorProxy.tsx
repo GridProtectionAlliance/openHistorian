@@ -1,10 +1,13 @@
 import { css } from '@emotion/css';
-import React, { useEffect } from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { FetchError } from '@grafana/runtime';
+import { config, FetchError } from '@grafana/runtime';
+import { Dashboard } from '@grafana/schema';
 import { Button, ConfirmModal, Modal, useStyles2 } from '@grafana/ui';
-import { DashboardModel } from 'app/features/dashboard/state';
+import { t, Trans } from 'app/core/internationalization';
+
+import { DashboardModel } from '../../state/DashboardModel';
 
 import { SaveDashboardAsButton } from './SaveDashboardButton';
 import { SaveDashboardModalProps } from './types';
@@ -14,9 +17,10 @@ interface SaveDashboardErrorProxyProps {
   /** original dashboard */
   dashboard: DashboardModel;
   /** dashboard save model with applied modifications, i.e. title */
-  dashboardSaveModel: any;
+  dashboardSaveModel: Dashboard;
   error: FetchError;
   onDismiss: () => void;
+  setErrorIsHandled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SaveDashboardErrorProxy = ({
@@ -24,15 +28,10 @@ export const SaveDashboardErrorProxy = ({
   dashboardSaveModel,
   error,
   onDismiss,
+  setErrorIsHandled,
 }: SaveDashboardErrorProxyProps) => {
-  const { onDashboardSave } = useDashboardSave(dashboard);
-
-  useEffect(() => {
-    if (error.data && isHandledError(error.data.status)) {
-      error.isHandled = true;
-    }
-  }, [error]);
-
+  const { onDashboardSave } = useDashboardSave();
+  const isRestoreDashboardsEnabled = config.featureToggles.dashboardRestore && config.featureToggles.dashboardRestoreUI;
   return (
     <>
       {error.data && error.data.status === 'version-mismatch' && (
@@ -53,32 +52,60 @@ export const SaveDashboardErrorProxy = ({
         />
       )}
       {error.data && error.data.status === 'name-exists' && (
-        <ConfirmModal
-          isOpen={true}
-          title="Conflict"
-          body={
-            <div>
-              A dashboard with the same name in selected folder already exists. <br />
-              <small>Would you still like to save this dashboard?</small>
-            </div>
-          }
-          confirmText="Save and overwrite"
-          onConfirm={async () => {
-            await onDashboardSave(dashboardSaveModel, { overwrite: true }, dashboard);
-            onDismiss();
-          }}
-          onDismiss={onDismiss}
-        />
+        <>
+          {isRestoreDashboardsEnabled ? (
+            <Modal
+              isOpen={true}
+              title={t('save-dashboards.name-exists.title', 'Dashboard name already exists')}
+              onDismiss={onDismiss}
+            >
+              <p>
+                <Trans i18nKey="save-dashboards.name-exists.message-info">
+                  A dashboard with the same name in the selected folder already exists, including recently deleted
+                  dashboards.
+                </Trans>
+              </p>
+              <p>
+                <Trans i18nKey="save-dashboards.name-exists.message-suggestion">
+                  Please choose a different name or folder.
+                </Trans>
+              </p>
+            </Modal>
+          ) : (
+            <ConfirmModal
+              isOpen={true}
+              title="Conflict"
+              body={
+                <div>
+                  A dashboard with the same name in selected folder already exists. <br />
+                  <small>Would you still like to save this dashboard?</small>
+                </div>
+              }
+              confirmText="Save and overwrite"
+              onConfirm={async () => {
+                await onDashboardSave(dashboardSaveModel, { overwrite: true }, dashboard);
+                onDismiss();
+              }}
+              onDismiss={onDismiss}
+            />
+          )}
+        </>
       )}
       {error.data && error.data.status === 'plugin-dashboard' && (
-        <ConfirmPluginDashboardSaveModal dashboard={dashboard} onDismiss={onDismiss} />
+        <ConfirmPluginDashboardSaveModal
+          dashboard={dashboard}
+          onDismiss={() => {
+            setErrorIsHandled(true);
+            onDismiss();
+          }}
+        />
       )}
     </>
   );
 };
 
 const ConfirmPluginDashboardSaveModal = ({ onDismiss, dashboard }: SaveDashboardModalProps) => {
-  const { onDashboardSave } = useDashboardSave(dashboard);
+  const { onDashboardSave } = useDashboardSave();
   const styles = useStyles2(getConfirmPluginDashboardSaveModalStyles);
 
   return (
@@ -94,7 +121,7 @@ const ConfirmPluginDashboardSaveModal = ({ onDismiss, dashboard }: SaveDashboard
         <Button variant="secondary" onClick={onDismiss} fill="outline">
           Cancel
         </Button>
-        <SaveDashboardAsButton dashboard={dashboard} onSaveSuccess={onDismiss} />
+        <SaveDashboardAsButton onClick={onDismiss} dashboard={dashboard} onSaveSuccess={onDismiss} />
         <Button
           variant="destructive"
           onClick={async () => {
@@ -109,7 +136,7 @@ const ConfirmPluginDashboardSaveModal = ({ onDismiss, dashboard }: SaveDashboard
   );
 };
 
-const isHandledError = (errorStatus: string) => {
+export const proxyHandlesError = (errorStatus: string) => {
   switch (errorStatus) {
     case 'version-mismatch':
     case 'name-exists':
@@ -122,20 +149,19 @@ const isHandledError = (errorStatus: string) => {
 };
 
 const getConfirmPluginDashboardSaveModalStyles = (theme: GrafanaTheme2) => ({
-  modal: css`
-    width: 500px;
-  `,
-  modalText: css`
-    font-size: ${theme.typography.h4.fontSize};
-    color: ${theme.colors.text.primary};
-    margin-bottom: ${theme.spacing(4)}
-    padding-top: ${theme.spacing(2)};
-  `,
-  modalButtonRow: css`
-    margin-bottom: 14px;
-    a,
-    button {
-      margin-right: ${theme.spacing(2)};
-    }
-  `,
+  modal: css({
+    width: '500px',
+  }),
+  modalText: css({
+    fontSize: theme.typography.h4.fontSize,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing(4),
+    paddingTop: theme.spacing(2),
+  }),
+  modalButtonRow: css({
+    marginBottom: '14px',
+    'a, button': {
+      marginRight: theme.spacing(2),
+    },
+  }),
 });

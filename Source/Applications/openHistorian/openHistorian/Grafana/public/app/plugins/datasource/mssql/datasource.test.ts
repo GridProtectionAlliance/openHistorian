@@ -3,15 +3,16 @@ import { createFetchResponse } from 'test/helpers/createFetchResponse';
 
 import {
   dataFrameToJSON,
+  getDefaultTimeRange,
   DataSourceInstanceSettings,
   dateTime,
   FieldType,
   MetricFindValue,
-  MutableDataFrame,
+  createDataFrame,
   TimeRange,
 } from '@grafana/data';
+import { SQLQuery } from '@grafana/sql';
 import { backendSrv } from 'app/core/services/backend_srv';
-import { SQLQuery } from 'app/features/plugins/sql/types';
 import { TemplateSrv } from 'app/features/templating/template_srv';
 
 import { initialCustomVariableModelState } from '../../../features/variables/custom/reducer';
@@ -33,6 +34,7 @@ const instanceSettings = {
 } as DataSourceInstanceSettings<MssqlOptions>;
 
 describe('MSSQLDatasource', () => {
+  const defaultRange = getDefaultTimeRange(); // it does not matter what value this has
   const fetchMock = jest.spyOn(backendSrv, 'fetch');
 
   const ctx = {
@@ -54,7 +56,7 @@ describe('MSSQLDatasource', () => {
         tempvar: {
           frames: [
             dataFrameToJSON(
-              new MutableDataFrame({
+              createDataFrame({
                 fields: [
                   { name: 'title', values: ['aTitle', 'aTitle2', 'aTitle3'] },
                   { name: 'text', values: ['some text', 'some text2', 'some text3'] },
@@ -69,7 +71,7 @@ describe('MSSQLDatasource', () => {
     beforeEach(() => {
       fetchMock.mockImplementation(() => of(createFetchResponse(response)));
 
-      return ctx.ds.metricFindQuery(query).then((data: MetricFindValue[]) => {
+      return ctx.ds.metricFindQuery(query, { range: defaultRange }).then((data: MetricFindValue[]) => {
         results = data;
       });
     });
@@ -97,7 +99,7 @@ describe('MSSQLDatasource', () => {
 
     it('should return an empty array when metricFindQuery is called', async () => {
       const query = 'select * from atable';
-      const results = await ctx.ds.metricFindQuery(query);
+      const results = await ctx.ds.metricFindQuery(query, { range: defaultRange });
       expect(results.length).toBe(0);
     });
 
@@ -130,7 +132,7 @@ describe('MSSQLDatasource', () => {
             refId: 'datasets',
             frames: [
               dataFrameToJSON(
-                new MutableDataFrame({
+                createDataFrame({
                   fields: [{ name: 'name', type: FieldType.string, values: ['test1', 'test2', 'test3'] }],
                 })
               ),
@@ -152,7 +154,7 @@ describe('MSSQLDatasource', () => {
             refId: 'tables',
             frames: [
               dataFrameToJSON(
-                new MutableDataFrame({
+                createDataFrame({
                   fields: [{ name: 'schemaAndName', type: FieldType.string, values: ['test1', 'test2', 'test3'] }],
                 })
               ),
@@ -175,7 +177,7 @@ describe('MSSQLDatasource', () => {
             refId: 'columns',
             frames: [
               dataFrameToJSON(
-                new MutableDataFrame({
+                createDataFrame({
                   fields: [
                     { name: 'column', type: FieldType.string, values: ['test1', 'test2', 'test3'] },
                     { name: 'type', type: FieldType.string, values: ['int', 'char', 'bool'] },
@@ -216,7 +218,7 @@ describe('MSSQLDatasource', () => {
         tempvar: {
           frames: [
             dataFrameToJSON(
-              new MutableDataFrame({
+              createDataFrame({
                 fields: [
                   { name: '__value', values: ['value1', 'value2', 'value3'] },
                   { name: '__text', values: ['aTitle', 'aTitle2', 'aTitle3'] },
@@ -231,7 +233,7 @@ describe('MSSQLDatasource', () => {
     beforeEach(() => {
       fetchMock.mockImplementation(() => of(createFetchResponse(response)));
 
-      return ctx.ds.metricFindQuery(query).then((data) => {
+      return ctx.ds.metricFindQuery(query, { range: defaultRange }).then((data) => {
         results = data;
       });
     });
@@ -254,7 +256,7 @@ describe('MSSQLDatasource', () => {
           refId: 'tempvar',
           frames: [
             dataFrameToJSON(
-              new MutableDataFrame({
+              createDataFrame({
                 fields: [
                   { name: 'id', values: [1, 2, 3] },
                   { name: 'values', values: ['test1', 'test2', 'test3'] },
@@ -272,7 +274,7 @@ describe('MSSQLDatasource', () => {
     beforeEach(() => {
       fetchMock.mockImplementation(() => of(createFetchResponse(response)));
 
-      return ctx.ds.metricFindQuery(query).then((data) => {
+      return ctx.ds.metricFindQuery(query, { range: defaultRange }).then((data) => {
         results = data;
       });
     });
@@ -297,7 +299,7 @@ describe('MSSQLDatasource', () => {
         tempvar: {
           frames: [
             dataFrameToJSON(
-              new MutableDataFrame({
+              createDataFrame({
                 fields: [
                   { name: '__text', values: ['aTitle', 'aTitle', 'aTitle'] },
                   { name: '__value', values: ['same', 'same', 'diff'] },
@@ -311,7 +313,7 @@ describe('MSSQLDatasource', () => {
 
     beforeEach(() => {
       fetchMock.mockImplementation(() => of(createFetchResponse(response)));
-      return ctx.ds.metricFindQuery(query).then((data) => {
+      return ctx.ds.metricFindQuery(query, { range: defaultRange }).then((data) => {
         results = data;
       });
     });
@@ -330,7 +332,7 @@ describe('MSSQLDatasource', () => {
         tempvar: {
           frames: [
             dataFrameToJSON(
-              new MutableDataFrame({
+              createDataFrame({
                 fields: [{ name: 'test', values: ['aTitle'] }],
               })
             ),

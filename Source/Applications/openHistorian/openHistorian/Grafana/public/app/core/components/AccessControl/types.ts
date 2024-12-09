@@ -1,8 +1,11 @@
+import { AccessControlAction } from 'app/types';
+
 export type ResourcePermission = {
   id: number;
-  resourceId: string;
+  resourceId?: string;
   isManaged: boolean;
   isInherited: boolean;
+  isServiceAccount: boolean;
   userId?: number;
   userLogin?: string;
   userAvatarUrl?: string;
@@ -10,8 +13,10 @@ export type ResourcePermission = {
   teamId?: number;
   teamAvatarUrl?: string;
   builtInRole?: string;
-  actions: string[];
+  actions: AccessControlAction[];
   permission: string;
+  roleName?: string;
+  warning?: string;
 };
 
 export type SetPermission = {
@@ -26,6 +31,7 @@ export enum PermissionTarget {
   None = 'None',
   Team = 'Team',
   User = 'User',
+  ServiceAccount = 'ServiceAccount',
   BuiltInRole = 'builtInRole',
 }
 export type Description = {
@@ -35,6 +41,7 @@ export type Description = {
 
 export type Assignments = {
   users: boolean;
+  serviceAccounts: boolean;
   teams: boolean;
   builtInRoles: boolean;
 };

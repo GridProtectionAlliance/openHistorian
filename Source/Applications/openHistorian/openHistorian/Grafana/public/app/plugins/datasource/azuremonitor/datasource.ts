@@ -8,16 +8,17 @@ import {
   DataQueryResponse,
   DataSourceInstanceSettings,
   LoadingState,
+  QueryFixAction,
   ScopedVars,
 } from '@grafana/data';
-import { DataSourceWithBackend } from '@grafana/runtime';
-import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
+import { DataSourceWithBackend, getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 
 import AzureLogAnalyticsDatasource from './azure_log_analytics/azure_log_analytics_datasource';
 import AzureMonitorDatasource from './azure_monitor/azure_monitor_datasource';
 import AzureResourceGraphDatasource from './azure_resource_graph/azure_resource_graph_datasource';
+import { instanceOfAzureCredential, isCredentialsComplete } from './credentials';
 import ResourcePickerData from './resourcePicker/resourcePickerData';
-import { AzureDataSourceJsonData, AzureMonitorQuery, AzureQueryType } from './types';
+import { AadCurrentUserCredentials, AzureDataSourceJsonData, AzureMonitorQuery, AzureQueryType } from './types';
 import migrateAnnotation from './utils/migrateAnnotation';
 import migrateQuery from './utils/migrateQuery';
 import { VariableSupport } from './variables';
@@ -31,6 +32,8 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
   azureLogAnalyticsDatasource: AzureLogAnalyticsDatasource;
   resourcePickerData: ResourcePickerData;
   azureResourceGraphDatasource: AzureResourceGraphDatasource;
+  currentUserAuth: boolean;
+  currentUserAuthFallbackAvailable: boolean;
 
   pseudoDatasource: {
     [key in AzureQueryType]?: AzureMonitorDatasource | AzureLogAnalyticsDatasource | AzureResourceGraphDatasource;
@@ -52,17 +55,32 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
       [AzureQueryType.AzureMonitor]: this.azureMonitorDatasource,
       [AzureQueryType.LogAnalytics]: this.azureLogAnalyticsDatasource,
       [AzureQueryType.AzureResourceGraph]: this.azureResourceGraphDatasource,
+      [AzureQueryType.AzureTraces]: this.azureLogAnalyticsDatasource,
     };
 
     this.variables = new VariableSupport(this);
+
+    this.currentUserAuth = instanceSettings.jsonData.azureAuthType === 'currentuser';
+    const credentials = instanceSettings.jsonData.azureCredentials;
+    if (credentials && instanceOfAzureCredential<AadCurrentUserCredentials>('currentuser', credentials)) {
+      if (!credentials.serviceCredentials) {
+        this.currentUserAuthFallbackAvailable = false;
+      } else {
+        this.currentUserAuthFallbackAvailable = isCredentialsComplete(credentials.serviceCredentials, true);
+      }
+    } else {
+      this.currentUserAuthFallbackAvailable = false;
+    }
   }
 
   filterQuery(item: AzureMonitorQuery): boolean {
     if (!item.queryType) {
       return false;
     }
+
+    const query = migrateQuery(item);
     const ds = this.pseudoDatasource[item.queryType];
-    return ds?.filterQuery?.(item) ?? true;
+    return ds?.filterQuery?.(query) ?? true;
   }
 
   query(options: DataQueryRequest<AzureMonitorQuery>): Observable<DataQueryResponse> {
@@ -90,7 +108,12 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
     }
 
     const observables: Array<Observable<DataQueryResponse>> = Array.from(byType.entries()).map(([queryType, req]) => {
-      const ds = this.pseudoDatasource[queryType];
+      let mappedQueryType = queryType;
+      if (queryType === AzureQueryType.AzureTraces || queryType === AzureQueryType.TraceExemplar) {
+        mappedQueryType = AzureQueryType.LogAnalytics;
+      }
+
+      const ds = this.pseudoDatasource[mappedQueryType];
       if (!ds) {
         throw new Error('Data source not created for query type ' + queryType);
       }
@@ -138,10 +161,6 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
     return !!subQuery && this.templateSrv.containsTemplate(subQuery);
   }
 
-  async annotationQuery(options: any) {
-    return this.azureLogAnalyticsDatasource.annotationQuery(options);
-  }
-
   /* Azure Monitor REST API methods */
   getResourceGroups(subscriptionId: string) {
     return this.azureMonitorDatasource.getResourceGroups(this.templateSrv.replace(subscriptionId));
@@ -150,7 +169,7 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
   getMetricNamespaces(subscriptionId: string, resourceGroup?: string) {
     let url = `/subscriptions/${subscriptionId}`;
     if (resourceGroup) {
-      url += `/resourceGroups/${resourceGroup};`;
+      url += `/resourceGroups/${resourceGroup}`;
     }
     return this.azureMonitorDatasource.getMetricNamespaces({ resourceUri: url }, true);
   }
@@ -183,7 +202,8 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
         return query;
       }
 
-      const ds = this.pseudoDatasource[query.queryType];
+      const queryType = query.queryType === AzureQueryType.AzureTraces ? AzureQueryType.LogAnalytics : query.queryType;
+      const ds = this.pseudoDatasource[queryType];
       return {
         datasource: ds?.getRef(),
         ...(ds?.applyTemplateVariables(query, scopedVars) ?? query),
@@ -200,6 +220,27 @@ export default class Datasource extends DataSourceWithBackend<AzureMonitorQuery,
   getVariablesRaw() {
     return this.templateSrv.getVariables();
   }
+
+  modifyQuery(query: AzureMonitorQuery, action: QueryFixAction): AzureMonitorQuery {
+    if (!action.options) {
+      return query;
+    }
+    let expression = query.azureLogAnalytics?.query;
+    if (expression === undefined) {
+      return query;
+    }
+    switch (action.type) {
+      case 'ADD_FILTER': {
+        expression += `\n| where ${action.options.key} == "${action.options.value}"`;
+        break;
+      }
+      case 'ADD_FILTER_OUT': {
+        expression += `\n| where ${action.options.key} != "${action.options.value}"`;
+        break;
+      }
+    }
+    return { ...query, azureLogAnalytics: { ...query.azureLogAnalytics, query: expression } };
+  }
 }
 
 function hasQueryForType(query: AzureMonitorQuery): boolean {
@@ -212,6 +253,10 @@ function hasQueryForType(query: AzureMonitorQuery): boolean {
 
     case AzureQueryType.AzureResourceGraph:
       return !!query.azureResourceGraph;
+
+    case AzureQueryType.AzureTraces:
+    case AzureQueryType.TraceExemplar:
+      return !!query.azureTraces;
 
     case AzureQueryType.GrafanaTemplateVariableFn:
       return !!query.grafanaTemplateVariableFn;

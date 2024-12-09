@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom-v5-compat';
 
 import { GrafanaPlugin, NavModelItem, PluginIncludeType, PluginType } from '@grafana/data';
 import { config } from '@grafana/runtime';
@@ -7,7 +7,6 @@ import { contextSrv } from 'app/core/core';
 import { AccessControlAction } from 'app/types';
 
 import { usePluginConfig } from '../hooks/usePluginConfig';
-import { isOrgAdmin } from '../permissions';
 import { CatalogPlugin, PluginTabIds, PluginTabLabels } from '../types';
 
 type ReturnType = {
@@ -21,13 +20,11 @@ export const usePluginDetailsTabs = (plugin?: CatalogPlugin, pageId?: PluginTabI
   const { loading, error, value: pluginConfig } = usePluginConfig(plugin);
   const { pathname } = useLocation();
   const defaultTab = useDefaultPage(plugin, pluginConfig);
-  const parentUrl = pathname.substring(0, pathname.lastIndexOf('/'));
   const isPublished = Boolean(plugin?.isPublished);
 
   const currentPageId = pageId || defaultTab;
   const navModelChildren = useMemo(() => {
-    const canConfigurePlugins =
-      plugin && contextSrv.hasAccessInMetadata(AccessControlAction.PluginsWrite, plugin, isOrgAdmin());
+    const canConfigurePlugins = plugin && contextSrv.hasPermissionInMetadata(AccessControlAction.PluginsWrite, plugin);
     const navModelChildren: NavModelItem[] = [];
     if (isPublished) {
       navModelChildren.push({
@@ -38,13 +35,35 @@ export const usePluginDetailsTabs = (plugin?: CatalogPlugin, pageId?: PluginTabI
         active: PluginTabIds.VERSIONS === currentPageId,
       });
     }
+    if (isPublished && plugin?.details?.changelog) {
+      navModelChildren.push({
+        text: PluginTabLabels.CHANGELOG,
+        id: PluginTabIds.CHANGELOG,
+        icon: 'rocket',
+        url: `${pathname}?page=${PluginTabIds.CHANGELOG}`,
+        active: PluginTabIds.CHANGELOG === currentPageId,
+      });
+    }
 
     // Not extending the tabs with the config pages if the plugin is not installed
     if (!pluginConfig) {
       return navModelChildren;
     }
 
-    if (config.featureToggles.panelTitleSearch && pluginConfig.meta.type === PluginType.panel) {
+    if (config.featureToggles.externalServiceAccounts && (plugin?.iam || plugin?.details?.iam)) {
+      navModelChildren.push({
+        text: PluginTabLabels.IAM,
+        icon: 'shield',
+        id: PluginTabIds.IAM,
+        url: `${pathname}?page=${PluginTabIds.IAM}`,
+        active: PluginTabIds.IAM === currentPageId,
+      });
+    }
+
+    if (
+      config.featureToggles.panelTitleSearch &&
+      (pluginConfig.meta.type === PluginType.panel || pluginConfig.meta.type === PluginType.datasource)
+    ) {
       navModelChildren.push({
         text: PluginTabLabels.USAGE,
         icon: 'list-ul',
@@ -98,7 +117,6 @@ export const usePluginDetailsTabs = (plugin?: CatalogPlugin, pageId?: PluginTabI
   const navModel: NavModelItem = {
     text: plugin?.name ?? '',
     img: plugin?.info.logos.small,
-    breadcrumbs: [{ title: 'Plugins', url: parentUrl }],
     children: [
       {
         text: PluginTabLabels.OVERVIEW,
@@ -124,7 +142,7 @@ function useDefaultPage(plugin: CatalogPlugin | undefined, pluginConfig: Grafana
     return PluginTabIds.OVERVIEW;
   }
 
-  const hasAccess = contextSrv.hasAccessInMetadata(AccessControlAction.PluginsWrite, plugin, isOrgAdmin());
+  const hasAccess = contextSrv.hasPermissionInMetadata(AccessControlAction.PluginsWrite, plugin);
 
   if (!hasAccess || pluginConfig.meta.type !== PluginType.app) {
     return PluginTabIds.OVERVIEW;

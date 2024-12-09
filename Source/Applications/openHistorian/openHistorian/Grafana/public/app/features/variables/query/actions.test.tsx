@@ -1,7 +1,14 @@
-import React from 'react';
-
-import { DataSourceRef, getDefaultTimeRange, LoadingState } from '@grafana/data';
-import { setDataSourceSrv } from '@grafana/runtime';
+import {
+  DataSourceApi,
+  DataSourceRef,
+  getDefaultTimeRange,
+  LoadingState,
+  QueryVariableModel,
+  VariableHide,
+  VariableRefresh,
+  VariableSort,
+} from '@grafana/data';
+import { DataSourceSrv, setDataSourceSrv } from '@grafana/runtime';
 
 import { reduxTester } from '../../../../test/core/redux/reduxTester';
 import { silenceConsoleOutput } from '../../../../test/core/utils/silenceConsoleOutput';
@@ -29,7 +36,7 @@ import {
   variableStateFetching,
 } from '../state/sharedReducer';
 import { variablesInitTransaction } from '../state/transactionReducer';
-import { QueryVariableModel, VariableHide, VariableQueryEditorProps, VariableRefresh, VariableSort } from '../types';
+import { VariableQueryEditorProps } from '../types';
 import { toKeyedVariableIdentifier, toVariablePayload } from '../utils';
 
 import { setVariableQueryRunner, VariableQueryRunner } from './VariableQueryRunner';
@@ -60,7 +67,7 @@ const mocks: Record<string, any> = {
   },
 };
 
-setDataSourceSrv(mocks.dataSourceSrv as any);
+setDataSourceSrv(mocks.dataSourceSrv as DataSourceSrv);
 
 jest.mock('../../plugins/plugin_loader', () => ({
   importDataSourcePlugin: () => mocks.pluginLoader.importDataSourcePlugin(),
@@ -353,7 +360,7 @@ describe('query actions', () => {
       it('then correct actions are dispatched', async () => {
         const variable = createVariable({ datasource: { uid: 'other' } });
         const editor = mocks.VariableQueryEditor;
-        const previousDataSource: any = { type: 'previous' };
+        const previousDataSource = { type: 'previous' } as DataSourceApi;
         const templatingState = {
           editor: {
             ...initialVariableEditorState,
@@ -554,6 +561,45 @@ describe('query actions', () => {
 
       tester.thenDispatchedActionsShouldEqual(
         toKeyedAction('key', addVariableEditorError({ errorProp: 'query', errorText }))
+      );
+    });
+  });
+
+  describe('when changeQueryVariableQuery is dispatched with empty string definition', () => {
+    it('then correct actions are dispatched', async () => {
+      const optionsMetrics = [createMetric('A'), createMetric('B')];
+      const variable = createVariable({ datasource: { uid: 'datasource' }, includeAll: true });
+
+      const query = '$datasource';
+      const definition = '';
+
+      mockDatasourceMetrics({ ...variable, query }, optionsMetrics);
+
+      const tester = await reduxTester<RootReducerType>()
+        .givenRootReducer(getRootReducer())
+        .whenActionIsDispatched(
+          toKeyedAction('key', addVariable(toVariablePayload(variable, { global: false, index: 0, model: variable })))
+        )
+        .whenActionIsDispatched(toKeyedAction('key', variablesInitTransaction({ uid: 'key' })))
+        .whenAsyncActionIsDispatched(
+          changeQueryVariableQuery(toKeyedVariableIdentifier(variable), query, definition),
+          true
+        );
+
+      const option = createOption(ALL_VARIABLE_TEXT, ALL_VARIABLE_VALUE);
+      const update = { results: optionsMetrics, templatedRegex: '' };
+
+      tester.thenDispatchedActionsShouldEqual(
+        toKeyedAction('key', removeVariableEditorError({ errorProp: 'query' })),
+        toKeyedAction('key', changeVariableProp(toVariablePayload(variable, { propName: 'query', propValue: query }))),
+        toKeyedAction(
+          'key',
+          changeVariableProp(toVariablePayload(variable, { propName: 'definition', propValue: definition }))
+        ),
+        toKeyedAction('key', variableStateFetching(toVariablePayload(variable))),
+        toKeyedAction('key', updateVariableOptions(toVariablePayload(variable, update))),
+        toKeyedAction('key', setCurrentVariableValue(toVariablePayload(variable, { option }))),
+        toKeyedAction('key', variableStateCompleted(toVariablePayload(variable)))
       );
     });
   });
@@ -804,8 +850,8 @@ describe('query actions', () => {
   });
 });
 
-function mockDatasourceMetrics(variable: QueryVariableModel, optionsMetrics: any[]) {
-  const metrics: Record<string, any[]> = {
+function mockDatasourceMetrics(variable: QueryVariableModel, optionsMetrics: unknown[]) {
+  const metrics: Record<string, unknown[]> = {
     [variable.query]: optionsMetrics,
   };
 

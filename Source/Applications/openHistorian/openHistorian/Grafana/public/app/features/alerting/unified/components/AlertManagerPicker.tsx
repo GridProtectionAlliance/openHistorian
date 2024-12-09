@@ -1,59 +1,68 @@
 import { css } from '@emotion/css';
-import React, { useMemo } from 'react';
+import { useMemo, ComponentProps } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Field, Select, useStyles2 } from '@grafana/ui';
+import { InlineField, Select, SelectMenuOptions, useStyles2 } from '@grafana/ui';
 
+import { useAlertmanager } from '../state/AlertmanagerContext';
 import { AlertManagerDataSource, GRAFANA_RULES_SOURCE_NAME } from '../utils/datasource';
 
 interface Props {
-  onChange: (alertManagerSourceName: string) => void;
-  current?: string;
   disabled?: boolean;
-  dataSources: AlertManagerDataSource[];
 }
 
 function getAlertManagerLabel(alertManager: AlertManagerDataSource) {
-  return alertManager.name === GRAFANA_RULES_SOURCE_NAME ? 'Grafana' : alertManager.name.slice(0, 37);
+  return alertManager.name === GRAFANA_RULES_SOURCE_NAME ? 'Grafana' : alertManager.name;
 }
 
-export const AlertManagerPicker = ({ onChange, current, dataSources, disabled = false }: Props) => {
+export const AlertManagerPicker = ({ disabled = false }: Props) => {
   const styles = useStyles2(getStyles);
+  const { selectedAlertmanager, availableAlertManagers, setSelectedAlertmanager } = useAlertmanager();
 
-  const options: Array<SelectableValue<string>> = useMemo(() => {
-    return dataSources.map((ds) => ({
+  const options = useMemo(() => {
+    return availableAlertManagers.map<SelectableValue<string>>((ds) => ({
       label: getAlertManagerLabel(ds),
       value: ds.name,
       imgUrl: ds.imgUrl,
       meta: ds.meta,
     }));
-  }, [dataSources]);
+  }, [availableAlertManagers]);
+
+  const isDisabled = disabled || options.length === 1;
+  const label = isDisabled ? 'Alertmanager' : 'Choose Alertmanager';
 
   return (
-    <Field
-      className={styles.field}
-      label={disabled ? 'Alertmanager' : 'Choose Alertmanager'}
-      disabled={disabled || options.length === 1}
-      data-testid="alertmanager-picker"
-    >
+    <InlineField className={styles.field} label={label} disabled={isDisabled} data-testid="alertmanager-picker">
       <Select
-        aria-label={disabled ? 'Alertmanager' : 'Choose Alertmanager'}
+        aria-label={label}
         width={29}
         className="ds-picker select-container"
         backspaceRemovesValue={false}
-        onChange={(value) => value.value && onChange(value.value)}
+        onChange={(value) => {
+          if (value?.value) {
+            setSelectedAlertmanager(value.value);
+          }
+        }}
         options={options}
-        maxMenuHeight={500}
         noOptionsMessage="No datasources found"
-        value={current}
+        value={selectedAlertmanager}
         getOptionLabel={(o) => o.label}
+        components={{ Option: CustomOption }}
       />
-    </Field>
+    </InlineField>
   );
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  field: css`
-    margin-bottom: ${theme.spacing(4)};
-  `,
+  field: css({
+    margin: 0,
+  }),
 });
+
+// custom option that overwrites the default "white-space: nowrap" for Alertmanager names that are really long
+const CustomOption = (props: ComponentProps<typeof SelectMenuOptions>) => (
+  <SelectMenuOptions
+    {...props}
+    renderOptionLabel={({ label }) => <div style={{ whiteSpace: 'pre-line' }}>{label}</div>}
+  />
+);

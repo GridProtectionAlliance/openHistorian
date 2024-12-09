@@ -16,64 +16,67 @@ package grafanaplugin
 
 import (
 	"github.com/grafana/grafana/packages/grafana-schema/src/common"
-	"github.com/grafana/grafana/pkg/plugins/pfs"
 )
-
-// This file (with its sibling .cue files) implements pfs.GrafanaPlugin
-pfs.GrafanaPlugin
 
 composableKinds: PanelCfg: {
 	maturity: "experimental"
 
 	lineage: {
-		seqs: [
-			{
-				schemas: [
-					{
+		schemas: [{
+			version: [0, 0]
+			schema: {
+				// Auto is "table" in the UI
+				SeriesMapping: "auto" | "manual"                   @cuetsy(kind="enum")
+				ScatterShow:   "points" | "lines" | "points+lines" @cuetsy(kind="enum", memberNames="Points|Lines|PointsAndLines")
 
-						SeriesMapping: "auto" | "manual"                   @cuetsy(kind="enum")
-						ScatterShow:   "points" | "lines" | "points+lines" @cuetsy(kind="enum", memberNames="Points|Lines|PointsAndLines")
+				// Configuration for the Table/Auto mode
+				XYDimensionConfig: {
+					frame: int32 & >=0
+					x?:    string
+					exclude?: [...string]
+				} @cuetsy(kind="interface")
 
-						XYDimensionConfig: {
-							frame: int32 & >=0
-							x?:    string
-							exclude?: [...string]
-						} @cuetsy(kind="interface")
+				FieldConfig: {
+					common.HideableFieldConfig
+					common.AxisConfig
 
-						ScatterFieldConfig: {
-							common.HideableFieldConfig
-							common.AxisConfig
+					show?: ScatterShow & (*"points" | _)
 
-							show?: ScatterShow | *"points"
+					pointSize?:  common.ScaleDimensionConfig
+					pointColor?: common.ColorDimensionConfig
+					// pointSymbol?: common.ResourceDimensionConfig
+					// fillOpacity?: number & >=0 & <=1 | *0.5
 
-							pointSize?:  common.ScaleDimensionConfig
-							lineColor?:  common.ColorDimensionConfig
-							pointColor?: common.ColorDimensionConfig
-							labelValue?: common.TextDimensionConfig
+					lineColor?: common.ColorDimensionConfig
+					lineWidth?: int32 & >=0
+					lineStyle?: common.LineStyle
 
-							lineWidth?: int32 & >=0
-							lineStyle?: common.LineStyle
-							label?:     common.VisibilityMode | *"auto"
-						} @cuetsy(kind="interface",TSVeneer="type")
+					label?:      common.VisibilityMode & (*"auto" | _)
+					labelValue?: common.TextDimensionConfig
+				} @cuetsy(kind="interface",TSVeneer="type")
 
-						ScatterSeriesConfig: {
-							ScatterFieldConfig
-							x?:    string
-							y?:    string
-							name?: string
-						} @cuetsy(kind="interface")
+				ScatterSeriesConfig: {
+					FieldConfig
+					x?:     string
+					y?:     string
+					name?:  string
+					frame?: number
+				} @cuetsy(kind="interface")
 
-						PanelOptions: {
-							common.OptionsWithLegend
-							common.OptionsWithTooltip
+				Options: {
+					common.OptionsWithLegend
+					common.OptionsWithTooltip
 
-							seriesMapping?: SeriesMapping
-							dims:           XYDimensionConfig
-							series: [...ScatterSeriesConfig]
-						} @cuetsy(kind="interface")
-					},
-				]
-			},
-		]
+					seriesMapping?: SeriesMapping
+
+					// Table Mode (auto)
+					dims: XYDimensionConfig
+
+					// Manual Mode
+					series: [...ScatterSeriesConfig]
+				} @cuetsy(kind="interface")
+			}
+		}]
+		lenses: []
 	}
 }

@@ -1,12 +1,14 @@
-import React from 'react';
-
-import { CanvasElementOptions, CanvasFrameOptions } from 'app/features/canvas';
+import { CanvasFrameOptions } from '../frame';
 
 import { FrameState } from './frame';
 import { Scene } from './scene';
 
 export class RootElement extends FrameState {
-  constructor(public options: CanvasFrameOptions, public scene: Scene, private changeCallback: () => void) {
+  constructor(
+    public options: CanvasFrameOptions,
+    public scene: Scene,
+    private changeCallback: () => void
+  ) {
     super(options, scene);
 
     this.sizeStyle = {
@@ -20,9 +22,9 @@ export class RootElement extends FrameState {
   }
 
   // root type can not change
-  onChange(options: CanvasElementOptions) {
+  onChange(options: CanvasFrameOptions) {
     this.revId++;
-    this.options = { ...options } as CanvasFrameOptions;
+    this.options = { ...options };
     this.changeCallback();
   }
 

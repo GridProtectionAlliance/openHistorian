@@ -1,10 +1,10 @@
 import { useDialog } from '@react-aria/dialog';
 import { useOverlay } from '@react-aria/overlays';
-import React, { createRef } from 'react';
+import { createRef } from 'react';
 
 import { Portal, VizTooltipContainer } from '@grafana/ui';
+import { ComplexDataHoverView } from 'app/features/visualization/data-hover/ComplexDataHoverView';
 
-import { ComplexDataHoverView } from './components/ComplexDataHoverView';
 import { GeomapHoverPayload } from './event';
 
 interface Props {

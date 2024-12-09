@@ -1,5 +1,4 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import React from 'react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import { ReplaySubject } from 'rxjs';
@@ -74,6 +73,8 @@ function setupTestContext(options: Partial<Props>) {
     </Provider>
   );
 
+  // Needed so mocks work
+  props.panel.refreshWhenInView = false;
   return { rerender, props, subject, store };
 }
 
@@ -128,9 +129,7 @@ describe('PanelStateWrapper', () => {
           </Provider>
         );
 
-        const button = screen.getByRole('button', {
-          name: selectors.components.Panels.Panel.headerCornerInfo('error'),
-        });
+        const button = screen.getByTestId(selectors.components.Panels.Panel.status('error'));
         expect(button).toBeInTheDocument();
         await act(async () => {
           fireEvent.focus(button);

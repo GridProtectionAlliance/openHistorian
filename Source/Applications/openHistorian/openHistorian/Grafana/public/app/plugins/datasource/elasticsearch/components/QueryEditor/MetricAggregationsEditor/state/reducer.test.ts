@@ -1,9 +1,6 @@
-import { reducerTester } from 'test/core/redux/reducerTester';
-
-import { ElasticsearchQuery } from 'app/plugins/datasource/elasticsearch/types';
-
 import { defaultMetricAgg } from '../../../../queryDef';
-import { Derivative, ExtendedStats, MetricAggregation } from '../../../../types';
+import { Derivative, ElasticsearchQuery, ExtendedStats, MetricAggregation } from '../../../../types';
+import { reducerTester } from '../../../reducerTester';
 import { initQuery } from '../../state';
 import { metricAggregationConfig } from '../utils';
 
@@ -84,7 +81,7 @@ describe('Metric Aggregations Reducer', () => {
         .thenStateShouldEqual([firstAggregation, { ...secondAggregation, type: expectedSecondAggregation.type }]);
     });
 
-    it('Should remove all other aggregations when the newly selected one is `isSingleMetric`', () => {
+    it('Should remove all other aggregations when the newly selected one is not metric', () => {
       const firstAggregation: MetricAggregation = {
         id: '1',
         type: 'count',

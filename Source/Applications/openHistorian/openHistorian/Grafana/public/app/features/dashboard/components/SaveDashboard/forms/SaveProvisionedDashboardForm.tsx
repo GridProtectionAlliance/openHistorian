@@ -1,13 +1,12 @@
 import { css } from '@emotion/css';
 import { saveAs } from 'file-saver';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { Stack } from '@grafana/experimental';
-import { Button, ClipboardButton, HorizontalGroup, TextArea } from '@grafana/ui';
+import { Button, ClipboardButton, HorizontalGroup, TextArea, Stack } from '@grafana/ui';
 
 import { SaveDashboardFormProps } from '../types';
 
-export const SaveProvisionedDashboardForm = ({ dashboard, onCancel }: SaveDashboardFormProps) => {
+export const SaveProvisionedDashboardForm = ({ dashboard, onCancel }: Omit<SaveDashboardFormProps, 'isLoading'>) => {
   const [dashboardJSON, setDashboardJson] = useState(() => {
     const clone = dashboard.getSaveModelClone();
     delete clone.id;
@@ -68,11 +67,11 @@ export const SaveProvisionedDashboardForm = ({ dashboard, onCancel }: SaveDashbo
 };
 
 const styles = {
-  json: css`
-    height: 400px;
-    width: 100%;
-    overflow: auto;
-    resize: none;
-    font-family: monospace;
-  `,
+  json: css({
+    height: '400px',
+    width: '100%',
+    overflow: 'auto',
+    resize: 'none',
+    fontFamily: 'monospace',
+  }),
 };

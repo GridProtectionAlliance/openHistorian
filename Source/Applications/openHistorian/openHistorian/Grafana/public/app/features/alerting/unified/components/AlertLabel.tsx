@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { IconButton, useStyles2 } from '@grafana/ui';
@@ -19,21 +18,21 @@ export const AlertLabel = ({ labelKey, value, operator = '=', onRemoveLabel }: P
       {labelKey}
       {operator}
       {value}
-      {!!onRemoveLabel && <IconButton name="times" size="xs" onClick={onRemoveLabel} />}
+      {!!onRemoveLabel && <IconButton name="times" size="xs" onClick={onRemoveLabel} tooltip="Remove label" />}
     </div>
   );
 };
 
 export const getStyles = (theme: GrafanaTheme2) => ({
-  wrapper: css`
-    padding: ${theme.spacing(0.5, 1)};
-    border-radius: ${theme.shape.borderRadius(1)};
-    border: solid 1px ${theme.colors.border.medium};
-    font-size: ${theme.typography.bodySmall.fontSize};
-    background-color: ${theme.colors.background.secondary};
-    font-weight: ${theme.typography.fontWeightBold};
-    color: ${theme.colors.text.primary};
-    display: inline-block;
-    line-height: 1.2;
-  `,
+  wrapper: css({
+    padding: theme.spacing(0.5, 1),
+    borderRadius: theme.shape.radius.default,
+    border: `solid 1px ${theme.colors.border.medium}`,
+    fontSize: theme.typography.bodySmall.fontSize,
+    backgroundColor: theme.colors.background.secondary,
+    fontWeight: theme.typography.fontWeightBold,
+    color: theme.colors.text.primary,
+    display: 'inline-block',
+    lineHeight: '1.2',
+  }),
 });

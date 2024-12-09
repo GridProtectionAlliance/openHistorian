@@ -1,13 +1,12 @@
-import { VariableType } from '@grafana/data';
+import { VariableType, VariableWithOptions } from '@grafana/data';
 import { LoadingState } from '@grafana/data/src/types/data';
-import { VariableWithOptions } from 'app/features/variables/types';
 
 interface TemplateableValue {
   variableName: string;
   templateVariable: VariableWithOptions;
 }
 
-export function createTemplateVariables(templateableProps: string[]): Map<string, TemplateableValue> {
+export function createTemplateVariables(templateableProps: string[], value = ''): Map<string, TemplateableValue> {
   const templateVariables = new Map<string, TemplateableValue>();
   templateableProps.map((prop) => {
     const variableName = prop.replace(/[\[\].]/g, '');
@@ -15,7 +14,7 @@ export function createTemplateVariables(templateableProps: string[]): Map<string
       current: {
         selected: false,
         text: `${variableName}-template-variable`,
-        value: `${variableName}-template-variable`,
+        value: value === '' ? `${variableName}-template-variable` : value,
       },
       id: variableName,
       name: variableName,
@@ -37,4 +36,20 @@ export function createTemplateVariables(templateableProps: string[]): Map<string
     });
   });
   return templateVariables;
+}
+
+export type DeepPartial<K> = {
+  [attr in keyof K]?: K[attr] extends object ? DeepPartial<K[attr]> : K[attr];
+};
+
+export function mapPartialArrayObject<T extends object>(defaultValue: T, arr?: Array<DeepPartial<T | undefined>>): T[] {
+  if (!arr) {
+    return [defaultValue];
+  }
+  return arr.map((item?: DeepPartial<T>) => {
+    if (!item) {
+      return defaultValue;
+    }
+    return { ...item, ...defaultValue };
+  });
 }

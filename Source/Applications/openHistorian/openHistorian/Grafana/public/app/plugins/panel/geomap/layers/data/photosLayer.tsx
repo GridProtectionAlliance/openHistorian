@@ -1,3 +1,9 @@
+import { FeatureLike } from 'ol/Feature';
+import Map from 'ol/Map';
+import VectorImage from 'ol/layer/VectorImage';
+import { Stroke, Style } from 'ol/style';
+import Photo from 'ol-ext/style/Photo';
+
 import {
   MapLayerRegistryItem,
   PanelData,
@@ -8,14 +14,9 @@ import {
   Field,
 } from '@grafana/data';
 import { FrameGeometrySourceMode, MapLayerOptions } from '@grafana/schema';
-import Map from 'ol/Map';
-import { FeatureLike } from 'ol/Feature';
-import { getLocationMatchers } from 'app/features/geo/utils/location';
-import VectorLayer from 'ol/layer/Vector';
-import { FrameVectorSource } from 'app/features/geo/utils/frameVectorSource';
-import { Stroke, Style } from 'ol/style';
-import Photo from 'ol-ext/style/Photo';
 import { findField } from 'app/features/dimensions';
+import { FrameVectorSource } from 'app/features/geo/utils/frameVectorSource';
+import { getLocationMatchers } from 'app/features/geo/utils/location';
 
 // Configuration options for Circle overlays
 export interface PhotoConfig {
@@ -68,7 +69,7 @@ export const photosLayer: MapLayerRegistryItem<PhotoConfig> = {
   isBaseMap: false,
   showLocation: true,
   hideOpacity: true,
-  state: PluginState.alpha,
+  state: PluginState.beta,
 
   /**
    * Function that configures transformation and returns a transformer
@@ -85,7 +86,7 @@ export const photosLayer: MapLayerRegistryItem<PhotoConfig> = {
 
     const location = await getLocationMatchers(options.location);
     const source = new FrameVectorSource(location);
-    const vectorLayer = new VectorLayer({
+    const vectorLayer = new VectorImage({
       source,
     });
 
@@ -93,9 +94,9 @@ export const photosLayer: MapLayerRegistryItem<PhotoConfig> = {
 
     vectorLayer.setStyle((feature: FeatureLike) => {
       let src = unknownImage;
-      let idx: number = Infinity;
+      let idx = Infinity;
       if (images.length > 0) {
-        idx = feature.get('rowIndex') as number;
+        idx = feature.get('rowIndex');
         src = images[idx] ?? unknownImage;
       }
       const photoStyle = new Style({
@@ -171,13 +172,13 @@ export const photosLayer: MapLayerRegistryItem<PhotoConfig> = {
           if (config.src) {
             const srcField: Field | undefined = findField(frame, config.src);
             if (srcField) {
-              images = srcField?.values.toArray();
+              images = srcField?.values;
             }
           } else {
             for (let i = 0; i < frame.fields.length; i++) {
               const field = frame.fields[i];
               if (field.type === FieldType.string) {
-                images = field.values.toArray();
+                images = field.values;
                 break;
               }
             }

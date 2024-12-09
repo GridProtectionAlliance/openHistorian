@@ -1,8 +1,10 @@
 import { css, cx } from '@emotion/css';
-import React, { createRef, MutableRefObject, PureComponent } from 'react';
+import { createRef, MutableRefObject, PureComponent } from 'react';
+import * as React from 'react';
 import SplitPane, { Split } from 'react-split-pane';
 
 import { GrafanaTheme2 } from '@grafana/data';
+import { getDragStyles } from '@grafana/ui';
 import { config } from 'app/core/config';
 
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
   maxSize?: number;
   primary?: 'first' | 'second';
   onDragFinished?: (size?: number) => void;
+  parentStyle?: React.CSSProperties;
   paneStyle?: React.CSSProperties;
   secondaryPaneStyle?: React.CSSProperties;
 }
@@ -58,6 +61,7 @@ export class SplitPaneWrapper extends PureComponent<React.PropsWithChildren<Prop
       maxSize,
       minSize,
       primary,
+      parentStyle,
       paneStyle,
       secondaryPaneStyle,
       splitVisible = true,
@@ -72,6 +76,7 @@ export class SplitPaneWrapper extends PureComponent<React.PropsWithChildren<Prop
 
     // Limit options pane width to 90% of screen.
     const styles = getStyles(config.theme2, splitVisible);
+    const dragStyles = getDragStyles(config.theme2);
 
     // Need to handle when width is relative. ie a percentage of the viewport
     const paneSizePx =
@@ -92,9 +97,13 @@ export class SplitPaneWrapper extends PureComponent<React.PropsWithChildren<Prop
         maxSize={maxSize}
         size={splitVisible ? paneSizePx : 0}
         primary={splitVisible ? primary : 'second'}
-        resizerClassName={splitOrientation === 'horizontal' ? styles.resizerH : styles.resizerV}
+        resizerClassName={cx(
+          styles.resizer,
+          splitOrientation === 'horizontal' ? dragStyles.dragHandleHorizontal : dragStyles.dragHandleVertical
+        )}
         onDragStarted={() => this.onDragStarted()}
         onDragFinished={(size) => this.onDragFinished(size)}
+        style={parentStyle}
         paneStyle={paneStyle}
         pane2Style={secondaryPaneStyle}
       >
@@ -105,80 +114,9 @@ export class SplitPaneWrapper extends PureComponent<React.PropsWithChildren<Prop
 }
 
 const getStyles = (theme: GrafanaTheme2, hasSplit: boolean) => {
-  const handleColor = theme.v1.palette.blue95;
-  const paneSpacing = theme.spacing(2);
-
-  const resizer = css`
-    position: relative;
-    display: ${hasSplit ? 'block' : 'none'};
-
-    &::before {
-      content: '';
-      position: absolute;
-      transition: 0.2s border-color ease-in-out;
-    }
-
-    &::after {
-      background: ${theme.components.panel.borderColor};
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transition: 0.2s background ease-in-out;
-      transform: translate(-50%, -50%);
-      border-radius: ${theme.shape.radius.default};
-    }
-
-    &:hover {
-      &::before {
-        border-color: ${handleColor};
-      }
-
-      &::after {
-        background: ${handleColor};
-      }
-    }
-  `;
-
   return {
-    resizerV: cx(
-      resizer,
-      css`
-        cursor: col-resize;
-        width: ${paneSpacing};
-
-        &::before {
-          border-right: 1px solid transparent;
-          height: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-        }
-
-        &::after {
-          height: 200px;
-          width: 4px;
-        }
-      `
-    ),
-    resizerH: cx(
-      resizer,
-      css`
-        height: ${paneSpacing};
-        cursor: row-resize;
-        margin-left: ${paneSpacing};
-
-        &::before {
-          border-top: 1px solid transparent;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 100%;
-        }
-
-        &::after {
-          height: 4px;
-          width: 200px;
-        }
-      `
-    ),
+    resizer: css({
+      display: hasSplit ? 'block' : 'none',
+    }),
   };
 };

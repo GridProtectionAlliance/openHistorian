@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { cloneDeep } from 'lodash';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 
 import { GrafanaTheme2, PanelData, VisualizationSuggestion } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
@@ -86,7 +86,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     vizBox: css`
       position: relative;
       background: none;
-      border-radius: ${theme.shape.borderRadius(1)};
+      border-radius: ${theme.shape.radius.default};
       cursor: pointer;
       border: 1px solid ${theme.colors.border.medium};
 

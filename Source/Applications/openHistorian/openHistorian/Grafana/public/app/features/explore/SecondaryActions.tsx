@@ -1,66 +1,73 @@
-import { css, cx } from '@emotion/css';
-import React from 'react';
+import { css } from '@emotion/css';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, HorizontalGroup, useTheme2 } from '@grafana/ui';
+import { Components } from '@grafana/e2e-selectors';
+import { ToolbarButton, useTheme2 } from '@grafana/ui';
+import { t, Trans } from 'app/core/internationalization';
+
+import { useQueriesDrawerContext } from './QueriesDrawer/QueriesDrawerContext';
 
 type Props = {
   addQueryRowButtonDisabled?: boolean;
   addQueryRowButtonHidden?: boolean;
   richHistoryRowButtonHidden?: boolean;
-  richHistoryButtonActive?: boolean;
   queryInspectorButtonActive?: boolean;
 
   onClickAddQueryRowButton: () => void;
-  onClickRichHistoryButton: () => void;
   onClickQueryInspectorButton: () => void;
 };
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    containerMargin: css`
-      margin-top: ${theme.spacing(2)};
-    `,
+    containerMargin: css({
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: theme.spacing(1),
+      marginTop: theme.spacing(2),
+    }),
   };
 };
+
 export function SecondaryActions(props: Props) {
   const theme = useTheme2();
   const styles = getStyles(theme);
+  const { drawerOpened, setDrawerOpened, queryLibraryAvailable } = useQueriesDrawerContext();
+
+  // When queryLibraryAvailable=true we show the button in the toolbar (see QueriesDrawerDropdown)
+  const showHistoryButton = !props.richHistoryRowButtonHidden && !queryLibraryAvailable;
+
   return (
     <div className={styles.containerMargin}>
-      <HorizontalGroup>
-        {!props.addQueryRowButtonHidden && (
-          <Button
-            variant="secondary"
-            aria-label="Add row button"
-            onClick={props.onClickAddQueryRowButton}
-            disabled={props.addQueryRowButtonDisabled}
-            icon="plus"
-          >
-            Add query
-          </Button>
-        )}
-        {!props.richHistoryRowButtonHidden && (
-          <Button
-            variant="secondary"
-            aria-label="Rich history button"
-            className={cx({ ['explore-active-button']: props.richHistoryButtonActive })}
-            onClick={props.onClickRichHistoryButton}
-            icon="history"
-          >
-            Query history
-          </Button>
-        )}
-        <Button
-          variant="secondary"
-          aria-label="Query inspector button"
-          className={cx({ ['explore-active-button']: props.queryInspectorButtonActive })}
-          onClick={props.onClickQueryInspectorButton}
-          icon="info-circle"
+      {!props.addQueryRowButtonHidden && (
+        <ToolbarButton
+          variant="canvas"
+          aria-label={t('explore.secondary-actions.query-add-button-aria-label', 'Add query')}
+          onClick={props.onClickAddQueryRowButton}
+          disabled={props.addQueryRowButtonDisabled}
+          icon="plus"
         >
-          Inspector
-        </Button>
-      </HorizontalGroup>
+          <Trans i18nKey="explore.secondary-actions.query-add-button">Add query</Trans>
+        </ToolbarButton>
+      )}
+      {showHistoryButton && (
+        <ToolbarButton
+          variant={drawerOpened ? 'active' : 'canvas'}
+          aria-label={t('explore.secondary-actions.query-history-button-aria-label', 'Query history')}
+          onClick={() => setDrawerOpened(!drawerOpened)}
+          data-testid={Components.QueryTab.queryHistoryButton}
+          icon="history"
+        >
+          <Trans i18nKey="explore.secondary-actions.query-history-button">Query history</Trans>
+        </ToolbarButton>
+      )}
+      <ToolbarButton
+        variant={props.queryInspectorButtonActive ? 'active' : 'canvas'}
+        aria-label={t('explore.secondary-actions.query-inspector-button-aria-label', 'Query inspector')}
+        onClick={props.onClickQueryInspectorButton}
+        icon="info-circle"
+      >
+        <Trans i18nKey="explore.secondary-actions.query-inspector-button">Query inspector</Trans>
+      </ToolbarButton>
     </div>
   );
 }

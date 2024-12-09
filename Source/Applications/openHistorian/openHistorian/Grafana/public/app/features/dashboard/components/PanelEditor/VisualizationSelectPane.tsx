@@ -1,12 +1,13 @@
 import { css } from '@emotion/css';
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 
 import { GrafanaTheme2, PanelData, SelectableValue } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { config } from '@grafana/runtime';
 import { Button, CustomScrollbar, FilterInput, RadioButtonGroup, useStyles2 } from '@grafana/ui';
 import { Field } from '@grafana/ui/src/components/Forms/Field';
-import { LS_VISUALIZATION_SELECT_TAB_KEY } from 'app/core/constants';
+import { LS_VISUALIZATION_SELECT_TAB_KEY, LS_WIDGET_SELECT_TAB_KEY } from 'app/core/constants';
 import { PanelLibraryOptionsGroup } from 'app/features/library-panels/components/PanelLibraryOptionsGroup/PanelLibraryOptionsGroup';
 import { VisualizationSuggestions } from 'app/features/panel/components/VizTypePicker/VisualizationSuggestions';
 import { VizTypeChangeDetails } from 'app/features/panel/components/VizTypePicker/types';
@@ -28,10 +29,15 @@ interface Props {
 export const VisualizationSelectPane = ({ panel, data }: Props) => {
   const plugin = useSelector(getPanelPluginWithFallback(panel.type));
   const [searchQuery, setSearchQuery] = useState('');
-  const [listMode, setListMode] = useLocalStorage(
-    LS_VISUALIZATION_SELECT_TAB_KEY,
-    VisualizationSelectPaneTab.Visualizations
-  );
+
+  // Add support to show widgets in the visualization picker
+  const isWidget = !!plugin.meta.skipDataQuery;
+  const isWidgetEnabled = Boolean(isWidget && config.featureToggles.vizAndWidgetSplit);
+
+  const tabKey = isWidgetEnabled ? LS_WIDGET_SELECT_TAB_KEY : LS_VISUALIZATION_SELECT_TAB_KEY;
+  const defaultTab = isWidgetEnabled ? VisualizationSelectPaneTab.Widgets : VisualizationSelectPaneTab.Visualizations;
+
+  const [listMode, setListMode] = useLocalStorage(tabKey, defaultTab);
 
   const dispatch = useDispatch();
   const styles = useStyles2(getStyles);
@@ -67,6 +73,15 @@ export const VisualizationSelectPane = ({ panel, data }: Props) => {
     },
   ];
 
+  const radioOptionsWidgetFlow: Array<SelectableValue<VisualizationSelectPaneTab>> = [
+    { label: 'Widgets', value: VisualizationSelectPaneTab.Widgets },
+    {
+      label: 'Library panels',
+      value: VisualizationSelectPaneTab.LibraryPanels,
+      description: 'Reusable panels you can share between multiple dashboards.',
+    },
+  ];
+
   return (
     <div className={styles.openWrapper}>
       <div className={styles.formBox}>
@@ -88,33 +103,34 @@ export const VisualizationSelectPane = ({ panel, data }: Props) => {
           />
         </div>
         <Field className={styles.customFieldMargin}>
-          <RadioButtonGroup options={radioOptions} value={listMode} onChange={setListMode} fullWidth />
+          <RadioButtonGroup
+            options={isWidgetEnabled ? radioOptionsWidgetFlow : radioOptions}
+            value={listMode}
+            onChange={setListMode}
+            fullWidth
+          />
         </Field>
       </div>
       <div className={styles.scrollWrapper}>
         <CustomScrollbar autoHeightMin="100%">
           <div className={styles.scrollContent}>
             {listMode === VisualizationSelectPaneTab.Visualizations && (
-              <VizTypePicker
-                current={plugin.meta}
-                onChange={onVizChange}
-                searchQuery={searchQuery}
-                data={data}
-                onClose={() => {}}
-              />
+              <VizTypePicker pluginId={plugin.meta.id} onChange={onVizChange} searchQuery={searchQuery} />
             )}
+            {listMode === VisualizationSelectPaneTab.Widgets && (
+              <VizTypePicker pluginId={plugin.meta.id} onChange={onVizChange} searchQuery={searchQuery} isWidget />
+            )}
+
             {listMode === VisualizationSelectPaneTab.Suggestions && (
-              <VisualizationSuggestions
-                current={plugin.meta}
-                onChange={onVizChange}
-                searchQuery={searchQuery}
-                panel={panel}
-                data={data}
-                onClose={() => {}}
-              />
+              <VisualizationSuggestions onChange={onVizChange} searchQuery={searchQuery} panel={panel} data={data} />
             )}
             {listMode === VisualizationSelectPaneTab.LibraryPanels && (
-              <PanelLibraryOptionsGroup searchQuery={searchQuery} panel={panel} key="Panel Library" />
+              <PanelLibraryOptionsGroup
+                searchQuery={searchQuery}
+                panel={panel}
+                key="Panel Library"
+                isWidget={isWidget}
+              />
             )}
           </div>
         </CustomScrollbar>
@@ -127,46 +143,46 @@ VisualizationSelectPane.displayName = 'VisualizationSelectPane';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    icon: css`
-      color: ${theme.v1.palette.gray33};
-    `,
-    wrapper: css`
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 0;
-      height: 100%;
-    `,
-    vizButton: css`
-      text-align: left;
-    `,
-    scrollWrapper: css`
-      flex-grow: 1;
-      min-height: 0;
-    `,
-    scrollContent: css`
-      padding: ${theme.spacing(1)};
-    `,
-    openWrapper: css`
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 100%;
-      height: 100%;
-      background: ${theme.colors.background.primary};
-      border: 1px solid ${theme.colors.border.weak};
-    `,
-    searchRow: css`
-      display: flex;
-      margin-bottom: ${theme.spacing(1)};
-    `,
-    closeButton: css`
-      margin-left: ${theme.spacing(1)};
-    `,
-    customFieldMargin: css`
-      margin-bottom: ${theme.spacing(1)};
-    `,
-    formBox: css`
-      padding: ${theme.spacing(1)};
-      padding-bottom: 0;
-    `,
+    icon: css({
+      color: theme.v1.palette.gray33,
+    }),
+    wrapper: css({
+      display: 'flex',
+      flexDirection: 'column',
+      flex: '1 1 0',
+      height: '100%',
+    }),
+    vizButton: css({
+      textAlign: 'left',
+    }),
+    scrollWrapper: css({
+      flexGrow: 1,
+      minHeight: 0,
+    }),
+    scrollContent: css({
+      padding: theme.spacing(1),
+    }),
+    openWrapper: css({
+      display: 'flex',
+      flexDirection: 'column',
+      flex: '1 1 100%',
+      height: '100%',
+      background: theme.colors.background.primary,
+      border: `1px solid ${theme.colors.border.weak}`,
+    }),
+    searchRow: css({
+      display: 'flex',
+      marginBottom: theme.spacing(1),
+    }),
+    closeButton: css({
+      marginLeft: theme.spacing(1),
+    }),
+    customFieldMargin: css({
+      marginBottom: theme.spacing(1),
+    }),
+    formBox: css({
+      padding: theme.spacing(1),
+      paddingBottom: 0,
+    }),
   };
 };

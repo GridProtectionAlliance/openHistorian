@@ -1,7 +1,9 @@
 import { css, cx } from '@emotion/css';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
+import { selectors } from '@grafana/e2e-selectors';
 import { IconButton, Pagination, useStyles2 } from '@grafana/ui';
 
 import { usePagination } from '../hooks/usePagination';
@@ -13,10 +15,13 @@ interface DynamicTablePagination {
 
 export interface DynamicTableColumnProps<T = unknown> {
   id: string | number;
+  /** Column header to display */
   label: string;
+  alignColumn?: 'end' | string;
 
   renderCell: (item: DynamicTableItemProps<T>, index: number) => ReactNode;
   size?: number | string;
+  className?: string;
 }
 
 export interface DynamicTableItemProps<T = unknown> {
@@ -28,6 +33,7 @@ export interface DynamicTableItemProps<T = unknown> {
 export interface DynamicTableProps<T = unknown> {
   cols: Array<DynamicTableColumnProps<T>>;
   items: Array<DynamicTableItemProps<T>>;
+  dataTestId?: string;
 
   isExpandable?: boolean;
   pagination?: DynamicTablePagination;
@@ -37,7 +43,6 @@ export interface DynamicTableProps<T = unknown> {
   onCollapse?: (item: DynamicTableItemProps<T>) => void;
   onExpand?: (item: DynamicTableItemProps<T>) => void;
   isExpanded?: (item: DynamicTableItemProps<T>) => boolean;
-
   renderExpandedContent?: (
     item: DynamicTableItemProps<T>,
     index: number,
@@ -51,7 +56,7 @@ export interface DynamicTableProps<T = unknown> {
     items: Array<DynamicTableItemProps<T>>
   ) => ReactNode;
 
-  footerRow?: JSX.Element;
+  footerRow?: React.ReactNode;
 }
 
 export const DynamicTable = <T extends object>({
@@ -70,6 +75,7 @@ export const DynamicTable = <T extends object>({
   renderPrefixCell,
   renderPrefixHeader,
   footerRow,
+  dataTestId,
 }: DynamicTableProps<T>) => {
   const defaultPaginationStyles = useStyles2(getPaginationStyles);
 
@@ -98,12 +104,12 @@ export const DynamicTable = <T extends object>({
 
   return (
     <>
-      <div className={styles.container} data-testid="dynamic-table">
+      <div className={styles.container} data-testid={dataTestId ?? 'dynamic-table'}>
         <div className={styles.row} data-testid="header">
           {renderPrefixHeader && renderPrefixHeader()}
-          {isExpandable && <div className={styles.cell} />}
+          {isExpandable && <div className={styles.cell()} />}
           {cols.map((col) => (
-            <div className={styles.cell} key={col.id}>
+            <div className={styles.cell(col.alignColumn)} key={col.id}>
               {col.label}
             </div>
           ))}
@@ -119,25 +125,29 @@ export const DynamicTable = <T extends object>({
             >
               {renderPrefixCell && renderPrefixCell(item, index, items)}
               {isExpandable && (
-                <div className={cx(styles.cell, styles.expandCell)}>
+                <div className={cx(styles.cell(), styles.expandCell)}>
                   <IconButton
-                    aria-label={`${isItemExpanded ? 'Collapse' : 'Expand'} row`}
-                    size="xl"
-                    data-testid="collapse-toggle"
-                    className={styles.expandButton}
+                    tooltip={`${isItemExpanded ? 'Collapse' : 'Expand'} row`}
+                    data-testid={selectors.components.AlertRules.toggle}
                     name={isItemExpanded ? 'angle-down' : 'angle-right'}
                     onClick={() => toggleExpanded(item)}
-                    type="button"
                   />
                 </div>
               )}
               {cols.map((col) => (
-                <div className={cx(styles.cell, styles.bodyCell)} data-column={col.label} key={`${item.id}-${col.id}`}>
+                <div
+                  className={cx(styles.cell(col.alignColumn), styles.bodyCell, col.className)}
+                  data-column={col.label}
+                  key={`${item.id}-${col.id}`}
+                >
                   {col.renderCell(item, index)}
                 </div>
               ))}
               {isItemExpanded && renderExpandedContent && (
-                <div className={styles.expandedContentRow} data-testid="expanded-content">
+                <div
+                  className={styles.expandedContentRow}
+                  data-testid={selectors.components.AlertRules.expandedContent}
+                >
                   {renderExpandedContent(item, index, items)}
                 </div>
               )}
@@ -185,94 +195,89 @@ const getStyles = <T extends unknown>(
   }
 
   return (theme: GrafanaTheme2) => ({
-    container: css`
-      border: 1px solid ${theme.colors.border.strong};
-      border-radius: ${theme.shape.borderRadius()};
-      color: ${theme.colors.text.secondary};
-    `,
-    row: css`
-      display: grid;
-      grid-template-columns: ${sizes.join(' ')};
-      grid-template-rows: 1fr auto;
+    container: css({
+      border: `1px solid ${theme.colors.border.weak}`,
+      borderRadius: theme.shape.radius.default,
+      color: theme.colors.text.secondary,
+    }),
+    row: css({
+      display: 'grid',
+      gridTemplateColumns: sizes.join(' '),
+      gridTemplateRows: '1fr auto',
 
-      &:nth-child(2n + 1) {
-        background-color: ${theme.colors.background.secondary};
-      }
+      '&:nth-child(2n + 1)': {
+        backgroundColor: theme.colors.background.secondary,
+      },
 
-      &:nth-child(2n) {
-        background-color: ${theme.colors.background.primary};
-      }
+      '&:nth-child(2n)': {
+        backgroundColor: theme.colors.background.primary,
+      },
 
-      ${theme.breakpoints.down('sm')} {
-        grid-template-columns: auto 1fr;
-        grid-template-areas: 'left right';
-        padding: 0 ${theme.spacing(0.5)};
+      [theme.breakpoints.down('sm')]: {
+        gridTemplateColumns: 'auto 1fr',
+        gridTemplateAreas: 'left right',
+        padding: `0 ${theme.spacing(0.5)}`,
 
-        &:first-child {
-          display: none;
-        }
+        '&:first-child': {
+          display: 'none',
+        },
 
-        ${hasPrefixCell
-          ? `
-            & > *:first-child {
-              display: none;
-            }
-          `
-          : ''}
-      }
-    `,
-    footerRow: css`
-      display: flex;
-      padding: ${theme.spacing(1)};
-    `,
-    cell: css`
-      align-items: center;
-      padding: ${theme.spacing(1)};
+        '& > *:first-child': {
+          display: hasPrefixCell ? 'none' : undefined,
+        },
+      },
+    }),
+    footerRow: css({
+      display: 'flex',
+      padding: theme.spacing(1),
+    }),
+    cell: (alignColumn?: string) =>
+      css({
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(1),
+        justifyContent: alignColumn || 'initial',
 
-      ${theme.breakpoints.down('sm')} {
-        padding: ${theme.spacing(1)} 0;
-        grid-template-columns: 1fr;
-      }
-    `,
-    bodyCell: css`
-      overflow: hidden;
+        [theme.breakpoints.down('sm')]: {
+          padding: `${theme.spacing(1)} 0`,
+          gridTemplateColumns: '1fr',
+        },
+      }),
+    bodyCell: css({
+      overflow: 'hidden',
 
-      ${theme.breakpoints.down('sm')} {
-        grid-column-end: right;
-        grid-column-start: right;
+      [theme.breakpoints.down('sm')]: {
+        gridColumnEnd: 'right',
+        gridColumnStart: 'right',
 
-        &::before {
-          content: attr(data-column);
-          display: block;
-          color: ${theme.colors.text.primary};
-        }
-      }
-    `,
-    expandCell: css`
-      justify-content: center;
+        '&::before': {
+          content: 'attr(data-column)',
+          display: 'block',
+          color: theme.colors.text.primary,
+        },
+      },
+    }),
+    expandCell: css({
+      justifyContent: 'center',
 
-      ${theme.breakpoints.down('sm')} {
-        align-items: start;
-        grid-area: left;
-      }
-    `,
-    expandedContentRow: css`
-      grid-column-end: ${sizes.length + 1};
-      grid-column-start: ${hasPrefixCell ? 3 : 2};
-      grid-row: 2;
-      padding: 0 ${theme.spacing(3)} 0 ${theme.spacing(1)};
-      position: relative;
+      [theme.breakpoints.down('sm')]: {
+        alignItems: 'start',
+        gridArea: 'left',
+      },
+    }),
+    expandedContentRow: css({
+      gridColumnEnd: sizes.length + 1,
+      gridColumnStart: hasPrefixCell ? 3 : 2,
+      gridRow: 2,
+      padding: `0 ${theme.spacing(3)} 0 ${theme.spacing(1)}`,
+      position: 'relative',
 
-      ${theme.breakpoints.down('sm')} {
-        grid-column-start: 2;
-        border-top: 1px solid ${theme.colors.border.strong};
-        grid-row: auto;
-        padding: ${theme.spacing(1)} 0 0 0;
-      }
-    `,
-    expandButton: css`
-      margin-right: 0;
-      display: block;
-    `,
+      [theme.breakpoints.down('sm')]: {
+        gridColumnStart: 2,
+        borderTop: `1px solid ${theme.colors.border.strong}`,
+        gridRow: 'auto',
+        padding: `${theme.spacing(1)} 0 0 0`,
+      },
+    }),
   });
 };

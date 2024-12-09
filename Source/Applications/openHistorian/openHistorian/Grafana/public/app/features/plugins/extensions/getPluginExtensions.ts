@@ -1,135 +1,137 @@
+import { isString } from 'lodash';
+
 import {
   type PluginExtension,
   PluginExtensionTypes,
-  PluginExtensionLink,
-  PluginExtensionLinkConfig,
+  type PluginExtensionLink,
+  type PluginExtensionComponent,
 } from '@grafana/data';
+import { GetPluginExtensions } from '@grafana/runtime';
 
-import type { PluginExtensionRegistry } from './types';
-import { isPluginExtensionLinkConfig, deepFreeze, logWarning, generateExtensionId, getEventHelpers } from './utils';
-import { assertIsNotPromise, assertLinkPathIsValid, assertStringProps, isPromise } from './validators';
+import { AddedComponentRegistryItem } from './registry/AddedComponentsRegistry';
+import { AddedLinkRegistryItem } from './registry/AddedLinksRegistry';
+import { RegistryType } from './registry/Registry';
+import type { PluginExtensionRegistries } from './registry/types';
+import {
+  getReadOnlyProxy,
+  logWarning,
+  generateExtensionId,
+  wrapWithPluginContext,
+  getLinkExtensionOnClick,
+  getLinkExtensionOverrides,
+  getLinkExtensionPathWithTracking,
+} from './utils';
 
 type GetExtensions = ({
   context,
   extensionPointId,
-  registry,
+  limitPerPlugin,
+  addedLinksRegistry,
+  addedComponentsRegistry,
 }: {
   context?: object | Record<string | symbol, unknown>;
   extensionPointId: string;
-  registry: PluginExtensionRegistry;
+  limitPerPlugin?: number;
+  addedComponentsRegistry: RegistryType<AddedComponentRegistryItem[]> | undefined;
+  addedLinksRegistry: RegistryType<AddedLinkRegistryItem[]> | undefined;
 }) => { extensions: PluginExtension[] };
 
+export function createPluginExtensionsGetter(registries: PluginExtensionRegistries): GetPluginExtensions {
+  let addedComponentsRegistry: RegistryType<AddedComponentRegistryItem[]>;
+  let addedLinksRegistry: RegistryType<Array<AddedLinkRegistryItem<object>>>;
+
+  // Create registry subscriptions to keep an copy of the registry state for use in the non-async
+  // plugin extensions getter.
+  registries.addedComponentsRegistry.asObservable().subscribe((componentsRegistry) => {
+    addedComponentsRegistry = componentsRegistry;
+  });
+
+  registries.addedLinksRegistry.asObservable().subscribe((linksRegistry) => {
+    addedLinksRegistry = linksRegistry;
+  });
+
+  return (options) => getPluginExtensions({ ...options, addedComponentsRegistry, addedLinksRegistry });
+}
+
 // Returns with a list of plugin extensions for the given extension point
-export const getPluginExtensions: GetExtensions = ({ context, extensionPointId, registry }) => {
-  const frozenContext = context ? deepFreeze(context) : {};
-  const registryItems = registry[extensionPointId] ?? [];
+export const getPluginExtensions: GetExtensions = ({
+  context,
+  extensionPointId,
+  limitPerPlugin,
+  addedLinksRegistry,
+  addedComponentsRegistry,
+}) => {
+  const frozenContext = context ? getReadOnlyProxy(context) : {};
   // We don't return the extensions separated by type, because in that case it would be much harder to define a sort-order for them.
   const extensions: PluginExtension[] = [];
+  const extensionsByPlugin: Record<string, number> = {};
 
-  for (const registryItem of registryItems) {
+  for (const addedLink of addedLinksRegistry?.[extensionPointId] ?? []) {
     try {
-      const extensionConfig = registryItem.config;
-
-      if (isPluginExtensionLinkConfig(extensionConfig)) {
-        const overrides = getLinkExtensionOverrides(registryItem.pluginId, extensionConfig, frozenContext);
-
-        // Hide (configure() has returned `undefined`)
-        if (extensionConfig.configure && overrides === undefined) {
-          continue;
-        }
-
-        const extension: PluginExtensionLink = {
-          id: generateExtensionId(registryItem.pluginId, extensionConfig),
-          type: PluginExtensionTypes.link,
-          pluginId: registryItem.pluginId,
-          onClick: getLinkExtensionOnClick(extensionConfig, frozenContext),
-
-          // Configurable properties
-          title: overrides?.title || extensionConfig.title,
-          description: overrides?.description || extensionConfig.description,
-          path: overrides?.path || extensionConfig.path,
-        };
-
-        extensions.push(extension);
+      const { pluginId } = addedLink;
+      // Only limit if the `limitPerPlugin` is set
+      if (limitPerPlugin && extensionsByPlugin[pluginId] >= limitPerPlugin) {
+        continue;
       }
+
+      if (extensionsByPlugin[pluginId] === undefined) {
+        extensionsByPlugin[pluginId] = 0;
+      }
+
+      // Run the configure() function with the current context, and apply the ovverides
+      const overrides = getLinkExtensionOverrides(pluginId, addedLink, frozenContext);
+
+      // configure() returned an `undefined` -> hide the extension
+      if (addedLink.configure && overrides === undefined) {
+        continue;
+      }
+
+      const path = overrides?.path || addedLink.path;
+      const extension: PluginExtensionLink = {
+        id: generateExtensionId(pluginId, extensionPointId, addedLink.title),
+        type: PluginExtensionTypes.link,
+        pluginId: pluginId,
+        onClick: getLinkExtensionOnClick(pluginId, extensionPointId, addedLink, frozenContext),
+
+        // Configurable properties
+        icon: overrides?.icon || addedLink.icon,
+        title: overrides?.title || addedLink.title,
+        description: overrides?.description || addedLink.description,
+        path: isString(path) ? getLinkExtensionPathWithTracking(pluginId, path, extensionPointId) : undefined,
+        category: overrides?.category || addedLink.category,
+      };
+
+      extensions.push(extension);
+      extensionsByPlugin[pluginId] += 1;
     } catch (error) {
       if (error instanceof Error) {
         logWarning(error.message);
       }
     }
+  }
+
+  const addedComponents = addedComponentsRegistry?.[extensionPointId] ?? [];
+  for (const addedComponent of addedComponents) {
+    // Only limit if the `limitPerPlugin` is set
+    if (limitPerPlugin && extensionsByPlugin[addedComponent.pluginId] >= limitPerPlugin) {
+      continue;
+    }
+
+    if (extensionsByPlugin[addedComponent.pluginId] === undefined) {
+      extensionsByPlugin[addedComponent.pluginId] = 0;
+    }
+    const extension: PluginExtensionComponent = {
+      id: generateExtensionId(addedComponent.pluginId, extensionPointId, addedComponent.title),
+      type: PluginExtensionTypes.component,
+      pluginId: addedComponent.pluginId,
+      title: addedComponent.title,
+      description: addedComponent.description,
+      component: wrapWithPluginContext(addedComponent.pluginId, addedComponent.component),
+    };
+
+    extensions.push(extension);
+    extensionsByPlugin[addedComponent.pluginId] += 1;
   }
 
   return { extensions };
 };
-
-function getLinkExtensionOverrides(pluginId: string, config: PluginExtensionLinkConfig, context?: object) {
-  try {
-    const overrides = config.configure?.(context);
-
-    // Hiding the extension
-    if (overrides === undefined) {
-      return undefined;
-    }
-
-    let { title = config.title, description = config.description, path = config.path, ...rest } = overrides;
-
-    assertIsNotPromise(
-      overrides,
-      `The configure() function for "${config.title}" returned a promise, skipping updates.`
-    );
-
-    path && assertLinkPathIsValid(pluginId, path);
-    assertStringProps({ title, description }, ['title', 'description']);
-
-    if (Object.keys(rest).length > 0) {
-      throw new Error(
-        `Invalid extension "${config.title}". Trying to override not-allowed properties: ${Object.keys(rest).join(
-          ', '
-        )}`
-      );
-    }
-
-    return {
-      title,
-      description,
-      path,
-    };
-  } catch (error) {
-    if (error instanceof Error) {
-      logWarning(error.message);
-    }
-
-    // If there is an error, we hide the extension
-    // (This seems to be safest option in case the extension is doing something wrong.)
-    return undefined;
-  }
-}
-
-function getLinkExtensionOnClick(
-  config: PluginExtensionLinkConfig,
-  context?: object
-): ((event?: React.MouseEvent) => void) | undefined {
-  const { onClick } = config;
-
-  if (!onClick) {
-    return;
-  }
-
-  return function onClickExtensionLink(event?: React.MouseEvent) {
-    try {
-      const result = onClick(event, getEventHelpers(context));
-
-      if (isPromise(result)) {
-        result.catch((e) => {
-          if (e instanceof Error) {
-            logWarning(e.message);
-          }
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        logWarning(error.message);
-      }
-    }
-  };
-}

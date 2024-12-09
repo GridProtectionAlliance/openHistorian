@@ -1,10 +1,9 @@
-import React from 'react';
-
-import { PanelData } from '@grafana/data/src/types';
+import { PanelData } from '@grafana/data';
 import { EditorRows, EditorRow, EditorFieldGroup } from '@grafana/experimental';
 
 import { multiResourceCompatibleTypes } from '../../azureMetadata';
 import type Datasource from '../../datasource';
+import { selectors } from '../../e2e/selectors';
 import type { AzureMonitorQuery, AzureMonitorOption, AzureMonitorErrorish, AzureMonitorResource } from '../../types';
 import ResourceField from '../ResourceField';
 import { ResourceRow, ResourceRowGroup, ResourceRowType } from '../ResourcePicker/types';
@@ -85,7 +84,7 @@ const MetricsQueryEditor = ({
   };
 
   return (
-    <span data-testid="azure-monitor-metrics-query-editor-with-experimental-ui">
+    <span data-testid={selectors.components.queryEditor.metricsQueryEditor.container.input}>
       <EditorRows>
         <EditorRow>
           <EditorFieldGroup>

@@ -14,7 +14,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { createTheme } from '@grafana/data';
 
@@ -39,6 +38,7 @@ describe('SpanTreeOffset', () => {
       addHoverIndentGuideId: jest.fn(),
       hoverIndentGuideIds: new Set(),
       removeHoverIndentGuideId: jest.fn(),
+      visibleSpanIds: [],
       span: {
         hasChildren: false,
         spanID: ownSpanID,

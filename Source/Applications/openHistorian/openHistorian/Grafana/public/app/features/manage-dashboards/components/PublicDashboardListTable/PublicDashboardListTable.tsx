@@ -1,156 +1,254 @@
 import { css } from '@emotion/css';
-import React from 'react';
-import { useWindowSize } from 'react-use';
+import { useMemo, useState } from 'react';
+import { useMedia } from 'react-use';
 
-import { GrafanaTheme2 } from '@grafana/data/src';
+import { GrafanaTheme2 } from '@grafana/data';
 import { selectors as e2eSelectors } from '@grafana/e2e-selectors/src';
-import { Link, ButtonGroup, LinkButton, Icon, Tag, useStyles2, Tooltip, useTheme2, Spinner } from '@grafana/ui/src';
+import { config, reportInteraction } from '@grafana/runtime';
+import {
+  Card,
+  EmptyState,
+  HorizontalGroup,
+  LinkButton,
+  Pagination,
+  Spinner,
+  Switch,
+  TextLink,
+  useStyles2,
+  useTheme2,
+} from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
-import { getConfig } from 'app/core/config';
+import { t, Trans } from 'app/core/internationalization';
 import { contextSrv } from 'app/core/services/context_srv';
-import { useListPublicDashboardsQuery } from 'app/features/dashboard/api/publicDashboardApi';
-import { isOrgAdmin } from 'app/features/plugins/admin/permissions';
+import {
+  useListPublicDashboardsQuery,
+  useUpdatePublicDashboardMutation,
+} from 'app/features/dashboard/api/publicDashboardApi';
+import {
+  generatePublicDashboardConfigUrl,
+  generatePublicDashboardUrl,
+} from 'app/features/dashboard/components/ShareModal/SharePublicDashboard/SharePublicDashboardUtils';
 import { AccessControlAction } from 'app/types';
 
-import { ListPublicDashboardResponse } from '../../types';
+import { PublicDashboardListResponse } from '../../types';
 
 import { DeletePublicDashboardButton } from './DeletePublicDashboardButton';
 
-export const viewPublicDashboardUrl = (accessToken: string): string =>
-  `${getConfig().appUrl}public-dashboards/${accessToken}`;
-
-export const PublicDashboardListTable = () => {
-  const { width } = useWindowSize();
-  const isMobile = width <= 480;
+const PublicDashboardCard = ({ pd }: { pd: PublicDashboardListResponse }) => {
+  const styles = useStyles2(getStyles);
   const theme = useTheme2();
-  const styles = useStyles2(() => getStyles(theme, isMobile));
+  const isMobile = useMedia(`(max-width: ${theme.breakpoints.values.sm}px)`);
 
-  const { data: publicDashboards, isLoading, isFetching } = useListPublicDashboardsQuery();
+  const [update, { isLoading: isUpdateLoading }] = useUpdatePublicDashboardMutation();
 
   const selectors = e2eSelectors.pages.PublicDashboards;
-  const hasWritePermissions = contextSrv.hasAccess(AccessControlAction.DashboardsPublicWrite, isOrgAdmin());
-  const responsiveSize = isMobile ? 'sm' : 'md';
+  const hasWritePermissions = contextSrv.hasPermission(AccessControlAction.DashboardsPublicWrite);
+
+  const onTogglePause = (pd: PublicDashboardListResponse, isPaused: boolean) => {
+    const req = {
+      dashboard: { uid: pd.dashboardUid },
+      payload: {
+        uid: pd.uid,
+        isEnabled: !isPaused,
+      },
+    };
+
+    update(req);
+  };
+
+  const CardActions = useMemo(() => (isMobile ? Card.Actions : Card.SecondaryActions), [isMobile]);
+
+  const isNewSharingComponentEnabled = config.featureToggles.newDashboardSharingComponent;
+  const translatedPauseSharingText = isNewSharingComponentEnabled
+    ? t('shared-dashboard-list.toggle.pause-sharing-toggle-text', 'Pause access')
+    : t('public-dashboard-list.toggle.pause-sharing-toggle-text', 'Pause sharing');
 
   return (
-    <Page.Contents isLoading={isLoading}>
-      <table className="filter-table">
-        <thead>
-          <tr>
-            <th className={styles.nameTh}>Name</th>
-            <th>Status</th>
-            <th className={styles.fetchingSpinner}>{isFetching && <Spinner />}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {publicDashboards?.map((pd: ListPublicDashboardResponse) => {
-            const isOrphaned = !pd.dashboardUid;
-            return (
-              <tr key={pd.uid}>
-                <td className={styles.titleTd}>
-                  <Tooltip
-                    content={!isOrphaned ? pd.title : 'The linked dashboard has already been deleted'}
-                    placement="top"
-                  >
-                    {!isOrphaned ? (
-                      <Link className={styles.link} href={`/d/${pd.dashboardUid}`}>
-                        {pd.title}
-                      </Link>
-                    ) : (
-                      <div className={styles.orphanedTitle}>
-                        <p>Orphaned public dashboard</p>
-                        <Icon name="info-circle" className={styles.orphanedInfoIcon} />
-                      </div>
-                    )}
-                  </Tooltip>
-                </td>
-                <td>
-                  <Tag
-                    name={pd.isEnabled ? 'enabled' : 'paused'}
-                    colorIndex={isOrphaned ? 9 : pd.isEnabled ? 20 : 15}
-                  />
-                </td>
-                <td>
-                  <ButtonGroup className={styles.buttonGroup}>
-                    <LinkButton
-                      href={viewPublicDashboardUrl(pd.accessToken)}
-                      fill="text"
-                      size={responsiveSize}
-                      title={pd.isEnabled ? 'View public dashboard' : 'Public dashboard is disabled'}
-                      target="_blank"
-                      disabled={!pd.isEnabled || isOrphaned}
-                      data-testid={selectors.ListItem.linkButton}
-                    >
-                      <Icon size={responsiveSize} name="external-link-alt" />
-                    </LinkButton>
-                    <LinkButton
-                      fill="text"
-                      size={responsiveSize}
-                      href={`/d/${pd.dashboardUid}?shareView=share`}
-                      title="Configure public dashboard"
-                      disabled={isOrphaned}
-                      data-testid={selectors.ListItem.configButton}
-                    >
-                      <Icon size={responsiveSize} name="cog" />
-                    </LinkButton>
-                    {hasWritePermissions && (
-                      <DeletePublicDashboardButton
-                        variant="primary"
-                        fill="text"
-                        data-testid={selectors.ListItem.trashcanButton}
-                        publicDashboard={pd}
-                        loader={<Spinner />}
-                      >
-                        <Icon size={responsiveSize} name="trash-alt" />
-                      </DeletePublicDashboardButton>
-                    )}
-                  </ButtonGroup>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </Page.Contents>
+    <Card className={styles.card} href={`/d/${pd.dashboardUid}`}>
+      <Card.Heading className={styles.heading}>
+        <span>{pd.title}</span>
+      </Card.Heading>
+      <CardActions className={styles.actions}>
+        <div className={styles.pauseSwitch}>
+          <Switch
+            value={!pd.isEnabled}
+            label={translatedPauseSharingText}
+            disabled={isUpdateLoading}
+            onChange={(e) => {
+              reportInteraction('grafana_dashboards_public_enable_clicked', {
+                action: e.currentTarget.checked ? 'disable' : 'enable',
+              });
+              onTogglePause(pd, e.currentTarget.checked);
+            }}
+            data-testid={selectors.ListItem.pauseSwitch}
+          />
+          <span>{translatedPauseSharingText}</span>
+        </div>
+        <LinkButton
+          fill="text"
+          icon="external-link-alt"
+          variant="secondary"
+          target="_blank"
+          color={theme.colors.warning.text}
+          href={generatePublicDashboardUrl(pd.accessToken)}
+          key="public-dashboard-url"
+          tooltip={
+            isNewSharingComponentEnabled
+              ? t('shared-dashboard-list.button.view-button-tooltip', 'View shared dashboard')
+              : t('public-dashboard-list.button.view-button-tooltip', 'View public dashboard')
+          }
+          data-testid={selectors.ListItem.linkButton}
+        />
+        <LinkButton
+          fill="text"
+          icon="cog"
+          variant="secondary"
+          color={theme.colors.warning.text}
+          href={generatePublicDashboardConfigUrl(pd.dashboardUid, pd.slug)}
+          key="public-dashboard-config-url"
+          tooltip={
+            isNewSharingComponentEnabled
+              ? t('shared-dashboard-list.button.config-button-tooltip', 'Configure shared dashboard')
+              : t('public-dashboard-list.button.config-button-tooltip', 'Configure public dashboard')
+          }
+          data-testid={selectors.ListItem.configButton}
+        />
+        {hasWritePermissions && (
+          <DeletePublicDashboardButton
+            fill="text"
+            icon="trash-alt"
+            variant="secondary"
+            publicDashboard={pd}
+            tooltip={
+              isNewSharingComponentEnabled
+                ? t('shared-dashboard-list.button.revoke-button-tooltip', 'Revoke access')
+                : t('public-dashboard-list.button.revoke-button-tooltip', 'Revoke public dashboard URL')
+            }
+            loader={<Spinner />}
+            data-testid={selectors.ListItem.trashcanButton}
+          />
+        )}
+      </CardActions>
+    </Card>
   );
 };
 
-function getStyles(theme: GrafanaTheme2, isMobile: boolean) {
-  return {
-    fetchingSpinner: css`
-      display: flex;
-      justify-content: end;
-    `,
-    link: css`
-      color: ${theme.colors.primary.text};
-      text-decoration: underline;
-      margin-right: ${theme.spacing()};
-    `,
-    nameTh: css`
-      width: 20%;
-    `,
-    titleTd: css`
-      max-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    `,
-    buttonGroup: css`
-      justify-content: ${isMobile ? 'space-between' : 'end'};
-    `,
-    orphanedTitle: css`
-      display: flex;
-      align-items: center;
-      gap: ${theme.spacing(1)};
+export const PublicDashboardListTable = () => {
+  const [page, setPage] = useState(1);
 
-      p {
-        margin: ${theme.spacing(0)};
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    `,
-    orphanedInfoIcon: css`
-      color: ${theme.colors.text.link};
-    `,
-  };
-}
+  const styles = useStyles2(getStyles);
+  const { data: paginatedPublicDashboards, isLoading, isError } = useListPublicDashboardsQuery(page);
+
+  return (
+    <Page navId="dashboards/public">
+      <Page.Contents isLoading={isLoading}>
+        {!isLoading && !isError && !!paginatedPublicDashboards && (
+          <div>
+            {paginatedPublicDashboards.publicDashboards.length === 0 ? (
+              config.featureToggles.newDashboardSharingComponent ? (
+                <EmptyState
+                  variant="call-to-action"
+                  message={t(
+                    'shared-dashboard-list.empty-state.message',
+                    "You haven't created any shared dashboards yet"
+                  )}
+                >
+                  <Trans i18nKey="shared-dashboard-list.empty-state.more-info">
+                    Create a shared dashboard from any existing dashboard through the <b>Share</b> modal.{' '}
+                    <TextLink
+                      external
+                      href="https://grafana.com/docs/grafana/latest/dashboards/share-dashboards-panels/shared-dashboards"
+                    >
+                      Learn more
+                    </TextLink>
+                  </Trans>
+                </EmptyState>
+              ) : (
+                <EmptyState
+                  variant="call-to-action"
+                  message={t(
+                    'public-dashboard-list.empty-state.message',
+                    "You haven't created any public dashboards yet"
+                  )}
+                >
+                  <Trans i18nKey="public-dashboard-list.empty-state.more-info">
+                    Create a public dashboard from any existing dashboard through the <b>Share</b> modal.{' '}
+                    <TextLink
+                      external
+                      href="https://grafana.com/docs/grafana/latest/dashboards/dashboard-public/#make-a-dashboard-public"
+                    >
+                      Learn more
+                    </TextLink>
+                  </Trans>
+                </EmptyState>
+              )
+            ) : (
+              <>
+                <ul className={styles.list}>
+                  {paginatedPublicDashboards.publicDashboards.map((pd: PublicDashboardListResponse) => (
+                    <li key={pd.uid}>
+                      <PublicDashboardCard pd={pd} />
+                    </li>
+                  ))}
+                </ul>
+                <HorizontalGroup justify="flex-end">
+                  <Pagination
+                    onNavigate={setPage}
+                    currentPage={paginatedPublicDashboards.page}
+                    numberOfPages={paginatedPublicDashboards.totalPages}
+                    hideWhenSinglePage
+                  />
+                </HorizontalGroup>
+              </>
+            )}
+          </div>
+        )}
+      </Page.Contents>
+    </Page>
+  );
+};
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  list: css`
+    list-style-type: none;
+    margin-bottom: ${theme.spacing(2)};
+  `,
+  card: css`
+    ${theme.breakpoints.up('sm')} {
+      display: flex;
+    }
+  `,
+  heading: css`
+    display: flex;
+    align-items: center;
+    gap: ${theme.spacing(1)};
+    flex: 1;
+  `,
+  orphanedTitle: css`
+    display: flex;
+    align-items: center;
+    gap: ${theme.spacing(1)};
+  `,
+  actions: css`
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    gap: ${theme.spacing(0.5)};
+    ${theme.breakpoints.up('sm')} {
+      gap: ${theme.spacing(1)};
+    }
+  `,
+  pauseSwitch: css`
+    display: flex;
+    gap: ${theme.spacing(1)};
+    align-items: center;
+    font-size: ${theme.typography.bodySmall.fontSize};
+    margin-bottom: 0;
+    flex: 1;
+
+    ${theme.breakpoints.up('sm')} {
+      padding-right: ${theme.spacing(2)};
+    }
+  `,
+});

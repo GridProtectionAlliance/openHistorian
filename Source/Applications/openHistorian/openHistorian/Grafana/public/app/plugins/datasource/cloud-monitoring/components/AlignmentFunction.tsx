@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { SelectableValue } from '@grafana/data';
 import { Select } from '@grafana/ui';
 
 import { getAlignmentPickerData } from '../functions';
-import { MetricDescriptor, PreprocessorType, SLOQuery, TimeSeriesList } from '../types';
+import { PreprocessorType, SLOQuery, TimeSeriesList } from '../types/query';
+import { MetricDescriptor } from '../types/types';
 
 export interface Props {
   inputId: string;

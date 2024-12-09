@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   DataTransformerID,
   TransformerRegistryItem,
@@ -7,9 +5,12 @@ import {
   FieldNamePickerConfigSettings,
   SelectableValue,
   StandardEditorsRegistryItem,
+  TransformerCategory,
 } from '@grafana/data';
 import { InlineField, InlineFieldRow, Select, InlineSwitch } from '@grafana/ui';
 import { FieldNamePicker } from '@grafana/ui/src/components/MatchersUI/FieldNamePicker';
+
+import { getTransformationContent } from '../docs/getTransformationContent';
 
 import { JSONPathEditor } from './components/JSONPathEditor';
 import { extractFieldsTransformer } from './extractFields';
@@ -80,7 +81,7 @@ export const extractFieldsTransformerEditor = ({
             context={{ data: input }}
             value={options.source ?? ''}
             onChange={onPickSourceField}
-            item={fieldNamePickerSettings as any}
+            item={fieldNamePickerSettings}
           />
         </InlineField>
       </InlineFieldRow>
@@ -116,6 +117,8 @@ export const extractFieldsTransformRegistryItem: TransformerRegistryItem<Extract
   id: DataTransformerID.extractFields,
   editor: extractFieldsTransformerEditor,
   transformation: extractFieldsTransformer,
-  name: 'Extract fields',
-  description: `Parse fields from content (JSON, labels, etc)`,
+  name: extractFieldsTransformer.name,
+  description: `Parse fields from content (JSON, labels, etc).`,
+  categories: new Set([TransformerCategory.Reformat]),
+  help: getTransformationContent(DataTransformerID.extractFields).helperDocs,
 };

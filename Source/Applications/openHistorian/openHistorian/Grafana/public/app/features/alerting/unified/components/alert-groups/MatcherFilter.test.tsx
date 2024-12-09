@@ -1,31 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import lodash from 'lodash'; // eslint-disable-line lodash/import-scope
-import React from 'react';
 
-import { logInfo } from '@grafana/runtime';
-
-import { LogMessages } from '../../Analytics';
+import * as analytics from '../../Analytics';
 
 import { MatcherFilter } from './MatcherFilter';
 
-jest.mock('@grafana/runtime');
+const logInfoSpy = jest.spyOn(analytics, 'logInfo');
 
 describe('Analytics', () => {
-  beforeEach(() => {
-    lodash.debounce = jest.fn().mockImplementation((fn) => {
-      fn.cancel = () => {};
-      return fn;
-    });
-  });
-
   it('Sends log info when filtering alert instances by label', async () => {
     render(<MatcherFilter onFilterChange={jest.fn()} />);
 
     const searchInput = screen.getByTestId('search-query-input');
-    await userEvent.type(searchInput, 'job=');
+    await userEvent.type(searchInput, 'job=', { delay: 600 }); // Delay waits for the MatcherFilter debounce
 
-    expect(logInfo).toHaveBeenCalledWith(LogMessages.filterByLabel);
+    expect(logInfoSpy).toHaveBeenCalledWith(analytics.LogMessages.filterByLabel);
   });
 
   it('should call onChange handler', async () => {
@@ -34,7 +23,7 @@ describe('Analytics', () => {
     render(<MatcherFilter defaultQueryString="foo" onFilterChange={onFilterMock} />);
 
     const searchInput = screen.getByTestId('search-query-input');
-    await userEvent.type(searchInput, '=bar');
+    await userEvent.type(searchInput, '=bar', { delay: 600 }); // Delay waits for the MatcherFilter debounce
 
     expect(onFilterMock).toHaveBeenLastCalledWith('foo=bar');
   });

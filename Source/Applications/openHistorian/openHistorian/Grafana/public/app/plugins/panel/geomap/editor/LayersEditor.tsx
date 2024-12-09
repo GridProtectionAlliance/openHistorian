@@ -1,5 +1,4 @@
-import React from 'react';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 
 import { StandardEditorProps } from '@grafana/data';
 import { Container } from '@grafana/ui';
@@ -7,9 +6,9 @@ import { AddLayerButton } from 'app/core/components/Layers/AddLayerButton';
 import { LayerDragDropList } from 'app/core/components/Layers/LayerDragDropList';
 
 import { getLayersOptions } from '../layers/registry';
-import { PanelOptions, MapLayerState, GeomapInstanceState } from '../types';
+import { Options, MapLayerState, GeomapInstanceState } from '../types';
 
-type LayersEditorProps = StandardEditorProps<unknown, unknown, PanelOptions, GeomapInstanceState>;
+type LayersEditorProps = StandardEditorProps<unknown, unknown, Options, GeomapInstanceState>;
 
 export const LayersEditor = (props: LayersEditorProps) => {
   const { layers, selected, actions } = props.context.instanceState ?? {};

@@ -1,13 +1,14 @@
 import { css } from '@emotion/css';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { GrafanaTheme2, SelectableValue, StandardEditorProps } from '@grafana/data';
+import { ScaleDimensionConfig } from '@grafana/schema';
 import { InlineField, InlineFieldRow, Select, useStyles2 } from '@grafana/ui';
 import { useFieldDisplayNames, useSelectOptions } from '@grafana/ui/src/components/MatchersUI/utils';
 import { NumberInput } from 'app/core/components/OptionsUI/NumberInput';
 
 import { validateScaleOptions, validateScaleConfig } from '../scale';
-import { ScaleDimensionConfig, ScaleDimensionOptions } from '../types';
+import { ScaleDimensionOptions } from '../types';
 
 const fixedValueOption: SelectableValue<string> = {
   label: 'Fixed value',
@@ -22,7 +23,7 @@ export const ScaleDimensionEditor = (props: StandardEditorProps<ScaleDimensionCo
   const fieldName = value?.field;
   const isFixed = Boolean(!fieldName);
   const names = useFieldDisplayNames(context.data);
-  const selectOptions = useSelectOptions(names, fieldName, fixedValueOption);
+  const selectOptions = useSelectOptions(names, fieldName, fixedValueOption, settings?.filteredFieldType);
   const minMaxStep = useMemo(() => {
     return validateScaleOptions(settings);
   }, [settings]);

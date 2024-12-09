@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useInterval } from 'react-use';
 
 import { Time, TimeProps } from './Time';
@@ -8,7 +8,7 @@ const INTERVAL = 150;
 export interface ElapsedTimeProps extends Omit<TimeProps, 'timeInMs'> {
   // Use this to reset the timer. Any value is allowed just need to be !== from the previous.
   // Keep in mind things like [] !== [] or {} !== {}.
-  resetKey?: any;
+  resetKey?: unknown;
 }
 
 export const ElapsedTime = ({ resetKey, humanize, className }: ElapsedTimeProps) => {

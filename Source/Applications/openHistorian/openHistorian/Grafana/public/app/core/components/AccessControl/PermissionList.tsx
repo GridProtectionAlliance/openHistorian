@@ -1,4 +1,6 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+
+import { Trans } from 'app/core/internationalization';
 
 import { PermissionListItem } from './PermissionListItem';
 import { ResourcePermission } from './types';
@@ -25,6 +27,12 @@ export const PermissionList = ({ title, items, compareKey, permissionLevels, can
 
       if (item.actions.length > keep[key].actions.length) {
         keep[key] = item;
+        continue;
+      }
+
+      // If the same permission has been inherited and applied directly, keep the one that is applied directly
+      if (item.actions.length === keep[key].actions.length && !item.isInherited) {
+        keep[key] = item;
       }
     }
     return Object.keys(keep).map((k) => keep[k]);
@@ -42,7 +50,11 @@ export const PermissionList = ({ title, items, compareKey, permissionLevels, can
             <th style={{ width: '1%' }} />
             <th>{title}</th>
             <th style={{ width: '1%' }} />
-            <th>Permission</th>
+
+            <th style={{ width: '40%' }}>
+              <Trans i18nKey="access-control.permission-list.permission">Permission</Trans>
+            </th>
+
             <th style={{ width: '1%' }} />
             <th style={{ width: '1%' }} />
           </tr>

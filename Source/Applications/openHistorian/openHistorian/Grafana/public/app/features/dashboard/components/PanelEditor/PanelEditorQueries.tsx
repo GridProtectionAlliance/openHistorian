@@ -1,12 +1,15 @@
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 
 import { DataQuery, getDataSourceRef } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
+import { storeLastUsedDataSourceInLocalStorage } from 'app/features/datasources/components/picker/utils';
 import { getDatasourceSrv } from 'app/features/plugins/datasource_srv';
 import { QueryGroup } from 'app/features/query/components/QueryGroup';
 import { QueryGroupDataSource, QueryGroupOptions } from 'app/types';
 
+import { getDashboardSrv } from '../../services/DashboardSrv';
 import { PanelModel } from '../../state';
+import { getLastUsedDatasourceFromStorage } from '../../utils/dashboard';
 
 interface Props {
   /** Current panel */
@@ -20,18 +23,24 @@ export class PanelEditorQueries extends PureComponent<Props> {
     super(props);
   }
 
+  // store last used datasource in local storage
+  updateLastUsedDatasource = (datasource: QueryGroupDataSource) => {
+    storeLastUsedDataSourceInLocalStorage(datasource);
+  };
+
   buildQueryOptions(panel: PanelModel): QueryGroupOptions {
     const dataSource: QueryGroupDataSource = panel.datasource ?? {
       default: true,
     };
     const datasourceSettings = getDatasourceSrv().getInstanceSettings(dataSource);
 
+    // store last datasource used in local storage
+    this.updateLastUsedDatasource(dataSource);
     return {
       cacheTimeout: datasourceSettings?.meta.queryOptions?.cacheTimeout ? panel.cacheTimeout : undefined,
       dataSource: {
         default: datasourceSettings?.isDefault,
-        type: datasourceSettings?.type,
-        uid: datasourceSettings?.uid,
+        ...(datasourceSettings ? getDataSourceRef(datasourceSettings) : { type: undefined, uid: undefined }),
       },
       queryCachingTTL: datasourceSettings?.cachingConfig?.enabled ? panel.queryCachingTTL : undefined,
       queries: panel.targets,
@@ -51,7 +60,20 @@ export class PanelEditorQueries extends PureComponent<Props> {
     // If the panel model has no datasource property load the default data source property and update the persisted model
     // Because this part of the panel model is not in redux yet we do a forceUpdate.
     if (!panel.datasource) {
-      const ds = getDatasourceSrv().getInstanceSettings(null);
+      let ds;
+      // check if we have last used datasource from local storage
+      // get dashboard uid
+      const dashboardUid = getDashboardSrv().getCurrent()?.uid ?? '';
+      const lastUsedDatasource = getLastUsedDatasourceFromStorage(dashboardUid!);
+      // do we have a last used datasource for this dashboard
+      if (lastUsedDatasource?.datasourceUid !== null) {
+        // get datasource from uid
+        ds = getDatasourceSrv().getInstanceSettings(lastUsedDatasource?.datasourceUid);
+      }
+      // else load default datasource
+      if (!ds) {
+        ds = getDatasourceSrv().getInstanceSettings(null);
+      }
       panel.datasource = getDataSourceRef(ds!);
       this.forceUpdate();
     }

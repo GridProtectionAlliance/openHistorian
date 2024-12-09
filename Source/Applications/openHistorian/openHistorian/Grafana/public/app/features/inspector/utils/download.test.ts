@@ -1,14 +1,6 @@
 import saveAs from 'file-saver';
 
-import {
-  dataFrameFromJSON,
-  DataFrameJSON,
-  dateTimeFormat,
-  dateTimeFormatISO,
-  FieldType,
-  LogRowModel,
-  LogsMetaKind,
-} from '@grafana/data';
+import { dataFrameFromJSON, DataFrameJSON, dateTimeFormat, FieldType, LogRowModel, LogsMetaKind } from '@grafana/data';
 
 import { downloadAsJson, downloadDataFrameAsCsv, downloadLogsModelAsTxt } from './download';
 
@@ -37,7 +29,7 @@ describe('inspector download', () => {
       },
     };
 
-    it.each([[dataFrameFromJSON(json), 'test', '"time","name","value"\r\n100,a,1\r\n\r\n']])(
+    it.each([[dataFrameFromJSON(json), 'test', '"time","name","value"\r\n100,a,1']])(
       'should, when logsModel is %s and title is %s, resolve in %s',
       async (dataFrame, title, expected) => {
         downloadDataFrameAsCsv(dataFrame, title);
@@ -46,10 +38,25 @@ describe('inspector download', () => {
         const filename = call[1];
         const text = await blob.text();
 
+        // By default the BOM character should not be included
+        expect(await hasBOM(blob)).toBe(false);
         expect(text).toEqual(expected);
         expect(filename).toEqual(`${title}-data-${dateTimeFormat(1400000000000)}.csv`);
       }
     );
+
+    it('should include the BOM character when useExcelHeader is true', async () => {
+      downloadDataFrameAsCsv(dataFrameFromJSON(json), 'test', { useExcelHeader: true });
+
+      const call = (saveAs as unknown as jest.Mock).mock.calls[0];
+      const blob = call[0];
+      const filename = call[1];
+      const text = await blob.text();
+
+      expect(await hasBOM(blob)).toBe(true);
+      expect(text).toEqual('sep=,\r\n"time","name","value"\r\n100,a,1');
+      expect(filename).toEqual(`test-data-${dateTimeFormat(1400000000000)}.csv`);
+    });
   });
 
   describe('downloadAsJson', () => {
@@ -98,7 +105,7 @@ describe('inspector download', () => {
           rows: [{ timeEpochMs: 100, entry: 'testEntry' } as unknown as LogRowModel],
         },
         'test',
-        `testLabel: 1\nsecondTestLabel: 2\n\n\n${dateTimeFormatISO(100)}\ttestEntry\n`,
+        `testLabel: 1\nsecondTestLabel: 2\n\n\n${dateTimeFormat(100, { defaultWithMS: true })}\ttestEntry\n`,
       ],
     ])('should, when logsModel is %s and title is %s, resolve in %s', async (logsModel, title, expected) => {
       downloadLogsModelAsTxt(logsModel, title);
@@ -112,3 +119,19 @@ describe('inspector download', () => {
     });
   });
 });
+
+async function hasBOM(blob: Blob) {
+  const reader = new FileReader();
+  return new Promise<boolean>((resolve, reject) => {
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      if (event.target?.result instanceof ArrayBuffer) {
+        const arr = new Uint8Array(event.target.result);
+        resolve(arr[0] === 0xef && arr[1] === 0xbb && arr[2] === 0xbf); // Check for UTF-8 BOM
+      } else {
+        reject(new Error('Unexpected FileReader result type'));
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob.slice(0, 3)); // Read only the first 3 bytes
+  });
+}

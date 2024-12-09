@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { dump, load } from 'js-yaml';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -20,7 +20,7 @@ interface Props {
   onClose: () => void;
 }
 
-const tabs = [{ label: 'Yaml', value: 'yaml' }];
+const cloudRulesTabs = [{ label: 'Yaml', value: 'yaml' }];
 
 export const RuleInspector = ({ onClose }: Props) => {
   const [activeTab, setActiveTab] = useState('yaml');
@@ -42,7 +42,7 @@ export const RuleInspector = ({ onClose }: Props) => {
       title="Inspect Alert rule"
       subtitle={
         <div className={styles.subtitle}>
-          <RuleInspectorSubtitle setActiveTab={setActiveTab} activeTab={activeTab} />
+          <RuleInspectorTabs tabs={cloudRulesTabs} setActiveTab={setActiveTab} activeTab={activeTab} />
         </div>
       }
       onClose={onClose}
@@ -52,12 +52,13 @@ export const RuleInspector = ({ onClose }: Props) => {
   );
 };
 
-interface SubtitleProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+interface RuleInspectorTabsProps<T = string> {
+  tabs: Array<{ label: string; value: T }>;
+  activeTab: T;
+  setActiveTab: (tab: T) => void;
 }
 
-const RuleInspectorSubtitle = ({ activeTab, setActiveTab }: SubtitleProps) => {
+export function RuleInspectorTabs<T extends string>({ tabs, activeTab, setActiveTab }: RuleInspectorTabsProps<T>) {
   return (
     <TabsBar>
       {tabs.map((tab, index) => {
@@ -73,7 +74,7 @@ const RuleInspectorSubtitle = ({ activeTab, setActiveTab }: SubtitleProps) => {
       })}
     </TabsBar>
   );
-};
+}
 
 interface YamlTabProps {
   onSubmit: (newModel: RuleFormValues) => void;
@@ -153,27 +154,27 @@ function rulerRuleToRuleFormValues(rulerRule: RulerRuleDTO): Partial<RuleFormVal
   return {};
 }
 
-const yamlTabStyle = (theme: GrafanaTheme2) => ({
-  content: css`
-    flex-grow: 1;
-    height: 100%;
-    padding-bottom: 16px;
-    margin-bottom: ${theme.spacing(2)};
-  `,
-  applyButton: css`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    flex-grow: 0;
-    margin-bottom: ${theme.spacing(2)};
-  `,
+export const yamlTabStyle = (theme: GrafanaTheme2) => ({
+  content: css({
+    flexGrow: 1,
+    height: '100%',
+    paddingBottom: '16px',
+    marginBottom: theme.spacing(2),
+  }),
+  applyButton: css({
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexGrow: 0,
+    marginBottom: theme.spacing(2),
+  }),
 });
 
-const drawerStyles = () => ({
-  subtitle: css`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  `,
+export const drawerStyles = () => ({
+  subtitle: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }),
 });

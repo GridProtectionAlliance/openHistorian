@@ -1,15 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { useAsync } from 'react-use';
+import { useMemo, useState } from 'react';
 
 import { config, isFetchError } from '@grafana/runtime';
-import { Drawer, Spinner, Tab, TabsBar } from '@grafana/ui';
-import { backendSrv } from 'app/core/services/backend_srv';
-
-import { jsonDiff } from '../VersionHistory/utils';
+import { Drawer, Tab, TabsBar } from '@grafana/ui';
+import { jsonDiff } from 'app/features/dashboard-scene/settings/version-history/utils';
 
 import DashboardValidation from './DashboardValidation';
 import { SaveDashboardDiff } from './SaveDashboardDiff';
-import { SaveDashboardErrorProxy } from './SaveDashboardErrorProxy';
+import { proxyHandlesError, SaveDashboardErrorProxy } from './SaveDashboardErrorProxy';
 import { SaveDashboardAsForm } from './forms/SaveDashboardAsForm';
 import { SaveDashboardForm } from './forms/SaveDashboardForm';
 import { SaveProvisionedDashboardForm } from './forms/SaveProvisionedDashboardForm';
@@ -18,18 +15,11 @@ import { useDashboardSave } from './useDashboardSave';
 
 export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCopy }: SaveDashboardModalProps) => {
   const [options, setOptions] = useState<SaveDashboardOptions>({});
-
+  const previous = dashboard.getOriginalDashboard();
   const isProvisioned = dashboard.meta.provisioned;
   const isNew = dashboard.version === 0;
-
-  const previous = useAsync(async () => {
-    if (isNew) {
-      return undefined;
-    }
-
-    const result = await backendSrv.getDashboardByUid(dashboard.uid);
-    return result.dashboard;
-  }, [dashboard, isNew]);
+  const hasUnsavedFolderChange = Boolean(dashboard.meta.hasUnsavedFolderChange);
+  const [errorIsHandled, setErrorIsHandled] = useState(false);
 
   const data = useMemo<SaveDashboardData>(() => {
     const clone = dashboard.getSaveModelClone({
@@ -37,14 +27,11 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
       saveVariables: Boolean(options.saveVariables),
     });
 
-    if (!previous.value) {
+    if (!previous) {
       return { clone, diff: {}, diffCount: 0, hasChanges: false };
     }
 
-    const cloneJSON = JSON.stringify(clone, null, 2);
-    const cloneSafe = JSON.parse(cloneJSON); // avoids undefined issues
-
-    const diff = jsonDiff(previous.value, cloneSafe);
+    const diff = jsonDiff(previous, clone);
     let diffCount = 0;
     for (const d of Object.values(diff)) {
       diffCount += d.length;
@@ -54,12 +41,12 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
       clone,
       diff,
       diffCount,
-      hasChanges: diffCount > 0 && !isNew,
+      hasChanges: (diffCount > 0 || hasUnsavedFolderChange) && !isNew,
     };
-  }, [dashboard, previous.value, options, isNew]);
+  }, [dashboard, previous, options, isNew, hasUnsavedFolderChange]);
 
   const [showDiff, setShowDiff] = useState(false);
-  const { state, onDashboardSave } = useDashboardSave(dashboard, isCopy);
+  const { state, onDashboardSave } = useDashboardSave(isCopy);
   const onSuccess = onSaveSuccess
     ? () => {
         onDismiss();
@@ -69,21 +56,14 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
 
   const renderSaveBody = () => {
     if (showDiff) {
-      return <SaveDashboardDiff diff={data.diff} oldValue={previous.value} newValue={data.clone} />;
-    }
-
-    if (state.loading) {
-      return (
-        <div>
-          <Spinner />
-        </div>
-      );
+      return <SaveDashboardDiff diff={data.diff} oldValue={previous} newValue={data.clone} />;
     }
 
     if (isNew || isCopy) {
       return (
         <SaveDashboardAsForm
           dashboard={dashboard}
+          isLoading={state.loading}
           onCancel={onDismiss}
           onSuccess={onSuccess}
           onSubmit={onDashboardSave}
@@ -99,6 +79,7 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
     return (
       <SaveDashboardForm
         dashboard={dashboard}
+        isLoading={state.loading}
         saveModel={data}
         onCancel={onDismiss}
         onSuccess={onSuccess}
@@ -109,13 +90,14 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
     );
   };
 
-  if (state.error && isFetchError(state.error) && !state.error.isHandled) {
+  if (state.error && !errorIsHandled && isFetchError(state.error) && proxyHandlesError(state.error.data.status)) {
     return (
       <SaveDashboardErrorProxy
         error={state.error}
         dashboard={dashboard}
         dashboardSaveModel={data.clone}
         onDismiss={onDismiss}
+        setErrorIsHandled={setErrorIsHandled}
       />
     );
   }
@@ -131,7 +113,6 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
     <Drawer
       title={title}
       onClose={onDismiss}
-      width={'40%'}
       subtitle={dashboard.title}
       tabs={
         <TabsBar>
@@ -141,8 +122,6 @@ export const SaveDashboardDrawer = ({ dashboard, onDismiss, onSaveSuccess, isCop
           )}
         </TabsBar>
       }
-      expandable
-      scrollableContent
     >
       {renderSaveBody()}
 

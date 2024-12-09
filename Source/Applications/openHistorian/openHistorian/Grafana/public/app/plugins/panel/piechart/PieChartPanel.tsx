@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
 
 import {
@@ -22,7 +22,7 @@ import {
 } from '@grafana/ui';
 
 import { PieChart } from './PieChart';
-import { PieChartLegendOptions, PieChartLegendValues, PanelOptions } from './panelcfg.gen';
+import { PieChartLegendOptions, PieChartLegendValues, Options } from './panelcfg.gen';
 import { filterDisplayItems, sumDisplayItemsReducer } from './utils';
 
 const defaultLegendOptions: PieChartLegendOptions = {
@@ -33,7 +33,7 @@ const defaultLegendOptions: PieChartLegendOptions = {
   values: [PieChartLegendValues.Percent],
 };
 
-interface Props extends PanelProps<PanelOptions> {}
+interface Props extends PanelProps<Options> {}
 
 /**
  * @beta
@@ -127,7 +127,7 @@ function getLegend(props: Props, displayValues: FieldDisplay[]) {
               percent: percentOfTotal,
               text:
                 hideFromViz || isNaN(fractionOfTotal)
-                  ? props.fieldConfig.defaults.noValue ?? '-'
+                  ? (props.fieldConfig.defaults.noValue ?? '-')
                   : percentOfTotal.toFixed(value.field.decimals ?? 0) + '%',
               title: valuesToShow.length > 1 ? 'Percent' : '',
             });
@@ -140,12 +140,14 @@ function getLegend(props: Props, displayValues: FieldDisplay[]) {
     .filter((i): i is VizLegendItem => !!i);
 
   return (
-    <VizLegend
-      items={legendItems}
-      seriesVisibilityChangeBehavior={SeriesVisibilityChangeBehavior.Hide}
-      placement={legendOptions.placement}
-      displayMode={legendOptions.displayMode}
-    />
+    <VizLayout.Legend placement={legendOptions.placement} width={legendOptions.width}>
+      <VizLegend
+        items={legendItems}
+        seriesVisibilityChangeBehavior={SeriesVisibilityChangeBehavior.Hide}
+        placement={legendOptions.placement}
+        displayMode={legendOptions.displayMode}
+      />
+    </VizLayout.Legend>
   );
 }
 

@@ -7,25 +7,19 @@ import {
   standardEditorsRegistry,
   identityOverrideProcessor,
 } from '@grafana/data';
-import {
-  TableFieldOptions,
-  TableCellOptions,
-  TableCellDisplayMode,
-  defaultTableFieldOptions,
-  TableCellHeight,
-} from '@grafana/schema';
+import { TableCellOptions, TableCellDisplayMode, defaultTableFieldOptions, TableCellHeight } from '@grafana/schema';
 
 import { PaginationEditor } from './PaginationEditor';
 import { TableCellOptionEditor } from './TableCellOptionEditor';
 import { TablePanel } from './TablePanel';
 import { tableMigrationHandler, tablePanelChangedHandler } from './migrations';
-import { PanelOptions, defaultPanelOptions } from './panelcfg.gen';
+import { Options, defaultOptions, FieldConfig } from './panelcfg.gen';
 import { TableSuggestionsSupplier } from './suggestions';
 
 const footerCategory = 'Table footer';
 const cellCategory = ['Cell options'];
 
-export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePanel)
+export const plugin = new PanelPlugin<Options, FieldConfig>(TablePanel)
   .setPanelChangeHandler(tablePanelChangedHandler)
   .setMigrationHandler(tableMigrationHandler)
   .useFieldConfig({
@@ -59,10 +53,10 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
           name: 'Column alignment',
           settings: {
             options: [
-              { label: 'auto', value: 'auto' },
-              { label: 'left', value: 'left' },
-              { label: 'center', value: 'center' },
-              { label: 'right', value: 'right' },
+              { label: 'Auto', value: 'auto' },
+              { label: 'Left', value: 'left' },
+              { label: 'Center', value: 'center' },
+              { label: 'Right', value: 'right' },
             ],
           },
           defaultValue: defaultTableFieldOptions.align,
@@ -112,12 +106,12 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
       .addBooleanSwitch({
         path: 'showHeader',
         name: 'Show table header',
-        defaultValue: defaultPanelOptions.showHeader,
+        defaultValue: defaultOptions.showHeader,
       })
       .addRadio({
         path: 'cellHeight',
         name: 'Cell height',
-        defaultValue: defaultPanelOptions.cellHeight,
+        defaultValue: defaultOptions.cellHeight,
         settings: {
           options: [
             { value: TableCellHeight.Sm, label: 'Small' },
@@ -130,7 +124,7 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
         path: 'footer.show',
         category: [footerCategory],
         name: 'Show table footer',
-        defaultValue: defaultPanelOptions.footer?.show,
+        defaultValue: defaultOptions.footer?.show,
       })
       .addCustomEditor({
         id: 'footer.reducer',
@@ -138,7 +132,7 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
         path: 'footer.reducer',
         name: 'Calculation',
         description: 'Choose a reducer function / calculation',
-        editor: standardEditorsRegistry.get('stats-picker').editor as any,
+        editor: standardEditorsRegistry.get('stats-picker').editor,
         defaultValue: [ReducerID.sum],
         showIf: (cfg) => cfg.footer?.show,
       })
@@ -147,7 +141,7 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
         category: [footerCategory],
         name: 'Count rows',
         description: 'Display a single count for all data rows',
-        defaultValue: defaultPanelOptions.footer?.countRows,
+        defaultValue: defaultOptions.footer?.countRows,
         showIf: (cfg) => cfg.footer?.reducer?.length === 1 && cfg.footer?.reducer[0] === ReducerID.count,
       })
       .addMultiSelect({
@@ -167,7 +161,7 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
                 if (field.type === FieldType.number) {
                   const name = getFieldDisplayName(field, frame, context.data);
                   const value = field.name;
-                  options.push({ value, label: name } as any);
+                  options.push({ value, label: name });
                 }
               }
             }
@@ -175,9 +169,7 @@ export const plugin = new PanelPlugin<PanelOptions, TableFieldOptions>(TablePane
           },
         },
         defaultValue: '',
-        showIf: (cfg) =>
-          (cfg.footer?.show && !cfg.footer?.countRows) ||
-          (cfg.footer?.reducer?.length === 1 && cfg.footer?.reducer[0] !== ReducerID.count),
+        showIf: (cfg) => cfg.footer?.show && !cfg.footer?.countRows,
       })
       .addCustomEditor({
         id: 'footer.enablePagination',

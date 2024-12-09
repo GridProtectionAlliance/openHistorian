@@ -1,81 +1,61 @@
 import { dateTime, getDefaultTimeRange } from '@grafana/data';
 
-import { createLokiDatasource } from '../mocks';
+import { LokiQueryType } from '../types';
 
-import { getStats, shouldUpdateStats } from './stats';
+import { shouldUpdateStats } from './stats';
 
 describe('shouldUpdateStats', () => {
+  const timerange = getDefaultTimeRange();
+  let queryType = LokiQueryType.Range;
+  let prevQueryType = LokiQueryType.Range;
+
   it('should return true if the query has changed', () => {
     const query = '{job="grafana"}';
     const prevQuery = '{job="not-grafana"}';
-    const timerange = getDefaultTimeRange();
-    const prevTimerange = timerange;
-    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange)).toBe(true);
+    expect(shouldUpdateStats(query, prevQuery, timerange, timerange, queryType, prevQueryType)).toBe(true);
   });
 
   it('should return true if the timerange has changed', () => {
     const query = '{job="grafana"}';
     const prevQuery = '{job="grafana"}';
-    const timerange = getDefaultTimeRange();
     timerange.raw.from = 'now-14h';
     const prevTimerange = getDefaultTimeRange();
-    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange)).toBe(true);
+    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange, queryType, prevQueryType)).toBe(true);
+  });
+
+  it('should return true if the previous query was undefined', () => {
+    const query = '{job="grafana"}';
+    const prevQuery = undefined;
+    expect(shouldUpdateStats(query, prevQuery, timerange, timerange, queryType, prevQueryType)).toBe(true);
+  });
+
+  it('should return true if the query really changed, otherwise false', () => {
+    const prevQuery = '{job="grafana"}';
+    const query = `${prevQuery} `;
+    expect(shouldUpdateStats(query, prevQuery, timerange, timerange, queryType, prevQueryType)).toBe(false);
   });
 
   it('should return false if the query and timerange have not changed', () => {
     const query = '{job="grafana"}';
     const prevQuery = '{job="grafana"}';
-    const timerange = getDefaultTimeRange();
-    const prevTimerange = timerange;
-    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange)).toBe(false);
-  });
-
-  it('should return false if the query and timerange have not changed', () => {
-    const query = '{job="grafana"}';
-    const prevQuery = '{job="grafana"}';
-    const timerange = getDefaultTimeRange();
-    const prevTimerange = getDefaultTimeRange();
-    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange)).toBe(false);
+    expect(shouldUpdateStats(query, prevQuery, timerange, timerange, queryType, prevQueryType)).toBe(false);
   });
 
   it('should return false if the query and timerange with absolute and relative mixed have not changed', () => {
     const query = '{job="grafana"}';
     const prevQuery = '{job="grafana"}';
     const now = dateTime(Date.now());
-    const timerange = getDefaultTimeRange();
     timerange.raw.from = now;
 
     const prevTimerange = getDefaultTimeRange();
     prevTimerange.raw.from = now;
-    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange)).toBe(false);
-  });
-});
-
-describe('makeStatsRequest', () => {
-  const datasource = createLokiDatasource();
-
-  it('should return undefined if there is no query', () => {
-    const query = '';
-    expect(getStats(datasource, query)).resolves.toBe(undefined); // change
+    expect(shouldUpdateStats(query, prevQuery, timerange, prevTimerange, queryType, prevQueryType)).toBe(false);
   });
 
-  it('should return undefined if the response has no data', () => {
+  it('should return true if the query type has changed', () => {
     const query = '{job="grafana"}';
-    datasource.getQueryStats = jest.fn().mockResolvedValue({ streams: 0, chunks: 0, bytes: 0, entries: 0 });
-    expect(getStats(datasource, query)).resolves.toBe(undefined);
-  });
-
-  it('should return the stats if the response has data', () => {
-    const query = '{job="grafana"}';
-
-    datasource.getQueryStats = jest
-      .fn()
-      .mockResolvedValue({ streams: 1, chunks: 12611, bytes: 12913664, entries: 78344 });
-    expect(getStats(datasource, query)).resolves.toEqual({
-      streams: 1,
-      chunks: 12611,
-      bytes: 12913664,
-      entries: 78344,
-    });
+    const prevQuery = '{job="grafana"}';
+    prevQueryType = LokiQueryType.Instant;
+    expect(shouldUpdateStats(query, prevQuery, timerange, timerange, queryType, prevQueryType)).toBe(true);
   });
 });

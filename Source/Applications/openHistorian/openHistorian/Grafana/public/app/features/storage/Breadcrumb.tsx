@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import { uniqueId } from 'lodash';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { Icon, IconName, useStyles2 } from '@grafana/ui';
@@ -27,6 +26,8 @@ export function Breadcrumb({ pathName, onPathChange, rootIcon }: Props) {
         const onClickBreadcrumb = () => onPathChange(url);
         const isLastBreadcrumb = index === paths.length - 1;
         return (
+          // TODO: fix keyboard a11y
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events
           <li key={uniqueId(path)} onClick={isLastBreadcrumb ? undefined : onClickBreadcrumb}>
             {path}
           </li>

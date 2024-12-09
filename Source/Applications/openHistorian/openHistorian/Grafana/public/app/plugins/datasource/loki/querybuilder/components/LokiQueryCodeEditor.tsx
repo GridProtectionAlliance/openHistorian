@@ -1,20 +1,16 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 
 import { testIds } from '../../components/LokiQueryEditor';
 import { LokiQueryField } from '../../components/LokiQueryField';
-import { getStats } from '../../components/stats';
 import { LokiQueryEditorProps } from '../../components/types';
-import { QueryStats } from '../../types';
 
 import { LokiQueryBuilderExplained } from './LokiQueryBuilderExplained';
 
 type Props = LokiQueryEditorProps & {
   showExplain: boolean;
-  setQueryStats: React.Dispatch<React.SetStateAction<QueryStats | undefined>>;
 };
 
 export function LokiQueryCodeEditor({
@@ -27,7 +23,6 @@ export function LokiQueryCodeEditor({
   app,
   showExplain,
   history,
-  setQueryStats,
 }: Props) {
   const styles = useStyles2(getStyles);
 
@@ -43,10 +38,6 @@ export function LokiQueryCodeEditor({
         data={data}
         app={app}
         data-testid={testIds.editor}
-        onQueryType={async (query: string) => {
-          const stats = await getStats(datasource, query);
-          setQueryStats(stats);
-        }}
       />
       {showExplain && <LokiQueryBuilderExplained query={query.expr} />}
     </div>
@@ -60,6 +51,21 @@ const getStyles = (theme: GrafanaTheme2) => {
       .gf-form {
         margin-bottom: 0.5;
       }
+    `,
+    buttonGroup: css`
+      border: 1px solid ${theme.colors.border.medium};
+      border-top: none;
+      padding: ${theme.spacing(0.5, 0.5, 0.5, 0.5)};
+      margin-bottom: ${theme.spacing(0.5)};
+      display: flex;
+      flex-grow: 1;
+      justify-content: end;
+      font-size: ${theme.typography.bodySmall.fontSize};
+    `,
+    hint: css`
+      color: ${theme.colors.text.disabled};
+      white-space: nowrap;
+      cursor: help;
     `,
   };
 };

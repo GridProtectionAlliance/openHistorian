@@ -6,7 +6,7 @@ import { BackendSrvRequest } from '@grafana/runtime';
 export const parseInitFromOptions = (options: BackendSrvRequest): RequestInit => {
   const method = options.method;
   const headers = parseHeaders(options);
-  const isAppJson = isContentTypeApplicationJson(headers);
+  const isAppJson = isContentTypeJson(headers);
   const body = parseBody(options, isAppJson);
   const credentials = parseCredentials(options);
 
@@ -57,9 +57,22 @@ const putHeaderParser: HeaderParser = parseHeaderByMethodFactory('put');
 const patchHeaderParser: HeaderParser = parseHeaderByMethodFactory('patch');
 
 const headerParsers = [postHeaderParser, putHeaderParser, patchHeaderParser, defaultHeaderParser];
+const unsafeCharacters = /[^\u0000-\u00ff]/g;
+
+/**
+ * Header values can only contain ISO-8859-1 characters. If a header key or value contains characters outside of this, we will encode the whole value.
+ * Since `encodeURI` also encodes spaces, we won't encode if the value doesn't contain any unsafe characters.
+ */
+function sanitizeHeader(v: string) {
+  return unsafeCharacters.test(v) ? encodeURI(v) : v;
+}
 
 export const parseHeaders = (options: BackendSrvRequest) => {
-  const headers = options?.headers ? new Headers(options.headers) : new Headers();
+  const safeHeaders: Record<string, string> = {};
+  for (let [key, value] of Object.entries(options.headers ?? {})) {
+    safeHeaders[sanitizeHeader(key)] = sanitizeHeader(value);
+  }
+  const headers = new Headers(safeHeaders);
   const parsers = headerParsers.filter((parser) => parser.canParse(options));
   const combinedHeaders = parsers.reduce((prev, parser) => {
     return parser.parse(prev);
@@ -68,13 +81,16 @@ export const parseHeaders = (options: BackendSrvRequest) => {
   return combinedHeaders;
 };
 
-export const isContentTypeApplicationJson = (headers: Headers) => {
+export const isContentTypeJson = (headers: Headers) => {
   if (!headers) {
     return false;
   }
 
   const contentType = headers.get('content-type');
-  if (contentType && contentType.toLowerCase() === 'application/json') {
+  if (
+    contentType &&
+    (contentType.toLowerCase() === 'application/json' || contentType.toLowerCase() === 'application/merge-patch+json')
+  ) {
     return true;
   }
 
@@ -89,6 +105,9 @@ export const parseBody = (options: BackendSrvRequest, isAppJson: boolean) => {
   if (!options.data || typeof options.data === 'string') {
     return options.data;
   }
+  if (options.data instanceof Blob) {
+    return options.data;
+  }
 
   return isAppJson ? JSON.stringify(options.data) : new URLSearchParams(options.data);
 };
@@ -100,23 +119,29 @@ export async function parseResponseBody<T>(
   if (responseType) {
     switch (responseType) {
       case 'arraybuffer':
-        return response.arrayBuffer() as any;
+        // this specifically returns a Promise<ArrayBuffer>
+        // TODO refactor this function to remove the type assertions
+        return response.arrayBuffer() as Promise<T>;
 
       case 'blob':
-        return response.blob() as any;
+        // this specifically returns a Promise<Blob>
+        // TODO refactor this function to remove the type assertions
+        return response.blob() as Promise<T>;
 
       case 'json':
         // An empty string is not a valid JSON.
         // Sometimes (unfortunately) our APIs declare their Content-Type as JSON, however they return an empty body.
         if (response.headers.get('Content-Length') === '0') {
           console.warn(`${response.url} returned an invalid JSON`);
-          return {} as unknown as T;
+          return {} as T;
         }
 
         return await response.json();
 
       case 'text':
-        return response.text() as any;
+        // this specifically returns a Promise<string>
+        // TODO refactor this function to remove the type assertions
+        return response.text() as Promise<T>;
     }
   }
 
@@ -124,10 +149,10 @@ export async function parseResponseBody<T>(
   try {
     return JSON.parse(textData); // majority of the requests this will be something that can be parsed
   } catch {}
-  return textData as any;
+  return textData as T;
 }
 
-export function serializeParams(data: Record<string, any>): string {
+function serializeParams(data: Record<string, any>): string {
   return Object.keys(data)
     .map((key) => {
       const value = data[key];

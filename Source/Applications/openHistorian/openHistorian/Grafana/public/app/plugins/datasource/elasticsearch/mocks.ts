@@ -1,12 +1,11 @@
-import { DataSourceInstanceSettings, PluginType } from '@grafana/data';
-import { TemplateSrv } from 'app/features/templating/template_srv';
+import { CoreApp, DataQueryRequest, DataSourceInstanceSettings, FieldType, PluginType, dateTime } from '@grafana/data';
+import { TemplateSrv } from '@grafana/runtime';
 
 import { ElasticDatasource } from './datasource';
-import { ElasticsearchOptions } from './types';
+import { ElasticsearchOptions, ElasticsearchQuery } from './types';
 
 export function createElasticDatasource(
-  settings: Partial<DataSourceInstanceSettings<ElasticsearchOptions>> = {},
-  templateSrv: TemplateSrv
+  settings: Partial<DataSourceInstanceSettings<Partial<ElasticsearchOptions>>> = {}
 ) {
   const { jsonData, ...rest } = settings;
 
@@ -38,15 +37,74 @@ export function createElasticDatasource(
     type: 'type',
     uid: 'uid',
     access: 'proxy',
-    url: '',
+    url: 'http://elasticsearch.local',
     jsonData: {
       timeField: '',
       timeInterval: '',
+      index: '[test-]YYYY.MM.DD',
       ...jsonData,
     },
-    database: '[test-]YYYY.MM.DD',
     ...rest,
+  };
+
+  const templateSrv: TemplateSrv = {
+    getVariables: () => [],
+    replace: (text?: string) => {
+      if (text?.startsWith('$')) {
+        return `resolvedVariable`;
+      } else {
+        return text || '';
+      }
+    },
+    containsTemplate: (text?: string) => text?.includes('$') ?? false,
+    updateTimeRange: () => {},
   };
 
   return new ElasticDatasource(instanceSettings, templateSrv);
 }
+
+export const createElasticQuery = (): DataQueryRequest<ElasticsearchQuery> => {
+  return {
+    requestId: '',
+    interval: '',
+    panelId: 0,
+    intervalMs: 1,
+    scopedVars: {},
+    timezone: '',
+    app: CoreApp.Dashboard,
+    startTime: 0,
+    range: {
+      from: dateTime([2015, 4, 30, 10]),
+      to: dateTime([2015, 5, 1, 10]),
+      raw: {
+        from: '',
+        to: '',
+      },
+    },
+    targets: [
+      {
+        refId: 'A',
+        bucketAggs: [{ type: 'date_histogram', field: '@timestamp', id: '2' }],
+        metrics: [{ type: 'count', id: '' }],
+        query: 'test',
+      },
+    ],
+  };
+};
+
+export const mockResponseFrames = [
+  {
+    schema: {
+      fields: [
+        { name: '@timestamp', type: FieldType.time },
+        { name: 'Value', type: FieldType.number },
+      ],
+    },
+    data: {
+      values: [
+        [100, 200, 300],
+        [1, 2, 3],
+      ],
+    },
+  },
+];

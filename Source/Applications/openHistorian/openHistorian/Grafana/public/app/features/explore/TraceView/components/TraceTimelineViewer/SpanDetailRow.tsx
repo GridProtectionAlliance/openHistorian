@@ -14,60 +14,60 @@
 
 import { css } from '@emotion/css';
 import classNames from 'classnames';
-import React from 'react';
+import { PureComponent } from 'react';
 
-import { GrafanaTheme2, LinkModel, TimeZone } from '@grafana/data';
+import { GrafanaTheme2, LinkModel, TraceKeyValuePair, TraceLog } from '@grafana/data';
+import { TraceToProfilesOptions } from '@grafana/o11y-ds-frontend';
+import { TimeZone } from '@grafana/schema';
 import { Button, clearButtonStyles, stylesFactory, withTheme2 } from '@grafana/ui';
 
 import { autoColor } from '../Theme';
 import { SpanLinkFunc } from '../types';
-import { TraceLog, TraceSpan, TraceKeyValuePair, TraceLink, TraceSpanReference } from '../types/trace';
+import { TraceSpan, TraceLink, TraceSpanReference } from '../types/trace';
 
-import SpanDetail from './SpanDetail';
+import SpanDetail, { TraceFlameGraphs } from './SpanDetail';
 import DetailState from './SpanDetail/DetailState';
 import SpanTreeOffset from './SpanTreeOffset';
 import TimelineRow from './TimelineRow';
-import { TopOfViewRefType } from './VirtualizedTraceView';
 
 const getStyles = stylesFactory((theme: GrafanaTheme2) => {
   return {
-    expandedAccent: css`
-      cursor: pointer;
-      height: 100%;
-      overflow: hidden;
-      position: absolute;
-      width: 100%;
-      &::before {
-        border-left: 4px solid;
-        pointer-events: none;
-        width: 1000px;
-      }
-      &::after {
-        border-right: 1000px solid;
-        border-color: inherit;
-        cursor: pointer;
-        opacity: 0.2;
-      }
+    expandedAccent: css({
+      cursor: 'pointer',
+      height: '100%',
+      overflow: 'hidden',
+      position: 'absolute',
+      width: '100%',
+      '&::before': {
+        borderLeft: '1px solid',
+        pointerEvents: 'none',
+        width: '1000px',
+      },
+      '&::after': {
+        borderRight: '1000px solid',
+        borderColor: 'inherit',
+        cursor: 'pointer',
+        opacity: 0.2,
+      },
 
       /* border-color inherit must come AFTER other border declarations for accent */
-      &::before,
-      &::after {
-        border-color: inherit;
-        content: ' ';
-        position: absolute;
-        height: 100%;
-      }
+      '&::before, &::after': {
+        borderColor: 'inherit',
+        content: '" "',
+        position: 'absolute',
+        height: '100%',
+      },
 
-      &:hover::after {
-        opacity: 0.35;
-      }
-    `,
-    infoWrapper: css`
-      label: infoWrapper;
-      border: 1px solid ${autoColor(theme, '#d3d3d3')};
-      border-top: 3px solid;
-      padding: 0.75rem;
-    `,
+      '&:hover::after': {
+        opacity: 0.35,
+      },
+    }),
+    infoWrapper: css({
+      label: 'infoWrapper',
+      border: `1px solid ${autoColor(theme, '#d3d3d3')}`,
+      borderTop: '3px solid',
+      padding: '0.75rem',
+    }),
   };
 });
 
@@ -85,9 +85,12 @@ export type SpanDetailRowProps = {
   warningsToggle: (spanID: string) => void;
   stackTracesToggle: (spanID: string) => void;
   span: TraceSpan;
+  traceToProfilesOptions?: TraceToProfilesOptions;
   timeZone: TimeZone;
   tagsToggle: (spanID: string) => void;
   traceStartTime: number;
+  traceDuration: number;
+  traceName: string;
   hoverIndentGuideIds: Set<string>;
   addHoverIndentGuideId: (spanID: string) => void;
   removeHoverIndentGuideId: (spanID: string) => void;
@@ -95,11 +98,14 @@ export type SpanDetailRowProps = {
   createSpanLink?: SpanLinkFunc;
   focusedSpanId?: string;
   createFocusSpanLink: (traceId: string, spanId: string) => LinkModel;
-  topOfViewRefType?: TopOfViewRefType;
   datasourceType: string;
+  visibleSpanIds: string[];
+  traceFlameGraphs: TraceFlameGraphs;
+  setTraceFlameGraphs: (flameGraphs: TraceFlameGraphs) => void;
+  setRedrawListView: (redraw: {}) => void;
 };
 
-export class UnthemedSpanDetailRow extends React.PureComponent<SpanDetailRowProps> {
+export class UnthemedSpanDetailRow extends PureComponent<SpanDetailRowProps> {
   _detailToggle = () => {
     this.props.onDetailToggled(this.props.span.spanID);
   };
@@ -122,9 +128,12 @@ export class UnthemedSpanDetailRow extends React.PureComponent<SpanDetailRowProp
       warningsToggle,
       stackTracesToggle,
       span,
+      traceToProfilesOptions,
       timeZone,
       tagsToggle,
       traceStartTime,
+      traceDuration,
+      traceName,
       hoverIndentGuideIds,
       addHoverIndentGuideId,
       removeHoverIndentGuideId,
@@ -132,8 +141,11 @@ export class UnthemedSpanDetailRow extends React.PureComponent<SpanDetailRowProp
       createSpanLink,
       focusedSpanId,
       createFocusSpanLink,
-      topOfViewRefType,
       datasourceType,
+      visibleSpanIds,
+      traceFlameGraphs,
+      setTraceFlameGraphs,
+      setRedrawListView,
     } = this.props;
     const styles = getStyles(theme);
     return (
@@ -145,6 +157,7 @@ export class UnthemedSpanDetailRow extends React.PureComponent<SpanDetailRowProp
             hoverIndentGuideIds={hoverIndentGuideIds}
             addHoverIndentGuideId={addHoverIndentGuideId}
             removeHoverIndentGuideId={removeHoverIndentGuideId}
+            visibleSpanIds={visibleSpanIds}
           />
           <Button
             fill="text"
@@ -167,14 +180,19 @@ export class UnthemedSpanDetailRow extends React.PureComponent<SpanDetailRowProp
               warningsToggle={warningsToggle}
               stackTracesToggle={stackTracesToggle}
               span={span}
+              traceToProfilesOptions={traceToProfilesOptions}
               timeZone={timeZone}
               tagsToggle={tagsToggle}
               traceStartTime={traceStartTime}
+              traceDuration={traceDuration}
+              traceName={traceName}
               createSpanLink={createSpanLink}
               focusedSpanId={focusedSpanId}
               createFocusSpanLink={createFocusSpanLink}
-              topOfViewRefType={topOfViewRefType}
               datasourceType={datasourceType}
+              traceFlameGraphs={traceFlameGraphs}
+              setTraceFlameGraphs={setTraceFlameGraphs}
+              setRedrawListView={setRedrawListView}
             />
           </div>
         </TimelineRow.Cell>

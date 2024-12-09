@@ -29,6 +29,7 @@ const getReferencedIds = (model: ExpressionQuery, queries: AlertQuery[]): string
     case ExpressionQueryType.classic:
       return getReferencedIdsForClassicCondition(model);
     case ExpressionQueryType.math:
+    case ExpressionQueryType.sql:
       return getReferencedIdsForMath(model, queries);
     case ExpressionQueryType.resample:
     case ExpressionQueryType.reduce:
@@ -44,8 +45,8 @@ const getReferencedIdsForClassicCondition = (model: ExpressionQuery) => {
 };
 
 const getTimeRanges = (referencedRefIds: string[], queries: AlertQuery[]) => {
-  let from: number[] = [];
-  let to = [FALL_BACK_TIME_RANGE.to];
+  const from: number[] = [];
+  const to = [FALL_BACK_TIME_RANGE.to];
   for (const referencedRefIdsKey of referencedRefIds) {
     const query = queries.find((query) => query.refId === referencedRefIdsKey);
 

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import uPlot, { TypedArray, Scale } from 'uplot';
 
 import { AbsoluteTimeRange } from '@grafana/data';
@@ -71,7 +71,11 @@ export const OutsideRangePlugin = ({ config, onChangeTimeRange }: ThresholdContr
     >
       <div>
         <div>Data outside time range</div>
-        <Button onClick={(v) => onChangeTimeRange({ from: first, to: last })} variant="secondary">
+        <Button
+          onClick={(v) => onChangeTimeRange({ from: first, to: last })}
+          variant="secondary"
+          data-testid="time-series-zoom-to-data"
+        >
           Zoom to data
         </Button>
       </div>

@@ -20,6 +20,9 @@ export const panelsToCheckFirst = [
   'status-history',
   'logs',
   'candlestick',
+  'flamegraph',
+  'traces',
+  'nodeGraph',
 ];
 
 export async function getAllSuggestions(data?: PanelData, panel?: PanelModel): Promise<VisualizationSuggestion[]> {
@@ -36,7 +39,7 @@ export async function getAllSuggestions(data?: PanelData, panel?: PanelModel): P
 
   const list = builder.getList();
 
-  if (builder.dataSummary.fieldCount === 0) {
+  if (!config.featureToggles.vizAndWidgetSplit && builder.dataSummary.fieldCount === 0) {
     for (const plugin of Object.values(config.panels)) {
       if (!plugin.skipDataQuery || plugin.hideFromList) {
         continue;
@@ -54,6 +57,14 @@ export async function getAllSuggestions(data?: PanelData, panel?: PanelModel): P
   }
 
   return list.sort((a, b) => {
+    if (builder.dataSummary.preferredVisualisationType) {
+      if (a.pluginId === builder.dataSummary.preferredVisualisationType) {
+        return -1;
+      }
+      if (b.pluginId === builder.dataSummary.preferredVisualisationType) {
+        return 1;
+      }
+    }
     return (b.score ?? VisualizationSuggestionScore.OK) - (a.score ?? VisualizationSuggestionScore.OK);
   });
 }

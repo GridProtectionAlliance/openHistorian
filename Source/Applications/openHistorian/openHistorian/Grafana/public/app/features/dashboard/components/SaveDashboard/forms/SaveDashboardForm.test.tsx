@@ -1,9 +1,10 @@
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
+import { Dashboard } from '@grafana/schema';
 import { DashboardModel } from 'app/features/dashboard/state';
 import { createDashboardModelFixture } from 'app/features/dashboard/state/__fixtures__/dashboardFixtures';
+import { SaveDashboardResponseDTO } from 'app/types';
 
 import { SaveDashboardOptions } from '../types';
 
@@ -15,34 +16,36 @@ const prepareDashboardMock = (
   resetTimeSpy: jest.Mock,
   resetVarsSpy: jest.Mock
 ) => {
-  const json = {
+  const json: Dashboard = {
     title: 'name',
-    hasTimeChanged: jest.fn().mockReturnValue(timeChanged),
-    hasVariableValuesChanged: jest.fn().mockReturnValue(variableValuesChanged),
-    resetOriginalTime: () => resetTimeSpy(),
-    resetOriginalVariables: () => resetVarsSpy(),
-    getSaveModelClone: jest.fn().mockReturnValue({}),
+    id: 5,
+    schemaVersion: 30,
   };
 
   return {
-    id: 5,
-    meta: {},
     ...json,
+    meta: {},
+    hasTimeChanged: jest.fn().mockReturnValue(timeChanged),
+    hasVariablesChanged: jest.fn().mockReturnValue(variableValuesChanged),
+    resetOriginalTime: () => resetTimeSpy(),
+    resetOriginalVariables: () => resetVarsSpy(),
     getSaveModelClone: () => json,
   } as unknown as DashboardModel;
 };
+
 const renderAndSubmitForm = async (dashboard: DashboardModel, submitSpy: jest.Mock) => {
   render(
     <SaveDashboardForm
+      isLoading={false}
       dashboard={dashboard}
       onCancel={() => {}}
       onSuccess={() => {}}
       onSubmit={async (jsonModel) => {
         submitSpy(jsonModel);
-        return { status: 'success' };
+        return { status: 'success' } as SaveDashboardResponseDTO;
       }}
       saveModel={{
-        clone: dashboard,
+        clone: dashboard.getSaveModelClone(),
         diff: {},
         diffCount: 0,
         hasChanges: true,
@@ -62,14 +65,15 @@ describe('SaveDashboardAsForm', () => {
     it('renders switches when variables or timerange', () => {
       render(
         <SaveDashboardForm
+          isLoading={false}
           dashboard={prepareDashboardMock(true, true, jest.fn(), jest.fn())}
           onCancel={() => {}}
           onSuccess={() => {}}
           onSubmit={async () => {
-            return {};
+            return {} as SaveDashboardResponseDTO;
           }}
           saveModel={{
-            clone: prepareDashboardMock(true, true, jest.fn(), jest.fn()),
+            clone: { id: 1, schemaVersion: 3 },
             diff: {},
             diffCount: 0,
             hasChanges: true,
@@ -124,14 +128,15 @@ describe('SaveDashboardAsForm', () => {
     it('renders saved message draft if it was filled before', () => {
       render(
         <SaveDashboardForm
+          isLoading={false}
           dashboard={createDashboardModelFixture()}
           onCancel={() => {}}
           onSuccess={() => {}}
           onSubmit={async () => {
-            return {};
+            return {} as SaveDashboardResponseDTO;
           }}
           saveModel={{
-            clone: createDashboardModelFixture(),
+            clone: createDashboardModelFixture().getSaveModelClone(),
             diff: {},
             diffCount: 0,
             hasChanges: true,

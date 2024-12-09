@@ -1,4 +1,4 @@
-import { config, reportInteraction } from '@grafana/runtime';
+import { reportInteraction } from '@grafana/runtime';
 import { InspectTab } from 'app/features/inspector/types';
 
 import { EventTrackingNamespace, SearchLayout } from '../types';
@@ -10,6 +10,7 @@ interface QueryProps {
   query: string;
   tagCount: number;
   includePanels?: boolean;
+  deleted: boolean;
 }
 
 export const reportDashboardListViewed = (eventTrackingNamespace: EventTrackingNamespace, query: QueryProps) => {
@@ -40,17 +41,13 @@ export const reportPanelInspectInteraction = (
 };
 
 const getQuerySearchContext = (query: QueryProps) => {
-  const showPreviews = query.layout === SearchLayout.Grid;
-  const previewsEnabled = Boolean(config.featureToggles.panelTitleSearch);
-  const previews = previewsEnabled ? (showPreviews ? 'on' : 'off') : 'feature_disabled';
-
   return {
-    previews,
     layout: query.layout,
     starredFilter: query.starred ?? false,
     sort: query.sortValue ?? '',
     tagCount: query.tagCount ?? 0,
     queryLength: query.query?.length ?? 0,
     includePanels: query.includePanels ?? false,
+    deleted: query.deleted ?? false,
   };
 };

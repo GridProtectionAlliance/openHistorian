@@ -1,27 +1,42 @@
-import { isEmpty, isObject, mapValues, omitBy } from 'lodash';
+import { uniq } from 'lodash';
 
 import {
   AbsoluteTimeRange,
   DataSourceApi,
+  dateMath,
+  DateTime,
   EventBusExtended,
-  ExploreUrlState,
   getDefaultTimeRange,
   HistoryItem,
+  isDateTime,
   LoadingState,
+  LogRowModel,
   PanelData,
+  RawTimeRange,
+  ScopedVars,
+  TimeFragment,
+  TimeRange,
+  toUtc,
+  URLRange,
+  URLRangeValue,
 } from '@grafana/data';
-import { DataSourceRef } from '@grafana/schema';
-import { ExplorePanelData } from 'app/types';
-import { ExploreItemState } from 'app/types/explore';
+import { config, getDataSourceSrv } from '@grafana/runtime';
+import { DataQuery, DataSourceJsonData, DataSourceRef, TimeZone } from '@grafana/schema';
+import { getLocalRichHistoryStorage } from 'app/core/history/richHistoryStorageProvider';
+import { SortOrder } from 'app/core/utils/richHistory';
+import { MIXED_DATASOURCE_NAME } from 'app/plugins/datasource/mixed/MixedDataSource';
+import { ExplorePanelData, StoreState } from 'app/types';
+import { ExploreItemState, RichHistoryQuery } from 'app/types/explore';
 
 import store from '../../../core/store';
-import { clearQueryKeys, lastUsedDatasourceKeyForOrgId } from '../../../core/utils/explore';
+import { setLastUsedDatasourceUID } from '../../../core/utils/explore';
 import { getDatasourceSrv } from '../../plugins/datasource_srv';
 import { loadSupplementaryQueries } from '../utils/supplementaryQueries';
-import { toRawTimeRange } from '../utils/time';
+
+export const MAX_HISTORY_AUTOCOMPLETE_ITEMS = 100;
 
 export const DEFAULT_RANGE = {
-  from: 'now-6h',
+  from: `now-${config.exploreDefaultTimeOffset}`,
   to: 'now',
 };
 
@@ -33,10 +48,9 @@ export const storeGraphStyle = (graphStyle: string): void => {
 /**
  * Returns a fresh Explore area state
  */
-export const makeExplorePaneState = (): ExploreItemState => ({
+export const makeExplorePaneState = (overrides?: Partial<ExploreItemState>): ExploreItemState => ({
   containerWidth: 0,
   datasourceInstance: null,
-  datasourceMissing: false,
   history: [],
   queries: [],
   initialized: false,
@@ -50,7 +64,6 @@ export const makeExplorePaneState = (): ExploreItemState => ({
     to: null,
   } as any,
   scanning: false,
-  loading: false,
   queryKeys: [],
   isLive: false,
   isPaused: false,
@@ -58,12 +71,14 @@ export const makeExplorePaneState = (): ExploreItemState => ({
   tableResult: null,
   graphResult: null,
   logsResult: null,
+  clearedAtIndex: null,
   rawPrometheusResult: null,
   eventBridge: null as unknown as EventBusExtended,
   cache: [],
-  richHistory: [],
   supplementaryQueries: loadSupplementaryQueries(),
   panelsState: {},
+  correlations: undefined,
+  ...overrides,
 });
 
 export const createEmptyQueryResponse = (): ExplorePanelData => ({
@@ -75,6 +90,7 @@ export const createEmptyQueryResponse = (): ExplorePanelData => ({
   traceFrames: [],
   nodeGraphFrames: [],
   flameGraphFrames: [],
+  customFrames: [],
   tableFrames: [],
   rawPrometheusFrames: [],
   rawPrometheusResult: null,
@@ -87,7 +103,7 @@ export async function loadAndInitDatasource(
   orgId: number,
   datasource: DataSourceRef | string
 ): Promise<{ history: HistoryItem[]; instance: DataSourceApi }> {
-  let instance;
+  let instance: DataSourceApi<DataQuery, DataSourceJsonData, {}>;
   try {
     // let datasource be a ref if we have the info, otherwise a name or uid will do for lookup
     instance = await getDatasourceSrv().get(datasource);
@@ -106,35 +122,60 @@ export async function loadAndInitDatasource(
     }
   }
 
-  const historyKey = `grafana.explore.history.${instance.meta?.id}`;
-  const history = store.getObject<HistoryItem[]>(historyKey, []);
-  // Save last-used datasource
+  let history: HistoryItem[] = [];
 
-  store.set(lastUsedDatasourceKeyForOrgId(orgId), instance.uid);
-  return { history, instance };
-}
+  const localStorageHistory = getLocalRichHistoryStorage();
 
-// recursively walks an object, removing keys where the value is undefined
-// if the resulting object is empty, returns undefined
-function pruneObject(obj: object): object | undefined {
-  let pruned = mapValues(obj, (value) => (isObject(value) ? pruneObject(value) : value));
-  pruned = omitBy<typeof pruned>(pruned, isEmpty);
-  if (isEmpty(pruned)) {
-    return undefined;
+  const historyResults = await localStorageHistory.getRichHistory({
+    search: '',
+    sortOrder: SortOrder.Ascending,
+    datasourceFilters: [instance.name],
+    starred: false,
+  });
+
+  // first, fill autocomplete with query history for that datasource
+  if ((historyResults.total || 0) > 0) {
+    historyResults.richHistory.forEach((historyResult: RichHistoryQuery) => {
+      historyResult.queries.forEach((q) => {
+        history.push({ ts: parseInt(historyResult.id, 10), query: q });
+      });
+    });
   }
-  return pruned;
-}
 
-export function getUrlStateFromPaneState(pane: ExploreItemState): ExploreUrlState {
-  return {
-    // datasourceInstance should not be undefined anymore here but in case there is some path for it to be undefined
-    // lets just fallback instead of crashing.
-    datasource: pane.datasourceInstance?.uid || '',
-    queries: pane.queries.map(clearQueryKeys),
-    range: toRawTimeRange(pane.range),
-    // don't include panelsState in the url unless a piece of state is actually set
-    panelsState: pruneObject(pane.panelsState),
-  };
+  if (history.length < MAX_HISTORY_AUTOCOMPLETE_ITEMS) {
+    // check the last 100 mixed history results seperately
+    const historyMixedResults = await localStorageHistory.getRichHistory({
+      search: '',
+      sortOrder: SortOrder.Ascending,
+      datasourceFilters: [MIXED_DATASOURCE_NAME],
+      starred: false,
+    });
+
+    if ((historyMixedResults.total || 0) > 0) {
+      // second, fill autocomplete with queries for that datasource used in Mixed scenarios
+      historyMixedResults.richHistory.forEach((historyResult: RichHistoryQuery) => {
+        historyResult.queries.forEach((q) => {
+          if (q?.datasource?.uid === instance.uid) {
+            history.push({ ts: parseInt(historyResult.id, 10), query: q });
+          }
+        });
+      });
+    }
+  }
+
+  // finally, add any legacy local storage history that might exist. To be removed in Grafana 12 #83309
+  if (history.length < MAX_HISTORY_AUTOCOMPLETE_ITEMS) {
+    const historyKey = `grafana.explore.history.${instance.meta?.id}`;
+    history = [...history, ...store.getObject<HistoryItem[]>(historyKey, [])];
+  }
+
+  if (history.length > MAX_HISTORY_AUTOCOMPLETE_ITEMS) {
+    history.length = MAX_HISTORY_AUTOCOMPLETE_ITEMS;
+  }
+
+  // Save last-used datasource
+  setLastUsedDatasourceUID(orgId, instance.uid);
+  return { history: history, instance };
 }
 
 export function createCacheKey(absRange: AbsoluteTimeRange) {
@@ -157,4 +198,113 @@ export function getResultsFromCache(
   const cacheIdx = cache.findIndex((c) => c.key === cacheKey);
   const cacheValue = cacheIdx >= 0 ? cache[cacheIdx].value : undefined;
   return cacheValue;
+}
+
+export function getRange(raw: RawTimeRange, timeZone: TimeZone): TimeRange {
+  return {
+    from: dateMath.parse(raw.from, false, timeZone)!,
+    to: dateMath.parse(raw.to, true, timeZone)!,
+    raw,
+  };
+}
+
+export function fromURLRange(range: URLRange): RawTimeRange {
+  let rawTimeRange: RawTimeRange = DEFAULT_RANGE;
+  let parsedRange = {
+    from: parseRawTime(range.from),
+    to: parseRawTime(range.to),
+  };
+  if (parsedRange.from !== null && parsedRange.to !== null) {
+    rawTimeRange = { from: parsedRange.from, to: parsedRange.to };
+  }
+  return rawTimeRange;
+}
+
+function parseRawTime(urlRangeValue: URLRangeValue | DateTime): TimeFragment | null {
+  if (urlRangeValue === null) {
+    return null;
+  }
+
+  if (isDateTime(urlRangeValue)) {
+    return urlRangeValue;
+  }
+
+  if (typeof urlRangeValue !== 'string') {
+    return null;
+  }
+
+  // it can only be a string now
+  const value = urlRangeValue;
+
+  if (value.indexOf('now') !== -1) {
+    return value;
+  }
+  if (value.length === 8) {
+    return toUtc(value, 'YYYYMMDD');
+  }
+  if (value.length === 15) {
+    return toUtc(value, 'YYYYMMDDTHHmmss');
+  }
+  // Backward compatibility
+  if (value.length === 19) {
+    return toUtc(value, 'YYYY-MM-DD HH:mm:ss');
+  }
+
+  // This should handle cases where value is an epoch time as string
+  if (value.match(/^\d+$/)) {
+    const epoch = parseInt(value, 10);
+    return toUtc(epoch);
+  }
+
+  // This should handle ISO strings
+  const time = toUtc(value);
+  if (time.isValid()) {
+    return time;
+  }
+
+  return null;
+}
+
+export const filterLogRowsByIndex = (
+  clearedAtIndex: ExploreItemState['clearedAtIndex'],
+  logRows?: LogRowModel[]
+): LogRowModel[] => {
+  if (!logRows) {
+    return [];
+  }
+
+  if (clearedAtIndex) {
+    const filteredRows = logRows.slice(clearedAtIndex + 1);
+    return filteredRows;
+  }
+
+  return logRows;
+};
+
+export const getDatasourceUIDs = (datasourceUID: string, queries: DataQuery[]): string[] => {
+  if (datasourceUID === MIXED_DATASOURCE_NAME) {
+    return uniq(queries.map((query) => query.datasource?.uid).filter((uid): uid is string => !!uid));
+  } else {
+    return [datasourceUID];
+  }
+};
+
+export async function getCorrelationsData(state: StoreState, exploreId: string) {
+  const correlationEditorHelperData = state.explore.panes[exploreId]!.correlationEditorHelperData;
+
+  const isCorrelationEditorMode = state.explore.correlationEditorDetails?.editorMode || false;
+  const isLeftPane = Object.keys(state.explore.panes)[0] === exploreId;
+  const showCorrelationEditorLinks = isCorrelationEditorMode && isLeftPane;
+  const defaultCorrelationEditorDatasource = showCorrelationEditorLinks ? await getDataSourceSrv().get() : undefined;
+  const interpolateCorrelationHelperVars =
+    isCorrelationEditorMode && !isLeftPane && correlationEditorHelperData !== undefined;
+
+  let scopedVars: ScopedVars = {};
+  if (interpolateCorrelationHelperVars && correlationEditorHelperData !== undefined) {
+    Object.entries(correlationEditorHelperData?.vars).forEach((variable) => {
+      scopedVars[variable[0]] = { value: variable[1] };
+    });
+  }
+
+  return { defaultCorrelationEditorDatasource, scopedVars, showCorrelationEditorLinks };
 }

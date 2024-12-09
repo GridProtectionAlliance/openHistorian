@@ -1,5 +1,9 @@
-import { VisualQueryBinary } from '../../prometheus/querybuilder/shared/LokiAndPromQueryModellerBase';
-import { QueryBuilderLabelFilter, QueryBuilderOperation } from '../../prometheus/querybuilder/shared/types';
+import {
+  VisualQueryBinary,
+  QueryBuilderLabelFilter,
+  QueryBuilderOperation,
+  BINARY_OPERATIONS_KEY,
+} from '@grafana/experimental';
 
 /**
  * Visual query model
@@ -29,7 +33,7 @@ export enum LokiVisualQueryOperationCategory {
   Formats = 'Formats',
   LineFilters = 'Line filters',
   LabelFilters = 'Label filters',
-  BinaryOps = 'Binary operations',
+  BinaryOps = BINARY_OPERATIONS_KEY,
 }
 
 export enum LokiOperationId {
@@ -40,6 +44,9 @@ export enum LokiOperationId {
   Unpack = 'unpack',
   LineFormat = 'line_format',
   LabelFormat = 'label_format',
+  Decolorize = 'decolorize',
+  Drop = 'drop',
+  Keep = 'keep',
   Rate = 'rate',
   RateCounter = 'rate_counter',
   CountOverTime = 'count_over_time',
@@ -95,8 +102,9 @@ export enum LokiOperationId {
 
 export enum LokiOperationOrder {
   LineFilters = 1,
-  LineFormats = 2,
-  LabelFilters = 3,
+  Parsers = 2,
+  PipeOperations = 3,
+  // Unwrap is a special case, as it is usually the last operation, so the order is after pipeOperations
   Unwrap = 4,
   NoErrors = 5,
   RangeVectorFunction = 5,

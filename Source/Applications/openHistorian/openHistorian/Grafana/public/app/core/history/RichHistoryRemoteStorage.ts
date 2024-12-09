@@ -8,7 +8,7 @@ import { PreferencesService } from '../services/PreferencesService';
 import { RichHistorySearchFilters, RichHistorySettings, SortOrder } from '../utils/richHistoryTypes';
 
 import RichHistoryStorage, { RichHistoryStorageWarningDetails } from './RichHistoryStorage';
-import { fromDTO, toDTO } from './remoteStorageConverter';
+import { fromDTO } from './remoteStorageConverter';
 
 export type RichHistoryRemoteStorageDTO = {
   uid: string;
@@ -17,18 +17,6 @@ export type RichHistoryRemoteStorageDTO = {
   starred: boolean;
   comment: string;
   queries: DataQuery[];
-};
-
-type RichHistoryRemoteStorageMigrationDTO = {
-  datasourceUid: string;
-  queries: DataQuery[];
-  createdAt: number;
-  starred: boolean;
-  comment: string;
-};
-
-type RichHistoryRemoteStorageMigrationPayloadDTO = {
-  queries: RichHistoryRemoteStorageMigrationDTO[];
 };
 
 type RichHistoryRemoteStorageResultsPayloadDTO = {
@@ -72,12 +60,18 @@ export default class RichHistoryRemoteStorage implements RichHistoryStorage {
   async getRichHistory(filters: RichHistorySearchFilters) {
     const params = buildQueryParams(filters);
 
+    let requestId = 'query-history-get-all';
+
+    if (filters.starred) {
+      requestId = 'query-history-get-starred';
+    }
+
     const queryHistory = await lastValueFrom(
       getBackendSrv().fetch<RichHistoryRemoteStorageResultsPayloadDTO>({
         method: 'GET',
         url: `/api/query-history?${params}`,
         // to ensure any previous requests are cancelled
-        requestId: 'query-history-get-all',
+        requestId,
       })
     );
 
@@ -91,7 +85,7 @@ export default class RichHistoryRemoteStorage implements RichHistoryStorage {
   async getSettings(): Promise<RichHistorySettings> {
     const preferences = await this.preferenceService.load();
     return {
-      activeDatasourceOnly: false,
+      activeDatasourcesOnly: false,
       lastUsedDatasourceFilters: undefined,
       retentionPeriod: 14,
       starredTabAsFirstTab: preferences.queryHistory?.homeTab === 'starred',
@@ -122,21 +116,6 @@ export default class RichHistoryRemoteStorage implements RichHistoryStorage {
     }
     return fromDTO(dto.result);
   }
-
-  /**
-   * @internal Used only for migration purposes. Will be removed in future.
-   */
-  async migrate(richHistory: RichHistoryQuery[]) {
-    const data: RichHistoryRemoteStorageMigrationPayloadDTO = { queries: richHistory.map(toDTO) };
-    await lastValueFrom(
-      getBackendSrv().fetch({
-        url: '/api/query-history/migrate',
-        method: 'POST',
-        data,
-        showSuccessAlert: false,
-      })
-    );
-  }
 }
 
 function buildQueryParams(filters: RichHistorySearchFilters): string {
@@ -152,11 +131,10 @@ function buildQueryParams(filters: RichHistorySearchFilters): string {
   if (filters.sortOrder) {
     params = params + `&sort=${filters.sortOrder === SortOrder.Ascending ? 'time-asc' : 'time-desc'}`;
   }
-  const relativeFrom = filters.from === 0 ? 'now' : `now-${filters.from}d`;
-  const relativeTo = filters.to === 0 ? 'now' : `now-${filters.to}d`;
-  // TODO: Unify: remote storage from/to params are swapped comparing to frontend and local storage filters
-  params = params + `&to=${relativeFrom}`;
-  params = params + `&from=${relativeTo}`;
+  if (!filters.starred) {
+    params = params + `&to=${filters.to}`;
+    params = params + `&from=${filters.from}`;
+  }
   params = params + `&limit=100`;
   params = params + `&page=${filters.page || 1}`;
   if (filters.starred) {

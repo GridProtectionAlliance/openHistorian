@@ -1,17 +1,31 @@
 import { WithAccessControlMetadata } from '@grafana/data';
 
-import { DashboardAcl } from './acl';
-
-export interface FolderDTO extends WithAccessControlMetadata {
-  id: number;
+export interface FolderListItemDTO {
   uid: string;
   title: string;
-  url: string;
-  version: number;
-  canSave: boolean;
-  canEdit: boolean;
+}
+
+export type FolderParent = Pick<FolderDTO, 'title' | 'uid' | 'url'>;
+
+export interface FolderDTO extends WithAccessControlMetadata {
   canAdmin: boolean;
   canDelete: boolean;
+  canEdit: boolean;
+  canSave: boolean;
+  created: string;
+  createdBy: string;
+  hasAcl: boolean;
+  id: number;
+  parentUid?: string;
+
+  // The API does actually return a full FolderDTO here, but we want to restrict it to just a few properties
+  parents?: FolderParent[];
+  title: string;
+  uid: string;
+  updated: string;
+  updatedBy: string;
+  url: string;
+  version?: number;
 }
 
 export interface FolderState {
@@ -23,8 +37,21 @@ export interface FolderState {
   canDelete: boolean;
   hasChanged: boolean;
   version: number;
-  permissions: DashboardAcl[];
-  canViewFolderPermissions: boolean;
+}
+
+export interface DescendantCountDTO {
+  // TODO: make this required once nestedFolders is enabled by default
+  folder?: number;
+  dashboard: number;
+  librarypanel: number;
+  alertrule: number;
+}
+
+export interface DescendantCount {
+  folder: number;
+  dashboard: number;
+  libraryPanel: number;
+  alertRule: number;
 }
 
 export interface FolderInfo {
@@ -35,5 +62,4 @@ export interface FolderInfo {
   uid?: string;
   title?: string;
   url?: string;
-  canViewFolderPermissions?: boolean;
 }

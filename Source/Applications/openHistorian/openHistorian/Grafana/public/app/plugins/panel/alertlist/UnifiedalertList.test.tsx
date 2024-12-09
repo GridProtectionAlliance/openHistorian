@@ -1,12 +1,16 @@
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { Provider } from 'react-redux';
 import { byRole, byText } from 'testing-library-selector';
 
-import { getDefaultTimeRange, LoadingState, PanelProps, FieldConfigSource } from '@grafana/data';
-import { TimeRangeUpdatedEvent } from '@grafana/runtime';
+import { FieldConfigSource, getDefaultTimeRange, LoadingState, PanelProps, PluginExtensionTypes } from '@grafana/data';
+import { TimeRangeUpdatedEvent, usePluginLinks } from '@grafana/runtime';
+import { setupMswServer } from 'app/features/alerting/unified/mockApi';
+import { mockPromRulesApiResponse } from 'app/features/alerting/unified/mocks/grafanaRulerApi';
+import { mockRulerRulesApiResponse } from 'app/features/alerting/unified/mocks/rulerApi';
+import { Annotation } from 'app/features/alerting/unified/utils/constants';
 import { DashboardSrv, setDashboardSrv } from 'app/features/dashboard/services/DashboardSrv';
+import { PromRuleGroupDTO, PromRulesResponse, RulerGrafanaRuleDTO } from 'app/types/unified-alerting-dto';
 
 import { contextSrv } from '../../../core/services/context_srv';
 import {
@@ -14,15 +18,87 @@ import {
   mockPromAlertingRule,
   mockPromRuleGroup,
   mockPromRuleNamespace,
+  mockRulerGrafanaRule,
   mockUnifiedAlertingStore,
 } from '../../../features/alerting/unified/mocks';
 import { GRAFANA_RULES_SOURCE_NAME } from '../../../features/alerting/unified/utils/datasource';
 
-import { UnifiedAlertList } from './UnifiedAlertList';
-import { UnifiedAlertListOptions, SortOrder, GroupMode, ViewMode } from './types';
+import { UnifiedAlertListPanel } from './UnifiedAlertList';
+import { GroupMode, SortOrder, UnifiedAlertListOptions, ViewMode } from './types';
 import * as utils from './util';
 
+const grafanaRuleMock = {
+  promRules: {
+    grafana: {
+      loading: false,
+      dispatched: true,
+      result: [
+        mockPromRuleNamespace({
+          name: 'ns1',
+          groups: [
+            mockPromRuleGroup({
+              name: 'group1',
+              rules: [
+                mockPromAlertingRule({
+                  name: 'rule1',
+                  alerts: [mockPromAlert({ labels: { severity: 'critical' } })],
+                  totals: { alerting: 1 },
+                  totalsFiltered: { alerting: 1 },
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    },
+  },
+};
+
+jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
+  usePluginLinks: jest.fn(),
+}));
 jest.mock('app/features/alerting/unified/api/alertmanager');
+
+const mocks = {
+  usePluginLinksMock: jest.mocked(usePluginLinks),
+};
+
+const fakeResponse: PromRulesResponse = {
+  data: { groups: grafanaRuleMock.promRules.grafana.result[0].groups as PromRuleGroupDTO[] },
+  status: 'success',
+};
+
+const server = setupMswServer();
+
+beforeEach(() => {
+  mockPromRulesApiResponse(server, fakeResponse);
+  const originRule: RulerGrafanaRuleDTO = mockRulerGrafanaRule(
+    {
+      for: '1m',
+      labels: { severity: 'critical', region: 'nasa' },
+      annotations: { [Annotation.summary]: 'This is a very important alert rule' },
+    },
+    { uid: 'grafana-rule-1', title: 'First Grafana Rule', data: [] }
+  );
+  mockRulerRulesApiResponse(server, 'grafana', {
+    'folder-one': [{ name: 'group1', interval: '20s', rules: [originRule] }],
+  });
+  mocks.usePluginLinksMock.mockReturnValue({
+    links: [
+      {
+        pluginId: 'grafana-ml-app',
+        id: '1',
+        type: PluginExtensionTypes.link,
+        title: 'Run investigation',
+        category: 'Sift',
+        description: 'Run a Sift investigation for this alert',
+        onClick: jest.fn(),
+      },
+    ],
+    isLoading: false,
+  });
+});
 
 const defaultOptions: UnifiedAlertListOptions = {
   maxItems: 2,
@@ -35,7 +111,7 @@ const defaultOptions: UnifiedAlertListOptions = {
   folder: { id: 1, title: 'test folder' },
   stateFilter: { firing: true, pending: false, noData: false, normal: true, error: false },
   alertInstanceLabelFilter: '',
-  datasource: 'Alertmanager',
+  datasource: 'grafana',
   viewMode: ViewMode.List,
 };
 
@@ -73,30 +149,7 @@ const dashboard = {
 };
 
 const renderPanel = (options: Partial<UnifiedAlertListOptions> = defaultOptions) => {
-  const store = mockUnifiedAlertingStore({
-    promRules: {
-      grafana: {
-        loading: false,
-        dispatched: true,
-        result: [
-          mockPromRuleNamespace({
-            name: 'ns1',
-            groups: [
-              mockPromRuleGroup({
-                name: 'group1',
-                rules: [
-                  mockPromAlertingRule({
-                    name: 'rule1',
-                    alerts: [mockPromAlert({ labels: { severity: 'critical' } })],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
-    },
-  });
+  const store = mockUnifiedAlertingStore(grafanaRuleMock);
 
   const dashSrv: unknown = { getCurrent: () => dashboard };
   setDashboardSrv(dashSrv as DashboardSrv);
@@ -105,20 +158,27 @@ const renderPanel = (options: Partial<UnifiedAlertListOptions> = defaultOptions)
 
   return render(
     <Provider store={store}>
-      <UnifiedAlertList {...props} />
+      <UnifiedAlertListPanel {...props} />
     </Provider>
   );
 };
 
 describe('UnifiedAlertList', () => {
+  jest.spyOn(contextSrv, 'hasPermission').mockReturnValue(true);
+
   it('subscribes to the dashboard refresh interval', async () => {
-    await renderPanel();
-    expect(dashboard.events.subscribe).toHaveBeenCalledTimes(1);
+    jest.spyOn(defaultProps, 'replaceVariables').mockReturnValue('severity=critical');
+
+    renderPanel();
+
+    await waitFor(() => expect(dashboard.events.subscribe).toHaveBeenCalledTimes(1));
     expect(dashboard.events.subscribe.mock.calls[0][0]).toEqual(TimeRangeUpdatedEvent);
   });
 
   it('should replace option variables before filtering', async () => {
-    jest.spyOn(contextSrv, 'hasPermission').mockReturnValue(true);
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
     const filterAlertsSpy = jest.spyOn(utils, 'filterAlerts');
 
     const replaceVarsSpy = jest.spyOn(defaultProps, 'replaceVariables').mockReturnValue('severity=critical');
@@ -133,14 +193,22 @@ describe('UnifiedAlertList', () => {
       folder: undefined,
     });
 
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
     expect(byText('rule1').get()).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('1 instance')).toBeInTheDocument();
+    });
 
     const expandElement = byText('1 instance').get();
 
     await user.click(expandElement);
 
-    const tagsElement = await byRole('list', { name: 'Tags' }).find();
-    expect(await byRole('listitem').find(tagsElement)).toHaveTextContent('severity=critical');
+    const labelsElement = await byRole('list', { name: 'Labels' }).find();
+    expect(await byRole('listitem').find(labelsElement)).toHaveTextContent('severitycritical');
 
     expect(replaceVarsSpy).toHaveBeenLastCalledWith('$label');
     expect(filterAlertsSpy).toHaveBeenLastCalledWith(
@@ -149,5 +217,13 @@ describe('UnifiedAlertList', () => {
       }),
       expect.anything()
     );
+  });
+
+  it('should render authorization error when user has no permission', async () => {
+    jest.spyOn(contextSrv, 'hasPermission').mockReturnValue(false);
+
+    renderPanel();
+
+    expect(screen.getByRole('alert', { name: 'Permission required' })).toBeInTheDocument();
   });
 });

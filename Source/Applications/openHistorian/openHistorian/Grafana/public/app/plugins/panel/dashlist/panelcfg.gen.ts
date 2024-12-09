@@ -4,22 +4,21 @@
 //     public/app/plugins/gen.go
 // Using jennies:
 //     TSTypesJenny
-//     PluginTSTypesJenny
+//     PluginTsTypesJenny
 //
 // Run 'make gen-cue' from repository root to regenerate.
 
-export const PanelCfgModelVersion = Object.freeze([0, 0]);
-
-export enum PanelLayout {
-  List = 'list',
-  Previews = 'previews',
-}
-
-export interface PanelOptions {
+export interface Options {
+  /**
+   * folderId is deprecated, and migrated to folderUid on panel init
+   */
   folderId?: number;
-  layout?: PanelLayout;
+  folderUID?: string;
+  includeVars: boolean;
+  keepTime: boolean;
   maxItems: number;
   query: string;
+  showFolderNames: boolean;
   showHeadings: boolean;
   showRecentlyViewed: boolean;
   showSearch: boolean;
@@ -27,10 +26,12 @@ export interface PanelOptions {
   tags: Array<string>;
 }
 
-export const defaultPanelOptions: Partial<PanelOptions> = {
-  layout: PanelLayout.List,
+export const defaultOptions: Partial<Options> = {
+  includeVars: false,
+  keepTime: false,
   maxItems: 10,
   query: '',
+  showFolderNames: true,
   showHeadings: true,
   showRecentlyViewed: false,
   showSearch: false,

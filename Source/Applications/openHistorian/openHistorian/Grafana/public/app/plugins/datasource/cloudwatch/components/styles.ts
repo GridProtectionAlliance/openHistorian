@@ -95,10 +95,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     verticalAlign: 'middle',
     marginLeft: theme.spacing(0.5),
   }),
-
-  addBtn: css({
-    marginRight: '10px',
-  }),
 });
+export const removeMarginBottom = css({ marginBottom: 8 });
 
 export default getStyles;

@@ -1,17 +1,15 @@
-import { PanelMenuItem, PluginExtensionPoints, type PluginExtensionPanelContext } from '@grafana/data';
-import {
-  isPluginExtensionLink,
-  AngularComponent,
-  getDataSourceSrv,
-  getPluginExtensions,
-  locationService,
-  reportInteraction,
-} from '@grafana/runtime';
+import { PanelMenuItem, urlUtil, PluginExtensionLink } from '@grafana/data';
+import { AngularComponent, locationService } from '@grafana/runtime';
 import { PanelCtrl } from 'app/angular/panel/panel_ctrl';
 import config from 'app/core/config';
+import { createErrorNotification } from 'app/core/copy/appNotification';
 import { t } from 'app/core/internationalization';
+import { notifyApp } from 'app/core/reducers/appNotification';
 import { contextSrv } from 'app/core/services/context_srv';
+import { getMessageFromError } from 'app/core/utils/errors';
 import { getExploreUrl } from 'app/core/utils/explore';
+import { RuleFormValues } from 'app/features/alerting/unified/types/rule-form';
+import { panelToRuleFormValues } from 'app/features/alerting/unified/utils/rule-form';
 import { DashboardModel } from 'app/features/dashboard/state/DashboardModel';
 import { PanelModel } from 'app/features/dashboard/state/PanelModel';
 import {
@@ -25,48 +23,47 @@ import {
 } from 'app/features/dashboard/utils/panel';
 import { InspectTab } from 'app/features/inspector/types';
 import { isPanelModelLibraryPanel } from 'app/features/library-panels/guard';
-import { store } from 'app/store/store';
+import { createExtensionSubMenu } from 'app/features/plugins/extensions/utils';
+import { SHARED_DASHBOARD_QUERY } from 'app/plugins/datasource/dashboard';
+import { dispatch, store } from 'app/store/store';
 
+import { getCreateAlertInMenuAvailability } from '../../alerting/unified/utils/access-control';
 import { navigateToExplore } from '../../explore/state/main';
 import { getTimeSrv } from '../services/TimeSrv';
 
 export function getPanelMenu(
   dashboard: DashboardModel,
   panel: PanelModel,
+  extensions: PluginExtensionLink[],
   angularComponent?: AngularComponent | null
 ): PanelMenuItem[] {
-  const onViewPanel = (event: React.MouseEvent<any>) => {
+  const onViewPanel = (event: React.MouseEvent) => {
     event.preventDefault();
     locationService.partial({
       viewPanel: panel.id,
     });
-    reportInteraction('dashboards_panelheader_view_clicked');
   };
 
-  const onEditPanel = (event: React.MouseEvent<any>) => {
+  const onEditPanel = (event: React.MouseEvent) => {
     event.preventDefault();
     locationService.partial({
       editPanel: panel.id,
     });
-    reportInteraction('dashboards_panelheader_edit_clicked');
   };
 
-  const onSharePanel = (event: React.MouseEvent<any>) => {
+  const onSharePanel = (event: React.MouseEvent) => {
     event.preventDefault();
     sharePanel(dashboard, panel);
-    reportInteraction('dashboards_panelheader_share_clicked');
   };
 
-  const onAddLibraryPanel = (event: React.MouseEvent<any>) => {
+  const onAddLibraryPanel = (event: React.MouseEvent) => {
     event.preventDefault();
     addLibraryPanel(dashboard, panel);
-    reportInteraction('dashboards_panelheader_createlibrarypanel_clicked');
   };
 
-  const onUnlinkLibraryPanel = (event: React.MouseEvent<any>) => {
+  const onUnlinkLibraryPanel = (event: React.MouseEvent) => {
     event.preventDefault();
     unlinkLibraryPanel(panel);
-    reportInteraction('dashboards_panelheader_unlinklibrarypanel_clicked');
   };
 
   const onInspectPanel = (tab?: InspectTab) => {
@@ -74,43 +71,39 @@ export function getPanelMenu(
       inspect: panel.id,
       inspectTab: tab,
     });
-    reportInteraction('dashboards_panelheader_inspect_clicked', { tab: tab ?? InspectTab.Data });
   };
 
-  const onMore = (event: React.MouseEvent<any>) => {
-    event.preventDefault();
-  };
-
-  const onDuplicatePanel = (event: React.MouseEvent<any>) => {
+  const onDuplicatePanel = (event: React.MouseEvent) => {
     event.preventDefault();
     duplicatePanel(dashboard, panel);
-    reportInteraction('dashboards_panelheader_duplicate_clicked');
   };
 
-  const onCopyPanel = (event: React.MouseEvent<any>) => {
+  const onCopyPanel = (event: React.MouseEvent) => {
     event.preventDefault();
     copyPanel(panel);
-    reportInteraction('dashboards_panelheader_copy_clicked');
   };
 
-  const onRemovePanel = (event: React.MouseEvent<any>) => {
+  const onRemovePanel = (event: React.MouseEvent) => {
     event.preventDefault();
     removePanel(dashboard, panel, true);
-    reportInteraction('dashboards_panelheader_remove_clicked');
   };
 
-  const onNavigateToExplore = (event: React.MouseEvent<any>) => {
+  const onNavigateToExplore = (event: React.MouseEvent) => {
     event.preventDefault();
     const openInNewWindow =
       event.ctrlKey || event.metaKey ? (url: string) => window.open(`${config.appSubUrl}${url}`) : undefined;
-    store.dispatch(navigateToExplore(panel, { getDataSourceSrv, getTimeSrv, getExploreUrl, openInNewWindow }) as any);
-    reportInteraction('dashboards_panelheader_explore_clicked');
+    store.dispatch(
+      navigateToExplore(panel, {
+        timeRange: getTimeSrv().timeRange(),
+        getExploreUrl,
+        openInNewWindow,
+      }) as any
+    );
   };
 
   const onToggleLegend = (event: React.MouseEvent) => {
     event.preventDefault();
     toggleLegend(panel);
-    reportInteraction('dashboards_panelheader_togglelegend_clicked');
   };
 
   const menu: PanelMenuItem[] = [];
@@ -140,12 +133,16 @@ export function getPanelMenu(
     shortcut: 'p s',
   });
 
-  if (contextSrv.hasAccessToExplore() && !(panel.plugin && panel.plugin.meta.skipDataQuery)) {
+  if (
+    contextSrv.hasAccessToExplore() &&
+    !(panel.plugin && panel.plugin.meta.skipDataQuery) &&
+    panel.datasource?.uid !== SHARED_DASHBOARD_QUERY
+  ) {
     menu.push({
       text: t('panel.header-menu.explore', `Explore`),
       iconClassName: 'compass',
       onClick: onNavigateToExplore,
-      shortcut: 'x',
+      shortcut: 'p x',
     });
   }
 
@@ -155,41 +152,56 @@ export function getPanelMenu(
   if (panel.plugin && !panel.plugin.meta.skipDataQuery) {
     inspectMenu.push({
       text: t('panel.header-menu.inspect-data', `Data`),
-      onClick: (e: React.MouseEvent<any>) => onInspectPanel(InspectTab.Data),
+      onClick: (e: React.MouseEvent) => onInspectPanel(InspectTab.Data),
     });
 
     if (dashboard.meta.canEdit) {
       inspectMenu.push({
         text: t('panel.header-menu.query', `Query`),
-        onClick: (e: React.MouseEvent<any>) => onInspectPanel(InspectTab.Query),
+        onClick: (e: React.MouseEvent) => onInspectPanel(InspectTab.Query),
       });
     }
   }
 
   inspectMenu.push({
     text: t('panel.header-menu.inspect-json', `Panel JSON`),
-    onClick: (e: React.MouseEvent<any>) => onInspectPanel(InspectTab.JSON),
+    onClick: (e: React.MouseEvent) => onInspectPanel(InspectTab.JSON),
   });
 
   menu.push({
     type: 'submenu',
     text: t('panel.header-menu.inspect', `Inspect`),
     iconClassName: 'info-circle',
-    onClick: (e: React.MouseEvent<HTMLElement>) => {
-      const currentTarget = e.currentTarget;
-      const target = e.target as HTMLElement;
-      const closestMenuItem = target.closest('[role="menuitem"]');
-
-      if (target === currentTarget || closestMenuItem === currentTarget) {
-        onInspectPanel();
-      }
-    },
     shortcut: 'i',
     subMenu: inspectMenu,
   });
 
+  const createAlert = async () => {
+    let formValues: Partial<RuleFormValues> | undefined;
+    try {
+      formValues = await panelToRuleFormValues(panel, dashboard);
+    } catch (err) {
+      const message = `Error getting rule values from the panel: ${getMessageFromError(err)}`;
+      dispatch(notifyApp(createErrorNotification(message)));
+      return;
+    }
+    const ruleFormUrl = urlUtil.renderUrl('/alerting/new', {
+      defaults: JSON.stringify(formValues),
+      returnTo: location.pathname + location.search,
+    });
+
+    locationService.push(ruleFormUrl);
+  };
+
+  const onCreateAlert = (event: React.MouseEvent) => {
+    event.preventDefault();
+    createAlert();
+  };
+
   const subMenu: PanelMenuItem[] = [];
   const canEdit = dashboard.canEditPanel(panel);
+  const isCreateAlertMenuOptionAvailable = getCreateAlertInMenuAvailability();
+
   if (!(panel.isViewing || panel.isEditing)) {
     if (canEdit) {
       subMenu.push({
@@ -221,6 +233,13 @@ export function getPanelMenu(
         onClick: onCopyPanel,
       });
     }
+  }
+
+  if (isCreateAlertMenuOptionAvailable) {
+    subMenu.push({
+      text: t('panel.header-menu.new-alert-rule', `New alert rule`),
+      onClick: onCreateAlert,
+    });
   }
 
   // add old angular panel options
@@ -259,6 +278,12 @@ export function getPanelMenu(
   // When editing hide most actions
   if (panel.isEditing) {
     subMenu.length = 0;
+    if (isCreateAlertMenuOptionAvailable) {
+      subMenu.push({
+        text: t('panel.header-menu.new-alert-rule', `New alert rule`),
+        onClick: onCreateAlert,
+      });
+    }
   }
 
   if (canEdit && panel.plugin && !panel.plugin.meta.skipDataQuery) {
@@ -268,40 +293,21 @@ export function getPanelMenu(
     });
   }
 
+  if (extensions.length > 0 && !panel.isEditing) {
+    menu.push({
+      text: 'Extensions',
+      iconClassName: 'plug',
+      type: 'submenu',
+      subMenu: createExtensionSubMenu(extensions),
+    });
+  }
+
   if (subMenu.length) {
     menu.push({
       type: 'submenu',
       text: t('panel.header-menu.more', `More...`),
       iconClassName: 'cube',
       subMenu,
-      onClick: onMore,
-    });
-  }
-
-  const { extensions } = getPluginExtensions({
-    extensionPointId: PluginExtensionPoints.DashboardPanelMenu,
-    context: createExtensionContext(panel, dashboard),
-  });
-
-  if (extensions.length > 0 && !panel.isEditing) {
-    const extensionsMenu: PanelMenuItem[] = [];
-
-    for (const extension of extensions) {
-      if (isPluginExtensionLink(extension)) {
-        extensionsMenu.push({
-          text: truncateTitle(extension.title, 25),
-          href: extension.path,
-          onClick: extension.onClick,
-        });
-        continue;
-      }
-    }
-
-    menu.push({
-      text: 'Extensions',
-      iconClassName: 'plug',
-      type: 'submenu',
-      subMenu: extensionsMenu,
     });
   }
 
@@ -317,28 +323,4 @@ export function getPanelMenu(
   }
 
   return menu;
-}
-
-function truncateTitle(title: string, length: number): string {
-  if (title.length < length) {
-    return title;
-  }
-  const part = title.slice(0, length - 3);
-  return `${part.trimEnd()}...`;
-}
-
-function createExtensionContext(panel: PanelModel, dashboard: DashboardModel): PluginExtensionPanelContext {
-  return {
-    id: panel.id,
-    pluginId: panel.type,
-    title: panel.title,
-    timeRange: dashboard.time,
-    timeZone: dashboard.timezone,
-    dashboard: {
-      uid: dashboard.uid,
-      title: dashboard.title,
-      tags: Array.from<string>(dashboard.tags),
-    },
-    targets: panel.targets,
-  };
 }

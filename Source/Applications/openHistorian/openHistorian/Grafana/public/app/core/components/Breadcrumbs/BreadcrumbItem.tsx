@@ -1,5 +1,4 @@
 import { css, cx } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { Components } from '@grafana/e2e-selectors';
@@ -10,9 +9,11 @@ import { Breadcrumb } from './types';
 
 type Props = Breadcrumb & {
   isCurrent: boolean;
+  index: number;
+  flexGrow: number;
 };
 
-export function BreadcrumbItem({ href, isCurrent, text }: Props) {
+export function BreadcrumbItem({ href, isCurrent, text, index, flexGrow }: Props) {
   const styles = useStyles2(getStyles);
 
   const onBreadcrumbClick = () => {
@@ -20,9 +21,14 @@ export function BreadcrumbItem({ href, isCurrent, text }: Props) {
   };
 
   return (
-    <li className={styles.breadcrumbWrapper}>
+    <li className={styles.breadcrumbWrapper} style={{ flexGrow }}>
       {isCurrent ? (
-        <span data-testid={Components.Breadcrumbs.breadcrumb(text)} className={styles.breadcrumb} aria-current="page">
+        <span
+          data-testid={Components.Breadcrumbs.breadcrumb(text)}
+          className={styles.breadcrumb}
+          aria-current="page"
+          title={text}
+        >
           {text}
         </span>
       ) : (
@@ -31,6 +37,7 @@ export function BreadcrumbItem({ href, isCurrent, text }: Props) {
             onClick={onBreadcrumbClick}
             data-testid={Components.Breadcrumbs.breadcrumb(text)}
             className={cx(styles.breadcrumb, styles.breadcrumbLink)}
+            title={text}
             href={href}
           >
             {text}
@@ -45,16 +52,11 @@ export function BreadcrumbItem({ href, isCurrent, text }: Props) {
 }
 
 const getStyles = (theme: GrafanaTheme2) => {
-  const separator = css({
-    color: theme.colors.text.secondary,
-  });
-
   return {
     breadcrumb: css({
       display: 'block',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
-      padding: theme.spacing(0, 0.5),
       whiteSpace: 'nowrap',
       color: theme.colors.text.secondary,
     }),
@@ -69,31 +71,27 @@ const getStyles = (theme: GrafanaTheme2) => {
       color: theme.colors.text.primary,
       display: 'flex',
       flex: 1,
+      gap: theme.spacing(0.5),
       minWidth: 0,
       maxWidth: 'max-content',
+      padding: theme.spacing(0.5, 0, 0.5, 0.5),
 
       // logic for small screens
       // hide any breadcrumbs that aren't the second to last child (the parent)
       // unless there's only one breadcrumb, in which case we show it
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('sm')]: {
         display: 'none',
         '&:nth-last-child(2)': {
           display: 'flex',
-          flexDirection: 'row-reverse',
-
-          [`.${separator}`]: {
-            transform: 'rotate(180deg)',
-          },
+          minWidth: '40px',
         },
-        '&:first-child&:last-child': {
+        '&:last-child': {
           display: 'flex',
-
-          [`.${separator}`]: {
-            display: 'none',
-          },
         },
       },
     }),
-    separator,
+    separator: css({
+      color: theme.colors.text.secondary,
+    }),
   };
 };

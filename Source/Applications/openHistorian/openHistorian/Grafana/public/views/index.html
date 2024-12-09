@@ -1,9 +1,49 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><meta name="viewport" content="width=device-width"/><meta name="theme-color" content="#000"/><title>[[.AppTitle]]</title><base href="[[.AppSubUrl]]/"/><link rel="icon" type="image/png" href="[[.FavIcon]]"/><link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]"/><link rel="mask-icon" href="[[.ContentDeliveryURL]]public/img/grafana_mask_icon.svg" color="#F05A28"/>[[ if eq .Theme "light" ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.light.664bea2b0c15e6740fd3.css"/>[[ else if eq .Theme "dark" ]]<link rel="stylesheet" href="[[.ContentDeliveryURL]]public/build/grafana.dark.922c73a268c5f56fe5fe.css"/>[[ end ]]<script nonce="[[.Nonce]]">performance.mark('frontend_boot_css_time_seconds');</script><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="msapplication-TileColor" content="#2b5797"/><meta name="msapplication-config" content="public/img/browserconfig.xml"/></head><body class="theme-[[ .Theme ]] [[.AppNameBodyClass]]"><style>.preloader {
+<!DOCTYPE html>
+<html lang="[[.User.Language]]">
+  <head>
+    [[ if and .CSPEnabled .IsDevelopmentEnv ]]
+    <!-- Cypress overwrites CSP headers in HTTP requests, so this is required for e2e tests-->
+    <meta  http-equiv="Content-Security-Policy" content="[[.CSPContent]]"/>
+    [[ end ]]
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000" />
+
+    <title>[[.AppTitle]]</title>
+
+    <base href="[[.AppSubUrl]]/" />
+
+    <link rel="icon" type="image/png" href="[[.FavIcon]]" />
+    <link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]" />
+    <link rel="mask-icon" href="[[.Assets.ContentDeliveryURL]]public/img/grafana_mask_icon.svg" color="#F05A28" />
+
+    <!-- If theme is "system", we inject the stylesheets with javascript further down the page -->
+    [[ if eq .ThemeType "light" ]]
+    <link rel="stylesheet" href="[[.Assets.Light]]" />
+    [[ else if eq .ThemeType "dark" ]]
+    <link rel="stylesheet" href="[[.Assets.Dark]]" />
+    [[ end ]]
+
+    <script nonce="[[.Nonce]]">
+      performance.mark('frontend_boot_css_time_seconds');
+    </script>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="msapplication-config" content="public/img/browserconfig.xml" />
+  </head>
+
+  <body class="theme-[[ .ThemeType ]] [[.AppNameBodyClass]]">
+    <style>
+      .preloader {
         height: 100%;
         flex-direction: column;
         display: flex;
         justify-content: center;
         align-items: center;
+        margin: 0 32px;
       }
 
       .preloader__enter {
@@ -11,7 +51,7 @@
         animation-name: preloader-fade-in;
         animation-iteration-count: 1;
         animation-duration: 0.9s;
-        animation-delay: 1.35s;
+        animation-delay: 0.5s;
         animation-fill-mode: forwards;
       }
 
@@ -42,7 +82,7 @@
         opacity: 0;
         animation-name: preloader-fade-in;
         animation-duration: 0.9s;
-        animation-delay: 1.8s;
+        animation-delay: 0.5s;
         animation-fill-mode: forwards;
       }
 
@@ -81,26 +121,21 @@
         0% {
           transform: scaleX(1.3) scaleY(0.8);
           animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
-          transform-origin: bottom center;
         }
         15% {
           transform: scaleX(0.75) scaleY(1.25);
           animation-timing-function: cubic-bezier(0, 0, 0.7, 0.75);
-          transform-origin: bottom center;
         }
         55% {
           transform: scaleX(1.05) scaleY(0.95);
           animation-timing-function: cubic-bezier(0.9, 0, 1, 1);
-          transform-origin: top center;
         }
         95% {
           transform: scaleX(0.75) scaleY(1.25);
           animation-timing-function: cubic-bezier(0, 0, 0, 1);
-          transform-origin: bottom center;
         }
         100% {
           transform: scaleX(1.3) scaleY(0.8);
-          transform-origin: bottom center;
           animation-timing-function: cubic-bezier(0, 0, 0.7, 1);
         }
       }
@@ -124,15 +159,69 @@
         font-size: 15px;
       }
 
+      .theme-light .preloader--done .preloader__text {
+        color: #52545c !important;
+      }
+
       .preloader--done .preloader__text--fail {
         display: block;
+      }
+
+      .preloader--done .preloader__text--fail a {
+        color: white;
+      }
+      
+      .theme-light .preloader--done .preloader__text--fail a {
+        color: rgb(31, 98, 224);
+      }
+
+      .preloader--done code {
+        white-space: nowrap;
+        padding: 2px 5px;
+        margin: 0px 2px;
+        font-size: 0.8rem;
+        background-color: rgb(24, 27, 31);
+        color: rgb(204, 204, 220);
+        border: 1px solid rgba(204, 204, 220, 0.2);
+        border-radius: 4px;
+      }
+
+      .preloader__error-list li {
+        margin-bottom: 8px;
       }
 
       [ng\:cloak],
       [ng-cloak],
       .ng-cloak {
         display: none !important;
-      }</style><div class="preloader"><div class="preloader__enter"><div class="preloader__bounce"><div class="preloader__logo"></div></div></div><div class="preloader__text">Loading Grafana</div><div class="preloader__text preloader__text--fail"><p><strong>If you're seeing this Grafana has failed to load its application files</strong><br/><br/></p><p>1. This could be caused by your reverse proxy settings.<br/><br/>2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath. If not using a reverse proxy make sure to set serve_from_sub_path to true.<br/><br/>3. If you have a local dev build make sure you build frontend using: yarn start, or yarn build<br/><br/>4. Sometimes restarting grafana-server can help<br/><br/>5. Check if you are using a non-supported browser. For more information, refer to the list of <a href="https://grafana.com/docs/grafana/latest/installation/requirements/#supported-web-browsers">supported browsers</a>.</p></div><script nonce="[[.Nonce]]">// Check to see if browser is not supported by Grafana
+      }
+    </style>
+
+    <div class="preloader">
+      <div class="preloader__enter">
+        <div class="preloader__bounce">
+          <div class="preloader__logo" aria-live="polite" role="status" aria-label="Loading Grafana"></div>
+        </div>
+      </div>
+      <div class="preloader__text preloader__text--fail">
+        <main>
+          <h1>If you're seeing this Grafana has failed to load its application files</h1>
+          <ol class="preloader__error-list">
+            <li>This could be caused by your reverse proxy settings.</li>
+            <li>If you host grafana under a subpath make sure your <code>grafana.ini</code> <code>root_url</code> setting
+              includes subpath. If not using a reverse proxy make sure to set <code>serve_from_sub_path</code> to true.</li>
+            <li>If you have a local dev build make sure you build frontend using: <code>yarn start</code>, or
+              <code>yarn build</code>.</li>
+            <li>Sometimes restarting <code>grafana-server</code> can help.</li>
+            <li>Check if you are using a non-supported browser. For more information, refer to the list of
+              <a href="https://grafana.com/docs/grafana/latest/installation/requirements/#supported-web-browsers">
+                supported browsers </a
+              >.</li>
+          </ol>
+        </main>
+      </div>
+      <script nonce="[[.Nonce]]">
+        // Check to see if browser is not supported by Grafana
         // Source file in app/core/utils/browser.ts & tests make edits there and copy compiled typescript here
         function checkBrowserCompatibility() {
           var isIE = navigator.userAgent.indexOf('MSIE') > -1;
@@ -167,14 +256,18 @@
 
         if (!checkBrowserCompatibility()) {
           alert('Your browser is not fully supported, please try newer version.');
-        }</script></div><div id="reactRoot"></div><script nonce="[[.Nonce]]">window.grafanaBootData = {
+        }
+      </script>
+    </div>
+
+    <div id="reactRoot"></div>
+
+    <script nonce="[[.Nonce]]">
+      window.grafanaBootData = {
         user: [[.User]],
         settings: [[.Settings]],
         navTree: [[.NavTree]],
-        themePaths: {
-          light: '[[.ContentDeliveryURL]]public/build/grafana.light.664bea2b0c15e6740fd3.css',
-          dark: '[[.ContentDeliveryURL]]public/build/grafana.dark.922c73a268c5f56fe5fe.css'
-        }
+        assets: [[.Assets]]
       };
 
       // Set theme to match system only on startup.
@@ -187,11 +280,11 @@
 
         if (darkQuery.matches) {
           document.body.classList.add("theme-dark");
-          cssLink.href = window.grafanaBootData.themePaths.dark;
+          cssLink.href = window.grafanaBootData.assets.dark;
           window.grafanaBootData.user.lightTheme = false;
         } else {
           document.body.classList.add("theme-light");
-          cssLink.href = window.grafanaBootData.themePaths.light;
+          cssLink.href = window.grafanaBootData.assets.light;
           window.grafanaBootData.user.lightTheme = true;
         }
         document.head.appendChild(cssLink);
@@ -212,12 +305,18 @@
         window.__grafana_load_failed();
       };
 
-      [[if .ContentDeliveryURL]]
-        window.public_cdn_path = '[[.ContentDeliveryURL]]public/build/';
+      [[if .Assets.ContentDeliveryURL]]
+        window.public_cdn_path = '[[.Assets.ContentDeliveryURL]]public/build/';
       [[end]]
       [[if .Nonce]]
         window.nonce = '[[.Nonce]]';
-      [[end]]</script>[[if .GoogleTagManagerId]]<script nonce="[[.Nonce]]">dataLayer = [
+      [[end]]
+    </script>
+
+    [[if .GoogleTagManagerId]]
+    <!-- Google Tag Manager -->
+    <script nonce="[[.Nonce]]">
+      dataLayer = [
         {
           IsSignedIn: '[[.User.IsSignedIn]]',
           Email: '[[.User.Email]]',
@@ -226,7 +325,18 @@
           OrgId: '[[.User.OrgId]]',
           OrgName: '[[.User.OrgName]]',
         },
-      ];</script><noscript><iframe src="//www.googletagmanager.com/ns.html?id=[[.GoogleTagManagerId]]" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript><script nonce="[[.Nonce]]">(function (w, d, s, l, i) {
+      ];
+    </script>
+    <noscript>
+      <iframe
+        src="//www.googletagmanager.com/ns.html?id=[[.GoogleTagManagerId]]"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
+    </noscript>
+    <script nonce="[[.Nonce]]">
+      (function (w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
         var f = d.getElementsByTagName(s)[0],
@@ -235,4 +345,22 @@
         j.async = true;
         j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', '[[.GoogleTagManagerId]]');</script>[[end]]<script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/runtime.2434a49086cee1380c4e.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/8683.9259ad853ca27103e2cc.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/7490.cf2da2a42f577bdb1843.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/6291.cb5ce8837ec621d8b6a1.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/6749.32f81d7fa137df51b539.js"></script><script nonce="[[.Nonce]]" src="[[.ContentDeliveryURL]]public/build/app.c52aa5cf53b2693cadba.js"></script><script nonce="[[.Nonce]]">performance.mark('frontend_boot_js_done_time_seconds');</script></body></html>
+      })(window, document, 'script', 'dataLayer', '[[.GoogleTagManagerId]]');
+    </script>
+    <!-- End Google Tag Manager -->
+    [[end]]
+
+    [[range $asset := .Assets.JSFiles]]
+      <script
+      nonce="[[$.Nonce]]"
+      src="[[$asset.FilePath]]"
+      type="text/javascript"
+      defer
+    ></script>
+    [[end]]
+
+    <script nonce="[[.Nonce]]">
+      performance.mark('frontend_boot_js_done_time_seconds');
+    </script>
+  </body>
+</html>

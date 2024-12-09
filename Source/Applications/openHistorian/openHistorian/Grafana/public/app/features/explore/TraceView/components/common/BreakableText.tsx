@@ -17,15 +17,13 @@ import * as React from 'react';
 
 import { useStyles2 } from '@grafana/ui';
 
-const getStyles = () => {
-  return {
-    BreakableText: css`
-      label: BreakableText;
-      display: inline-block;
-      white-space: pre;
-    `,
-  };
-};
+const getStyles = () => ({
+  BreakableText: css({
+    label: 'BreakableText',
+    display: 'inline-block',
+    whiteSpace: 'pre',
+  }),
+});
 
 const WORD_RX = /\W*\w+\W*/g;
 
@@ -35,12 +33,7 @@ type Props = {
   wordRegexp?: RegExp;
 };
 
-// TODO typescript doesn't understand text or null as react nodes
-// https://github.com/Microsoft/TypeScript/issues/21699
-export default function BreakableText(
-  props: Props
-): any /* React.ReactNode /* React.ReactElement | React.ReactElement[] \*\/ */ {
-  const { className, text, wordRegexp = WORD_RX } = props;
+export default function BreakableText({ text, className, wordRegexp = WORD_RX }: Props): React.ReactElement | null {
   const styles = useStyles2(getStyles);
   if (!text) {
     return null;
@@ -57,9 +50,5 @@ export default function BreakableText(
     );
     match = wordRegexp.exec(text);
   }
-  return spans;
+  return <>{spans}</>;
 }
-
-BreakableText.defaultProps = {
-  wordRegexp: WORD_RX,
-};

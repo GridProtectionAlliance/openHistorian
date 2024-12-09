@@ -1,5 +1,5 @@
 import { cx } from '@emotion/css';
-import React, { FormEvent } from 'react';
+import { forwardRef, FormEvent } from 'react';
 
 import { Checkbox, Icon, Tooltip, useStyles2, useTheme2 } from '@grafana/ui';
 import { getSelectStyles } from '@grafana/ui/src/components/Select/getSelectStyles';
@@ -16,7 +16,7 @@ interface RoleMenuOptionProps {
   hideDescription?: boolean;
 }
 
-export const RoleMenuOption = React.forwardRef<HTMLDivElement, React.PropsWithChildren<RoleMenuOptionProps>>(
+export const RoleMenuOption = forwardRef<HTMLDivElement, React.PropsWithChildren<RoleMenuOptionProps>>(
   ({ data, isFocused, isSelected, disabled, onChange, hideDescription }, ref) => {
     const theme = useTheme2();
     const styles = getSelectStyles(theme);
@@ -38,6 +38,8 @@ export const RoleMenuOption = React.forwardRef<HTMLDivElement, React.PropsWithCh
     };
 
     return (
+      // TODO: fix keyboard a11y
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div ref={ref} className={wrapperClassName} aria-label="Role picker option" onClick={onChangeInternal}>
         <Checkbox
           value={isSelected}

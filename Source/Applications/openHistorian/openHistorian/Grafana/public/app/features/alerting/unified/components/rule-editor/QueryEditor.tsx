@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2, PanelData } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
@@ -47,9 +46,8 @@ export const QueryEditor = ({
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    background-color: ${theme.colors.background.primary};
-    height: 100%;
-    max-width: ${theme.breakpoints.values.xxl}px;
-  `,
+  container: css({
+    backgroundColor: theme.colors.background.primary,
+    height: '100%',
+  }),
 });
