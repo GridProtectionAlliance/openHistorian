@@ -28,6 +28,9 @@
 
 #pragma warning disable 169, 414, 649
 
+// If proxy needs cookies to be forwarded to Grafana, e.g., for grafana-session management, uncomment:
+//#define ProxyCookies
+
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
@@ -178,15 +181,35 @@ namespace openHistorian.Adapters
             if (securityPrincipal?.Identity is null)
                 throw new SecurityException($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
 
-            Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
-            //Request.Headers.Authorization = null;
+        #if ProxyCookies
+            // Forward any cookies from client request to Grafana
+            if (Request.Headers.Contains("Cookie"))
+            {
+                Request.Headers.Remove("Cookie");
+                Request.Headers.Add("Cookie", Request.Headers.GetCookies().Select(c => c.ToString()));
+            }
+        #endif
 
+            Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
 
             if (Request.Method == HttpMethod.Get)
                 Request.Content = null;
-            
+
             HttpResponseMessage response = await s_http.SendAsync(Request, cancellationToken);
+
+        #if ProxyCookies
+            // Forward any Set-Cookie headers from Grafana back to client
+            if (response.Headers.Contains("Set-Cookie"))
+            {
+                IEnumerable<string> cookies = response.Headers.GetValues("Set-Cookie");
+                response.Headers.Remove("Set-Cookie");
+
+                foreach (string cookie in cookies)
+                    response.Headers.Add("Set-Cookie", cookie);
+            }
+        #endif
+
             HttpStatusCode statusCode = response.StatusCode;
 
             if (statusCode is HttpStatusCode.NotFound or HttpStatusCode.Unauthorized)
