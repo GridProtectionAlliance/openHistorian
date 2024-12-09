@@ -22,23 +22,31 @@ composableKinds: PanelCfg: {
 	maturity: "experimental"
 
 	lineage: {
-		seqs: [
-			{
-				schemas: [
-					{
-						PanelOptions: {
-							showLabels:         bool
-							showCommonLabels:   bool
-							showTime:           bool
-							wrapLogMessage:     bool
-							prettifyLogMessage: bool
-							enableLogDetails:   bool
-							sortOrder:          common.LogsSortOrder
-							dedupStrategy:      common.LogsDedupStrategy
-						} @cuetsy(kind="interface")
-					},
-				]
-			},
-		]
+		schemas: [{
+			version: [0, 0]
+			schema: {
+				Options: {
+					showLabels:           bool
+					showCommonLabels:     bool
+					showTime:             bool
+					showLogContextToggle: bool
+					wrapLogMessage:       bool
+					prettifyLogMessage:   bool
+					enableLogDetails:     bool
+					sortOrder:            common.LogsSortOrder
+					dedupStrategy:        common.LogsDedupStrategy
+					// TODO: figure out how to define callbacks
+					onClickFilterLabel?:     _
+					onClickFilterOutLabel?:  _
+					isFilterLabelActive?:    _
+					onClickFilterString?:    _
+					onClickFilterOutString?: _
+					onClickShowField?:       _
+					onClickHideField?:       _
+					displayedFields?: [...string]
+				} @cuetsy(kind="interface")
+			}
+		}]
+		lenses: []
 	}
 }

@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import * as React from 'react';
 
 import { Button, InlineField, InlineFieldRow, IconButton, Input } from '@grafana/ui';
 
@@ -67,7 +68,7 @@ export function JSONPathEditor({ options, onChange }: Props) {
                 />
               </InlineField>
               <InlineField className={cx(style.removeIcon)}>
-                <IconButton onClick={() => removeJSONPath(key)} name={'trash-alt'} />
+                <IconButton onClick={() => removeJSONPath(key)} name={'trash-alt'} tooltip="Remove path" />
               </InlineField>
             </InlineFieldRow>
           </li>

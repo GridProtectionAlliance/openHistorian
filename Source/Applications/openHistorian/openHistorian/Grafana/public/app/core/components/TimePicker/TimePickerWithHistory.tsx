@@ -1,8 +1,9 @@
 import { uniqBy } from 'lodash';
-import React from 'react';
 
-import { TimeRange, isDateTime, rangeUtil, TimeZone } from '@grafana/data';
+import { AppEvents, TimeRange, isDateTime, rangeUtil } from '@grafana/data';
 import { TimeRangePickerProps, TimeRangePicker } from '@grafana/ui';
+import { t } from '@grafana/ui/src/utils/i18n';
+import appEvents from 'app/core/app_events';
 
 import { LocalStorageValueProvider } from '../LocalStorageValueProvider';
 
@@ -24,7 +25,7 @@ export const TimePickerWithHistory = (props: Props) => {
     <LocalStorageValueProvider<LSTimePickerHistoryItem[]> storageKey={LOCAL_STORAGE_KEY} defaultValue={[]}>
       {(rawValues, onSaveToStore) => {
         const values = migrateHistory(rawValues);
-        const history = deserializeHistory(values, props.timeZone);
+        const history = deserializeHistory(values);
 
         return (
           <TimeRangePicker
@@ -34,6 +35,12 @@ export const TimePickerWithHistory = (props: Props) => {
               onAppendToHistory(value, values, onSaveToStore);
               props.onChange(value);
             }}
+            onError={(error?: string) =>
+              appEvents.emit(AppEvents.alertError, [
+                t('time-picker.copy-paste.default-error-title', 'Invalid time range'),
+                t('time-picker.copy-paste.default-error-message', `{{error}} is not a valid time range`, { error }),
+              ])
+            }
           />
         );
       }}
@@ -41,8 +48,9 @@ export const TimePickerWithHistory = (props: Props) => {
   );
 };
 
-function deserializeHistory(values: TimePickerHistoryItem[], timeZone: TimeZone | undefined): TimeRange[] {
-  return values.map((item) => rangeUtil.convertRawToRange(item, timeZone));
+function deserializeHistory(values: TimePickerHistoryItem[]): TimeRange[] {
+  // The history is saved in UTC and with the default date format, so we need to pass those values to the convertRawToRange
+  return values.map((item) => rangeUtil.convertRawToRange(item, 'utc', undefined, 'YYYY-MM-DD HH:mm:ss'));
 }
 
 function migrateHistory(values: LSTimePickerHistoryItem[]): TimePickerHistoryItem[] {

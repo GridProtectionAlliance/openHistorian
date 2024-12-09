@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { Select, HorizontalGroup, Input, useStyles2 } from '@grafana/ui';
 
@@ -14,15 +13,16 @@ interface Props {
   operators: string[];
 }
 
-const validationRegex = /^\d+(?:\.\d)?\d*(?:us|µs|ns|ms|s|m|h)$/;
+// Support template variables (e.g., `$dur`, `$v_1`) and durations (e.g., `300µs`, `1.2ms`)
+const validationRegex = /^(\$\w+)|(\d+(?:\.\d)?\d*(?:us|µs|ns|ms|s|m|h))$/;
 
 const getStyles = () => ({
-  noBoxShadow: css`
-    box-shadow: none;
-    *:focus {
-      box-shadow: none;
-    }
-  `,
+  noBoxShadow: css({
+    boxShadow: 'none',
+    '*:focus': {
+      boxShadow: 'none',
+    },
+  }),
 });
 
 const DurationInput = ({ filter, operators, updateFilter }: Props) => {

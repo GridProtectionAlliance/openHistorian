@@ -1,4 +1,5 @@
-import { DataSourceSettings } from '@grafana/data';
+import { getAzureClouds } from '@grafana/azure-sdk';
+import { DataSourceSettings, SelectableValue } from '@grafana/data';
 import { config } from '@grafana/runtime';
 
 import { AzureCloud, AzureCredentials, ConcealedSecret } from './AzureCredentials';
@@ -23,6 +24,15 @@ export function hasCredentials(options: DataSourceSettings<any, any>): boolean {
   return !!options.jsonData.azureCredentials;
 }
 
+export function getAzureCloudOptions(): Array<SelectableValue<string>> {
+  const cloudInfo = getAzureClouds();
+
+  return cloudInfo.map((cloud) => ({
+    value: cloud.name,
+    label: cloud.displayName,
+  }));
+}
+
 export function getDefaultCredentials(): AzureCredentials {
   if (config.azure.managedIdentityEnabled) {
     return { authType: 'msi' };
@@ -42,12 +52,16 @@ export function getCredentials(options: DataSourceSettings<any, any>): AzureCred
 
   switch (credentials.authType) {
     case 'msi':
-      if (config.azure.managedIdentityEnabled) {
+    case 'workloadidentity':
+      if (
+        (credentials.authType === 'msi' && config.azure.managedIdentityEnabled) ||
+        (credentials.authType === 'workloadidentity' && config.azure.workloadIdentityEnabled)
+      ) {
         return {
-          authType: 'msi',
+          authType: credentials.authType,
         };
       } else {
-        // If authentication type is managed identity but managed identities were disabled in Grafana config,
+        // If authentication type is managed identity or workload identity but either method is disabled in Grafana config,
         // then we should fallback to an empty app registration (client secret) configuration
         return {
           authType: 'clientsecret',
@@ -71,16 +85,21 @@ export function updateCredentials(
 ): DataSourceSettings<any, any> {
   switch (credentials.authType) {
     case 'msi':
-      if (!config.azure.managedIdentityEnabled) {
+    case 'workloadidentity':
+      if (credentials.authType === 'msi' && !config.azure.managedIdentityEnabled) {
         throw new Error('Managed Identity authentication is not enabled in Grafana config.');
+      }
+      if (credentials.authType === 'workloadidentity' && !config.azure.workloadIdentityEnabled) {
+        throw new Error('Workload Identity authentication is not enabled in Grafana config.');
       }
 
       options = {
         ...options,
         jsonData: {
           ...options.jsonData,
+          azureAuthType: credentials.authType,
           azureCredentials: {
-            authType: 'msi',
+            authType: credentials.authType,
           },
         },
       };

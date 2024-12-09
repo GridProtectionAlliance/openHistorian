@@ -1,5 +1,5 @@
-import classNames from 'classnames';
-import React, { PureComponent } from 'react';
+import { debounce } from 'lodash';
+import { PureComponent } from 'react';
 import { Subscription } from 'rxjs';
 
 import {
@@ -8,56 +8,53 @@ import {
   AnnotationEventUIModel,
   CoreApp,
   DashboardCursorSync,
+  DataFrame,
   EventFilterOptions,
   FieldConfigSource,
   getDataSourceRef,
   getDefaultTimeRange,
-  LinkModel,
   LoadingState,
   PanelData,
   PanelPlugin,
   PanelPluginMeta,
-  PluginContextProvider,
-  renderMarkdown,
+  SetPanelAttentionEvent,
   TimeRange,
   toDataFrameDTO,
   toUtc,
 } from '@grafana/data';
-import { selectors } from '@grafana/e2e-selectors';
-import { getTemplateSrv, config, locationService, RefreshEvent, reportInteraction } from '@grafana/runtime';
+import { RefreshEvent } from '@grafana/runtime';
 import { VizLegendOptions } from '@grafana/schema';
 import {
   ErrorBoundary,
   PanelChrome,
   PanelContext,
   PanelContextProvider,
-  PanelPadding,
   SeriesVisibilityChangeMode,
   AdHocFilterItem,
 } from '@grafana/ui';
-import { PANEL_BORDER } from 'app/core/constants';
+import appEvents from 'app/core/app_events';
+import config from 'app/core/config';
 import { profiler } from 'app/core/profiler';
 import { applyPanelTimeOverrides } from 'app/features/dashboard/utils/panel';
-import { InspectTab } from 'app/features/inspector/types';
-import { getPanelLinksSupplier } from 'app/features/panel/panellinks/linkSuppliers';
 import { getDatasourceSrv } from 'app/features/plugins/datasource_srv';
 import { applyFilterFromTable } from 'app/features/variables/adhoc/actions';
+import { onUpdatePanelSnapshotData } from 'app/plugins/datasource/grafana/utils';
 import { changeSeriesColorConfigFactory } from 'app/plugins/panel/timeseries/overrides/colorSeriesConfigFactory';
 import { dispatch } from 'app/store/store';
 import { RenderEvent } from 'app/types/events';
 
-import { isSoloRoute } from '../../../routes/utils';
 import { deleteAnnotation, saveAnnotation, updateAnnotation } from '../../annotations/api';
 import { getDashboardQueryRunner } from '../../query/state/DashboardQueryRunner/DashboardQueryRunner';
 import { getTimeSrv, TimeSrv } from '../services/TimeSrv';
 import { DashboardModel, PanelModel } from '../state';
+import { getPanelChromeProps } from '../utils/getPanelChromeProps';
 import { loadSnapshotData } from '../utils/loadSnapshotData';
 
-import { PanelHeader } from './PanelHeader/PanelHeader';
-import { PanelHeaderMenuWrapperNew } from './PanelHeader/PanelHeaderMenuWrapper';
-import { PanelHeaderTitleItems } from './PanelHeader/PanelHeaderTitleItems';
+import { PanelHeaderMenuWrapper } from './PanelHeader/PanelHeaderMenuWrapper';
+import { PanelLoadTimeMonitor } from './PanelLoadTimeMonitor';
 import { seriesVisibilityConfigFactory } from './SeriesVisibilityConfigFactory';
 import { liveTimer } from './liveTimer';
+import { PanelOptionsLogger } from './panelOptionsLogger';
 
 const DEFAULT_PLUGIN_ERROR = 'Error in plugin';
 
@@ -68,9 +65,10 @@ export interface Props {
   isViewing: boolean;
   isEditing: boolean;
   isInView: boolean;
+  isDraggable?: boolean;
   width: number;
   height: number;
-  onInstanceStateChange: (value: any) => void;
+  onInstanceStateChange: (value: unknown) => void;
   timezone?: string;
   hideMenu?: boolean;
 }
@@ -79,7 +77,6 @@ export interface State {
   isFirstLoad: boolean;
   renderCounter: number;
   errorMessage?: string;
-  refreshWhenInView: boolean;
   context: PanelContext;
   data: PanelData;
   liveTime?: TimeRange;
@@ -89,19 +86,20 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
   private readonly timeSrv: TimeSrv = getTimeSrv();
   private subs = new Subscription();
   private eventFilter: EventFilterOptions = { onlyLocal: true };
-  private descriptionInteractionReported = false;
+  private panelOptionsLogger: PanelOptionsLogger | undefined = undefined;
 
   constructor(props: Props) {
     super(props);
 
     // Can this eventBus be on PanelModel?  when we have more complex event filtering, that may be a better option
     const eventBus = props.dashboard.events.newScopedBus(`panel:${props.panel.id}`, this.eventFilter);
+    this.debouncedSetPanelAttention = debounce(this.setPanelAttention.bind(this), 100);
 
     this.state = {
       isFirstLoad: true,
       renderCounter: 0,
-      refreshWhenInView: false,
       context: {
+        eventsScope: '__global_',
         eventBus,
         app: this.getPanelContextApp(),
         sync: this.getSync,
@@ -116,15 +114,26 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
         canEditAnnotations: props.dashboard.canEditAnnotations.bind(props.dashboard),
         canDeleteAnnotations: props.dashboard.canDeleteAnnotations.bind(props.dashboard),
         onAddAdHocFilter: this.onAddAdHocFilter,
+        onUpdateData: this.onUpdateData,
       },
       data: this.getInitialPanelDataState(),
     };
+
+    if (config.featureToggles.panelMonitoring && this.getPanelContextApp() === CoreApp.PanelEditor) {
+      const panelInfo = {
+        panelId: String(props.panel.id),
+        panelType: props.panel.type,
+        panelTitle: props.panel.title,
+      };
+
+      this.panelOptionsLogger = new PanelOptionsLogger(props.panel.getOptions(), props.panel.fieldConfig, panelInfo);
+    }
   }
 
   // Due to a mutable panel model we get the sync settings via function that proactively reads from the model
   getSync = () => (this.props.isEditing ? DashboardCursorSync.Off : this.props.dashboard.graphTooltip);
 
-  onInstanceStateChange = (value: any) => {
+  onInstanceStateChange = (value: unknown) => {
     this.props.onInstanceStateChange(value);
 
     this.setState({
@@ -145,6 +154,10 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
 
     return CoreApp.Dashboard;
   }
+
+  onUpdateData = (frames: DataFrame[]): Promise<boolean> => {
+    return onUpdatePanelSnapshotData(this.props.panel, frames);
+  };
 
   onSeriesColorChange = (label: string, color: string) => {
     this.onFieldConfigChange(changeSeriesColorConfigFactory(label, color, this.props.panel.fieldConfig));
@@ -247,7 +260,7 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { isInView, width } = this.props;
+    const { isInView, width, panel } = this.props;
     const { context } = this.state;
 
     const app = this.getPanelContextApp();
@@ -265,7 +278,7 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
     if (isInView !== prevProps.isInView) {
       if (isInView) {
         // Check if we need a delayed refresh
-        if (this.state.refreshWhenInView) {
+        if (panel.refreshWhenInView) {
           this.onRefresh();
         }
       }
@@ -331,8 +344,8 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
   onRefresh = () => {
     const { dashboard, panel, isInView, width } = this.props;
 
-    if (!isInView) {
-      this.setState({ refreshWhenInView: true });
+    if (!dashboard.snapshot && !isInView) {
+      panel.refreshWhenInView = true;
       return;
     }
 
@@ -344,14 +357,10 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
         return;
       }
 
-      if (this.state.refreshWhenInView) {
-        this.setState({ refreshWhenInView: false });
-      }
+      panel.refreshWhenInView = false;
       panel.runAllPanelQueries({
-        dashboardId: dashboard.id,
         dashboardUID: dashboard.uid,
         dashboardTimezone: dashboard.getTimezone(),
-        publicDashboardAccessToken: dashboard.meta.publicDashboardAccessToken,
         timeData,
         width,
       });
@@ -370,7 +379,7 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
     this.setState(stateUpdate);
   };
 
-  onOptionsChange = (options: any) => {
+  onOptionsChange = (options: object) => {
     this.props.panel.updateOptions(options);
   };
 
@@ -378,8 +387,17 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
     this.props.panel.updateFieldConfig(config);
   };
 
+  logPanelChangesOnError() {
+    this.panelOptionsLogger!.logChanges(this.props.panel.getOptions(), this.props.panel.fieldConfig);
+  }
+
   onPanelError = (error: Error) => {
+    if (config.featureToggles.panelMonitoring && this.getPanelContextApp() === CoreApp.PanelEditor) {
+      this.logPanelChangesOnError();
+    }
+
     const errorMessage = error.message || DEFAULT_PLUGIN_ERROR;
+
     if (this.state.errorMessage !== errorMessage) {
       this.setState({ errorMessage });
     }
@@ -446,7 +464,12 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
   };
 
   shouldSignalRenderingCompleted(loadingState: LoadingState, pluginMeta: PanelPluginMeta) {
-    return loadingState === LoadingState.Done || loadingState === LoadingState.Error || pluginMeta.skipDataQuery;
+    return (
+      loadingState === LoadingState.Done ||
+      loadingState === LoadingState.Streaming ||
+      loadingState === LoadingState.Error ||
+      pluginMeta.skipDataQuery
+    );
   }
 
   skipFirstRender(loadingState: LoadingState) {
@@ -517,251 +540,74 @@ export class PanelStateWrapper extends PureComponent<Props, State> {
             onChangeTimeRange={this.onChangeTimeRange}
             eventBus={dashboard.events}
           />
+          {config.featureToggles.panelMonitoring && this.state.errorMessage === undefined && (
+            <PanelLoadTimeMonitor panelType={plugin.meta.id} panelId={panel.id} panelTitle={panel.title} />
+          )}
         </PanelContextProvider>
       </>
     );
   }
 
-  renderPanel(width: number, height: number) {
-    const { panel, plugin, dashboard } = this.props;
-    const { renderCounter, data } = this.state;
-    const { theme } = config;
-    const { state: loadingState } = data;
-
-    // do not render component until we have first data
-    if (this.skipFirstRender(loadingState)) {
-      return null;
-    }
-
-    // This is only done to increase a counter that is used by backend
-    // image rendering to know when to capture image
-    if (this.shouldSignalRenderingCompleted(loadingState, plugin.meta)) {
-      profiler.renderingCompleted();
-    }
-
-    const PanelComponent = plugin.panel!;
-    const timeRange = this.state.liveTime ?? data.timeRange ?? this.timeSrv.timeRange();
-    const headerHeight = this.hasOverlayHeader() ? 0 : theme.panelHeaderHeight;
-    const chromePadding = plugin.noPadding ? 0 : theme.panelPadding;
-    const panelWidth = width - chromePadding * 2 - PANEL_BORDER;
-    const innerPanelHeight = height - headerHeight - chromePadding * 2 - PANEL_BORDER;
-    const panelContentClassNames = classNames({
-      'panel-content': true,
-      'panel-content--no-padding': plugin.noPadding,
-    });
-    const panelOptions = panel.getOptions();
-
-    // Update the event filter (dashboard settings may have changed)
-    // Yes this is called ever render for a function that is triggered on every mouse move
-    this.eventFilter.onlyLocal = dashboard.graphTooltip === 0;
-
-    const timeZone = this.props.timezone || this.props.dashboard.getTimezone();
-
-    return (
-      <>
-        <div className={panelContentClassNames}>
-          <PluginContextProvider meta={plugin.meta}>
-            <PanelContextProvider value={this.state.context}>
-              <PanelComponent
-                id={panel.id}
-                data={data}
-                title={panel.title}
-                timeRange={timeRange}
-                timeZone={timeZone}
-                options={panelOptions}
-                fieldConfig={panel.fieldConfig}
-                transparent={panel.transparent}
-                width={panelWidth}
-                height={innerPanelHeight}
-                renderCounter={renderCounter}
-                replaceVariables={panel.replaceVariables}
-                onOptionsChange={this.onOptionsChange}
-                onFieldConfigChange={this.onFieldConfigChange}
-                onChangeTimeRange={this.onChangeTimeRange}
-                eventBus={dashboard.events}
-              />
-            </PanelContextProvider>
-          </PluginContextProvider>
-        </div>
-      </>
-    );
+  setPanelAttention() {
+    appEvents.publish(new SetPanelAttentionEvent({ panelId: this.props.panel.id }));
   }
 
-  hasOverlayHeader() {
-    const { panel } = this.props;
-    const { data } = this.state;
-
-    // always show normal header if we have time override
-    if (data.request && data.request.timeInfo) {
-      return false;
-    }
-
-    return !panel.hasTitle();
-  }
-
-  onShowPanelDescription = () => {
-    const { panel } = this.props;
-    const descriptionMarkdown = getTemplateSrv().replace(panel.description, panel.scopedVars);
-    const interpolatedDescription = renderMarkdown(descriptionMarkdown);
-
-    if (!this.descriptionInteractionReported) {
-      // Description rendering function can be called multiple times due to re-renders but we want to report the interaction once.
-      reportInteraction('dashboards_panelheader_description_displayed');
-      this.descriptionInteractionReported = true;
-    }
-
-    return interpolatedDescription;
-  };
-
-  onShowPanelLinks = (): LinkModel[] => {
-    const { panel } = this.props;
-    const linkSupplier = getPanelLinksSupplier(panel);
-    if (linkSupplier) {
-      const panelLinks = linkSupplier && linkSupplier.getLinks(panel.replaceVariables);
-
-      return panelLinks.map((panelLink) => ({
-        ...panelLink,
-        onClick: (...args) => {
-          reportInteraction('dashboards_panelheader_datalink_clicked', { has_multiple_links: panelLinks.length > 1 });
-          panelLink.onClick?.(...args);
-        },
-      }));
-    }
-    return [];
-  };
-
-  onOpenInspector = (e: React.SyntheticEvent, tab: string) => {
-    e.stopPropagation();
-    locationService.partial({ inspect: this.props.panel.id, inspectTab: tab });
-  };
-
-  onOpenErrorInspect = (e: React.SyntheticEvent) => {
-    e.stopPropagation();
-    locationService.partial({ inspect: this.props.panel.id, inspectTab: InspectTab.Error });
-    reportInteraction('dashboards_panelheader_statusmessage_clicked');
-  };
-
-  onCancelQuery = () => {
-    this.props.panel.getQueryRunner().cancelQuery();
-    reportInteraction('dashboards_panelheader_cancelquery_clicked', { data_state: this.state.data.state });
-  };
+  debouncedSetPanelAttention() {}
 
   render() {
-    const { dashboard, panel, isViewing, isEditing, width, height, plugin } = this.props;
+    const { dashboard, panel, width, height, plugin } = this.props;
     const { errorMessage, data } = this.state;
     const { transparent } = panel;
+    const panelChromeProps = getPanelChromeProps({ ...this.props, data });
 
-    const alertState = data.alertState?.state;
-    const hasHoverHeader = this.hasOverlayHeader();
+    // Shift the hover menu down if it's on the top row so it doesn't get clipped by topnav
+    const hoverHeaderOffset = (panel.gridPos?.y ?? 0) === 0 ? -16 : undefined;
 
-    const containerClassNames = classNames({
-      'panel-container': true,
-      'panel-container--absolute': isSoloRoute(locationService.getLocation().pathname),
-      'panel-container--transparent': transparent,
-      'panel-container--no-title': hasHoverHeader,
-      [`panel-alert-state--${alertState}`]: alertState !== undefined,
-    });
-
-    const title = panel.getDisplayTitle();
-    const padding: PanelPadding = plugin.noPadding ? 'none' : 'md';
-
-    const showTitleItems =
-      (panel.links && panel.links.length > 0 && this.onShowPanelLinks) ||
-      (data.series.length > 0 && data.series.some((v) => (v.meta?.notices?.length ?? 0) > 0)) ||
-      (data.request && data.request.timeInfo) ||
-      alertState;
-
-    const titleItems = showTitleItems && (
-      <PanelHeaderTitleItems
-        key="title-items"
-        alertState={alertState}
-        data={data}
-        panelId={panel.id}
-        panelLinks={panel.links}
-        onShowPanelLinks={this.onShowPanelLinks}
-      />
+    const menu = (
+      <div data-testid="panel-dropdown">
+        <PanelHeaderMenuWrapper panel={panel} dashboard={dashboard} loadingState={data.state} />
+      </div>
     );
 
-    const dragClass = !(isViewing || isEditing) ? 'grid-drag-handle' : '';
-    if (config.featureToggles.newPanelChromeUI) {
-      // Shift the hover menu down if it's on the top row so it doesn't get clipped by topnav
-      const hoverHeaderOffset = (panel.gridPos?.y ?? 0) === 0 ? -16 : undefined;
-
-      const menu = (
-        <div data-testid="panel-dropdown">
-          <PanelHeaderMenuWrapperNew panel={panel} dashboard={dashboard} loadingState={data.state} />
-        </div>
-      );
-
-      return (
-        <PanelChrome
-          width={width}
-          height={height}
-          title={title}
-          loadingState={data.state}
-          statusMessage={errorMessage}
-          statusMessageOnClick={this.onOpenErrorInspect}
-          description={!!panel.description ? this.onShowPanelDescription : undefined}
-          titleItems={titleItems}
-          menu={this.props.hideMenu ? undefined : menu}
-          dragClass={dragClass}
-          dragClassCancel="grid-drag-cancel"
-          padding={padding}
-          hoverHeaderOffset={hoverHeaderOffset}
-          hoverHeader={this.hasOverlayHeader()}
-          displayMode={transparent ? 'transparent' : 'default'}
-          onCancelQuery={this.onCancelQuery}
-        >
-          {(innerWidth, innerHeight) => (
-            <>
-              <ErrorBoundary
-                dependencies={[data, plugin, panel.getOptions()]}
-                onError={this.onPanelError}
-                onRecover={this.onPanelErrorRecover}
-              >
-                {({ error }) => {
-                  if (error) {
-                    return null;
-                  }
-                  return this.renderPanelContent(innerWidth, innerHeight);
-                }}
-              </ErrorBoundary>
-            </>
-          )}
-        </PanelChrome>
-      );
-    } else {
-      return (
-        <section
-          className={containerClassNames}
-          aria-label={selectors.components.Panels.Panel.containerByTitle(panel.title)}
-        >
-          <PanelHeader
-            panel={panel}
-            dashboard={dashboard}
-            title={panel.title}
-            description={panel.description}
-            links={panel.links}
-            error={errorMessage}
-            isEditing={isEditing}
-            isViewing={isViewing}
-            alertState={alertState}
-            data={data}
-          />
-          <ErrorBoundary
-            dependencies={[data, plugin, panel.getOptions()]}
-            onError={this.onPanelError}
-            onRecover={this.onPanelErrorRecover}
-          >
-            {({ error }) => {
-              if (error) {
-                return null;
-              }
-              return this.renderPanel(width, height);
-            }}
-          </ErrorBoundary>
-        </section>
-      );
-    }
+    return (
+      <PanelChrome
+        width={width}
+        height={height}
+        title={panelChromeProps.title}
+        loadingState={data.state}
+        statusMessage={errorMessage}
+        statusMessageOnClick={panelChromeProps.onOpenErrorInspect}
+        description={panelChromeProps.description}
+        titleItems={panelChromeProps.titleItems}
+        menu={this.props.hideMenu ? undefined : menu}
+        dragClass={panelChromeProps.dragClass}
+        dragClassCancel="grid-drag-cancel"
+        padding={panelChromeProps.padding}
+        hoverHeaderOffset={hoverHeaderOffset}
+        hoverHeader={panelChromeProps.hasOverlayHeader()}
+        displayMode={transparent ? 'transparent' : 'default'}
+        onCancelQuery={panelChromeProps.onCancelQuery}
+        onFocus={() => this.setPanelAttention()}
+        onMouseEnter={() => this.setPanelAttention()}
+        onMouseMove={() => this.debouncedSetPanelAttention()}
+      >
+        {(innerWidth, innerHeight) => (
+          <>
+            <ErrorBoundary
+              dependencies={[data, plugin, panel.getOptions()]}
+              onError={this.onPanelError}
+              onRecover={this.onPanelErrorRecover}
+            >
+              {({ error }) => {
+                if (error) {
+                  return null;
+                }
+                return this.renderPanelContent(innerWidth, innerHeight);
+              }}
+            </ErrorBoundary>
+          </>
+        )}
+      </PanelChrome>
+    );
   }
 }

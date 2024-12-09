@@ -1,30 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
-import { getBackendSrv, locationService } from '@grafana/runtime';
-import { ConfirmModal, Button, LinkButton } from '@grafana/ui';
+import { config } from '@grafana/runtime';
+import { ConfirmModal, EmptyState, TextLink } from '@grafana/ui';
+import { Trans, t } from 'app/core/internationalization';
+import { getDashboardSnapshotSrv, Snapshot } from 'app/features/dashboard/services/SnapshotSrv';
 
-import { Snapshot } from '../types';
+import { SnapshotListTableRow } from './SnapshotListTableRow';
 
-export function getSnapshots() {
-  return getBackendSrv()
-    .get('/api/dashboard/snapshots')
+export async function getSnapshots() {
+  return getDashboardSnapshotSrv()
+    .getSnapshots()
     .then((result: Snapshot[]) => {
       return result.map((snapshot) => ({
         ...snapshot,
-        url: `/dashboard/snapshot/${snapshot.key}`,
+        url: `${config.appUrl}dashboard/snapshot/${snapshot.key}`,
       }));
     });
 }
 export const SnapshotListTable = () => {
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
   const [removeSnapshot, setRemoveSnapshot] = useState<Snapshot | undefined>();
-  const currentPath = locationService.getLocation().pathname;
-  const fullUrl = window.location.href;
-  const baseUrl = fullUrl.substring(0, fullUrl.indexOf(currentPath));
-
   useAsync(async () => {
+    setIsFetching(true);
     const response = await getSnapshots();
+    setIsFetching(false);
     setSnapshots(response);
   }, [setSnapshots]);
 
@@ -32,8 +33,8 @@ export const SnapshotListTable = () => {
     async (snapshot: Snapshot) => {
       const filteredSnapshots = snapshots.filter((ss) => ss.key !== snapshot.key);
       setSnapshots(filteredSnapshots);
-      await getBackendSrv()
-        .delete(`/api/snapshots/${snapshot.key}`)
+      await getDashboardSnapshotSrv()
+        .deleteSnapshot(snapshot.key)
         .catch(() => {
           setSnapshots(snapshots);
         });
@@ -41,16 +42,39 @@ export const SnapshotListTable = () => {
     [snapshots]
   );
 
+  if (!isFetching && snapshots.length === 0) {
+    return (
+      <EmptyState
+        variant="call-to-action"
+        message={t('snapshot.empty-state.message', "You haven't created any snapshots yet")}
+      >
+        <Trans i18nKey="snapshot.empty-state.more-info">
+          You can create a snapshot of any dashboard through the <b>Share</b> modal.{' '}
+          <TextLink
+            external
+            href="https://grafana.com/docs/grafana/latest/dashboards/share-dashboards-panels/#publish-a-snapshot"
+          >
+            Learn more
+          </TextLink>
+        </Trans>
+      </EmptyState>
+    );
+  }
+
   return (
     <div>
       <table className="filter-table">
         <thead>
           <tr>
             <th>
-              <strong>Name</strong>
+              <strong>
+                <Trans i18nKey="snapshot.name-column-header">Name</Trans>
+              </strong>
             </th>
             <th>
-              <strong>Snapshot url</strong>
+              <strong>
+                <Trans i18nKey="snapshot.url-column-header">Snapshot url</Trans>
+              </strong>
             </th>
             <th style={{ width: '70px' }}></th>
             <th style={{ width: '30px' }}></th>
@@ -58,29 +82,21 @@ export const SnapshotListTable = () => {
           </tr>
         </thead>
         <tbody>
-          {snapshots.map((snapshot) => {
-            const url = snapshot.externalUrl || snapshot.url;
-            const fullUrl = snapshot.externalUrl || `${baseUrl}${snapshot.url}`;
-            return (
-              <tr key={snapshot.key}>
-                <td>
-                  <a href={url}>{snapshot.name}</a>
-                </td>
-                <td>
-                  <a href={url}>{fullUrl}</a>
-                </td>
-                <td>{snapshot.external && <span className="query-keyword">External</span>}</td>
-                <td className="text-center">
-                  <LinkButton href={url} variant="secondary" size="sm" icon="eye">
-                    View
-                  </LinkButton>
-                </td>
-                <td className="text-right">
-                  <Button variant="destructive" size="sm" icon="times" onClick={() => setRemoveSnapshot(snapshot)} />
-                </td>
-              </tr>
-            );
-          })}
+          {isFetching ? (
+            <>
+              <SnapshotListTableRow.Skeleton />
+              <SnapshotListTableRow.Skeleton />
+              <SnapshotListTableRow.Skeleton />
+            </>
+          ) : (
+            snapshots.map((snapshot) => (
+              <SnapshotListTableRow
+                key={snapshot.key}
+                snapshot={snapshot}
+                onRemove={() => setRemoveSnapshot(snapshot)}
+              />
+            ))
+          )}
         </tbody>
       </table>
 

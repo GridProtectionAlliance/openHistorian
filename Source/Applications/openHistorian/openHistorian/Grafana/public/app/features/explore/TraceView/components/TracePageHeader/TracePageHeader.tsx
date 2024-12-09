@@ -14,153 +14,69 @@
 
 import { css } from '@emotion/css';
 import cx from 'classnames';
-import { get as _get, maxBy as _maxBy, values as _values } from 'lodash';
+import { memo, useEffect, useMemo } from 'react';
 import * as React from 'react';
 
-import { dateTimeFormat, GrafanaTheme2, TimeZone } from '@grafana/data';
-import { useStyles2 } from '@grafana/ui';
+import { CoreApp, DataFrame, dateTimeFormat, GrafanaTheme2 } from '@grafana/data';
+import { TimeZone } from '@grafana/schema';
+import { Badge, BadgeColor, Tooltip, useStyles2 } from '@grafana/ui';
 
+import { SearchProps } from '../../useSearch';
 import ExternalLinks from '../common/ExternalLinks';
-import LabeledList from '../common/LabeledList';
 import TraceName from '../common/TraceName';
-import { autoColor, TUpdateViewRangeTimeFunction, ViewRange, ViewRangeTimeUpdate } from '../index';
 import { getTraceLinks } from '../model/link-patterns';
-import { getTraceName } from '../model/trace-viewer';
+import { getHeaderTags, getTraceName } from '../model/trace-viewer';
 import { Trace } from '../types';
-import { uTxMuted } from '../uberUtilityStyles';
 import { formatDuration } from '../utils/date';
 
-import SpanGraph from './SpanGraph';
+import TracePageActions from './Actions/TracePageActions';
+import { SpanFilters } from './SpanFilters/SpanFilters';
 
-export const getStyles = (theme: GrafanaTheme2) => {
-  return {
-    theme,
-    TracePageHeader: css`
-      label: TracePageHeader;
-      & > :last-child {
-        border-bottom: 1px solid ${autoColor(theme, '#ccc')};
-      }
-    `,
-    TracePageHeaderTitleRow: css`
-      label: TracePageHeaderTitleRow;
-      align-items: center;
-      display: flex;
-    `,
-    TracePageHeaderBack: css`
-      label: TracePageHeaderBack;
-      align-items: center;
-      align-self: stretch;
-      background-color: #fafafa;
-      border-bottom: 1px solid #ddd;
-      border-right: 1px solid #ddd;
-      color: inherit;
-      display: flex;
-      font-size: 1.4rem;
-      padding: 0 1rem;
-      margin-bottom: -1px;
-      &:hover {
-        background-color: #f0f0f0;
-        border-color: #ccc;
-      }
-    `,
-    TracePageHeaderTitle: css`
-      label: TracePageHeaderTitle;
-      color: inherit;
-      flex: 1;
-      font-size: 1.7em;
-      line-height: 1em;
-      margin: 0 0 0 0.3em;
-      padding-bottom: 0.5em;
-    `,
-    TracePageHeaderOverviewItems: css`
-      label: TracePageHeaderOverviewItems;
-      background-color: ${autoColor(theme, '#eee')};
-      border-bottom: 1px solid ${autoColor(theme, '#e4e4e4')};
-      padding: 0.25rem 0.5rem !important;
-    `,
-    TracePageHeaderOverviewItemValueDetail: cx(
-      css`
-        label: TracePageHeaderOverviewItemValueDetail;
-        color: #aaa;
-      `,
-      'trace-item-value-detail'
-    ),
-    TracePageHeaderOverviewItemValue: css`
-      label: TracePageHeaderOverviewItemValue;
-      &:hover > .trace-item-value-detail {
-        color: unset;
-      }
-    `,
-    TracePageHeaderArchiveIcon: css`
-      label: TracePageHeaderArchiveIcon;
-      font-size: 1.78em;
-      margin-right: 0.15em;
-    `,
-    TracePageHeaderTraceId: css`
-      label: TracePageHeaderTraceId;
-      white-space: nowrap;
-    `,
-    titleBorderBottom: css`
-      border-bottom: 1px solid ${autoColor(theme, '#e8e8e8')};
-    `,
-  };
-};
-
-export type TracePageHeaderEmbedProps = {
+export type TracePageHeaderProps = {
   trace: Trace | null;
-  updateNextViewRangeTime: (update: ViewRangeTimeUpdate) => void;
-  updateViewRangeTime: TUpdateViewRangeTimeFunction;
-  viewRange: ViewRange;
+  data: DataFrame;
+  app?: CoreApp;
   timeZone: TimeZone;
+  search: SearchProps;
+  setSearch: React.Dispatch<React.SetStateAction<SearchProps>>;
+  showSpanFilters: boolean;
+  setShowSpanFilters: (isOpen: boolean) => void;
+  showSpanFilterMatchesOnly: boolean;
+  setShowSpanFilterMatchesOnly: (showMatchesOnly: boolean) => void;
+  showCriticalPathSpansOnly: boolean;
+  setShowCriticalPathSpansOnly: (showCriticalPathSpansOnly: boolean) => void;
+  setFocusedSpanIdForSearch: React.Dispatch<React.SetStateAction<string>>;
+  spanFilterMatches: Set<string> | undefined;
+  datasourceType: string;
+  setHeaderHeight: (height: number) => void;
 };
 
-export const timestamp = (trace: Trace, timeZone: TimeZone, styles: ReturnType<typeof getStyles>) => {
-  // Convert date from micro to milli seconds
-  const dateStr = dateTimeFormat(trace.startTime / 1000, { timeZone, defaultWithMS: true });
-  const match = dateStr.match(/^(.+)(:\d\d\.\d+)$/);
-  return match ? (
-    <span className={styles.TracePageHeaderOverviewItemValue}>
-      {match[1]}
-      <span className={styles.TracePageHeaderOverviewItemValueDetail}>{match[2]}</span>
-    </span>
-  ) : (
-    dateStr
-  );
-};
+export const TracePageHeader = memo((props: TracePageHeaderProps) => {
+  const {
+    trace,
+    data,
+    app,
+    timeZone,
+    search,
+    setSearch,
+    showSpanFilters,
+    setShowSpanFilters,
+    showSpanFilterMatchesOnly,
+    setShowSpanFilterMatchesOnly,
+    showCriticalPathSpansOnly,
+    setShowCriticalPathSpansOnly,
+    setFocusedSpanIdForSearch,
+    spanFilterMatches,
+    datasourceType,
+    setHeaderHeight,
+  } = props;
+  const styles = useStyles2(getNewStyles);
 
-export const HEADER_ITEMS = [
-  {
-    key: 'timestamp',
-    label: 'Trace Start:',
-    renderer: timestamp,
-  },
-  {
-    key: 'duration',
-    label: 'Duration:',
-    renderer: (trace: Trace) => formatDuration(trace.duration),
-  },
-  {
-    key: 'service-count',
-    label: 'Services:',
-    renderer: (trace: Trace) => new Set(_values(trace.processes).map((p) => p.serviceName)).size,
-  },
-  {
-    key: 'depth',
-    label: 'Depth:',
-    renderer: (trace: Trace) => _get(_maxBy(trace.spans, 'depth'), 'depth', 0) + 1,
-  },
-  {
-    key: 'span-count',
-    label: 'Total Spans:',
-    renderer: (trace: Trace) => trace.spans.length,
-  },
-];
+  useEffect(() => {
+    setHeaderHeight(document.querySelector('.' + styles.header)?.scrollHeight ?? 0);
+  }, [setHeaderHeight, showSpanFilters, styles.header]);
 
-export default function TracePageHeader(props: TracePageHeaderEmbedProps) {
-  const { trace, updateNextViewRangeTime, updateViewRangeTime, viewRange, timeZone } = props;
-
-  const styles = useStyles2(getStyles);
-  const links = React.useMemo(() => {
+  const links = useMemo(() => {
     if (!trace) {
       return [];
     }
@@ -171,32 +87,187 @@ export default function TracePageHeader(props: TracePageHeaderEmbedProps) {
     return null;
   }
 
-  const summaryItems = HEADER_ITEMS.map((item) => {
-    const { renderer, ...rest } = item;
-    return { ...rest, value: renderer(trace, timeZone, styles) };
-  });
+  const timestamp = (trace: Trace, timeZone: TimeZone) => {
+    // Convert date from micro to milli seconds
+    const dateStr = dateTimeFormat(trace.startTime / 1000, { timeZone, defaultWithMS: true });
+    const match = dateStr.match(/^(.+)(:\d\d\.\d+)$/);
+    return match ? (
+      <span className={styles.TracePageHeaderOverviewItemValue}>
+        {match[1]}
+        <span className={styles.TracePageHeaderOverviewItemValueDetail}>{match[2]}</span>
+      </span>
+    ) : (
+      dateStr
+    );
+  };
 
   const title = (
-    <h1 className={styles.TracePageHeaderTitle}>
-      <TraceName traceName={getTraceName(trace.spans)} />{' '}
-      <small className={cx(styles.TracePageHeaderTraceId, uTxMuted)}>{trace.traceID}</small>
+    <h1 className={cx(styles.title)}>
+      <TraceName traceName={getTraceName(trace.spans)} />
+      <small className={styles.duration}>{formatDuration(trace.duration)}</small>
     </h1>
   );
 
+  const { method, status, url } = getHeaderTags(trace.spans);
+  let statusColor: BadgeColor = 'green';
+  if (status && status.length > 0) {
+    if (status[0].value.toString().charAt(0) === '4') {
+      statusColor = 'orange';
+    } else if (status[0].value.toString().charAt(0) === '5') {
+      statusColor = 'red';
+    }
+  }
+
+  const urlTooltip = (url: string) => {
+    return (
+      <>
+        <div>http.url or http.target or http.path</div>
+        <div>({url})</div>
+      </>
+    );
+  };
+
   return (
-    <header className={styles.TracePageHeader}>
-      <div className={cx(styles.TracePageHeaderTitleRow, styles.titleBorderBottom)}>
+    <header className={styles.header}>
+      <div className={styles.titleRow}>
         {links && links.length > 0 && <ExternalLinks links={links} className={styles.TracePageHeaderBack} />}
         {title}
+        <TracePageActions traceId={trace.traceID} data={data} app={app} />
       </div>
-      {summaryItems && <LabeledList className={styles.TracePageHeaderOverviewItems} items={summaryItems} />}
 
-      <SpanGraph
+      <div className={styles.subtitle}>
+        <span className={styles.timestamp}>{timestamp(trace, timeZone)}</span>
+        <span className={styles.tagMeta}>
+          {method && method.length > 0 && (
+            <Tooltip content={'http.method'} interactive={true}>
+              <span className={styles.tag}>
+                <Badge text={method[0].value} color="blue" />
+              </span>
+            </Tooltip>
+          )}
+          {status && status.length > 0 && (
+            <Tooltip content={'http.status_code'} interactive={true}>
+              <span className={styles.tag}>
+                <Badge text={status[0].value} color={statusColor} />
+              </span>
+            </Tooltip>
+          )}
+          {url && url.length > 0 && (
+            <Tooltip content={urlTooltip(url[0].value)} interactive={true}>
+              <span className={styles.url}>{url[0].value}</span>
+            </Tooltip>
+          )}
+        </span>
+      </div>
+
+      <SpanFilters
         trace={trace}
-        viewRange={viewRange}
-        updateNextViewRangeTime={updateNextViewRangeTime}
-        updateViewRangeTime={updateViewRangeTime}
+        showSpanFilters={showSpanFilters}
+        setShowSpanFilters={setShowSpanFilters}
+        showSpanFilterMatchesOnly={showSpanFilterMatchesOnly}
+        setShowSpanFilterMatchesOnly={setShowSpanFilterMatchesOnly}
+        showCriticalPathSpansOnly={showCriticalPathSpansOnly}
+        setShowCriticalPathSpansOnly={setShowCriticalPathSpansOnly}
+        search={search}
+        setSearch={setSearch}
+        spanFilterMatches={spanFilterMatches}
+        setFocusedSpanIdForSearch={setFocusedSpanIdForSearch}
+        datasourceType={datasourceType}
       />
     </header>
   );
-}
+});
+
+TracePageHeader.displayName = 'TracePageHeader';
+
+const getNewStyles = (theme: GrafanaTheme2) => {
+  return {
+    TracePageHeaderBack: css({
+      label: 'TracePageHeaderBack',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      backgroundColor: '#fafafa',
+      borderBottom: '1px solid #ddd',
+      borderRight: '1px solid #ddd',
+      color: 'inherit',
+      display: 'flex',
+      fontSize: '1.4rem',
+      padding: '0 1rem',
+      marginBottom: '-1px',
+      '&:hover': {
+        backgroundColor: '#f0f0f0',
+        borderColor: '#ccc',
+      },
+    }),
+    TracePageHeaderOverviewItemValueDetail: cx(
+      css({
+        label: 'TracePageHeaderOverviewItemValueDetail',
+        color: '#aaa',
+      }),
+      'trace-item-value-detail'
+    ),
+    TracePageHeaderOverviewItemValue: css({
+      label: 'TracePageHeaderOverviewItemValue',
+      '&:hover > .trace-item-value-detail': {
+        color: 'unset',
+      },
+    }),
+    header: css({
+      label: 'TracePageHeader',
+      backgroundColor: theme.colors.background.primary,
+      padding: '0.5em 0 0 0',
+      position: 'sticky',
+      top: 0,
+      zIndex: 5,
+      textAlign: 'left',
+    }),
+    titleRow: css({
+      alignItems: 'flex-start',
+      display: 'flex',
+      padding: '0 8px',
+      flexWrap: 'wrap',
+    }),
+    title: css({
+      color: 'inherit',
+      flex: 1,
+      fontSize: '1.7em',
+      lineHeight: '1em',
+      marginBottom: 0,
+      minWidth: '200px',
+    }),
+    subtitle: css({
+      flex: 1,
+      lineHeight: '1em',
+      margin: '-0.5em 0.5em 0.75em 0.5em',
+    }),
+    tag: css({
+      margin: '0 0.5em 0 0',
+    }),
+    duration: css({
+      color: '#aaa',
+      margin: '0 0.75em',
+    }),
+    timestamp: css({
+      verticalAlign: 'middle',
+    }),
+    tagMeta: css({
+      margin: '0 0.75em',
+      verticalAlign: 'text-top',
+    }),
+    url: css({
+      margin: '-2.5px 0.3em',
+      height: '15px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '700px',
+      display: 'inline-block',
+    }),
+    TracePageHeaderTraceId: css({
+      label: 'TracePageHeaderTraceId',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      maxWidth: '30%',
+      display: 'inline-block',
+    }),
+  };
+};

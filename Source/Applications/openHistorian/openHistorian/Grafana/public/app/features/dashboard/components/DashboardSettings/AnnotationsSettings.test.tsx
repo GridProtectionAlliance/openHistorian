@@ -1,10 +1,7 @@
-import { within } from '@testing-library/dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { TestProvider } from 'test/helpers/TestProvider';
 
-import { selectors } from '@grafana/e2e-selectors';
 import { locationService, setAngularLoader, setDataSourceSrv } from '@grafana/runtime';
 import { mockDataSource, MockDataSourceSrv } from 'app/features/alerting/unified/mocks';
 
@@ -75,23 +72,11 @@ describe('AnnotationsSettings', () => {
   });
 
   beforeEach(() => {
+    // we have a default build-in annotation
     dashboard = createDashboardModelFixture({
       id: 74,
       version: 7,
-      annotations: {
-        list: [
-          {
-            builtIn: 1,
-            datasource: { uid: 'uid1', type: 'grafana' },
-            enable: true,
-            hide: true,
-            iconColor: 'rgba(0, 211, 255, 1)',
-            name: 'Annotations & Alerts',
-            type: 'dashboard',
-            showIn: 1,
-          },
-        ],
-      },
+      annotations: {},
       links: [],
     });
   });
@@ -100,10 +85,9 @@ describe('AnnotationsSettings', () => {
     setup(dashboard);
 
     expect(screen.queryByRole('grid')).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /annotations & alerts \(built\-in\) grafana/i })).toBeInTheDocument();
-    expect(
-      screen.getByTestId(selectors.components.CallToActionCard.buttonV2('Add annotation query'))
-    ).toBeInTheDocument();
+    expect(screen.getByRole('row', { name: /annotations & alerts \(built-in\) -- grafana --/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: 'Add annotation query' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /annotations documentation/i })).toBeInTheDocument();
   });
 
@@ -111,12 +95,10 @@ describe('AnnotationsSettings', () => {
     dashboard.annotations.list = [];
     setup(dashboard);
 
-    expect(
-      screen.getByTestId(selectors.components.CallToActionCard.buttonV2('Add annotation query'))
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add annotation query' })).toBeInTheDocument();
   });
 
-  test('it renders the annotation names or uid if annotation doesnt exist', async () => {
+  test('it renders the annotation names or uid if annotation does not exist', async () => {
     dashboard.annotations.list = [
       ...dashboard.annotations.list,
       {
@@ -170,23 +152,23 @@ describe('AnnotationsSettings', () => {
     setup(dashboard);
 
     // Check that we have sorting buttons
-    expect(within(getTableBodyRows()[0]).queryByRole('button', { name: 'arrow-up' })).not.toBeInTheDocument();
-    expect(within(getTableBodyRows()[0]).queryByRole('button', { name: 'arrow-down' })).toBeInTheDocument();
+    expect(within(getTableBodyRows()[0]).queryByRole('button', { name: 'Move up' })).not.toBeInTheDocument();
+    expect(within(getTableBodyRows()[0]).queryByRole('button', { name: 'Move down' })).toBeInTheDocument();
 
-    expect(within(getTableBodyRows()[1]).queryByRole('button', { name: 'arrow-up' })).toBeInTheDocument();
-    expect(within(getTableBodyRows()[1]).queryByRole('button', { name: 'arrow-down' })).toBeInTheDocument();
+    expect(within(getTableBodyRows()[1]).queryByRole('button', { name: 'Move up' })).toBeInTheDocument();
+    expect(within(getTableBodyRows()[1]).queryByRole('button', { name: 'Move down' })).toBeInTheDocument();
 
-    expect(within(getTableBodyRows()[2]).queryByRole('button', { name: 'arrow-up' })).toBeInTheDocument();
-    expect(within(getTableBodyRows()[2]).queryByRole('button', { name: 'arrow-down' })).not.toBeInTheDocument();
+    expect(within(getTableBodyRows()[2]).queryByRole('button', { name: 'Move up' })).toBeInTheDocument();
+    expect(within(getTableBodyRows()[2]).queryByRole('button', { name: 'Move down' })).not.toBeInTheDocument();
 
     // Check the original order
     expect(within(getTableBodyRows()[0]).queryByText(/annotations & alerts/i)).toBeInTheDocument();
     expect(within(getTableBodyRows()[1]).queryByText(/annotation 2/i)).toBeInTheDocument();
     expect(within(getTableBodyRows()[2]).queryByText(/annotation 3/i)).toBeInTheDocument();
 
-    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'arrow-down' })[0]);
-    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'arrow-down' })[1]);
-    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'arrow-up' })[0]);
+    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'Move down' })[0]);
+    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'Move down' })[1]);
+    await userEvent.click(within(getTableBody()).getAllByRole('button', { name: 'Move up' })[0]);
 
     // Checking if it has changed the sorting accordingly
     expect(within(getTableBodyRows()[0]).queryByText(/annotation 3/i)).toBeInTheDocument();
@@ -197,7 +179,7 @@ describe('AnnotationsSettings', () => {
   test('Adding a new annotation', async () => {
     setup(dashboard);
 
-    await userEvent.click(screen.getByTestId(selectors.components.CallToActionCard.buttonV2('Add annotation query')));
+    await userEvent.click(screen.getByRole('button', { name: 'Add annotation query' }));
 
     expect(locationService.getSearchObject().editIndex).toBe('1');
     expect(dashboard.annotations.list.length).toBe(2);
@@ -217,10 +199,10 @@ describe('AnnotationsSettings', () => {
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'My Prometheus Annotation');
 
-    await userEvent.click(screen.getByText(/testdata/i));
+    await userEvent.click(screen.getByPlaceholderText(/testdata/i));
 
     expect(await screen.findByText(/Prometheus/i)).toBeVisible();
-    expect(screen.queryAllByText(/testdata/i)).toHaveLength(2);
+    expect(screen.queryAllByText(/testdata/i)).toHaveLength(1);
 
     await userEvent.click(screen.getByText(/prometheus/i));
 

@@ -3,28 +3,17 @@ import { DataFrame, DataSourceRef } from '@grafana/data';
 import { DataQuery } from '@grafana/schema';
 
 import * as raw from './dataquery.gen';
-import { QueryEditorArrayExpression } from './expressions';
 
 export * from './dataquery.gen';
 
-// QueryEditorArrayExpression has a recursive property, so cannot be defined in cue
-export interface SQLExpression extends raw.SQLExpression {
-  where?: QueryEditorArrayExpression;
-  groupBy?: QueryEditorArrayExpression;
-}
-
 export type CloudWatchQuery =
-  | CloudWatchMetricsQuery
+  | raw.CloudWatchMetricsQuery
   | raw.CloudWatchLogsQuery
   | raw.CloudWatchAnnotationQuery
   | CloudWatchDefaultQuery;
 
-export interface CloudWatchMetricsQuery extends raw.CloudWatchMetricsQuery {
-  sql?: SQLExpression;
-}
-
 // We want to allow setting defaults for both Logs and Metrics queries
-export type CloudWatchDefaultQuery = Omit<raw.CloudWatchLogsQuery, 'queryMode'> & CloudWatchMetricsQuery;
+export type CloudWatchDefaultQuery = Omit<raw.CloudWatchLogsQuery, 'queryMode'> & raw.CloudWatchMetricsQuery;
 
 export interface MultiFilters {
   [key: string]: string[];
@@ -67,7 +56,7 @@ export interface CloudWatchSecureJsonData extends AwsAuthDataSourceSecureJsonDat
 
 export type CloudWatchLogsRequest = GetLogEventsRequest | StartQueryRequest | QueryParam;
 
-export interface GetLogEventsRequest {
+export interface GetLogEventsRequest extends DataQuery {
   /**
    * The name of the log group.
    */
@@ -96,7 +85,7 @@ export interface GetLogEventsRequest {
    * If the value is true, the earliest log events are returned first. If the value is false, the latest log events are returned first. The default value is false. If you are using nextToken in this operation, you must specify true for startFromHead.
    */
   startFromHead?: boolean;
-  region?: string;
+  region: string;
 }
 
 export interface TSDBResponse<T = any> {
@@ -146,7 +135,7 @@ export interface LogGroupField {
   percent?: number;
 }
 
-export interface StartQueryRequest {
+export interface StartQueryRequest extends DataQuery {
   /**
    * The log group on which to perform the query. A StartQuery operation must include a logGroupNames or a logGroupName parameter, but not both.
    */
@@ -168,7 +157,7 @@ export interface StartQueryRequest {
   region: string;
 }
 
-export interface QueryParam {
+export interface QueryParam extends DataQuery {
   queryId: string;
   refId: string;
   limit?: number;

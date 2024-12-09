@@ -7,19 +7,19 @@ import { getBackendSrv, locationService } from '@grafana/runtime';
 import { backendSrv } from 'app/core/services/backend_srv';
 import impressionSrv from 'app/core/services/impression_srv';
 import kbn from 'app/core/utils/kbn';
+import { getDashboardScenePageStateManager } from 'app/features/dashboard-scene/pages/DashboardScenePageStateManager';
 import { getDatasourceSrv } from 'app/features/plugins/datasource_srv';
-import { DashboardDataDTO, DashboardDTO, DashboardMeta } from 'app/types';
+import { DashboardDTO } from 'app/types';
 
 import { appEvents } from '../../../core/core';
+import { getDashboardAPI } from '../api/dashboard_api';
 
 import { getDashboardSrv } from './DashboardSrv';
+import { getDashboardSnapshotSrv } from './SnapshotSrv';
 
 export class DashboardLoaderSrv {
   constructor() {}
-  _dashboardLoadFailed(
-    title: string,
-    snapshot?: boolean
-  ): { meta: DashboardMeta; dashboard: Partial<DashboardDataDTO> } {
+  _dashboardLoadFailed(title: string, snapshot?: boolean): DashboardDTO {
     snapshot = snapshot || false;
     return {
       meta: {
@@ -28,27 +28,31 @@ export class DashboardLoaderSrv {
         canDelete: false,
         canSave: false,
         canEdit: false,
+        canShare: false,
         dashboardNotFound: true,
       },
-      dashboard: { title },
+      dashboard: { title, uid: title, schemaVersion: 0 },
     };
   }
 
-  loadDashboard(type: UrlQueryValue, slug: any, uid: any): Promise<DashboardDTO> {
+  loadDashboard(type: UrlQueryValue, slug: string | undefined, uid: string | undefined): Promise<DashboardDTO> {
+    const stateManager = getDashboardScenePageStateManager();
     let promise;
 
-    if (type === 'script') {
+    if (type === 'script' && slug) {
       promise = this._loadScriptedDashboard(slug);
-    } else if (type === 'snapshot') {
-      promise = backendSrv.get('/api/snapshots/' + slug).catch(() => {
-        return this._dashboardLoadFailed('Snapshot not found', true);
-      });
-    } else if (type === 'ds') {
+    } else if (type === 'snapshot' && slug) {
+      promise = getDashboardSnapshotSrv()
+        .getSnapshot(slug)
+        .catch(() => {
+          return this._dashboardLoadFailed('Snapshot not found', true);
+        });
+    } else if (type === 'ds' && slug) {
       promise = this._loadFromDatasource(slug); // explore dashboards as code
-    } else if (type === 'public') {
+    } else if (type === 'public' && uid) {
       promise = backendSrv
         .getPublicDashboardByUid(uid)
-        .then((result: any) => {
+        .then((result) => {
           return result;
         })
         .catch((e) => {
@@ -56,6 +60,8 @@ export class DashboardLoaderSrv {
             e.data.statusCode === 403 && e.data.messageId === 'publicdashboards.notEnabled';
           const isPublicDashboardNotFound =
             e.data.statusCode === 404 && e.data.messageId === 'publicdashboards.notFound';
+          const isDashboardNotFound =
+            e.data.statusCode === 404 && e.data.messageId === 'publicdashboards.dashboardNotFound';
 
           const dashboardModel = this._dashboardLoadFailed(
             isPublicDashboardPaused ? 'Public Dashboard paused' : 'Public Dashboard Not found',
@@ -66,14 +72,19 @@ export class DashboardLoaderSrv {
             meta: {
               ...dashboardModel.meta,
               publicDashboardEnabled: isPublicDashboardNotFound ? undefined : !isPublicDashboardPaused,
-              dashboardNotFound: isPublicDashboardNotFound,
+              dashboardNotFound: isPublicDashboardNotFound || isDashboardNotFound,
             },
           };
         });
-    } else {
-      promise = backendSrv
-        .getDashboardByUid(uid)
-        .then((result: any) => {
+    } else if (uid) {
+      const cachedDashboard = stateManager.getDashboardFromCache(uid);
+      if (cachedDashboard) {
+        return Promise.resolve(cachedDashboard);
+      }
+
+      promise = getDashboardAPI()
+        .getDashboardDTO(uid)
+        .then((result) => {
           if (result.meta.isFolder) {
             appEvents.emit(AppEvents.alertError, ['Dashboard not found']);
             throw new Error('Dashboard not found');
@@ -81,8 +92,12 @@ export class DashboardLoaderSrv {
           return result;
         })
         .catch(() => {
-          return this._dashboardLoadFailed('Not found', true);
+          const dash = this._dashboardLoadFailed('Not found', true);
+          dash.dashboard.uid = uid;
+          return dash;
         });
+    } else {
+      throw new Error('Dashboard uid or slug required');
     }
 
     promise.then((result: DashboardDTO) => {
@@ -114,7 +129,7 @@ export class DashboardLoaderSrv {
             dashboard: result.data,
           };
         },
-        (err: any) => {
+        (err) => {
           console.error('Script dashboard error ' + err);
           appEvents.emit(AppEvents.alertError, [
             'Script Error',
@@ -142,7 +157,7 @@ export class DashboardLoaderSrv {
       return Promise.reject('expecting path parameter');
     }
 
-    const queryParams: { [key: string]: any } = {};
+    const queryParams: { [key: string]: string } = {};
 
     params.forEach((value, key) => {
       queryParams[key] = value;

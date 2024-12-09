@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { LinkButton, useStyles2 } from '@grafana/ui';
@@ -7,7 +6,7 @@ import { contextSrv } from 'app/core/services/context_srv';
 import { AlertmanagerAlert, AlertState } from 'app/plugins/datasource/alertmanager/types';
 import { AccessControlAction } from 'app/types';
 
-import { getInstancesPermissions } from '../../utils/access-control';
+import { AlertmanagerAction } from '../../hooks/useAbilities';
 import { isGrafanaRulesSource } from '../../utils/datasource';
 import { makeAMLink, makeLabelBasedSilenceLink } from '../../utils/misc';
 import { AnnotationDetailsField } from '../AnnotationDetailsField';
@@ -20,7 +19,6 @@ interface AmNotificationsAlertDetailsProps {
 
 export const AlertDetails = ({ alert, alertManagerSourceName }: AmNotificationsAlertDetailsProps) => {
   const styles = useStyles2(getStyles);
-  const instancePermissions = getInstancesPermissions(alertManagerSourceName);
 
   // For Grafana Managed alerts the Generator URL redirects to the alert rule edit page, so update permission is required
   // For external alert manager the Generator URL redirects to an external service which we don't control
@@ -32,8 +30,8 @@ export const AlertDetails = ({ alert, alertManagerSourceName }: AmNotificationsA
   return (
     <>
       <div className={styles.actionsRow}>
-        <Authorize actions={[instancePermissions.update, instancePermissions.create]} fallback={contextSrv.isEditor}>
-          {alert.status.state === AlertState.Suppressed && (
+        {alert.status.state === AlertState.Suppressed && (
+          <Authorize actions={[AlertmanagerAction.CreateSilence, AlertmanagerAction.UpdateSilence]}>
             <LinkButton
               href={`${makeAMLink(
                 '/alerting/silences',
@@ -45,8 +43,10 @@ export const AlertDetails = ({ alert, alertManagerSourceName }: AmNotificationsA
             >
               Manage silences
             </LinkButton>
-          )}
-          {alert.status.state === AlertState.Active && (
+          </Authorize>
+        )}
+        {alert.status.state === AlertState.Active && (
+          <Authorize actions={[AlertmanagerAction.CreateSilence]}>
             <LinkButton
               href={makeLabelBasedSilenceLink(alertManagerSourceName, alert.labels)}
               className={styles.button}
@@ -55,11 +55,11 @@ export const AlertDetails = ({ alert, alertManagerSourceName }: AmNotificationsA
             >
               Silence
             </LinkButton>
-          )}
-        </Authorize>
+          </Authorize>
+        )}
         {isSeeSourceButtonEnabled && alert.generatorURL && (
           <LinkButton className={styles.button} href={alert.generatorURL} icon={'chart-line'} size={'sm'}>
-            See source
+            {isGrafanaSource ? 'See alert rule' : 'See source'}
           </LinkButton>
         )}
       </div>
@@ -78,16 +78,16 @@ export const AlertDetails = ({ alert, alertManagerSourceName }: AmNotificationsA
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  button: css`
-    & + & {
-      margin-left: ${theme.spacing(1)};
-    }
-  `,
-  actionsRow: css`
-    padding: ${theme.spacing(2, 0)} !important;
-    border-bottom: 1px solid ${theme.colors.border.medium};
-  `,
-  receivers: css`
-    padding: ${theme.spacing(1, 0)};
-  `,
+  button: css({
+    '& + &': {
+      marginLeft: theme.spacing(1),
+    },
+  }),
+  actionsRow: css({
+    padding: `${theme.spacing(2, 0)} !important`,
+    borderBottom: `1px solid ${theme.colors.border.medium}`,
+  }),
+  receivers: css({
+    padding: theme.spacing(1, 0),
+  }),
 });

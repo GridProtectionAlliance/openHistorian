@@ -1,4 +1,10 @@
+import { randomBytes } from 'crypto';
+
 import { Team, TeamGroup, TeamMember, TeamPermissionLevel } from 'app/types';
+
+function generateShortUid(): string {
+  return randomBytes(3).toString('hex'); // Generate a short UID
+}
 
 export const getMultipleMockTeams = (numberOfTeams: number): Team[] => {
   const teams: Team[] = [];
@@ -9,39 +15,20 @@ export const getMultipleMockTeams = (numberOfTeams: number): Team[] => {
   return teams;
 };
 
-export const getMockTeam = (i = 1, overrides = {}): Team => {
+export const getMockTeam = (i = 1, uid = 'aaaaaa', overrides = {}): Team => {
+  uid = uid || generateShortUid();
   return {
     id: i,
-    name: `test-${i}`,
+    uid: uid,
+    name: `test-${uid}`,
     avatarUrl: 'some/url/',
-    email: `test-${i}@test.com`,
+    email: `test-${uid}@test.com`,
     memberCount: i,
     permission: TeamPermissionLevel.Member,
     accessControl: { isEditor: false },
-    created: '',
     orgId: 0,
-    updated: '',
     ...overrides,
   };
-};
-
-export const getMockTeamMembers = (amount: number, teamAdminId: number): TeamMember[] => {
-  const teamMembers: TeamMember[] = [];
-
-  for (let i = 1; i <= amount; i++) {
-    teamMembers.push({
-      userId: i,
-      teamId: 1,
-      avatarUrl: 'some/url/',
-      email: 'test@test.com',
-      name: 'testName',
-      login: `testUser-${i}`,
-      labels: ['label 1', 'label 2'],
-      permission: i === teamAdminId ? TeamPermissionLevel.Admin : TeamPermissionLevel.Member,
-    });
-  }
-
-  return teamMembers;
 };
 
 export const getMockTeamMember = (): TeamMember => {

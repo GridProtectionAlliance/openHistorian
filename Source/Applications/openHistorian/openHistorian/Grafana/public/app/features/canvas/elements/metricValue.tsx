@@ -1,18 +1,30 @@
 import { css } from '@emotion/css';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useObservable } from 'react-use';
 import { of } from 'rxjs';
 
-import { DataFrame, FieldNamePickerConfigSettings, GrafanaTheme2, StandardEditorsRegistryItem } from '@grafana/data';
+import {
+  DataFrame,
+  FieldNamePickerConfigSettings,
+  GrafanaTheme2,
+  OneClickMode,
+  StandardEditorsRegistryItem,
+} from '@grafana/data';
+import { TextDimensionMode } from '@grafana/schema';
 import { usePanelContext, useStyles2 } from '@grafana/ui';
 import { FieldNamePicker } from '@grafana/ui/src/components/MatchersUI/FieldNamePicker';
-import { TextDimensionMode } from 'app/features/dimensions';
+import { frameHasName, getFrameFieldsDisplayNames } from '@grafana/ui/src/components/MatchersUI/utils';
 import { DimensionContext } from 'app/features/dimensions/context';
 import { ColorDimensionEditor } from 'app/features/dimensions/editors/ColorDimensionEditor';
 import { TextDimensionEditor } from 'app/features/dimensions/editors/TextDimensionEditor';
 
-import { getDataLinks } from '../../../plugins/panel/canvas/utils';
-import { CanvasElementItem, CanvasElementProps, defaultBgColor, defaultTextColor } from '../element';
+import {
+  CanvasElementItem,
+  CanvasElementOptions,
+  CanvasElementProps,
+  defaultBgColor,
+  defaultTextColor,
+} from '../element';
 import { ElementState } from '../runtime/element';
 import { Align, TextConfig, TextData, VAlign } from '../types';
 
@@ -37,12 +49,16 @@ const MetricValueDisplay = (props: CanvasElementProps<TextConfig, TextData>) => 
       return 'Field not found';
     }
 
+    if (panelData && config.text?.field && !data?.text) {
+      return 'No data';
+    }
+
     return data?.text ? data.text : 'Double click to set field';
   };
 
   const fieldNotFound = () => {
-    const field = panelData.filter((series) => series.fields.find((field) => field.name === config.text?.field));
-    return !field.length;
+    const fieldNames = getFrameFieldsDisplayNames(panelData);
+    return !frameHasName(config.text?.field, fieldNames);
   };
 
   if (isEditMode && isSelected) {
@@ -106,26 +122,26 @@ const MetricValueEdit = (props: CanvasElementProps<TextConfig, TextData>) => {
 };
 
 const getStyles = (data: TextData | undefined) => (theme: GrafanaTheme2) => ({
-  container: css`
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    display: table;
-  `,
-  inlineEditorContainer: css`
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-  `,
-  span: css`
-    display: table-cell;
-    vertical-align: ${data?.valign};
-    text-align: ${data?.align};
-    font-size: ${data?.size}px;
-    color: ${data?.color};
-  `,
+  container: css({
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    display: 'table',
+  }),
+  inlineEditorContainer: css({
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(1),
+  }),
+  span: css({
+    display: 'table-cell',
+    verticalAlign: data?.valign,
+    textAlign: data?.align,
+    fontSize: `${data?.size}px`,
+    color: data?.color,
+  }),
 });
 
 export const metricValueItem: CanvasElementItem<TextConfig, TextData> = {
@@ -159,24 +175,30 @@ export const metricValueItem: CanvasElementItem<TextConfig, TextData> = {
       },
     },
     placement: {
-      top: 100,
-      left: 100,
+      width: options?.placement?.width,
+      height: options?.placement?.height,
+      top: options?.placement?.top ?? 100,
+      left: options?.placement?.left ?? 100,
+      rotation: options?.placement?.rotation ?? 0,
     },
+    oneClickMode: options?.oneClickMode ?? OneClickMode.Off,
+    links: options?.links ?? [],
   }),
 
-  prepareData: (ctx: DimensionContext, cfg: TextConfig) => {
+  prepareData: (dimensionContext: DimensionContext, elementOptions: CanvasElementOptions<TextConfig>) => {
+    const textConfig = elementOptions.config;
+
     const data: TextData = {
-      text: cfg.text ? ctx.getText(cfg.text).value() : '',
-      align: cfg.align ?? Align.Center,
-      valign: cfg.valign ?? VAlign.Middle,
-      size: cfg.size,
+      text: textConfig?.text ? dimensionContext.getText(textConfig.text).value() : '',
+      field: textConfig?.text?.field,
+      align: textConfig?.align ?? Align.Center,
+      valign: textConfig?.valign ?? VAlign.Middle,
+      size: textConfig?.size,
     };
 
-    if (cfg.color) {
-      data.color = ctx.getColor(cfg.color).value();
+    if (textConfig?.color) {
+      data.color = dimensionContext.getColor(textConfig.color).value();
     }
-
-    data.links = getDataLinks(ctx, cfg, data.text);
 
     return data;
   },

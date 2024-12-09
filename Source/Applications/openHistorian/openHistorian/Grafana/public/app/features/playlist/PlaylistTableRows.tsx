@@ -1,12 +1,13 @@
 import { css } from '@emotion/css';
+import { Draggable } from '@hello-pangea/dnd';
 import pluralize from 'pluralize';
-import React, { ReactNode } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import { ReactNode } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
 import { Icon, IconButton, useStyles2, Spinner, IconName } from '@grafana/ui';
 import { TagBadge } from 'app/core/components/TagFilter/TagBadge';
+import { t, Trans } from 'app/core/internationalization';
 
 import { PlaylistItem } from './types';
 
@@ -20,7 +21,9 @@ export const PlaylistTableRows = ({ items, onDelete }: Props) => {
   if (!items?.length) {
     return (
       <div>
-        <em>Playlist is empty. Add dashboards below.</em>
+        <em>
+          <Trans i18nKey="playlist-edit.form.table-empty">Playlist is empty. Add dashboards below.</Trans>
+        </em>
       </div>
     );
   }
@@ -80,10 +83,14 @@ export const PlaylistTableRows = ({ items, onDelete }: Props) => {
                   name="times"
                   size="md"
                   onClick={() => onDelete(index)}
-                  aria-label={selectors.pages.PlaylistForm.itemDelete}
-                  type="button"
+                  data-testid={selectors.pages.PlaylistForm.itemDelete}
+                  tooltip={t('playlist-edit.form.table-delete', 'Delete playlist item')}
                 />
-                <Icon title="Drag and drop to reorder" name="draggabledots" size="md" />
+                <Icon
+                  title={t('playlist-edit.form.table-drag', 'Drag and drop to reorder')}
+                  name="draggabledots"
+                  size="md"
+                />
               </div>
             </div>
           )}
@@ -95,30 +102,31 @@ export const PlaylistTableRows = ({ items, onDelete }: Props) => {
 
 function getStyles(theme: GrafanaTheme2) {
   return {
-    row: css`
-      padding: 6px;
-      background: ${theme.colors.background.secondary};
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 3px;
+    row: css({
+      padding: theme.spacing(0.75),
+      background: theme.colors.background.secondary,
+      borderRadius: theme.shape.radius.default,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: '3px',
 
-      border: 1px solid ${theme.colors.border.medium};
-      &:hover {
-        border: 1px solid ${theme.colors.border.strong};
-      }
-    `,
-    rightMargin: css`
-      margin-right: 5px;
-    `,
-    actions: css`
-      align-items: center;
-      justify-content: center;
-      display: flex;
-    `,
-    settings: css`
-      label: settings;
-      text-align: right;
-    `,
+      border: `1px solid ${theme.colors.border.medium}`,
+      '&:hover': {
+        border: `1px solid ${theme.colors.border.strong}`,
+      },
+    }),
+    rightMargin: css({
+      marginRight: '5px',
+    }),
+    actions: css({
+      alignItems: 'center',
+      justifyContent: 'center',
+      display: 'flex',
+    }),
+    settings: css({
+      label: 'settings',
+      textAlign: 'right',
+    }),
   };
 }

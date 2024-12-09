@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { DateTimeInput, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
@@ -52,7 +51,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       font-size: ${theme.typography.bodySmall.fontSize};
     `,
     userAvatar: css`
-      border-radius: 50%;
+      border-radius: ${theme.shape.radius.circle};
       box-sizing: content-box;
       width: 22px;
       height: 22px;

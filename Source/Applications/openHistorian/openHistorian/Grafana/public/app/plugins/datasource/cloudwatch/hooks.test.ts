@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { config } from '@grafana/runtime';
 
@@ -11,11 +11,13 @@ import {
   setupMockedDataSource,
 } from './__mocks__/CloudWatchDataSource';
 import { setupMockedResourcesAPI } from './__mocks__/ResourcesAPI';
-import { useAccountOptions, useDimensionKeys, useIsMonitoringAccount, useMetrics } from './hooks';
-
-const WAIT_OPTIONS = {
-  timeout: 1000,
-};
+import {
+  useAccountOptions,
+  useDimensionKeys,
+  useIsMonitoringAccount,
+  useMetrics,
+  useEnsureVariableHasSingleSelection,
+} from './hooks';
 
 const originalFeatureToggleValue = config.featureToggles.cloudWatchCrossAccountQuerying;
 
@@ -32,10 +34,11 @@ describe('hooks', () => {
       const isMonitoringAccountMock = jest.fn().mockResolvedValue(true);
       api.isMonitoringAccount = isMonitoringAccountMock;
 
-      const { waitForNextUpdate } = renderHook(() => useIsMonitoringAccount(api, `$${regionVariable.name}`));
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(isMonitoringAccountMock).toHaveBeenCalledTimes(1);
-      expect(isMonitoringAccountMock).toHaveBeenCalledWith(regionVariable.current.value);
+      renderHook(() => useIsMonitoringAccount(api, `$${regionVariable.name}`));
+      await waitFor(() => {
+        expect(isMonitoringAccountMock).toHaveBeenCalledTimes(1);
+        expect(isMonitoringAccountMock).toHaveBeenCalledWith(regionVariable.current.value);
+      });
     });
   });
   describe('useMetricNames', () => {
@@ -46,19 +49,20 @@ describe('hooks', () => {
       const getMetricsMock = jest.fn().mockResolvedValue([]);
       datasource.resources.getMetrics = getMetricsMock;
 
-      const { waitForNextUpdate } = renderHook(() =>
+      renderHook(() =>
         useMetrics(datasource, {
           namespace: `$${namespaceVariable.name}`,
           region: `$${regionVariable.name}`,
           accountId: `$${accountIdVariable.name}`,
         })
       );
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(getMetricsMock).toHaveBeenCalledTimes(1);
-      expect(getMetricsMock).toHaveBeenCalledWith({
-        region: regionVariable.current.value,
-        namespace: namespaceVariable.current.value,
-        accountId: accountIdVariable.current.value,
+      await waitFor(() => {
+        expect(getMetricsMock).toHaveBeenCalledTimes(1);
+        expect(getMetricsMock).toHaveBeenCalledWith({
+          region: regionVariable.current.value,
+          namespace: namespaceVariable.current.value,
+          accountId: accountIdVariable.current.value,
+        });
       });
     });
   });
@@ -66,13 +70,12 @@ describe('hooks', () => {
   describe('useDimensionKeys', () => {
     it('should interpolate variables before calling api', async () => {
       const { datasource } = setupMockedDataSource({
-        mockGetVariableName: true,
         variables: [regionVariable, namespaceVariable, accountIdVariable, metricVariable, dimensionVariable],
       });
       const getDimensionKeysMock = jest.fn().mockResolvedValue([]);
       datasource.resources.getDimensionKeys = getDimensionKeysMock;
 
-      const { waitForNextUpdate } = renderHook(() =>
+      renderHook(() =>
         useDimensionKeys(datasource, {
           namespace: `$${namespaceVariable.name}`,
           metricName: `$${metricVariable.name}`,
@@ -83,16 +86,20 @@ describe('hooks', () => {
           },
         })
       );
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(getDimensionKeysMock).toHaveBeenCalledTimes(1);
-      expect(getDimensionKeysMock).toHaveBeenCalledWith({
-        region: regionVariable.current.value,
-        namespace: namespaceVariable.current.value,
-        metricName: metricVariable.current.value,
-        accountId: accountIdVariable.current.value,
-        dimensionFilters: {
-          environment: [dimensionVariable.current.value],
-        },
+      await waitFor(() => {
+        expect(getDimensionKeysMock).toHaveBeenCalledTimes(1);
+        expect(getDimensionKeysMock).toHaveBeenCalledWith(
+          {
+            region: regionVariable.current.value,
+            namespace: namespaceVariable.current.value,
+            metricName: metricVariable.current.value,
+            accountId: accountIdVariable.current.value,
+            dimensionFilters: {
+              environment: [dimensionVariable.current.value],
+            },
+          },
+          false
+        );
       });
     });
   });
@@ -105,9 +112,10 @@ describe('hooks', () => {
       });
       const getAccountsMock = jest.fn().mockResolvedValue([{ id: '123', label: 'accountLabel' }]);
       api.getAccounts = getAccountsMock;
-      const { waitForNextUpdate } = renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(getAccountsMock).toHaveBeenCalledTimes(0);
+      renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
+      await waitFor(() => {
+        expect(getAccountsMock).toHaveBeenCalledTimes(0);
+      });
     });
 
     it('interpolates region variables before calling the api', async () => {
@@ -117,10 +125,11 @@ describe('hooks', () => {
       });
       const getAccountsMock = jest.fn().mockResolvedValue([{ id: '123', label: 'accountLabel' }]);
       api.getAccounts = getAccountsMock;
-      const { waitForNextUpdate } = renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(getAccountsMock).toHaveBeenCalledTimes(1);
-      expect(getAccountsMock).toHaveBeenCalledWith({ region: regionVariable.current.value });
+      renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
+      await waitFor(() => {
+        expect(getAccountsMock).toHaveBeenCalledTimes(1);
+        expect(getAccountsMock).toHaveBeenCalledWith({ region: regionVariable.current.value });
+      });
     });
 
     it('returns properly formatted account options, and template variables', async () => {
@@ -130,12 +139,44 @@ describe('hooks', () => {
       });
       const getAccountsMock = jest.fn().mockResolvedValue([{ id: '123', label: 'accountLabel' }]);
       api.getAccounts = getAccountsMock;
-      const { waitForNextUpdate, result } = renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
-      await waitForNextUpdate(WAIT_OPTIONS);
-      expect(result.current.value).toEqual([
-        { label: 'accountLabel', description: '123', value: '123' },
-        { label: 'Template Variables', options: [{ label: '$region', value: '$region' }] },
-      ]);
+      const { result } = renderHook(() => useAccountOptions(api, `$${regionVariable.name}`));
+      await waitFor(() => {
+        expect(result.current.value).toEqual([
+          { label: 'accountLabel', description: '123', value: '123' },
+          { label: 'Template Variables', options: [{ label: '$region', value: '$region' }] },
+        ]);
+      });
+    });
+  });
+
+  describe('useEnsureVariableHasSingleSelection', () => {
+    it('should return an error if a variable has multiple options selected', () => {
+      const { datasource } = setupMockedDataSource();
+      datasource.resources.isVariableWithMultipleOptionsSelected = jest.fn().mockReturnValue(true);
+
+      const variable = '$variable';
+      const { result } = renderHook(() => useEnsureVariableHasSingleSelection(datasource, variable));
+      expect(result.current).toEqual(
+        `Template variables with multiple selected options are not supported for ${variable}`
+      );
+    });
+
+    it('should not return an error if a variable is a multi-variable but does not have multiple options selected', () => {
+      const { datasource } = setupMockedDataSource();
+      datasource.resources.isVariableWithMultipleOptionsSelected = jest.fn().mockReturnValue(false);
+
+      const variable = '$variable';
+      const { result } = renderHook(() => useEnsureVariableHasSingleSelection(datasource, variable));
+      expect(result.current).toEqual('');
+    });
+
+    it('should not return an error if a variable is not a multi-variable', () => {
+      const { datasource } = setupMockedDataSource();
+      datasource.resources.isMultiVariable = jest.fn().mockReturnValue(false);
+
+      const variable = '$variable';
+      const { result } = renderHook(() => useEnsureVariableHasSingleSelection(datasource, variable));
+      expect(result.current).toEqual('');
     });
   });
 });

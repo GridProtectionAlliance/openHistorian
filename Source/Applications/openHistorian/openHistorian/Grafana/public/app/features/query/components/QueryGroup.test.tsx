@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import config from 'app/core/config';
 import { mockDataSource } from 'app/features/alerting/unified/mocks';
@@ -61,7 +60,7 @@ describe('QueryGroup', () => {
   it('Should add query on click', async () => {
     renderScenario({});
 
-    const addQueryButton = await screen.findByTestId('query-tab-add-query');
+    const addQueryButton = await screen.findByRole('button', { name: /Add query/i });
     const queryRowsContainer = await screen.findByTestId('query-editor-rows');
     expect(queryRowsContainer.children.length).toBe(2);
 
@@ -80,7 +79,7 @@ describe('QueryGroup', () => {
     await userEvent.click(addExpressionButton);
 
     const lastQueryEditorRow = (await screen.findAllByTestId('query-editor-row')).at(-1);
-    const lastEditorToggleRow = (await screen.findAllByLabelText('toggle collapse and expand query row')).at(-1);
+    const lastEditorToggleRow = (await screen.findAllByLabelText('Collapse query row')).at(-1);
 
     expect(lastEditorToggleRow?.getAttribute('aria-expanded')).toBe('true');
     expect(lastQueryEditorRow?.firstElementChild?.children.length).toBe(2);
@@ -92,12 +91,12 @@ describe('QueryGroup', () => {
   it('New query should be expanded', async () => {
     renderScenario({});
 
-    const addQueryButton = await screen.findByTestId('query-tab-add-query');
+    const addQueryButton = await screen.findByRole('button', { name: /Add query/i });
     const queryRowsContainer = await screen.findByTestId('query-editor-rows');
     await userEvent.click(addQueryButton);
 
     const lastQueryEditorRow = (await screen.findAllByTestId('query-editor-row')).at(-1);
-    const lastEditorToggleRow = (await screen.findAllByLabelText('toggle collapse and expand query row')).at(-1);
+    const lastEditorToggleRow = (await screen.findAllByLabelText('Collapse query row')).at(-1);
 
     expect(lastEditorToggleRow?.getAttribute('aria-expanded')).toBe('true');
     expect(lastQueryEditorRow?.firstElementChild?.children.length).toBe(2);
@@ -119,9 +118,39 @@ describe('QueryGroup', () => {
   it('Should not show add expression button when expressions are disabled', async () => {
     config.expressionsEnabled = false;
     renderScenario({});
-    await screen.findByTestId('query-tab-add-query');
+    await screen.findByRole('button', { name: /Add query/i });
     const addExpressionButton = screen.queryByTestId('query-tab-add-expression');
     expect(addExpressionButton).not.toBeInTheDocument();
+  });
+
+  describe('Angular deprecation', () => {
+    const deprecationText = /legacy platform based on AngularJS/i;
+
+    const oldAngularDetected = mockDS.meta.angular?.detected ?? false;
+    const oldDatasources = config.datasources;
+
+    afterEach(() => {
+      mockDS.meta.angular = { detected: oldAngularDetected, hideDeprecation: false };
+      config.datasources = oldDatasources;
+    });
+
+    it('Should render angular deprecation notice for angular plugins', async () => {
+      mockDS.meta.angular = { detected: true, hideDeprecation: false };
+      config.datasources[mockDS.name] = mockDS;
+      renderScenario({});
+      await waitFor(async () => {
+        expect(await screen.findByText(deprecationText)).toBeInTheDocument();
+      });
+    });
+
+    it('Should not render angular deprecation notice for non-angular plugins', async () => {
+      mockDS.meta.angular = { detected: false, hideDeprecation: false };
+      config.datasources[mockDS.name] = mockDS;
+      renderScenario({});
+      await waitFor(async () => {
+        expect(await screen.queryByText(deprecationText)).not.toBeInTheDocument();
+      });
+    });
   });
 });
 

@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
@@ -48,10 +47,10 @@ export function CheatSheet() {
         </li>
         <li>
           $__timeGroupAlias(column,&apos;5m&apos;) -&gt; cast(cast(UNIX_TIMESTAMP(column)/(300) as signed)*300 as
-          signed) AS &quote;time&quote;
+          signed) AS &quot;time&quot;
         </li>
         <li>$__unixEpochGroup(column,&apos;5m&apos;) -&gt; column DIV 300 * 300</li>
-        <li>$__unixEpochGroupAlias(column,&apos;5m&apos;) -&gt; column DIV 300 * 300 AS &quote;time&quote;</li>
+        <li>$__unixEpochGroupAlias(column,&apos;5m&apos;) -&gt; column DIV 300 * 300 AS &quot;time&quot;</li>
       </ul>
       <p>Example of group by and order by with $__timeGroup:</p>
       <pre>

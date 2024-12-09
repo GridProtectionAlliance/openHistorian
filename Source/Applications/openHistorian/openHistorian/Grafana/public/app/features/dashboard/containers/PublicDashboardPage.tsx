@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom-v5-compat';
 import { usePrevious } from 'react-use';
 
 import { GrafanaTheme2, PageLayoutType, TimeZone } from '@grafana/data';
@@ -8,42 +9,45 @@ import { PageToolbar, useStyles2 } from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
+import {
+  PublicDashboardPageRouteParams,
+  PublicDashboardPageRouteSearchParams,
+} from 'app/features/dashboard/containers/types';
 import { updateTimeZoneForSession } from 'app/features/profile/state/reducers';
 import { useSelector, useDispatch } from 'app/types';
 
 import { DashNavTimeControls } from '../components/DashNav/DashNavTimeControls';
 import { DashboardFailed } from '../components/DashboardLoading/DashboardFailed';
 import { DashboardLoading } from '../components/DashboardLoading/DashboardLoading';
-import { PublicDashboardFooter } from '../components/PublicDashboardFooter/PublicDashboardsFooter';
+import { PublicDashboardFooter } from '../components/PublicDashboard/PublicDashboardsFooter';
+import { useGetPublicDashboardConfig } from '../components/PublicDashboard/usePublicDashboardConfig';
 import { PublicDashboardNotAvailable } from '../components/PublicDashboardNotAvailable/PublicDashboardNotAvailable';
 import { DashboardGrid } from '../dashgrid/DashboardGrid';
 import { getTimeSrv } from '../services/TimeSrv';
 import { DashboardModel } from '../state';
 import { initDashboard } from '../state/initDashboard';
 
-interface PublicDashboardPageRouteParams {
-  accessToken?: string;
-}
-
-interface PublicDashboardPageRouteSearchParams {
-  from?: string;
-  to?: string;
-  refresh?: string;
-}
-
-export type Props = GrafanaRouteComponentProps<PublicDashboardPageRouteParams, PublicDashboardPageRouteSearchParams>;
+export type Props = Omit<
+  GrafanaRouteComponentProps<PublicDashboardPageRouteParams, PublicDashboardPageRouteSearchParams>,
+  'match' | 'history'
+>;
 
 const selectors = e2eSelectors.pages.PublicDashboard;
 
 const Toolbar = ({ dashboard }: { dashboard: DashboardModel }) => {
   const dispatch = useDispatch();
+  const conf = useGetPublicDashboardConfig();
 
   const onChangeTimeZone = (timeZone: TimeZone) => {
     dispatch(updateTimeZoneForSession(timeZone));
   };
 
   return (
-    <PageToolbar title={dashboard.title} buttonOverflowAlignment="right">
+    <PageToolbar
+      title={dashboard.title}
+      pageIcon={!conf.headerLogoHide ? 'grafana' : undefined}
+      buttonOverflowAlignment="right"
+    >
       {!dashboard.timepicker.hidden && (
         <DashNavTimeControls dashboard={dashboard} onChangeTimeZone={onChangeTimeZone} />
       )}
@@ -52,10 +56,12 @@ const Toolbar = ({ dashboard }: { dashboard: DashboardModel }) => {
 };
 
 const PublicDashboardPage = (props: Props) => {
-  const { match, route, location } = props;
+  const { route } = props;
+  const location = useLocation();
+  const { accessToken } = useParams();
   const dispatch = useDispatch();
   const context = useGrafana();
-  const prevProps = usePrevious(props);
+  const prevProps = usePrevious({ ...props, location });
   const styles = useStyles2(getStyles);
   const dashboardState = useSelector((store) => store.dashboard);
   const dashboard = dashboardState.getModel();
@@ -65,12 +71,11 @@ const PublicDashboardPage = (props: Props) => {
       initDashboard({
         routeName: route.routeName,
         fixUrl: false,
-        accessToken: match.params.accessToken,
+        accessToken,
         keybindingSrv: context.keybindings,
       })
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [route.routeName, accessToken, context.keybindings, dispatch]);
 
   useEffect(() => {
     if (prevProps?.location.search !== location.search) {
@@ -89,7 +94,7 @@ const PublicDashboardPage = (props: Props) => {
         getTimeSrv().setAutoRefresh(urlParams.refresh);
       }
     }
-  }, [prevProps, location.search, props.queryParams, dashboard?.timepicker.hidden]);
+  }, [prevProps, location.search, props.queryParams, dashboard?.timepicker.hidden, accessToken]);
 
   if (!dashboard) {
     return <DashboardLoading initPhase={dashboardState.initPhase} />;
@@ -104,17 +109,15 @@ const PublicDashboardPage = (props: Props) => {
   }
 
   return (
-    <Page
-      pageNav={{ text: dashboard.title }}
-      layout={PageLayoutType.Custom}
-      toolbar={<Toolbar dashboard={dashboard} />}
-      data-testid={selectors.page}
-    >
+    <Page pageNav={{ text: dashboard.title }} layout={PageLayoutType.Custom} data-testid={selectors.page}>
+      <Toolbar dashboard={dashboard} />
       {dashboardState.initError && <DashboardFailed initError={dashboardState.initError} />}
       <div className={styles.gridContainer}>
         <DashboardGrid dashboard={dashboard} isEditable={false} viewPanel={null} editPanel={null} hidePanelMenus />
       </div>
-      <PublicDashboardFooter />
+      <div className={styles.footer}>
+        <PublicDashboardFooter />
+      </div>
     </Page>
   );
 };
@@ -122,8 +125,11 @@ const PublicDashboardPage = (props: Props) => {
 const getStyles = (theme: GrafanaTheme2) => ({
   gridContainer: css({
     flex: 1,
-    padding: theme.spacing(0, 2, 2, 2),
+    padding: theme.spacing(2, 2, 2, 2),
     overflow: 'auto',
+  }),
+  footer: css({
+    padding: theme.spacing(0, 2),
   }),
 });
 

@@ -3,7 +3,10 @@ import { asapScheduler, Subscription, timer, isObservable } from 'rxjs';
 
 import { OBSERVABLE_TEST_TIMEOUT_IN_MS } from './types';
 
-export function forceObservableCompletion(subscription: Subscription, resolve: (args: any) => void) {
+export function forceObservableCompletion(
+  subscription: Subscription,
+  resolve: (args: jest.CustomMatcherResult | PromiseLike<jest.CustomMatcherResult>) => void
+) {
   const timeoutObservable = timer(OBSERVABLE_TEST_TIMEOUT_IN_MS, asapScheduler);
 
   subscription.add(
@@ -15,8 +18,8 @@ export function forceObservableCompletion(subscription: Subscription, resolve: (
           `${matcherHint('.toEmitValues')}
 
     Expected ${printReceived('Observable')} to be ${printExpected(
-            `completed within ${OBSERVABLE_TEST_TIMEOUT_IN_MS}ms`
-          )} but it did not.`,
+      `completed within ${OBSERVABLE_TEST_TIMEOUT_IN_MS}ms`
+    )} but it did not.`,
       });
     })
   );

@@ -1,7 +1,16 @@
-import { AlertmanagerApiFeatures } from '../../../../types/unified-alerting-dto';
+import { RulerDataSourceConfig } from 'app/types/unified-alerting';
+
+import { AlertmanagerApiFeatures, PromApplication } from '../../../../types/unified-alerting-dto';
+import { withPerformanceLogging } from '../Analytics';
+import { getRulesDataSource, isGrafanaRulesSource } from '../utils/datasource';
 
 import { alertingApi } from './alertingApi';
-import { discoverAlertmanagerFeatures } from './buildInfo';
+import { discoverAlertmanagerFeatures, discoverFeatures } from './buildInfo';
+
+export const GRAFANA_RULER_CONFIG: RulerDataSourceConfig = {
+  dataSourceName: 'grafana',
+  apiVersion: 'legacy',
+};
 
 export const featureDiscoveryApi = alertingApi.injectEndpoints({
   endpoints: (build) => ({
@@ -13,6 +22,39 @@ export const featureDiscoveryApi = alertingApi.injectEndpoints({
         } catch (error) {
           return { error: error };
         }
+      },
+    }),
+
+    discoverDsFeatures: build.query<{ rulerConfig?: RulerDataSourceConfig }, { rulesSourceName: string }>({
+      queryFn: async ({ rulesSourceName }) => {
+        if (isGrafanaRulesSource(rulesSourceName)) {
+          return { data: { rulerConfig: GRAFANA_RULER_CONFIG } };
+        }
+
+        const dsSettings = getRulesDataSource(rulesSourceName);
+        if (!dsSettings) {
+          return { error: new Error(`Missing data source configuration for ${rulesSourceName}`) };
+        }
+
+        const discoverFeaturesWithLogging = withPerformanceLogging(
+          'unifiedalerting/featureDiscoveryApi/discoverDsFeatures',
+          discoverFeatures,
+          {
+            dataSourceName: rulesSourceName,
+            endpoint: 'unifiedalerting/featureDiscoveryApi/discoverDsFeatures',
+          }
+        );
+
+        const dsFeatures = await discoverFeaturesWithLogging(dsSettings.name);
+
+        const rulerConfig: RulerDataSourceConfig | undefined = dsFeatures.features.rulerApiEnabled
+          ? {
+              dataSourceName: dsSettings.name,
+              apiVersion: dsFeatures.application === PromApplication.Cortex ? 'legacy' : 'config',
+            }
+          : undefined;
+
+        return { data: { rulerConfig } };
       },
     }),
   }),

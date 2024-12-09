@@ -1,25 +1,29 @@
 import { css } from '@emotion/css';
-import { debounce, pick } from 'lodash';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { debounce, isEqual } from 'lodash';
+import { useCallback, useEffect, useRef } from 'react';
 
-import { SelectableValue } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
-import { Button, Field, Icon, Input, Label as LabelElement, Select, Tooltip, useStyles2 } from '@grafana/ui';
-import { ObjectMatcher, Receiver, RouteWithID } from 'app/plugins/datasource/alertmanager/types';
+import { Button, Field, Icon, Input, Label, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui';
+import { ContactPointSelector } from 'app/features/alerting/unified/components/notification-policies/ContactPointSelector';
+import { ObjectMatcher, RouteWithID } from 'app/plugins/datasource/alertmanager/types';
 
 import { useURLSearchParams } from '../../hooks/useURLSearchParams';
-import { matcherToObjectMatcher, parseMatchers } from '../../utils/alertmanager';
+import { matcherToObjectMatcher } from '../../utils/alertmanager';
+import {
+  normalizeMatchers,
+  parsePromQLStyleMatcherLoose,
+  parsePromQLStyleMatcherLooseSafe,
+} from '../../utils/matchers';
 
 interface NotificationPoliciesFilterProps {
-  receivers: Receiver[];
   onChangeMatchers: (labels: ObjectMatcher[]) => void;
   onChangeReceiver: (receiver: string | undefined) => void;
+  matchingCount: number;
 }
 
 const NotificationPoliciesFilter = ({
-  receivers,
   onChangeReceiver,
   onChangeMatchers,
+  matchingCount,
 }: NotificationPoliciesFilterProps) => {
   const [searchParams, setSearchParams] = useURLSearchParams();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -33,7 +37,7 @@ const NotificationPoliciesFilter = ({
   }, [contactPoint, onChangeReceiver]);
 
   useEffect(() => {
-    const matchers = parseMatchers(queryString ?? '').map(matcherToObjectMatcher);
+    const matchers = parsePromQLStyleMatcherLooseSafe(queryString ?? '').map(matcherToObjectMatcher);
     handleChangeLabels()(matchers);
   }, [handleChangeLabels, queryString]);
 
@@ -41,38 +45,45 @@ const NotificationPoliciesFilter = ({
     if (searchInputRef.current) {
       searchInputRef.current.value = '';
     }
-    setSearchParams({ contactPoint: undefined, queryString: undefined });
+    setSearchParams({ contactPoint: '', queryString: undefined });
   }, [setSearchParams]);
 
-  const receiverOptions: Array<SelectableValue<string>> = receivers.map(toOption);
-  const selectedContactPoint = receiverOptions.find((option) => option.value === contactPoint) ?? null;
-
   const hasFilters = queryString || contactPoint;
-  const inputInvalid = queryString && queryString.length > 3 ? parseMatchers(queryString).length === 0 : false;
+
+  let inputValid = Boolean(queryString && queryString.length > 3);
+  try {
+    if (!queryString) {
+      inputValid = true;
+    } else {
+      parsePromQLStyleMatcherLoose(queryString);
+    }
+  } catch (err) {
+    inputValid = false;
+  }
 
   return (
-    <Stack direction="row" alignItems="flex-start" gap={0.5}>
+    <Stack direction="row" alignItems="flex-end" gap={1}>
       <Field
         className={styles.noBottom}
         label={
-          <LabelElement>
+          <Label>
             <Stack gap={0.5}>
               <span>Search by matchers</span>
               <Tooltip
                 content={
                   <div>
-                    Filter silences by matchers using a comma separated list of matchers, ie:
-                    <pre>{`severity=critical, instance=~cluster-us-.+`}</pre>
+                    Filter notification policies by using a comma separated list of matchers, e.g.:
+                    <pre>severity=critical, region=EMEA</pre>
                   </div>
                 }
               >
                 <Icon name="info-circle" size="sm" />
               </Tooltip>
             </Stack>
-          </LabelElement>
+          </Label>
         }
-        invalid={inputInvalid}
-        error={inputInvalid ? 'Query must use valid matcher syntax' : null}
+        invalid={!inputValid}
+        error={!inputValid ? 'Query must use valid matcher syntax' : null}
       >
         <Input
           ref={searchInputRef}
@@ -87,22 +98,30 @@ const NotificationPoliciesFilter = ({
         />
       </Field>
       <Field label="Search by contact point" style={{ marginBottom: 0 }}>
-        <Select
-          id="receiver"
-          aria-label="Search by contact point"
-          value={selectedContactPoint}
-          options={receiverOptions}
-          onChange={(option) => {
-            setSearchParams({ contactPoint: option?.value });
+        <ContactPointSelector
+          selectProps={{
+            id: 'receiver',
+            'aria-label': 'Search by contact point',
+            onChange: (option) => {
+              setSearchParams({ contactPoint: option?.value?.name });
+            },
+            width: 28,
+            isClearable: true,
           }}
-          width={28}
-          isClearable
+          selectedContactPointName={searchParams.get('contactPoint') ?? undefined}
         />
       </Field>
       {hasFilters && (
-        <Button variant="secondary" icon="times" onClick={clearFilters} style={{ marginTop: 19 }}>
-          Clear filters
-        </Button>
+        <Stack alignItems="center">
+          <Button variant="secondary" icon="times" onClick={clearFilters}>
+            Clear filters
+          </Button>
+          <Text variant="bodySmall" color="secondary">
+            {matchingCount === 0 && 'No policies matching filters.'}
+            {matchingCount === 1 && `${matchingCount} policy matches the filters.`}
+            {matchingCount > 1 && `${matchingCount} policies match the filters.`}
+          </Text>
+        </Stack>
       )}
     </Stack>
   );
@@ -113,49 +132,47 @@ const NotificationPoliciesFilter = ({
  */
 type FilterPredicate = (route: RouteWithID) => boolean;
 
-export function findRoutesMatchingPredicate(routeTree: RouteWithID, predicateFn: FilterPredicate): RouteWithID[] {
-  const matches: RouteWithID[] = [];
+/**
+ * Find routes int the tree that match the given predicate function
+ * @param routeTree the route tree to search
+ * @param predicateFn the predicate function to match routes
+ * @returns
+ * - matches: list of routes that match the predicate
+ * - matchingRouteIdsWithPath: map with routeids that are part of the path of a matching route
+ *  key is the route id, value is an array of route ids that are part of its path
+ */
+export function findRoutesMatchingPredicate(
+  routeTree: RouteWithID,
+  predicateFn: FilterPredicate
+): Map<RouteWithID, RouteWithID[]> {
+  // map with routids that are part of the path of a matching route
+  // key is the route id, value is an array of route ids that are part of the path
+  const matchingRouteIdsWithPath = new Map<RouteWithID, RouteWithID[]>();
 
-  function findMatch(route: RouteWithID) {
+  function findMatch(route: RouteWithID, path: RouteWithID[]) {
+    const newPath = [...path, route];
+
     if (predicateFn(route)) {
-      matches.push(route);
+      // if the route matches the predicate, we need to add the path to the map of matching routes
+      const previousPath = matchingRouteIdsWithPath.get(route) ?? [];
+      // add the current route id to the map with its path
+      matchingRouteIdsWithPath.set(route, [...previousPath, ...newPath]);
     }
 
-    route.routes?.forEach(findMatch);
+    // if the route has subroutes, call findMatch recursively
+    route.routes?.forEach((route) => findMatch(route, newPath));
   }
 
-  findMatch(routeTree);
-  return matches;
+  findMatch(routeTree, []);
+
+  return matchingRouteIdsWithPath;
 }
 
-/**
- * This function will compute the full tree with inherited properties – this is mostly used for search and filtering
- */
-export function computeInheritedTree(routeTree: RouteWithID): RouteWithID {
-  return {
-    ...routeTree,
-    routes: routeTree.routes?.map((route) => {
-      const inheritableProperties = pick(routeTree, [
-        'receiver',
-        'group_by',
-        'group_wait',
-        'group_interval',
-        'repeat_interval',
-        'mute_time_intervals',
-      ]);
+export function findRoutesByMatchers(route: RouteWithID, labelMatchersFilter: ObjectMatcher[]): boolean {
+  const routeMatchers = normalizeMatchers(route);
 
-      return computeInheritedTree({
-        ...inheritableProperties,
-        ...route,
-      });
-    }),
-  };
+  return labelMatchersFilter.every((filter) => routeMatchers.some((matcher) => isEqual(filter, matcher)));
 }
-
-const toOption = (receiver: Receiver) => ({
-  label: receiver.name,
-  value: receiver.name,
-});
 
 const getNotificationPoliciesFilters = (searchParams: URLSearchParams) => ({
   queryString: searchParams.get('queryString') ?? undefined,
@@ -163,9 +180,9 @@ const getNotificationPoliciesFilters = (searchParams: URLSearchParams) => ({
 });
 
 const getStyles = () => ({
-  noBottom: css`
-    margin-bottom: 0;
-  `,
+  noBottom: css({
+    marginBottom: 0,
+  }),
 });
 
 export { NotificationPoliciesFilter };

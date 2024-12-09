@@ -1,14 +1,18 @@
-import React from 'react';
+import { ChangeEvent } from 'react';
 
-import { Button, Input, Switch, Form, Field, InputControl, HorizontalGroup } from '@grafana/ui';
+import { config } from '@grafana/runtime';
+import { Button, Input, Switch, Form, Field, InputControl, Label, TextArea, Stack } from '@grafana/ui';
 import { FolderPicker } from 'app/core/components/Select/FolderPicker';
-import { DashboardModel, PanelModel } from 'app/features/dashboard/state';
+import { DashboardModel } from 'app/features/dashboard/state';
 import { validationSrv } from 'app/features/manage-dashboards/services/ValidationSrv';
 
+import { GenAIDashDescriptionButton } from '../../GenAI/GenAIDashDescriptionButton';
+import { GenAIDashTitleButton } from '../../GenAI/GenAIDashTitleButton';
 import { SaveDashboardFormProps } from '../types';
 
 interface SaveDashboardAsFormDTO {
   title: string;
+  description: string;
   $folder: { uid?: string; title?: string };
   copyTags: boolean;
 }
@@ -22,11 +26,14 @@ const getSaveAsDashboardClone = (dashboard: DashboardModel) => {
 
   // remove alerts if source dashboard is already persisted
   // do not want to create alert dupes
-  if (dashboard.id > 0) {
-    clone.panels.forEach((panel: PanelModel) => {
+  if (dashboard.id > 0 && clone.panels) {
+    clone.panels.forEach((panel) => {
+      // @ts-expect-error
       if (panel.type === 'graph' && panel.alert) {
+        // @ts-expect-error
         delete panel.thresholds;
       }
+      // @ts-expect-error
       delete panel.alert;
     });
   }
@@ -38,9 +45,17 @@ export interface SaveDashboardAsFormProps extends SaveDashboardFormProps {
   isNew?: boolean;
 }
 
-export const SaveDashboardAsForm = ({ dashboard, isNew, onSubmit, onCancel, onSuccess }: SaveDashboardAsFormProps) => {
+export const SaveDashboardAsForm = ({
+  dashboard,
+  isLoading,
+  isNew,
+  onSubmit,
+  onCancel,
+  onSuccess,
+}: SaveDashboardAsFormProps) => {
   const defaultValues: SaveDashboardAsFormDTO = {
     title: isNew ? dashboard.title : `${dashboard.title} Copy`,
+    description: dashboard.description,
     $folder: {
       uid: dashboard.meta.folderUid,
       title: dashboard.meta.folderTitle,
@@ -52,8 +67,9 @@ export const SaveDashboardAsForm = ({ dashboard, isNew, onSubmit, onCancel, onSu
     if (dashboardName && dashboardName === getFormValues().$folder.title?.trim()) {
       return 'Dashboard name cannot be the same as folder name';
     }
+
     try {
-      await validationSrv.validateNewDashboardName(getFormValues().$folder.uid, dashboardName);
+      await validationSrv.validateNewDashboardName(getFormValues().$folder.uid ?? 'general', dashboardName);
       return true;
     } catch (e) {
       return e instanceof Error ? e.message : 'Dashboard name is invalid';
@@ -70,7 +86,8 @@ export const SaveDashboardAsForm = ({ dashboard, isNew, onSubmit, onCancel, onSu
 
         const clone = getSaveAsDashboardClone(dashboard);
         clone.title = data.title;
-        if (!data.copyTags) {
+        clone.description = data.description;
+        if (!isNew && !data.copyTags) {
           clone.tags = [];
         }
 
@@ -89,23 +106,69 @@ export const SaveDashboardAsForm = ({ dashboard, isNew, onSubmit, onCancel, onSu
     >
       {({ register, control, errors, getValues }) => (
         <>
-          <Field label="Dashboard name" invalid={!!errors.title} error={errors.title?.message}>
-            <Input
-              {...register('title', {
-                validate: validateDashboardName(getValues),
-              })}
-              aria-label="Save dashboard title field"
-              autoFocus
-            />
-          </Field>
+          <InputControl
+            render={({ field: { ref, ...field } }) => (
+              <Field
+                label={
+                  <Stack justifyContent="space-between">
+                    <Label htmlFor="title">Title</Label>
+                    {config.featureToggles.dashgpt && isNew && (
+                      <GenAIDashTitleButton onGenerate={(title) => field.onChange(title)} />
+                    )}
+                  </Stack>
+                }
+                invalid={!!errors.title}
+                error={errors.title?.message}
+              >
+                <Input
+                  {...field}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => field.onChange(e.target.value)}
+                  aria-label="Save dashboard title field"
+                  autoFocus
+                />
+              </Field>
+            )}
+            control={control}
+            name="title"
+            rules={{
+              validate: validateDashboardName(getValues),
+            }}
+          />
+          <InputControl
+            render={({ field: { ref, ...field } }) => (
+              <Field
+                label={
+                  <Stack justifyContent="space-between">
+                    <Label htmlFor="description">Description</Label>
+                    {config.featureToggles.dashgpt && isNew && (
+                      <GenAIDashDescriptionButton onGenerate={(description) => field.onChange(description)} />
+                    )}
+                  </Stack>
+                }
+                invalid={!!errors.description}
+                error={errors.description?.message}
+              >
+                <TextArea
+                  {...field}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => field.onChange(e.target.value)}
+                  aria-label="Save dashboard description field"
+                  autoFocus
+                />
+              </Field>
+            )}
+            control={control}
+            name="description"
+          />
           <Field label="Folder">
             <InputControl
               render={({ field: { ref, ...field } }) => (
                 <FolderPicker
                   {...field}
-                  dashboardId={dashboard.id}
-                  initialFolderUid={dashboard.meta.folderUid}
+                  onChange={(uid: string | undefined, title: string | undefined) => field.onChange({ uid, title })}
+                  value={field.value?.uid}
+                  // Old folder picker fields
                   initialTitle={dashboard.meta.folderTitle}
+                  dashboardId={dashboard.id}
                   enableCreateNew
                 />
               )}
@@ -118,14 +181,14 @@ export const SaveDashboardAsForm = ({ dashboard, isNew, onSubmit, onCancel, onSu
               <Switch {...register('copyTags')} />
             </Field>
           )}
-          <HorizontalGroup>
+          <Stack>
             <Button type="button" variant="secondary" onClick={onCancel} fill="outline">
               Cancel
             </Button>
-            <Button type="submit" aria-label="Save dashboard button">
-              Save
+            <Button disabled={isLoading} type="submit" aria-label="Save dashboard button">
+              {isLoading ? 'Saving...' : 'Save'}
             </Button>
-          </HorizontalGroup>
+          </Stack>
         </>
       )}
     </Form>

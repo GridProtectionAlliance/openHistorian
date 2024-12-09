@@ -1,17 +1,14 @@
 import 'symbol-observable';
-import 'core-js';
 import 'regenerator-runtime/runtime';
 
 import 'whatwg-fetch'; // fetch polyfill needed for PhantomJs rendering
-import './polyfills/old-mediaquerylist'; // Safari < 14 does not have mql.addEventListener()
 import 'file-saver';
 import 'jquery';
-
-import 'app/features/all';
+import 'vendor/bootstrap/bootstrap';
 
 import _ from 'lodash'; // eslint-disable-line lodash/import-scope
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createElement } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import {
   locationUtil,
@@ -34,14 +31,20 @@ import {
   setRunRequest,
   setPluginImportUtils,
   setPluginExtensionGetter,
+  setEmbeddedDashboard,
   setAppEvents,
-  type GetPluginExtensions,
+  setReturnToPreviousHook,
+  setPluginExtensionsHook,
+  setPluginComponentHook,
+  setPluginComponentsHook,
+  setCurrentUser,
+  setChromeHeaderHeightHook,
+  setPluginLinksHook,
 } from '@grafana/runtime';
 import { setPanelDataErrorView } from '@grafana/runtime/src/components/PanelDataErrorView';
 import { setPanelRenderer } from '@grafana/runtime/src/components/PanelRenderer';
 import { setPluginPage } from '@grafana/runtime/src/components/PluginPage';
-import { getScrollbarWidth } from '@grafana/ui';
-import config from 'app/core/config';
+import config, { updateConfig } from 'app/core/config';
 import { arrayMove } from 'app/core/utils/arrayMove';
 import { getStandardTransformers } from 'app/features/transformers/standardTransformers';
 
@@ -51,13 +54,15 @@ import { AppWrapper } from './AppWrapper';
 import appEvents from './core/app_events';
 import { AppChromeService } from './core/components/AppChrome/AppChromeService';
 import { getAllOptionEditors, getAllStandardFieldConfigs } from './core/components/OptionsUI/registry';
-import { PluginPage } from './core/components/PageNew/PluginPage';
-import { GrafanaContextType } from './core/context/GrafanaContext';
+import { PluginPage } from './core/components/Page/PluginPage';
+import { GrafanaContextType, useChromeHeaderHeight, useReturnToPreviousInternal } from './core/context/GrafanaContext';
+import { initIconCache } from './core/icons/iconBundle';
 import { initializeI18n } from './core/internationalization';
+import { setMonacoEnv } from './core/monacoEnv';
 import { interceptLinkClicks } from './core/navigation/patch/interceptLinkClicks';
-import { ModalManager } from './core/services/ModalManager';
+import { NewFrontendAssetsChecker } from './core/services/NewFrontendAssetsChecker';
 import { backendSrv } from './core/services/backend_srv';
-import { contextSrv } from './core/services/context_srv';
+import { contextSrv, RedirectToUrlKey } from './core/services/context_srv';
 import { Echo } from './core/services/echo/Echo';
 import { reportPerformance } from './core/services/echo/EchoSrv';
 import { PerformanceBackend } from './core/services/echo/backends/PerformanceBackend';
@@ -66,20 +71,31 @@ import { GA4EchoBackend } from './core/services/echo/backends/analytics/GA4Backe
 import { GAEchoBackend } from './core/services/echo/backends/analytics/GABackend';
 import { RudderstackBackend } from './core/services/echo/backends/analytics/RudderstackBackend';
 import { GrafanaJavascriptAgentBackend } from './core/services/echo/backends/grafana-javascript-agent/GrafanaJavascriptAgentBackend';
-import { SentryEchoBackend } from './core/services/echo/backends/sentry/SentryBackend';
 import { KeybindingSrv } from './core/services/keybindingSrv';
+import { startMeasure, stopMeasure } from './core/utils/metrics';
 import { initDevFeatures } from './dev';
+import { initAlerting } from './features/alerting/unified/initAlerting';
+import { initAuthConfig } from './features/auth-config';
 import { getTimeSrv } from './features/dashboard/services/TimeSrv';
+import { EmbeddedDashboardLazy } from './features/dashboard-scene/embedding/EmbeddedDashboardLazy';
+import { initGrafanaLive } from './features/live';
 import { PanelDataErrorView } from './features/panel/components/PanelDataErrorView';
 import { PanelRenderer } from './features/panel/components/PanelRenderer';
 import { DatasourceSrv } from './features/plugins/datasource_srv';
-import { createPluginExtensionRegistry } from './features/plugins/extensions/createPluginExtensionRegistry';
-import { getPluginExtensions } from './features/plugins/extensions/getPluginExtensions';
+import { createPluginExtensionsGetter } from './features/plugins/extensions/getPluginExtensions';
+import { setupPluginExtensionRegistries } from './features/plugins/extensions/registry/setup';
+import { PluginExtensionRegistries } from './features/plugins/extensions/registry/types';
+import { usePluginComponent } from './features/plugins/extensions/usePluginComponent';
+import { usePluginComponents } from './features/plugins/extensions/usePluginComponents';
+import { createUsePluginExtensions } from './features/plugins/extensions/usePluginExtensions';
+import { usePluginLinks } from './features/plugins/extensions/usePluginLinks';
 import { importPanelPlugin, syncGetPanelPlugin } from './features/plugins/importPanelPlugin';
 import { preloadPlugins } from './features/plugins/pluginPreloader';
 import { QueryRunner } from './features/query/state/QueryRunner';
 import { runRequest } from './features/query/state/runRequest';
 import { initWindowRuntime } from './features/runtime/init';
+import { initializeScopes } from './features/scopes';
+import { cleanupOldExpandedFolders } from './features/search/utils';
 import { variableAdapters } from './features/variables/adapters';
 import { createAdHocVariableAdapter } from './features/variables/adhoc/adapter';
 import { createConstantVariableAdapter } from './features/variables/constant/adapter';
@@ -109,6 +125,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export class GrafanaApp {
   context!: GrafanaContextType;
+  pluginExtensionsRegistries!: PluginExtensionRegistries;
 
   async init() {
     try {
@@ -116,17 +133,26 @@ export class GrafanaApp {
       parent.postMessage('GrafanaAppInit', '*');
 
       const initI18nPromise = initializeI18n(config.bootData.user.language);
+      initI18nPromise.then(({ language }) => updateConfig({ language }));
 
       setBackendSrv(backendSrv);
       initEchoSrv();
-      addClassIfNoOverlayScrollbar();
+      initIconCache();
+      // This needs to be done after the `initEchoSrv` since it is being used under the hood.
+      startMeasure('frontend_app_init');
+
       setLocale(config.bootData.user.locale);
       setWeekStart(config.bootData.user.weekStart);
       setPanelRenderer(PanelRenderer);
       setPluginPage(PluginPage);
       setPanelDataErrorView(PanelDataErrorView);
       setLocationSrv(locationService);
+      setEmbeddedDashboard(EmbeddedDashboardLazy);
       setTimeZoneResolver(() => config.bootData.user.timezone);
+      initGrafanaLive();
+      setCurrentUser(contextSrv.user);
+
+      initAuthConfig();
 
       // Expose the app-wide eventbus
       setAppEvents(appEvents);
@@ -138,6 +164,8 @@ export class GrafanaApp {
       addExtensionReducers();
       configureStore();
       initExtensions();
+
+      initAlerting();
 
       standardEditorsRegistry.setInit(getAllOptionEditors);
       standardFieldConfigEditorRegistry.setInit(getAllStandardFieldConfigs);
@@ -152,7 +180,9 @@ export class GrafanaApp {
         createAdHocVariableAdapter(),
         createSystemVariableAdapter(),
       ]);
+
       monacoLanguageRegistry.setInit(getDefaultMonacoLanguages);
+      setMonacoEnv();
 
       setQueryRunnerFactory(() => new QueryRunner());
       setVariableQueryRunner(new VariableQueryRunner());
@@ -165,6 +195,10 @@ export class GrafanaApp {
         importPanelPlugin,
         getPanelPluginFromCache: syncGetPanelPlugin,
       });
+
+      if (config.featureToggles.useSessionStorageForRedirection) {
+        handleRedirectTo();
+      }
 
       locationUtil.initialize({
         config,
@@ -181,43 +215,68 @@ export class GrafanaApp {
       setDataSourceSrv(dataSourceSrv);
       initWindowRuntime();
 
-      // init modal manager
-      const modalManager = new ModalManager();
-      modalManager.init();
+      // Initialize plugin extensions
+      this.pluginExtensionsRegistries = setupPluginExtensionRegistries();
 
-      // Preload selected app plugins
-      const preloadResults = await preloadPlugins(config.apps);
+      if (contextSrv.user.orgRole !== '') {
+        // The "cloud-home-app" is registering banners once it's loaded, and this can cause a rerender in the AppChrome if it's loaded after the Grafana app init.
+        // TODO: remove the following exception once the issue mentioned above is fixed.
+        const awaitedAppPluginIds = ['cloud-home-app'];
+        const awaitedAppPlugins = Object.values(config.apps).filter((app) => awaitedAppPluginIds.includes(app.id));
+        const appPlugins = Object.values(config.apps).filter((app) => !awaitedAppPluginIds.includes(app.id));
 
-      // Create extension registry out of the preloaded plugins
-      const pluginExtensionGetter: GetPluginExtensions = (options) =>
-        getPluginExtensions({ ...options, registry: createPluginExtensionRegistry(preloadResults) });
-      setPluginExtensionGetter(pluginExtensionGetter);
+        preloadPlugins(appPlugins, this.pluginExtensionsRegistries);
+        await preloadPlugins(awaitedAppPlugins, this.pluginExtensionsRegistries, 'frontend_awaited_plugins_preload');
+      }
+
+      setPluginExtensionGetter(createPluginExtensionsGetter(this.pluginExtensionsRegistries));
+      setPluginExtensionsHook(createUsePluginExtensions(this.pluginExtensionsRegistries));
+      setPluginLinksHook(usePluginLinks);
+      setPluginComponentHook(usePluginComponent);
+      setPluginComponentsHook(usePluginComponents);
 
       // initialize chrome service
       const queryParams = locationService.getSearchObject();
       const chromeService = new AppChromeService();
       const keybindingsService = new KeybindingSrv(locationService, chromeService);
+      const newAssetsChecker = new NewFrontendAssetsChecker();
+      newAssetsChecker.start();
 
       // Read initial kiosk mode from url at app startup
       chromeService.setKioskModeFromUrl(queryParams.kiosk);
+
+      // Clean up old search local storage values
+      try {
+        cleanupOldExpandedFolders();
+      } catch (err) {
+        console.warn('Failed to clean up old expanded folders', err);
+      }
 
       this.context = {
         backend: backendSrv,
         location: locationService,
         chrome: chromeService,
         keybindings: keybindingsService,
+        newAssetsChecker,
         config,
       };
 
-      ReactDOM.render(
-        React.createElement(AppWrapper, {
+      setReturnToPreviousHook(useReturnToPreviousInternal);
+      setChromeHeaderHeightHook(useChromeHeaderHeight);
+
+      initializeScopes();
+
+      const root = createRoot(document.getElementById('reactRoot')!);
+      root.render(
+        createElement(AppWrapper, {
           app: this,
-        }),
-        document.getElementById('reactRoot')
+        })
       );
     } catch (error) {
       console.error('Failed to start Grafana', error);
       window.__grafana_load_failed();
+    } finally {
+      stopMeasure('frontend_app_init');
     }
   }
 }
@@ -239,7 +298,7 @@ function initEchoSrv() {
 
   window.addEventListener('load', (e) => {
     const loadMetricName = 'frontend_boot_load_time_seconds';
-    // Metrics below are marked in public/views/index-template.html
+    // Metrics below are marked in public/views/index.html
     const jsLoadMetricName = 'frontend_boot_js_done_time_seconds';
     const cssLoadMetricName = 'frontend_boot_css_time_seconds';
 
@@ -257,15 +316,6 @@ function initEchoSrv() {
     registerEchoBackend(new PerformanceBackend({}));
   }
 
-  if (config.sentry.enabled) {
-    registerEchoBackend(
-      new SentryEchoBackend({
-        ...config.sentry,
-        user: config.bootData.user,
-        buildInfo: config.buildInfo,
-      })
-    );
-  }
   if (config.grafanaJavascriptAgent.enabled) {
     registerEchoBackend(
       new GrafanaJavascriptAgentBackend({
@@ -308,6 +358,8 @@ function initEchoSrv() {
         user: config.bootData.user,
         sdkUrl: config.rudderstackSdkUrl,
         configUrl: config.rudderstackConfigUrl,
+        integrationsUrl: config.rudderstackIntegrationsUrl,
+        buildInfo: config.buildInfo,
       })
     );
   }
@@ -322,12 +374,6 @@ function initEchoSrv() {
   }
 }
 
-function addClassIfNoOverlayScrollbar() {
-  if (getScrollbarWidth() > 0) {
-    document.body.classList.add('no-overlay-scrollbar');
-  }
-}
-
 /**
  * Report when a metric of a given name was marked during the document lifecycle. Works for markers with no duration,
  * like PerformanceMark or PerformancePaintTiming (e.g. created with performance.mark, or first-contentful-paint)
@@ -337,6 +383,37 @@ function reportMetricPerformanceMark(metricName: string, prefix = '', suffix = '
   if (metric) {
     const metricName = metric.name.replace(/-/g, '_');
     reportPerformance(`${prefix}${metricName}${suffix}`, Math.round(metric.startTime) / 1000);
+  }
+}
+
+function handleRedirectTo(): void {
+  const queryParams = locationService.getSearch();
+  const redirectToParamKey = 'redirectTo';
+
+  if (queryParams.has(redirectToParamKey) && window.location.pathname !== '/') {
+    const rawRedirectTo = queryParams.get(redirectToParamKey)!;
+    window.sessionStorage.setItem(RedirectToUrlKey, encodeURIComponent(rawRedirectTo));
+    queryParams.delete(redirectToParamKey);
+    window.history.replaceState({}, '', `${window.location.pathname}${queryParams.size > 0 ? `?${queryParams}` : ''}`);
+    return;
+  }
+
+  if (!contextSrv.user.isSignedIn) {
+    return;
+  }
+
+  const redirectTo = window.sessionStorage.getItem(RedirectToUrlKey);
+  if (!redirectTo) {
+    return;
+  }
+
+  window.sessionStorage.removeItem(RedirectToUrlKey);
+  const decodedRedirectTo = decodeURIComponent(redirectTo);
+  if (decodedRedirectTo.startsWith('/goto/')) {
+    // In this case there should be a request to the backend
+    window.location.replace(decodedRedirectTo);
+  } else {
+    locationService.replace(decodedRedirectTo);
   }
 }
 

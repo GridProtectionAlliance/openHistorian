@@ -1,25 +1,31 @@
 import { css, cx } from '@emotion/css';
-import { capitalize, uniqueId } from 'lodash';
-import React, { FC, useCallback, useState } from 'react';
+import { uniqueId } from 'lodash';
+import { FC, useCallback, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 import { DataFrame, dateTimeFormat, GrafanaTheme2, isTimeSeriesFrames, LoadingState, PanelData } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
-import { AutoSizeInput, Button, clearButtonStyles, Icon, IconButton, Select, useStyles2 } from '@grafana/ui';
+import { Alert, AutoSizeInput, Button, clearButtonStyles, IconButton, Stack, useStyles2 } from '@grafana/ui';
 import { ClassicConditions } from 'app/features/expressions/components/ClassicConditions';
 import { Math } from 'app/features/expressions/components/Math';
 import { Reduce } from 'app/features/expressions/components/Reduce';
 import { Resample } from 'app/features/expressions/components/Resample';
+import { SqlExpr } from 'app/features/expressions/components/SqlExpr';
 import { Threshold } from 'app/features/expressions/components/Threshold';
-import { ExpressionQuery, ExpressionQueryType, gelTypes } from 'app/features/expressions/types';
+import {
+  ExpressionQuery,
+  ExpressionQueryType,
+  expressionTypes,
+  getExpressionLabel,
+} from 'app/features/expressions/types';
 import { AlertQuery, PromAlertingRuleState } from 'app/types/unified-alerting-dto';
 
 import { usePagination } from '../../hooks/usePagination';
-import { HoverCard } from '../HoverCard';
+import { PopupCard } from '../HoverCard';
 import { Spacer } from '../Spacer';
 import { AlertStateTag } from '../rules/AlertStateTag';
 
-import { AlertConditionIndicator } from './AlertConditionIndicator';
-import { formatLabels, getSeriesName, getSeriesValue, isEmptySeries } from './util';
+import { ExpressionStatusIndicator } from './ExpressionStatusIndicator';
+import { formatLabels, getSeriesLabels, getSeriesName, getSeriesValue, isEmptySeries } from './util';
 
 interface ExpressionProps {
   isAlertCondition?: boolean;
@@ -45,24 +51,33 @@ export const Expression: FC<ExpressionProps> = ({
   onSetCondition,
   onUpdateRefId,
   onRemoveExpression,
-  onUpdateExpressionType,
+  onUpdateExpressionType, // this method is not used? maybe we should remove it
   onChangeQuery,
 }) => {
   const styles = useStyles2(getStyles);
 
   const queryType = query?.type;
 
+  const { setError, clearErrors } = useFormContext();
+
+  const onQueriesValidationError = useCallback(
+    (errorMsg: string | undefined) => {
+      if (errorMsg) {
+        setError('queries', { type: 'custom', message: errorMsg });
+      } else {
+        clearErrors('queries');
+      }
+    },
+    [setError, clearErrors]
+  );
+
   const isLoading = data && Object.values(data).some((d) => Boolean(d) && d.state === LoadingState.Loading);
   const hasResults = Array.isArray(data?.series) && !isLoading;
   const series = data?.series ?? [];
 
   const alertCondition = isAlertCondition ?? false;
-  const showSummary = isAlertCondition && hasResults;
 
-  const groupedByState = {
-    [PromAlertingRuleState.Firing]: series.filter((serie) => getSeriesValue(serie) >= 1),
-    [PromAlertingRuleState.Inactive]: series.filter((serie) => getSeriesValue(serie) < 1),
-  };
+  const { seriesCount, groupedByState } = getGroupedByStateAndSeriesCount(series);
 
   const renderExpressionType = useCallback(
     (query: ExpressionQuery) => {
@@ -85,45 +100,80 @@ export const Expression: FC<ExpressionProps> = ({
           return <ClassicConditions onChange={onChangeQuery} query={query} refIds={availableRefIds} />;
 
         case ExpressionQueryType.threshold:
-          return <Threshold onChange={onChangeQuery} query={query} labelWidth={'auto'} refIds={availableRefIds} />;
+          return (
+            <Threshold
+              onChange={onChangeQuery}
+              query={query}
+              labelWidth={'auto'}
+              refIds={availableRefIds}
+              onError={onQueriesValidationError}
+              useHysteresis={true}
+            />
+          );
+
+        case ExpressionQueryType.sql:
+          return <SqlExpr onChange={onChangeQuery} query={query} refIds={availableRefIds} />;
 
         default:
           return <>Expression not supported: {query.type}</>;
       }
     },
-    [onChangeQuery, queries]
+    [onChangeQuery, queries, onQueriesValidationError]
   );
+  const selectedExpressionType = expressionTypes.find((o) => o.value === queryType);
+  const selectedExpressionDescription = selectedExpressionType?.description ?? '';
 
   return (
-    <div className={cx(styles.expression.wrapper, alertCondition && styles.expression.alertCondition)}>
+    <div
+      className={cx(
+        styles.expression.wrapper,
+        alertCondition && styles.expression.alertCondition,
+        queryType === ExpressionQueryType.classic && styles.expression.classic,
+        queryType !== ExpressionQueryType.classic && styles.expression.nonClassic
+      )}
+    >
       <div className={styles.expression.stack}>
         <Header
           refId={query.refId}
           queryType={queryType}
           onRemoveExpression={() => onRemoveExpression(query.refId)}
           onUpdateRefId={(newRefId) => onUpdateRefId(query.refId, newRefId)}
-          onUpdateExpressionType={(type) => onUpdateExpressionType(query.refId, type)}
+          onSetCondition={onSetCondition}
+          query={query}
+          alertCondition={alertCondition}
         />
-        <div className={styles.expression.body}>{renderExpressionType(query)}</div>
-        {hasResults && <ExpressionResult series={series} isAlertCondition={isAlertCondition} />}
-
-        <div className={styles.footer}>
-          <Stack direction="row" alignItems="center">
-            <AlertConditionIndicator
-              onSetCondition={() => onSetCondition(query.refId)}
-              enabled={alertCondition}
-              error={error}
-              warning={warning}
-            />
-            <Spacer />
-            {showSummary && (
-              <PreviewSummary
-                firing={groupedByState[PromAlertingRuleState.Firing].length}
-                normal={groupedByState[PromAlertingRuleState.Inactive].length}
-              />
-            )}
-          </Stack>
+        <div className={styles.expression.body}>
+          {error && (
+            <Alert title="Expression failed" severity="error">
+              {error.message}
+            </Alert>
+          )}
+          {warning && (
+            <Alert title="Expression warning" severity="warning">
+              {warning.message}
+            </Alert>
+          )}
+          <div className={styles.expression.description}>{selectedExpressionDescription}</div>
+          {renderExpressionType(query)}
         </div>
+        {hasResults && (
+          <>
+            <ExpressionResult series={series} isAlertCondition={isAlertCondition} />
+
+            <div className={styles.footer}>
+              <Stack direction="row" alignItems="center">
+                <Spacer />
+
+                <PreviewSummary
+                  isCondition={Boolean(isAlertCondition)}
+                  firing={groupedByState[PromAlertingRuleState.Firing].length}
+                  normal={groupedByState[PromAlertingRuleState.Inactive].length}
+                  seriesCount={seriesCount}
+                />
+              </Stack>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -196,41 +246,77 @@ export const ExpressionResult: FC<ExpressionResultProps> = ({ series, isAlertCon
   );
 };
 
-export const PreviewSummary: FC<{ firing: number; normal: number }> = ({ firing, normal }) => {
+export const PreviewSummary: FC<{ firing: number; normal: number; isCondition: boolean; seriesCount: number }> = ({
+  firing,
+  normal,
+  isCondition,
+  seriesCount,
+}) => {
   const { mutedText } = useStyles2(getStyles);
-  return <span className={mutedText}>{`${firing} firing, ${normal} normal`}</span>;
+
+  if (seriesCount === 0) {
+    return <span className={mutedText}>No series</span>;
+  }
+
+  if (isCondition) {
+    return <span className={mutedText}>{`${seriesCount} series: ${firing} firing, ${normal} normal`}</span>;
+  }
+
+  return <span className={mutedText}>{`${seriesCount} series`}</span>;
 };
+
+export function getGroupedByStateAndSeriesCount(series: DataFrame[]) {
+  const noDataSeries = series.filter((serie) => getSeriesValue(serie) === undefined).length;
+  const groupedByState = {
+    // we need to filter out series with no data (undefined) or zero value
+    [PromAlertingRuleState.Firing]: series.filter(
+      (serie) => getSeriesValue(serie) !== undefined && getSeriesValue(serie) !== 0
+    ),
+    [PromAlertingRuleState.Inactive]: series.filter((serie) => getSeriesValue(serie) === 0),
+  };
+
+  const seriesCount = series.length - noDataSeries;
+
+  return { groupedByState, seriesCount };
+}
 
 interface HeaderProps {
   refId: string;
   queryType: ExpressionQueryType;
   onUpdateRefId: (refId: string) => void;
   onRemoveExpression: () => void;
-  onUpdateExpressionType: (type: ExpressionQueryType) => void;
+  onSetCondition: (refId: string) => void;
+  query: ExpressionQuery;
+  alertCondition: boolean;
 }
 
-const Header: FC<HeaderProps> = ({ refId, queryType, onUpdateRefId, onUpdateExpressionType, onRemoveExpression }) => {
+const Header: FC<HeaderProps> = ({
+  refId,
+  queryType,
+  onUpdateRefId,
+  onRemoveExpression,
+  onSetCondition,
+  alertCondition,
+  query,
+}) => {
   const styles = useStyles2(getStyles);
   const clearButton = useStyles2(clearButtonStyles);
   /**
    * There are 3 edit modes:
    *
    * 1. "refId": Editing the refId (ie. A -> B)
-   * 2. "epressionType": Editing the type of the expression (ie. Reduce -> Math)
+   * 2. "expressionType": Editing the type of the expression (ie. Reduce -> Math)
    * 3. "false": This means we're not editing either of those
    */
   const [editMode, setEditMode] = useState<'refId' | 'expressionType' | false>(false);
 
   const editing = editMode !== false;
   const editingRefId = editing && editMode === 'refId';
-  const editingType = editing && editMode === 'expressionType';
-
-  const selectedExpressionType = gelTypes.find((o) => o.value === queryType);
 
   return (
     <header className={styles.header.wrapper}>
       <Stack direction="row" gap={0.5} alignItems="center">
-        <Stack direction="row" gap={1} alignItems="center" wrap={false}>
+        <Stack direction="row" gap={1} alignItems="center">
           {!editingRefId && (
             <button type="button" className={cx(clearButton, styles.editable)} onClick={() => setEditMode('refId')}>
               <div className={styles.expression.refId}>{refId}</div>
@@ -241,10 +327,6 @@ const Header: FC<HeaderProps> = ({ refId, queryType, onUpdateRefId, onUpdateExpr
               autoFocus
               defaultValue={refId}
               minWidth={5}
-              onChange={(event) => {
-                onUpdateRefId(event.currentTarget.value);
-                setEditMode(false);
-              }}
               onFocus={(event) => event.target.select()}
               onBlur={(event) => {
                 onUpdateRefId(event.currentTarget.value);
@@ -252,40 +334,16 @@ const Header: FC<HeaderProps> = ({ refId, queryType, onUpdateRefId, onUpdateExpr
               }}
             />
           )}
-          {!editingType && (
-            <button
-              type="button"
-              className={cx(clearButton, styles.editable)}
-              onClick={() => setEditMode('expressionType')}
-            >
-              <div className={styles.mutedText}>{capitalize(queryType)}</div>
-              <Icon size="xs" name="pen" className={styles.mutedIcon} onClick={() => setEditMode('expressionType')} />
-            </button>
-          )}
-          {editingType && (
-            <Select
-              isOpen
-              autoFocus
-              onChange={(selection) => {
-                onUpdateExpressionType(selection.value ?? ExpressionQueryType.classic);
-                setEditMode(false);
-              }}
-              onBlur={() => {
-                setEditMode(false);
-              }}
-              options={gelTypes}
-              value={selectedExpressionType}
-              width={25}
-            />
-          )}
+          <div>{getExpressionLabel(queryType)}</div>
         </Stack>
         <Spacer />
+        <ExpressionStatusIndicator onSetCondition={() => onSetCondition(query.refId)} isCondition={alertCondition} />
         <IconButton
-          type="button"
           name="trash-alt"
           variant="secondary"
           className={styles.mutedIcon}
           onClick={onRemoveExpression}
+          tooltip="Remove expression"
         />
       </Stack>
     </header>
@@ -302,16 +360,37 @@ const FrameRow: FC<FrameProps> = ({ frame, index, isAlertCondition }) => {
 
   const name = getSeriesName(frame) || 'Series ' + index;
   const value = getSeriesValue(frame);
+  const labelsRecord = getSeriesLabels(frame);
+  const labels = Object.entries(labelsRecord);
+  const hasLabels = labels.length > 0;
 
   const showFiring = isAlertCondition && value !== 0;
   const showNormal = isAlertCondition && value === 0;
 
+  const title = `${hasLabels ? '' : name}${hasLabels ? `{${formatLabels(labelsRecord)}}` : ''}`;
+
   return (
     <div className={styles.expression.resultsRow}>
       <Stack direction="row" gap={1} alignItems="center">
-        <span className={cx(styles.mutedText, styles.expression.resultLabel)} title={name}>
-          {name}
-        </span>
+        <div className={styles.expression.resultLabel} title={title}>
+          <span>{hasLabels ? '' : name}</span>
+          {hasLabels && (
+            <>
+              <span>{'{'}</span>
+              {labels.map(([key, value], index) => (
+                <span key={uniqueId()}>
+                  <span className={styles.expression.labelKey}>{key}</span>
+                  <span>=</span>
+                  <span>&quot;</span>
+                  <span className={styles.expression.labelValue}>{value}</span>
+                  <span>&quot;</span>
+                  {index < labels.length - 1 && <span>, </span>}
+                </span>
+              ))}
+              <span>{'}'}</span>
+            </>
+          )}
+        </div>
         <div className={styles.expression.resultValue}>{value}</div>
         {showFiring && <AlertStateTag state={PromAlertingRuleState.Firing} size="sm" />}
         {showNormal && <AlertStateTag state={PromAlertingRuleState.Inactive} size="sm" />}
@@ -329,19 +408,19 @@ const TimeseriesRow: FC<FrameProps & { index: number }> = ({ frame, index }) => 
   const displayNameFromDS = valueField.config?.displayNameFromDS;
   const name = displayNameFromDS ?? (hasLabels ? formatLabels(valueField.labels ?? {}) : 'Series ' + index);
 
-  const timestamps = frame.fields[0].values.toArray();
+  const timestamps = frame.fields[0].values;
 
-  const getTimestampFromIndex = (index: number) => frame.fields[0].values.get(index);
-  const getValueFromIndex = (index: number) => frame.fields[1].values.get(index);
+  const getTimestampFromIndex = (index: number) => frame.fields[0].values[index];
+  const getValueFromIndex = (index: number) => frame.fields[1].values[index];
 
   return (
     <div className={styles.expression.resultsRow}>
-      <Stack direction="row" gap={1} alignItems="center">
+      <Stack direction="row" alignItems="center">
         <span className={cx(styles.mutedText, styles.expression.resultLabel)} title={name}>
           {name}
         </span>
         <div className={styles.expression.resultValue}>
-          <HoverCard
+          <PopupCard
             placement="right"
             wrapperClassName={styles.timeseriesTableWrapper}
             content={
@@ -364,7 +443,7 @@ const TimeseriesRow: FC<FrameProps & { index: number }> = ({ frame, index }) => 
             }
           >
             <span>Time series data</span>
-          </HoverCard>
+          </PopupCard>
         </div>
       </Stack>
     </div>
@@ -373,136 +452,159 @@ const TimeseriesRow: FC<FrameProps & { index: number }> = ({ frame, index }) => 
 
 const getStyles = (theme: GrafanaTheme2) => ({
   expression: {
-    wrapper: css`
-      display: flex;
-      border: solid 1px ${theme.colors.border.medium};
+    wrapper: css({
+      display: 'flex',
+      border: `solid 1px ${theme.colors.border.medium}`,
+      flex: 1,
+      flexBasis: '400px',
+      borderRadius: theme.shape.radius.default,
+    }),
+    stack: css({
+      display: 'flex',
+      flexDirection: 'column',
+      flexWrap: 'nowrap',
+      gap: 0,
+      width: '100%',
+      minWidth: '0', // this one is important to prevent text overflow
+    }),
+    classic: css({
+      maxWidth: '100%',
+    }),
+    nonClassic: css({
+      maxWidth: '640px',
+    }),
+    alertCondition: css({}),
+    body: css({
+      padding: theme.spacing(1),
+      flex: 1,
+    }),
+    description: css({
+      marginBottom: theme.spacing(1),
+      fontSize: theme.typography.size.xs,
+      color: theme.colors.text.secondary,
+    }),
+    refId: css({
+      fontWeight: theme.typography.fontWeightBold,
+      color: theme.colors.primary.text,
+    }),
+    results: css({
+      display: 'flex',
+      flexDirection: 'column',
+      flexWrap: 'nowrap',
 
-      border-radius: ${theme.shape.borderRadius()};
-      max-width: 640px;
-    `,
-    stack: css`
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      gap: 0;
-      min-width: 0; // this one is important to prevent text overflow
-    `,
-    alertCondition: css``,
-    body: css`
-      padding: ${theme.spacing(1)};
-      flex: 1;
-    `,
-    refId: css`
-      font-weight: ${theme.typography.fontWeightBold};
-      color: ${theme.colors.primary.text};
-    `,
-    results: css`
-      border-top: solid 1px ${theme.colors.border.medium};
-    `,
-    noResults: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `,
-    resultsRow: css`
-      padding: ${theme.spacing(0.75)} ${theme.spacing(1)};
+      borderTop: `solid 1px ${theme.colors.border.medium}`,
+    }),
+    noResults: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }),
+    resultsRow: css({
+      padding: `${theme.spacing(0.75)} ${theme.spacing(1)}`,
 
-      &:nth-child(odd) {
-        background-color: ${theme.colors.background.secondary};
-      }
+      '&:nth-child(odd)': {
+        backgroundColor: theme.colors.background.secondary,
+      },
 
-      &:hover {
-        background-color: ${theme.colors.background.canvas};
-      }
-    `,
-    resultValue: css`
-      color: ${theme.colors.text.maxContrast};
-      text-align: right;
-    `,
-    resultLabel: css`
-      flex: 1;
-    `,
-    noData: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: ${theme.spacing()};
-    `,
+      '&:hover': {
+        backgroundColor: theme.colors.background.canvas,
+      },
+    }),
+    labelKey: css({
+      color: theme.isDark ? '#73bf69' : '#56a64b',
+    }),
+    labelValue: css({
+      color: theme.isDark ? '#ce9178' : '#a31515',
+    }),
+    resultValue: css({
+      textAlign: 'right',
+    }),
+    resultLabel: css({
+      flex: 1,
+      overflowX: 'auto',
+
+      display: 'inline-block',
+      whiteSpace: 'nowrap',
+    }),
+    noData: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: theme.spacing(),
+    }),
   },
-  mutedText: css`
-    color: ${theme.colors.text.secondary};
-    font-size: 0.9em;
+  mutedText: css({
+    color: theme.colors.text.secondary,
+    fontSize: '0.9em',
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  `,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
   header: {
-    wrapper: css`
-      background: ${theme.colors.background.secondary};
-      padding: ${theme.spacing(0.5)} ${theme.spacing(1)};
-      border-bottom: solid 1px ${theme.colors.border.medium};
-    `,
+    wrapper: css({
+      background: theme.colors.background.secondary,
+      padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+      borderBottom: `solid 1px ${theme.colors.border.weak}`,
+    }),
   },
-  footer: css`
-    background: ${theme.colors.background.secondary};
-    padding: ${theme.spacing(1)};
-    border-top: solid 1px ${theme.colors.border.medium};
-  `,
-  draggableIcon: css`
-    cursor: grab;
-  `,
-  mutedIcon: css`
-    color: ${theme.colors.text.secondary};
-  `,
-  editable: css`
-    padding: ${theme.spacing(0.5)} ${theme.spacing(1)};
-    border: solid 1px ${theme.colors.border.weak};
-    border-radius: ${theme.shape.borderRadius()};
+  footer: css({
+    background: theme.colors.background.secondary,
+    padding: theme.spacing(1),
+    borderTop: `solid 1px ${theme.colors.border.weak}`,
+  }),
+  draggableIcon: css({
+    cursor: 'grab',
+  }),
+  mutedIcon: css({
+    color: theme.colors.text.secondary,
+  }),
+  editable: css({
+    padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+    border: `solid 1px ${theme.colors.border.weak}`,
+    borderRadius: theme.shape.radius.default,
 
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: ${theme.spacing(1)};
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    cursor: 'pointer',
+  }),
+  timeseriesTableWrapper: css({
+    maxHeight: '500px',
 
-    cursor: pointer;
-  `,
-  timeseriesTableWrapper: css`
-    max-height: 500px;
+    overflowY: 'scroll',
+  }),
+  timeseriesTable: css({
+    tableLayout: 'auto',
 
-    overflow-y: scroll;
-  `,
-  timeseriesTable: css`
-    table-layout: auto;
+    width: '100%',
+    height: '100%',
 
-    width: 100%;
-    height: 100%;
+    'td, th': {
+      padding: theme.spacing(1),
+    },
 
-    td,
-    th {
-      padding: ${theme.spacing(1)};
-    }
+    td: {
+      background: theme.colors.background.primary,
+    },
 
-    td {
-      background: ${theme.colors.background.primary};
-    }
+    th: {
+      background: theme.colors.background.secondary,
+    },
 
-    th {
-      background: ${theme.colors.background.secondary};
-    }
+    tr: {
+      borderBottom: `1px solid ${theme.colors.border.medium}`,
 
-    tr {
-      border-bottom: 1px solid ${theme.colors.border.medium};
-
-      &:last-of-type {
-        border-bottom: none;
-      }
-    }
-  `,
+      '&:last-of-type': {
+        borderBottom: 'none',
+      },
+    },
+  }),
   pagination: {
-    wrapper: css`
-      border-top: 1px solid ${theme.colors.border.medium};
-      padding: ${theme.spacing()};
-    `,
+    wrapper: css({
+      borderTop: `1px solid ${theme.colors.border.medium}`,
+      padding: theme.spacing(),
+    }),
   },
 });

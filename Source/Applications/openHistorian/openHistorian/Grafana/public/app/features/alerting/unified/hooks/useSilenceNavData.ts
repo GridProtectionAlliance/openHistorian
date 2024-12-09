@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom-v5-compat';
 
 import { NavModelItem } from '@grafana/data';
 
 const defaultPageNav: Partial<NavModelItem> = {
   icon: 'bell-slash',
-  breadcrumbs: [{ title: 'Silences', url: 'alerting/silences' }],
 };
 
 export function useSilenceNavData() {
-  const { isExact, path } = useRouteMatch();
-  const [pageNav, setPageNav] = useState<Pick<NavModelItem, 'id' | 'text' | 'icon'> | undefined>();
+  const [pageNav, setPageNav] = useState<NavModelItem | undefined>();
+  const isNewPath = useMatch('/alerting/silence/new');
+  const isEditPath = useMatch('/alerting/silence/:id/edit');
 
   useEffect(() => {
-    if (path === '/alerting/silence/new') {
+    if (isNewPath) {
       setPageNav({
         ...defaultPageNav,
         id: 'silence-new',
-        text: 'Add silence',
+        text: 'Silence alert rule',
+        subTitle: 'Configure silences to stop notifications from a particular alert rule',
       });
-    } else if (path === '/alerting/silence/:id/edit') {
+    } else if (isEditPath) {
       setPageNav({
         ...defaultPageNav,
         id: 'silence-edit',
         text: 'Edit silence',
+        subTitle: 'Recreate existing silence to stop notifications from a particular alert rule',
       });
     }
-  }, [path, isExact]);
+  }, [isEditPath, isNewPath]);
 
   return pageNav;
 }

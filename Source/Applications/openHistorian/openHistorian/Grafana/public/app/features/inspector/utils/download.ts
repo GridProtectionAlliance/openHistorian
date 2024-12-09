@@ -5,10 +5,14 @@ import {
   DataFrame,
   DataTransformerID,
   dateTimeFormat,
-  dateTimeFormatISO,
   LogsModel,
+  MutableDataFrame,
   toCSV,
 } from '@grafana/data';
+import { transformToOTLP } from '@grafana-plugins/tempo/resultTransformer';
+
+import { transformToJaeger } from '../../../plugins/datasource/jaeger/responseTransform';
+import { transformToZipkin } from '../../../plugins/datasource/zipkin/utils/transforms';
 
 /**
  * Downloads a DataFrame as a TXT file.
@@ -26,7 +30,7 @@ export function downloadLogsModelAsTxt(logsModel: Pick<LogsModel, 'meta' | 'rows
   textToDownload = textToDownload + '\n\n';
 
   logsModel.rows.forEach((row) => {
-    const newRow = dateTimeFormatISO(row.timeEpochMs) + '\t' + row.entry + '\n';
+    const newRow = dateTimeFormat(row.timeEpochMs, { defaultWithMS: true }) + '\t' + row.entry + '\n';
     textToDownload = textToDownload + newRow;
   });
 
@@ -53,8 +57,9 @@ export function downloadDataFrameAsCsv(
   transformId: DataTransformerID = DataTransformerID.noop
 ) {
   const dataFrameCsv = toCSV([dataFrame], csvConfig);
+  const bomChar = csvConfig?.useExcelHeader ? String.fromCharCode(0xfeff) : '';
 
-  const blob = new Blob([String.fromCharCode(0xfeff), dataFrameCsv], {
+  const blob = new Blob([bomChar, dataFrameCsv], {
     type: 'text/csv;charset=utf-8',
   });
 
@@ -76,4 +81,35 @@ export function downloadAsJson(json: unknown, title: string) {
 
   const fileName = `${title}-${dateTimeFormat(new Date())}.json`;
   saveAs(blob, fileName);
+}
+
+/**
+ * Downloads a trace as json, based on the DataFrame format or OTLP as a default
+ *
+ * @param {DataFrame} frame
+ * @param {string} title
+ */
+export function downloadTraceAsJson(frame: DataFrame, title: string): string {
+  let traceFormat = 'otlp';
+  switch (frame.meta?.custom?.traceFormat) {
+    case 'jaeger': {
+      let res = transformToJaeger(new MutableDataFrame(frame));
+      downloadAsJson(res, title);
+      traceFormat = 'jaeger';
+      break;
+    }
+    case 'zipkin': {
+      let res = transformToZipkin(new MutableDataFrame(frame));
+      downloadAsJson(res, title);
+      traceFormat = 'zipkin';
+      break;
+    }
+    case 'otlp':
+    default: {
+      let res = transformToOTLP(new MutableDataFrame(frame));
+      downloadAsJson(res, title);
+      break;
+    }
+  }
+  return traceFormat;
 }

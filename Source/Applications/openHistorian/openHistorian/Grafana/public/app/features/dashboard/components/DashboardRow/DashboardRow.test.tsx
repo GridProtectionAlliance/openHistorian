@@ -1,10 +1,13 @@
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+
+import { createTheme } from '@grafana/data';
+import { selectors } from '@grafana/e2e-selectors';
+import { SHARED_DASHBOARD_QUERY } from 'app/plugins/datasource/dashboard/types';
 
 import { PanelModel } from '../../state/PanelModel';
 
-import { DashboardRow } from './DashboardRow';
+import { DashboardRow, UnthemedDashboardRow } from './DashboardRow';
 
 describe('DashboardRow', () => {
   let panel: PanelModel, dashboardMock: any;
@@ -17,23 +20,24 @@ describe('DashboardRow', () => {
         canEdit: true,
       },
       events: { subscribe: jest.fn() },
+      getRowPanels: () => [],
     };
 
     panel = new PanelModel({ collapsed: false });
   });
 
-  it('Should not have collapsed class when collaped is false', () => {
+  it('Should correctly show expanded state when the panel is expanded', () => {
     render(<DashboardRow panel={panel} dashboard={dashboardMock} />);
-    const row = screen.getByTestId('dashboard-row-container');
+    const row = screen.getByTestId(selectors.components.DashboardRow.title(''));
     expect(row).toBeInTheDocument();
-    expect(row).not.toHaveClass('dashboard-row--collapsed');
+    expect(row).toHaveAttribute('aria-expanded', 'true');
   });
 
-  it('Should collapse when the panel is collapsed', async () => {
+  it('Should correctly show expanded state when the panel is collapsed', async () => {
     const panel = new PanelModel({ collapsed: true });
     render(<DashboardRow panel={panel} dashboard={dashboardMock} />);
-    const row = screen.getByTestId('dashboard-row-container');
-    expect(row).toHaveClass('dashboard-row--collapsed');
+    const row = screen.getByTestId(selectors.components.DashboardRow.title(''));
+    expect(row).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('Should collapse after clicking title', async () => {
@@ -66,5 +70,29 @@ describe('DashboardRow', () => {
     render(<DashboardRow panel={panel} dashboard={dashboardMock} />);
     expect(screen.queryByRole('button', { name: 'Delete row' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Row options' })).not.toBeInTheDocument();
+  });
+
+  it('Should return warning message when row panel has a panel with dashboard ds set', async () => {
+    const panel = new PanelModel({
+      datasource: {
+        type: 'datasource',
+        uid: SHARED_DASHBOARD_QUERY,
+      },
+    });
+    const rowPanel = new PanelModel({ collapsed: true, panels: [panel] });
+    const dashboardRow = new UnthemedDashboardRow({ panel: rowPanel, dashboard: dashboardMock, theme: createTheme() });
+    expect(dashboardRow.getWarning()).toBeDefined();
+  });
+
+  it('Should not return warning message when row panel does not have a panel with dashboard ds set', async () => {
+    const panel = new PanelModel({
+      datasource: {
+        type: 'datasource',
+        uid: 'ds-uid',
+      },
+    });
+    const rowPanel = new PanelModel({ collapsed: true, panels: [panel] });
+    const dashboardRow = new UnthemedDashboardRow({ panel: rowPanel, dashboard: dashboardMock, theme: createTheme() });
+    expect(dashboardRow.getWarning()).not.toBeDefined();
   });
 });

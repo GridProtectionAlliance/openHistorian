@@ -1,41 +1,38 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { assertInstanceOf } from 'test/helpers/asserts';
+import { comboboxTestSetup } from 'test/helpers/comboboxTestSetup';
 import { getSelectParent, selectOptionInTest } from 'test/helpers/selectOptionInTest';
 
 import { Preferences as UserPreferencesDTO } from '@grafana/schema/src/raw/preferences/x/preferences_types.gen';
 
 import SharedPreferences from './SharedPreferences';
 
-jest.mock('@grafana/runtime', () => {
-  const originalModule = jest.requireActual('@grafana/runtime');
-  return {
-    ...originalModule,
-    config: {
-      ...originalModule.config,
-      featureToggles: {
-        internationalization: true,
+const selectComboboxOptionInTest = async (input: HTMLElement, optionOrOptions: string) => {
+  await userEvent.click(input);
+  const option = await screen.findByRole('option', { name: optionOrOptions });
+  await userEvent.click(option);
+};
+
+jest.mock('app/features/dashboard/api/dashboard_api', () => ({
+  getDashboardAPI: () => ({
+    getDashboardDTO: jest.fn().mockResolvedValue({
+      dashboard: {
+        id: 2,
+        title: 'My Dashboard',
+        uid: 'myDash',
+        templating: {
+          list: [],
+        },
+        panels: [],
       },
-    },
-  };
-});
+      meta: {},
+    }),
+  }),
+}));
 
 jest.mock('app/core/services/backend_srv', () => {
   return {
     backendSrv: {
-      getDashboardByUid: jest.fn().mockResolvedValue({
-        dashboard: {
-          id: 2,
-          title: 'My Dashboard',
-          uid: 'myDash',
-          templating: {
-            list: [],
-          },
-          panels: [],
-        },
-        meta: {},
-      }),
       search: jest.fn().mockResolvedValue([
         {
           id: 2,
@@ -85,6 +82,17 @@ const mockPreferences: UserPreferencesDTO = {
   language: '',
 };
 
+const defaultPreferences: UserPreferencesDTO = {
+  timezone: '',
+  weekStart: '',
+  theme: '',
+  homeDashboardUID: '',
+  queryHistory: {
+    homeTab: '',
+  },
+  language: '',
+};
+
 const mockPrefsPatch = jest.fn();
 const mockPrefsUpdate = jest.fn();
 const mockPrefsLoad = jest.fn().mockResolvedValue(mockPreferences);
@@ -113,6 +121,7 @@ describe('SharedPreferences', () => {
       configurable: true,
       value: { reload: mockReload },
     });
+    comboboxTestSetup();
   });
 
   afterAll(() => {
@@ -128,9 +137,9 @@ describe('SharedPreferences', () => {
     await waitFor(() => expect(mockPrefsLoad).toHaveBeenCalled());
   });
 
-  it('renders the theme preference', () => {
-    const lightThemeRadio = assertInstanceOf(screen.getByLabelText('Light'), HTMLInputElement);
-    expect(lightThemeRadio.checked).toBeTruthy();
+  it('renders the theme preference', async () => {
+    const themeSelect = await screen.findByRole('combobox', { name: 'Interface theme' });
+    expect(themeSelect).toHaveValue('Light');
   });
 
   it('renders the home dashboard preference', async () => {
@@ -146,24 +155,23 @@ describe('SharedPreferences', () => {
   });
 
   it('renders the week start preference', async () => {
-    const weekSelect = getSelectParent(screen.getByLabelText('Week start'));
-    expect(weekSelect).toHaveTextContent('Monday');
+    const weekSelect = await screen.findByRole('combobox', { name: 'Week start' });
+    expect(weekSelect).toHaveValue('Monday');
   });
 
-  it('renders the language preference', async () => {
-    const weekSelect = getSelectParent(screen.getByLabelText(/language/i));
-    expect(weekSelect).toHaveTextContent('Default');
+  it('renders the default language preference', async () => {
+    const langSelect = await screen.findByRole('combobox', { name: /language/i });
+    expect(langSelect).toHaveValue('Default');
   });
 
-  it("saves the user's new preferences", async () => {
-    const darkThemeRadio = assertInstanceOf(screen.getByLabelText('Dark'), HTMLInputElement);
-    await userEvent.click(darkThemeRadio);
-
+  it('saves the users new preferences', async () => {
+    await selectComboboxOptionInTest(await screen.findByRole('combobox', { name: 'Interface theme' }), 'Dark');
     await selectOptionInTest(screen.getByLabelText('Timezone'), 'Australia/Sydney');
-    await selectOptionInTest(screen.getByLabelText('Week start'), 'Saturday');
-    await selectOptionInTest(screen.getByLabelText(/language/i), 'Français');
+    await selectComboboxOptionInTest(await screen.findByRole('combobox', { name: 'Week start' }), 'Saturday');
+    await selectComboboxOptionInTest(await screen.findByRole('combobox', { name: /language/i }), 'Français');
 
     await userEvent.click(screen.getByText('Save'));
+
     expect(mockPrefsUpdate).toHaveBeenCalledWith({
       timezone: 'Australia/Sydney',
       weekStart: 'saturday',
@@ -176,26 +184,22 @@ describe('SharedPreferences', () => {
     });
   });
 
-  it("saves the user's default preferences", async () => {
-    const defThemeRadio = assertInstanceOf(screen.getByLabelText('Default'), HTMLInputElement);
-    await userEvent.click(defThemeRadio);
+  it('saves the users default preferences', async () => {
+    await selectComboboxOptionInTest(await screen.findByRole('combobox', { name: 'Interface theme' }), 'Default');
 
-    await selectOptionInTest(screen.getByLabelText('Home Dashboard'), 'Default');
+    // there's no default option in this dropdown - there's a clear selection button
+    // get the parent container, and find the "select-clear-value" button
+    const dashboardSelect = screen.getByTestId('User preferences home dashboard drop down');
+    await userEvent.click(within(dashboardSelect).getByRole('button', { name: 'select-clear-value' }));
+
     await selectOptionInTest(screen.getByLabelText('Timezone'), 'Default');
-    await selectOptionInTest(screen.getByLabelText('Week start'), 'Default');
-    await selectOptionInTest(screen.getByLabelText(/language/i), 'Default');
+
+    await selectComboboxOptionInTest(await screen.findByRole('combobox', { name: 'Week start' }), 'Default');
+
+    await selectComboboxOptionInTest(screen.getByRole('combobox', { name: /language/i }), 'Default');
 
     await userEvent.click(screen.getByText('Save'));
-    expect(mockPrefsUpdate).toHaveBeenCalledWith({
-      timezone: 'browser',
-      weekStart: '',
-      theme: '',
-      homeDashboardUID: 'myDash',
-      queryHistory: {
-        homeTab: '',
-      },
-      language: '',
-    });
+    expect(mockPrefsUpdate).toHaveBeenCalledWith(defaultPreferences);
   });
 
   it('refreshes the page after saving preferences', async () => {

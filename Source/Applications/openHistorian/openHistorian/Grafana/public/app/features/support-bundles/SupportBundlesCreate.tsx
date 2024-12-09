@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { Form, Button, Field, Checkbox, LinkButton, HorizontalGroup, Alert } from '@grafana/ui';
+import { Button, Field, Checkbox, LinkButton, Stack, Alert } from '@grafana/ui';
+import { Form } from 'app/core/components/Form/Form';
 import { Page } from 'app/core/components/Page/Page';
 import { StoreState } from 'app/types';
 
@@ -56,14 +57,11 @@ export const SupportBundlesCreateUnconnected = ({
   return (
     <Page navId="support-bundles" pageNav={{ text: 'Create support bundle' }} subTitle={subTitle}>
       <Page.Contents isLoading={isLoading}>
-        <Page.OldNavOnly>
-          <h3 className="page-sub-heading">Create support bundle</h3>
-        </Page.OldNavOnly>
         {loadCollectorsError && <Alert title={loadCollectorsError} severity="error" />}
         {createBundleError && <Alert title={createBundleError} severity="error" />}
         {!!collectors.length && (
           <Form defaultValues={values} onSubmit={onSubmit} validateOn="onSubmit">
-            {({ register, errors }) => {
+            {({ register }) => {
               return (
                 <>
                   {[...collectors]
@@ -82,12 +80,12 @@ export const SupportBundlesCreateUnconnected = ({
                         </Field>
                       );
                     })}
-                  <HorizontalGroup>
+                  <Stack>
                     <Button type="submit">Create</Button>
                     <LinkButton href="/support-bundles" variant="secondary">
                       Cancel
                     </LinkButton>
-                  </HorizontalGroup>
+                  </Stack>
                 </>
               );
             }}

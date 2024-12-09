@@ -1,8 +1,6 @@
 import { DataSourceInstanceSettings, TimeRange } from '@grafana/data';
 import { CompletionItemKind, LanguageDefinition, TableIdentifier } from '@grafana/experimental';
-import { SqlDatasource } from 'app/features/plugins/sql/datasource/SqlDatasource';
-import { DB, SQLQuery } from 'app/features/plugins/sql/types';
-import { formatSQL } from 'app/features/plugins/sql/utils/formatSQL';
+import { SqlDatasource, DB, SQLQuery, formatSQL } from '@grafana/sql';
 
 import { mapFieldsToTypes } from './fields';
 import { buildColumnQuery, buildTableQuery, showDatabases } from './mySqlMetaQuery';
@@ -29,11 +27,13 @@ export class MySqlDatasource extends SqlDatasource {
     const args = {
       getMeta: (identifier?: TableIdentifier) => this.fetchMeta(identifier),
     };
+
     this.sqlLanguageDefinition = {
       id: 'mysql',
       completionProvider: getSqlCompletionProvider(args),
       formatter: formatSQL,
     };
+
     return this.sqlLanguageDefinition;
   }
 
@@ -88,11 +88,12 @@ export class MySqlDatasource extends SqlDatasource {
     if (this.db !== undefined) {
       return this.db;
     }
+
     return {
       datasets: () => this.fetchDatasets(),
       tables: (dataset?: string) => this.fetchTables(dataset),
       fields: (query: SQLQuery) => this.fetchFields(query),
-      validateQuery: (query: SQLQuery, range?: TimeRange) =>
+      validateQuery: (query: SQLQuery, _range?: TimeRange) =>
         Promise.resolve({ query, error: '', isError: false, isValid: true }),
       dsID: () => this.id,
       toRawSql,

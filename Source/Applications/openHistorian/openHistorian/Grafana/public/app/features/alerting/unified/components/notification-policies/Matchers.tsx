@@ -1,18 +1,18 @@
 import { css } from '@emotion/css';
 import { take, takeRight, uniqueId } from 'lodash';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
-import { getTagColorsFromName, useStyles2 } from '@grafana/ui';
+import { getTagColorsFromName, useStyles2, Stack } from '@grafana/ui';
 import { ObjectMatcher } from 'app/plugins/datasource/alertmanager/types';
 
-import { HoverCard } from '../HoverCard';
+import { MatcherFormatter, matcherFormatter } from '../../utils/matchers';
+import { PopupCard } from '../HoverCard';
 
-type MatchersProps = { matchers: ObjectMatcher[] };
+type MatchersProps = { matchers: ObjectMatcher[]; formatter?: MatcherFormatter };
 
 // renders the first N number of matchers
-const Matchers: FC<MatchersProps> = ({ matchers }) => {
+const Matchers: FC<MatchersProps> = ({ matchers, formatter = 'default' }) => {
   const styles = useStyles2(getStyles);
 
   const NUM_MATCHERS = 5;
@@ -23,13 +23,13 @@ const Matchers: FC<MatchersProps> = ({ matchers }) => {
 
   return (
     <span data-testid="label-matchers">
-      <Stack direction="row" gap={1} alignItems="center">
+      <Stack direction="row" gap={1} alignItems="center" wrap={'wrap'}>
         {firstFew.map((matcher) => (
-          <MatcherBadge key={uniqueId()} matcher={matcher} />
+          <MatcherBadge key={uniqueId()} matcher={matcher} formatter={formatter} />
         ))}
         {/* TODO hover state to show all matchers we're not showing */}
         {hasMoreMatchers && (
-          <HoverCard
+          <PopupCard
             arrow
             placement="top"
             content={
@@ -43,7 +43,7 @@ const Matchers: FC<MatchersProps> = ({ matchers }) => {
             <span>
               <div className={styles.metadata}>{`and ${rest.length} more`}</div>
             </span>
-          </HoverCard>
+          </PopupCard>
         )}
       </Stack>
     </span>
@@ -52,15 +52,16 @@ const Matchers: FC<MatchersProps> = ({ matchers }) => {
 
 interface MatcherBadgeProps {
   matcher: ObjectMatcher;
+  formatter?: MatcherFormatter;
 }
 
-const MatcherBadge: FC<MatcherBadgeProps> = ({ matcher: [label, operator, value] }) => {
+const MatcherBadge: FC<MatcherBadgeProps> = ({ matcher, formatter = 'default' }) => {
   const styles = useStyles2(getStyles);
 
   return (
-    <div className={styles.matcher(label).wrapper}>
+    <div className={styles.matcher(matcher[0]).wrapper}>
       <Stack direction="row" gap={0} alignItems="baseline">
-        {label} {operator} {value}
+        {matcherFormatter[formatter](matcher)}
       </Stack>
     </div>
   );
@@ -71,23 +72,27 @@ const getStyles = (theme: GrafanaTheme2) => ({
     const { color, borderColor } = getTagColorsFromName(label);
 
     return {
-      wrapper: css`
-        color: #fff;
-        background: ${color};
-        padding: ${theme.spacing(0.33)} ${theme.spacing(0.66)};
-        font-size: ${theme.typography.bodySmall.fontSize};
+      wrapper: css({
+        color: '#fff',
+        background: color,
+        padding: `${theme.spacing(0.33)} ${theme.spacing(0.66)}`,
+        fontSize: theme.typography.bodySmall.fontSize,
 
-        border: solid 1px ${borderColor};
-        border-radius: ${theme.shape.borderRadius(2)};
-      `,
+        border: `solid 1px ${borderColor}`,
+        borderRadius: theme.shape.borderRadius(2),
+
+        // Ensure we preserve whitespace, as otherwise it's not noticeable _at all_
+        // when rendering the matcher, and is only noticeable when editing
+        whiteSpace: 'pre',
+      }),
     };
   },
-  metadata: css`
-    color: ${theme.colors.text.secondary};
+  metadata: css({
+    color: theme.colors.text.secondary,
 
-    font-size: ${theme.typography.bodySmall.fontSize};
-    font-weight: ${theme.typography.bodySmall.fontWeight};
-  `,
+    fontSize: theme.typography.bodySmall.fontSize,
+    fontWeight: theme.typography.bodySmall.fontWeight,
+  }),
 });
 
 export { Matchers };

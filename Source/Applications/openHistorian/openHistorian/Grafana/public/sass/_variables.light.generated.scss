@@ -8,6 +8,7 @@
  * !!! THIS FILE WAS GENERATED AUTOMATICALLY !!!
  */
 
+@use 'sass:color';
 // Global values
 // --------------------------------------------------
 
@@ -75,7 +76,7 @@ $variable: #1F62E0;
 
 $brand-primary: #eb7b18;
 $brand-success: #1B855E;
-$brand-warning: #FAD34A;
+$brand-warning: #FF9900;
 $brand-danger: #E0226E;
 
 $query-red: #CF0E5B;
@@ -86,7 +87,7 @@ $query-orange: #eb7b18;
 // Status colors
 // -------------------------
 $online: #0A764E;
-$warn: #8A6C00;
+$warn: #B5510D;
 $critical: #CF0E5B;
 
 
@@ -100,7 +101,7 @@ $text-color: rgba(36, 41, 46, 1);
 $text-color-strong: #000000;
 $text-color-semi-weak: rgba(36, 41, 46, 0.75);
 $text-color-weak: rgba(36, 41, 46, 0.75);
-$text-color-faint: rgba(36, 41, 46, 0.50);
+$text-color-faint: rgba(36, 41, 46, 0.64);
 $text-color-emphasis: #000000;
 $text-blue: #1F62E0;
 
@@ -113,7 +114,7 @@ $brand-gradient-vertical: linear-gradient(0.01deg, #F53E4C -31.2%, #FF8833 113.0
 // Links
 // -------------------------
 $link-color: rgba(36, 41, 46, 1);
-$link-color-disabled: rgba(36, 41, 46, 0.50);
+$link-color-disabled: rgba(36, 41, 46, 0.64);
 $link-hover-color: #000000;
 $external-link-color: #1F62E0;
 
@@ -214,7 +215,7 @@ $input-border-color: rgba(36, 41, 46, 0.30);
 $input-box-shadow: none;
 $input-border-focus: #5794f2;
 $input-box-shadow-focus: #5794f2;
-$input-color-placeholder: rgba(36, 41, 46, 0.50);
+$input-color-placeholder: rgba(36, 41, 46, 0.64);
 $input-label-bg: #F4F5F5;
 $input-color-select-arrow: #7b8087;
 
@@ -272,14 +273,14 @@ $tab-border-color: $gray-5;
 
 // Form states and alerts
 // -------------------------
-$warning-text-color: #8A6C00;
+$warning-text-color: #B5510D;
 $error-text-color: #CF0E5B;
 $success-text-color: #0A764E;
 
 $alert-error-bg: #E0226E;
 $alert-success-bg: #1B855E;
-$alert-warning-bg: #FAD34A;
-$alert-info-bg: #FAD34A;
+$alert-warning-bg: #FF9900;
+$alert-info-bg: #FF9900;
 
 // Tooltips and popovers
 $tooltipBackground: #F4F5F5;
@@ -297,7 +298,7 @@ $popover-shadow: 0px 13px 20px 1px rgba(24, 26, 27, 0.18);
 $graph-tooltip-bg: $gray-5;
 
 $tooltipArrowWidth: 5px;
-$tooltipLinkColor: lighten($tooltipColor, 5%);
+$tooltipLinkColor: color.adjust($tooltipColor, $lightness: 5%);
 $tooltipExternalLinkColor: #6E9FFF;
 
 $popover-error-bg: $btn-danger-bg;
@@ -379,9 +380,9 @@ $panel-editor-viz-item-border-hover: 1px solid $blue-light;
 $panel-editor-viz-item-bg: $card-background;
 $panel-editor-tabs-line-color: $dark-2;
 
-$panel-editor-viz-item-bg-hover: lighten($blue-base, 45%);
+$panel-editor-viz-item-bg-hover: color.adjust($blue-base, $lightness: 45%);
 
-$panel-grid-placeholder-bg: lighten(#5794f2, 30%);
+$panel-grid-placeholder-bg: color.adjust(#5794f2, $lightness: 30%);
 $panel-grid-placeholder-shadow: 0 0 4px #5794f2;
 
 // logs

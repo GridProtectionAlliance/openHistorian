@@ -1,14 +1,16 @@
 import { AzureMonitorQuery as AzureMonitorQueryBase, AzureQueryType } from '../dataquery.gen';
 
 export { AzureQueryType };
-export {
+export type {
   AzureMetricQuery,
   AzureLogsQuery,
   AzureResourceGraphQuery,
+  AzureTracesQuery,
   AzureMonitorResource,
   AzureMetricDimension,
-  ResultFormat,
+  AzureTracesFilter,
 } from '../dataquery.gen';
+export { ResultFormat } from '../dataquery.gen';
 
 /**
  * Represents the query as it moves through the frontend query editor and datasource files.

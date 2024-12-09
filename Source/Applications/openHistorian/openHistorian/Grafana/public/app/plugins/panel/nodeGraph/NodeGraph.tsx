@@ -1,20 +1,19 @@
 import { css } from '@emotion/css';
 import cx from 'classnames';
-import React, { memo, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import useMeasure from 'react-use/lib/useMeasure';
 
 import { DataFrame, GrafanaTheme2, LinkModel } from '@grafana/data';
 import { Icon, Spinner, useStyles2 } from '@grafana/ui';
 
 import { Edge } from './Edge';
-import { EdgeArrowMarker } from './EdgeArrowMarker';
 import { EdgeLabel } from './EdgeLabel';
 import { Legend } from './Legend';
 import { Marker } from './Marker';
 import { Node } from './Node';
 import { ViewControls } from './ViewControls';
 import { Config, defaultConfig, useLayout } from './layout';
-import { EdgeDatum, NodeDatum, NodesMarker } from './types';
+import { EdgeDatumLayout, NodeDatum, NodesMarker } from './types';
 import { useCategorizeFrames } from './useCategorizeFrames';
 import { useContextMenu } from './useContextMenu';
 import { useFocusPositionOnLayout } from './useFocusPositionOnLayout';
@@ -86,7 +85,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     padding: 5px 8px;
     font-size: 10px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-    border-radius: ${theme.shape.borderRadius()};
+    border-radius: ${theme.shape.radius.default};
     align-items: center;
     position: absolute;
     top: 0;
@@ -112,8 +111,9 @@ interface Props {
   dataFrames: DataFrame[];
   getLinks: (dataFrame: DataFrame, rowIndex: number) => LinkModel[];
   nodeLimit?: number;
+  panelId?: string;
 }
-export function NodeGraph({ getLinks, dataFrames, nodeLimit }: Props) {
+export function NodeGraph({ getLinks, dataFrames, nodeLimit, panelId }: Props) {
   const nodeCountLimit = nodeLimit || defaultNodeCountLimit;
   const { edges: edgesDataFrames, nodes: nodesDataFrames } = useCategorizeFrames(dataFrames);
 
@@ -122,6 +122,13 @@ export function NodeGraph({ getLinks, dataFrames, nodeLimit }: Props) {
 
   const firstNodesDataFrame = nodesDataFrames[0];
   const firstEdgesDataFrame = edgesDataFrames[0];
+
+  // Ensure we use unique IDs for the marker tip elements, since IDs are global
+  // in the entire HTML document. This prevents hidden tips when an earlier
+  // occurence is hidden (editor is open in front of an existing node graph
+  // panel) or when the earlier tips have different properties (color, size, or
+  // shape for example).
+  const svgIdNamespace = panelId || 'nodegraphpanel';
 
   // TODO we should be able to allow multiple dataframes for both edges and nodes, could be issue with node ids which in
   //  that case should be unique or figure a way to link edges and nodes dataframes together.
@@ -157,7 +164,8 @@ export function NodeGraph({ getLinks, dataFrames, nodeLimit }: Props) {
     config,
     nodeCountLimit,
     width,
-    focusedNodeId
+    focusedNodeId,
+    processed.hasFixedPositions
   );
 
   // If we move from grid to graph layout, and we have focused node lets get its position to center there. We want to
@@ -208,7 +216,6 @@ export function NodeGraph({ getLinks, dataFrames, nodeLimit }: Props) {
             className={styles.mainGroup}
             style={{ transform: `scale(${scale}) translate(${Math.floor(position.x)}px, ${Math.floor(position.y)}px)` }}
           >
-            <EdgeArrowMarker />
             {!config.gridLayout && (
               <Edges
                 edges={edges}
@@ -217,6 +224,7 @@ export function NodeGraph({ getLinks, dataFrames, nodeLimit }: Props) {
                 onClick={onEdgeOpen}
                 onMouseEnter={setEdgeHover}
                 onMouseLeave={clearEdgeHover}
+                svgIdNamespace={svgIdNamespace}
               />
             )}
             <Nodes
@@ -307,8 +315,8 @@ const Nodes = memo(function Nodes(props: NodesProps) {
             !props.hoveringIds || props.hoveringIds.length === 0
               ? 'default'
               : props.hoveringIds?.includes(n.id)
-              ? 'active'
-              : 'inactive'
+                ? 'active'
+                : 'inactive'
           }
         />
       ))}
@@ -331,10 +339,11 @@ const Markers = memo(function Nodes(props: MarkersProps) {
 });
 
 interface EdgesProps {
-  edges: EdgeDatum[];
+  edges: EdgeDatumLayout[];
   nodeHoveringId?: string;
   edgeHoveringId?: string;
-  onClick: (event: MouseEvent<SVGElement>, link: EdgeDatum) => void;
+  svgIdNamespace: string;
+  onClick: (event: MouseEvent<SVGElement>, link: EdgeDatumLayout) => void;
   onMouseEnter: (id: string) => void;
   onMouseLeave: (id: string) => void;
 }
@@ -353,6 +362,7 @@ const Edges = memo(function Edges(props: EdgesProps) {
           onClick={props.onClick}
           onMouseEnter={props.onMouseEnter}
           onMouseLeave={props.onMouseLeave}
+          svgIdNamespace={props.svgIdNamespace}
         />
       ))}
     </>
@@ -360,7 +370,7 @@ const Edges = memo(function Edges(props: EdgesProps) {
 });
 
 interface EdgeLabelsProps {
-  edges: EdgeDatum[];
+  edges: EdgeDatumLayout[];
   nodeHoveringId?: string;
   edgeHoveringId?: string;
 }

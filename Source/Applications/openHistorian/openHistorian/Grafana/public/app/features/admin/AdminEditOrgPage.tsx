@@ -1,46 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom-v5-compat';
 import { useAsyncFn } from 'react-use';
 
-import { NavModelItem, UrlQueryValue } from '@grafana/data';
-import { getBackendSrv } from '@grafana/runtime';
-import { Form, Field, Input, Button, Legend, Alert, VerticalGroup, HorizontalGroup, Pagination } from '@grafana/ui';
+import { NavModelItem } from '@grafana/data';
+import { Field, Input, Button, Legend, Alert } from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
 import { contextSrv } from 'app/core/core';
-import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
-import { accessControlQueryParam } from 'app/core/utils/accessControl';
 import { OrgUser, AccessControlAction, OrgRole } from 'app/types';
 
-import { UsersTable } from '../users/UsersTable';
-
-const perPage = 30;
+import { OrgUsersTable } from './Users/OrgUsersTable';
+import { getOrg, getOrgUsers, getUsersRoles, removeOrgUser, updateOrgName, updateOrgUserRole } from './api';
 
 interface OrgNameDTO {
   orgName: string;
 }
 
-const getOrg = async (orgId: UrlQueryValue) => {
-  return await getBackendSrv().get(`/api/orgs/${orgId}`);
-};
-
-const getOrgUsers = async (orgId: UrlQueryValue, page: number) => {
-  if (contextSrv.hasPermission(AccessControlAction.OrgUsersRead)) {
-    return getBackendSrv().get(`/api/orgs/${orgId}/users/search`, accessControlQueryParam({ perpage: perPage, page }));
-  }
-  return { orgUsers: [] };
-};
-
-const updateOrgUserRole = (orgUser: OrgUser, orgId: UrlQueryValue) => {
-  return getBackendSrv().patch(`/api/orgs/${orgId}/users/${orgUser.userId}`, orgUser);
-};
-
-const removeOrgUser = (orgUser: OrgUser, orgId: UrlQueryValue) => {
-  return getBackendSrv().delete(`/api/orgs/${orgId}/users/${orgUser.userId}`);
-};
-
-interface Props extends GrafanaRouteComponentProps<{ id: string }> {}
-
-const AdminEditOrgPage = ({ match }: Props) => {
-  const orgId = parseInt(match.params.id, 10);
+const AdminEditOrgPage = () => {
+  const { id = '' } = useParams();
+  const orgId = parseInt(id, 10);
   const canWriteOrg = contextSrv.hasPermission(AccessControlAction.OrgsWrite);
   const canReadUsers = contextSrv.hasPermission(AccessControlAction.OrgUsersRead);
 
@@ -49,8 +27,18 @@ const AdminEditOrgPage = ({ match }: Props) => {
   const [totalPages, setTotalPages] = useState(1);
 
   const [orgState, fetchOrg] = useAsyncFn(() => getOrg(orgId), []);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<OrgNameDTO>();
   const [, fetchOrgUsers] = useAsyncFn(async (page) => {
     const result = await getOrgUsers(orgId, page);
+
+    if (contextSrv.licensedAccessControlEnabled()) {
+      await getUsersRoles(orgId, result.orgUsers);
+    }
+
     const totalPages = result?.perPage !== 0 ? Math.ceil(result.totalCount / result.perPage) : 0;
     setTotalPages(totalPages);
     setUsers(result.orgUsers);
@@ -62,8 +50,8 @@ const AdminEditOrgPage = ({ match }: Props) => {
     fetchOrgUsers(page);
   }, [fetchOrg, fetchOrgUsers, page]);
 
-  const updateOrgName = async (name: string) => {
-    return await getBackendSrv().put(`/api/orgs/${orgId}`, { ...orgState.value, name });
+  const onUpdateOrgName = async ({ orgName }: OrgNameDTO) => {
+    await updateOrgName(orgName, orgId);
   };
 
   const renderMissingPermissionMessage = () => (
@@ -90,7 +78,6 @@ const AdminEditOrgPage = ({ match }: Props) => {
   const pageNav: NavModelItem = {
     text: orgState?.value?.name ?? '',
     icon: 'shield',
-    breadcrumbs: [{ title: 'Orgs', url: 'admin/orgs' }],
     subTitle: 'Manage settings and user roles for an organization.',
   };
 
@@ -100,38 +87,33 @@ const AdminEditOrgPage = ({ match }: Props) => {
         <>
           <Legend>Edit organization</Legend>
           {orgState.value && (
-            <Form
-              defaultValues={{ orgName: orgState.value.name }}
-              onSubmit={(values: OrgNameDTO) => updateOrgName(values.orgName)}
-            >
-              {({ register, errors }) => (
-                <>
-                  <Field label="Name" invalid={!!errors.orgName} error="Name is required" disabled={!canWriteOrg}>
-                    <Input {...register('orgName', { required: true })} id="org-name-input" />
-                  </Field>
-                  <Button type="submit" disabled={!canWriteOrg}>
-                    Update
-                  </Button>
-                </>
-              )}
-            </Form>
+            <form onSubmit={handleSubmit(onUpdateOrgName)} style={{ maxWidth: '600px' }}>
+              <Field label="Name" invalid={!!errors.orgName} error="Name is required" disabled={!canWriteOrg}>
+                <Input
+                  {...register('orgName', { required: true })}
+                  id="org-name-input"
+                  defaultValue={orgState.value.name}
+                />
+              </Field>
+              <Button type="submit" disabled={!canWriteOrg}>
+                Update
+              </Button>
+            </form>
           )}
 
           <div style={{ marginTop: '20px' }}>
             <Legend>Organization users</Legend>
             {!canReadUsers && renderMissingPermissionMessage()}
             {canReadUsers && !!users.length && (
-              <VerticalGroup spacing="md">
-                <UsersTable users={users} orgId={orgId} onRoleChange={onRoleChange} onRemoveUser={onRemoveUser} />
-                <HorizontalGroup justify="flex-end">
-                  <Pagination
-                    onNavigate={onPageChange}
-                    currentPage={page}
-                    numberOfPages={totalPages}
-                    hideWhenSinglePage={true}
-                  />
-                </HorizontalGroup>
-              </VerticalGroup>
+              <OrgUsersTable
+                users={users}
+                orgId={orgId}
+                onRoleChange={onRoleChange}
+                onRemoveUser={onRemoveUser}
+                changePage={onPageChange}
+                page={page}
+                totalPages={totalPages}
+              />
             )}
           </div>
         </>

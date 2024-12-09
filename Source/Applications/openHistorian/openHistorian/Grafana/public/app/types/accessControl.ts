@@ -101,6 +101,11 @@ export enum AccessControlAction {
   AlertingInstanceUpdate = 'alert.instances:write',
   AlertingInstanceRead = 'alert.instances:read',
 
+  // Alerting silences
+  AlertingSilenceCreate = 'alert.silences:create',
+  AlertingSilenceUpdate = 'alert.silences:write',
+  AlertingSilenceRead = 'alert.silences:read',
+
   // Alerting Notification policies
   AlertingNotificationsRead = 'alert.notifications:read',
   AlertingNotificationsWrite = 'alert.notifications:write',
@@ -118,8 +123,16 @@ export enum AccessControlAction {
   AlertingNotificationsExternalRead = 'alert.notifications.external:read',
 
   // Alerting provisioning actions
+  AlertingProvisioningReadSecrets = 'alert.provisioning.secrets:read',
   AlertingProvisioningRead = 'alert.provisioning:read',
   AlertingProvisioningWrite = 'alert.provisioning:write',
+
+  // Alerting receivers actions
+  AlertingReceiversPermissionsRead = 'receivers.permissions:read',
+  AlertingReceiversPermissionsWrite = 'receivers.permissions:write',
+  AlertingReceiversCreate = 'alert.notifications.receivers:create',
+  AlertingReceiversWrite = 'alert.notifications.receivers:write',
+  AlertingReceiversRead = 'alert.notifications.receivers:read',
 
   ActionAPIKeysRead = 'apikeys:read',
   ActionAPIKeysCreate = 'apikeys:create',
@@ -127,6 +140,14 @@ export enum AccessControlAction {
 
   PluginsInstall = 'plugins:install',
   PluginsWrite = 'plugins:write',
+
+  // Settings
+  SettingsRead = 'settings:read',
+  SettingsWrite = 'settings:write',
+
+  // GroupSync
+  GroupSyncMappingsRead = 'groupsync.mappings:read',
+  GroupSyncMappingsWrite = 'groupsync.mappings:write',
 }
 
 export interface Role {

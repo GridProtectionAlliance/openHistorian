@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import { NavIndex, NavModel, NavModelItem } from '@grafana/data';
 import config from 'app/core/config';
 
-import { getNavSubTitle, getNavTitle } from '../components/NavBar/navBarItem-translations';
+import { getNavSubTitle, getNavTitle } from '../utils/navBarItem-translations';
 
 export const HOME_NAV_ID = 'home';
 
@@ -73,6 +73,8 @@ export const updateNavIndex = createAction<NavModelItem>('navIndex/updateNavInde
 // Since the configuration subtitle includes the organization name, we include this action to update the org name if it changes.
 export const updateConfigurationSubtitle = createAction<string>('navIndex/updateConfigurationSubtitle');
 
+export const removeNavIndex = createAction<string>('navIndex/removeNavIndex');
+
 export const getItemWithNewSubTitle = (item: NavModelItem, subTitle: string): NavModelItem => ({
   ...item,
   parentItem: {
@@ -92,12 +94,20 @@ export const navIndexReducer = (state: NavIndex = initialState, action: AnyActio
     const newPages: NavIndex = {};
     const payload = action.payload;
 
-    for (const node of payload.children!) {
-      newPages[node.id!] = {
-        ...node,
-        parentItem: payload,
-      };
+    function addNewPages(node: NavModelItem) {
+      if (node.children) {
+        for (const child of node.children) {
+          newPages[child.id!] = {
+            ...child,
+            parentItem: node,
+          };
+        }
+      }
+      if (node.parentItem) {
+        addNewPages(node.parentItem);
+      }
     }
+    addNewPages(payload);
 
     return { ...state, ...newPages };
   } else if (updateConfigurationSubtitle.match(action)) {
@@ -114,6 +124,8 @@ export const navIndexReducer = (state: NavIndex = initialState, action: AnyActio
       'org-settings': getItemWithNewSubTitle(state['org-settings'], subTitle),
       apikeys: getItemWithNewSubTitle(state.apikeys, subTitle),
     };
+  } else if (removeNavIndex.match(action)) {
+    delete state[action.payload];
   }
 
   return state;

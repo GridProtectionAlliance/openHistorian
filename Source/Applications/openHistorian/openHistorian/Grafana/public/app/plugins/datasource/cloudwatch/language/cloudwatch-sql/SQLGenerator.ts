@@ -1,4 +1,4 @@
-import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
+import { getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 
 import {
   QueryEditorArrayExpression,
@@ -10,18 +10,15 @@ import {
 } from '../../expressions';
 import { SQLExpression } from '../../types';
 
+const isAccountIdDefined = (accountId: string | undefined): boolean => !!(accountId && accountId !== 'all');
+
 export default class SQLGenerator {
   constructor(private templateSrv: TemplateSrv = getTemplateSrv()) {}
 
-  expressionToSqlQuery({
-    select,
-    from,
-    where,
-    groupBy,
-    orderBy,
-    orderByDirection,
-    limit,
-  }: SQLExpression): string | undefined {
+  expressionToSqlQuery(
+    { select, from, where, groupBy, orderBy, orderByDirection, limit }: SQLExpression,
+    accountId?: string
+  ): string | undefined {
     if (!from || !select?.name || !select?.parameters?.length) {
       return undefined;
     }
@@ -29,7 +26,8 @@ export default class SQLGenerator {
     let parts: string[] = [];
     this.appendSelect(select, parts);
     this.appendFrom(from, parts);
-    this.appendWhere(where, parts, true, where?.expressions?.length ?? 0);
+    this.appendAccountId(parts, accountId);
+    this.appendWhere(where, parts, true, where?.expressions?.length ?? 0, accountId);
     this.appendGroupBy(groupBy, parts);
     this.appendOrderBy(orderBy, orderByDirection, parts);
     this.appendLimit(limit, parts);
@@ -49,11 +47,19 @@ export default class SQLGenerator {
       : parts.push(this.formatValue(from?.property?.name ?? ''));
   }
 
+  private appendAccountId(parts: string[], accountId?: string) {
+    if (!isAccountIdDefined(accountId)) {
+      return;
+    }
+    parts.push(`WHERE AWS.AccountId = '${accountId}'`);
+  }
+
   private appendWhere(
     filter: QueryEditorExpression | undefined,
     parts: string[],
     isTopLevelExpression: boolean,
-    topLevelExpressionsCount: number
+    topLevelExpressionsCount: number,
+    accountId?: string
   ) {
     if (!filter) {
       return;
@@ -61,7 +67,11 @@ export default class SQLGenerator {
 
     const hasChildExpressions = 'expressions' in filter && filter.expressions.length > 0;
     if (isTopLevelExpression && hasChildExpressions) {
-      parts.push('WHERE');
+      if (isAccountIdDefined(accountId)) {
+        parts.push('AND');
+      } else {
+        parts.push('WHERE');
+      }
     }
 
     if (filter.type === QueryEditorExpressionType.And) {
@@ -146,11 +156,15 @@ export default class SQLGenerator {
   }
 
   private formatValue(label: string): string {
-    const specialCharacters = /[/\s\.-]/; // slash, space, dot or dash
+    const specialCharacters = /[/\s\.%-]/; // slash, space, dot, percent, or dash
+    const startsWithNumber = /^\d/;
 
     const interpolated = this.templateSrv.replace(label, {}, 'raw');
-    if (specialCharacters.test(interpolated)) {
-      return `"${label}"`;
+    if (interpolated !== 'AWS.AccountId') {
+      // AWS.AccountId should never be in quotes
+      if (specialCharacters.test(interpolated) || startsWithNumber.test(interpolated)) {
+        return `"${label}"`;
+      }
     }
 
     return label;

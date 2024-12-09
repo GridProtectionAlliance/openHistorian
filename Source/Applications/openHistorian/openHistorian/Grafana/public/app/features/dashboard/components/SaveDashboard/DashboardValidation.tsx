@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React from 'react';
+import * as React from 'react';
 import { useAsync } from 'react-use';
 
 import { GrafanaTheme2 } from '@grafana/data';
@@ -18,7 +18,7 @@ type ValidationResponse = Awaited<ReturnType<typeof backendSrv.validateDashboard
 function DashboardValidation({ dashboard }: DashboardValidationProps) {
   const styles = useStyles2(getStyles);
   const { loading, value, error } = useAsync(async () => {
-    const saveModel = dashboard.getSaveModelClone();
+    const saveModel = dashboard.getSaveModelCloneOld();
     const respPromise = backendSrv
       .validateDashboard(saveModel)
       // API returns schema validation errors in 4xx range, so resolve them rather than throwing

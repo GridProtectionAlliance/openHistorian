@@ -1,19 +1,13 @@
 import { groupBy } from 'lodash';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
-import { Stack } from '@grafana/experimental';
-import { Button, Icon, Modal, ModalProps, Spinner } from '@grafana/ui';
-import {
-  AlertmanagerGroup,
-  AlertState,
-  ObjectMatcher,
-  Receiver,
-  RouteWithID,
-} from 'app/plugins/datasource/alertmanager/types';
+import { Button, Icon, Modal, ModalProps, Spinner, Stack } from '@grafana/ui';
+import { AlertmanagerGroup, AlertState, ObjectMatcher, RouteWithID } from 'app/plugins/datasource/alertmanager/types';
 
 import { FormAmRoute } from '../../types/amroutes';
+import { MatcherFormatter } from '../../utils/matchers';
+import { InsertPosition } from '../../utils/routeTree';
 import { AlertGroup } from '../alert-groups/AlertGroup';
-import { useGetAmRouteReceiverWithGrafanaAppTypes } from '../receivers/grafanaAppReceivers/grafanaApp';
 
 import { AlertGroupsSummary } from './AlertGroupsSummary';
 import { AmRootRouteForm } from './EditDefaultPolicyForm';
@@ -21,24 +15,26 @@ import { AmRoutesExpandedForm } from './EditNotificationPolicyForm';
 import { Matchers } from './Matchers';
 
 type ModalHook<T = undefined> = [JSX.Element, (item: T) => void, () => void];
+type AddModalHook<T = undefined> = [JSX.Element, (item: T, position: InsertPosition) => void, () => void];
 type EditModalHook = [JSX.Element, (item: RouteWithID, isDefaultRoute?: boolean) => void, () => void];
 
 const useAddPolicyModal = (
-  receivers: Receiver[] = [],
-  handleAdd: (route: Partial<FormAmRoute>, parentRoute: RouteWithID) => void,
+  handleAdd: (route: Partial<FormAmRoute>, referenceRoute: RouteWithID, position: InsertPosition) => void,
   loading: boolean
-): ModalHook<RouteWithID> => {
+): AddModalHook<RouteWithID> => {
   const [showModal, setShowModal] = useState(false);
-  const [parentRoute, setParentRoute] = useState<RouteWithID>();
-  const AmRouteReceivers = useGetAmRouteReceiverWithGrafanaAppTypes(receivers);
+  const [insertPosition, setInsertPosition] = useState<InsertPosition | undefined>(undefined);
+  const [referenceRoute, setReferenceRoute] = useState<RouteWithID>();
 
   const handleDismiss = useCallback(() => {
-    setParentRoute(undefined);
+    setReferenceRoute(undefined);
+    setInsertPosition(undefined);
     setShowModal(false);
   }, []);
 
-  const handleShow = useCallback((parentRoute: RouteWithID) => {
-    setParentRoute(parentRoute);
+  const handleShow = useCallback((referenceRoute: RouteWithID, position: InsertPosition) => {
+    setReferenceRoute(referenceRoute);
+    setInsertPosition(position);
     setShowModal(true);
   }, []);
 
@@ -55,23 +51,26 @@ const useAddPolicyModal = (
           title="Add notification policy"
         >
           <AmRoutesExpandedForm
-            receivers={AmRouteReceivers}
             defaults={{
-              groupBy: parentRoute?.group_by,
+              groupBy: referenceRoute?.group_by,
             }}
-            onSubmit={(newRoute) => parentRoute && handleAdd(newRoute, parentRoute)}
+            onSubmit={(newRoute) => {
+              if (referenceRoute && insertPosition) {
+                handleAdd(newRoute, referenceRoute, insertPosition);
+              }
+            }}
             actionButtons={
               <Modal.ButtonRow>
-                <Button type="submit">Add policy</Button>
-                <Button type="button" variant="secondary" onClick={handleDismiss}>
+                <Button type="button" variant="secondary" onClick={handleDismiss} fill="outline">
                   Cancel
                 </Button>
+                <Button type="submit">Save policy</Button>
               </Modal.ButtonRow>
             }
           />
         </Modal>
       ),
-    [AmRouteReceivers, handleAdd, handleDismiss, loading, parentRoute, showModal]
+    [handleAdd, handleDismiss, insertPosition, loading, referenceRoute, showModal]
   );
 
   return [modalElement, handleShow, handleDismiss];
@@ -79,14 +78,12 @@ const useAddPolicyModal = (
 
 const useEditPolicyModal = (
   alertManagerSourceName: string,
-  receivers: Receiver[],
   handleSave: (route: Partial<FormAmRoute>) => void,
   loading: boolean
 ): EditModalHook => {
   const [showModal, setShowModal] = useState(false);
   const [isDefaultPolicy, setIsDefaultPolicy] = useState(false);
   const [route, setRoute] = useState<RouteWithID>();
-  const AmRouteReceivers = useGetAmRouteReceiverWithGrafanaAppTypes(receivers);
 
   const handleDismiss = useCallback(() => {
     setRoute(undefined);
@@ -117,36 +114,34 @@ const useEditPolicyModal = (
               // passing it down all the way here is a code smell
               alertManagerSourceName={alertManagerSourceName}
               onSubmit={handleSave}
-              receivers={AmRouteReceivers}
               route={route}
               actionButtons={
                 <Modal.ButtonRow>
-                  <Button type="submit">Update default policy</Button>
-                  <Button type="button" variant="secondary" onClick={handleDismiss}>
+                  <Button type="button" variant="secondary" onClick={handleDismiss} fill="outline">
                     Cancel
                   </Button>
+                  <Button type="submit">Update default policy</Button>
                 </Modal.ButtonRow>
               }
             />
           )}
           {!isDefaultPolicy && (
             <AmRoutesExpandedForm
-              receivers={AmRouteReceivers}
               route={route}
               onSubmit={handleSave}
               actionButtons={
                 <Modal.ButtonRow>
-                  <Button type="submit">Update policy</Button>
-                  <Button type="button" variant="secondary" onClick={handleDismiss}>
+                  <Button type="button" variant="secondary" onClick={handleDismiss} fill="outline">
                     Cancel
                   </Button>
+                  <Button type="submit">Update policy</Button>
                 </Modal.ButtonRow>
               }
             />
           )}
         </Modal>
       ),
-    [AmRouteReceivers, alertManagerSourceName, handleDismiss, handleSave, isDefaultPolicy, loading, route, showModal]
+    [alertManagerSourceName, handleDismiss, handleSave, isDefaultPolicy, loading, route, showModal]
   );
 
   return [modalElement, handleShow, handleDismiss];
@@ -203,14 +198,13 @@ const useDeletePolicyModal = (handleDelete: (route: RouteWithID) => void, loadin
   return [modalElement, handleShow, handleDismiss];
 };
 
-const useAlertGroupsModal = (): [
-  JSX.Element,
-  (alertGroups: AlertmanagerGroup[], matchers?: ObjectMatcher[]) => void,
-  () => void
-] => {
+const useAlertGroupsModal = (
+  alertManagerSourceName: string
+): [JSX.Element, (alertGroups: AlertmanagerGroup[], matchers?: ObjectMatcher[]) => void, () => void] => {
   const [showModal, setShowModal] = useState(false);
   const [alertGroups, setAlertGroups] = useState<AlertmanagerGroup[]>([]);
   const [matchers, setMatchers] = useState<ObjectMatcher[]>([]);
+  const [formatter, setFormatter] = useState<MatcherFormatter>('default');
 
   const handleDismiss = useCallback(() => {
     setShowModal(false);
@@ -218,11 +212,19 @@ const useAlertGroupsModal = (): [
     setMatchers([]);
   }, []);
 
-  const handleShow = useCallback((alertGroups, matchers) => {
-    setAlertGroups(alertGroups);
-    setMatchers(matchers);
-    setShowModal(true);
-  }, []);
+  const handleShow = useCallback(
+    (alertGroups: AlertmanagerGroup[], matchers?: ObjectMatcher[], formatter?: MatcherFormatter) => {
+      setAlertGroups(alertGroups);
+      if (matchers) {
+        setMatchers(matchers);
+      }
+      if (formatter) {
+        setFormatter(formatter);
+      }
+      setShowModal(true);
+    },
+    []
+  );
 
   const instancesByState = useMemo(() => {
     const instances = alertGroups.flatMap((group) => group.alerts);
@@ -237,11 +239,11 @@ const useAlertGroupsModal = (): [
         closeOnBackdropClick={true}
         closeOnEscape={true}
         title={
-          <Stack direction="row" alignItems="center" gap={1} flexGrow={1}>
+          <Stack direction="row" alignItems="center" gap={1} wrap={'wrap'}>
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Icon name="x" /> Matchers
             </Stack>
-            <Matchers matchers={matchers} />
+            <Matchers matchers={matchers} formatter={formatter} />
           </Stack>
         }
       >
@@ -253,7 +255,7 @@ const useAlertGroupsModal = (): [
           />
           <div>
             {alertGroups.map((group, index) => (
-              <AlertGroup key={index} alertManagerSourceName={''} group={group} />
+              <AlertGroup key={index} alertManagerSourceName={alertManagerSourceName} group={group} />
             ))}
           </div>
         </Stack>
@@ -264,7 +266,7 @@ const useAlertGroupsModal = (): [
         </Modal.ButtonRow>
       </Modal>
     ),
-    [alertGroups, handleDismiss, instancesByState, matchers, showModal]
+    [alertGroups, handleDismiss, instancesByState, matchers, formatter, showModal, alertManagerSourceName]
   );
 
   return [modalElement, handleShow, handleDismiss];

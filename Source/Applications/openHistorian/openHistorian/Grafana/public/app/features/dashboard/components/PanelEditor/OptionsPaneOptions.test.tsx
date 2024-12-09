@@ -1,7 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import React from 'react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import { render } from 'test/test-utils';
 
 import {
   FieldConfigSource,
@@ -244,7 +244,7 @@ describe('OptionsPaneOptions', () => {
 
     scenario.render();
 
-    const thresholdsSection = screen.getByLabelText(selectors.components.OptionsGroup.group('Thresholds'));
+    const thresholdsSection = screen.getByTestId(selectors.components.OptionsGroup.group('Thresholds'));
     expect(
       within(thresholdsSection).getByLabelText(OptionsPaneSelector.fieldLabel('Thresholds CustomThresholdOption'))
     ).toBeInTheDocument();

@@ -5,15 +5,8 @@ import { getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 
 import { AGGREGATIONS, ALIGNMENTS, SYSTEM_LABELS } from './constants';
 import CloudMonitoringDatasource from './datasource';
-import {
-  AlignmentTypes,
-  CustomMetaData,
-  MetricDescriptor,
-  MetricKind,
-  PreprocessorType,
-  TimeSeriesList,
-  ValueTypes,
-} from './types';
+import { AlignmentTypes, PreprocessorType, TimeSeriesList, MetricKind, ValueTypes } from './types/query';
+import { CustomMetaData, MetricDescriptor } from './types/types';
 
 export const extractServicesFromMetricDescriptors = (metricDescriptors: MetricDescriptor[]) =>
   uniqBy(metricDescriptors, 'service');
@@ -97,7 +90,15 @@ export const getAlignmentPickerData = (
 };
 
 export const labelsToGroupedOptions = (groupBys: string[]) => {
-  const groups = groupBys.reduce((acc: any, curr: string) => {
+  const groups = groupBys.reduce<
+    Record<
+      string,
+      Array<{
+        value: string;
+        label: string;
+      }>
+    >
+  >((acc, curr) => {
     const arr = curr.split('.').map(startCase);
     const group = (arr.length === 2 ? arr : initial(arr)).join(' ');
     const option = {

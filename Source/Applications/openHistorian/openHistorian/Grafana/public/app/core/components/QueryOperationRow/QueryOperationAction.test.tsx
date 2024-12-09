@@ -1,30 +1,26 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ComponentPropsWithoutRef } from 'react';
 
-import { selectors } from '@grafana/e2e-selectors';
-
-import { QueryOperationAction, QueryOperationActionProps } from './QueryOperationAction';
-
-const setup = (propOverrides?: Partial<QueryOperationActionProps>) => {
-  const props: QueryOperationActionProps = {
-    icon: 'panel-add',
-    title: 'test',
-    onClick: jest.fn(),
-    disabled: false,
-    ...propOverrides,
-  };
-
-  render(<QueryOperationAction {...props} />);
-};
+import { QueryOperationAction, QueryOperationToggleAction } from './QueryOperationAction';
 
 describe('QueryOperationAction tests', () => {
+  function setup(propOverrides?: Partial<ComponentPropsWithoutRef<typeof QueryOperationAction>>) {
+    const props: ComponentPropsWithoutRef<typeof QueryOperationAction> = {
+      icon: 'panel-add',
+      title: 'test',
+      onClick: jest.fn(),
+      disabled: false,
+      ...propOverrides,
+    };
+
+    render(<QueryOperationAction {...props} />);
+  }
+
   it('should render component', () => {
     setup();
 
-    expect(
-      screen.getByRole('button', { name: selectors.components.QueryEditorRow.actionButton('test') })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'test' })).toBeInTheDocument();
   });
 
   it('should call on click handler', async () => {
@@ -32,7 +28,7 @@ describe('QueryOperationAction tests', () => {
     setup({ disabled: false, onClick: clickSpy });
 
     expect(clickSpy).not.toHaveBeenCalled();
-    const queryButton = screen.getByRole('button', { name: selectors.components.QueryEditorRow.actionButton('test') });
+    const queryButton = screen.getByRole('button', { name: 'test' });
 
     await userEvent.click(queryButton);
 
@@ -44,10 +40,43 @@ describe('QueryOperationAction tests', () => {
     setup({ disabled: true, onClick: clickSpy });
 
     expect(clickSpy).not.toHaveBeenCalled();
-    const queryButton = screen.getByRole('button', { name: selectors.components.QueryEditorRow.actionButton('test') });
+    const queryButton = screen.getByRole('button', { name: 'test' });
 
     await userEvent.click(queryButton);
 
     expect(clickSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('QueryOperationToggleAction', () => {
+  function setup(active: boolean) {
+    const props: ComponentPropsWithoutRef<typeof QueryOperationToggleAction> = {
+      icon: 'panel-add',
+      title: 'test',
+      onClick: () => {},
+      active,
+    };
+
+    return render(<QueryOperationToggleAction {...props} />);
+  }
+
+  it('should correctly set pressed state', () => {
+    setup(false);
+
+    expect(
+      screen.getByRole('button', {
+        name: 'test',
+        pressed: false,
+      })
+    ).toBeInTheDocument();
+
+    setup(true);
+
+    expect(
+      screen.getByRole('button', {
+        name: 'test',
+        pressed: true,
+      })
+    ).toBeInTheDocument();
   });
 });

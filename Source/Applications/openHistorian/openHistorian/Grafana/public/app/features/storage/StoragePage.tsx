@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom-v5-compat';
 import { useAsync } from 'react-use';
 
 import { DataFrame, GrafanaTheme2, isDataFrame, ValueLinkConfig } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
-import { useStyles2, Spinner, TabsBar, Tab, Button, HorizontalGroup, Alert, toIconName } from '@grafana/ui';
+import { useStyles2, Spinner, TabsBar, Tab, Button, Stack, Box, Alert, toIconName } from '@grafana/ui';
 import appEvents from 'app/core/app_events';
 import { Page } from 'app/core/components/Page/Page';
 import { useNavModel } from 'app/core/hooks/useNavModel';
@@ -46,7 +47,7 @@ const getParentPath = (path: string) => {
 export default function StoragePage(props: Props) {
   const styles = useStyles2(getStyles);
   const navModel = useNavModel('storage');
-  const path = props.match.params.path ?? '';
+  const { path = '' } = useParams();
   const view = props.queryParams.view ?? StorageView.Data;
   const setPath = (p: string, view?: StorageView) => {
     let url = ('/admin/storage/' + p).replace('//', '/');
@@ -68,7 +69,7 @@ export default function StoragePage(props: Props) {
           frame.fields[0] = {
             ...name,
             getLinks: (cfg: ValueLinkConfig) => {
-              const n = name.values.get(cfg.valueRowIndex ?? 0);
+              const n = name.values[cfg.valueRowIndex ?? 0];
               const p = path + '/' + n;
               return [
                 {
@@ -93,7 +94,7 @@ export default function StoragePage(props: Props) {
     if (listing.value) {
       const length = listing.value.length;
       if (length === 1) {
-        const first = listing.value.fields[0].values.get(0) as string;
+        const first: string = listing.value.fields[0].values[0];
         isFolder = !path.endsWith(first);
       } else {
         // TODO: handle files/folders which do not exist
@@ -104,12 +105,7 @@ export default function StoragePage(props: Props) {
   }, [path, listing]);
 
   const fileNames = useMemo(() => {
-    return (
-      listing.value?.fields
-        ?.find((f) => f.name === 'name')
-        ?.values?.toArray()
-        ?.filter((v) => typeof v === 'string') ?? []
-    );
+    return listing.value?.fields?.find((f) => f.name === 'name')?.values.filter((v) => typeof v === 'string') ?? [];
   }, [listing]);
 
   const renderView = () => {
@@ -168,9 +164,9 @@ export default function StoragePage(props: Props) {
 
     return (
       <div className={styles.wrapper}>
-        <HorizontalGroup width="100%" justify="space-between" spacing={'md'} height={25}>
+        <Box display="flex" justifyContent="space-between" width="100%" height={3}>
           <Breadcrumb pathName={path} onPathChange={setPath} rootIcon={toIconName(navModel.node.icon ?? '')} />
-          <HorizontalGroup>
+          <Stack>
             {canAddFolder && (
               <>
                 <UploadButton path={path} setErrorMessages={setErrorMessages} fileNames={fileNames} setPath={setPath} />
@@ -205,8 +201,8 @@ export default function StoragePage(props: Props) {
                 Delete
               </Button>
             )}
-          </HorizontalGroup>
-        </HorizontalGroup>
+          </Stack>
+        </Box>
 
         {errorMessages.length > 0 && getErrorMessages()}
 

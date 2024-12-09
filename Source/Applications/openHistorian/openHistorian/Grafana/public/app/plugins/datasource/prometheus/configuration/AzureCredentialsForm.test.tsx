@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import AzureCredentialsForm, { Props } from './AzureCredentialsForm';
 
 const setup = (propsFunc?: (props: Props) => Props) => {
   let props: Props = {
     managedIdentityEnabled: false,
+    workloadIdentityEnabled: false,
     credentials: {
       authType: 'clientsecret',
       azureCloud: 'azuremonitor',

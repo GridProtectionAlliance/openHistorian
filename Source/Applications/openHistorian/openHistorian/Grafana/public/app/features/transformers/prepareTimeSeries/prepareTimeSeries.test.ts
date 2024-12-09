@@ -1,6 +1,5 @@
 import {
   toDataFrame,
-  ArrayVector,
   DataFrame,
   FieldType,
   toDataFrameDTO,
@@ -40,7 +39,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3, 4, 5, 6] },
           { name: 'count', type: FieldType.number, values: [10, 20, 30, 40, 50, 60] },
-        ],
+        ] as DataFrame['fields'],
         meta: {
           type: DataFrameType.TimeSeriesMulti,
         },
@@ -52,7 +51,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3, 4, 5, 6] },
           { name: 'more', type: FieldType.number, values: [2, 3, 4, 5, 6, 7] },
-        ],
+        ] as DataFrame['fields'],
         meta: {
           type: DataFrameType.TimeSeriesMulti,
         },
@@ -85,8 +84,8 @@ describe('Prepare time series transformer', () => {
       frames.map((f) => ({
         name: getFrameDisplayName(f),
         labels: f.fields[1].labels,
-        time: f.fields[0].values.toArray(),
-        values: f.fields[1].values.toArray(),
+        time: f.fields[0].values,
+        values: f.fields[1].values,
       }))
     ).toMatchInlineSnapshot(`
       [
@@ -182,7 +181,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [0, 1, 2, 3, 4, 5] },
           { name: 'another', type: FieldType.number, values: [2, 3, 4, 5, 6, 7] },
-        ],
+        ] as DataFrame['fields'],
         length: 6,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -194,7 +193,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [0, 1, 2, 3, 4, 5] },
           { name: 'count', type: FieldType.number, values: [10, 20, 30, 40, 50, 60] },
-        ],
+        ] as DataFrame['fields'],
         length: 6,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -206,7 +205,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [4, 5, 6, 7, 8, 9] },
           { name: 'value', type: FieldType.number, values: [2, 3, 4, 5, 6, 7] },
-        ],
+        ] as DataFrame['fields'],
         length: 6,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -305,7 +304,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3] },
           { name: 'value', labels: { region: 'a' }, type: FieldType.number, values: [10, 30, 50] },
-        ],
+        ] as DataFrame['fields'],
         length: 3,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -317,7 +316,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3] },
           { name: 'value', labels: { region: 'b' }, type: FieldType.number, values: [20, 40, 60] },
-        ],
+        ] as DataFrame['fields'],
         length: 3,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -344,6 +343,7 @@ describe('Prepare time series transformer', () => {
     };
 
     const frames = prepareTimeSeriesTransformer.transformer(config, ctx)(source);
+
     expect(frames).toEqual([
       toEquableDataFrame({
         name: 'wants-to-be-many',
@@ -351,7 +351,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3] },
           { name: 'value', labels: { region: 'a' }, type: FieldType.number, values: [10, 30, 50] },
-        ],
+        ] as DataFrame['fields'],
         length: 3,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -363,7 +363,7 @@ describe('Prepare time series transformer', () => {
         fields: [
           { name: 'time', type: FieldType.time, values: [1, 2, 3] },
           { name: 'value', labels: { region: 'b' }, type: FieldType.number, values: [20, 40, 60] },
-        ],
+        ] as DataFrame['fields'],
         length: 3,
         meta: {
           type: DataFrameType.TimeSeriesMulti,
@@ -415,14 +415,13 @@ describe('Prepare time series transformer', () => {
   });
 });
 
-function toEquableDataFrame(source: any): DataFrame {
+function toEquableDataFrame(source: DataFrame): DataFrame {
   return toDataFrame({
     meta: undefined,
     ...source,
     fields: source.fields.map((field: any) => {
       return {
         ...field,
-        values: new ArrayVector(field.values),
         config: {},
       };
     }),

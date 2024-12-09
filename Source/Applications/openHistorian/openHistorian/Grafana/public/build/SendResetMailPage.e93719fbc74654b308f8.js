@@ -1,9 +1,0 @@
-"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[133],{37673:(R,s,t)=>{t.r(s),t.d(s,{SendResetMailPage:()=>m,default:()=>P});var e=t(68404),o=t(80472),c=t(9892),u=t(54899),g=t(72648),i=t(52081),n=t(31403),E=t(94270),f=t(19825),y=t(24799),v=t(46967),h=t(47694);const S=a=>c.css`
-  color: ${a.colors.text.secondary};
-  font-size: ${a.typography.bodySmall.fontSize};
-  font-weight: ${a.typography.fontWeightRegular};
-  margin-top: ${a.spacing(1)};
-  display: block;
-`,p=()=>{const[a,$]=(0,e.useState)(!1),F=(0,g.wW)(S),d=`${h.ZP.appSubUrl}/login`,L=async l=>{await(0,u.i)().post("/api/user/password/send-reset-email",l)&&$(!0)};return a?e.createElement("div",null,e.createElement("p",null,"An email with a reset link has been sent to the email address. You should receive it shortly."),e.createElement(i.W2,{margin:"md"}),e.createElement(n.Qj,{variant:"primary",href:d},"Back to login")):e.createElement(E.l,{onSubmit:L},({register:l,errors:r})=>e.createElement(e.Fragment,null,e.createElement(f.D,null,"Reset password"),e.createElement(y.g,{label:"User",description:"Enter your information to get a reset link sent to you",invalid:!!r.userOrEmail,error:r?.userOrEmail?.message},e.createElement(v.I,{id:"user-input",placeholder:"Email or username",...l("userOrEmail",{required:"Email or username is required"})})),e.createElement(i.Lh,null,e.createElement(n.zx,{type:"submit"},"Send reset email"),e.createElement(n.Qj,{fill:"text",href:d},"Back to login")),e.createElement("p",{className:F},"Did you forget your username or email? Contact your Grafana administrator.")))},m=()=>e.createElement(o.dd,null,e.createElement(o.$s,null,e.createElement(p,null))),P=m}}]);
-
-//# sourceMappingURL=SendResetMailPage.e93719fbc74654b308f8.js.map

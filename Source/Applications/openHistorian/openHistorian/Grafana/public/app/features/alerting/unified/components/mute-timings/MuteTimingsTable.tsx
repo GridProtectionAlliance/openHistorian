@@ -1,68 +1,74 @@
 import { css } from '@emotion/css';
-import React, { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { Stack } from '@grafana/experimental';
-import { IconButton, LinkButton, Link, useStyles2, ConfirmModal } from '@grafana/ui';
-import { contextSrv } from 'app/core/services/context_srv';
-import { AlertManagerCortexConfig, MuteTimeInterval, TimeInterval } from 'app/plugins/datasource/alertmanager/types';
-import { useDispatch } from 'app/types';
+import { Alert, Button, LinkButton, LoadingPlaceholder, Stack, useStyles2 } from '@grafana/ui';
+import { Trans, t } from 'app/core/internationalization';
+import { MuteTimingActionsButtons } from 'app/features/alerting/unified/components/mute-timings/MuteTimingActionsButtons';
+import {
+  ALL_MUTE_TIMINGS,
+  useExportMuteTimingsDrawer,
+} from 'app/features/alerting/unified/components/mute-timings/useExportMuteTimingsDrawer';
+import { PROVENANCE_ANNOTATION } from 'app/features/alerting/unified/utils/k8s/constants';
 
 import { Authorize } from '../../components/Authorize';
-import { useUnifiedAlertingSelector } from '../../hooks/useUnifiedAlertingSelector';
-import { deleteMuteTimingAction } from '../../state/actions';
-import { getNotificationsPermissions } from '../../utils/access-control';
-import {
-  getTimeString,
-  getWeekdayString,
-  getDaysOfMonthString,
-  getMonthsString,
-  getYearsString,
-} from '../../utils/alertmanager';
+import { AlertmanagerAction, useAlertmanagerAbilities, useAlertmanagerAbility } from '../../hooks/useAbilities';
 import { makeAMLink } from '../../utils/misc';
-import { AsyncRequestState, initialAsyncRequestState } from '../../utils/redux';
-import { DynamicTable, DynamicTableItemProps, DynamicTableColumnProps } from '../DynamicTable';
+import { DynamicTable, DynamicTableColumnProps } from '../DynamicTable';
 import { EmptyAreaWithCTA } from '../EmptyAreaWithCTA';
 import { ProvisioningBadge } from '../Provisioning';
 import { Spacer } from '../Spacer';
 
-interface Props {
+import { MuteTiming, useMuteTimings } from './useMuteTimings';
+import { renderTimeIntervals } from './util';
+
+interface MuteTimingsTableProps {
   alertManagerSourceName: string;
-  muteTimingNames?: string[];
   hideActions?: boolean;
 }
 
-export const MuteTimingsTable = ({ alertManagerSourceName, muteTimingNames, hideActions }: Props) => {
+type TableItem = {
+  id: string;
+  data: MuteTiming;
+};
+
+export const MuteTimingsTable = ({ alertManagerSourceName, hideActions }: MuteTimingsTableProps) => {
   const styles = useStyles2(getStyles);
-  const dispatch = useDispatch();
-  const permissions = getNotificationsPermissions(alertManagerSourceName);
-  const amConfigs = useUnifiedAlertingSelector((state) => state.amConfigs);
-  const [muteTimingName, setMuteTimingName] = useState<string>('');
-  const { result }: AsyncRequestState<AlertManagerCortexConfig> =
-    (alertManagerSourceName && amConfigs[alertManagerSourceName]) || initialAsyncRequestState;
+  const [ExportAllDrawer, showExportAllDrawer] = useExportMuteTimingsDrawer();
 
-  const items = useMemo((): Array<DynamicTableItemProps<MuteTimeInterval>> => {
-    const muteTimings = result?.alertmanager_config?.mute_time_intervals ?? [];
-    const muteTimingsProvenances = result?.alertmanager_config?.muteTimeProvenances ?? {};
+  const { data, isLoading, error } = useMuteTimings({ alertmanager: alertManagerSourceName });
 
-    return muteTimings
-      .filter(({ name }) => (muteTimingNames ? muteTimingNames.includes(name) : true))
-      .map((mute) => {
-        return {
-          id: mute.name,
-          data: {
-            ...mute,
-            provenance: muteTimingsProvenances[mute.name],
-          },
-        };
-      });
-  }, [
-    result?.alertmanager_config?.mute_time_intervals,
-    result?.alertmanager_config?.muteTimeProvenances,
-    muteTimingNames,
-  ]);
+  const items = useMemo((): TableItem[] => {
+    const muteTimings = data || [];
 
-  const columns = useColumns(alertManagerSourceName, hideActions, setMuteTimingName);
+    return muteTimings.map((mute) => {
+      return {
+        id: mute.id,
+        data: mute,
+      };
+    });
+  }, [data]);
+
+  const [_, allowedToCreateMuteTiming] = useAlertmanagerAbility(AlertmanagerAction.CreateMuteTiming);
+
+  const [exportMuteTimingsSupported, exportMuteTimingsAllowed] = useAlertmanagerAbility(
+    AlertmanagerAction.ExportMuteTimings
+  );
+  const columns = useColumns(alertManagerSourceName, hideActions);
+
+  if (isLoading) {
+    return <LoadingPlaceholder text="Loading mute timings..." />;
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" title={t('alerting.mute_timings.error-loading.title', 'Error loading mute timings')}>
+        <Trans i18nKey="alerting.mute_timings.error-loading.description">
+          Could not load mute timings. Please try again later.
+        </Trans>
+      </Alert>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -73,9 +79,9 @@ export const MuteTimingsTable = ({ alertManagerSourceName, muteTimingNames, hide
         </span>
         <Spacer />
         {!hideActions && items.length > 0 && (
-          <Authorize actions={[permissions.create]}>
+          <Authorize actions={[AlertmanagerAction.CreateMuteTiming]}>
             <LinkButton
-              className={styles.addMuteButton}
+              className={styles.muteTimingsButtons}
               icon="plus"
               variant="primary"
               href={makeAMLink('alerting/routes/mute-timing/new', alertManagerSourceName)}
@@ -84,9 +90,23 @@ export const MuteTimingsTable = ({ alertManagerSourceName, muteTimingNames, hide
             </LinkButton>
           </Authorize>
         )}
+        {exportMuteTimingsSupported && (
+          <>
+            <Button
+              icon="download-alt"
+              className={styles.muteTimingsButtons}
+              variant="secondary"
+              disabled={!exportMuteTimingsAllowed}
+              onClick={() => showExportAllDrawer(ALL_MUTE_TIMINGS)}
+            >
+              <Trans i18nKey="alerting.common.export-all">Export all</Trans>
+            </Button>
+            {ExportAllDrawer}
+          </>
+        )}
       </Stack>
       {items.length > 0 ? (
-        <DynamicTable items={items} cols={columns} />
+        <DynamicTable items={items} cols={columns} pagination={{ itemsPerPage: 25 }} />
       ) : !hideActions ? (
         <EmptyAreaWithCTA
           text="You haven't created any mute timings yet"
@@ -94,125 +114,69 @@ export const MuteTimingsTable = ({ alertManagerSourceName, muteTimingNames, hide
           buttonIcon="plus"
           buttonSize="lg"
           href={makeAMLink('alerting/routes/mute-timing/new', alertManagerSourceName)}
-          showButton={contextSrv.hasPermission(permissions.create)}
+          showButton={allowedToCreateMuteTiming}
         />
       ) : (
-        <p>No mute timings configured</p>
-      )}
-      {!hideActions && (
-        <ConfirmModal
-          isOpen={!!muteTimingName}
-          title="Delete mute timing"
-          body={`Are you sure you would like to delete "${muteTimingName}"`}
-          confirmText="Delete"
-          onConfirm={() => dispatch(deleteMuteTimingAction(alertManagerSourceName, muteTimingName))}
-          onDismiss={() => setMuteTimingName('')}
-        />
+        <EmptyAreaWithCTA text="No mute timings configured" buttonLabel={''} showButton={false} />
       )}
     </div>
   );
 };
 
-function useColumns(alertManagerSourceName: string, hideActions = false, setMuteTimingName: (name: string) => void) {
-  const permissions = getNotificationsPermissions(alertManagerSourceName);
+function useColumns(alertManagerSourceName: string, hideActions = false) {
+  const [[_editSupported, allowedToEdit], [_deleteSupported, allowedToDelete]] = useAlertmanagerAbilities([
+    AlertmanagerAction.UpdateMuteTiming,
+    AlertmanagerAction.DeleteMuteTiming,
+  ]);
+  const showActions = !hideActions && (allowedToEdit || allowedToDelete);
 
-  const userHasEditPermissions = contextSrv.hasPermission(permissions.update);
-  const userHasDeletePermissions = contextSrv.hasPermission(permissions.delete);
-  const showActions = !hideActions && (userHasEditPermissions || userHasDeletePermissions);
-
-  return useMemo((): Array<DynamicTableColumnProps<MuteTimeInterval>> => {
-    const columns: Array<DynamicTableColumnProps<MuteTimeInterval>> = [
+  return useMemo((): Array<DynamicTableColumnProps<MuteTiming>> => {
+    const columns: Array<DynamicTableColumnProps<MuteTiming>> = [
       {
         id: 'name',
         label: 'Name',
         renderCell: function renderName({ data }) {
           return (
-            <>
-              {data.name} {data.provenance && <ProvisioningBadge />}
-            </>
+            <div>
+              {data.name}{' '}
+              {data.provisioned && (
+                <ProvisioningBadge tooltip provenance={data.metadata?.annotations?.[PROVENANCE_ANNOTATION]} />
+              )}
+            </div>
           );
         },
-        size: '250px',
+        size: 1,
       },
       {
         id: 'timeRange',
         label: 'Time range',
-        renderCell: ({ data }) => renderTimeIntervals(data.time_intervals),
+        renderCell: ({ data }) => {
+          return renderTimeIntervals(data);
+        },
+        size: 5,
       },
     ];
     if (showActions) {
       columns.push({
         id: 'actions',
         label: 'Actions',
-        renderCell: function renderActions({ data }) {
-          if (data.provenance) {
-            return (
-              <div>
-                <Link
-                  href={makeAMLink(`/alerting/routes/mute-timing/edit`, alertManagerSourceName, {
-                    muteName: data.name,
-                  })}
-                >
-                  <IconButton name="file-alt" title="View mute timing" />
-                </Link>
-              </div>
-            );
-          }
-          return (
-            <div>
-              <Authorize actions={[permissions.update]}>
-                <Link
-                  href={makeAMLink(`/alerting/routes/mute-timing/edit`, alertManagerSourceName, {
-                    muteName: data.name,
-                  })}
-                >
-                  <IconButton name="edit" title="Edit mute timing" />
-                </Link>
-              </Authorize>
-              <Authorize actions={[permissions.delete]}>
-                <IconButton
-                  name={'trash-alt'}
-                  title="Delete mute timing"
-                  onClick={() => setMuteTimingName(data.name)}
-                />
-              </Authorize>
-            </div>
-          );
-        },
-        size: '100px',
+        alignColumn: 'end',
+        renderCell: ({ data }) => (
+          <MuteTimingActionsButtons muteTiming={data} alertManagerSourceName={alertManagerSourceName} />
+        ),
+        size: 2,
       });
     }
     return columns;
-  }, [alertManagerSourceName, setMuteTimingName, showActions, permissions]);
-}
-
-function renderTimeIntervals(timeIntervals: TimeInterval[]) {
-  return timeIntervals.map((interval, index) => {
-    const { times, weekdays, days_of_month, months, years } = interval;
-    const timeString = getTimeString(times);
-    const weekdayString = getWeekdayString(weekdays);
-    const daysString = getDaysOfMonthString(days_of_month);
-    const monthsString = getMonthsString(months);
-    const yearsString = getYearsString(years);
-
-    return (
-      <React.Fragment key={JSON.stringify(interval) + index}>
-        {`${timeString} ${weekdayString}`}
-        <br />
-        {[daysString, monthsString, yearsString].join(' | ')}
-        <br />
-      </React.Fragment>
-    );
-  });
+  }, [showActions, alertManagerSourceName]);
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    display: flex;
-    flex-flow: column nowrap;
-  `,
-  addMuteButton: css`
-    margin-bottom: ${theme.spacing(2)};
-    align-self: flex-end;
-  `,
+  container: css({
+    display: 'flex',
+    flexFlow: 'column nowrap',
+  }),
+  muteTimingsButtons: css({
+    marginBottom: theme.spacing(2),
+  }),
 });

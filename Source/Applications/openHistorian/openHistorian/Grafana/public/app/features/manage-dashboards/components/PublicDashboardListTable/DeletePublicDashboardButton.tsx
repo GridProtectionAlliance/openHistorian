@@ -1,6 +1,8 @@
-import React from 'react';
+import * as React from 'react';
 
+import { config } from '@grafana/runtime';
 import { Button, ModalsController, ButtonProps } from '@grafana/ui/src';
+import { t } from 'app/core/internationalization';
 import { useDeletePublicDashboardMutation } from 'app/features/dashboard/api/publicDashboardApi';
 import { DashboardModel } from 'app/features/dashboard/state/DashboardModel';
 
@@ -23,7 +25,7 @@ export const DeletePublicDashboardButton = ({
   dashboard?: DashboardModel;
   publicDashboard: PublicDashboardDeletion;
   loader?: JSX.Element;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onDismiss?: () => void;
 } & ButtonProps) => {
   const [deletePublicDashboard, { isLoading }] = useDeletePublicDashboardMutation();
@@ -39,24 +41,28 @@ export const DeletePublicDashboardButton = ({
 
   return (
     <ModalsController>
-      {({ showModal, hideModal }) => (
-        <Button
-          aria-label="Revoke public URL"
-          title="Revoke public URL"
-          onClick={() =>
-            showModal(DeletePublicDashboardModal, {
-              dashboardTitle: publicDashboard.title,
-              onConfirm: () => onDeletePublicDashboardClick(publicDashboard, hideModal),
-              onDismiss: () => {
-                onDismiss ? onDismiss() : hideModal();
-              },
-            })
-          }
-          {...rest}
-        >
-          {isLoading && loader ? loader : children}
-        </Button>
-      )}
+      {({ showModal, hideModal }) => {
+        const translatedRevocationButtonText = config.featureToggles.newDashboardSharingComponent
+          ? t('shared-dashboard-list.button.revoke-button-text', 'Revoke access')
+          : t('public-dashboard-list.button.revoke-button-text', 'Revoke public URL');
+        return (
+          <Button
+            aria-label={translatedRevocationButtonText}
+            title={translatedRevocationButtonText}
+            onClick={() =>
+              showModal(DeletePublicDashboardModal, {
+                onConfirm: () => onDeletePublicDashboardClick(publicDashboard, hideModal),
+                onDismiss: () => {
+                  onDismiss ? onDismiss() : hideModal();
+                },
+              })
+            }
+            {...rest}
+          >
+            {isLoading && loader ? loader : children}
+          </Button>
+        );
+      }}
     </ModalsController>
   );
 };

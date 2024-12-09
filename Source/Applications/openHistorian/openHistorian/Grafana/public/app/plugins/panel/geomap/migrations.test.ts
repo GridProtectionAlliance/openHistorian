@@ -12,7 +12,7 @@ describe('Worldmap Migrations', () => {
   });
 
   it('simple worldmap', () => {
-    const old: any = {
+    const old = {
       angular: simpleWorldmapConfig,
     };
     const panel = {} as PanelModel;
@@ -55,7 +55,53 @@ describe('Worldmap Migrations', () => {
             "mouseWheelZoom": true,
             "showZoom": true,
           },
-          "layers": [],
+          "layers": [
+            {
+              "config": {
+                "showLegend": true,
+                "style": {
+                  "color": {
+                    "fixed": "dark-green",
+                  },
+                  "opacity": 0.4,
+                  "rotation": {
+                    "fixed": 0,
+                    "max": 360,
+                    "min": -360,
+                    "mode": "mod",
+                  },
+                  "size": {
+                    "fixed": 5,
+                    "max": 30,
+                    "min": 2,
+                  },
+                  "symbol": {
+                    "fixed": "img/icons/marker/circle.svg",
+                    "mode": "fixed",
+                  },
+                  "symbolAlign": {
+                    "horizontal": "center",
+                    "vertical": "center",
+                  },
+                  "textConfig": {
+                    "fontSize": 12,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "textAlign": "center",
+                    "textBaseline": "middle",
+                  },
+                },
+              },
+              "location": {
+                "gazetteer": "public/gazetteer/countries.json",
+                "lookup": undefined,
+                "mode": "lookup",
+              },
+              "name": "",
+              "tooltip": true,
+              "type": "markers",
+            },
+          ],
           "tooltip": {
             "mode": "details",
           },
@@ -66,6 +112,16 @@ describe('Worldmap Migrations', () => {
             "zoom": 6,
           },
         },
+        "transformations": [
+          {
+            "id": "reduce",
+            "options": {
+              "reducers": [
+                "sum",
+              ],
+            },
+          },
+        ],
       }
     `);
   });
@@ -169,6 +225,10 @@ describe('geomap migrations', () => {
                   "symbol": {
                     "fixed": "img/icons/marker/triangle.svg",
                     "mode": "fixed",
+                  },
+                  "symbolAlign": {
+                    "horizontal": "center",
+                    "vertical": "center",
                   },
                   "textConfig": {
                     "fontSize": 12,

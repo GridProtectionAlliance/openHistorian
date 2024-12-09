@@ -3,6 +3,7 @@ import { ContextSrvStub } from 'test/specs/helpers';
 
 import { dateTime, isDateTime } from '@grafana/data';
 import { config, HistoryWrapper, locationService, setLocationService } from '@grafana/runtime';
+import { EmbeddedScene, SceneCanvasText, SceneTimeRange } from '@grafana/scenes';
 
 import { TimeModel } from '../state/TimeModel';
 
@@ -23,7 +24,7 @@ describe('timeSrv', () => {
     _dashboard = {
       time: { from: 'now-6h', to: 'now' },
       getTimezone: jest.fn(() => 'browser'),
-      refresh: false,
+      refresh: '',
       timeRangeUpdated: jest.fn(() => {}),
       timepicker: {},
     };
@@ -82,7 +83,7 @@ describe('timeSrv', () => {
       timeSrv = new TimeSrv(new ContextSrvStub());
 
       // dashboard saved with refresh on
-      _dashboard.refresh = true;
+      _dashboard.refresh = '10s';
       timeSrv.init(_dashboard);
 
       expect(timeSrv.refresh).toBe(false);
@@ -93,13 +94,13 @@ describe('timeSrv', () => {
         _dashboard = {
           time: { from: 'now-6h', to: 'now' },
           getTimezone: jest.fn(() => 'browser'),
-          refresh: false,
+          refresh: '',
           timeRangeUpdated: jest.fn(() => {}),
           timepicker: {},
         };
 
         locationService.push('/d/id?from=now-24h&to=now');
-        config.isPublicDashboardView = true;
+        config.publicDashboardAccessToken = 'abc123';
         timeSrv = new TimeSrv(new ContextSrvStub());
       });
 
@@ -209,36 +210,54 @@ describe('timeSrv', () => {
         expect(time.to.valueOf()).toEqual(1410337650000);
       });
 
-      it('corrects inverted from/to dates in ms', () => {
+      it('does not correct inverted from/to dates in ms', () => {
         locationService.push('/d/id?from=1621436828909&to=1621436818909');
 
         timeSrv = new TimeSrv(new ContextSrvStub());
 
         timeSrv.init(_dashboard);
         const time = timeSrv.timeRange();
-        expect(time.from.valueOf()).toEqual(1621436818909);
-        expect(time.to.valueOf()).toEqual(1621436828909);
+        expect(time.from.valueOf()).toEqual(1621436828909);
+        expect(time.to.valueOf()).toEqual(1621436818909);
       });
 
-      it('corrects inverted from/to dates as relative times', () => {
+      it('does not correct inverted from/to dates as relative times', () => {
         locationService.push('/d/id?from=now&to=now-1h');
 
         timeSrv = new TimeSrv(new ContextSrvStub());
 
         timeSrv.init(_dashboard);
         const time = timeSrv.timeRange();
-        expect(time.raw.from).toBe('now-1h');
-        expect(time.raw.to).toBe('now');
+        expect(time.raw.from).toBe('now');
+        expect(time.raw.to).toBe('now-1h');
+      });
+
+      it('should correctly handle timezones', () => {
+        locationService.push('/d/id?from=1718797457286&to=1718819057286');
+        _dashboard = {
+          time: { from: '1718797457286', to: '1718819057286' },
+          getTimezone: jest.fn(() => 'Africa/Cairo'),
+          refresh: '',
+          timeRangeUpdated: jest.fn(() => {}),
+          timepicker: {},
+        };
+
+        timeSrv = new TimeSrv(new ContextSrvStub());
+        timeSrv.init(_dashboard);
+
+        const time = timeSrv.timeRange();
+        expect(time.from.toString()).toBe('Wed Jun 19 2024 14:44:17 GMT+0300');
+        expect(time.to.toString()).toBe('Wed Jun 19 2024 20:44:17 GMT+0300');
       });
     });
   });
 
   describe('setTime', () => {
     it('should return disable refresh if refresh is disabled for any range', () => {
-      _dashboard.refresh = false;
+      _dashboard.refresh = '';
 
       timeSrv.setTime({ from: '2011-01-01', to: '2015-01-01' });
-      expect(_dashboard.refresh).toBe(false);
+      expect(_dashboard.refresh).toBe('');
     });
 
     it('should restore refresh for absolute time range', () => {
@@ -254,7 +273,7 @@ describe('timeSrv', () => {
         from: dateTime([2011, 1, 1]),
         to: dateTime([2015, 1, 1]),
       });
-      expect(_dashboard.refresh).toBe(false);
+      expect(_dashboard.refresh).toBe('');
       timeSrv.setTime({ from: '2011-01-01', to: 'now' });
       expect(_dashboard.refresh).toBe('10s');
     });
@@ -287,19 +306,21 @@ describe('timeSrv', () => {
     });
   });
 
-  describe('pauseAutoRefresh', () => {
-    it('should set autoRefreshPaused to true', () => {
-      _dashboard.refresh = '10s';
-      timeSrv.pauseAutoRefresh();
-      expect(timeSrv.autoRefreshPaused).toBe(true);
-    });
-  });
-
   describe('resumeAutoRefresh', () => {
-    it('should set refresh to empty value', () => {
-      timeSrv.autoRefreshPaused = true;
+    it('should set auto-refresh interval', () => {
+      timeSrv.setAutoRefresh('10s');
+      expect(timeSrv.refreshTimer).not.toBeUndefined();
+
+      timeSrv.stopAutoRefresh();
+      expect(timeSrv.refreshTimer).toBeUndefined();
+
       timeSrv.resumeAutoRefresh();
-      expect(timeSrv.autoRefreshPaused).toBe(false);
+      expect(timeSrv.refreshTimer).not.toBeUndefined();
+    });
+
+    it('should allow an auto refresh value', () => {
+      timeSrv.setAutoRefresh('auto');
+      expect(timeSrv.refreshTimer).not.toBeUndefined();
     });
   });
 
@@ -338,6 +359,26 @@ describe('timeSrv', () => {
           expect(timeSrv.isRefreshOutsideThreshold(57000, 0.05)).toBe(true);
         });
       });
+    });
+  });
+
+  describe('Scenes compatibility', () => {
+    it('should use scene provided range if active', () => {
+      timeSrv.setTime({ from: 'now-6h', to: 'now' });
+
+      window.__grafanaSceneContext = new EmbeddedScene({
+        $timeRange: new SceneTimeRange({ from: 'now-1h', to: 'now' }),
+        body: new SceneCanvasText({ text: 'hello' }),
+      });
+
+      let time = timeSrv.timeRange();
+      expect(time.raw.from).toBe('now-6h');
+      expect(time.raw.to).toBe('now');
+
+      window.__grafanaSceneContext.activate();
+      time = timeSrv.timeRange();
+      expect(time.raw.from).toBe('now-1h');
+      expect(time.raw.to).toBe('now');
     });
   });
 });

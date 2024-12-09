@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { NodeGraph } from './NodeGraph';
 import { makeEdgesDataFrame, makeNodesDataFrame } from './utils';
@@ -89,7 +88,7 @@ describe('NodeGraph', () => {
     const origError = console.error;
     console.error = jest.fn();
 
-    const node = await screen.findByLabelText(/Node: service:0/);
+    const node = await screen.findByTestId('node-click-rect-0');
     await userEvent.click(node);
     await screen.findByText(/Node traces/);
 

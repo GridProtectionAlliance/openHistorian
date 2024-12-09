@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 
 import {
   FieldConfigSource,
@@ -14,7 +14,12 @@ import {
 import { LegendDisplayMode, SortOrder, TooltipDisplayMode } from '@grafana/schema';
 
 import { PieChartPanel } from './PieChartPanel';
-import { PanelOptions, PieChartType, PieChartLegendValues } from './panelcfg.gen';
+import { Options, PieChartType, PieChartLegendValues } from './panelcfg.gen';
+
+jest.mock('react-use', () => ({
+  ...jest.requireActual('react-use'),
+  useMeasure: () => [() => {}, { width: 100, height: 100 }],
+}));
 
 type PieChartPanelProps = ComponentProps<typeof PieChartPanel>;
 
@@ -55,7 +60,7 @@ describe('PieChartPanel', () => {
       it('should not filter out any slices or legend items', () => {
         setup({ data: { series: seriesWithNoOverrides } });
 
-        const slices = screen.queryAllByLabelText('Pie Chart Slice');
+        const slices = screen.queryAllByTestId('data testid Pie Chart Slice');
         expect(slices.length).toBe(3);
         expect(screen.queryByText(/Chrome/i)).toBeInTheDocument();
         expect(screen.queryByText(/Firefox/i)).toBeInTheDocument();
@@ -87,7 +92,7 @@ describe('PieChartPanel', () => {
       it('should filter out the Firefox pie chart slice but not the legend', () => {
         setup({ data: { series: seriesWithFirefoxOverride } });
 
-        const slices = screen.queryAllByLabelText('Pie Chart Slice');
+        const slices = screen.queryAllByTestId('data testid Pie Chart Slice');
         expect(slices.length).toBe(2);
         expect(screen.queryByText(/Firefox/i)).toBeInTheDocument();
       });
@@ -117,13 +122,13 @@ describe('PieChartPanel', () => {
       it('should filter out the Firefox series with value 190 from the multi tooltip', async () => {
         setup({ data: { series: seriesWithFirefoxOverride } });
 
-        await userEvent.hover(screen.getAllByLabelText('Pie Chart Slice')[0]);
+        await userEvent.hover(screen.getAllByTestId('data testid Pie Chart Slice')[0]);
         expect(screen.queryByText(/600/i)).toBeInTheDocument();
         expect(screen.queryByText(/190/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/210/i)).toBeInTheDocument();
 
         expect(screen.queryByText(/Firefox/i)).toBeInTheDocument();
-        const slices = screen.queryAllByLabelText('Pie Chart Slice');
+        const slices = screen.queryAllByTestId('data testid Pie Chart Slice');
         expect(slices.length).toBe(3);
       });
     });
@@ -153,7 +158,7 @@ describe('PieChartPanel', () => {
         setup({ data: { series: seriesWithFirefoxOverride } });
 
         expect(screen.queryByText(/Firefox/i)).not.toBeInTheDocument();
-        const slices = screen.queryAllByLabelText('Pie Chart Slice');
+        const slices = screen.queryAllByTestId('data testid Pie Chart Slice');
         expect(slices.length).toBe(3);
       });
     });
@@ -166,7 +171,7 @@ const setup = (propsOverrides?: {}) => {
     overrides: [],
   };
 
-  const options: PanelOptions = {
+  const options: Options = {
     pieType: PieChartType.Pie,
     displayLabels: [],
     legend: {

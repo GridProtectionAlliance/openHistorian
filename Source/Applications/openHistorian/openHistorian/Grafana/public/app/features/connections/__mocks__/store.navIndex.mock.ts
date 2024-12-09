@@ -1,10 +1,9 @@
-import { NavIndex, NavSection } from '@grafana/data';
+import { NavIndex } from '@grafana/data';
 
 export const navIndex: NavIndex = {
   home: {
     id: 'home',
     text: 'Home',
-    section: NavSection.Core,
     icon: 'home-alt',
     url: '/',
     sortWeight: -2000,
@@ -12,14 +11,12 @@ export const navIndex: NavIndex = {
   starred: {
     id: 'starred',
     text: 'Starred',
-    section: NavSection.Core,
     icon: 'star',
     sortWeight: -1900,
     emptyMessageId: 'starred-empty',
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -28,7 +25,6 @@ export const navIndex: NavIndex = {
   'dashboards/browse': {
     id: 'dashboards/browse',
     text: 'Dashboards',
-    section: NavSection.Core,
     subTitle: 'Create and manage dashboards to visualize your data',
     icon: 'apps',
     url: '/dashboards',
@@ -59,7 +55,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -99,7 +94,6 @@ export const navIndex: NavIndex = {
   explore: {
     id: 'explore',
     text: 'Explore',
-    section: NavSection.Core,
     subTitle: 'Explore your data',
     icon: 'compass',
     url: '/explore',
@@ -107,7 +101,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -116,7 +109,6 @@ export const navIndex: NavIndex = {
   alerting: {
     id: 'alerting',
     text: 'Alerting',
-    section: NavSection.Core,
     subTitle: 'Learn about problems in your systems moments after they occur',
     icon: 'bell',
     url: '/alerting',
@@ -153,36 +145,35 @@ export const navIndex: NavIndex = {
       {
         id: 'groups',
         text: 'Alert groups',
-        subTitle: 'See grouped alerts from an Alertmanager instance',
+        subTitle: 'See grouped alerts with active notifications',
         icon: 'layer-group',
         url: '/alerting/groups',
       },
       {
+        id: 'history',
+        text: 'History',
+        subTitle: 'Alert state history',
+        icon: 'history',
+        url: '/alerting/history',
+      },
+      {
         id: 'alerting-admin',
-        text: 'Admin',
+        text: 'Settings',
         icon: 'cog',
         url: '/alerting/admin',
       },
       {
-        id: 'divider',
-        text: 'Divider',
-        divider: true,
-        hideFromTabs: true,
-      },
-      {
         id: 'alert',
-        text: 'Create alert rule',
+        text: 'New alert rule',
         subTitle: 'Create an alert rule',
         icon: 'plus',
         url: '/alerting/new',
         hideFromTabs: true,
-        showIconInNavbar: true,
       },
     ],
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -219,111 +210,79 @@ export const navIndex: NavIndex = {
   groups: {
     id: 'groups',
     text: 'Alert groups',
-    subTitle: 'See grouped alerts from an Alertmanager instance',
+    subTitle: 'See grouped alerts with active notifications',
     icon: 'layer-group',
     url: '/alerting/groups',
   },
   'alerting-admin': {
     id: 'alerting-admin',
-    text: 'Admin',
+    text: 'Settings',
     icon: 'cog',
     url: '/alerting/admin',
   },
   alert: {
     id: 'alert',
-    text: 'Create alert rule',
+    text: 'New alert rule',
     subTitle: 'Create an alert rule',
     icon: 'plus',
     url: '/alerting/new',
     hideFromTabs: true,
-    showIconInNavbar: true,
   },
   connections: {
     id: 'connections',
     text: 'Connections',
-    section: NavSection.Core,
     icon: 'link',
     url: '/connections',
     sortWeight: -1300,
     children: [
       {
-        id: 'connections-your-connections',
-        text: 'Your connections',
-        subTitle: 'Manage your existing connections',
-        url: '/connections/your-connections',
-        children: [
-          {
-            id: 'connections-your-connections-datasources',
-            text: 'Datasources',
-            subTitle: 'Manage your existing datasource connections',
-            url: '/connections/your-connections/datasources',
-          },
-          {
-            id: 'standalone-plugin-page-/connections/your-connections/infrastructure',
-            text: 'Infrastructure',
-            url: '/connections/your-connections/infrastructure',
-            pluginId: 'grafana-easystart-app',
-          },
-        ],
+        id: 'connections-add-new-connection',
+        text: 'Add new connection',
+        subTitle: 'Browse and create new connections',
+        url: '/connections/add-new-connection',
       },
       {
-        id: 'connections-connect-data',
-        text: 'Connect data',
-        subTitle: 'Browse and create new connections',
-        url: '/connections/connect-data',
+        id: 'connections-datasources',
+        text: 'Data sources',
+        subTitle: 'Manage your existing datasource connections',
+        url: '/connections/datasources',
+      },
+      {
+        id: 'standalone-plugin-page-/connections/infrastructure',
+        text: 'Infrastructure',
+        url: '/connections/infrastructure',
+        pluginId: 'grafana-easystart-app',
       },
     ],
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
     },
   },
-  'connections-your-connections': {
-    id: 'connections-your-connections',
-    text: 'Your connections',
-    subTitle: 'Manage your existing connections',
-    url: '/connections/your-connections',
-    children: [
-      {
-        id: 'connections-your-connections-datasources',
-        text: 'Datasources',
-        subTitle: 'Manage your existing datasource connections',
-        url: '/connections/your-connections/datasources',
-      },
-      {
-        id: 'standalone-plugin-page-/connections/your-connections/infrastructure',
-        text: 'Infrastructure',
-        url: '/connections/your-connections/infrastructure',
-        pluginId: 'grafana-easystart-app',
-      },
-    ],
-  },
-  'connections-your-connections-datasources': {
-    id: 'connections-your-connections-datasources',
-    text: 'Datasources',
+  'connections-datasources': {
+    id: 'connections-datasources',
+    text: 'Data sources',
     subTitle: 'Manage your existing datasource connections',
-    url: '/connections/your-connections/datasources',
+    url: '/connections/datasources',
   },
-  'standalone-plugin-page-/connections/your-connections/infrastructure': {
-    id: 'standalone-plugin-page-/connections/your-connections/infrastructure',
+  'standalone-plugin-page-/connections/infrastructure': {
+    id: 'standalone-plugin-page-/connections/infrastructure',
     text: 'Infrastructure',
-    url: '/connections/your-connections/infrastructure',
+    url: '/connections/infrastructure',
     pluginId: 'grafana-easystart-app',
   },
-  'connections-connect-data': {
-    id: 'connections-connect-data',
-    text: 'Connect data',
+  'connections-add-new-connection': {
+    id: 'connections-add-new-connection',
+    text: 'Add new connection',
     subTitle: 'Browse and create new connections',
-    url: '/connections/connect-data',
+    url: '/connections/add-new-connection',
   },
   cfg: {
     id: 'cfg',
     text: 'Administration',
-    section: NavSection.Config,
     subTitle: 'Organization: Main Org. 123',
     icon: 'cog',
     url: '/admin',
@@ -381,7 +340,6 @@ export const navIndex: NavIndex = {
       {
         id: 'admin',
         text: 'Server admin',
-        section: NavSection.Config,
         subTitle: 'Manage server-wide settings and access to resources such as organizations, users, and licenses',
         icon: 'shield',
         url: '/admin/server',
@@ -419,7 +377,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -477,7 +434,6 @@ export const navIndex: NavIndex = {
   admin: {
     id: 'admin',
     text: 'Server admin',
-    section: NavSection.Config,
     subTitle: 'Manage server-wide settings and access to resources such as organizations, users, and licenses',
     icon: 'shield',
     url: '/admin/server',
@@ -541,8 +497,7 @@ export const navIndex: NavIndex = {
   monitoring: {
     id: 'monitoring',
     text: 'Observability',
-    section: NavSection.Core,
-    subTitle: 'Monitoring and infrastructure apps',
+    subTitle: 'Out-of-the-box observability solutions',
     icon: 'heart-rate',
     url: '/monitoring',
     sortWeight: -900,
@@ -550,7 +505,6 @@ export const navIndex: NavIndex = {
       {
         id: 'plugin-page-grafana-synthetic-monitoring-app',
         text: 'Synthetic Monitoring',
-        section: NavSection.Plugin,
         img: 'public/plugins/grafana-synthetic-monitoring-app/img/logo.svg',
         url: '/a/grafana-synthetic-monitoring-app/home',
         sortWeight: 2,
@@ -588,7 +542,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -597,7 +550,6 @@ export const navIndex: NavIndex = {
   'plugin-page-grafana-synthetic-monitoring-app': {
     id: 'plugin-page-grafana-synthetic-monitoring-app',
     text: 'Synthetic Monitoring',
-    section: NavSection.Plugin,
     img: 'public/plugins/grafana-synthetic-monitoring-app/img/logo.svg',
     url: '/a/grafana-synthetic-monitoring-app/home',
     sortWeight: 2,
@@ -639,7 +591,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'plugin-page-redis-explorer-app',
       text: 'Redis Explorer',
-      section: NavSection.Plugin,
       img: 'public/plugins/redis-explorer-app/img/logo.svg',
       url: '/a/redis-explorer-app/',
       sortWeight: -1200,
@@ -674,7 +625,6 @@ export const navIndex: NavIndex = {
       parentItem: {
         id: 'apps',
         text: 'Apps',
-        section: NavSection.Core,
         subTitle: 'App plugins that extend the Grafana experience',
         icon: 'apps',
         url: '/apps',
@@ -683,7 +633,6 @@ export const navIndex: NavIndex = {
           {
             id: 'plugin-page-cloudflare-app',
             text: 'Cloudflare Grafana App',
-            section: NavSection.Plugin,
             img: 'public/plugins/cloudflare-app/img/cf_icon.png',
             url: '/a/cloudflare-app',
             sortWeight: -1200,
@@ -705,7 +654,6 @@ export const navIndex: NavIndex = {
           {
             id: 'plugin-page-grafana-easystart-app',
             text: 'Integrations and Connections',
-            section: NavSection.Plugin,
             img: 'public/plugins/grafana-easystart-app/img/logo.svg',
             url: '/a/grafana-easystart-app',
             sortWeight: -1200,
@@ -722,7 +670,6 @@ export const navIndex: NavIndex = {
           {
             id: 'plugin-page-grafana-k6-app',
             text: 'k6 Cloud App',
-            section: NavSection.Plugin,
             img: 'public/plugins/grafana-k6-app/img/logo.svg',
             url: '/a/grafana-k6-app',
             sortWeight: -1200,
@@ -732,7 +679,6 @@ export const navIndex: NavIndex = {
           {
             id: 'plugin-page-myorg-app-basic',
             text: 'Basic App',
-            section: NavSection.Plugin,
             img: 'public/plugins/myorg-app-basic/img/logo.svg',
             url: '/a/myorg-app-basic/one',
             sortWeight: -1200,
@@ -766,7 +712,6 @@ export const navIndex: NavIndex = {
         parentItem: {
           id: 'home',
           text: 'Home',
-          section: NavSection.Core,
           icon: 'home-alt',
           url: '/',
           sortWeight: -2000,
@@ -777,7 +722,6 @@ export const navIndex: NavIndex = {
   apps: {
     id: 'apps',
     text: 'Apps',
-    section: NavSection.Core,
     subTitle: 'App plugins that extend the Grafana experience',
     icon: 'apps',
     url: '/apps',
@@ -786,7 +730,6 @@ export const navIndex: NavIndex = {
       {
         id: 'plugin-page-cloudflare-app',
         text: 'Cloudflare Grafana App',
-        section: NavSection.Plugin,
         img: 'public/plugins/cloudflare-app/img/cf_icon.png',
         url: '/a/cloudflare-app',
         sortWeight: -1200,
@@ -808,7 +751,6 @@ export const navIndex: NavIndex = {
       {
         id: 'plugin-page-grafana-easystart-app',
         text: 'Integrations and Connections',
-        section: NavSection.Plugin,
         img: 'public/plugins/grafana-easystart-app/img/logo.svg',
         url: '/a/grafana-easystart-app',
         sortWeight: -1200,
@@ -825,7 +767,6 @@ export const navIndex: NavIndex = {
       {
         id: 'plugin-page-grafana-k6-app',
         text: 'k6 Cloud App',
-        section: NavSection.Plugin,
         img: 'public/plugins/grafana-k6-app/img/logo.svg',
         url: '/a/grafana-k6-app',
         sortWeight: -1200,
@@ -835,7 +776,6 @@ export const navIndex: NavIndex = {
       {
         id: 'plugin-page-myorg-app-basic',
         text: 'Basic App',
-        section: NavSection.Plugin,
         img: 'public/plugins/myorg-app-basic/img/logo.svg',
         url: '/a/myorg-app-basic/one',
         sortWeight: -1200,
@@ -869,7 +809,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -878,7 +817,6 @@ export const navIndex: NavIndex = {
   'plugin-page-cloudflare-app': {
     id: 'plugin-page-cloudflare-app',
     text: 'Cloudflare Grafana App',
-    section: NavSection.Plugin,
     img: 'public/plugins/cloudflare-app/img/cf_icon.png',
     url: '/a/cloudflare-app',
     sortWeight: -1200,
@@ -900,7 +838,6 @@ export const navIndex: NavIndex = {
   'plugin-page-grafana-easystart-app': {
     id: 'plugin-page-grafana-easystart-app',
     text: 'Integrations and Connections',
-    section: NavSection.Plugin,
     img: 'public/plugins/grafana-easystart-app/img/logo.svg',
     url: '/a/grafana-easystart-app',
     sortWeight: -1200,
@@ -917,7 +854,6 @@ export const navIndex: NavIndex = {
   'plugin-page-grafana-k6-app': {
     id: 'plugin-page-grafana-k6-app',
     text: 'k6 Cloud App',
-    section: NavSection.Plugin,
     img: 'public/plugins/grafana-k6-app/img/logo.svg',
     url: '/a/grafana-k6-app',
     sortWeight: -1200,
@@ -927,7 +863,6 @@ export const navIndex: NavIndex = {
   'plugin-page-myorg-app-basic': {
     id: 'plugin-page-myorg-app-basic',
     text: 'Basic App',
-    section: NavSection.Plugin,
     img: 'public/plugins/myorg-app-basic/img/logo.svg',
     url: '/a/myorg-app-basic/one',
     sortWeight: -1200,
@@ -960,7 +895,6 @@ export const navIndex: NavIndex = {
   'plugin-page-redis-explorer-app': {
     id: 'plugin-page-redis-explorer-app',
     text: 'Redis Explorer',
-    section: NavSection.Plugin,
     img: 'public/plugins/redis-explorer-app/img/logo.svg',
     url: '/a/redis-explorer-app/',
     sortWeight: -1200,
@@ -995,7 +929,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'apps',
       text: 'Apps',
-      section: NavSection.Core,
       subTitle: 'App plugins that extend the Grafana experience',
       icon: 'apps',
       url: '/apps',
@@ -1004,7 +937,6 @@ export const navIndex: NavIndex = {
         {
           id: 'plugin-page-cloudflare-app',
           text: 'Cloudflare Grafana App',
-          section: NavSection.Plugin,
           img: 'public/plugins/cloudflare-app/img/cf_icon.png',
           url: '/a/cloudflare-app',
           sortWeight: -1200,
@@ -1026,7 +958,6 @@ export const navIndex: NavIndex = {
         {
           id: 'plugin-page-grafana-easystart-app',
           text: 'Integrations and Connections',
-          section: NavSection.Plugin,
           img: 'public/plugins/grafana-easystart-app/img/logo.svg',
           url: '/a/grafana-easystart-app',
           sortWeight: -1200,
@@ -1043,7 +974,6 @@ export const navIndex: NavIndex = {
         {
           id: 'plugin-page-grafana-k6-app',
           text: 'k6 Cloud App',
-          section: NavSection.Plugin,
           img: 'public/plugins/grafana-k6-app/img/logo.svg',
           url: '/a/grafana-k6-app',
           sortWeight: -1200,
@@ -1053,7 +983,6 @@ export const navIndex: NavIndex = {
         {
           id: 'plugin-page-myorg-app-basic',
           text: 'Basic App',
-          section: NavSection.Plugin,
           img: 'public/plugins/myorg-app-basic/img/logo.svg',
           url: '/a/myorg-app-basic/one',
           sortWeight: -1200,
@@ -1087,7 +1016,6 @@ export const navIndex: NavIndex = {
       parentItem: {
         id: 'home',
         text: 'Home',
-        section: NavSection.Core,
         icon: 'home-alt',
         url: '/',
         sortWeight: -2000,
@@ -1097,7 +1025,6 @@ export const navIndex: NavIndex = {
   profile: {
     id: 'profile',
     text: 'admin',
-    section: NavSection.Config,
     img: '/avatar/46d229b033af06a191ff2267bca9ae56',
     url: '/profile',
     sortWeight: -600,
@@ -1133,7 +1060,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,
@@ -1168,7 +1094,6 @@ export const navIndex: NavIndex = {
   help: {
     id: 'help',
     text: 'Help',
-    section: NavSection.Config,
     subTitle: 'Grafana v9.4.0-pre (8f5dc47e87)',
     icon: 'question-circle',
     url: '#',
@@ -1176,7 +1101,6 @@ export const navIndex: NavIndex = {
     parentItem: {
       id: 'home',
       text: 'Home',
-      section: NavSection.Core,
       icon: 'home-alt',
       url: '/',
       sortWeight: -2000,

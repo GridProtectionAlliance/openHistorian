@@ -1,3 +1,4 @@
+import { defaultGeoHashPrecisionString } from '../../../../queryDef';
 import { BucketAggregation } from '../../../../types';
 import { describeMetric, convertOrderByToMetricId } from '../../../../utils';
 import { useQuery } from '../../ElasticsearchQueryContext';
@@ -49,8 +50,8 @@ export const useDescription = (bucketAgg: BucketAggregation): string => {
     }
 
     case 'histogram': {
-      const interval = bucketAgg.settings?.interval || 1000;
-      const minDocCount = bucketAgg.settings?.min_doc_count || 1;
+      const interval = bucketAgg.settings?.interval || '1000';
+      const minDocCount = parseInt(bucketAgg.settings?.min_doc_count || '1', 10);
 
       return `Interval: ${interval}${minDocCount > 0 ? `, Min Doc Count: ${minDocCount}` : ''}`;
     }
@@ -61,14 +62,15 @@ export const useDescription = (bucketAgg: BucketAggregation): string => {
     }
 
     case 'geohash_grid': {
-      const precision = Math.max(Math.min(parseInt(bucketAgg.settings?.precision || '5', 10), 12), 1);
+      const precision = parseInt(bucketAgg.settings?.precision || defaultGeoHashPrecisionString, 10);
+
       return `Precision: ${precision}`;
     }
 
     case 'date_histogram': {
       const interval = bucketAgg.settings?.interval || 'auto';
-      const minDocCount = bucketAgg.settings?.min_doc_count || 0;
-      const trimEdges = bucketAgg.settings?.trimEdges || 0;
+      const minDocCount = parseInt(bucketAgg.settings?.min_doc_count || '0', 10);
+      const trimEdges = parseInt(bucketAgg.settings?.trimEdges || '0', 10);
 
       let description = `Interval: ${interval}`;
 

@@ -8,7 +8,7 @@ import { getGrafanaDatasource } from 'app/plugins/datasource/grafana/datasource'
 
 import { GeomapPanel } from '../GeomapPanel';
 import { defaultStyleConfig, StyleConfig, StyleConfigState, StyleDimensions } from '../style/types';
-import { PanelOptions, MapLayerState } from '../types';
+import { Options, MapLayerState } from '../types';
 
 export function getStyleDimension(
   frame: DataFrame | undefined,
@@ -74,8 +74,8 @@ async function initGeojsonFiles() {
   }
 }
 
-export const getNewOpenLayersMap = (panel: GeomapPanel, options: PanelOptions, div: HTMLDivElement) => {
-  const [view] = panel.initMapView(options.view, undefined);
+export const getNewOpenLayersMap = (panel: GeomapPanel, options: Options, div: HTMLDivElement) => {
+  const view = panel.initMapView(options.view);
   return (panel.map = new OpenLayersMap({
     view: view,
     pixelRatio: 1, // or zoom?
@@ -88,7 +88,7 @@ export const getNewOpenLayersMap = (panel: GeomapPanel, options: PanelOptions, d
   }));
 };
 
-export const updateMap = (panel: GeomapPanel, options: PanelOptions) => {
+export const updateMap = (panel: GeomapPanel, options: Options) => {
   panel.initControls(options.controls);
   panel.forceUpdate(); // first render
 };

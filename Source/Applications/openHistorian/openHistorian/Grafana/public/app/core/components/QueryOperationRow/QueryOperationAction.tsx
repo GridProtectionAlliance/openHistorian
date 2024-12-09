@@ -1,57 +1,68 @@
 import { css, cx } from '@emotion/css';
-import React from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
 import { IconButton, IconName, useStyles2 } from '@grafana/ui';
 
-export interface QueryOperationActionProps {
+interface BaseQueryOperationActionProps {
   icon: IconName;
   title: string;
   onClick: (e: React.MouseEvent) => void;
   disabled?: boolean;
-  active?: boolean;
+  dataTestId?: string;
 }
 
-export const QueryOperationAction = ({ icon, active, disabled, title, onClick }: QueryOperationActionProps) => {
+function BaseQueryOperationAction(props: QueryOperationActionProps | QueryOperationToggleActionProps) {
   const styles = useStyles2(getStyles);
 
   return (
-    <div className={cx(styles.icon, active && styles.active)}>
+    <div className={cx(styles.icon, 'active' in props && props.active && styles.active)}>
       <IconButton
-        name={icon}
-        tooltip={title}
+        name={props.icon}
+        tooltip={props.title}
         className={styles.icon}
-        disabled={!!disabled}
-        onClick={onClick}
+        disabled={!!props.disabled}
+        onClick={props.onClick}
         type="button"
-        aria-label={selectors.components.QueryEditorRow.actionButton(title)}
+        data-testid={props.dataTestId ?? selectors.components.QueryEditorRow.actionButton(props.title)}
+        {...('active' in props && { 'aria-pressed': props.active })}
       />
     </div>
   );
-};
+}
 
-QueryOperationAction.displayName = 'QueryOperationAction';
+interface QueryOperationActionProps extends BaseQueryOperationActionProps {}
+export function QueryOperationAction(props: QueryOperationActionProps) {
+  return <BaseQueryOperationAction {...props} />;
+}
+
+interface QueryOperationToggleActionProps extends BaseQueryOperationActionProps {
+  active: boolean;
+}
+export const QueryOperationToggleAction = (props: QueryOperationToggleActionProps) => {
+  return <BaseQueryOperationAction {...props} />;
+};
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    icon: css`
-      display: flex;
-      position: relative;
-      color: ${theme.colors.text.secondary};
-    `,
-    active: css`
-      &::before {
-        display: block;
-        content: ' ';
-        position: absolute;
-        left: -1px;
-        right: 2px;
-        height: 3px;
-        border-radius: ${theme.shape.radius.default};
-        bottom: -8px;
-        background-image: ${theme.colors.gradients.brandHorizontal} !important;
-      }
-    `,
+    icon: css({
+      display: 'flex',
+      position: 'relative',
+      color: theme.colors.text.secondary,
+    }),
+    active: css({
+      '&:before': {
+        display: 'block',
+        content: '" "',
+        position: 'absolute',
+        left: -1,
+        right: 2,
+        height: 3,
+        borderRadius: theme.shape.radius.default,
+        bottom: -8,
+        backgroundImage: theme.colors.gradients.brandHorizontal,
+      },
+    }),
   };
 };

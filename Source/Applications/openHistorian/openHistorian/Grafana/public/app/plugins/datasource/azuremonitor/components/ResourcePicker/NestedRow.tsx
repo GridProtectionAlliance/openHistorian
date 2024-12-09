@@ -1,5 +1,5 @@
 import { cx } from '@emotion/css';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { FadeTransition, LoadingPlaceholder, useStyles2 } from '@grafana/ui';
 
@@ -78,7 +78,7 @@ const NestedRow = ({
 
         <td className={styles.cell}>{row.typeLabel}</td>
 
-        <td className={styles.cell}>{row.locationDisplayName ?? '-'}</td>
+        <td className={styles.cell}>{row.location ?? '-'}</td>
       </tr>
 
       {isOpen &&

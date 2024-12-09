@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import { PluginErrorCode, PluginSignatureStatus, PluginType } from '@grafana/data';
 
-import { CatalogPlugin, PluginListDisplayMode } from '../types';
+import { CatalogPlugin } from '../types';
 
 import { PluginListItem } from './PluginListItem';
 
@@ -42,6 +41,7 @@ describe('PluginListItem', () => {
         small: 'https://grafana.com/api/plugins/test-plugin/versions/0.0.10/logos/small',
         large: 'https://grafana.com/api/plugins/test-plugin/versions/0.0.10/logos/large',
       },
+      keywords: ['test', 'plugin'],
     },
     name: 'Testing Plugin',
     orgName: 'Test',
@@ -55,7 +55,10 @@ describe('PluginListItem', () => {
     isDev: false,
     isEnterprise: false,
     isDisabled: false,
+    isDeprecated: false,
     isPublished: true,
+    isManaged: false,
+    isPreinstalled: { found: false, withVersion: false },
   };
 
   /** As Grid */
@@ -64,7 +67,7 @@ describe('PluginListItem', () => {
 
     expect(screen.getByRole('link')).toHaveAttribute('href', '/plugins/test-plugin');
 
-    const logo = screen.getByRole('img');
+    const logo = screen.getByRole('presentation');
     expect(logo).toHaveAttribute('src', plugin.info.logos.small);
 
     expect(screen.getByRole('heading', { name: /testing plugin/i })).toBeVisible();
@@ -97,49 +100,6 @@ describe('PluginListItem', () => {
   it('renders a disabled plugin with a badge to indicate its error', () => {
     const pluginWithError = { ...plugin, isDisabled: true, error: PluginErrorCode.modifiedSignature };
     render(<PluginListItem plugin={pluginWithError} pathName="" />);
-
-    expect(screen.getByText(/disabled/i)).toBeVisible();
-  });
-
-  /** As List */
-  it('renders a row with link, image, name, orgName and badges', () => {
-    render(<PluginListItem plugin={plugin} pathName="/plugins" displayMode={PluginListDisplayMode.List} />);
-
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/plugins/test-plugin');
-
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveAttribute('src', plugin.info.logos.small);
-
-    expect(screen.getByRole('heading', { name: /testing plugin/i })).toBeVisible();
-    expect(screen.getByText(`By ${plugin.orgName}`)).toBeVisible();
-    expect(screen.getByText(/signed/i)).toBeVisible();
-    expect(screen.queryByLabelText(/icon/i)).not.toBeInTheDocument();
-  });
-
-  it('renders a datasource plugin with correct icon', () => {
-    const datasourcePlugin = { ...plugin, type: PluginType.datasource };
-    render(<PluginListItem plugin={datasourcePlugin} pathName="" displayMode={PluginListDisplayMode.List} />);
-
-    expect(screen.getByTitle(/datasource plugin/i)).toBeInTheDocument();
-  });
-
-  it('renders a panel plugin with correct icon', () => {
-    const panelPlugin = { ...plugin, type: PluginType.panel };
-    render(<PluginListItem plugin={panelPlugin} pathName="" displayMode={PluginListDisplayMode.List} />);
-
-    expect(screen.getByTitle(/panel plugin/i)).toBeInTheDocument();
-  });
-
-  it('renders an app plugin with correct icon', () => {
-    const appPlugin = { ...plugin, type: PluginType.app };
-    render(<PluginListItem plugin={appPlugin} pathName="" displayMode={PluginListDisplayMode.List} />);
-
-    expect(screen.getByTitle(/app plugin/i)).toBeInTheDocument();
-  });
-
-  it('renders a disabled plugin with a badge to indicate its error', () => {
-    const pluginWithError = { ...plugin, isDisabled: true, error: PluginErrorCode.modifiedSignature };
-    render(<PluginListItem plugin={pluginWithError} pathName="" displayMode={PluginListDisplayMode.List} />);
 
     expect(screen.getByText(/disabled/i)).toBeVisible();
   });

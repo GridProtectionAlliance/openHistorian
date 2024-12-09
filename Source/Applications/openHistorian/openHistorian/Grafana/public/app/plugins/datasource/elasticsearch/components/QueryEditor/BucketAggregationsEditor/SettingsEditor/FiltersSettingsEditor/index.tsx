@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { uniqueId } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { InlineField, Input, QueryField } from '@grafana/ui';
 
@@ -59,7 +59,6 @@ export const FiltersSettingsEditor = ({ bucketAgg }: Props) => {
                 <QueryField
                   placeholder="Lucene Query"
                   portalOrigin="elasticsearch"
-                  onBlur={() => {}}
                   onChange={(query) => dispatch(changeFilter({ index, filter: { ...filter, query } }))}
                   query={filter.query}
                 />

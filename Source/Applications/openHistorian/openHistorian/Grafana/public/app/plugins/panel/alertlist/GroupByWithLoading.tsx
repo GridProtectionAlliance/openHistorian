@@ -1,5 +1,5 @@
 import { isEmpty, uniq } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { SelectableValue } from '@grafana/data';
 import { Icon, MultiSelect } from '@grafana/ui';
@@ -13,21 +13,27 @@ import { useDispatch } from 'app/types';
 import { AlertingRule } from 'app/types/unified-alerting';
 import { PromRuleType } from 'app/types/unified-alerting-dto';
 
-import { isPrivateLabel } from './util';
+import { fetchPromRulesAction } from '../../../features/alerting/unified/state/actions';
+import { isPrivateLabelKey } from '../../../features/alerting/unified/utils/labels';
 
 interface Props {
   id: string;
   defaultValue: SelectableValue<string>;
   onChange: (keys: string[]) => void;
+  dataSource?: string;
 }
 
 export const GroupBy = (props: Props) => {
-  const { onChange, id, defaultValue } = props;
+  const { onChange, id, defaultValue, dataSource } = props;
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllPromRulesAction());
-  }, [dispatch]);
+    if (dataSource) {
+      dataSource && dispatch(fetchPromRulesAction({ rulesSourceName: dataSource }));
+    } else {
+      dispatch(fetchAllPromRulesAction());
+    }
+  }, [dispatch, dataSource]);
 
   const promRulesByDatasource = useUnifiedAlertingSelector((state) => state.promRules);
 
@@ -49,7 +55,7 @@ export const GroupBy = (props: Props) => {
       .flatMap((group) => group.rules.filter((rule): rule is AlertingRule => rule.type === PromRuleType.Alerting))
       .flatMap((rule) => rule.alerts ?? [])
       .map((alert) => Object.keys(alert.labels ?? {}))
-      .flatMap((labels) => labels.filter(isPrivateLabel));
+      .flatMap((labels) => labels.filter((label) => !isPrivateLabelKey(label)));
 
     return uniq(allLabels);
   }, [allRequestsReady, promRulesByDatasource]);

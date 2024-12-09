@@ -1,5 +1,4 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import React from 'react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import { ReplaySubject } from 'rxjs';
@@ -146,7 +145,6 @@ describe('PanelEditorTableView', () => {
 
     // panel queries should have the updated time range
     expect(props.panel.runAllPanelQueries).toHaveBeenNthCalledWith(1, {
-      dashboardId: props.dashboard.id,
       dashboardTimezone: '',
       dashboardUID: props.dashboard.uid,
       timeData: timeRangeUpdated,
@@ -167,7 +165,6 @@ describe('PanelEditorTableView', () => {
 
     // panel queries should have the updated time range
     expect(props.panel.runAllPanelQueries).toHaveBeenLastCalledWith({
-      dashboardId: props.dashboard.id,
       dashboardTimezone: '',
       dashboardUID: props.dashboard.uid,
       timeData: timeRangeUpdated2,

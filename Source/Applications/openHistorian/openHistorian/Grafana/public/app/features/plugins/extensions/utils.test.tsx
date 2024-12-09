@@ -1,6 +1,35 @@
-import { PluginExtensionLinkConfig, PluginExtensionTypes } from '@grafana/data';
+import { render, screen } from '@testing-library/react';
+import { type Unsubscribable } from 'rxjs';
 
-import { deepFreeze, isPluginExtensionLinkConfig, handleErrorsInFn } from './utils';
+import {
+  dateTime,
+  PluginContextType,
+  PluginExtensionPoints,
+  PluginLoadingStrategy,
+  PluginType,
+  usePluginContext,
+} from '@grafana/data';
+import { config } from '@grafana/runtime';
+import appEvents from 'app/core/app_events';
+import { ShowModalReactEvent } from 'app/types/events';
+
+import {
+  deepFreeze,
+  handleErrorsInFn,
+  getReadOnlyProxy,
+  createOpenModalFunction,
+  wrapWithPluginContext,
+  isAddedLinkMetaInfoMissing,
+  isAddedComponentMetaInfoMissing,
+  isExposedComponentMetaInfoMissing,
+  isExposedComponentDependencyMissing,
+  isExtensionPointMetaInfoMissing,
+} from './utils';
+
+jest.mock('app/features/plugins/pluginSettings', () => ({
+  ...jest.requireActual('app/features/plugins/pluginSettings'),
+  getPluginSettings: () => Promise.resolve({ info: { version: '1.0.0' } }),
+}));
 
 describe('Plugin Extensions / Utils', () => {
   describe('deepFreeze()', () => {
@@ -181,28 +210,6 @@ describe('Plugin Extensions / Utils', () => {
     });
   });
 
-  describe('isPluginExtensionLinkConfig()', () => {
-    test('should return TRUE if the object is a command extension config', () => {
-      expect(
-        isPluginExtensionLinkConfig({
-          type: PluginExtensionTypes.link,
-          title: 'Title',
-          description: 'Description',
-          path: '...',
-        } as PluginExtensionLinkConfig)
-      ).toBe(true);
-    });
-    test('should return FALSE if the object is NOT a link extension', () => {
-      expect(
-        isPluginExtensionLinkConfig({
-          title: 'Title',
-          description: 'Description',
-          path: '...',
-        } as PluginExtensionLinkConfig)
-      ).toBe(false);
-    });
-  });
-
   describe('handleErrorsInFn()', () => {
     test('should catch errors thrown by the provided function and print them as console warnings', () => {
       global.console.warn = jest.fn();
@@ -217,6 +224,681 @@ describe('Plugin Extensions / Utils', () => {
         // Logs the errors
         expect(console.warn).toHaveBeenCalledWith('Error: TEST');
       }).not.toThrow();
+    });
+  });
+
+  describe('getReadOnlyProxy()', () => {
+    it('should not be possible to modify values in proxied object', () => {
+      const proxy = getReadOnlyProxy({ a: 'a' });
+
+      expect(() => {
+        proxy.a = 'b';
+      }).toThrowError(TypeError);
+    });
+
+    it('should not be possible to modify values in proxied array', () => {
+      const proxy = getReadOnlyProxy([1, 2, 3]);
+
+      expect(() => {
+        proxy[0] = 2;
+      }).toThrowError(TypeError);
+    });
+
+    it('should not be possible to modify nested objects in proxied object', () => {
+      const proxy = getReadOnlyProxy({
+        a: {
+          c: 'c',
+        },
+        b: 'b',
+      });
+
+      expect(() => {
+        proxy.a.c = 'testing';
+      }).toThrowError(TypeError);
+    });
+
+    it('should not be possible to modify nested arrays in proxied object', () => {
+      const proxy = getReadOnlyProxy({
+        a: {
+          c: ['c', 'd'],
+        },
+        b: 'b',
+      });
+
+      expect(() => {
+        proxy.a.c[0] = 'testing';
+      }).toThrowError(TypeError);
+    });
+
+    it('should be possible to modify source object', () => {
+      const source = { a: 'b' };
+
+      getReadOnlyProxy(source);
+      source.a = 'c';
+
+      expect(source.a).toBe('c');
+    });
+
+    it('should be possible to modify source array', () => {
+      const source = ['a', 'b'];
+
+      getReadOnlyProxy(source);
+      source[0] = 'c';
+
+      expect(source[0]).toBe('c');
+    });
+
+    it('should be possible to modify nedsted objects in source object', () => {
+      const source = { a: { b: 'c' } };
+
+      getReadOnlyProxy(source);
+      source.a.b = 'd';
+
+      expect(source.a.b).toBe('d');
+    });
+
+    it('should be possible to modify nedsted arrays in source object', () => {
+      const source = { a: { b: ['c', 'd'] } };
+
+      getReadOnlyProxy(source);
+      source.a.b[0] = 'd';
+
+      expect(source.a.b[0]).toBe('d');
+    });
+
+    it('should be possible to call functions in proxied object', () => {
+      const proxy = getReadOnlyProxy({
+        a: () => 'testing',
+      });
+
+      expect(proxy.a()).toBe('testing');
+    });
+
+    it('should return a clone of moment/datetime in context', () => {
+      const source = dateTime('2023-10-26T18:25:01Z');
+      const proxy = getReadOnlyProxy({
+        a: source,
+      });
+
+      expect(source.isSame(proxy.a)).toBe(true);
+      expect(source).not.toBe(proxy.a);
+    });
+  });
+
+  describe('createOpenModalFunction()', () => {
+    let renderModalSubscription: Unsubscribable | undefined;
+
+    beforeAll(() => {
+      renderModalSubscription = appEvents.subscribe(ShowModalReactEvent, (event) => {
+        const { payload } = event;
+        const Modal = payload.component;
+        render(<Modal />);
+      });
+    });
+
+    afterAll(() => {
+      renderModalSubscription?.unsubscribe();
+    });
+
+    it('should open modal with provided title and body', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const openModal = createOpenModalFunction(pluginId);
+
+      openModal({
+        title: 'Title in modal',
+        body: () => <div>Text in body</div>,
+      });
+
+      expect(await screen.findByRole('dialog')).toBeVisible();
+      expect(screen.getByRole('heading')).toHaveTextContent('Title in modal');
+      expect(screen.getByText('Text in body')).toBeVisible();
+    });
+
+    it('should open modal with default width if not specified', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const openModal = createOpenModalFunction(pluginId);
+
+      openModal({
+        title: 'Title in modal',
+        body: () => <div>Text in body</div>,
+      });
+
+      const modal = await screen.findByRole('dialog');
+      const style = window.getComputedStyle(modal);
+
+      expect(style.width).toBe('750px');
+      expect(style.height).toBe('');
+    });
+
+    it('should open modal with specified width', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const openModal = createOpenModalFunction(pluginId);
+
+      openModal({
+        title: 'Title in modal',
+        body: () => <div>Text in body</div>,
+        width: '70%',
+      });
+
+      const modal = await screen.findByRole('dialog');
+      const style = window.getComputedStyle(modal);
+
+      expect(style.width).toBe('70%');
+    });
+
+    it('should open modal with specified height', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const openModal = createOpenModalFunction(pluginId);
+
+      openModal({
+        title: 'Title in modal',
+        body: () => <div>Text in body</div>,
+        height: 600,
+      });
+
+      const modal = await screen.findByRole('dialog');
+      const style = window.getComputedStyle(modal);
+
+      expect(style.height).toBe('600px');
+    });
+
+    it('should open modal with the plugin context being available', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const openModal = createOpenModalFunction(pluginId);
+
+      const ModalContent = () => {
+        const context = usePluginContext();
+
+        return <div>Version: {context!.meta.info.version}</div>;
+      };
+
+      openModal({
+        title: 'Title in modal',
+        body: ModalContent,
+      });
+
+      const modal = await screen.findByRole('dialog');
+      expect(modal).toHaveTextContent('Version: 1.0.0');
+    });
+  });
+
+  describe('wrapExtensionComponentWithContext()', () => {
+    type ExampleComponentProps = {
+      audience?: string;
+    };
+
+    const ExampleComponent = (props: ExampleComponentProps) => {
+      const pluginContext = usePluginContext();
+
+      const audience = props.audience || 'Grafana';
+
+      return (
+        <div>
+          <h1>Hello {audience}!</h1> Version: {pluginContext!.meta.info.version}
+        </div>
+      );
+    };
+
+    it('should make the plugin context available for the wrapped component', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const Component = wrapWithPluginContext(pluginId, ExampleComponent);
+
+      render(<Component />);
+
+      expect(await screen.findByText('Hello Grafana!')).toBeVisible();
+      expect(screen.getByText('Version: 1.0.0')).toBeVisible();
+    });
+
+    it('should pass the properties into the wrapped component', async () => {
+      const pluginId = 'grafana-worldmap-panel';
+      const Component = wrapWithPluginContext(pluginId, ExampleComponent);
+
+      render(<Component audience="folks" />);
+
+      expect(await screen.findByText('Hello folks!')).toBeVisible();
+      expect(screen.getByText('Version: 1.0.0')).toBeVisible();
+    });
+  });
+
+  describe('isAddedLinkMetaInfoMissing()', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    const originalApps = config.apps;
+    const pluginId = 'myorg-extensions-app';
+    const appPluginConfig = {
+      id: pluginId,
+      path: '',
+      version: '',
+      preload: false,
+      angular: {
+        detected: false,
+        hideDeprecation: false,
+      },
+      loadingStrategy: PluginLoadingStrategy.fetch,
+      dependencies: {
+        grafanaVersion: '8.0.0',
+        plugins: [],
+        extensions: {
+          exposedComponents: [],
+        },
+      },
+      extensions: {
+        addedLinks: [],
+        addedComponents: [],
+        exposedComponents: [],
+        extensionPoints: [],
+      },
+    };
+    const extensionConfig = {
+      targets: [PluginExtensionPoints.DashboardPanelMenu],
+      title: 'Link title',
+      description: 'Link description',
+    };
+
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      config.apps = {
+        [pluginId]: appPluginConfig,
+      };
+    });
+
+    afterEach(() => {
+      config.apps = originalApps;
+    });
+
+    it('should return FALSE if the meta-info in the plugin.json is correct', () => {
+      config.apps[pluginId].extensions.addedLinks.push(extensionConfig);
+
+      const returnValue = isAddedLinkMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return TRUE and log a warning if the app config is not found', () => {
+      delete config.apps[pluginId];
+
+      const returnValue = isAddedLinkMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch("couldn't find app plugin");
+    });
+
+    it('should return TRUE and log a warning if the link has no meta-info in the plugin.json', () => {
+      config.apps[pluginId].extensions.addedLinks = [];
+
+      const returnValue = isAddedLinkMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('not registered in the plugin.json');
+    });
+
+    it('should return TRUE and log a warning if the "targets" do not match', () => {
+      config.apps[pluginId].extensions.addedLinks.push(extensionConfig);
+
+      const returnValue = isAddedLinkMetaInfoMissing(pluginId, {
+        ...extensionConfig,
+        targets: [PluginExtensionPoints.DashboardPanelMenu, PluginExtensionPoints.ExploreToolbarAction],
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"targets" don\'t match');
+    });
+
+    it('should return TRUE and log a warning if the "description" does not match', () => {
+      config.apps[pluginId].extensions.addedLinks.push(extensionConfig);
+
+      const returnValue = isAddedLinkMetaInfoMissing(pluginId, {
+        ...extensionConfig,
+        description: 'Link description UPDATED',
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"description" doesn\'t match');
+    });
+  });
+
+  describe('isAddedComponentMetaInfoMissing()', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    const originalApps = config.apps;
+    const pluginId = 'myorg-extensions-app';
+    const appPluginConfig = {
+      id: pluginId,
+      path: '',
+      version: '',
+      preload: false,
+      angular: {
+        detected: false,
+        hideDeprecation: false,
+      },
+      loadingStrategy: PluginLoadingStrategy.fetch,
+      dependencies: {
+        grafanaVersion: '8.0.0',
+        plugins: [],
+        extensions: {
+          exposedComponents: [],
+        },
+      },
+      extensions: {
+        addedLinks: [],
+        addedComponents: [],
+        exposedComponents: [],
+        extensionPoints: [],
+      },
+    };
+    const extensionConfig = {
+      targets: [PluginExtensionPoints.DashboardPanelMenu],
+      title: 'Component title',
+      description: 'Component description',
+      component: () => <div>Component content</div>,
+    };
+
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      config.apps = {
+        [pluginId]: appPluginConfig,
+      };
+    });
+
+    afterEach(() => {
+      config.apps = originalApps;
+    });
+
+    it('should return FALSE if the meta-info in the plugin.json is correct', () => {
+      config.apps[pluginId].extensions.addedComponents.push(extensionConfig);
+
+      const returnValue = isAddedComponentMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return TRUE and log a warning if the app config is not found', () => {
+      delete config.apps[pluginId];
+
+      const returnValue = isAddedComponentMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch("couldn't find app plugin");
+    });
+
+    it('should return TRUE and log a warning if the Component has no meta-info in the plugin.json', () => {
+      config.apps[pluginId].extensions.addedComponents = [];
+
+      const returnValue = isAddedComponentMetaInfoMissing(pluginId, extensionConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('not registered in the plugin.json');
+    });
+
+    it('should return TRUE and log a warning if the "targets" do not match', () => {
+      config.apps[pluginId].extensions.addedComponents.push(extensionConfig);
+
+      const returnValue = isAddedComponentMetaInfoMissing(pluginId, {
+        ...extensionConfig,
+        targets: [PluginExtensionPoints.ExploreToolbarAction],
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"targets" don\'t match');
+    });
+
+    it('should return TRUE and log a warning if the "description" does not match', () => {
+      config.apps[pluginId].extensions.addedComponents.push(extensionConfig);
+
+      const returnValue = isAddedComponentMetaInfoMissing(pluginId, {
+        ...extensionConfig,
+        description: 'UPDATED',
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"description" doesn\'t match');
+    });
+  });
+
+  describe('isExposedComponentMetaInfoMissing()', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    const originalApps = config.apps;
+    const pluginId = 'myorg-extensions-app';
+    const appPluginConfig = {
+      id: pluginId,
+      path: '',
+      version: '',
+      preload: false,
+      angular: {
+        detected: false,
+        hideDeprecation: false,
+      },
+      loadingStrategy: PluginLoadingStrategy.fetch,
+      dependencies: {
+        grafanaVersion: '8.0.0',
+        plugins: [],
+        extensions: {
+          exposedComponents: [],
+        },
+      },
+      extensions: {
+        addedLinks: [],
+        addedComponents: [],
+        exposedComponents: [],
+        extensionPoints: [],
+      },
+    };
+    const exposedComponentConfig = {
+      id: `${pluginId}/component/v1`,
+      title: 'Exposed component',
+      description: 'Exposed component description',
+      component: () => <div>Component content</div>,
+    };
+
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      config.apps = {
+        [pluginId]: appPluginConfig,
+      };
+    });
+
+    afterEach(() => {
+      config.apps = originalApps;
+    });
+
+    it('should return FALSE if the meta-info in the plugin.json is correct', () => {
+      config.apps[pluginId].extensions.exposedComponents.push(exposedComponentConfig);
+
+      const returnValue = isExposedComponentMetaInfoMissing(pluginId, exposedComponentConfig);
+
+      expect(returnValue).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return TRUE and log a warning if the app config is not found', () => {
+      delete config.apps[pluginId];
+
+      const returnValue = isExposedComponentMetaInfoMissing(pluginId, exposedComponentConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch("couldn't find app plugin");
+    });
+
+    it('should return TRUE and log a warning if the exposed component has no meta-info in the plugin.json', () => {
+      config.apps[pluginId].extensions.exposedComponents = [];
+
+      const returnValue = isExposedComponentMetaInfoMissing(pluginId, exposedComponentConfig);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('not registered in the plugin.json');
+    });
+
+    it('should return TRUE and log a warning if the title does not match', () => {
+      config.apps[pluginId].extensions.exposedComponents.push(exposedComponentConfig);
+
+      const returnValue = isExposedComponentMetaInfoMissing(pluginId, {
+        ...exposedComponentConfig,
+        title: 'UPDATED',
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"title" doesn\'t match');
+    });
+
+    it('should return TRUE and log a warning if the "description" does not match', () => {
+      config.apps[pluginId].extensions.exposedComponents.push(exposedComponentConfig);
+
+      const returnValue = isExposedComponentMetaInfoMissing(pluginId, {
+        ...exposedComponentConfig,
+        description: 'UPDATED',
+      });
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch('"description" doesn\'t match');
+    });
+  });
+
+  describe('isExposedComponentDependencyMissing()', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    let pluginContext: PluginContextType;
+    const pluginId = 'myorg-extensions-app';
+    const exposedComponentId = `${pluginId}/component/v1`;
+
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      pluginContext = {
+        meta: {
+          id: pluginId,
+          name: 'Extensions App',
+          type: PluginType.app,
+          module: '',
+          baseUrl: '',
+          info: {
+            author: {
+              name: 'MyOrg',
+            },
+            description: 'App for testing extensions',
+            links: [],
+            logos: {
+              large: '',
+              small: '',
+            },
+            screenshots: [],
+            updated: '2023-10-26T18:25:01Z',
+            version: '1.0.0',
+          },
+          dependencies: {
+            grafanaVersion: '8.0.0',
+            plugins: [],
+            extensions: {
+              exposedComponents: [],
+            },
+          },
+        },
+      };
+    });
+
+    it('should return FALSE if the meta-info in the plugin.json is correct', () => {
+      pluginContext.meta.dependencies?.extensions.exposedComponents.push(exposedComponentId);
+
+      const returnValue = isExposedComponentDependencyMissing(exposedComponentId, pluginContext);
+
+      expect(returnValue).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return TRUE and log a warning if the dependencies are missing', () => {
+      delete pluginContext.meta.dependencies;
+
+      const returnValue = isExposedComponentDependencyMissing(exposedComponentId, pluginContext);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch(`Using exposed component "${exposedComponentId}"`);
+    });
+
+    it('should return TRUE and log a warning if the exposed component id is not specified in the list of dependencies', () => {
+      const returnValue = isExposedComponentDependencyMissing(exposedComponentId, pluginContext);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch(`Using exposed component "${exposedComponentId}"`);
+    });
+  });
+
+  describe('isExtensionPointMetaInfoMissing()', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    let pluginContext: PluginContextType;
+    const pluginId = 'myorg-extensions-app';
+    const extensionPointId = `${pluginId}/extension-point/v1`;
+    const extensionPointConfig = {
+      id: extensionPointId,
+      title: 'Extension point title',
+      description: 'Extension point description',
+    };
+
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      pluginContext = {
+        meta: {
+          id: pluginId,
+          name: 'Extensions App',
+          type: PluginType.app,
+          module: '',
+          baseUrl: '',
+          info: {
+            author: {
+              name: 'MyOrg',
+            },
+            description: 'App for testing extensions',
+            links: [],
+            logos: {
+              large: '',
+              small: '',
+            },
+            screenshots: [],
+            updated: '2023-10-26T18:25:01Z',
+            version: '1.0.0',
+          },
+          extensions: {
+            addedLinks: [],
+            addedComponents: [],
+            exposedComponents: [],
+            extensionPoints: [],
+          },
+          dependencies: {
+            grafanaVersion: '8.0.0',
+            plugins: [],
+            extensions: {
+              exposedComponents: [],
+            },
+          },
+        },
+      };
+    });
+
+    it('should return FALSE if the meta-info in the plugin.json is correct', () => {
+      pluginContext.meta.extensions?.extensionPoints.push(extensionPointConfig);
+
+      const returnValue = isExtensionPointMetaInfoMissing(extensionPointId, pluginContext);
+
+      expect(returnValue).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return TRUE and log a warning if the extension point id is not recorded in the plugin.json', () => {
+      const returnValue = isExtensionPointMetaInfoMissing(extensionPointId, pluginContext);
+
+      expect(returnValue).toBe(true);
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.mock.calls[0][0]).toMatch(`Extension point "${extensionPointId}"`);
     });
   });
 });

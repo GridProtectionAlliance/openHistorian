@@ -1,16 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
-import { getDefaultTimeRange } from '@grafana/data';
+import { getDefaultTimeRange, systemDateFormats } from '@grafana/data';
 
 import { TimePickerWithHistory } from './TimePickerWithHistory';
 
 describe('TimePickerWithHistory', () => {
   // In some of the tests we close and re-open the picker. When we do that we must re-find these inputs
   // as new elements will have been mounted
-  const getFromField = () => screen.getByLabelText('Time Range from field');
-  const getToField = () => screen.getByLabelText('Time Range to field');
+  const getFromField = () => screen.getByLabelText('From');
+  const getToField = () => screen.getByLabelText('To');
   const getApplyButton = () => screen.getByRole('button', { name: 'Apply time range' });
 
   const LOCAL_STORAGE_KEY = 'grafana.dashboard.timepicker.history';
@@ -41,7 +40,9 @@ describe('TimePickerWithHistory', () => {
     onZoom: () => {},
   };
 
-  afterEach(() => window.localStorage.clear());
+  afterEach(() => {
+    window.localStorage.clear();
+  });
 
   it('Should load with no history', async () => {
     const timeRange = getDefaultTimeRange();
@@ -111,7 +112,6 @@ describe('TimePickerWithHistory', () => {
 
     const timeRange = getDefaultTimeRange();
     render(<TimePickerWithHistory value={timeRange} {...props} />);
-    await userEvent.click(screen.getByLabelText(/Time range selected/));
 
     for (const [inputFrom, inputTo] of inputRanges) {
       await userEvent.click(screen.getByLabelText(/Time range selected/));
@@ -123,6 +123,50 @@ describe('TimePickerWithHistory', () => {
 
     const newLsValue = JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? '[]');
     expect(newLsValue).toEqual(expectedLocalStorage);
+  });
+
+  it('Should display handle timezones correctly', async () => {
+    const timeRange = getDefaultTimeRange();
+    render(<TimePickerWithHistory value={timeRange} {...props} {...{ timeZone: 'Asia/Tokyo' }} />);
+    await userEvent.click(screen.getByLabelText(/Time range selected/));
+
+    await clearAndType(getFromField(), '2022-12-10 00:00:00');
+    await clearAndType(getToField(), '2022-12-10 23:59:59');
+    await userEvent.click(getApplyButton());
+
+    await userEvent.click(screen.getByLabelText(/Time range selected/));
+
+    expect(screen.getByText(/2022-12-10 00:00:00 to 2022-12-10 23:59:59/i)).toBeInTheDocument();
+  });
+
+  it('Should display history correctly with custom time format', async () => {
+    const timeRange = getDefaultTimeRange();
+
+    const interval = {
+      millisecond: 'HH:mm:ss.SSS',
+      second: 'HH:mm:ss',
+      minute: 'HH:mm',
+      hour: 'DD-MM HH:mm',
+      day: 'DD-MM',
+      month: 'MM-YYYY',
+      year: 'YYYY',
+    };
+
+    systemDateFormats.update({
+      fullDate: 'DD-MM-YYYY HH:mm:ss',
+      interval: interval,
+      useBrowserLocale: false,
+    });
+    render(<TimePickerWithHistory value={timeRange} {...props} />);
+    await userEvent.click(screen.getByLabelText(/Time range selected/));
+
+    await clearAndType(getFromField(), '03-12-2022 00:00:00');
+    await clearAndType(getToField(), '03-12-2022 23:59:59');
+    await userEvent.click(getApplyButton());
+
+    await userEvent.click(screen.getByLabelText(/Time range selected/));
+
+    expect(screen.getByText(/03-12-2022 00:00:00 to 03-12-2022 23:59:59/i)).toBeInTheDocument();
   });
 });
 

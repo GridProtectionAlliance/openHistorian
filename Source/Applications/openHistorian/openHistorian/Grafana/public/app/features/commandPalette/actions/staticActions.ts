@@ -1,4 +1,5 @@
-import { locationUtil, NavModelItem } from '@grafana/data';
+import { NavModelItem } from '@grafana/data';
+import { enrichHelpItem } from 'app/core/components/AppChrome/MegaMenu/utils';
 import { t } from 'app/core/internationalization';
 import { changeTheme } from 'app/core/services/theme';
 
@@ -13,12 +14,29 @@ function idForNavItem(navItem: NavModelItem) {
 function navTreeToActions(navTree: NavModelItem[], parents: NavModelItem[] = []): CommandPaletteAction[] {
   const navActions: CommandPaletteAction[] = [];
 
-  for (const navItem of navTree) {
-    const { url, target, text, isCreateAction, children } = navItem;
+  for (let navItem of navTree) {
+    // help node needs enriching with the frontend links
+    if (navItem.id === 'help') {
+      navItem = enrichHelpItem({ ...navItem });
+      delete navItem.url;
+    }
+    const { url, target, text, isCreateAction, children, onClick, keywords } = navItem;
     const hasChildren = Boolean(children?.length);
 
-    if (!(url || hasChildren)) {
+    if (!(url || onClick || hasChildren)) {
       continue;
+    }
+
+    let urlOrCallback: CommandPaletteAction['url'] = url;
+    if (
+      url &&
+      (navItem.id === 'connections-add-new-connection' ||
+        navItem.id === 'standalone-plugin-page-/connections/add-new-connection')
+    ) {
+      urlOrCallback = (searchQuery: string) => {
+        const matchingKeyword = keywords?.find((keyword) => keyword.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchingKeyword ? `${url}?search=${matchingKeyword}` : url;
+      };
     }
 
     const section = isCreateAction
@@ -28,14 +46,16 @@ function navTreeToActions(navTree: NavModelItem[], parents: NavModelItem[] = [])
     const priority = isCreateAction ? ACTIONS_PRIORITY : DEFAULT_PRIORITY;
 
     const subtitle = parents.map((parent) => parent.text).join(' > ');
-    const action = {
+    const action: CommandPaletteAction = {
       id: idForNavItem(navItem),
       name: text,
-      section: section,
-      url: url && locationUtil.stripBaseFromUrl(url),
+      section,
+      url: urlOrCallback,
       target,
       parent: parents.length > 0 && !isCreateAction ? idForNavItem(parents[parents.length - 1]) : undefined,
-      priority: priority,
+      perform: onClick,
+      keywords: keywords?.join(' '),
+      priority,
       subtitle: isCreateAction ? undefined : subtitle,
     };
 
@@ -50,7 +70,7 @@ function navTreeToActions(navTree: NavModelItem[], parents: NavModelItem[] = [])
   return navActions;
 }
 
-export default (navBarTree: NavModelItem[]): CommandPaletteAction[] => {
+export default (navBarTree: NavModelItem[], extensionActions: CommandPaletteAction[]): CommandPaletteAction[] => {
   const globalActions: CommandPaletteAction[] = [
     {
       id: 'preferences/theme',
@@ -79,5 +99,5 @@ export default (navBarTree: NavModelItem[]): CommandPaletteAction[] => {
 
   const navBarActions = navTreeToActions(navBarTree);
 
-  return [...globalActions, ...navBarActions];
+  return [...globalActions, ...extensionActions, ...navBarActions];
 };

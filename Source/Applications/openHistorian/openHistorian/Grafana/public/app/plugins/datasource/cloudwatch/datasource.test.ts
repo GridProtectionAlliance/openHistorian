@@ -1,7 +1,7 @@
 import { lastValueFrom } from 'rxjs';
 import { toArray } from 'rxjs/operators';
 
-import { CoreApp, dateTime, Field } from '@grafana/data';
+import { CoreApp, Field } from '@grafana/data';
 
 import {
   CloudWatchSettings,
@@ -16,21 +16,30 @@ import { TimeRangeMock } from './__mocks__/timeRange';
 import {
   CloudWatchDefaultQuery,
   CloudWatchLogsQuery,
+  CloudWatchLogsRequest,
   CloudWatchMetricsQuery,
   CloudWatchQuery,
+  LogsQueryLanguage,
   MetricEditorMode,
   MetricQueryType,
 } from './types';
+import * as templateUtils from './utils/templateVariableUtils';
 
 describe('datasource', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
   describe('query', () => {
-    it('should not run a query if log groups is not specified', async () => {
-      const { datasource, fetchMock } = setupMockedDataSource();
-      await lastValueFrom(
-        datasource.query({
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    describe('query filtering', () => {
+      const testCases: Array<{
+        targets: CloudWatchQuery[];
+        queryLanguage: string | LogsQueryLanguage;
+        expectedOutput: Partial<CloudWatchLogsRequest>;
+      }> = [
+        {
           targets: [
             {
               queryMode: 'Logs',
@@ -48,27 +57,109 @@ describe('datasource', () => {
               expression: 'some query string',
             },
           ],
-          requestId: '',
-          interval: '',
-          intervalMs: 0,
-          range: TimeRangeMock,
-          scopedVars: {},
-          timezone: '',
-          app: '',
-          startTime: 0,
-        })
-      );
+          expectedOutput: {
+            queryString: 'some query string',
+            logGroupNames: ['/some/group'],
+            region: 'us-west-1',
+          },
+          queryLanguage: 'undefined',
+        },
+        {
+          targets: [
+            {
+              queryMode: 'Logs',
+              queryLanguage: LogsQueryLanguage.CWLI,
+              id: '',
+              refId: '',
+              region: '',
+              expression: 'some query string', // missing logGroups and logGroupNames, this query will be not be run
+            },
+            {
+              queryMode: 'Logs',
+              id: '',
+              refId: '',
+              region: '',
+              logGroupNames: ['/some/group'],
+              expression: 'some query string',
+            },
+          ],
+          expectedOutput: {
+            queryString: 'some query string',
+            logGroupNames: ['/some/group'],
+            region: 'us-west-1',
+          },
+          queryLanguage: LogsQueryLanguage.CWLI,
+        },
+        {
+          targets: [
+            {
+              queryMode: 'Logs',
+              queryLanguage: LogsQueryLanguage.PPL,
+              id: '',
+              refId: '',
+              region: '',
+              expression: 'some query string', // missing logGroups and logGroupNames, this query will be not be run
+            },
+            {
+              queryMode: 'Logs',
+              queryLanguage: LogsQueryLanguage.CWLI,
+              id: '',
+              refId: '',
+              region: '',
+              logGroupNames: ['/some/group'],
+              expression: 'some query string',
+            },
+          ],
+          expectedOutput: {
+            queryString: 'some query string',
+            logGroupNames: ['/some/group'],
+            region: 'us-west-1',
+          },
+          queryLanguage: LogsQueryLanguage.PPL,
+        },
+        {
+          targets: [
+            {
+              queryMode: 'Logs',
+              queryLanguage: LogsQueryLanguage.SQL,
+              id: '',
+              refId: '',
+              region: '',
+              expression: 'some query string',
+            },
+          ],
+          expectedOutput: {
+            queryString: 'some query string',
+            region: 'us-west-1',
+          },
+          queryLanguage: LogsQueryLanguage.SQL,
+        },
+      ];
+      testCases.forEach(async (testCase) => {
+        it(`should filter out query with no log groups when query language is ${testCase.queryLanguage}`, async () => {
+          const { datasource, queryMock } = setupMockedDataSource();
+          await lastValueFrom(
+            datasource.query({
+              targets: testCase.targets,
+              requestId: '',
+              interval: '',
+              intervalMs: 0,
+              range: TimeRangeMock,
+              scopedVars: {},
+              timezone: '',
+              app: '',
+              startTime: 0,
+            })
+          );
 
-      expect(fetchMock.mock.calls[0][0].data.queries).toHaveLength(1);
-      expect(fetchMock.mock.calls[0][0].data.queries[0]).toMatchObject({
-        queryString: 'some query string',
-        logGroupNames: ['/some/group'],
-        region: 'us-west-1',
+          expect(queryMock.mock.calls[0][0].targets).toHaveLength(1);
+          expect(queryMock.mock.calls[0][0].targets[0]).toMatchObject(testCase.expectedOutput);
+        });
       });
     });
 
     it('should not run a query if query expression is not specified', async () => {
-      const { datasource, fetchMock } = setupMockedDataSource();
+      const { datasource, queryMock } = setupMockedDataSource();
       await lastValueFrom(
         datasource.query({
           targets: [
@@ -99,8 +190,8 @@ describe('datasource', () => {
         })
       );
 
-      expect(fetchMock.mock.calls[0][0].data.queries).toHaveLength(1);
-      expect(fetchMock.mock.calls[0][0].data.queries[0]).toMatchObject({
+      expect(queryMock.mock.calls[0][0].targets).toHaveLength(1);
+      expect(queryMock.mock.calls[0][0].targets[0]).toMatchObject({
         queryString: 'some query string',
         logGroupNames: ['/some/group'],
         region: 'us-west-1',
@@ -141,7 +232,7 @@ describe('datasource', () => {
     });
 
     it('should interpolate variables in the query', async () => {
-      const { datasource, fetchMock } = setupMockedDataSource({
+      const { datasource, queryMock } = setupMockedDataSource({
         variables: [fieldsVariable, regionVariable],
       });
       await lastValueFrom(
@@ -168,7 +259,7 @@ describe('datasource', () => {
           })
           .pipe(toArray())
       );
-      expect(fetchMock.mock.calls[0][0].data.queries[0]).toMatchObject({
+      expect(queryMock.mock.calls[0][0].targets[0]).toMatchObject({
         queryString: 'fields templatedField',
         logGroupNames: ['/some/group'],
         region: 'templatedRegion',
@@ -176,9 +267,8 @@ describe('datasource', () => {
     });
 
     it('should interpolate multi-value template variable for log group names in the query', async () => {
-      const { datasource, fetchMock } = setupMockedDataSource({
+      const { datasource, queryMock } = setupMockedDataSource({
         variables: [fieldsVariable, logGroupNamesVariable, regionVariable],
-        mockGetVariableName: false,
       });
       await lastValueFrom(
         datasource
@@ -204,7 +294,7 @@ describe('datasource', () => {
           })
           .pipe(toArray())
       );
-      expect(fetchMock.mock.calls[0][0].data.queries[0]).toMatchObject({
+      expect(queryMock.mock.calls[0][0].targets[0]).toMatchObject({
         queryString: 'fields templatedField',
         logGroupNames: ['templatedGroup-1', 'templatedGroup-2'],
         region: 'templatedRegion',
@@ -212,19 +302,7 @@ describe('datasource', () => {
     });
 
     it('should add links to log queries', async () => {
-      const { datasource, timeSrv } = setupForLogs();
-      timeSrv.timeRange = () => {
-        const time = dateTime('2021-01-01T01:00:00Z');
-        const range = {
-          from: time.subtract(6, 'hour'),
-          to: time,
-        };
-
-        return {
-          ...range,
-          raw: range,
-        };
-      };
+      const { datasource } = setupForLogs();
 
       const observable = datasource.query({
         targets: [
@@ -264,7 +342,7 @@ describe('datasource', () => {
       expect(emits[0].data[0].fields.find((f: Field) => f.name === '@message').config.links).toMatchObject([
         {
           title: 'View in CloudWatch console',
-          url: "https://us-west-1.console.aws.amazon.com/cloudwatch/home?region=us-west-1#logs-insights:queryDetail=~(end~'2020-12-31T19*3a00*3a00.000Z~start~'2020-12-31T19*3a00*3a00.000Z~timeType~'ABSOLUTE~tz~'UTC~editorString~'some*20query~isLiveTail~false~source~(~'test))",
+          url: "https://us-west-1.console.aws.amazon.com/cloudwatch/home?region=us-west-1#logs-insights:queryDetail=~(end~'2016-12-31T16*3a00*3a00.000Z~start~'2016-12-31T15*3a00*3a00.000Z~timeType~'ABSOLUTE~tz~'UTC~editorString~'some*20query~isLiveTail~false~source~(~'test))",
         },
       ]);
     });
@@ -316,7 +394,9 @@ describe('datasource', () => {
     it('should replace correct variables in CloudWatchMetricsQuery', () => {
       const { datasource, templateService } = setupMockedDataSource();
       templateService.replace = jest.fn();
-      templateService.getVariableName = jest.fn();
+      const mockGetVariableName = jest
+        .spyOn(templateUtils, 'getVariableName')
+        .mockImplementation((name: string) => name.replace('$', ''));
       const variableName = 'someVar';
       const metricsQuery: CloudWatchMetricsQuery = {
         queryMode: 'Metrics',
@@ -342,8 +422,8 @@ describe('datasource', () => {
       expect(templateService.replace).toHaveBeenCalledWith(`$${variableName}`, {});
       expect(templateService.replace).toHaveBeenCalledTimes(8);
 
-      expect(templateService.getVariableName).toHaveBeenCalledWith(`$${variableName}`);
-      expect(templateService.getVariableName).toHaveBeenCalledTimes(1);
+      expect(mockGetVariableName).toHaveBeenCalledWith(`$${variableName}`);
+      expect(mockGetVariableName).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -374,6 +454,20 @@ describe('datasource', () => {
         MetricEditorMode.Builder
       );
       expect((datasource.getDefaultQuery(CoreApp.PanelEditor) as CloudWatchDefaultQuery).matchExact).toEqual(true);
+    });
+    it('should set default values from logs query', () => {
+      const defaultLogGroups = [{ name: 'logName', arn: 'logARN' }];
+      const { datasource } = setupMockedDataSource({
+        customInstanceSettings: {
+          ...CloudWatchSettings,
+          jsonData: { ...CloudWatchSettings.jsonData, logGroups: defaultLogGroups },
+        },
+      });
+      expect(datasource.getDefaultQuery(CoreApp.PanelEditor).region).toEqual('default');
+      expect((datasource.getDefaultQuery(CoreApp.PanelEditor) as CloudWatchDefaultQuery).queryLanguage).toEqual('CWLI');
+      expect((datasource.getDefaultQuery(CoreApp.PanelEditor) as CloudWatchDefaultQuery).logGroups).toEqual(
+        defaultLogGroups
+      );
     });
   });
 });

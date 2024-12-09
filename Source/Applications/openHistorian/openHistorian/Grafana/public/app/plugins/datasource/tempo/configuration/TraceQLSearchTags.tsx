@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
 import { DataSourcePluginOptionsEditorProps, updateDatasourcePluginJsonDataOption } from '@grafana/data';
@@ -8,8 +8,8 @@ import TagsInput from '../SearchTraceQLEditor/TagsInput';
 import { replaceAt } from '../SearchTraceQLEditor/utils';
 import { TraceqlFilter, TraceqlSearchScope } from '../dataquery.gen';
 import { TempoDatasource } from '../datasource';
-import { CompletionProvider } from '../traceql/autocomplete';
 import { TempoJsonData } from '../types';
+import { getErrorMessage } from '../utils';
 
 interface Props extends DataSourcePluginOptionsEditorProps<TempoJsonData> {
   datasource?: TempoDatasource;
@@ -23,24 +23,13 @@ export function TraceQLSearchTags({ options, onOptionsChange, datasource }: Prop
 
     try {
       await datasource.languageProvider.start();
-      const tags = datasource.languageProvider.getTags();
-
-      if (tags) {
-        // This is needed because the /api/v2/search/tag/${tag}/values API expects "status" and the v1 API expects "status.code"
-        // so Tempo doesn't send anything and we inject it here for the autocomplete
-        if (!tags.find((t) => t === 'status')) {
-          tags.push('status');
-        }
-        return tags;
-      }
-    } catch (e) {
+    } catch (err) {
       // @ts-ignore
-      throw new Error(`${e.statusText}: ${e.data.error}`);
+      throw new Error(getErrorMessage(err.data.message, 'Unable to query Tempo'));
     }
-    return [];
   };
 
-  const { error, loading, value: tags } = useAsync(fetchTags, [datasource, options]);
+  const { error, loading } = useAsync(fetchTags, [datasource, options]);
 
   const updateFilter = useCallback(
     (s: TraceqlFilter) => {
@@ -85,6 +74,11 @@ export function TraceQLSearchTags({ options, onOptionsChange, datasource }: Prop
     }
   }, [onOptionsChange, options]);
 
+  // filter out tags that already exist in TraceQLSearch editor
+  const staticTags = ['duration'];
+
+  const missingTag = options.jsonData.search?.filters?.find((f) => !f.tag);
+
   return (
     <>
       {datasource ? (
@@ -94,9 +88,10 @@ export function TraceQLSearchTags({ options, onOptionsChange, datasource }: Prop
           filters={options.jsonData.search?.filters || []}
           datasource={datasource}
           setError={() => {}}
-          tags={[...CompletionProvider.intrinsics, ...(tags || [])]}
+          staticTags={staticTags}
           isTagsLoading={loading}
           hideValues={true}
+          query={'{}'}
         />
       ) : (
         <div>Invalid data source, please create a valid data source and try again</div>
@@ -105,6 +100,9 @@ export function TraceQLSearchTags({ options, onOptionsChange, datasource }: Prop
         <Alert title={'Unable to fetch TraceQL tags'} severity={'error'} topSpacing={1}>
           {error.message}
         </Alert>
+      )}
+      {missingTag && (
+        <Alert title={'Please ensure each filter has a selected tag'} severity={'warning'} topSpacing={1}></Alert>
       )}
     </>
   );

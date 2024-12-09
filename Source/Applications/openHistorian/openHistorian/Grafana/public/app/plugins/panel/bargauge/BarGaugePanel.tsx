@@ -1,22 +1,24 @@
 import { isNumber } from 'lodash';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 
 import {
+  DisplayProcessor,
+  DisplayValue,
   DisplayValueAlignmentFactors,
+  FieldConfig,
   FieldDisplay,
   getDisplayValueAlignmentFactors,
   getFieldDisplayValues,
   PanelProps,
-  FieldConfig,
-  DisplayProcessor,
-  DisplayValue,
   VizOrientation,
 } from '@grafana/data';
-import { BarGauge, DataLinksContextMenu, VizRepeater, VizRepeaterRenderValueProps } from '@grafana/ui';
+import { BarGaugeSizing } from '@grafana/schema';
+import { BarGauge, DataLinksContextMenu, VizLayout, VizRepeater, VizRepeaterRenderValueProps } from '@grafana/ui';
 import { DataLinksContextMenuApi } from '@grafana/ui/src/components/DataLinks/DataLinksContextMenu';
 import { config } from 'app/core/config';
 
-import { PanelOptions } from './panelcfg.gen';
+import { BarGaugeLegend } from './BarGaugeLegend';
+import { defaultOptions, Options } from './panelcfg.gen';
 
 export class BarGaugePanel extends PureComponent<BarGaugePanelProps> {
   renderComponent = (
@@ -50,6 +52,7 @@ export class BarGaugePanel extends PureComponent<BarGaugePanelProps> {
         alignmentFactors={count > 1 ? alignmentFactors : undefined}
         showUnfilled={options.showUnfilled}
         valueDisplayMode={options.valueMode}
+        namePlacement={options.namePlacement}
       />
     );
   };
@@ -61,7 +64,9 @@ export class BarGaugePanel extends PureComponent<BarGaugePanelProps> {
     if (hasLinks && getLinks) {
       return (
         <div style={{ width: '100%', display: orientation === VizOrientation.Vertical ? 'flex' : 'initial' }}>
-          <DataLinksContextMenu links={getLinks}>{(api) => this.renderComponent(valueProps, api)}</DataLinksContextMenu>
+          <DataLinksContextMenu style={{ height: '100%' }} links={getLinks}>
+            {(api) => this.renderComponent(valueProps, api)}
+          </DataLinksContextMenu>
         </div>
       );
     }
@@ -90,27 +95,76 @@ export class BarGaugePanel extends PureComponent<BarGaugePanelProps> {
     return 10;
   }
 
+  getOrientation(): VizOrientation {
+    const { options, width, height } = this.props;
+    const { orientation } = options;
+
+    if (orientation === VizOrientation.Auto) {
+      if (width > height) {
+        return VizOrientation.Vertical;
+      } else {
+        return VizOrientation.Horizontal;
+      }
+    }
+
+    return orientation;
+  }
+
+  calcBarSize() {
+    const { options } = this.props;
+
+    const orientation = this.getOrientation();
+    const isManualSizing = options.sizing === BarGaugeSizing.Manual;
+    const isVertical = orientation === VizOrientation.Vertical;
+    const isHorizontal = orientation === VizOrientation.Horizontal;
+    const minVizWidth = isManualSizing && isVertical ? options.minVizWidth : defaultOptions.minVizWidth;
+    const minVizHeight = isManualSizing && isHorizontal ? options.minVizHeight : defaultOptions.minVizHeight;
+    const maxVizHeight = isManualSizing && isHorizontal ? options.maxVizHeight : defaultOptions.maxVizHeight;
+
+    return { minVizWidth, minVizHeight, maxVizHeight };
+  }
+
+  getLegend() {
+    const { options, data } = this.props;
+    const { legend } = options;
+
+    if (legend.showLegend && data && data.series.length > 0) {
+      return <BarGaugeLegend data={data.series} {...legend} />;
+    }
+
+    return null;
+  }
+
   render() {
     const { height, width, options, data, renderCounter } = this.props;
 
+    const { minVizWidth, minVizHeight, maxVizHeight } = this.calcBarSize();
+
     return (
-      <VizRepeater
-        source={data}
-        getAlignmentFactors={getDisplayValueAlignmentFactors}
-        getValues={this.getValues}
-        renderValue={this.renderValue}
-        renderCounter={renderCounter}
-        width={width}
-        height={height}
-        minVizWidth={options.minVizWidth}
-        minVizHeight={options.minVizHeight}
-        itemSpacing={this.getItemSpacing()}
-        orientation={options.orientation}
-      />
+      <VizLayout width={width} height={height} legend={this.getLegend()}>
+        {(vizWidth: number, vizHeight: number) => {
+          return (
+            <VizRepeater
+              source={data}
+              getAlignmentFactors={getDisplayValueAlignmentFactors}
+              getValues={this.getValues}
+              renderValue={this.renderValue}
+              renderCounter={renderCounter}
+              width={vizWidth}
+              height={vizHeight}
+              maxVizHeight={maxVizHeight}
+              minVizWidth={minVizWidth}
+              minVizHeight={minVizHeight}
+              itemSpacing={this.getItemSpacing()}
+              orientation={options.orientation}
+            />
+          );
+        }}
+      </VizLayout>
     );
   }
 }
-export type BarGaugePanelProps = PanelProps<PanelOptions>;
+export type BarGaugePanelProps = PanelProps<Options>;
 
 export function clearNameForSingleSeries(count: number, field: FieldConfig, display: DisplayValue): DisplayValue {
   if (count === 1 && !field.displayName) {

@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AnnotationQuery, EventBus, GrafanaTheme2 } from '@grafana/data';
+import { selectors } from '@grafana/e2e-selectors';
 import { InlineField, InlineFieldRow, InlineSwitch, useStyles2 } from '@grafana/ui';
 import { LoadingIndicator } from '@grafana/ui/src/components/PanelChrome/LoadingIndicator';
 
@@ -44,8 +45,18 @@ export const AnnotationPicker = ({ annotation, events, onEnabledChanged }: Annot
   return (
     <div key={annotation.name} className={styles.annotation}>
       <InlineFieldRow>
-        <InlineField label={annotation.name} disabled={loading}>
-          <InlineSwitch value={annotation.enable} onChange={() => onEnabledChanged(annotation)} disabled={loading} />
+        <InlineField
+          label={annotation.name}
+          disabled={loading}
+          data-testid={selectors.pages.Dashboard.SubMenu.Annotations.annotationLabel(annotation.name)}
+        >
+          <InlineSwitch
+            label={annotation.name}
+            value={annotation.enable}
+            onChange={() => onEnabledChanged(annotation)}
+            disabled={loading}
+            data-testid={selectors.pages.Dashboard.SubMenu.Annotations.annotationToggle(annotation.name)}
+          />
         </InlineField>
         <div className={styles.indicator}>
           <LoadingIndicator loading={loading} onCancel={onCancel} />
@@ -57,22 +68,20 @@ export const AnnotationPicker = ({ annotation, events, onEnabledChanged }: Annot
 
 function getStyles(theme: GrafanaTheme2) {
   return {
-    annotation: css`
-      display: inline-block;
-      margin-right: ${theme.spacing(1)};
-
-      .fa-caret-down {
-        font-size: 75%;
-        padding-left: ${theme.spacing(1)};
-      }
-
-      .gf-form-inline .gf-form {
-        margin-bottom: 0;
-      }
-    `,
-    indicator: css`
-      align-self: center;
-      padding: 0 ${theme.spacing(0.5)};
-    `,
+    annotation: css({
+      display: 'inline-block',
+      marginRight: theme.spacing(1),
+      '.fa-caret-down': {
+        fontSize: '75%',
+        paddingLeft: theme.spacing(1),
+      },
+      '.gf-form-inline .gf-form': {
+        marginBottom: 0,
+      },
+    }),
+    indicator: css({
+      alignSelf: 'center',
+      padding: `0 ${theme.spacing(0.5)}`,
+    }),
   };
 }

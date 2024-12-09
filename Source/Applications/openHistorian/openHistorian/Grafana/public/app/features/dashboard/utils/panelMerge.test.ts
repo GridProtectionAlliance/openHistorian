@@ -2,9 +2,9 @@ import { PanelModel } from '@grafana/data';
 import { FieldColorModeId, ThresholdsMode } from '@grafana/schema/src';
 
 import { DashboardModel } from '../state/DashboardModel';
-import { createDashboardModelFixture, createPanelJSONFixture } from '../state/__fixtures__/dashboardFixtures';
+import { createDashboardModelFixture, createPanelSaveModel } from '../state/__fixtures__/dashboardFixtures';
 
-describe('Merge dashbaord panels', () => {
+describe('Merge dashboard panels', () => {
   describe('simple changes', () => {
     let dashboard: DashboardModel;
     let rawPanels: PanelModel[];
@@ -13,15 +13,15 @@ describe('Merge dashbaord panels', () => {
       dashboard = createDashboardModelFixture({
         title: 'simple title',
         panels: [
-          createPanelJSONFixture({
+          createPanelSaveModel({
             id: 1,
             type: 'timeseries',
           }),
-          createPanelJSONFixture({
+          createPanelSaveModel({
             id: 2,
             type: 'timeseries',
           }),
-          createPanelJSONFixture({
+          createPanelSaveModel({
             id: 3,
             type: 'table',
             fieldConfig: {
@@ -41,7 +41,7 @@ describe('Merge dashbaord panels', () => {
           }),
         ],
       });
-      rawPanels = dashboard.getSaveModelClone().panels;
+      rawPanels = dashboard.getSaveModelCloneOld().panels;
     });
 
     it('should load and support noop', () => {

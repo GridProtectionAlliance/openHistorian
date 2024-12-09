@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 
-import { EdgeDatum, NodeDatum } from './types';
+import { nodeR } from './Node';
+import { EdgeDatumLayout } from './types';
 import { shortenLine } from './utils';
 
 const getStyles = (theme: GrafanaTheme2) => {
@@ -25,12 +26,12 @@ const getStyles = (theme: GrafanaTheme2) => {
 };
 
 interface Props {
-  edge: EdgeDatum;
+  edge: EdgeDatumLayout;
 }
 export const EdgeLabel = memo(function EdgeLabel(props: Props) {
   const { edge } = props;
   // Not great typing, but after we do layout these properties are full objects not just references
-  const { source, target } = edge as { source: NodeDatum; target: NodeDatum };
+  const { source, target, sourceNodeRadius, targetNodeRadius } = edge;
 
   // As the nodes have some radius we want edges to end outside the node circle.
   const line = shortenLine(
@@ -40,7 +41,8 @@ export const EdgeLabel = memo(function EdgeLabel(props: Props) {
       x2: target.x!,
       y2: target.y!,
     },
-    90
+    sourceNodeRadius || nodeR,
+    targetNodeRadius || nodeR
   );
 
   const middle = {

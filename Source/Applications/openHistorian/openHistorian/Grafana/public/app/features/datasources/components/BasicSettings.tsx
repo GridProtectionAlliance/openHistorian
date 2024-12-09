@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
@@ -10,22 +10,12 @@ export interface Props {
   isDefault: boolean;
   onNameChange: (name: string) => void;
   onDefaultChange: (value: boolean) => void;
-  alertingSupported: boolean;
   disabled?: boolean;
 }
 
-export function BasicSettings({
-  dataSourceName,
-  isDefault,
-  onDefaultChange,
-  onNameChange,
-  alertingSupported,
-  disabled,
-}: Props) {
+export function BasicSettings({ dataSourceName, isDefault, onDefaultChange, onNameChange, disabled }: Props) {
   return (
     <>
-      <AlertingEnabled enabled={alertingSupported} />
-
       <div className="gf-form-group" aria-label="Datasource settings page basic settings">
         <div className="gf-form-inline">
           {/* Name */}
@@ -36,6 +26,7 @@ export function BasicSettings({
               'preselected in new panels."
               grow
               disabled={disabled}
+              labelWidth={14}
             >
               <Input
                 id="basic-settings-name"
@@ -44,7 +35,7 @@ export function BasicSettings({
                 placeholder="Name"
                 onChange={(event) => onNameChange(event.currentTarget.value)}
                 required
-                aria-label={selectors.pages.DataSource.name}
+                data-testid={selectors.pages.DataSource.name}
               />
             </InlineField>
           </div>

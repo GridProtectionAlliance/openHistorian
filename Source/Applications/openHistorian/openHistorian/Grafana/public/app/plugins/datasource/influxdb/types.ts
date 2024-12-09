@@ -1,8 +1,11 @@
 import { AdHocVariableFilter, DataQuery, DataSourceJsonData } from '@grafana/data';
 
+export const DEFAULT_POLICY = 'default';
+
 export enum InfluxVersion {
   InfluxQL = 'InfluxQL',
   Flux = 'Flux',
+  SQL = 'SQL',
 }
 
 export interface InfluxOptions extends DataSourceJsonData {
@@ -17,6 +20,18 @@ export interface InfluxOptions extends DataSourceJsonData {
   organization?: string;
   defaultBucket?: string;
   maxSeries?: number;
+
+  // With SQL
+  metadata?: Array<Record<string, string>>;
+  insecureGrpc?: boolean;
+}
+
+/**
+ * @deprecated
+ */
+export interface InfluxOptionsV1 extends InfluxOptions {
+  user?: string;
+  database?: string;
 }
 
 export interface InfluxSecureJsonData {
@@ -45,6 +60,11 @@ export interface InfluxQueryTag {
 
 export type ResultFormat = 'time_series' | 'table' | 'logs';
 
+export interface InfluxVariableQuery extends DataQuery {
+  query: string;
+  maxDataPoints?: number;
+}
+
 export interface InfluxQuery extends DataQuery {
   policy?: string;
   measurement?: string;
@@ -71,6 +91,11 @@ export interface InfluxQuery extends DataQuery {
   timeEndColumn?: string;
   titleColumn?: string;
   name?: string;
+  matchAny?: boolean;
+  type?: string;
+
   textEditor?: boolean;
   adhocFilters?: AdHocVariableFilter[];
 }
+
+export type MetadataQueryType = 'TAG_KEYS' | 'TAG_VALUES' | 'MEASUREMENTS' | 'FIELDS' | 'RETENTION_POLICIES';

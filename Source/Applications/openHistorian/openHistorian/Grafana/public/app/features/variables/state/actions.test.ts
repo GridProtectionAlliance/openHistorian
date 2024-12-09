@@ -1,6 +1,6 @@
 import { AnyAction } from 'redux';
 
-import { LoadingState } from '@grafana/data';
+import { ConstantVariableModel, LoadingState, VariableRefresh } from '@grafana/data';
 import * as runtime from '@grafana/runtime';
 import { DataSourceSrv, LocationService } from '@grafana/runtime';
 import { BackendSrv } from 'app/core/services/backend_srv';
@@ -12,6 +12,7 @@ import { variableAdapters } from '../adapters';
 import { createConstantVariableAdapter } from '../constant/adapter';
 import { ALL_VARIABLE_TEXT, ALL_VARIABLE_VALUE, NEW_VARIABLE_ID } from '../constants';
 import { createCustomVariableAdapter } from '../custom/adapter';
+import { createCustomOptionsFromQuery } from '../custom/reducer';
 import { changeVariableName } from '../editor/actions';
 import { changeVariableNameFailed, changeVariableNameSucceeded, cleanEditorState } from '../editor/reducer';
 import { cleanPickerState } from '../pickers/OptionsPicker/reducer';
@@ -26,7 +27,6 @@ import {
   textboxBuilder,
 } from '../shared/testing/builders';
 import { createTextBoxVariableAdapter } from '../textbox/adapter';
-import { ConstantVariableModel, VariableRefresh } from '../types';
 import { toKeyedVariableIdentifier, toVariablePayload } from '../utils';
 
 import {
@@ -192,7 +192,7 @@ describe('shared actions', () => {
         .whenAsyncActionIsDispatched(processVariables(key), true);
 
       await tester.thenDispatchedActionsPredicateShouldEqual((dispatchedActions) => {
-        expect(dispatchedActions.length).toEqual(5);
+        expect(dispatchedActions.length).toEqual(7);
 
         expect(dispatchedActions[0]).toEqual(
           toKeyedAction(
@@ -213,7 +213,7 @@ describe('shared actions', () => {
         expect(dispatchedActions[2]).toEqual(
           toKeyedAction(
             key,
-            variableStateCompleted(toVariablePayload({ ...custom, id: dispatchedActions[2].payload.action.payload.id }))
+            variableStateFetching(toVariablePayload({ ...custom, id: dispatchedActions[2].payload.action.payload.id }))
           )
         );
 
@@ -229,7 +229,23 @@ describe('shared actions', () => {
         expect(dispatchedActions[4]).toEqual(
           toKeyedAction(
             key,
-            variableStateCompleted(toVariablePayload({ ...query, id: dispatchedActions[4].payload.action.payload.id }))
+            createCustomOptionsFromQuery(
+              toVariablePayload({ ...custom, id: dispatchedActions[4].payload.action.payload.id }, '')
+            )
+          )
+        );
+
+        expect(dispatchedActions[5]).toEqual(
+          toKeyedAction(
+            key,
+            variableStateCompleted(toVariablePayload({ ...custom, id: dispatchedActions[5].payload.action.payload.id }))
+          )
+        );
+
+        expect(dispatchedActions[6]).toEqual(
+          toKeyedAction(
+            key,
+            variableStateCompleted(toVariablePayload({ ...query, id: dispatchedActions[6].payload.action.payload.id }))
           )
         );
 
@@ -288,7 +304,7 @@ describe('shared actions', () => {
           key,
           setCurrentVariableValue(
             toVariablePayload(stats, {
-              option: { text: ALL_VARIABLE_TEXT, value: ALL_VARIABLE_VALUE, selected: false },
+              option: { text: [ALL_VARIABLE_TEXT], value: [ALL_VARIABLE_VALUE], selected: true },
             })
           )
         ),
@@ -381,6 +397,74 @@ describe('shared actions', () => {
       });
     });
 
+    describe('and not multivalue, but with currentValue specified', () => {
+      const A = { text: 'A', value: 'a-uid' };
+      const B = { text: 'B', value: 'b-uid' };
+      const C = { text: 'C', value: 'c-uid' };
+
+      it.each`
+        withOptions  | currentText  | currentValue | defaultValue | expected
+        ${[A, B, C]} | ${undefined} | ${undefined} | ${undefined} | ${A}
+        ${[A, B, C]} | ${'B'}       | ${'b-uid'}   | ${undefined} | ${B}
+        ${[A, B, C]} | ${'B'}       | ${undefined} | ${undefined} | ${B}
+        ${[A, B, C]} | ${undefined} | ${'b-uid'}   | ${undefined} | ${B}
+        ${[A, B, C]} | ${'Old B'}   | ${'b-uid'}   | ${undefined} | ${B}
+        ${[A, B, C]} | ${undefined} | ${'x-uid'}   | ${'b-uid'}   | ${B}
+        ${[A, B, C]} | ${undefined} | ${'b-uid'}   | ${'c-uid'}   | ${B}
+        ${[A, B, C]} | ${undefined} | ${'x-uid'}   | ${undefined} | ${A}
+        ${undefined} | ${undefined} | ${'b-uid'}   | ${undefined} | ${'should not dispatch setCurrentVariableValue'}
+      `(
+        'then correct actions are dispatched',
+        async ({ withOptions, currentText, currentValue, defaultValue, expected }) => {
+          let custom;
+          const key = 'key';
+          if (!withOptions) {
+            custom = customBuilder()
+              .withId('0')
+              .withRootStateKey(key)
+              .withCurrent(currentText, currentValue)
+              .withoutOptions()
+              .build();
+          } else {
+            custom = customBuilder()
+              .withId('0')
+              .withRootStateKey(key)
+              .withOptions(...withOptions)
+              .withCurrent(currentText, currentValue)
+              .build();
+          }
+
+          const tester = await reduxTester<TemplatingReducerType>()
+            .givenRootReducer(getTemplatingRootReducer())
+            .whenActionIsDispatched(
+              toKeyedAction(key, addVariable(toVariablePayload(custom, { global: false, index: 0, model: custom })))
+            )
+            .whenAsyncActionIsDispatched(
+              validateVariableSelectionState(toKeyedVariableIdentifier(custom), defaultValue),
+              true
+            );
+
+          await tester.thenDispatchedActionsPredicateShouldEqual((dispatchedActions) => {
+            const expectedActions: AnyAction[] = withOptions
+              ? [
+                  toKeyedAction(
+                    key,
+                    setCurrentVariableValue(
+                      toVariablePayload(
+                        { type: 'custom', id: '0' },
+                        { option: { text: expected.text, value: expected.value, selected: false } }
+                      )
+                    )
+                  ),
+                ]
+              : [];
+            expect(dispatchedActions).toEqual(expectedActions);
+            return true;
+          });
+        }
+      );
+    });
+
     describe('and multivalue', () => {
       it.each`
         withOptions        | withCurrent   | defaultValue | expectedText  | expectedSelected
@@ -388,8 +472,8 @@ describe('shared actions', () => {
         ${['A', 'B', 'C']} | ${['B']}      | ${'C'}       | ${['B']}      | ${true}
         ${['A', 'B', 'C']} | ${['B', 'C']} | ${undefined} | ${['B', 'C']} | ${true}
         ${['A', 'B', 'C']} | ${['B', 'C']} | ${'C'}       | ${['B', 'C']} | ${true}
-        ${['A', 'B', 'C']} | ${['X']}      | ${undefined} | ${'A'}        | ${false}
-        ${['A', 'B', 'C']} | ${['X']}      | ${'C'}       | ${'A'}        | ${false}
+        ${['A', 'B', 'C']} | ${['X']}      | ${undefined} | ${['A']}      | ${true}
+        ${['A', 'B', 'C']} | ${['X']}      | ${'C'}       | ${['A']}      | ${true}
       `(
         'then correct actions are dispatched',
         async ({ withOptions, withCurrent, defaultValue, expectedText, expectedSelected }) => {
@@ -606,7 +690,7 @@ describe('shared actions', () => {
               key,
               changeVariableNameFailed({
                 newName: '#constant!',
-                errorText: 'Only word and digit characters are allowed in variable names',
+                errorText: 'Only word characters are allowed in variable names',
               })
             )
           );

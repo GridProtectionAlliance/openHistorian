@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
+import { useCallback, useEffect, useRef } from 'react';
+import * as React from 'react';
 
 import { GrafanaTheme2, MappingType, SpecialValueMatch, SelectableValue, ValueMappingResult } from '@grafana/data';
 import { useStyles2, Icon, Select, HorizontalGroup, ColorPicker, IconButton, Input, Button } from '@grafana/ui';
@@ -220,8 +221,20 @@ export function ValueMappingEditRow({ mapping, index, onChange, onRemove, onDupl
           )}
           <td className={styles.textAlignCenter}>
             <HorizontalGroup spacing="sm">
-              <IconButton name="copy" onClick={() => onDuplicate(index)} data-testid="duplicate-value-mapping" />
-              <IconButton name="trash-alt" onClick={() => onRemove(index)} data-testid="remove-value-mapping" />
+              <IconButton
+                name="copy"
+                onClick={() => onDuplicate(index)}
+                data-testid="duplicate-value-mapping"
+                aria-label="Duplicate value mapping"
+                tooltip="Duplicate"
+              />
+              <IconButton
+                name="trash-alt"
+                onClick={() => onRemove(index)}
+                data-testid="remove-value-mapping"
+                aria-label="Delete value mapping"
+                tooltip="Delete"
+              />
             </HorizontalGroup>
           </td>
         </tr>

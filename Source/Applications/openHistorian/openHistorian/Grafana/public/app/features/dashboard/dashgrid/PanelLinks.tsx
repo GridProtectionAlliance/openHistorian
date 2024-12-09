@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { DataLink, GrafanaTheme2, LinkModel } from '@grafana/data';
 import { Dropdown, Icon, Menu, ToolbarButton, useStyles2, PanelChrome } from '@grafana/ui';
@@ -50,7 +49,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       height: '100%',
       background: 'inherit',
       border: 'none',
-      borderRadius: `${theme.shape.borderRadius()}`,
+      borderRadius: `${theme.shape.radius.default}`,
       cursor: 'context-menu',
     }),
   };

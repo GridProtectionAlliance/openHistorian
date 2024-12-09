@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 import { useEffectOnce } from 'react-use';
 
 import { GrafanaTheme2 } from '@grafana/data';
@@ -20,6 +19,8 @@ export default function AppNotificationItem({ appNotification, onClearNotificati
     }, timeoutMap[appNotification.severity]);
   });
 
+  const hasBody = appNotification.component || appNotification.text || appNotification.traceId;
+
   return (
     <Alert
       severity={appNotification.severity}
@@ -27,10 +28,12 @@ export default function AppNotificationItem({ appNotification, onClearNotificati
       onRemove={() => onClearNotification(appNotification.id)}
       elevated
     >
-      <div className={styles.wrapper}>
-        <span>{appNotification.component || appNotification.text}</span>
-        {appNotification.traceId && <span className={styles.trace}>Trace ID: {appNotification.traceId}</span>}
-      </div>
+      {hasBody && (
+        <div className={styles.wrapper}>
+          <span>{appNotification.component || appNotification.text}</span>
+          {appNotification.traceId && <span className={styles.trace}>Trace ID: {appNotification.traceId}</span>}
+        </div>
+      )}
     </Alert>
   );
 }

@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2, PluginSignatureType } from '@grafana/data';
+import { t } from 'app/core/internationalization';
 
 import { PageInfoItem } from '../../../../core/components/Page/types';
 import { PluginDisabledBadge } from '../components/Badges';
@@ -19,18 +19,29 @@ export const usePluginInfo = (plugin?: CatalogPlugin): PageInfoItem[] => {
 
   // Populate info
   const latestCompatibleVersion = getLatestCompatibleVersion(plugin.details?.versions);
-  const version = plugin.installedVersion || latestCompatibleVersion?.version;
+  const useLatestCompatibleInfo = !plugin.isInstalled;
+  let version = plugin.installedVersion;
+  if (!version && useLatestCompatibleInfo && latestCompatibleVersion?.version) {
+    version = latestCompatibleVersion?.version;
+  }
 
-  if (Boolean(version)) {
-    info.push({
-      label: 'Version',
-      value: version,
-    });
+  if (version) {
+    if (plugin.isManaged) {
+      info.push({
+        label: t('plugins.details.labels.version', 'Version'),
+        value: 'Managed by Grafana',
+      });
+    } else {
+      info.push({
+        label: t('plugins.details.labels.version', 'Version'),
+        value: `${version}${plugin.isPreinstalled.withVersion ? ' (preinstalled)' : ''}`,
+      });
+    }
   }
 
   if (Boolean(plugin.orgName)) {
     info.push({
-      label: 'From',
+      label: t('plugins.details.labels.from', 'From'),
       value: plugin.orgName,
     });
   }
@@ -41,33 +52,34 @@ export const usePluginInfo = (plugin?: CatalogPlugin): PageInfoItem[] => {
     plugin.signatureType === PluginSignatureType.commercial;
   if (showDownloads && Boolean(plugin.downloads > 0)) {
     info.push({
-      label: 'Downloads',
+      label: t('plugins.details.labels.downloads', 'Downloads'),
       value: new Intl.NumberFormat().format(plugin.downloads),
     });
   }
 
   const pluginDependencies = plugin.details?.pluginDependencies;
-  const grafanaDependency = plugin.isInstalled
-    ? plugin.details?.grafanaDependency
-    : latestCompatibleVersion?.grafanaDependency || plugin.details?.grafanaDependency;
+  let grafanaDependency = plugin.details?.grafanaDependency;
+  if (useLatestCompatibleInfo && latestCompatibleVersion?.grafanaDependency) {
+    grafanaDependency = latestCompatibleVersion?.grafanaDependency;
+  }
   const hasNoDependencyInfo = !grafanaDependency && (!pluginDependencies || !pluginDependencies.length);
 
   if (!hasNoDependencyInfo) {
     info.push({
-      label: 'Dependencies',
-      value: <PluginDetailsHeaderDependencies plugin={plugin} latestCompatibleVersion={latestCompatibleVersion} />,
+      label: t('plugins.details.labels.dependencies', 'Dependencies'),
+      value: <PluginDetailsHeaderDependencies plugin={plugin} grafanaDependency={grafanaDependency} />,
     });
   }
 
   if (plugin.isDisabled) {
     info.push({
-      label: 'Status',
+      label: t('plugins.details.labels.status', 'Status'),
       value: <PluginDisabledBadge error={plugin.error!} />,
     });
   }
 
   info.push({
-    label: 'Signature',
+    label: t('plugins.details.labels.signature', 'Signature'),
     value: <PluginDetailsHeaderSignature plugin={plugin} />,
   });
 

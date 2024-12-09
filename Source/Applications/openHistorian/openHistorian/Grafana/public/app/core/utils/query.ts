@@ -1,13 +1,4 @@
-import { DataQuery, DataSourceRef } from '@grafana/data';
-
-export const getNextRefIdChar = (queries: DataQuery[]): string => {
-  for (let num = 0; ; num++) {
-    const refId = getRefId(num);
-    if (!queries.some((query) => query.refId === refId)) {
-      return refId;
-    }
-  }
-};
+import { DataQuery, DataSourceRef, getNextRefId } from '@grafana/data';
 
 // This function checks if the query has defined properties beyond those defined in the DataQuery interface.
 export function queryIsEmpty(query: DataQuery): boolean {
@@ -27,15 +18,17 @@ export function queryIsEmpty(query: DataQuery): boolean {
 }
 
 export function addQuery(queries: DataQuery[], query?: Partial<DataQuery>, datasource?: DataSourceRef): DataQuery[] {
-  const q = query || {};
-  q.refId = getNextRefIdChar(queries);
-  q.hide = false;
+  const q: DataQuery = {
+    ...query,
+    refId: getNextRefId(queries),
+    hide: false,
+  };
 
   if (!q.datasource && datasource) {
     q.datasource = datasource;
   }
 
-  return [...queries, q as DataQuery];
+  return [...queries, q];
 }
 
 export function isDataQuery(url: string): boolean {
@@ -48,16 +41,6 @@ export function isDataQuery(url: string): boolean {
 
 export function isLocalUrl(url: string) {
   return !url.match(/^http/);
-}
-
-function getRefId(num: number): string {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-  if (num < letters.length) {
-    return letters[num];
-  } else {
-    return getRefId(Math.floor(num / letters.length) - 1) + letters[num % letters.length];
-  }
 }
 
 /**

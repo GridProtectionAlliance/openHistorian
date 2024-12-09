@@ -1,5 +1,6 @@
 import { cx } from '@emotion/css';
-import React from 'react';
+import { intervalToDuration } from 'date-fns';
+import Skeleton from 'react-loading-skeleton';
 
 import {
   DisplayProcessor,
@@ -10,9 +11,10 @@ import {
   getFieldDisplayName,
 } from '@grafana/data';
 import { config, getDataSourceSrv } from '@grafana/runtime';
-import { Checkbox, Icon, IconButton, IconName, TagList } from '@grafana/ui';
+import { Checkbox, Icon, IconName, TagList, Text, Tooltip } from '@grafana/ui';
 import appEvents from 'app/core/app_events';
 import { t } from 'app/core/internationalization';
+import { formatDate, formatDuration } from 'app/core/internationalization/dates';
 import { PluginIconName } from 'app/features/plugins/admin/types';
 import { ShowModalReactEvent } from 'app/types/events';
 
@@ -24,6 +26,7 @@ import { ExplainScorePopup } from './ExplainScorePopup';
 import { TableColumn } from './SearchResultsTable';
 
 const TYPE_COLUMN_WIDTH = 175;
+const DURATION_COLUMN_WIDTH = 200;
 const DATASOURCE_COLUMN_WIDTH = 200;
 
 export const generateColumns = (
@@ -42,7 +45,7 @@ export const generateColumns = (
   const uidField = access.uid;
   const kindField = access.kind;
   let sortFieldWith = 0;
-  const sortField = (access as any)[response.view.dataFrame.meta?.custom?.sortBy] as Field;
+  const sortField: Field = access[response.view.dataFrame.meta?.custom?.sortBy];
   if (sortField) {
     sortFieldWith = 175;
     if (sortField.type === FieldType.time) {
@@ -57,56 +60,47 @@ export const generateColumns = (
 
   let width = 50;
   if (selection && selectionToggle) {
-    width = 30;
+    width = 0;
     columns.push({
       id: `column-checkbox`,
       width,
       Header: () => {
-        if (selection('*', '*')) {
-          return (
-            <div className={styles.checkboxHeader}>
-              <IconButton name="check-square" onClick={clearSelection} />
-            </div>
-          );
-        }
+        const { view } = response;
+        const hasSelection = selection('*', '*');
+        const allSelected = view.every((item) => selection(item.kind, item.uid));
         return (
-          <div className={styles.checkboxHeader}>
-            <Checkbox
-              checked={false}
-              onChange={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                const { view } = response;
-                const count = Math.min(view.length, 50);
-                for (let i = 0; i < count; i++) {
+          <Checkbox
+            indeterminate={!allSelected && hasSelection}
+            checked={allSelected}
+            disabled={!response}
+            onChange={(e) => {
+              if (hasSelection) {
+                clearSelection();
+              } else {
+                for (let i = 0; i < view.length; i++) {
                   const item = view.get(i);
-                  if (item.uid && item.kind) {
-                    if (!selection(item.kind, item.uid)) {
-                      selectionToggle(item.kind, item.uid);
-                    }
-                  }
+                  selectionToggle(item.kind, item.uid);
                 }
-              }}
-            />
-          </div>
+              }
+            }}
+          />
         );
       },
       Cell: (p) => {
-        const uid = uidField.values.get(p.row.index);
-        const kind = kindField ? kindField.values.get(p.row.index) : 'dashboard'; // HACK for now
+        const uid = uidField.values[p.row.index];
+        const kind = kindField ? kindField.values[p.row.index] : 'dashboard'; // HACK for now
         const selected = selection(kind, uid);
         const hasUID = uid != null; // Panels don't have UID! Likely should not be shown on pages with manage options
+        const { key, ...cellProps } = p.cellProps;
         return (
-          <div {...p.cellProps}>
-            <div className={styles.checkbox}>
-              <Checkbox
-                disabled={!hasUID}
-                value={selected && hasUID}
-                onChange={(e) => {
-                  selectionToggle(kind, uid);
-                }}
-              />
-            </div>
+          <div key={key} {...cellProps} className={styles.cell}>
+            <Checkbox
+              disabled={!hasUID}
+              value={selected && hasUID}
+              onChange={(e) => {
+                selectionToggle(kind, uid);
+              }}
+            />
           </div>
         );
       },
@@ -120,28 +114,49 @@ export const generateColumns = (
   columns.push({
     Cell: (p) => {
       let classNames = cx(styles.nameCellStyle);
-      let name = access.name.values.get(p.row.index);
+      let name = access.name.values[p.row.index];
+      const isDeleted = access.isDeleted?.values[p.row.index];
+
       if (!name?.length) {
         const loading = p.row.index >= response.view.dataFrame.length;
         name = loading ? 'Loading...' : 'Missing title'; // normal for panels
         classNames += ' ' + styles.missingTitleText;
       }
+      const { key, ...cellProps } = p.cellProps;
+
       return (
-        <a {...p.cellProps} href={p.userProps.href} onClick={p.userProps.onClick} className={classNames} title={name}>
-          {name}
-        </a>
+        <div key={key} className={styles.cell} {...cellProps}>
+          {!response.isItemLoaded(p.row.index) ? (
+            <Skeleton width={200} />
+          ) : isDeleted ? (
+            <span className={classNames}>{name}</span>
+          ) : (
+            <a href={p.userProps.href} onClick={p.userProps.onClick} className={classNames} title={name}>
+              {name}
+            </a>
+          )}
+        </div>
       );
     },
     id: `column-name`,
     field: access.name!,
-    Header: () => <div className={styles.headerNameStyle}>{t('search.results-table.name-header', 'Name')}</div>,
+    Header: () => <div>{t('search.results-table.name-header', 'Name')}</div>,
     width,
   });
   availableWidth -= width;
 
-  width = TYPE_COLUMN_WIDTH;
-  columns.push(makeTypeColumn(access.kind, access.panel_type, width, styles));
-  availableWidth -= width;
+  const showDeletedRemaining =
+    response.view.fields.permanentlyDeleteDate && hasValue(response.view.fields.permanentlyDeleteDate);
+
+  if (showDeletedRemaining && access.permanentlyDeleteDate) {
+    width = DURATION_COLUMN_WIDTH;
+    columns.push(makeDeletedRemainingColumn(response, access.permanentlyDeleteDate, width, styles));
+    availableWidth -= width;
+  } else {
+    width = TYPE_COLUMN_WIDTH;
+    columns.push(makeTypeColumn(response, access.kind, access.panel_type, width, styles));
+    availableWidth -= width;
+  }
 
   // Show datasources if we have any
   if (access.ds_uid && onDatasourceChange) {
@@ -166,44 +181,56 @@ export const generateColumns = (
     availableWidth -= width;
     columns.push({
       Cell: (p) => {
-        const parts = (access.location?.values.get(p.row.index) ?? '').split('/');
+        const parts = (access.location?.values[p.row.index] ?? '').split('/');
+        const { key, ...cellProps } = p.cellProps;
         return (
-          <div {...p.cellProps} className={cx(styles.locationCellStyle)}>
-            {parts.map((p) => {
-              let info = meta.locationInfo[p];
-              if (!info && p === 'general') {
-                info = { kind: 'folder', url: '/dashboards', name: 'General' };
-              }
-              return info ? (
-                <a key={p} href={info.url} className={styles.locationItem}>
-                  <Icon name={getIconForKind(info.kind)} /> {info.name}
-                </a>
-              ) : (
-                <span key={p}>{p}</span>
-              );
-            })}
+          <div key={key} {...cellProps} className={styles.cell}>
+            {!response.isItemLoaded(p.row.index) ? (
+              <Skeleton width={150} />
+            ) : (
+              <div className={styles.locationContainer}>
+                {parts.map((p) => {
+                  let info = meta.locationInfo[p];
+                  if (!info && p === 'general') {
+                    info = { kind: 'folder', url: '/dashboards', name: 'Dashboards' };
+                  }
+                  return info ? (
+                    <a key={p} href={info.url} className={styles.locationItem}>
+                      <Icon name={getIconForKind(info.kind)} />
+
+                      <Text variant="body" truncate>
+                        {info.name}
+                      </Text>
+                    </a>
+                  ) : (
+                    <span key={p}>{p}</span>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       },
       id: `column-location`,
       field: access.location ?? access.url,
-      Header: () => t('search.results-table.location-header', 'Location'),
+      Header: t('search.results-table.location-header', 'Location'),
       width,
     });
   }
 
   if (availableWidth > 0 && showTags) {
-    columns.push(makeTagsColumn(access.tags, availableWidth, styles.tagList, onTagSelected));
+    columns.push(makeTagsColumn(response, access.tags, availableWidth, styles, onTagSelected));
   }
 
   if (sortField && sortFieldWith) {
     const disp = sortField.display ?? getDisplayProcessor({ field: sortField, theme: config.theme2 });
 
     columns.push({
-      Header: () => <div className={styles.sortedHeader}>{getFieldDisplayName(sortField)}</div>,
+      Header: getFieldDisplayName(sortField),
       Cell: (p) => {
+        const { key, ...cellProps } = p.cellProps;
         return (
-          <div {...p.cellProps} className={styles.sortedItems}>
+          <div key={key} {...cellProps} className={styles.cell}>
             {getDisplayValue({
               sortField,
               getDisplay: disp,
@@ -226,8 +253,8 @@ export const generateColumns = (
         new ShowModalReactEvent({
           component: ExplainScorePopup,
           props: {
-            name: access.name.values.get(row),
-            explain: access.explain.values.get(row),
+            name: access.name.values[row],
+            explain: access.explain.values[row],
             frame: response.view.dataFrame,
             row: row,
           },
@@ -238,9 +265,17 @@ export const generateColumns = (
     columns.push({
       Header: () => <div className={styles.sortedHeader}>Score</div>,
       Cell: (p) => {
+        const { key, ...cellProps } = p.cellProps;
         return (
-          <div {...p.cellProps} className={styles.explainItem} onClick={() => showExplainPopup(p.row.index)}>
-            {vals.get(p.row.index)}
+          // TODO: fix keyboard a11y
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          <div
+            key={key}
+            {...cellProps}
+            className={cx(styles.cell, styles.explainItem)}
+            onClick={() => showExplainPopup(p.row.index)}
+          >
+            {vals[p.row.index]}
           </div>
         );
       },
@@ -255,7 +290,7 @@ export const generateColumns = (
 
 function hasValue(f: Field): boolean {
   for (let i = 0; i < f.values.length; i++) {
-    if (f.values.get(i) != null) {
+    if (f.values[i] != null) {
       return true;
     }
   }
@@ -274,19 +309,22 @@ function makeDataSourceColumn(
   return {
     id: `column-datasource`,
     field,
-    Header: () => t('search.results-table.datasource-header', 'Data source'),
+    Header: t('search.results-table.datasource-header', 'Data source'),
     Cell: (p) => {
-      const dslist = field.values.get(p.row.index);
+      const dslist = field.values[p.row.index];
       if (!dslist?.length) {
         return null;
       }
+      const { key, ...cellProps } = p.cellProps;
       return (
-        <div {...p.cellProps} className={cx(datasourceItemClass)}>
+        <div key={key} {...cellProps} className={cx(datasourceItemClass)}>
           {dslist.map((v, i) => {
             const settings = srv.getInstanceSettings(v);
             const icon = settings?.meta?.info?.logos?.small;
             if (icon) {
               return (
+                // TODO: fix keyboard a11y
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <span
                   key={i}
                   onClick={(e) => {
@@ -313,7 +351,49 @@ function makeDataSourceColumn(
   };
 }
 
+function makeDeletedRemainingColumn(
+  response: QueryResponse,
+  deletedField: Field<Date | undefined>,
+  width: number,
+  styles: Record<string, string>
+): TableColumn {
+  return {
+    id: 'column-delete-age',
+    field: deletedField,
+    width,
+    Header: t('search.results-table.deleted-remaining-header', 'Time remaining'),
+    Cell: (p) => {
+      const i = p.row.index;
+      const deletedDate = deletedField.values[i];
+      const { key, ...cellProps } = p.cellProps;
+
+      if (!deletedDate || !response.isItemLoaded(p.row.index)) {
+        return (
+          <div key={key} {...cellProps} className={cx(styles.cell, styles.typeCell)}>
+            <Skeleton width={100} />
+          </div>
+        );
+      }
+
+      const duration = calcCoarseDuration(new Date(), deletedDate);
+      const isDeletingSoon = !Object.values(duration).some((v) => v > 0);
+      const formatted = isDeletingSoon
+        ? t('search.results-table.deleted-less-than-1-min', '< 1 min')
+        : formatDuration(duration, { style: 'long' });
+
+      return (
+        <div key={key} {...cellProps} className={cx(styles.cell, styles.typeCell)}>
+          <Tooltip content={formatDate(deletedDate, { dateStyle: 'medium', timeStyle: 'short' })}>
+            <span>{formatted}</span>
+          </Tooltip>
+        </div>
+      );
+    },
+  };
+}
+
 function makeTypeColumn(
+  response: QueryResponse,
   kindField: Field<string>,
   typeField: Field<string>,
   width: number,
@@ -322,10 +402,10 @@ function makeTypeColumn(
   return {
     id: `column-type`,
     field: kindField ?? typeField,
-    Header: () => t('search.results-table.type-header', 'Type'),
+    Header: t('search.results-table.type-header', 'Type'),
     Cell: (p) => {
       const i = p.row.index;
-      const kind = kindField?.values.get(i) ?? 'dashboard';
+      const kind = kindField?.values[i] ?? 'dashboard';
       let icon: IconName = 'apps';
       let txt = 'Dashboard';
       if (kind) {
@@ -342,7 +422,7 @@ function makeTypeColumn(
 
           case 'panel':
             icon = `${PluginIconName.panel}`;
-            const type = typeField.values.get(i);
+            const type = typeField.values[i];
             if (type) {
               txt = type;
               const info = config.panels[txt];
@@ -365,10 +445,17 @@ function makeTypeColumn(
             break;
         }
       }
+      const { key, ...cellProps } = p.cellProps;
       return (
-        <div {...p.cellProps} className={styles.typeText}>
-          <Icon name={icon} size="sm" title={txt} className={styles.typeIcon} />
-          {txt}
+        <div key={key} {...cellProps} className={cx(styles.cell, styles.typeCell)}>
+          {!response.isItemLoaded(p.row.index) ? (
+            <Skeleton width={100} />
+          ) : (
+            <>
+              <Icon name={icon} size="sm" title={txt} className={styles.typeIcon} />
+              {txt}
+            </>
+          )}
         </div>
       );
     },
@@ -377,23 +464,29 @@ function makeTypeColumn(
 }
 
 function makeTagsColumn(
+  response: QueryResponse,
   field: Field<string[]>,
   width: number,
-  tagListClass: string,
+  styles: Record<string, string>,
   onTagSelected: (tag: string) => void
 ): TableColumn {
   return {
     Cell: (p) => {
-      const tags = field.values.get(p.row.index);
-      return tags ? (
-        <div {...p.cellProps}>
-          <TagList className={tagListClass} tags={tags} onClick={onTagSelected} />
+      const tags = field.values[p.row.index];
+      const { key, ...cellProps } = p.cellProps;
+      return (
+        <div key={key} {...cellProps} className={styles.cell}>
+          {!response.isItemLoaded(p.row.index) ? (
+            <TagList.Skeleton />
+          ) : (
+            <>{tags ? <TagList className={styles.tagList} tags={tags} onClick={onTagSelected} /> : null}</>
+          )}
         </div>
-      ) : null;
+      );
     },
     id: `column-tags`,
     field: field,
-    Header: () => t('search.results-table.tags-header', 'Tags'),
+    Header: t('search.results-table.tags-header', 'Tags'),
     width,
   };
 }
@@ -409,9 +502,28 @@ function getDisplayValue({
   index: number;
   getDisplay: DisplayProcessor;
 }) {
-  const value = sortField.values.get(index);
-  if (['folder', 'panel'].includes(kind.values.get(index)) && value === 0) {
+  const value = sortField.values[index];
+  if (['folder', 'panel'].includes(kind.values[index]) && value === 0) {
     return '-';
   }
   return formattedValueToString(getDisplay(value));
+}
+
+/**
+ * Calculates the rough duration between two dates, keeping only the most significant unit
+ */
+function calcCoarseDuration(start: Date, end: Date) {
+  let { years = 0, months = 0, days = 0, hours = 0, minutes = 0 } = intervalToDuration({ start, end });
+
+  if (years > 0) {
+    return { years };
+  } else if (months > 0) {
+    return { months };
+  } else if (days > 0) {
+    return { days };
+  } else if (hours > 0) {
+    return { hours };
+  }
+
+  return { minutes };
 }

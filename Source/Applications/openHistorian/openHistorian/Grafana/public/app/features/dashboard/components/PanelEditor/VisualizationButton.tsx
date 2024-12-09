@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { selectors } from '@grafana/e2e-selectors';
 import { ToolbarButton, ButtonGroup } from '@grafana/ui';
@@ -42,7 +41,8 @@ export const VisualizationButton = ({ panel }: Props) => {
           imgSrc={plugin.meta.info.logos.small}
           isOpen={isVizPickerOpen}
           onClick={onToggleOpen}
-          aria-label={selectors.components.PanelEditor.toggleVizPicker}
+          data-testid={selectors.components.PanelEditor.toggleVizPicker}
+          aria-label="Change Visualization"
           variant="canvas"
           fullWidth
         >
@@ -53,7 +53,8 @@ export const VisualizationButton = ({ panel }: Props) => {
           icon={isPanelOptionsVisible ? 'angle-right' : 'angle-left'}
           onClick={onToggleOptionsPane}
           variant="canvas"
-          aria-label={selectors.components.PanelEditor.toggleVizOptions}
+          data-testid={selectors.components.PanelEditor.toggleVizOptions}
+          aria-label={isPanelOptionsVisible ? 'Close options pane' : 'Show options pane'}
         />
       </ButtonGroup>
     </div>
@@ -63,11 +64,11 @@ export const VisualizationButton = ({ panel }: Props) => {
 VisualizationButton.displayName = 'VisualizationTab';
 
 const styles = {
-  wrapper: css`
-    display: flex;
-    flex-direction: column;
-  `,
-  vizButton: css`
-    text-align: left;
-  `,
+  wrapper: css({
+    display: 'flex',
+    flexDirection: 'column',
+  }),
+  vizButton: css({
+    textAlign: 'left',
+  }),
 };

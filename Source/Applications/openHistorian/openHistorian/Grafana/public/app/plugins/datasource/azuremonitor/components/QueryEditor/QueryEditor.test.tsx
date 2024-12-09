@@ -1,13 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
-import { selectOptionInTest } from 'test/helpers/selectOptionInTest';
 
+import { CoreApp } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import * as ui from '@grafana/ui';
 
 import createMockDatasource from '../../__mocks__/datasource';
 import { invalidNamespaceError } from '../../__mocks__/errors';
 import createMockQuery from '../../__mocks__/query';
+import { selectors } from '../../e2e/selectors';
 import { AzureQueryType } from '../../types';
+import { selectOptionInTest } from '../../utils/testUtils';
 
 import QueryEditor from './QueryEditor';
 
@@ -17,6 +19,16 @@ jest.mock('@grafana/ui', () => ({
   CodeEditor: function CodeEditor({ value }: { value: string }) {
     return <pre>{value}</pre>;
   },
+}));
+
+jest.mock('@grafana/runtime', () => ({
+  ___esModule: true,
+  ...jest.requireActual('@grafana/runtime'),
+  getTemplateSrv: () => ({
+    replace: (val: string) => {
+      return val;
+    },
+  }),
 }));
 
 describe('Azure Monitor QueryEditor', () => {
@@ -29,7 +41,9 @@ describe('Azure Monitor QueryEditor', () => {
 
     render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
     await waitFor(() =>
-      expect(screen.getByTestId('azure-monitor-metrics-query-editor-with-experimental-ui')).toBeInTheDocument()
+      expect(
+        screen.getByTestId(selectors.components.queryEditor.metricsQueryEditor.container.input)
+      ).toBeInTheDocument()
     );
   });
 
@@ -42,7 +56,35 @@ describe('Azure Monitor QueryEditor', () => {
 
     render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
     await waitFor(() =>
-      expect(screen.queryByTestId('azure-monitor-logs-query-editor-with-experimental-ui')).toBeInTheDocument()
+      expect(screen.queryByTestId(selectors.components.queryEditor.logsQueryEditor.container.input)).toBeInTheDocument()
+    );
+  });
+
+  it('renders the ARG query editor when the query type is ARG', async () => {
+    const mockDatasource = createMockDatasource();
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureResourceGraph,
+    };
+
+    render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
+    await waitFor(() =>
+      expect(screen.queryByTestId(selectors.components.queryEditor.argsQueryEditor.container.input)).toBeInTheDocument()
+    );
+  });
+
+  it('renders the Traces query editor when the query type is Traces', async () => {
+    const mockDatasource = createMockDatasource();
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureTraces,
+    };
+
+    render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId(selectors.components.queryEditor.tracesQueryEditor.container.input)
+      ).toBeInTheDocument()
     );
   });
 
@@ -57,7 +99,8 @@ describe('Azure Monitor QueryEditor', () => {
     await selectOptionInTest(metrics, 'Logs');
 
     expect(onChange).toHaveBeenCalledWith({
-      ...mockQuery,
+      refId: mockQuery.refId,
+      datasource: mockQuery.datasource,
       queryType: AzureQueryType.LogAnalytics,
     });
   });
@@ -69,7 +112,9 @@ describe('Azure Monitor QueryEditor', () => {
       <QueryEditor query={createMockQuery()} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />
     );
     await waitFor(() =>
-      expect(screen.getByTestId('azure-monitor-metrics-query-editor-with-experimental-ui')).toBeInTheDocument()
+      expect(
+        screen.getByTestId(selectors.components.queryEditor.metricsQueryEditor.container.input)
+      ).toBeInTheDocument()
     );
     expect(screen.getByText('An error occurred while requesting metadata from Azure Monitor')).toBeInTheDocument();
   });
@@ -85,6 +130,78 @@ describe('Azure Monitor QueryEditor', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('data-testid azure-monitor-experimental-header')).toBeInTheDocument()
+    );
+  });
+
+  it('renders the Metrics query editor when the data source is configured for user auth and the user is authenticated with Azure', async () => {
+    jest.mocked(config).bootData.user.authenticatedBy = 'oauth_azuread';
+    const mockDatasource = createMockDatasource({ currentUserAuth: true });
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureMonitor,
+    };
+
+    render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
+    await waitFor(() =>
+      expect(
+        screen.getByTestId(selectors.components.queryEditor.metricsQueryEditor.container.input)
+      ).toBeInTheDocument()
+    );
+  });
+
+  it('renders the user auth alert when the data source is configured for user auth and the user is not authenticated with Azure', async () => {
+    jest.mocked(config).bootData.user.authenticatedBy = 'not_azuread';
+    const mockDatasource = createMockDatasource({ currentUserAuth: true });
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureMonitor,
+    };
+
+    render(<QueryEditor query={mockQuery} datasource={mockDatasource} onChange={() => {}} onRunQuery={() => {}} />);
+    await waitFor(() => expect(screen.getByTestId(selectors.components.queryEditor.userAuthAlert)).toBeInTheDocument());
+  });
+
+  it('renders the user auth fallback alert when the data source is configured for user auth and fallback credentials are disabled', async () => {
+    jest.mocked(config).azure.userIdentityFallbackCredentialsEnabled = false;
+    const mockDatasource = createMockDatasource({ currentUserAuth: true });
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureMonitor,
+    };
+
+    render(
+      <QueryEditor
+        app={CoreApp.UnifiedAlerting}
+        query={mockQuery}
+        datasource={mockDatasource}
+        onChange={() => {}}
+        onRunQuery={() => {}}
+      />
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId(selectors.components.queryEditor.userAuthFallbackAlert)).toBeInTheDocument()
+    );
+  });
+
+  it('renders the user auth fallback alert when the data source is configured for user auth and fallback credentials are enabled but the data source has none', async () => {
+    jest.mocked(config).azure.userIdentityFallbackCredentialsEnabled = true;
+    const mockDatasource = createMockDatasource({ currentUserAuth: true });
+    const mockQuery = {
+      ...createMockQuery(),
+      queryType: AzureQueryType.AzureMonitor,
+    };
+
+    render(
+      <QueryEditor
+        app={CoreApp.UnifiedAlerting}
+        query={mockQuery}
+        datasource={mockDatasource}
+        onChange={() => {}}
+        onRunQuery={() => {}}
+      />
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId(selectors.components.queryEditor.userAuthFallbackAlert)).toBeInTheDocument()
     );
   });
 });

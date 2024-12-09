@@ -6,27 +6,26 @@ import {
   DataQueryRequest,
   DataQueryResponse,
   DataSourceInstanceSettings,
+  QueryVariableModel,
   ScopedVars,
   SelectableValue,
   TimeRange,
+  getDefaultTimeRange,
 } from '@grafana/data';
-import { DataSourceWithBackend, getBackendSrv, toDataQueryResponse, BackendSrv } from '@grafana/runtime';
-import { getTimeSrv, TimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import { getTemplateSrv, TemplateSrv } from 'app/features/templating/template_srv';
+import {
+  DataSourceWithBackend,
+  getBackendSrv,
+  toDataQueryResponse,
+  BackendSrv,
+  getTemplateSrv,
+  TemplateSrv,
+} from '@grafana/runtime';
 
 import { CloudMonitoringAnnotationSupport } from './annotationSupport';
 import { SLO_BURN_RATE_SELECTOR_NAME } from './constants';
 import { getMetricType, setMetricType } from './functions';
-import {
-  CloudMonitoringOptions,
-  CloudMonitoringQuery,
-  Filter,
-  MetricDescriptor,
-  QueryType,
-  PostResponse,
-  Aggregation,
-  MetricQuery,
-} from './types';
+import { CloudMonitoringQuery, QueryType, MetricQuery, Filter } from './types/query';
+import { CloudMonitoringOptions, MetricDescriptor, PostResponse, Aggregation } from './types/types';
 import { CloudMonitoringVariableSupport } from './variables';
 
 export default class CloudMonitoringDatasource extends DataSourceWithBackend<
@@ -39,8 +38,7 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
 
   constructor(
     private instanceSettings: DataSourceInstanceSettings<CloudMonitoringOptions>,
-    public templateSrv: TemplateSrv = getTemplateSrv(),
-    readonly timeSrv: TimeSrv = getTimeSrv()
+    public templateSrv: TemplateSrv = getTemplateSrv()
   ) {
     super(instanceSettings);
     this.authenticationType = instanceSettings.jsonData.authenticationType || 'jwt';
@@ -62,8 +60,8 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
     return super.query(request);
   }
 
-  applyTemplateVariables(target: CloudMonitoringQuery, scopedVars: ScopedVars): Record<string, any> {
-    const { timeSeriesList, timeSeriesQuery, sloQuery } = target;
+  applyTemplateVariables(target: CloudMonitoringQuery, scopedVars: ScopedVars) {
+    const { timeSeriesList, timeSeriesQuery, sloQuery, promQLQuery } = target;
 
     return {
       ...target,
@@ -87,6 +85,7 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
         ),
       },
       sloQuery: sloQuery && this.interpolateProps(sloQuery, scopedVars),
+      promQLQuery: promQLQuery && this.interpolateProps(promQLQuery, scopedVars, { expr: this.interpolatePromQLQuery }),
     };
   }
 
@@ -96,7 +95,7 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
     projectName: string,
     aggregation?: Aggregation,
     timeRange?: TimeRange
-  ) {
+  ): Promise<{ [k: string]: string[] }> {
     const options = {
       targets: [
         {
@@ -110,11 +109,11 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
               crossSeriesReducer: aggregation?.crossSeriesReducer ?? 'REDUCE_NONE',
               view: 'HEADERS',
             },
-            metricType
+            this.templateSrv.replace(metricType)
           ),
         },
       ],
-      range: timeRange ?? this.timeSrv.timeRange(),
+      range: timeRange || getDefaultTimeRange(),
     };
 
     const queries = options.targets;
@@ -137,11 +136,13 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
             },
           });
         }),
+
         map(({ data }) => {
           const dataQueryResponse = toDataQueryResponse({
             data: data,
           });
-          const labels = dataQueryResponse?.data
+
+          const labels: Record<string, Set<string>> = dataQueryResponse?.data
             .map((f) => f.meta?.custom?.labels)
             .filter((p) => !!p)
             .reduce((acc, labels) => {
@@ -155,10 +156,11 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
               }
               return acc;
             }, {});
+
           return Object.fromEntries(
-            Object.entries(labels).map((l: any) => {
-              l[1] = Array.from(l[1]);
-              return l;
+            Object.entries(labels).map(([key, value]) => {
+              const fromArr = Array.from(value);
+              return [key, fromArr];
             })
           );
         })
@@ -191,9 +193,18 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
       return [];
     }
 
+    return this.getResource(`metricDescriptors/v3/projects/${this.templateSrv.replace(projectName)}/metricDescriptors`);
+  }
+
+  async filterMetricsByType(projectName: string, filter: string): Promise<MetricDescriptor[]> {
+    if (!projectName) {
+      return [];
+    }
+
     return this.getResource(
-      `metricDescriptors/v3/projects/${this.templateSrv.replace(projectName)}/metricDescriptors`
-    ) as Promise<MetricDescriptor[]>;
+      `metricDescriptors/v3/projects/${this.templateSrv.replace(projectName)}/metricDescriptors`,
+      { filter: `metric.type : "${filter}"` }
+    );
   }
 
   async getSLOServices(projectName: string): Promise<Array<SelectableValue<string>>> {
@@ -230,6 +241,11 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
       !query.hasOwnProperty('timeSeriesQuery') &&
       !query.hasOwnProperty('timeSeriesList')
     ) {
+      let filters = rest.filters || [];
+      if (rest.metricType) {
+        filters = this.migrateMetricTypeFilter(rest.metricType, filters);
+      }
+
       return {
         datasource,
         key,
@@ -239,13 +255,15 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
         queryType: type === 'annotationQuery' ? QueryType.ANNOTATION : QueryType.TIME_SERIES_LIST,
         timeSeriesList: {
           ...rest,
+          projectName: get(query, 'projectName') || this.getDefaultProject(),
+          filters,
           view: rest.view || 'FULL',
         },
       };
     }
 
-    if (has(query, 'metricQuery') && ['metrics', QueryType.ANNOTATION].includes(query.queryType)) {
-      const metricQuery: MetricQuery = get(query, 'metricQuery')!;
+    if (has(query, 'metricQuery') && ['metrics', QueryType.ANNOTATION].includes(query.queryType ?? '')) {
+      const metricQuery = get(query, 'metricQuery') as MetricQuery;
       if (metricQuery.editorMode === 'mql') {
         query.timeSeriesQuery = {
           projectName: metricQuery.projectName,
@@ -255,7 +273,7 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
         query.queryType = QueryType.TIME_SERIES_QUERY;
       } else {
         query.timeSeriesList = {
-          projectName: metricQuery.projectName,
+          projectName: metricQuery.projectName || this.getDefaultProject(),
           crossSeriesReducer: metricQuery.crossSeriesReducer,
           alignmentPeriod: metricQuery.alignmentPeriod,
           perSeriesAligner: metricQuery.perSeriesAligner,
@@ -277,26 +295,51 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
     }
 
     if (query.queryType === QueryType.SLO && has(query, 'sloQuery.aliasBy')) {
-      query.aliasBy = get(query, 'sloQuery.aliasBy');
+      const sloQuery = get(query, 'sloQuery.aliasBy');
+      if (typeof sloQuery === 'string') {
+        query.aliasBy = sloQuery;
+      }
       query = omit(query, 'sloQuery.aliasBy');
     }
 
     return query;
   }
 
-  interpolateProps<T extends Record<string, any>>(object: T, scopedVars: ScopedVars = {}): T {
+  interpolatePromQLQuery(value: string | string[], _variable: QueryVariableModel) {
+    if (isArray(value)) {
+      return value.join('|');
+    }
+    return value;
+  }
+
+  interpolateProps<T extends Record<string, any>>(
+    object: T,
+    scopedVars: ScopedVars = {},
+    formattingFunctions?: { [key: string]: Function | undefined }
+  ): T {
     return Object.entries(object).reduce((acc, [key, value]) => {
+      let interpolatedValue = value;
+      if (value && isString(value)) {
+        // Pass a function to the template service for formatting
+        interpolatedValue = this.templateSrv.replace(
+          value,
+          scopedVars,
+          formattingFunctions && formattingFunctions[key]
+        );
+      }
       return {
         ...acc,
-        [key]: value && isString(value) ? this.templateSrv.replace(value, scopedVars) : value,
+        [key]: interpolatedValue,
       };
     }, {} as T);
   }
 
-  filterQuery(query: CloudMonitoringQuery): boolean {
-    if (query.hide) {
+  filterQuery(item: CloudMonitoringQuery): boolean {
+    if (item.hide) {
       return false;
     }
+
+    const query = this.migrateQuery(item);
 
     if (query.queryType === QueryType.SLO) {
       if (!query.sloQuery) {
@@ -316,17 +359,21 @@ export default class CloudMonitoringDatasource extends DataSourceWithBackend<
       return !!query.timeSeriesQuery && !!query.timeSeriesQuery.projectName && !!query.timeSeriesQuery.query;
     }
 
-    if ([QueryType.TIME_SERIES_LIST, QueryType.ANNOTATION].includes(query.queryType)) {
+    if (query.queryType && [QueryType.TIME_SERIES_LIST, QueryType.ANNOTATION].includes(query.queryType)) {
       return !!query.timeSeriesList && !!query.timeSeriesList.projectName && !!getMetricType(query.timeSeriesList);
+    }
+
+    if (query.queryType === QueryType.PROMQL) {
+      return (
+        !!query.promQLQuery && !!query.promQLQuery.projectName && !!query.promQLQuery.expr && !!query.promQLQuery.step
+      );
     }
 
     return false;
   }
 
   interpolateVariablesInQueries(queries: CloudMonitoringQuery[], scopedVars: ScopedVars): CloudMonitoringQuery[] {
-    return queries.map(
-      (query) => this.applyTemplateVariables(this.migrateQuery(query), scopedVars) as CloudMonitoringQuery
-    );
+    return queries.map((query) => this.applyTemplateVariables(this.migrateQuery(query), scopedVars));
   }
 
   interpolateFilters(filters: string[], scopedVars: ScopedVars) {

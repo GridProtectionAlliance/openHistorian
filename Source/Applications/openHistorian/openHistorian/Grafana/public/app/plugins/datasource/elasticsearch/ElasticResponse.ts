@@ -10,13 +10,12 @@ import {
 } from '@grafana/data';
 import { convertFieldType } from '@grafana/data/src/transformations/transformers/convertFieldType';
 import TableModel from 'app/core/TableModel';
-import flatten from 'app/core/utils/flatten';
 
 import { isMetricAggregationWithField } from './components/QueryEditor/MetricAggregationsEditor/aggregations';
 import { metricAggregationConfig } from './components/QueryEditor/MetricAggregationsEditor/utils';
 import * as queryDef from './queryDef';
 import { ElasticsearchAggregation, ElasticsearchQuery, TopMetrics, ExtendedStatMetaType } from './types';
-import { describeMetric, getScriptValue } from './utils';
+import { describeMetric, flattenObject, getScriptValue } from './utils';
 
 const HIGHLIGHT_TAGS_EXP = `${queryDef.highlightTags.pre}([^@]+)${queryDef.highlightTags.post}`;
 type TopMetricMetric = Record<string, number>;
@@ -27,7 +26,10 @@ interface TopMetricBucket {
 }
 
 export class ElasticResponse {
-  constructor(private targets: ElasticsearchQuery[], private response: any) {
+  constructor(
+    private targets: ElasticsearchQuery[],
+    private response: any
+  ) {
     this.targets = targets;
     this.response = response;
   }
@@ -81,7 +83,7 @@ export class ElasticResponse {
         }
         case 'extended_stats': {
           for (const statName in metric.meta) {
-            if (!metric.meta[statName as ExtendedStatMetaType]) {
+            if (!metric.meta[statName]) {
               continue;
             }
 
@@ -121,7 +123,7 @@ export class ElasticResponse {
               };
               for (let i = 0; i < esAgg.buckets.length; i++) {
                 const bucket = esAgg.buckets[i];
-                const stats = bucket[metric.id] as TopMetricBucket;
+                const stats: TopMetricBucket = bucket[metric.id];
                 const values = stats.top.map((hit) => {
                   if (hit.metrics[metricField]) {
                     return hit.metrics[metricField];
@@ -184,7 +186,7 @@ export class ElasticResponse {
     }
 
     // helper func to add values to value array
-    const addMetricValue = (values: any[], metricName: string, value: any) => {
+    const addMetricValue = (values: unknown[], metricName: string, value: unknown) => {
       table.addColumn({ text: metricName });
       values.push(value);
     };
@@ -207,7 +209,7 @@ export class ElasticResponse {
           }
           case 'extended_stats': {
             for (const statName in metric.meta) {
-              if (!metric.meta[statName as ExtendedStatMetaType]) {
+              if (!metric.meta[statName]) {
                 continue;
               }
 
@@ -236,7 +238,7 @@ export class ElasticResponse {
                 // If we selected more than one metric we also add each metric name
                 const metricName = metric.settings.metrics.length > 1 ? `${baseName} ${metricField}` : baseName;
 
-                const stats = bucket[metric.id] as TopMetricBucket;
+                const stats: TopMetricBucket = bucket[metric.id];
 
                 // Size of top_metrics is fixed to 1.
                 addMetricValue(values, metricName, stats.top[0].metrics[metricField]);
@@ -337,7 +339,7 @@ export class ElasticResponse {
     if (target.alias) {
       const regex = /\{\{([\s\S]+?)\}\}/g;
 
-      return target.alias.replace(regex, (match: any, g1: any, g2: any) => {
+      return target.alias.replace(regex, (match, g1, g2) => {
         const group = g1 || g2;
 
         if (group.indexOf('term ') === 0) {
@@ -364,7 +366,7 @@ export class ElasticResponse {
           metricName = getScriptValue(agg);
 
           for (const pv of agg.pipelineVariables) {
-            const appliedAgg: any = find(target.metrics, { id: pv.pipelineAgg });
+            const appliedAgg = find(target.metrics, { id: pv.pipelineAgg });
             if (appliedAgg) {
               metricName = metricName.replace('params.' + pv.name, describeMetric(appliedAgg));
             }
@@ -373,7 +375,7 @@ export class ElasticResponse {
           metricName = 'Unset';
         }
       } else {
-        const appliedAgg: any = find(target.metrics, { id: series.field });
+        const appliedAgg = find(target.metrics, { id: series.field });
         if (appliedAgg) {
           metricName += ' ' + describeMetric(appliedAgg);
         } else {
@@ -604,7 +606,7 @@ export class ElasticResponse {
 
     for (let frame of dataFrame) {
       for (let field of frame.fields) {
-        if (field.type === FieldType.time && typeof field.values.get(0) !== 'number') {
+        if (field.type === FieldType.time && typeof field.values[0] !== 'number') {
           field.values = convertFieldType(field, { destinationType: FieldType.time }).values;
         }
       }
@@ -675,7 +677,7 @@ const flattenHits = (hits: Doc[]): { docs: Array<Record<string, any>>; propNames
   let propNames: string[] = [];
 
   for (const hit of hits) {
-    const flattened = hit._source ? flatten(hit._source) : {};
+    const flattened = hit._source ? flattenObject(hit._source) : {};
     const doc = {
       _id: hit._id,
       _type: hit._type,
@@ -731,7 +733,7 @@ const createEmptyDataFrame = (
       name: logMessageField,
       type: FieldType.string,
     });
-    series.setParser(f, (v: any) => {
+    series.setParser(f, (v) => {
       return v || '';
     });
   }
@@ -741,7 +743,7 @@ const createEmptyDataFrame = (
       name: 'level',
       type: FieldType.string,
     });
-    series.setParser(f, (v: any) => {
+    series.setParser(f, (v) => {
       return v || '';
     });
   }
@@ -765,7 +767,7 @@ const createEmptyDataFrame = (
       name,
       type,
     });
-    series.setParser(f, (v: any) => {
+    series.setParser(f, (v) => {
       return v || '';
     });
   }
@@ -773,7 +775,7 @@ const createEmptyDataFrame = (
   return series;
 };
 
-const addPreferredVisualisationType = (series: any, type: PreferredVisualisationType) => {
+const addPreferredVisualisationType = (series: DataFrame, type: PreferredVisualisationType) => {
   let s = series;
   s.meta
     ? (s.meta.preferredVisualisationType = type)
@@ -783,9 +785,11 @@ const addPreferredVisualisationType = (series: any, type: PreferredVisualisation
 };
 
 const toNameTypePair =
-  (docs: Array<Record<string, any>>) =>
-  (propName: string): [string, FieldType] =>
-    [propName, guessType(docs.find((doc) => doc[propName] !== undefined)?.[propName])];
+  (docs: Array<Record<string, unknown>>) =>
+  (propName: string): [string, FieldType] => [
+    propName,
+    guessType(docs.find((doc) => doc[propName] !== undefined)?.[propName]),
+  ];
 
 /**
  * Trying to guess data type from its value. This is far from perfect, as in order to have accurate guess

@@ -1,12 +1,12 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, OneClickMode } from '@grafana/data';
+import { ScalarDimensionConfig } from '@grafana/schema';
 import { useStyles2 } from '@grafana/ui';
-import { DimensionContext, ScalarDimensionConfig } from 'app/features/dimensions';
+import { DimensionContext } from 'app/features/dimensions';
 import { ScalarDimensionEditor } from 'app/features/dimensions/editors';
 
-import { CanvasElementItem, CanvasElementProps, defaultBgColor } from '../element';
+import { CanvasElementItem, CanvasElementOptions, CanvasElementProps, defaultBgColor } from '../element';
 
 interface DroneFrontData {
   rollAngle?: number;
@@ -68,7 +68,7 @@ const DroneFrontDisplay = ({ data }: CanvasElementProps<DroneFrontConfig, DroneF
   );
 };
 
-export const droneFrontItem: CanvasElementItem<any, any> = {
+export const droneFrontItem: CanvasElementItem = {
   id: 'droneFront',
   name: 'Drone Front',
   description: 'Drone front',
@@ -92,13 +92,18 @@ export const droneFrontItem: CanvasElementItem<any, any> = {
       height: options?.placement?.height ?? 26,
       top: options?.placement?.top,
       left: options?.placement?.left,
+      rotation: options?.placement?.rotation ?? 0,
     },
+    oneClickMode: options?.oneClickMode ?? OneClickMode.Off,
+    links: options?.links ?? [],
   }),
 
   // Called when data changes
-  prepareData: (ctx: DimensionContext, cfg: DroneFrontConfig) => {
+  prepareData: (dimensionContext: DimensionContext, elementOptions: CanvasElementOptions<DroneFrontConfig>) => {
+    const droneFrontConfig = elementOptions.config;
+
     const data: DroneFrontData = {
-      rollAngle: cfg?.rollAngle ? ctx.getScalar(cfg.rollAngle).value() : 0,
+      rollAngle: droneFrontConfig?.rollAngle ? dimensionContext.getScalar(droneFrontConfig.rollAngle).value() : 0,
     };
 
     return data;
@@ -117,7 +122,9 @@ export const droneFrontItem: CanvasElementItem<any, any> = {
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  droneFront: css`
-    transition: transform 0.4s;
-  `,
+  droneFront: css({
+    // TODO: figure out what styles to apply when prefers-reduced-motion is set
+    // eslint-disable-next-line @grafana/no-unreduced-motion
+    transition: 'transform 0.4s',
+  }),
 });

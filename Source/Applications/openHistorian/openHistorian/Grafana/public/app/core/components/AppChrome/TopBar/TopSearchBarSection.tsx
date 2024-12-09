@@ -1,12 +1,12 @@
 import { css, cx } from '@emotion/css';
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { useMediaQueryChange } from 'app/core/hooks/useMediaQueryChange';
 
 export interface TopSearchBarSectionProps {
-  children: React.ReactNode;
+  children: ReactNode;
   align?: 'left' | 'center' | 'right';
 }
 
@@ -29,7 +29,7 @@ export function TopSearchBarSection({ children, align = 'left' }: TopSearchBarSe
   }
 
   return (
-    <div data-test-id="wrapper" className={cx(styles.wrapper, { [styles[align]]: align === 'right' })}>
+    <div data-testid="wrapper" className={cx(styles.wrapper, { [styles[align]]: align === 'right' })}>
       {children}
     </div>
   );

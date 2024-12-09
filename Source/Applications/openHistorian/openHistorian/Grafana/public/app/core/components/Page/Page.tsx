@@ -1,125 +1,179 @@
-// Libraries
 import { css, cx } from '@emotion/css';
-import React, { useEffect } from 'react';
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 
 import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
 import { config } from '@grafana/runtime';
-import { CustomScrollbar, useStyles2 } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 
-import { Footer } from '../Footer/Footer';
-import { PageHeader } from '../PageHeader/PageHeader';
-import { Page as NewPage } from '../PageNew/Page';
+import { TOP_BAR_LEVEL_HEIGHT } from '../AppChrome/types';
+import NativeScrollbar from '../NativeScrollbar';
 
-import { OldNavOnly } from './OldNavOnly';
 import { PageContents } from './PageContents';
+import { PageHeader } from './PageHeader';
+import { PageTabs } from './PageTabs';
+import { PageToolbarActions } from './PageToolbarActions';
 import { PageType } from './types';
 import { usePageNav } from './usePageNav';
 import { usePageTitle } from './usePageTitle';
 
-export const OldPage: PageType = ({
+export interface PageContextType {
+  setToolbar: Dispatch<SetStateAction<ReactNode>>;
+}
+
+export const PageContext = createContext<PageContextType | undefined>(undefined);
+
+function usePageContext(): PageContextType {
+  const context = useContext(PageContext);
+  if (!context) {
+    throw new Error('No PageContext found');
+  }
+  return context;
+}
+
+/**
+ * Hook to dynamically set the toolbar of a Page from a child component.
+ * Prefer setting the toolbar directly as a prop to Page.
+ * @param toolbar a ReactNode that will be rendered in a second toolbar
+ */
+export function usePageToolbar(toolbar?: ReactNode) {
+  const { setToolbar } = usePageContext();
+  useEffect(() => {
+    setToolbar(toolbar);
+    return () => setToolbar(undefined);
+  }, [setToolbar, toolbar]);
+}
+
+export const Page: PageType = ({
   navId,
   navModel: oldNavProp,
   pageNav,
+  renderTitle,
+  onEditTitle,
+  actions,
+  subTitle,
   children,
   className,
-  toolbar,
-  scrollRef,
-  scrollTop,
-  layout = PageLayoutType.Standard,
-  renderTitle,
-  subTitle,
-  actions,
+  toolbar: toolbarProp,
   info,
+  layout = PageLayoutType.Standard,
+  onSetScrollRef,
   ...otherProps
 }) => {
-  const styles = useStyles2(getStyles);
+  const isSingleTopNav = config.featureToggles.singleTopNav;
+  const [toolbar, setToolbar] = useState(toolbarProp);
+  const styles = useStyles2(getStyles, Boolean(isSingleTopNav && toolbar));
   const navModel = usePageNav(navId, oldNavProp);
   const { chrome } = useGrafana();
 
   usePageTitle(navModel, pageNav);
 
-  const pageHeaderNav = pageNav ?? navModel?.main;
+  const pageHeaderNav = pageNav ?? navModel?.node;
 
-  useEffect(() => {
+  // We use useLayoutEffect here to make sure that the chrome is updated before the page is rendered
+  // This prevents flickering sectionNav when going from dashboard to settings for example
+  useLayoutEffect(() => {
     if (navModel) {
-      // This is needed for chrome to update it's chromeless state
       chrome.update({
-        sectionNav: navModel.node,
+        sectionNav: navModel,
+        pageNav: pageNav,
+        layout: layout,
       });
-    } else {
-      // Need to trigger a chrome state update for the route change to be processed
-      chrome.update({});
     }
-  }, [navModel, chrome]);
+  }, [navModel, pageNav, chrome, layout]);
 
   return (
-    <div className={cx(styles.wrapper, className)} {...otherProps}>
-      {layout === PageLayoutType.Standard && (
-        <CustomScrollbar autoHeightMin={'100%'} scrollTop={scrollTop} scrollRefCallback={scrollRef}>
-          <div className={cx('page-scrollbar-content', className)}>
-            {pageHeaderNav && (
-              <PageHeader
-                actions={actions}
-                info={info}
-                navItem={pageHeaderNav}
-                renderTitle={renderTitle}
-                subTitle={subTitle}
-              />
-            )}
-            {children}
-            <Footer />
-          </div>
-        </CustomScrollbar>
-      )}
-      {layout === PageLayoutType.Canvas && (
-        <>
-          {toolbar}
-          <div className={styles.scrollWrapper}>
-            <CustomScrollbar autoHeightMin={'100%'} scrollTop={scrollTop} scrollRefCallback={scrollRef}>
-              <div className={cx(styles.content, !toolbar && styles.contentWithoutToolbar)}>{children}</div>
-            </CustomScrollbar>
-          </div>
-        </>
-      )}
-      {layout === PageLayoutType.Custom && (
-        <>
-          {toolbar}
-          {children}
-        </>
-      )}
-    </div>
+    <PageContext.Provider value={{ setToolbar }}>
+      <div className={cx(styles.wrapper, className)} {...otherProps}>
+        {isSingleTopNav && toolbar && <PageToolbarActions>{toolbar}</PageToolbarActions>}
+        {layout === PageLayoutType.Standard && (
+          <NativeScrollbar
+            // This id is used by the image renderer to scroll through the dashboard
+            divId="page-scrollbar"
+            onSetScrollRef={onSetScrollRef}
+          >
+            <div className={styles.pageInner}>
+              {pageHeaderNav && (
+                <PageHeader
+                  actions={actions}
+                  onEditTitle={onEditTitle}
+                  navItem={pageHeaderNav}
+                  renderTitle={renderTitle}
+                  info={info}
+                  subTitle={subTitle}
+                />
+              )}
+              {pageNav && pageNav.children && <PageTabs navItem={pageNav} />}
+              <div className={styles.pageContent}>{children}</div>
+            </div>
+          </NativeScrollbar>
+        )}
+
+        {layout === PageLayoutType.Canvas && (
+          <NativeScrollbar
+            // This id is used by the image renderer to scroll through the dashboard
+            divId="page-scrollbar"
+            onSetScrollRef={onSetScrollRef}
+          >
+            <div className={styles.canvasContent}>{children}</div>
+          </NativeScrollbar>
+        )}
+
+        {layout === PageLayoutType.Custom && children}
+      </div>
+    </PageContext.Provider>
   );
 };
 
-OldPage.Contents = PageContents;
-OldPage.OldNavOnly = OldNavOnly;
+Page.Contents = PageContents;
 
-export const Page: PageType = config.featureToggles.topnav ? NewPage : OldPage;
+const getStyles = (theme: GrafanaTheme2, hasToolbar: boolean) => {
+  return {
+    wrapper: css({
+      label: 'page-wrapper',
+      display: 'flex',
+      flex: '1 1 0',
+      flexDirection: 'column',
+      marginTop: hasToolbar ? TOP_BAR_LEVEL_HEIGHT : 0,
+      position: 'relative',
+    }),
+    pageContent: css({
+      label: 'page-content',
+      flexGrow: 1,
+    }),
+    primaryBg: css({
+      background: theme.colors.background.primary,
+    }),
+    pageInner: css({
+      label: 'page-inner',
+      padding: theme.spacing(2),
+      borderBottom: 'none',
+      background: theme.colors.background.primary,
+      display: 'flex',
+      flexDirection: 'column',
+      flexGrow: 1,
+      margin: theme.spacing(0, 0, 0, 0),
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  wrapper: css({
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flex: '1 1 0',
-    flexDirection: 'column',
-    minHeight: 0,
-  }),
-  scrollWrapper: css({
-    width: '100%',
-    flexGrow: 1,
-    minHeight: 0,
-    display: 'flex',
-  }),
-  content: css({
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(0, 2, 2, 2),
-    flexBasis: '100%',
-    flexGrow: 1,
-  }),
-  contentWithoutToolbar: css({
-    padding: theme.spacing(2),
-  }),
-});
+      [theme.breakpoints.up('md')]: {
+        padding: theme.spacing(4),
+      },
+    }),
+    canvasContent: css({
+      label: 'canvas-content',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: theme.spacing(2),
+      flexBasis: '100%',
+      flexGrow: 1,
+    }),
+  };
+};

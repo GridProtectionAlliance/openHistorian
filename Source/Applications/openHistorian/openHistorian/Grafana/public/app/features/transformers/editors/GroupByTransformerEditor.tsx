@@ -1,5 +1,5 @@
-import { css, cx } from '@emotion/css';
-import React, { useCallback } from 'react';
+import { css } from '@emotion/css';
+import { useCallback } from 'react';
 
 import {
   DataTransformerID,
@@ -8,14 +8,17 @@ import {
   standardTransformers,
   TransformerRegistryItem,
   TransformerUIProps,
+  TransformerCategory,
+  GrafanaTheme2,
 } from '@grafana/data';
 import {
   GroupByFieldOptions,
   GroupByOperationID,
   GroupByTransformerOptions,
 } from '@grafana/data/src/transformations/transformers/groupBy';
-import { Select, StatsPicker, stylesFactory } from '@grafana/ui';
+import { useTheme2, Select, StatsPicker, InlineField, Stack, Alert } from '@grafana/ui';
 
+import { getTransformationContent } from '../docs/getTransformationContent';
 import { useAllFieldNamesFromDataFrames } from '../utils';
 
 interface FieldProps {
@@ -46,8 +49,28 @@ export const GroupByTransformerEditor = ({
     [onChange]
   );
 
+  // See if there's both an aggregation and grouping field configured
+  // for calculations. If not we display a warning because there
+  // needs to be a grouping for the calculation to have effect
+  let hasGrouping,
+    hasAggregation = false;
+
+  for (const field of Object.values(options.fields)) {
+    if (field.aggregations.length > 0 && field.operation !== null) {
+      hasAggregation = true;
+    }
+    if (field.operation === GroupByOperationID.groupBy) {
+      hasGrouping = true;
+    }
+  }
+
+  const showCalcAlert = hasAggregation && !hasGrouping;
+
   return (
-    <div>
+    <Stack direction="column">
+      {showCalcAlert && (
+        <Alert title="Calculations will not have an effect if no fields are being grouped on." severity="warning" />
+      )}
       {fieldNames.map((key) => (
         <GroupByFieldConfiguration
           onConfigChange={onConfigChange(key)}
@@ -56,7 +79,7 @@ export const GroupByTransformerEditor = ({
           key={key}
         />
       ))}
-    </div>
+    </Stack>
   );
 };
 
@@ -66,7 +89,8 @@ const options = [
 ];
 
 export const GroupByFieldConfiguration = ({ fieldName, config, onConfigChange }: FieldProps) => {
-  const styles = getStyling();
+  const theme = useTheme2();
+  const styles = getStyles(theme);
 
   const onChange = useCallback(
     (value: SelectableValue<GroupByOperationID | null>) => {
@@ -79,28 +103,15 @@ export const GroupByFieldConfiguration = ({ fieldName, config, onConfigChange }:
   );
 
   return (
-    <div className={cx('gf-form-inline', styles.row)}>
-      <div className={cx('gf-form', styles.fieldName)}>
-        <div className={cx('gf-form-label', styles.rowSpacing)}>{fieldName}</div>
-      </div>
-
-      <div className={cx('gf-form', styles.cell)}>
-        <div className={cx('gf-form-spacing', styles.rowSpacing)}>
-          <Select
-            className="width-12"
-            options={options}
-            value={config?.operation}
-            placeholder="Ignored"
-            onChange={onChange}
-            isClearable
-          />
+    <InlineField className={styles.label} label={fieldName} grow shrink>
+      <Stack gap={0.5} direction="row">
+        <div className={styles.operation}>
+          <Select options={options} value={config?.operation} placeholder="Ignored" onChange={onChange} isClearable />
         </div>
-      </div>
 
-      {config?.operation === GroupByOperationID.aggregate && (
-        <div className={cx('gf-form', 'gf-form--grow', styles.calculations)}>
+        {config?.operation === GroupByOperationID.aggregate && (
           <StatsPicker
-            className={cx('flex-grow-1', styles.rowSpacing)}
+            className={styles.aggregations}
             placeholder="Select Stats"
             allowMultiple
             stats={config.aggregations}
@@ -108,36 +119,29 @@ export const GroupByFieldConfiguration = ({ fieldName, config, onConfigChange }:
               onConfigChange({ ...config, aggregations: stats as ReducerID[] });
             }}
           />
-        </div>
-      )}
-    </div>
+        )}
+      </Stack>
+    </InlineField>
   );
 };
 
-const getStyling = stylesFactory(() => {
-  const cell = css`
-    display: table-cell;
-  `;
-
+const getStyles = (theme: GrafanaTheme2) => {
   return {
-    row: css`
-      display: table-row;
+    label: css`
+      label {
+        min-width: ${theme.spacing(32)};
+      }
     `,
-    cell: cell,
-    rowSpacing: css`
-      margin-bottom: 4px;
+    operation: css`
+      flex-shrink: 0;
+      height: 100%;
+      width: ${theme.spacing(24)};
     `,
-    fieldName: css`
-      ${cell}
-      min-width: 250px;
-      white-space: nowrap;
-    `,
-    calculations: css`
-      ${cell}
-      width: 99%;
+    aggregations: css`
+      flex-grow: 1;
     `,
   };
-});
+};
 
 export const groupByTransformRegistryItem: TransformerRegistryItem<GroupByTransformerOptions> = {
   id: DataTransformerID.groupBy,
@@ -145,4 +149,10 @@ export const groupByTransformRegistryItem: TransformerRegistryItem<GroupByTransf
   transformation: standardTransformers.groupByTransformer,
   name: standardTransformers.groupByTransformer.name,
   description: standardTransformers.groupByTransformer.description,
+  categories: new Set([
+    TransformerCategory.Combine,
+    TransformerCategory.CalculateNewFields,
+    TransformerCategory.Reformat,
+  ]),
+  help: getTransformationContent(DataTransformerID.groupBy).helperDocs,
 };

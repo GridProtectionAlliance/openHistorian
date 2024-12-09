@@ -1,46 +1,74 @@
-import React from 'react';
+import { css } from '@emotion/css';
 
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { DataSourcePluginOptionsEditorProps, GrafanaTheme2 } from '@grafana/data';
+import {
+  AdvancedHttpSettings,
+  Auth,
+  ConfigSection,
+  ConnectionSettings,
+  DataSourceDescription,
+  convertLegacyAuthProps,
+} from '@grafana/experimental';
+import { NodeGraphSection, SpanBarSection, TraceToLogsSection, TraceToMetricsSection } from '@grafana/o11y-ds-frontend';
 import { config } from '@grafana/runtime';
-import { DataSourceHttpSettings, SecureSocksProxySettings } from '@grafana/ui';
-import { NodeGraphSettings } from 'app/core/components/NodeGraphSettings';
-import { TraceToLogsSettings } from 'app/core/components/TraceToLogs/TraceToLogsSettings';
-import { TraceToMetricsSettings } from 'app/core/components/TraceToMetrics/TraceToMetricsSettings';
-import { SpanBarSettings } from 'app/features/explore/TraceView/components';
+import { useStyles2, Divider, Stack, SecureSocksProxySettings } from '@grafana/ui';
 
 export type Props = DataSourcePluginOptionsEditorProps;
 
 export const ConfigEditor = ({ options, onOptionsChange }: Props) => {
+  const styles = useStyles2(getStyles);
+
   return (
-    <>
-      <DataSourceHttpSettings
-        defaultUrl="http://localhost:9411"
-        dataSourceConfig={options}
-        showAccessOptions={false}
-        onChange={onOptionsChange}
+    <div className={styles.container}>
+      <DataSourceDescription
+        dataSourceName="Zipkin"
+        docsLink="https://grafana.com/docs/grafana/latest/datasources/zipkin"
+        hasRequiredFields={false}
       />
 
-      {config.featureToggles.secureSocksDatasourceProxy && (
-        <SecureSocksProxySettings options={options} onOptionsChange={onOptionsChange} />
-      )}
+      <Divider spacing={4} />
 
-      <div className="gf-form-group">
-        <TraceToLogsSettings options={options} onOptionsChange={onOptionsChange} />
-      </div>
+      <ConnectionSettings config={options} onChange={onOptionsChange} urlPlaceholder="http://localhost:9411" />
 
-      {config.featureToggles.traceToMetrics ? (
-        <div className="gf-form-group">
-          <TraceToMetricsSettings options={options} onOptionsChange={onOptionsChange} />
-        </div>
-      ) : null}
+      <Divider spacing={4} />
+      <Auth
+        {...convertLegacyAuthProps({
+          config: options,
+          onChange: onOptionsChange,
+        })}
+      />
 
-      <div className="gf-form-group">
-        <NodeGraphSettings options={options} onOptionsChange={onOptionsChange} />
-      </div>
+      <Divider spacing={4} />
+      <TraceToLogsSection options={options} onOptionsChange={onOptionsChange} />
+      <Divider spacing={4} />
 
-      <div className="gf-form-group">
-        <SpanBarSettings options={options} onOptionsChange={onOptionsChange} />
-      </div>
-    </>
+      <TraceToMetricsSection options={options} onOptionsChange={onOptionsChange} />
+      <Divider spacing={4} />
+
+      <ConfigSection
+        title="Additional settings"
+        description="Additional settings are optional settings that can be configured for more control over your data source."
+        isCollapsible={true}
+        isInitiallyOpen={false}
+      >
+        <Stack gap={5} direction="column">
+          <AdvancedHttpSettings config={options} onChange={onOptionsChange} />
+
+          {config.secureSocksDSProxyEnabled && (
+            <SecureSocksProxySettings options={options} onOptionsChange={onOptionsChange} />
+          )}
+
+          <NodeGraphSection options={options} onOptionsChange={onOptionsChange} />
+          <SpanBarSection options={options} onOptionsChange={onOptionsChange} />
+        </Stack>
+      </ConfigSection>
+    </div>
   );
 };
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  container: css({
+    marginBottom: theme.spacing(2),
+    maxWidth: '900px',
+  }),
+});

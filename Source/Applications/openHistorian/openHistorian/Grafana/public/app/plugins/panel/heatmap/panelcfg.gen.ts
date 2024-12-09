@@ -4,13 +4,11 @@
 //     public/app/plugins/gen.go
 // Using jennies:
 //     TSTypesJenny
-//     PluginTSTypesJenny
+//     PluginTsTypesJenny
 //
 // Run 'make gen-cue' from repository root to regenerate.
 
 import * as ui from '@grafana/schema';
-
-export const PanelCfgModelVersion = Object.freeze([0, 0]);
 
 /**
  * Controls the color mode of the heatmap
@@ -26,6 +24,15 @@ export enum HeatmapColorMode {
 export enum HeatmapColorScale {
   Exponential = 'exponential',
   Linear = 'linear',
+}
+
+/**
+ * Controls which axis to allow selection on
+ */
+export enum HeatmapSelectionMode {
+  X = 'x',
+  Xy = 'xy',
+  Y = 'y',
 }
 
 /**
@@ -128,10 +135,16 @@ export interface FilterValueRange {
  * Controls tooltip options
  */
 export interface HeatmapTooltip {
+  maxHeight?: number;
+  maxWidth?: number;
   /**
-   * Controls if the tooltip is shown
+   * Controls how the tooltip is shown
    */
-  show: boolean;
+  mode: ui.TooltipDisplayMode;
+  /**
+   * Controls if the tooltip shows a color scale in header
+   */
+  showColorScale?: boolean;
   /**
    * Controls if the tooltip shows a histogram of the y-axis values
    */
@@ -172,7 +185,7 @@ export interface RowsHeatmapOptions {
   value?: string;
 }
 
-export interface PanelOptions {
+export interface Options {
   /**
    * Controls if the heatmap should be calculated from data
    */
@@ -217,6 +230,10 @@ export interface PanelOptions {
    */
   rowsFrame?: RowsHeatmapOptions;
   /**
+   * Controls which axis to allow selection on
+   */
+  selectionMode?: HeatmapSelectionMode;
+  /**
    * | *{
    * 	layout: ui.HeatmapCellLayout & "auto" // TODO: fix after remove when https://github.com/grafana/cuetsy/issues/74 is fixed
    * }
@@ -233,7 +250,7 @@ export interface PanelOptions {
   yAxis: YAxisConfig;
 }
 
-export const defaultPanelOptions: Partial<PanelOptions> = {
+export const defaultOptions: Partial<Options> = {
   calculate: false,
   cellGap: 1,
   cellValues: {},
@@ -259,13 +276,15 @@ export const defaultPanelOptions: Partial<PanelOptions> = {
   legend: {
     show: true,
   },
+  selectionMode: HeatmapSelectionMode.X,
   showValue: ui.VisibilityMode.Auto,
   tooltip: {
-    show: true,
+    mode: ui.TooltipDisplayMode.Single,
     yHistogram: false,
+    showColorScale: false,
   },
 };
 
-export interface PanelFieldConfig extends ui.HideableFieldConfig {
+export interface FieldConfig extends ui.HideableFieldConfig {
   scaleDistribution?: ui.ScaleDistributionConfig;
 }

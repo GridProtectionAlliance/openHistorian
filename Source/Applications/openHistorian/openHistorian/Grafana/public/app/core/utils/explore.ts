@@ -1,166 +1,139 @@
-import { flatten, omit, uniq } from 'lodash';
+import { customAlphabet } from 'nanoid';
 import { Unsubscribable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  AdHocVariableFilter,
   CoreApp,
   DataQuery,
   DataQueryRequest,
   DataSourceApi,
   DataSourceRef,
-  dateMath,
-  DateTime,
   DefaultTimeZone,
-  ExploreUrlState,
-  HistoryItem,
+  getNextRefId,
   IntervalValues,
-  isDateTime,
+  locationUtil,
   LogsDedupStrategy,
   LogsSortOrder,
   rangeUtil,
   RawTimeRange,
-  TimeFragment,
+  ScopedVars,
   TimeRange,
   TimeZone,
-  toUtc,
+  toURLRange,
   urlUtil,
 } from '@grafana/data';
-import { DataSourceSrv, getDataSourceSrv } from '@grafana/runtime';
+import { getDataSourceSrv } from '@grafana/runtime';
 import { RefreshPicker } from '@grafana/ui';
 import store from 'app/core/store';
-import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import { PanelModel } from 'app/features/dashboard/state';
 import { ExpressionDatasourceUID } from 'app/features/expressions/types';
-import { ExploreId, QueryOptions, QueryTransaction } from 'app/types/explore';
-
-import { config } from '../config';
-
-import { getNextRefIdChar } from './query';
-
-export const DEFAULT_RANGE = {
-  from: 'now-1h',
-  to: 'now',
-};
+import { QueryOptions, QueryTransaction } from 'app/types/explore';
 
 export const DEFAULT_UI_STATE = {
   dedupStrategy: LogsDedupStrategy.none,
 };
 
-const MAX_HISTORY_ITEMS = 100;
+export const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
+const nanoid = customAlphabet(ID_ALPHABET, 3);
 
-export const LAST_USED_DATASOURCE_KEY = 'grafana.explore.datasource';
-export const lastUsedDatasourceKeyForOrgId = (orgId: number) => `${LAST_USED_DATASOURCE_KEY}.${orgId}`;
+const LAST_USED_DATASOURCE_KEY = 'grafana.explore.datasource';
+const lastUsedDatasourceKeyForOrgId = (orgId: number) => `${LAST_USED_DATASOURCE_KEY}.${orgId}`;
+export const getLastUsedDatasourceUID = (orgId: number) =>
+  store.getObject<string>(lastUsedDatasourceKeyForOrgId(orgId));
+export const setLastUsedDatasourceUID = (orgId: number, datasourceUID: string) =>
+  store.setObject(lastUsedDatasourceKeyForOrgId(orgId), datasourceUID);
 
 export interface GetExploreUrlArguments {
-  panel: PanelModel;
-  /** Datasource service to query other datasources in case the panel datasource is mixed */
-  datasourceSrv: DataSourceSrv;
-  /** Time service to get the current dashboard range from */
-  timeSrv: TimeSrv;
+  queries: DataQuery[];
+  dsRef: DataSourceRef | null | undefined;
+  timeRange: TimeRange;
+  scopedVars: ScopedVars | undefined;
+  adhocFilters?: AdHocVariableFilter[];
+}
+
+export function generateExploreId() {
+  while (true) {
+    const id = nanoid(3);
+
+    if (!/^\d+$/.test(id)) {
+      return id;
+    }
+  }
 }
 
 /**
  * Returns an Explore-URL that contains a panel's queries and the dashboard time range.
  */
 export async function getExploreUrl(args: GetExploreUrlArguments): Promise<string | undefined> {
-  const { panel, datasourceSrv, timeSrv } = args;
-  let exploreDatasource = await datasourceSrv.get(panel.datasource);
+  const { queries, dsRef, timeRange, scopedVars, adhocFilters } = args;
+  const interpolatedQueries = (
+    await Promise.allSettled(
+      queries
+        // Explore does not support expressions so filter those out
+        .filter((q) => q.datasource?.uid !== ExpressionDatasourceUID)
+        .map(async (q) => {
+          // if the query defines a datasource, use that one, otherwise use the one from the panel, which should always be defined.
+          // this will rejects if the datasource is not found, or return the default one if dsRef is not provided.
+          const queryDs = await getDataSourceSrv().get(q.datasource || dsRef);
 
-  /** In Explore, we don't have legend formatter and we don't want to keep
-   * legend formatting as we can't change it
-   *
-   * We also don't have expressions, so filter those out
-   */
-  let exploreTargets: DataQuery[] = panel.targets
-    .map((t) => omit(t, 'legendFormat'))
-    .filter((t) => t.datasource?.uid !== ExpressionDatasourceUID);
-  let url: string | undefined;
-  // if the mixed datasource is not enabled for explore, choose only one datasource
-  if (
-    config.featureToggles.exploreMixedDatasource === false &&
-    exploreDatasource.meta?.id === 'mixed' &&
-    exploreTargets
-  ) {
-    // Find first explore datasource among targets
-    for (const t of exploreTargets) {
-      const datasource = await datasourceSrv.get(t.datasource || undefined);
-      if (datasource) {
-        exploreDatasource = datasource;
-        exploreTargets = panel.targets.filter((t) => t.datasource === datasource.name);
-        break;
-      }
-    }
-  }
+          return {
+            // interpolate the query using its datasource `interpolateVariablesInQueries` method if defined, othewise return the query as-is.
+            ...(queryDs.interpolateVariablesInQueries?.([q], scopedVars ?? {}, adhocFilters)[0] || q),
+            // But always set the datasource as it's  required in Explore.
+            // NOTE: if for some reason the query has the "mixed" datasource, we omit the property;
+            // Upon initialization, Explore use its own logic to determine the datasource.
+            ...(!queryDs.meta.mixed && { datasource: queryDs.getRef() }),
+          };
+        })
+    )
+  )
+    .filter(
+      <T>(promise: PromiseSettledResult<T>): promise is PromiseFulfilledResult<T> => promise.status === 'fulfilled'
+    )
+    .map((q) => q.value);
 
-  if (exploreDatasource) {
-    const range = timeSrv.timeRangeForUrl();
-    let state: Partial<ExploreUrlState> = { range };
-    if (exploreDatasource.interpolateVariablesInQueries) {
-      const scopedVars = panel.scopedVars || {};
-      state = {
-        ...state,
-        datasource: exploreDatasource.name,
-        context: 'explore',
-        queries: exploreDatasource.interpolateVariablesInQueries(exploreTargets, scopedVars),
-      };
-    } else {
-      state = {
-        ...state,
-        datasource: exploreDatasource.name,
-        context: 'explore',
-        queries: exploreTargets,
-      };
-    }
+  const exploreState = JSON.stringify({
+    [generateExploreId()]: { range: toURLRange(timeRange.raw), queries: interpolatedQueries, datasource: dsRef?.uid },
+  });
+  return locationUtil.assureBaseUrl(urlUtil.renderUrl('/explore', { panes: exploreState, schemaVersion: 1 }));
+}
 
-    const exploreState = JSON.stringify(state);
-    url = urlUtil.renderUrl('/explore', { left: exploreState });
-  }
-
-  return url;
+export function requestIdGenerator(exploreId: string) {
+  return `explore_${exploreId}`;
 }
 
 export function buildQueryTransaction(
-  exploreId: ExploreId,
+  exploreId: string,
   queries: DataQuery[],
   queryOptions: QueryOptions,
   range: TimeRange,
   scanning: boolean,
-  timeZone?: TimeZone
+  timeZone?: TimeZone,
+  scopedVars?: ScopedVars
 ): QueryTransaction {
-  const key = queries.reduce((combinedKey, query) => {
-    combinedKey += query.key;
-    return combinedKey;
-  }, '');
-
+  const panelId = Number.parseInt(exploreId, 36);
   const { interval, intervalMs } = getIntervals(range, queryOptions.minInterval, queryOptions.maxDataPoints);
-
-  // Most datasource is using `panelId + query.refId` for cancellation logic.
-  // Using `format` here because it relates to the view panel that the request is for.
-  // However, some datasources don't use `panelId + query.refId`, but only `panelId`.
-  // Therefore panel id has to be unique.
-  const panelId = `${key}`;
 
   const request: DataQueryRequest = {
     app: CoreApp.Explore,
-    dashboardId: 0,
     // TODO probably should be taken from preferences but does not seem to be used anyway.
     timezone: timeZone || DefaultTimeZone,
     startTime: Date.now(),
     interval,
     intervalMs,
-    // TODO: the query request expects number and we are using string here. Seems like it works so far but can create
-    // issues down the road.
-    panelId: panelId as any,
+    panelId,
     targets: queries, // Datasources rely on DataQueries being passed under the targets key.
     range,
-    requestId: 'explore_' + exploreId,
+    requestId: requestIdGenerator(exploreId),
     rangeRaw: range.raw,
     scopedVars: {
       __interval: { text: interval, value: interval },
       __interval_ms: { text: intervalMs, value: intervalMs },
+      ...scopedVars,
     },
     maxDataPoints: queryOptions.maxDataPoints,
     liveStreaming: queryOptions.liveStreaming,
+    skipQueryCache: true,
   };
 
   return {
@@ -174,29 +147,7 @@ export function buildQueryTransaction(
 
 export const clearQueryKeys: (query: DataQuery) => DataQuery = ({ key, ...rest }) => rest;
 
-const isSegment = (segment: { [key: string]: string }, ...props: string[]) =>
-  props.some((prop) => segment.hasOwnProperty(prop));
-
-enum ParseUrlStateIndex {
-  RangeFrom = 0,
-  RangeTo = 1,
-  Datasource = 2,
-  SegmentsStart = 3,
-}
-
-export const safeParseJson = (text?: string): any | undefined => {
-  if (!text) {
-    return;
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const safeStringifyValue = (value: any, space?: number) => {
+export const safeStringifyValue = (value: unknown, space?: number) => {
   if (value === undefined || value === null) {
     return '';
   }
@@ -209,41 +160,6 @@ export const safeStringifyValue = (value: any, space?: number) => {
 
   return '';
 };
-
-export function parseUrlState(initial: string | undefined): ExploreUrlState {
-  const parsed = safeParseJson(initial);
-  const errorResult: any = {
-    datasource: null,
-    queries: [],
-    range: DEFAULT_RANGE,
-    mode: null,
-  };
-
-  if (!parsed) {
-    return errorResult;
-  }
-
-  if (!Array.isArray(parsed)) {
-    const urlState = { ...parsed, isFromCompactUrl: false };
-    return urlState;
-  }
-
-  if (parsed.length <= ParseUrlStateIndex.SegmentsStart) {
-    console.error('Error parsing compact URL state for Explore.');
-    return errorResult;
-  }
-
-  const range = {
-    from: parsed[ParseUrlStateIndex.RangeFrom],
-    to: parsed[ParseUrlStateIndex.RangeTo],
-  };
-  const datasource = parsed[ParseUrlStateIndex.Datasource];
-  const parsedSegments = parsed.slice(ParseUrlStateIndex.SegmentsStart);
-  const queries = parsedSegments.filter((segment) => !isSegment(segment, 'ui', 'mode', '__panelsState'));
-
-  const panelsState = parsedSegments.find((segment) => isSegment(segment, '__panelsState'))?.__panelsState;
-  return { datasource, queries, range, panelsState, isFromCompactUrl: true };
-}
 
 export function generateKey(index = 0): string {
   return `Q-${uuidv4()}-${index}`;
@@ -276,23 +192,14 @@ export async function generateEmptyQuery(
     defaultQuery = datasourceInstance.getDefaultQuery?.(CoreApp.Explore);
   }
 
-  return { refId: getNextRefIdChar(queries), key: generateKey(index), datasource: datasourceRef, ...defaultQuery };
+  return { ...defaultQuery, refId: getNextRefId(queries), key: generateKey(index), datasource: datasourceRef };
 }
 
 export const generateNewKeyAndAddRefIdIfMissing = (target: DataQuery, queries: DataQuery[], index = 0): DataQuery => {
   const key = generateKey(index);
-  const refId = target.refId || getNextRefIdChar(queries);
+  const refId = target.refId || getNextRefId(queries);
 
   return { ...target, refId, key };
-};
-
-export const queryDatasourceDetails = (queries: DataQuery[]) => {
-  const allUIDs = queries.map((query) => query.datasource?.uid);
-  return {
-    allHaveDatasource: allUIDs.length === queries.length,
-    noneHaveDatasource: allUIDs.length === 0,
-    allDatasourceSame: allUIDs.every((val, i, arr) => val === arr[0]),
-  };
 };
 
 /**
@@ -311,7 +218,7 @@ export async function ensureQueries(
       const key = generateKey(index);
       let refId = query.refId;
       if (!refId) {
-        refId = getNextRefIdChar(allQueries);
+        refId = getNextRefId(allQueries);
       }
 
       // if a query has a datasource, validate it and only add it if valid
@@ -358,48 +265,13 @@ const validKeys = ['refId', 'key', 'context', 'datasource'];
 export function hasNonEmptyQuery<TQuery extends DataQuery>(queries: TQuery[]): boolean {
   return (
     queries &&
-    queries.some((query: any) => {
-      const keys = Object.keys(query)
-        .filter((key) => validKeys.indexOf(key) === -1)
-        .map((k) => query[k])
-        .filter((v) => v);
-      return keys.length > 0;
+    queries.some((query) => {
+      const entries = Object.entries(query)
+        .filter(([key, _]) => validKeys.indexOf(key) === -1)
+        .filter(([_, value]) => value);
+      return entries.length > 0;
     })
   );
-}
-
-/**
- * Update the query history. Side-effect: store history in local storage
- */
-export function updateHistory<T extends DataQuery>(
-  history: Array<HistoryItem<T>>,
-  datasourceId: string,
-  queries: T[]
-): Array<HistoryItem<T>> {
-  const ts = Date.now();
-  let updatedHistory = history;
-  queries.forEach((query) => {
-    updatedHistory = [{ query, ts }, ...updatedHistory];
-  });
-
-  if (updatedHistory.length > MAX_HISTORY_ITEMS) {
-    updatedHistory = updatedHistory.slice(0, MAX_HISTORY_ITEMS);
-  }
-
-  // Combine all queries of a datasource type into one history
-  const historyKey = `grafana.explore.history.${datasourceId}`;
-  try {
-    store.setObject(historyKey, updatedHistory);
-    return updatedHistory;
-  } catch (error) {
-    console.error(error);
-    return history;
-  }
-}
-
-export function clearHistory(datasourceId: string) {
-  const historyKey = `grafana.explore.history.${datasourceId}`;
-  store.delete(historyKey);
 }
 
 export const getQueryKeys = (queries: DataQuery[]): string[] => {
@@ -414,123 +286,11 @@ export const getQueryKeys = (queries: DataQuery[]): string[] => {
 export const getTimeRange = (timeZone: TimeZone, rawRange: RawTimeRange, fiscalYearStartMonth: number): TimeRange => {
   let range = rangeUtil.convertRawToRange(rawRange, timeZone, fiscalYearStartMonth);
 
-  if (range.to.isBefore(range.from)) {
-    range = rangeUtil.convertRawToRange({ from: range.raw.to, to: range.raw.from }, timeZone, fiscalYearStartMonth);
-  }
-
   return range;
-};
-
-const parseRawTime = (value: string | DateTime): TimeFragment | null => {
-  if (value === null) {
-    return null;
-  }
-
-  if (isDateTime(value)) {
-    return value;
-  }
-
-  if (value.indexOf('now') !== -1) {
-    return value;
-  }
-  if (value.length === 8) {
-    return toUtc(value, 'YYYYMMDD');
-  }
-  if (value.length === 15) {
-    return toUtc(value, 'YYYYMMDDTHHmmss');
-  }
-  // Backward compatibility
-  if (value.length === 19) {
-    return toUtc(value, 'YYYY-MM-DD HH:mm:ss');
-  }
-
-  // This should handle cases where value is an epoch time as string
-  if (value.match(/^\d+$/)) {
-    const epoch = parseInt(value, 10);
-    return toUtc(epoch);
-  }
-
-  // This should handle ISO strings
-  const time = toUtc(value);
-  if (time.isValid()) {
-    return time;
-  }
-
-  return null;
-};
-
-export const getTimeRangeFromUrl = (
-  range: RawTimeRange,
-  timeZone: TimeZone,
-  fiscalYearStartMonth: number
-): TimeRange => {
-  const raw = {
-    from: parseRawTime(range.from)!,
-    to: parseRawTime(range.to)!,
-  };
-
-  return {
-    from: dateMath.parse(raw.from, false, timeZone as any)!,
-    to: dateMath.parse(raw.to, true, timeZone as any)!,
-    raw,
-  };
-};
-
-export const getValueWithRefId = (value?: any): any => {
-  if (!value || typeof value !== 'object') {
-    return undefined;
-  }
-
-  if (value.refId) {
-    return value;
-  }
-
-  const keys = Object.keys(value);
-  for (let index = 0; index < keys.length; index++) {
-    const key = keys[index];
-    const refId = getValueWithRefId(value[key]);
-    if (refId) {
-      return refId;
-    }
-  }
-
-  return undefined;
-};
-
-export const getRefIds = (value: any): string[] => {
-  if (!value) {
-    return [];
-  }
-
-  if (typeof value !== 'object') {
-    return [];
-  }
-
-  const keys = Object.keys(value);
-  const refIds = [];
-  for (let index = 0; index < keys.length; index++) {
-    const key = keys[index];
-    if (key === 'refId') {
-      refIds.push(value[key]);
-      continue;
-    }
-    refIds.push(getRefIds(value[key]));
-  }
-
-  return uniq(flatten(refIds));
 };
 
 export const refreshIntervalToSortOrder = (refreshInterval?: string) =>
   RefreshPicker.isLive(refreshInterval) ? LogsSortOrder.Ascending : LogsSortOrder.Descending;
-
-export const convertToWebSocketUrl = (url: string) => {
-  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  let backend = `${protocol}${window.location.host}${config.appSubUrl}`;
-  if (backend.endsWith('/')) {
-    backend = backend.slice(0, -1);
-  }
-  return `${backend}${url}`;
-};
 
 export const stopQueryState = (querySubscription: Unsubscribable | undefined) => {
   if (querySubscription) {
@@ -547,10 +307,14 @@ export function getIntervals(range: TimeRange, lowLimit?: string, resolution?: n
 }
 
 export const copyStringToClipboard = (string: string) => {
-  const el = document.createElement('textarea');
-  el.value = string;
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(string);
+  } else {
+    const el = document.createElement('textarea');
+    el.value = string;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
 };

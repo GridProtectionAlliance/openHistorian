@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { defaultIntervals } from '@grafana/ui';
 
@@ -100,7 +99,7 @@ describe('getValidIntervals', () => {
         getTimeSrv: () =>
           ({
             getValidIntervals: (intervals: string[]) => intervals,
-          } as unknown as TimeSrv),
+          }) as unknown as TimeSrv,
       };
 
       const result = getValidIntervals(emptyIntervals, dependencies);
@@ -116,7 +115,7 @@ describe('getValidIntervals', () => {
         getTimeSrv: () =>
           ({
             getValidIntervals: (intervals: string[]) => intervals,
-          } as unknown as TimeSrv),
+          }) as unknown as TimeSrv,
       };
 
       const result = getValidIntervals(duplicateIntervals, dependencies);
@@ -132,7 +131,7 @@ describe('getValidIntervals', () => {
         getTimeSrv: () =>
           ({
             getValidIntervals: (intervals: string[]) => intervals,
-          } as unknown as TimeSrv),
+          }) as unknown as TimeSrv,
       };
 
       const result = getValidIntervals(duplicateIntervals, dependencies);
@@ -149,7 +148,7 @@ describe('validateIntervals', () => {
         getTimeSrv: () =>
           ({
             getValidIntervals: (intervals: string[]) => intervals,
-          } as unknown as TimeSrv),
+          }) as unknown as TimeSrv,
       };
 
       const result = validateIntervals(defaultIntervals, dependencies);
@@ -166,7 +165,7 @@ describe('validateIntervals', () => {
             getValidIntervals: () => {
               throw new Error('Some error');
             },
-          } as unknown as TimeSrv),
+          }) as unknown as TimeSrv,
       };
 
       const result = validateIntervals(defaultIntervals, dependencies);

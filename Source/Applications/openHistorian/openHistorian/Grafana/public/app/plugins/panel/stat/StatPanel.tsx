@@ -1,5 +1,5 @@
 import { isNumber } from 'lodash';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 
 import {
   DisplayValueAlignmentFactors,
@@ -16,15 +16,15 @@ import { BigValue, DataLinksContextMenu, VizRepeater, VizRepeaterRenderValueProp
 import { DataLinksContextMenuApi } from '@grafana/ui/src/components/DataLinks/DataLinksContextMenu';
 import { config } from 'app/core/config';
 
-import { PanelOptions } from './panelcfg.gen';
+import { Options } from './panelcfg.gen';
 
-export class StatPanel extends PureComponent<PanelProps<PanelOptions>> {
+export class StatPanel extends PureComponent<PanelProps<Options>> {
   renderComponent = (
     valueProps: VizRepeaterRenderValueProps<FieldDisplay, DisplayValueAlignmentFactors>,
     menuProps: DataLinksContextMenuApi
   ): JSX.Element => {
     const { timeRange, options } = this.props;
-    const { value, alignmentFactors, width, height, count, orientation } = valueProps;
+    const { value, alignmentFactors, width, height, count } = valueProps;
     const { openMenu, targetClassName } = menuProps;
     let sparkline = value.sparkline;
     if (sparkline) {
@@ -41,13 +41,14 @@ export class StatPanel extends PureComponent<PanelProps<PanelOptions>> {
         justifyMode={options.justifyMode}
         textMode={this.getTextMode()}
         alignmentFactors={alignmentFactors}
-        parentOrientation={orientation}
         text={options.text}
         width={width}
         height={height}
         theme={config.theme2}
         onClick={openMenu}
         className={targetClassName}
+        disableWideLayout={!options.wideLayout}
+        percentChangeColorMode={options.percentChangeColorMode}
       />
     );
   };
@@ -112,6 +113,7 @@ export class StatPanel extends PureComponent<PanelProps<PanelOptions>> {
       theme: config.theme2,
       data: data.series,
       sparkline: options.graphMode !== BigValueGraphMode.None,
+      percentChange: options.showPercentChange,
       timeZone,
     });
   };

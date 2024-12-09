@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, Modal, Icon, Button } from '@grafana/ui';
@@ -91,7 +90,7 @@ export function NoAccessModal({ item, isOpen, onDismiss }: NoAccessModalProps) {
           <div>
             <p>
               Editors cannot add new connections. You may check to see if it is already configured in{' '}
-              <a href="/connections/your-connections">Your Connections</a>.
+              <a href="/connections/datasources">Data sources</a>.
             </p>
             <p>To add a new connection, contact your Grafana admin.</p>
           </div>

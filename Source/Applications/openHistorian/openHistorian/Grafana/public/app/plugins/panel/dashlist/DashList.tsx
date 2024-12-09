@@ -1,20 +1,31 @@
-import { css, cx } from '@emotion/css';
 import { take } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 
-import { GrafanaTheme2, InterpolateFunction, PanelProps } from '@grafana/data';
-import { CustomScrollbar, stylesFactory, useStyles2 } from '@grafana/ui';
-import { Icon, IconProps } from '@grafana/ui/src/components/Icon/Icon';
-import { getFocusStyles } from '@grafana/ui/src/themes/mixins';
-import { setStarred } from 'app/core/reducers/navBarTree';
+import {
+  DataLinkBuiltInVars,
+  DateTime,
+  InterpolateFunction,
+  PanelProps,
+  textUtil,
+  UrlQueryValue,
+  urlUtil,
+} from '@grafana/data';
+import { CustomScrollbar, useStyles2, IconButton } from '@grafana/ui';
+import { updateNavIndex } from 'app/core/actions';
+import { getConfig } from 'app/core/config';
+import { appEvents } from 'app/core/core';
+import { useBusEvent } from 'app/core/hooks/useBusEvent';
+import { ID_PREFIX, setStarred } from 'app/core/reducers/navBarTree';
+import { removeNavIndex } from 'app/core/reducers/navModel';
 import { getBackendSrv } from 'app/core/services/backend_srv';
 import impressionSrv from 'app/core/services/impression_srv';
 import { getDashboardSrv } from 'app/features/dashboard/services/DashboardSrv';
-import { SearchCard } from 'app/features/search/components/SearchCard';
 import { DashboardSearchItem } from 'app/features/search/types';
-import { useDispatch } from 'app/types';
+import { VariablesChanged } from 'app/features/variables/types';
+import { useDispatch, useSelector } from 'app/types';
 
-import { PanelLayout, PanelOptions } from './panelcfg.gen';
+import { Options } from './panelcfg.gen';
 import { getStyles } from './styles';
 
 type Dashboard = DashboardSearchItem & { id?: number; isSearchResult?: boolean; isRecent?: boolean };
@@ -25,8 +36,9 @@ interface DashboardGroup {
   dashboards: Dashboard[];
 }
 
-async function fetchDashboards(options: PanelOptions, replaceVars: InterpolateFunction) {
+async function fetchDashboards(options: Options, replaceVars: InterpolateFunction) {
   let starredDashboards: Promise<DashboardSearchItem[]> = Promise.resolve([]);
+
   if (options.showStarred) {
     const params = { limit: options.maxItems, starred: 'true' };
     starredDashboards = getBackendSrv().search(params);
@@ -42,10 +54,11 @@ async function fetchDashboards(options: PanelOptions, replaceVars: InterpolateFu
 
   let searchedDashboards: Promise<DashboardSearchItem[]> = Promise.resolve([]);
   if (options.showSearch) {
+    const uid = options.folderUID === '' ? 'general' : options.folderUID;
     const params = {
       limit: options.maxItems,
       query: replaceVars(options.query, {}, 'text'),
-      folderIds: options.folderId,
+      folderUIDs: uid,
       tag: options.tags.map((tag: string) => replaceVars(tag, {}, 'text')),
       type: 'dash-db',
     };
@@ -89,9 +102,11 @@ async function fetchDashboards(options: PanelOptions, replaceVars: InterpolateFu
   return dashMap;
 }
 
-export function DashList(props: PanelProps<PanelOptions>) {
+export function DashList(props: PanelProps<Options>) {
   const [dashboards, setDashboards] = useState(new Map<string, Dashboard>());
   const dispatch = useDispatch();
+  const navIndex = useSelector((state) => state.navIndex);
+
   useEffect(() => {
     fetchDashboards(props.options, props.replaceVariables).then((dashes) => {
       setDashboards(dashes);
@@ -108,6 +123,23 @@ export function DashList(props: PanelProps<PanelOptions>) {
     updatedDashboards.set(dash?.uid ?? '', { ...dash, isStarred });
     setDashboards(updatedDashboards);
     dispatch(setStarred({ id: uid ?? '', title, url, isStarred }));
+
+    const starredNavItem = navIndex['starred'];
+    if (isStarred) {
+      starredNavItem.children?.push({
+        id: ID_PREFIX + uid,
+        text: title,
+        url: url ?? '',
+        parentItem: starredNavItem,
+      });
+    } else {
+      dispatch(removeNavIndex(ID_PREFIX + uid));
+      const indexToRemove = starredNavItem.children?.findIndex((element) => element.id === ID_PREFIX + uid);
+      if (indexToRemove) {
+        starredNavItem.children?.splice(indexToRemove, 1);
+      }
+    }
+    dispatch(updateNavIndex(starredNavItem));
   };
 
   const [starredDashboards, recentDashboards, searchedDashboards] = useMemo(() => {
@@ -119,7 +151,7 @@ export function DashList(props: PanelProps<PanelOptions>) {
     ];
   }, [dashboards]);
 
-  const { showStarred, showRecentlyViewed, showHeadings, showSearch, layout } = props.options;
+  const { showStarred, showRecentlyViewed, showHeadings, showFolderNames, showSearch } = props.options;
 
   const dashboardGroups: DashboardGroup[] = [
     {
@@ -140,39 +172,35 @@ export function DashList(props: PanelProps<PanelOptions>) {
   ];
 
   const css = useStyles2(getStyles);
+  const urlParams = useDashListUrlParams(props);
 
   const renderList = (dashboards: Dashboard[]) => (
     <ul>
-      {dashboards.map((dash) => (
-        <li className={css.dashlistItem} key={`dash-${dash.uid}`}>
-          <div className={css.dashlistLink}>
-            <div className={css.dashlistLinkBody}>
-              <a className={css.dashlistTitle} href={dash.url}>
-                {dash.title}
-              </a>
-              {dash.folderTitle && <div className={css.dashlistFolder}>{dash.folderTitle}</div>}
-            </div>
-            <IconToggle
-              aria-label={`Star dashboard "${dash.title}".`}
-              className={css.dashlistStar}
-              enabled={{ name: 'favorite', type: 'mono' }}
-              disabled={{ name: 'star', type: 'default' }}
-              checked={dash.isStarred}
-              onClick={(e) => toggleDashboardStar(e, dash)}
-            />
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
+      {dashboards.map((dash) => {
+        let url = dash.url;
 
-  const renderPreviews = (dashboards: Dashboard[]) => (
-    <ul className={css.gridContainer}>
-      {dashboards.map((dash) => (
-        <li key={dash.uid}>
-          <SearchCard item={{ ...dash, kind: 'dashboard' }} />
-        </li>
-      ))}
+        url = urlUtil.appendQueryToUrl(url, urlParams);
+        url = getConfig().disableSanitizeHtml ? url : textUtil.sanitizeUrl(url);
+
+        return (
+          <li className={css.dashlistItem} key={`dash-${dash.uid}`}>
+            <div className={css.dashlistLink}>
+              <div className={css.dashlistLinkBody}>
+                <a className={css.dashlistTitle} href={url}>
+                  {dash.title}
+                </a>
+                {showFolderNames && dash.folderTitle && <div className={css.dashlistFolder}>{dash.folderTitle}</div>}
+              </div>
+              <IconButton
+                tooltip={dash.isStarred ? `Unmark "${dash.title}" as favorite` : `Mark "${dash.title}" as favorite`}
+                name={dash.isStarred ? 'favorite' : 'star'}
+                iconType={dash.isStarred ? 'mono' : 'default'}
+                onClick={(e) => toggleDashboardStar(e, dash)}
+              />
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 
@@ -183,7 +211,7 @@ export function DashList(props: PanelProps<PanelOptions>) {
           show && (
             <div className={css.dashlistSection} key={`dash-group-${i}`}>
               {showHeadings && <h6 className={css.dashlistSectionHeader}>{header}</h6>}
-              {layout === PanelLayout.Previews ? renderPreviews(dashboards) : renderList(dashboards)}
+              {renderList(dashboards)}
             </div>
           )
       )}
@@ -191,67 +219,21 @@ export function DashList(props: PanelProps<PanelOptions>) {
   );
 }
 
-interface IconToggleProps extends Partial<IconProps> {
-  enabled: IconProps;
-  disabled: IconProps;
-  checked: boolean;
+function useDashListUrlParams(props: PanelProps<Options>) {
+  // We don't care about the payload just want to get re-render when this event is published
+  useBusEvent(appEvents, VariablesChanged);
+
+  let params: { [key: string]: string | DateTime | UrlQueryValue } = {};
+
+  if (props.options.keepTime) {
+    params[`\$${DataLinkBuiltInVars.keepTime}`] = true;
+  }
+
+  if (props.options.includeVars) {
+    params[`\$${DataLinkBuiltInVars.includeVars}`] = true;
+  }
+
+  const urlParms = props.replaceVariables(urlUtil.toUrlParams(params));
+
+  return urlParms;
 }
-
-function IconToggle({
-  enabled,
-  disabled,
-  checked,
-  onClick,
-  className,
-  'aria-label': ariaLabel,
-  ...otherProps
-}: IconToggleProps) {
-  const toggleCheckbox = useCallback(
-    (e: React.MouseEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      onClick?.(e);
-    },
-    [onClick]
-  );
-
-  const iconPropsOverride = checked ? enabled : disabled;
-  const iconProps = { ...otherProps, ...iconPropsOverride };
-  const styles = useStyles2(getCheckboxStyles);
-  return (
-    <label className={styles.wrapper}>
-      <input
-        type="checkbox"
-        defaultChecked={checked}
-        onClick={toggleCheckbox}
-        className={styles.checkBox}
-        aria-label={ariaLabel}
-      />
-      <Icon className={cx(styles.icon, className)} {...iconProps} />
-    </label>
-  );
-}
-
-export const getCheckboxStyles = stylesFactory((theme: GrafanaTheme2) => {
-  return {
-    wrapper: css({
-      display: 'flex',
-      alignSelf: 'center',
-      cursor: 'pointer',
-      zIndex: 1,
-    }),
-    checkBox: css({
-      appearance: 'none',
-      '&:focus-visible + *': {
-        ...getFocusStyles(theme),
-        borderRadius: theme.shape.borderRadius(1),
-      },
-    }),
-    icon: css({
-      marginBottom: 0,
-      verticalAlign: 'baseline',
-      display: 'flex',
-    }),
-  };
-});

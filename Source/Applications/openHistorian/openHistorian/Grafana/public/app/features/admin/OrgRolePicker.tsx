@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { OrgRole } from '@grafana/data';
 import { Select } from '@grafana/ui';
 
@@ -13,7 +11,8 @@ interface Props {
   width?: number | 'auto';
 }
 
-const options = Object.keys(OrgRole).map((key) => ({ label: key, value: key }));
+const basicRoles = Object.values(OrgRole).filter((r) => r !== OrgRole.None);
+const options = basicRoles.map((r) => ({ label: r, value: r }));
 
 export function OrgRolePicker({ value, onChange, 'aria-label': ariaLabel, inputId, autoFocus, ...restProps }: Props) {
   return (
@@ -21,7 +20,7 @@ export function OrgRolePicker({ value, onChange, 'aria-label': ariaLabel, inputI
       inputId={inputId}
       value={value}
       options={options}
-      onChange={(val) => onChange(val.value as OrgRole)}
+      onChange={(val) => onChange(val.value ?? OrgRole.None)}
       placeholder="Choose role..."
       aria-label={ariaLabel}
       autoFocus={autoFocus}

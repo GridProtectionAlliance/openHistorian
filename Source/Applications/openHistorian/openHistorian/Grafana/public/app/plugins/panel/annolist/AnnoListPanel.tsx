@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { PureComponent } from 'react';
+import { createRef, PureComponent } from 'react';
 import { Subscription } from 'rxjs';
 
 import {
@@ -19,7 +19,7 @@ import appEvents from 'app/core/app_events';
 import { getDashboardSrv } from 'app/features/dashboard/services/DashboardSrv';
 
 import { AnnotationListItem } from './AnnotationListItem';
-import { PanelOptions } from './panelcfg.gen';
+import { Options } from './panelcfg.gen';
 
 interface UserInfo {
   id?: number;
@@ -27,7 +27,7 @@ interface UserInfo {
   email?: string;
 }
 
-export interface Props extends PanelProps<PanelOptions> {}
+export interface Props extends PanelProps<Options> {}
 interface State {
   annotations: AnnotationEvent[];
   timeInfo: string;
@@ -38,7 +38,7 @@ interface State {
 export class AnnoListPanel extends PureComponent<Props, State> {
   style = getStyles(config.theme2);
   subs = new Subscription();
-  tagListRef = React.createRef<HTMLUListElement>();
+  tagListRef = createRef<HTMLUListElement>();
 
   constructor(props: Props) {
     super(props);
@@ -74,6 +74,7 @@ export class AnnoListPanel extends PureComponent<Props, State> {
       options !== prevProps.options ||
       this.state.queryTags !== prevState.queryTags ||
       this.state.queryUser !== prevState.queryUser ||
+      prevProps.renderCounter !== this.props.renderCounter ||
       (options.onlyInTimeRange && timeRange !== prevProps.timeRange);
 
     if (needsQuery) {
@@ -89,7 +90,11 @@ export class AnnoListPanel extends PureComponent<Props, State> {
     const { options } = this.props;
     const { queryUser, queryTags } = this.state;
 
-    const params: any = {
+    const params: {
+      tags: typeof options.tags;
+      limit: typeof options.limit;
+      type: string;
+    } & Record<string, unknown> = {
       tags: options.tags,
       limit: options.limit,
       type: 'annotation', // Skip the Annotations that are really alerts.  (Use the alerts panel!)
@@ -138,16 +143,13 @@ export class AnnoListPanel extends PureComponent<Props, State> {
     const dashboardSrv = getDashboardSrv();
     const current = dashboardSrv.getCurrent();
 
-    const params: any = {
+    const params = {
       from: this._timeOffset(anno.time, options.navigateBefore, true),
       to: this._timeOffset(anno.timeEnd ?? anno.time, options.navigateAfter, false),
+      viewPanel: options.navigateToPanel && anno.panelId ? anno.panelId : undefined,
     };
 
-    if (options.navigateToPanel) {
-      params.viewPanel = anno.panelId;
-    }
-
-    if (current?.uid === anno.dashboardUID) {
+    if (!anno.dashboardUID || current?.uid === anno.dashboardUID) {
       locationService.partial(params);
       return;
     }
@@ -156,8 +158,8 @@ export class AnnoListPanel extends PureComponent<Props, State> {
     if (result && result.length && result[0].uid === anno.dashboardUID) {
       const dash = result[0];
       const url = new URL(dash.url, window.location.origin);
-      url.searchParams.set('from', params.from);
-      url.searchParams.set('to', params.to);
+      url.searchParams.set('from', String(params.from));
+      url.searchParams.set('to', String(params.to));
       locationService.push(locationUtil.stripBaseFromUrl(url.toString()));
       return;
     }
@@ -294,13 +296,13 @@ export class AnnoListPanel extends PureComponent<Props, State> {
 }
 
 const getStyles = stylesFactory((theme: GrafanaTheme2) => ({
-  noneFound: css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: calc(100% - 30px);
-  `,
+  noneFound: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: 'calc(100% - 30px)',
+  }),
   filter: css({
     alignItems: 'center',
     display: 'flex',

@@ -8,6 +8,8 @@ import {
   standardFieldConfigEditorRegistry,
   dateTime,
   TimeRange,
+  PanelMigrationHandler,
+  PanelTypeChangedHandler,
 } from '@grafana/data';
 import { getPanelPlugin } from '@grafana/data/test/__mocks__/pluginMocks';
 import { mockStandardFieldConfigOptions } from '@grafana/data/test/helpers/fieldConfig';
@@ -42,7 +44,7 @@ variableAdapters.setInit(() => [createQueryVariableAdapter()]);
 describe('PanelModel', () => {
   describe('when creating new panel model', () => {
     let model: any;
-    let modelJson: any;
+    let modelJson: Record<string, unknown>;
     let persistedOptionsMock;
 
     const tablePlugin = getPanelPlugin(
@@ -80,7 +82,7 @@ describe('PanelModel', () => {
       },
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
       persistedOptionsMock = {
         fieldOptions: {
           thresholds: [
@@ -141,7 +143,44 @@ describe('PanelModel', () => {
       };
 
       model = new PanelModel(modelJson);
-      model.pluginLoaded(tablePlugin);
+      await model.pluginLoaded(tablePlugin);
+    });
+
+    describe('migrations', () => {
+      let initialMigrator: PanelMigrationHandler<(typeof model)['options']> | undefined = undefined;
+
+      beforeEach(() => {
+        initialMigrator = tablePlugin.onPanelMigration;
+      });
+      afterEach(() => {
+        tablePlugin.onPanelMigration = initialMigrator;
+      });
+
+      it('should run sync migrations', async () => {
+        model.options.valueToMigrate = 'old-legacy';
+
+        tablePlugin.onPanelMigration = (p) => ({ ...p.options, valueToMigrate: 'new-version' });
+
+        tablePlugin.onPanelMigration = (p) => {
+          p.options.valueToMigrate = 'new-version';
+          return p.options;
+        };
+
+        await model.pluginLoaded(tablePlugin);
+        expect(model.options).toMatchObject({ valueToMigrate: 'new-version' });
+      });
+
+      it('should run async migrations', async () => {
+        model.options.valueToMigrate = 'old-legacy';
+
+        tablePlugin.onPanelMigration = async (p) =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve({ ...p.options, valueToMigrate: 'new-version' }), 10);
+          });
+
+        await model.pluginLoaded(tablePlugin);
+        expect(model.options).toMatchObject({ valueToMigrate: 'new-version' });
+      });
     });
 
     it('should apply defaults', () => {
@@ -193,6 +232,27 @@ describe('PanelModel', () => {
     it('getSaveModel should remove nonPersistedProperties', () => {
       const saveModel = model.getSaveModel();
       expect(saveModel.events).toBe(undefined);
+    });
+
+    it('getSaveModel should clean libraryPanels from a collapsed row', () => {
+      const newmodelJson = {
+        type: 'row',
+        panels: [
+          {
+            ...modelJson,
+            libraryPanel: {
+              uid: 'BVIBScisnl',
+              model: modelJson,
+              name: 'Library panel title',
+            },
+          },
+          modelJson,
+        ],
+      };
+      const newmodel = new PanelModel(newmodelJson);
+      const saveModel = newmodel.getSaveModel();
+      expect(saveModel.panels[0].tagrets).toBe(undefined);
+      expect(saveModel.panels[1].targets).toBeTruthy();
     });
 
     describe('variables interpolation', () => {
@@ -329,10 +389,12 @@ describe('PanelModel', () => {
     });
 
     describe('when changing to react panel from angular panel', () => {
-      let panelQueryRunner: any;
+      let panelQueryRunner: PanelQueryRunner;
 
       const onPanelTypeChanged = jest.fn();
-      const reactPlugin = getPanelPlugin({ id: 'react' }).setPanelChangeHandler(onPanelTypeChanged as any);
+      const reactPlugin = getPanelPlugin({ id: 'react' }).setPanelChangeHandler(
+        onPanelTypeChanged as PanelTypeChangedHandler
+      );
 
       beforeEach(() => {
         model.changePlugin(reactPlugin);
@@ -352,11 +414,51 @@ describe('PanelModel', () => {
       });
     });
 
+    describe('when autoMigrateFrom angular to react', () => {
+      const onPanelTypeChanged: PanelTypeChangedHandler = (panel, prevPluginId, prevOptions) => {
+        panel.fieldConfig = { defaults: { unit: 'bytes' }, overrides: [] };
+        return { name: prevOptions.angular.oldName };
+      };
+
+      const reactPlugin = getPanelPlugin({ id: 'timeseries' })
+        .setPanelChangeHandler(onPanelTypeChanged)
+        .useFieldConfig({
+          disableStandardOptions: [FieldConfigProperty.Thresholds],
+        })
+        .setPanelOptions((builder) => {
+          builder.addTextInput({
+            name: 'Name',
+            path: 'name',
+          });
+        });
+
+      beforeEach(() => {
+        model = new PanelModel({
+          autoMigrateFrom: 'graph',
+          oldName: 'old name',
+          type: 'timeseries',
+        });
+
+        model.pluginLoaded(reactPlugin);
+      });
+
+      it('should run panel changed handler and remove old model props', () => {
+        expect(model.options).toEqual({ name: 'old name' });
+        expect(model.fieldConfig).toEqual({ defaults: { unit: 'bytes' }, overrides: [] });
+        expect(model.autoMigrateFrom).toBe(undefined);
+        expect(model.oldName).toBe(undefined);
+        expect(model.plugin).toBe(reactPlugin);
+        expect(model.type).toBe('timeseries');
+      });
+    });
+
     describe('variables interpolation', () => {
-      let panelQueryRunner: any;
+      let panelQueryRunner: PanelQueryRunner;
 
       const onPanelTypeChanged = jest.fn();
-      const reactPlugin = getPanelPlugin({ id: 'react' }).setPanelChangeHandler(onPanelTypeChanged as any);
+      const reactPlugin = getPanelPlugin({ id: 'react' }).setPanelChangeHandler(
+        onPanelTypeChanged as PanelTypeChangedHandler
+      );
 
       beforeEach(() => {
         model.changePlugin(reactPlugin);
@@ -440,7 +542,7 @@ describe('PanelModel', () => {
     describe('destroy', () => {
       it('Should still preserve last query result', () => {
         model.getQueryRunner().useLastResultFrom({
-          getLastResult: () => ({} as PanelData),
+          getLastResult: () => ({}) as PanelData,
         } as PanelQueryRunner);
 
         model.destroy();

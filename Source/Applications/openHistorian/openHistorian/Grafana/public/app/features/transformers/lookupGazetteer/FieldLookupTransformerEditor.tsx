@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import {
   DataTransformerID,
@@ -8,10 +8,13 @@ import {
   TransformerRegistryItem,
   TransformerUIProps,
   FieldType,
+  TransformerCategory,
 } from '@grafana/data';
 import { InlineField, InlineFieldRow } from '@grafana/ui';
 import { FieldNamePicker } from '@grafana/ui/src/components/MatchersUI/FieldNamePicker';
 import { GazetteerPathEditor, GazetteerPathEditorConfigSettings } from 'app/features/geo/editor/GazetteerPathEditor';
+
+import { getTransformationContent } from '../docs/getTransformationContent';
 
 import { FieldLookupOptions, fieldLookupTransformer } from './fieldLookup';
 
@@ -27,9 +30,9 @@ const fieldNamePickerSettings: StandardEditorsRegistryItem<string, FieldNamePick
   editor: () => null,
 };
 
-const fieldLookupSettings: StandardEditorsRegistryItem<string, GazetteerPathEditorConfigSettings> = {
+const fieldLookupSettings = {
   settings: {},
-} as any;
+} as StandardEditorsRegistryItem<string, GazetteerPathEditorConfigSettings>;
 
 export const FieldLookupTransformerEditor = ({ input, options, onChange }: TransformerUIProps<FieldLookupOptions>) => {
   const onPickLookupField = useCallback(
@@ -59,7 +62,7 @@ export const FieldLookupTransformerEditor = ({ input, options, onChange }: Trans
             context={{ data: input }}
             value={options?.lookupField ?? ''}
             onChange={onPickLookupField}
-            item={fieldNamePickerSettings as any}
+            item={fieldNamePickerSettings}
           />
         </InlineField>
       </InlineFieldRow>
@@ -81,7 +84,9 @@ export const fieldLookupTransformRegistryItem: TransformerRegistryItem<FieldLook
   id: DataTransformerID.fieldLookup,
   editor: FieldLookupTransformerEditor,
   transformation: fieldLookupTransformer,
-  name: 'Field lookup',
-  description: `Use a field value to lookup additional fields from an external source.  This currently supports spatial data, but will eventually support more formats`,
+  name: fieldLookupTransformer.name,
+  description: `Use a field value to lookup additional fields from an external source. This currently supports spatial data, but will eventually support more formats.`,
   state: PluginState.alpha,
+  categories: new Set([TransformerCategory.PerformSpatialOperations]),
+  help: getTransformationContent(DataTransformerID.fieldLookup).helperDocs,
 };

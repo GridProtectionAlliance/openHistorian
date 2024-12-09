@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 
 import { GrafanaTheme2 } from '@grafana/data';
@@ -58,7 +58,7 @@ export function VariablesUnknownTable({ variables, dashboard }: VariablesUnknown
           <VerticalGroup justify="center">
             <HorizontalGroup justify="center">
               <span>Loading...</span>
-              <Spinner size={16} />
+              <Spinner />
             </HorizontalGroup>
           </VerticalGroup>
         )}

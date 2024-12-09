@@ -1,9 +1,13 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { useState } from 'react';
+
+import { config } from '@grafana/runtime';
 
 import { TraceqlSearchScope } from '../dataquery.gen';
 import { TempoDatasource } from '../datasource';
+import TempoLanguageProvider from '../language_provider';
+import { initTemplateSrv } from '../test/test_utils';
 import { TempoQuery } from '../types';
 
 import TraceQLSearch from './TraceQLSearch';
@@ -38,6 +42,14 @@ jest.mock('../language_provider', () => {
 });
 
 describe('TraceQLSearch', () => {
+  const expectedValues = {
+    interpolationVar: 'interpolationText',
+    interpolationText: 'interpolationText',
+    interpolationVarWithPipe: 'interpolationTextOne|interpolationTextTwo',
+    scopedInterpolationText: 'scopedInterpolationText',
+  };
+  initTemplateSrv([{ name: 'templateVariable1' }, { name: 'templateVariable2' }], expectedValues);
+
   let user: ReturnType<typeof userEvent.setup>;
 
   const datasource: TempoDatasource = {
@@ -52,7 +64,8 @@ describe('TraceQLSearch', () => {
       ],
     },
   } as TempoDatasource;
-
+  datasource.isStreamingSearchEnabled = () => false;
+  datasource.languageProvider = new TempoLanguageProvider(datasource);
   let query: TempoQuery = {
     refId: 'A',
     queryType: 'traceqlSearch',
@@ -63,6 +76,7 @@ describe('TraceQLSearch', () => {
   const onChange = (q: TempoQuery) => {
     query = q;
   };
+  const onClearResults = jest.fn();
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -75,8 +89,78 @@ describe('TraceQLSearch', () => {
     jest.useRealTimers();
   });
 
+  it('should only show add/remove tag when necessary', async () => {
+    const TraceQLSearchWithProps = () => {
+      const [query, setQuery] = useState<TempoQuery>({
+        refId: 'A',
+        queryType: 'traceqlSearch',
+        key: 'Q-595a9bbc-2a25-49a7-9249-a52a0a475d83-0',
+        filters: [],
+      });
+      return (
+        <TraceQLSearch
+          datasource={datasource}
+          query={query}
+          onChange={(q: TempoQuery) => setQuery(q)}
+          onClearResults={onClearResults}
+        />
+      );
+    };
+    render(<TraceQLSearchWithProps />);
+
+    await act(async () => {
+      expect(screen.queryAllByLabelText('Add tag').length).toBe(0); // not filled in the default tag, so no need to add another one
+      expect(screen.queryAllByLabelText('Remove tag').length).toBe(0); // mot filled in the default tag, so no values to remove
+      expect(screen.getAllByText('Select tag').length).toBe(1);
+    });
+
+    await user.click(screen.getByText('Select tag'));
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    await user.click(screen.getByText('foo'));
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    await user.click(screen.getAllByText('Select value')[2]);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    await user.click(screen.getByText('driver'));
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    await act(async () => {
+      expect(screen.getAllByLabelText('Add tag').length).toBe(1);
+      expect(screen.getAllByLabelText(/Remove tag/).length).toBe(1);
+    });
+
+    await user.click(screen.getByLabelText('Add tag'));
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(screen.queryAllByLabelText('Add tag').length).toBe(0); // not filled in the new tag, so no need to add another one
+    expect(screen.getAllByLabelText(/Remove tag/).length).toBe(2); // one for each tag
+
+    await user.click(screen.getAllByLabelText(/Remove tag/)[1]);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(screen.queryAllByLabelText('Add tag').length).toBe(1); // filled in the default tag, so can add another one
+    expect(screen.queryAllByLabelText(/Remove tag/).length).toBe(1); // filled in the default tag, so can remove values
+
+    await user.click(screen.getAllByLabelText(/Remove tag/)[0]);
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+      expect(screen.queryAllByLabelText('Add tag').length).toBe(0); // not filled in the default tag, so no need to add another one
+      expect(screen.queryAllByLabelText(/Remove tag/).length).toBe(0); // mot filled in the default tag, so no values to remove
+    });
+  });
+
   it('should update operator when new value is selected in operator input', async () => {
-    const { container } = render(<TraceQLSearch datasource={datasource} query={query} onChange={onChange} />);
+    const { container } = render(
+      <TraceQLSearch datasource={datasource} query={query} onChange={onChange} onClearResults={onClearResults} />
+    );
 
     const minDurationOperator = container.querySelector(`input[aria-label="select min-duration operator"]`);
     expect(minDurationOperator).not.toBeNull();
@@ -84,7 +168,9 @@ describe('TraceQLSearch', () => {
 
     if (minDurationOperator) {
       await user.click(minDurationOperator);
-      jest.advanceTimersByTime(1000);
+      await act(async () => {
+        jest.advanceTimersByTime(1000);
+      });
       const regexOp = await screen.findByText('>=');
       await user.click(regexOp);
       const minDurationFilter = query.filters.find((f) => f.id === 'min-duration');
@@ -94,7 +180,9 @@ describe('TraceQLSearch', () => {
   });
 
   it('should add new filter when new value is selected in the service name section', async () => {
-    const { container } = render(<TraceQLSearch datasource={datasource} query={query} onChange={onChange} />);
+    const { container } = render(
+      <TraceQLSearch datasource={datasource} query={query} onChange={onChange} onClearResults={onClearResults} />
+    );
     const serviceNameValue = container.querySelector(`input[aria-label="select service-name value"]`);
     expect(serviceNameValue).not.toBeNull();
     expect(serviceNameValue).toBeInTheDocument();
@@ -103,7 +191,9 @@ describe('TraceQLSearch', () => {
 
     if (serviceNameValue) {
       await user.click(serviceNameValue);
-      jest.advanceTimersByTime(1000);
+      await act(async () => {
+        jest.advanceTimersByTime(1000);
+      });
       const customerValue = await screen.findByText('customer');
       await user.click(customerValue);
       const nameFilter = query.filters.find((f) => f.id === 'service-name');
@@ -113,5 +203,52 @@ describe('TraceQLSearch', () => {
       expect(nameFilter?.tag).toBe('service.name');
       expect(nameFilter?.scope).toBe(TraceqlSearchScope.Resource);
     }
+  });
+
+  it('should not render static filter when no tag is configured', async () => {
+    const datasource: TempoDatasource = {
+      search: {
+        filters: [
+          {
+            id: 'service-name',
+            operator: '=',
+            scope: TraceqlSearchScope.Resource,
+          },
+        ],
+      },
+    } as TempoDatasource;
+    datasource.isStreamingSearchEnabled = () => false;
+    datasource.languageProvider = new TempoLanguageProvider(datasource);
+    await act(async () => {
+      const { container } = render(
+        <TraceQLSearch datasource={datasource} query={query} onChange={onChange} onClearResults={onClearResults} />
+      );
+      const serviceNameValue = container.querySelector(`input[aria-label="select service-name value"]`);
+      expect(serviceNameValue).toBeNull();
+      expect(serviceNameValue).not.toBeInTheDocument();
+    });
+  });
+
+  it('should not render group by when feature toggle is not enabled', async () => {
+    await waitFor(() => {
+      render(
+        <TraceQLSearch datasource={datasource} query={query} onChange={onChange} onClearResults={onClearResults} />
+      );
+      const groupBy = screen.queryByText('Aggregate by');
+      expect(groupBy).toBeNull();
+      expect(groupBy).not.toBeInTheDocument();
+    });
+  });
+
+  it('should render group by when feature toggle enabled', async () => {
+    config.featureToggles.metricsSummary = true;
+    await waitFor(() => {
+      render(
+        <TraceQLSearch datasource={datasource} query={query} onChange={onChange} onClearResults={onClearResults} />
+      );
+      const groupBy = screen.queryByText('Aggregate by');
+      expect(groupBy).not.toBeNull();
+      expect(groupBy).toBeInTheDocument();
+    });
   });
 });
