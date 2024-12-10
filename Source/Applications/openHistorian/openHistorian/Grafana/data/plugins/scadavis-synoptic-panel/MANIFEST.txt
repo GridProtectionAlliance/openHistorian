@@ -1,0 +1,57 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "scadavis",
+  "signedByOrgName": "scadavis",
+  "plugin": "scadavis-synoptic-panel",
+  "version": "2.0.2",
+  "time": 1714326904270,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "CHANGELOG.md": "d4dd3947b08f8153ed779ab34d1c7d3fbb3096ed7f20d76fc357e8084974f01f",
+    "img/scadavis-donuts-radar.png": "dd9d9a92d44e0c43b6f5afe3f73ae9d96f367b8376abbdbe75a0a24e366efe7c",
+    "img/scadavis-large.png": "fe13d3634daa2ef415de3a9c530dd05f9b8c9b9fd7fe07f745d36d395bdeb2f0",
+    "img/scadavis-options.png": "299f804da97176c4c338ad5efddb48b09a3dfeced1dbbad9cb3ae11bc8b47930",
+    "img/scadavis-power.png": "3a554bbed4143f6139307437f32f1b578e6055fec34359ac2ecd3eee457b66b1",
+    "img/scadavis-small.png": "b270b4ed5bdd37a65a0fd6961058b9624e9af2b1a5486593b68283b5d10ae073",
+    "img/scadavis-speedometer.png": "0f6b33b475767852de20aa63859893f65f32c6b7473f1e23edb80fef8f6b099f",
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "module.js": "c647d09a27e4190eac5e1dae305fe983eb0df5289ecc8dc156111a363c3b81f5",
+    "module.js.map": "4a7f2ba0c13b384f84ab9631862d344c6db4e43c60a80938ae30c71ed5f96bc3",
+    "plugin.json": "e19b689def998a65f1960b1b4b8c8be4e7564156ab6fb0328509c41ad60c0f12",
+    "README.md": "4e555e74cc7c371e6e81499266714b20c1145e5327e3ed8ed0985c39ed36ac65",
+    "synoptic/cdn/chroma.min.js": "b886a36b0727ff20c7ee27cae930604a94021c65cc402e0efedd3e27fb6a2301",
+    "synoptic/cdn/chroma.min.js.LICENSE.txt": "d8923c44c3015ba9b9f0f1c8fb1b77e1c0857b6bd0015383c906a8c10877b4f3",
+    "synoptic/cdn/d3.v7.min.js": "b3b27a546f09a2aabcaec01554ee42f9f690f44c21c89011a2e7f186c3d73a6d",
+    "synoptic/cdn/jquery-3.6.1.min.js": "cdb85e11146fa8b6d810f156abded3176cc87646e65074c7c5074080c92d3243",
+    "synoptic/cdn/jquery-3.6.1.min.js.LICENSE.txt": "44ea2c125c5ab20d5835d86d2e4a8a005105ad5031d7e5daefd8b15cddc2fd00",
+    "synoptic/cdn/snap.svg-min.js": "6fbce655671d5cd0e786f208342dd98d6cb985376079689a3189de5eb89591b5",
+    "synoptic/cdn/vega-lite.min-5.5.0.js": "e1883227e996ce672097b45eb42a9de1874132257545fbcfa82ef2439cdb61da",
+    "synoptic/cdn/vega.min-5.22.1.js": "dfa719f8e447a2c0e373a6ac9ddcbbb21e14c371c9b1fa9c3c14d5a1b516c0bf",
+    "synoptic/config_viewers_default.js": "a41f14dcb0506c97a26019c584a8d6c8de62b70792ce5ea80cc0c61db42155f3",
+    "synoptic/getjsondata.js": "bf833ad8c8fc7fb88198c5d16914ef681d1818823a7e56b8242eb7d1c92d6e1f",
+    "synoptic/images/move.svg": "1af8cfbacdc74f7c2cb266f45d29434725f2341dd5197e7eb2a90e069aa2c3ce",
+    "synoptic/images/scadavis.svg": "bb77c113d62eff9df65c2da88bb5b616bd5e0a8ab97a70d86c09332ffb291946",
+    "synoptic/images/zoom-in.svg": "f48ac21d434a18f3ca08dc6efa6c22b72b0b6c9e1bd66bc3986013b26ee84d64",
+    "synoptic/images/zoom-out.svg": "1e29ef2ea2711c80ca439b35c6ad769e2993819a958b11194c9ad9a9161e19af",
+    "synoptic/legacy_options.js": "1dd9059f91b79050c9c7a5c5ac0a7395a07f5a9cbf8d448c347a2c4faaf3fccd",
+    "synoptic/synoptic.html": "3c8e8c57c415f00dfc77d040d6af87dabf4b9f4257269a977efe105ac48d44e8",
+    "synoptic/vega_websage.js": "88e0ca815a879b6f5c92afc50f2272da07804db4e8a2eea31bc93692ae848816",
+    "synoptic/websage.js": "2a8816383ee91cab9061d9eed72d23e02d62f06ec283f37efc9101e00f664105"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.11
+Comment: https://openpgpjs.org
+
+wrkEARMKAAYFAmYujXgAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5wRjAgkBTACP2eEo1AoyH0eiQkcHiwdpywDO/dRdtL1+pMfXdm/2F9o6
+5C6CIe7r7V2qt2L6zvsz0Cr0CQNbpyaOQEAJhz8CCQFU9OqplTLDSY4+IQTs
+6MFvz3zKTY08youyI3wj5TUFZHQV6qF/lrDdvz9yqFAZ9RR9r92m4gthhvr0
+26PY6C+Iwg==
+=iNpl
+-----END PGP SIGNATURE-----
