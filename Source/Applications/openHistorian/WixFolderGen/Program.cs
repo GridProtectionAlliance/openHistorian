@@ -93,6 +93,8 @@ namespace WiXFolderGen
             if (removeSpaces || !replaceSpaces)
                 path = path.RemoveWhiteSpace();
 
+            path = path.Replace("-", "_d_");
+
             path = new Regex("[^a-zA-Z0-9_.]").Replace(path, "_");
 
             if (dupClearAndTrim)

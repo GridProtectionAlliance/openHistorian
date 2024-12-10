@@ -98,38 +98,38 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Content_Components" Directory="CONTENTFOLDER">
-  <Component Id="Content_bootstrap_datetimepicker_css">
-    <File Id="Content_bootstrap_datetimepicker.css" Name="bootstrap-datetimepicker.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datetimepicker.css" />
+  <Component Id="Content_bootstrap_d_datetimepicker_css">
+    <File Id="Content_bootstrap_d_datetimepicker.css" Name="bootstrap-datetimepicker.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-datetimepicker.css" />
   </Component>
-  <Component Id="Content_bootstrap_sidebar_css">
-    <File Id="Content_bootstrap_sidebar.css" Name="bootstrap-sidebar.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-sidebar.css" />
+  <Component Id="Content_bootstrap_d_sidebar_css">
+    <File Id="Content_bootstrap_d_sidebar.css" Name="bootstrap-sidebar.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-sidebar.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_cerulean_css">
-    <File Id="Content_bootstrap_theme_cerulean.css" Name="bootstrap-theme-cerulean.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cerulean.css" />
+  <Component Id="Content_bootstrap_d_theme_d_cerulean_css">
+    <File Id="Content_bootstrap_d_theme_d_cerulean.css" Name="bootstrap-theme-cerulean.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cerulean.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_cosmo_css">
-    <File Id="Content_bootstrap_theme_cosmo.css" Name="bootstrap-theme-cosmo.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cosmo.css" />
+  <Component Id="Content_bootstrap_d_theme_d_cosmo_css">
+    <File Id="Content_bootstrap_d_theme_d_cosmo.css" Name="bootstrap-theme-cosmo.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cosmo.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_cyborg_css">
-    <File Id="Content_bootstrap_theme_cyborg.css" Name="bootstrap-theme-cyborg.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cyborg.css" />
+  <Component Id="Content_bootstrap_d_theme_d_cyborg_css">
+    <File Id="Content_bootstrap_d_theme_d_cyborg.css" Name="bootstrap-theme-cyborg.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-cyborg.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_readable_css">
-    <File Id="Content_bootstrap_theme_readable.css" Name="bootstrap-theme-readable.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-readable.css" />
+  <Component Id="Content_bootstrap_d_theme_d_readable_css">
+    <File Id="Content_bootstrap_d_theme_d_readable.css" Name="bootstrap-theme-readable.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-readable.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_sandstone_css">
-    <File Id="Content_bootstrap_theme_sandstone.css" Name="bootstrap-theme-sandstone.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-sandstone.css" />
+  <Component Id="Content_bootstrap_d_theme_d_sandstone_css">
+    <File Id="Content_bootstrap_d_theme_d_sandstone.css" Name="bootstrap-theme-sandstone.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-sandstone.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_slate_css">
-    <File Id="Content_bootstrap_theme_slate.css" Name="bootstrap-theme-slate.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-slate.css" />
+  <Component Id="Content_bootstrap_d_theme_d_slate_css">
+    <File Id="Content_bootstrap_d_theme_d_slate.css" Name="bootstrap-theme-slate.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-slate.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_united_css">
-    <File Id="Content_bootstrap_theme_united.css" Name="bootstrap-theme-united.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-united.css" />
+  <Component Id="Content_bootstrap_d_theme_d_united_css">
+    <File Id="Content_bootstrap_d_theme_d_united.css" Name="bootstrap-theme-united.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme-united.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_css">
-    <File Id="Content_bootstrap_theme.css" Name="bootstrap-theme.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.css" />
+  <Component Id="Content_bootstrap_d_theme_css">
+    <File Id="Content_bootstrap_d_theme.css" Name="bootstrap-theme.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.css" />
   </Component>
-  <Component Id="Content_bootstrap_theme_min_css">
-    <File Id="Content_bootstrap_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.min.css" />
+  <Component Id="Content_bootstrap_d_theme_min_css">
+    <File Id="Content_bootstrap_d_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\bootstrap-theme.min.css" />
   </Component>
   <Component Id="Content_jquery_jspanel_css">
     <File Id="Content_jquery.jspanel.css" Name="jquery.jspanel.css" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Content\jquery.jspanel.css" />
@@ -213,23 +213,23 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="SCRIPTSFOLDER">
-  <Component Id="Scripts_bootstrap_datetimepicker_js">
-    <File Id="Scripts_bootstrap_datetimepicker.js" Name="bootstrap-datetimepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.js" />
+  <Component Id="Scripts_bootstrap_d_datetimepicker_js">
+    <File Id="Scripts_bootstrap_d_datetimepicker.js" Name="bootstrap-datetimepicker.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\bootstrap-datetimepicker.js" />
   </Component>
-  <Component Id="Scripts_d3_dsv_js">
-    <File Id="Scripts_d3_dsv.js" Name="d3-dsv.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-dsv.js" />
+  <Component Id="Scripts_d3_d_dsv_js">
+    <File Id="Scripts_d3_d_dsv.js" Name="d3-dsv.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-dsv.js" />
   </Component>
-  <Component Id="Scripts_d3_force_js">
-    <File Id="Scripts_d3_force.js" Name="d3-force.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-force.js" />
+  <Component Id="Scripts_d3_d_force_js">
+    <File Id="Scripts_d3_d_force.js" Name="d3-force.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-force.js" />
   </Component>
-  <Component Id="Scripts_d3_quadtree_js">
-    <File Id="Scripts_d3_quadtree.js" Name="d3-quadtree.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-quadtree.js" />
+  <Component Id="Scripts_d3_d_quadtree_js">
+    <File Id="Scripts_d3_d_quadtree.js" Name="d3-quadtree.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\d3-quadtree.js" />
   </Component>
   <Component Id="Scripts_dateFormat_js">
     <File Id="Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\dateFormat.js" />
   </Component>
-  <Component Id="Scripts_force_graph_js">
-    <File Id="Scripts_force_graph.js" Name="force-graph.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\force-graph.js" />
+  <Component Id="Scripts_force_d_graph_js">
+    <File Id="Scripts_force_d_graph.js" Name="force-graph.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\force-graph.js" />
   </Component>
   <Component Id="Scripts_jquery_jspanel_js">
     <File Id="Scripts_jquery.jspanel.js" Name="jquery.jspanel.js" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Scripts\jquery.jspanel.js" />

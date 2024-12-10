@@ -3,63 +3,429 @@
   <Directory Id="BINFOLDER" Name="bin" />
   <Directory Id="CONFFOLDER" Name="conf">
     <Directory Id="CONFPROVISIONINGFOLDER" Name="provisioning">
-      <Directory Id="CONFPROVISIONINGACCESS_CONTROLFOLDER" Name="access-control" />
+      <Directory Id="CONFPROVISIONINGACCESS_D_CONTROLFOLDER" Name="access-control" />
       <Directory Id="CONFPROVISIONINGALERTINGFOLDER" Name="alerting" />
       <Directory Id="CONFPROVISIONINGDASHBOARDSFOLDER" Name="dashboards" />
       <Directory Id="CONFPROVISIONINGDATASOURCESFOLDER" Name="datasources" />
-      <Directory Id="CONFPROVISIONINGNOTIFIERSFOLDER" Name="notifiers" />
       <Directory Id="CONFPROVISIONINGPLUGINSFOLDER" Name="plugins" />
     </Directory>
   </Directory>
   <Directory Id="DATAFOLDER" Name="data">
     <Directory Id="DATAPLUGINSFOLDER" Name="plugins">
-      <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELFOLDER" Name="grafana-clock-panel">
-        <Directory Id="DATAPLUGINSGRAFANA_CLOCK_PANELIMGFOLDER" Name="img" />
+      <Directory Id="DATAPLUGINSGRAFANA_D_CLOCK_D_PANELFOLDER" Name="grafana-clock-panel">
+        <Directory Id="DATAPLUGINSGRAFANA_D_CLOCK_D_PANELIMGFOLDER" Name="img" />
       </Directory>
-      <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELFOLDER" Name="grafana-pmumap-panel">
-        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELCSSFOLDER" Name="css" />
-        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELDATAFOLDER" Name="data" />
-        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELIMAGESFOLDER" Name="images" />
-        <Directory Id="DATAPLUGINSGRAFANA_PMUMAP_PANELPARTIALSFOLDER" Name="partials" />
+      <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_D_OPENHISTORIAN_D_DATASOURCEFOLDER" Name="gridprotectionalliance-openhistorian-datasource">
+        <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_D_OPENHISTORIAN_D_DATASOURCEIMGFOLDER" Name="img" />
       </Directory>
-      <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEFOLDER" Name="gridprotectionalliance-openhistorian-datasource">
-        <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OPENHISTORIAN_DATASOURCEIMGFOLDER" Name="img" />
+      <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_D_OSISOFTPI_D_DATASOURCEFOLDER" Name="gridprotectionalliance-osisoftpi-datasource">
+        <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_D_OSISOFTPI_D_DATASOURCEIMGFOLDER" Name="img" />
       </Directory>
-      <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEFOLDER" Name="gridprotectionalliance-osisoftpi-datasource">
-        <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEIMGFOLDER" Name="img" />
-        <Directory Id="DATAPLUGINSGRIDPROTECTIONALLIANCE_OSISOFTPI_DATASOURCEPARTIALSFOLDER" Name="partials" />
-      </Directory>
-      <Directory Id="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELFOLDER" Name="openHistorianGrafanaAlarmPanel">
-        <Directory Id="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELIMAGESFOLDER" Name="images" />
-        <Directory Id="DATAPLUGINSOPENHISTORIANGRAFANAALARMPANELPARTIALSFOLDER" Name="partials" />
-      </Directory>
-      <Directory Id="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELFOLDER" Name="openhistporian-datadownload-panel">
-        <Directory Id="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELIMAGESFOLDER" Name="images" />
-        <Directory Id="DATAPLUGINSOPENHISTPORIAN_DATADOWNLOAD_PANELPARTIALSFOLDER" Name="partials" />
-      </Directory>
-      <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELFOLDER" Name="riclolsen-scadavis-synoptic-panel">
-        <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELCSSFOLDER" Name="css" />
-        <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELIMGFOLDER" Name="img" />
-        <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELLIBFOLDER" Name="lib" />
-        <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCFOLDER" Name="src">
-          <Directory Id="DATAPLUGINSRICLOLSEN_SCADAVIS_SYNOPTIC_PANELSRCIMGFOLDER" Name="img" />
+      <Directory Id="DATAPLUGINSSCADAVIS_D_SYNOPTIC_D_PANELFOLDER" Name="scadavis-synoptic-panel">
+        <Directory Id="DATAPLUGINSSCADAVIS_D_SYNOPTIC_D_PANELIMGFOLDER" Name="img" />
+        <Directory Id="DATAPLUGINSSCADAVIS_D_SYNOPTIC_D_PANELSYNOPTICFOLDER" Name="synoptic">
+          <Directory Id="DATAPLUGINSSCADAVIS_D_SYNOPTIC_D_PANELSYNOPTICCDNFOLDER" Name="cdn" />
+          <Directory Id="DATAPLUGINSSCADAVIS_D_SYNOPTIC_D_PANELSYNOPTICIMAGESFOLDER" Name="images" />
         </Directory>
       </Directory>
     </Directory>
   </Directory>
-  <Directory Id="PLUGINS_BUNDLEDFOLDER" Name="plugins-bundled">
-    <Directory Id="PLUGINS_BUNDLEDINTERNALFOLDER" Name="internal">
-      <Directory Id="PLUGINS_BUNDLEDINTERNALINPUT_DATASOURCEFOLDER" Name="input-datasource">
-        <Directory Id="PLUGINS_BUNDLEDINTERNALINPUT_DATASOURCEIMGFOLDER" Name="img" />
+  <Directory Id="DOCSFOLDER" Name="docs">
+    <Directory Id="DOCSSOURCESFOLDER" Name="sources">
+      <Directory Id="DOCSSOURCESADMINISTRATIONFOLDER" Name="administration">
+        <Directory Id="DOCSSOURCESADMINISTRATIONANNOUNCEMENT_D_BANNERFOLDER" Name="announcement-banner" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONBACK_D_UP_D_GRAFANAFOLDER" Name="back-up-grafana" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSFOLDER" Name="correlations">
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSADD_D_PERMISSIONS_D_886455469FOLDER" Name="add-permissions-to-create-new-correlations" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSCORRELATION_D_CONFIGURATIONFOLDER" Name="correlation-configuration" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSCORRELATION_D_PERMISSIONSFOLDER" Name="correlation-permissions" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSCREATE_D_A_D_NEW_D_C947169459FOLDER" Name="create-a-new-correlation" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSUSE_D_CORRELATIONS_3705731334FOLDER" Name="use-correlations-in-visualizations" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONCORRELATIONSUSE_D_VARIABLES_D_AN508592211FOLDER" Name="use-variables-and-transformations" />
+        </Directory>
+        <Directory Id="DOCSSOURCESADMINISTRATIONDATA_D_SOURCE_D_MANAGEMENTFOLDER" Name="data-source-management">
+          <Directory Id="DOCSSOURCESADMINISTRATIONDATA_D_SOURCE_D_MANAGEMENTTEAMLBACFOLDER" Name="teamlbac">
+            <Directory Id="DOCSSOURCESADMINISTRATIONDATA_D_SOURCE_D_MANAGEMENTTEAML3740640422FOLDER" Name="configure-teamlbac-for-loki" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONDATA_D_SOURCE_D_MANAGEMENTTEAML3762728668FOLDER" Name="create-teamlbac-rules" />
+          </Directory>
+        </Directory>
+        <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGFOLDER" Name="enterprise-licensing">
+          <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_2806368770FOLDER" Name="activate-aws-marketplace-license">
+            <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_2160434756FOLDER" Name="activate-license-on-ecs" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_1209799756FOLDER" Name="activate-license-on-eks" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_4045125764FOLDER" Name="activate-license-on-instance-outside-aws" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_2671581883FOLDER" Name="manage-license-in-aws-marketplace" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONENTERPRISE_D_LICENSINGACTIVATE_2476119500FOLDER" Name="transfer-ge-license" />
+          </Directory>
+        </Directory>
+        <Directory Id="DOCSSOURCESADMINISTRATIONFEATURE_D_TOGGLESFOLDER" Name="feature-toggles" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONORGANIZATION_D_MANAGEMENTFOLDER" Name="organization-management" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONORGANIZATION_D_PREFERENCESFOLDER" Name="organization-preferences" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONPLUGIN_D_MANAGEMENTFOLDER" Name="plugin-management" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONPROVISIONINGFOLDER" Name="provisioning" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONRECORDED_D_QUERIESFOLDER" Name="recorded-queries" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSFOLDER" Name="roles-and-permissions">
+          <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS_D_CONTROLFOLDER" Name="access-control">
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS1276092600FOLDER" Name="assign-rbac-roles" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS1144209256FOLDER" Name="configure-rbac" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS_783538078FOLDER" Name="custom-role-actions-scopes" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS_955211352FOLDER" Name="manage-rbac-roles" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS2239684263FOLDER" Name="plan-rbac-rollout-strategy" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS2538691783FOLDER" Name="rbac-fixed-basic-role-definitions" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS4155673360FOLDER" Name="rbac-for-app-plugins" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS1376786014FOLDER" Name="rbac-grafana-provisioning" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS3949866110FOLDER" Name="rbac-terraform-provisioning" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONROLES_D_AND_D_PERMISSIONSACCESS_453228149FOLDER" Name="troubleshooting" />
+          </Directory>
+        </Directory>
+        <Directory Id="DOCSSOURCESADMINISTRATIONSERVICE_D_ACCOUNTSFOLDER" Name="service-accounts" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONSTATS_D_AND_D_LICENSEFOLDER" Name="stats-and-license" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONTEAM_D_MANAGEMENTFOLDER" Name="team-management" />
+        <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTFOLDER" Name="user-management">
+          <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTMANAGE_D_DASHB2968886275FOLDER" Name="manage-dashboard-permissions" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTMANAGE_D_ORG_D_USERSFOLDER" Name="manage-org-users" />
+          <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTSERVER_D_USER_2594318357FOLDER" Name="server-user-management">
+            <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTSERVER_D_USER_1830198276FOLDER" Name="add-remove-user-to-org" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTSERVER_D_USER_2607562267FOLDER" Name="assign-remove-server-admin-privileges" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTSERVER_D_USER_D549403072FOLDER" Name="change-user-org-permissions" />
+            <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTSERVER_D_USER_2319193251FOLDER" Name="grant-editor-admin-permissions" />
+          </Directory>
+          <Directory Id="DOCSSOURCESADMINISTRATIONUSER_D_MANAGEMENTUSER_D_PREFERENCESFOLDER" Name="user-preferences" />
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESALERTINGFOLDER" Name="alerting">
+        <Directory Id="DOCSSOURCESALERTINGALERTING_D_RULESFOLDER" Name="alerting-rules">
+          <Directory Id="DOCSSOURCESALERTINGALERTING_D_RULESCREATE_D_RECORDING_D_RULESFOLDER" Name="create-recording-rules" />
+          <Directory Id="DOCSSOURCESALERTINGALERTING_D_RULESTEMPLATESFOLDER" Name="templates" />
+        </Directory>
+        <Directory Id="DOCSSOURCESALERTINGCONFIGURE_D_NOTIFICATIONSFOLDER" Name="configure-notifications">
+          <Directory Id="DOCSSOURCESALERTINGCONFIGURE_D_NOTIFICATIONSMANAGE_D_CON3695961127FOLDER" Name="manage-contact-points">
+            <Directory Id="DOCSSOURCESALERTINGCONFIGURE_D_NOTIFICATIONSMANAGE_D_CONT318947458FOLDER" Name="integrations" />
+          </Directory>
+          <Directory Id="DOCSSOURCESALERTINGCONFIGURE_D_NOTIFICATIONSTEMPLATE_D_N1516779446FOLDER" Name="template-notifications" />
+        </Directory>
+        <Directory Id="DOCSSOURCESALERTINGFUNDAMENTALSFOLDER" Name="fundamentals">
+          <Directory Id="DOCSSOURCESALERTINGFUNDAMENTALSALERT_D_RULE_D_EVALUATIONFOLDER" Name="alert-rule-evaluation" />
+          <Directory Id="DOCSSOURCESALERTINGFUNDAMENTALSALERT_D_RULESFOLDER" Name="alert-rules" />
+          <Directory Id="DOCSSOURCESALERTINGFUNDAMENTALSNOTIFICATIONSFOLDER" Name="notifications" />
+        </Directory>
+        <Directory Id="DOCSSOURCESALERTINGMANAGE_D_NOTIFICATIONSFOLDER" Name="manage-notifications" />
+        <Directory Id="DOCSSOURCESALERTINGSET_D_UPFOLDER" Name="set-up">
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_ALERTMANAGERFOLDER" Name="configure-alertmanager" />
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_ALERT_D_STATE_D_HISTORYFOLDER" Name="configure-alert-state-history" />
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_HIGH_D_AVAILABILITYFOLDER" Name="configure-high-availability" />
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_RBACFOLDER" Name="configure-rbac">
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_RBACACCESS_D_FOLDERSFOLDER" Name="access-folders" />
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_RBACACCESS_D_ROLESFOLDER" Name="access-roles" />
+          </Directory>
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPCONFIGURE_D_ROLESFOLDER" Name="configure-roles" />
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPPERFORMANCE_D_LIMITATIONSFOLDER" Name="performance-limitations" />
+          <Directory Id="DOCSSOURCESALERTINGSET_D_UPPROVISION_D_ALERTING_D_RESOURCESFOLDER" Name="provision-alerting-resources">
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPPROVISION_D_ALERTING_D_RESOUR3649580063FOLDER" Name="export-alerting-resources" />
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPPROVISION_D_ALERTING_D_RESOUR2132031047FOLDER" Name="file-provisioning" />
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPPROVISION_D_ALERTING_D_RESOUR3140471603FOLDER" Name="http-api-provisioning" />
+            <Directory Id="DOCSSOURCESALERTINGSET_D_UPPROVISION_D_ALERTING_D_RESOUR1713927926FOLDER" Name="terraform-provisioning" />
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESBREAKING_D_CHANGESFOLDER" Name="breaking-changes" />
+      <Directory Id="DOCSSOURCESDASHBOARDSFOLDER" Name="dashboards">
+        <Directory Id="DOCSSOURCESDASHBOARDSASSESS_D_DASHBOARD_D_USAGEFOLDER" Name="assess-dashboard-usage" />
+        <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSFOLDER" Name="build-dashboards">
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSANNOTATE_D_VISUALIZATIONSFOLDER" Name="annotate-visualizations" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSBEST_D_PRACTICESFOLDER" Name="best-practices" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSCREATE_D_DASHBOARDFOLDER" Name="create-dashboard" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSCREATE_D_DASHBOAR3684551895FOLDER" Name="create-dashboard-url-variables" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSIMPORT_D_DASHBOARDSFOLDER" Name="import-dashboards" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSMANAGE_D_DASHBOARD_D_LINKSFOLDER" Name="manage-dashboard-links" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSMANAGE_D_LIBRARY_D_PANELSFOLDER" Name="manage-library-panels" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSMANAGE_D_VERSION_D_HISTORYFOLDER" Name="manage-version-history" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSMODIFY_D_DASHBOAR1515158743FOLDER" Name="modify-dashboard-settings" />
+          <Directory Id="DOCSSOURCESDASHBOARDSBUILD_D_DASHBOARDSVIEW_D_DASHBOARD_1677085727FOLDER" Name="view-dashboard-json-model" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDASHBOARDSCREATE_D_MANAGE_D_PLAYLISTSFOLDER" Name="create-manage-playlists" />
+        <Directory Id="DOCSSOURCESDASHBOARDSCREATE_D_REPORTSFOLDER" Name="create-reports" />
+        <Directory Id="DOCSSOURCESDASHBOARDSDASHBOARD_D_PUBLICFOLDER" Name="dashboard-public" />
+        <Directory Id="DOCSSOURCESDASHBOARDSMANAGE_D_DASHBOARDSFOLDER" Name="manage-dashboards" />
+        <Directory Id="DOCSSOURCESDASHBOARDSSEARCH_D_DASHBOARDSFOLDER" Name="search-dashboards" />
+        <Directory Id="DOCSSOURCESDASHBOARDSSHARE_D_DASHBOARDS_D_PANELSFOLDER" Name="share-dashboards-panels" />
+        <Directory Id="DOCSSOURCESDASHBOARDSTROUBLESHOOT_D_DASHBOARDSFOLDER" Name="troubleshoot-dashboards" />
+        <Directory Id="DOCSSOURCESDASHBOARDSUSE_D_DASHBOARDSFOLDER" Name="use-dashboards" />
+        <Directory Id="DOCSSOURCESDASHBOARDSVARIABLESFOLDER" Name="variables">
+          <Directory Id="DOCSSOURCESDASHBOARDSVARIABLESADD_D_TEMPLATE_D_VARIABLESFOLDER" Name="add-template-variables" />
+          <Directory Id="DOCSSOURCESDASHBOARDSVARIABLESINSPECT_D_VARIABLEFOLDER" Name="inspect-variable" />
+          <Directory Id="DOCSSOURCESDASHBOARDSVARIABLESVARIABLE_D_SYNTAXFOLDER" Name="variable-syntax" />
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESDATASOURCESFOLDER" Name="datasources">
+        <Directory Id="DOCSSOURCESDATASOURCESALERTMANAGERFOLDER" Name="alertmanager" />
+        <Directory Id="DOCSSOURCESDATASOURCESAWS_D_CLOUDWATCHFOLDER" Name="aws-cloudwatch">
+          <Directory Id="DOCSSOURCESDATASOURCESAWS_D_CLOUDWATCHAWS_D_AUTHENTICATIONFOLDER" Name="aws-authentication" />
+          <Directory Id="DOCSSOURCESDATASOURCESAWS_D_CLOUDWATCHQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESAWS_D_CLOUDWATCHTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESAZURE_D_MONITORFOLDER" Name="azure-monitor">
+          <Directory Id="DOCSSOURCESDATASOURCESAZURE_D_MONITORQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESAZURE_D_MONITORTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESELASTICSEARCHFOLDER" Name="elasticsearch">
+          <Directory Id="DOCSSOURCESDATASOURCESELASTICSEARCHQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESELASTICSEARCHTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESGOOGLE_D_CLOUD_D_MONITORINGFOLDER" Name="google-cloud-monitoring">
+          <Directory Id="DOCSSOURCESDATASOURCESGOOGLE_D_CLOUD_D_MONITORINGGOOGLE_D777977953FOLDER" Name="google-authentication" />
+          <Directory Id="DOCSSOURCESDATASOURCESGOOGLE_D_CLOUD_D_MONITORINGQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESGOOGLE_D_CLOUD_D_MONITORINGTEMPLAT3229410575FOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESGRAPHITEFOLDER" Name="graphite">
+          <Directory Id="DOCSSOURCESDATASOURCESGRAPHITEQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESGRAPHITETEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESINFLUXDBFOLDER" Name="influxdb">
+          <Directory Id="DOCSSOURCESDATASOURCESINFLUXDBCONFIGURE_D_INFLUXDB_D_DATA_D_SOURCEFOLDER" Name="configure-influxdb-data-source" />
+          <Directory Id="DOCSSOURCESDATASOURCESINFLUXDBQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESINFLUXDBTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESJAEGERFOLDER" Name="jaeger" />
+        <Directory Id="DOCSSOURCESDATASOURCESLOKIFOLDER" Name="loki">
+          <Directory Id="DOCSSOURCESDATASOURCESLOKIQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESLOKITEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESMSSQLFOLDER" Name="mssql">
+          <Directory Id="DOCSSOURCESDATASOURCESMSSQLQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESMSSQLTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESMYSQLFOLDER" Name="mysql" />
+        <Directory Id="DOCSSOURCESDATASOURCESOPENTSDBFOLDER" Name="opentsdb" />
+        <Directory Id="DOCSSOURCESDATASOURCESPOSTGRESFOLDER" Name="postgres" />
+        <Directory Id="DOCSSOURCESDATASOURCESPROMETHEUSFOLDER" Name="prometheus">
+          <Directory Id="DOCSSOURCESDATASOURCESPROMETHEUSQUERY_D_EDITORFOLDER" Name="query-editor" />
+          <Directory Id="DOCSSOURCESDATASOURCESPROMETHEUSTEMPLATE_D_VARIABLESFOLDER" Name="template-variables" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESPYROSCOPEFOLDER" Name="pyroscope" />
+        <Directory Id="DOCSSOURCESDATASOURCESTEMPOFOLDER" Name="tempo">
+          <Directory Id="DOCSSOURCESDATASOURCESTEMPOQUERY_D_EDITORFOLDER" Name="query-editor" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDATASOURCESTESTDATAFOLDER" Name="testdata" />
+        <Directory Id="DOCSSOURCESDATASOURCESZIPKINFOLDER" Name="zipkin" />
+      </Directory>
+      <Directory Id="DOCSSOURCESDEVELOPERSFOLDER" Name="developers">
+        <Directory Id="DOCSSOURCESDEVELOPERSANGULAR_DEPRECATIONFOLDER" Name="angular_deprecation" />
+        <Directory Id="DOCSSOURCESDEVELOPERSHTTP_APIFOLDER" Name="http_api">
+          <Directory Id="DOCSSOURCESDEVELOPERSHTTP_APIEXAMPLESFOLDER" Name="examples" />
+        </Directory>
+        <Directory Id="DOCSSOURCESDEVELOPERSPLUGINSFOLDER" Name="plugins" />
+      </Directory>
+      <Directory Id="DOCSSOURCESEXPLOREFOLDER" Name="explore">
+        <Directory Id="DOCSSOURCESEXPLORESIMPLIFIED_D_EXPLORATIONFOLDER" Name="simplified-exploration">
+          <Directory Id="DOCSSOURCESEXPLORESIMPLIFIED_D_EXPLORATIONMETRICSFOLDER" Name="metrics" />
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESFUNDAMENTALSFOLDER" Name="fundamentals">
+        <Directory Id="DOCSSOURCESFUNDAMENTALSDASHBOARDS_D_OVERVIEWFOLDER" Name="dashboards-overview" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSEXEMPLARSFOLDER" Name="exemplars" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSGLOSSARYFOLDER" Name="glossary" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSINTRO_D_HISTOGRAMSFOLDER" Name="intro-histograms" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSINTRO_D_TO_D_PROMETHEUSFOLDER" Name="intro-to-prometheus" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSTIMESERIESFOLDER" Name="timeseries" />
+        <Directory Id="DOCSSOURCESFUNDAMENTALSTIMESERIES_D_DIMENSIONSFOLDER" Name="timeseries-dimensions" />
+      </Directory>
+      <Directory Id="DOCSSOURCESGETTING_D_STARTEDFOLDER" Name="getting-started" />
+      <Directory Id="DOCSSOURCESINTRODUCTIONFOLDER" Name="introduction" />
+      <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSFOLDER" Name="panels-visualizations">
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_DATA_D_LINKSFOLDER" Name="configure-data-links" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_LEGENDFOLDER" Name="configure-legend" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_OVERRIDESFOLDER" Name="configure-overrides" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_PANEL_D_OPTIONSFOLDER" Name="configure-panel-options" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_STANDARD_D_OPTIONSFOLDER" Name="configure-standard-options" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_THRESHOLDSFOLDER" Name="configure-thresholds" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_TOOLTIPSFOLDER" Name="configure-tooltips" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSCONFIGURE_D_VALUE_D_MAPPINGSFOLDER" Name="configure-value-mappings" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSPANEL_D_EDITOR_D_OVERVIEWFOLDER" Name="panel-editor-overview" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSPANEL_D_INSPECTORFOLDER" Name="panel-inspector" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSPANEL_D_OVERVIEWFOLDER" Name="panel-overview" />
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DATAFOLDER" Name="query-transform-data">
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DAT252552927FOLDER" Name="calculation-types" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DA4158451762FOLDER" Name="expression-queries" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DAT627283429FOLDER" Name="share-query" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DA1808046725FOLDER" Name="transform-data" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSQUERY_D_TRANSFORM_D_DA3561245646FOLDER" Name="troubleshoot-queries" />
+        </Directory>
+        <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSFOLDER" Name="visualizations">
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSALERT_D_LISTFOLDER" Name="alert-list" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSANNOTATIONSFOLDER" Name="annotations" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSBAR_D_CHARTFOLDER" Name="bar-chart" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSBAR_D_GAUGEFOLDER" Name="bar-gauge" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSCANDLESTICKFOLDER" Name="candlestick" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSCANVASFOLDER" Name="canvas" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSDASHBOARD_D_LISTFOLDER" Name="dashboard-list" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSDATAGRIDFOLDER" Name="datagrid" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSFLAME_D_GRAPHFOLDER" Name="flame-graph" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSGAUGEFOLDER" Name="gauge" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSGEOMAPFOLDER" Name="geomap" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSHEATMAPFOLDER" Name="heatmap" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSHISTOGRAMFOLDER" Name="histogram" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSLOGSFOLDER" Name="logs" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSNEWSFOLDER" Name="news" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSNODE_D_GRAPHFOLDER" Name="node-graph" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSPIE_D_CHARTFOLDER" Name="pie-chart" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSSTATFOLDER" Name="stat" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSSTATE_D_TIMELINEFOLDER" Name="state-timeline" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSSTATUS_D_HISTORYFOLDER" Name="status-history" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSTABLEFOLDER" Name="table" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSTEXTFOLDER" Name="text" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSTIME_D_SERIESFOLDER" Name="time-series" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSTRACESFOLDER" Name="traces" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSTRENDFOLDER" Name="trend" />
+          <Directory Id="DOCSSOURCESPANELS_D_VISUALIZATIONSVISUALIZATIONSXY_D_CHARTFOLDER" Name="xy-chart" />
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESRELEASE_D_NOTESFOLDER" Name="release-notes" />
+      <Directory Id="DOCSSOURCESSEARCHFOLDER" Name="search" />
+      <Directory Id="DOCSSOURCESSETUP_D_GRAFANAFOLDER" Name="setup-grafana">
+        <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANAFOLDER" Name="configure-grafana">
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANACONFIGURE_D3953822818FOLDER" Name="configure-custom-branding" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANACONFIGURE_D_TRACINGFOLDER" Name="configure-tracing" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANAENTERPRISE_1071382432FOLDER" Name="enterprise-configuration" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANAFEATURE_D_TOGGLESFOLDER" Name="feature-toggles" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANAPROXYFOLDER" Name="proxy" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_GRAFANASETTINGS_D_U632260282FOLDER" Name="settings-updates-at-runtime" />
+        </Directory>
+        <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYFOLDER" Name="configure-security">
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1274149170FOLDER" Name="configure-authentication">
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1307351285FOLDER" Name="auth-proxy" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2786401591FOLDER" Name="azuread" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_3085487951FOLDER" Name="enhanced-ldap" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1164542061FOLDER" Name="generic-oauth" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_D771697792FOLDER" Name="github" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_D_72897289FOLDER" Name="gitlab" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_D731869752FOLDER" Name="google" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2473991030FOLDER" Name="grafana" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_3678465569FOLDER" Name="grafana-cloud" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2772198459FOLDER" Name="jwt" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2425159468FOLDER" Name="keycloak" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_3204239793FOLDER" Name="keycloak-multitenant" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1058533136FOLDER" Name="ldap" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1722330036FOLDER" Name="ldap-ui" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2080096549FOLDER" Name="okta" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2299689329FOLDER" Name="saml" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_4001726692FOLDER" Name="saml-ui" />
+          </Directory>
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_D510170155FOLDER" Name="configure-database-encryption">
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_4040591071FOLDER" Name="encrypt-secrets-using-aws-kms" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_2557375746FOLDER" Name="encrypt-secrets-using-azure-key-vault" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1123901071FOLDER" Name="encrypt-secrets-using-google-cloud-kms" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_3465754111FOLDER" Name="encrypt-secrets-using-hashicorp-key-vault" />
+            <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_1340272065FOLDER" Name="integrate-with-hashicorp-vault" />
+          </Directory>
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYCONFIGURE_D991390534FOLDER" Name="configure-security-hardening" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANACONFIGURE_D_SECURITYPLANNING_D_148424735FOLDER" Name="planning-iam-strategy" />
+        </Directory>
+        <Directory Id="DOCSSOURCESSETUP_D_GRAFANAIMAGE_D_RENDERINGFOLDER" Name="image-rendering">
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAIMAGE_D_RENDERINGMONITORINGFOLDER" Name="monitoring" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAIMAGE_D_RENDERINGTROUBLESHOOTINGFOLDER" Name="troubleshooting" />
+        </Directory>
+        <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONFOLDER" Name="installation">
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONDEBIANFOLDER" Name="debian" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONDOCKERFOLDER" Name="docker" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONHELMFOLDER" Name="helm" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONKUBERNETESFOLDER" Name="kubernetes" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONMACFOLDER" Name="mac" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONREDHAT_D_RHEL_D_FEDORAFOLDER" Name="redhat-rhel-fedora" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONSUSE_D_OPENSUSEFOLDER" Name="suse-opensuse" />
+          <Directory Id="DOCSSOURCESSETUP_D_GRAFANAINSTALLATIONWINDOWSFOLDER" Name="windows" />
+        </Directory>
+      </Directory>
+      <Directory Id="DOCSSOURCESSHAREDFOLDER" Name="shared">
+        <Directory Id="DOCSSOURCESSHAREDALERTSFOLDER" Name="alerts" />
+        <Directory Id="DOCSSOURCESSHAREDAUTHFOLDER" Name="auth" />
+        <Directory Id="DOCSSOURCESSHAREDBACK_D_UPFOLDER" Name="back-up" />
+        <Directory Id="DOCSSOURCESSHAREDBASICSFOLDER" Name="basics" />
+        <Directory Id="DOCSSOURCESSHAREDDASHBOARDSFOLDER" Name="dashboards" />
+        <Directory Id="DOCSSOURCESSHAREDDATASOURCESFOLDER" Name="datasources" />
+        <Directory Id="DOCSSOURCESSHAREDDEVELOPERSFOLDER" Name="developers" />
+        <Directory Id="DOCSSOURCESSHAREDINFLUXDBFOLDER" Name="influxdb" />
+        <Directory Id="DOCSSOURCESSHAREDMANAGE_D_USERSFOLDER" Name="manage-users" />
+        <Directory Id="DOCSSOURCESSHAREDPANELSFOLDER" Name="panels" />
+        <Directory Id="DOCSSOURCESSHAREDPREFERENCESFOLDER" Name="preferences" />
+        <Directory Id="DOCSSOURCESSHAREDSYSTEMDFOLDER" Name="systemd" />
+        <Directory Id="DOCSSOURCESSHAREDTUTORIALSFOLDER" Name="tutorials" />
+        <Directory Id="DOCSSOURCESSHAREDUPGRADEFOLDER" Name="upgrade" />
+        <Directory Id="DOCSSOURCESSHAREDVISUALIZATIONSFOLDER" Name="visualizations" />
+      </Directory>
+      <Directory Id="DOCSSOURCESTROUBLESHOOTINGFOLDER" Name="troubleshooting">
+        <Directory Id="DOCSSOURCESTROUBLESHOOTINGSEND_D_PANEL_D_TO_D_GRAFANA_D_SUPPORTFOLDER" Name="send-panel-to-grafana-support" />
+        <Directory Id="DOCSSOURCESTROUBLESHOOTINGSUPPORT_D_BUNDLESFOLDER" Name="support-bundles" />
+      </Directory>
+      <Directory Id="DOCSSOURCESTUTORIALSFOLDER" Name="tutorials">
+        <Directory Id="DOCSSOURCESTUTORIALSALERTING_D_GET_D_STARTEDFOLDER" Name="alerting-get-started" />
+        <Directory Id="DOCSSOURCESTUTORIALSALERTING_D_GET_D_STARTED_D_PT2FOLDER" Name="alerting-get-started-pt2" />
+        <Directory Id="DOCSSOURCESTUTORIALSCREATE_D_ALERTS_D_FROM_D_FLUX_D_QUERIESFOLDER" Name="create-alerts-from-flux-queries" />
+        <Directory Id="DOCSSOURCESTUTORIALSCREATE_D_ALERTS_D_WITH_D_LOGSFOLDER" Name="create-alerts-with-logs" />
+        <Directory Id="DOCSSOURCESTUTORIALSCREATE_D_USERS_D_AND_D_TEAMSFOLDER" Name="create-users-and-teams" />
+        <Directory Id="DOCSSOURCESTUTORIALSGRAFANA_D_FUNDAMENTALSFOLDER" Name="grafana-fundamentals" />
+        <Directory Id="DOCSSOURCESTUTORIALSIISFOLDER" Name="iis" />
+        <Directory Id="DOCSSOURCESTUTORIALSINSTALL_D_GRAFANA_D_ON_D_RASPBERRY_D_PIFOLDER" Name="install-grafana-on-raspberry-pi" />
+        <Directory Id="DOCSSOURCESTUTORIALSINTEGRATE_D_HUBOTFOLDER" Name="integrate-hubot" />
+        <Directory Id="DOCSSOURCESTUTORIALSPROVISION_D_DASHBOARDS_D_AND_D_DATA_D_SOURCESFOLDER" Name="provision-dashboards-and-data-sources" />
+        <Directory Id="DOCSSOURCESTUTORIALSRUN_D_GRAFANA_D_BEHIND_D_A_D_PROXYFOLDER" Name="run-grafana-behind-a-proxy" />
+        <Directory Id="DOCSSOURCESTUTORIALSSTREAM_D_METRICS_D_FROM_D_TELEGRAF_D3775330821FOLDER" Name="stream-metrics-from-telegraf-to-grafana" />
+      </Directory>
+      <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEFOLDER" Name="upgrade-guide">
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V10.0FOLDER" Name="upgrade-v10.0" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V10.1FOLDER" Name="upgrade-v10.1" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V10.2FOLDER" Name="upgrade-v10.2" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V10.3FOLDER" Name="upgrade-v10.3" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V10.4FOLDER" Name="upgrade-v10.4" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V11.0FOLDER" Name="upgrade-v11.0" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V11.1FOLDER" Name="upgrade-v11.1" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V11.2FOLDER" Name="upgrade-v11.2" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V11.3FOLDER" Name="upgrade-v11.3" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.0FOLDER" Name="upgrade-v8.0" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.1FOLDER" Name="upgrade-v8.1" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.2FOLDER" Name="upgrade-v8.2" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.3FOLDER" Name="upgrade-v8.3" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.4FOLDER" Name="upgrade-v8.4" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V8.5FOLDER" Name="upgrade-v8.5" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.0FOLDER" Name="upgrade-v9.0" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.1FOLDER" Name="upgrade-v9.1" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.2FOLDER" Name="upgrade-v9.2" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.3FOLDER" Name="upgrade-v9.3" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.4FOLDER" Name="upgrade-v9.4" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEUPGRADE_D_V9.5FOLDER" Name="upgrade-v9.5" />
+        <Directory Id="DOCSSOURCESUPGRADE_D_GUIDEWHEN_D_TO_D_UPGRADEFOLDER" Name="when-to-upgrade" />
+      </Directory>
+      <Directory Id="DOCSSOURCESWHATSNEWFOLDER" Name="whatsnew">
+        <Directory Id="DOCSSOURCESWHATSNEWWHATS_D_NEW_D_NEXTFOLDER" Name="whats-new-next" />
       </Directory>
     </Directory>
   </Directory>
+  <Directory Id="NPM_D_ARTIFACTSFOLDER" Name="npm-artifacts" />
+  <Directory Id="PACKAGINGFOLDER" Name="packaging">
+    <Directory Id="PACKAGINGDEBFOLDER" Name="deb">
+      <Directory Id="PACKAGINGDEBCONTROLFOLDER" Name="control" />
+      <Directory Id="PACKAGINGDEBDEFAULTFOLDER" Name="default" />
+      <Directory Id="PACKAGINGDEBINIT.DFOLDER" Name="init.d" />
+      <Directory Id="PACKAGINGDEBSYSTEMDFOLDER" Name="systemd" />
+    </Directory>
+    <Directory Id="PACKAGINGDOCKERFOLDER" Name="docker">
+      <Directory Id="PACKAGINGDOCKERCUSTOMFOLDER" Name="custom" />
+    </Directory>
+    <Directory Id="PACKAGINGRPMFOLDER" Name="rpm">
+      <Directory Id="PACKAGINGRPMCONTROLFOLDER" Name="control" />
+      <Directory Id="PACKAGINGRPMSYSCONFIGFOLDER" Name="sysconfig" />
+      <Directory Id="PACKAGINGRPMSYSTEMDFOLDER" Name="systemd" />
+    </Directory>
+    <Directory Id="PACKAGINGWRAPPERSFOLDER" Name="wrappers" />
+  </Directory>
+  <Directory Id="PLUGINS_D_BUNDLEDFOLDER" Name="plugins-bundled" />
   <Directory Id="PUBLICFOLDER" Name="public">
     <Directory Id="PUBLICAPPFOLDER" Name="app">
       <Directory Id="PUBLICAPPANGULARFOLDER" Name="angular">
         <Directory Id="PUBLICAPPANGULARCOMPONENTSFOLDER" Name="components">
           <Directory Id="PUBLICAPPANGULARCOMPONENTSCODE_EDITORFOLDER" Name="code_editor" />
           <Directory Id="PUBLICAPPANGULARCOMPONENTSFORM_DROPDOWNFOLDER" Name="form_dropdown" />
+          <Directory Id="PUBLICAPPANGULARCOMPONENTSPAGEHEADERFOLDER" Name="PageHeader" />
           <Directory Id="PUBLICAPPANGULARCOMPONENTSSQL_PARTFOLDER" Name="sql_part" />
         </Directory>
         <Directory Id="PUBLICAPPANGULARFILTERSFOLDER" Name="filters" />
@@ -76,41 +442,48 @@
           <Directory Id="PUBLICAPPCORECOMPONENTSACCESSCONTROLFOLDER" Name="AccessControl" />
           <Directory Id="PUBLICAPPCORECOMPONENTSANIMATIONSFOLDER" Name="Animations" />
           <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMEFOLDER" Name="AppChrome">
+            <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMEMEGAMENUFOLDER" Name="MegaMenu" />
+            <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMENAVTOOLBARFOLDER" Name="NavToolbar" />
             <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMENEWSFOLDER" Name="News">
               <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMENEWSFIXTURESFOLDER" Name="fixtures" />
             </Directory>
-            <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMEORGANIZATIONFOLDER" Name="Organization" />
+            <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMEORGANIZATIONSWITCHERFOLDER" Name="OrganizationSwitcher" />
             <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMEQUICKADDFOLDER" Name="QuickAdd" />
+            <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMERETURNTOPREVIOUSFOLDER" Name="ReturnToPrevious" />
             <Directory Id="PUBLICAPPCORECOMPONENTSAPPCHROMETOPBARFOLDER" Name="TopBar" />
           </Directory>
           <Directory Id="PUBLICAPPCORECOMPONENTSAPPNOTIFICATIONSFOLDER" Name="AppNotifications" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSBOOKMARKSFOLDER" Name="Bookmarks" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSBOUNCINGLOADERFOLDER" Name="BouncingLoader" />
           <Directory Id="PUBLICAPPCORECOMPONENTSBRANDINGFOLDER" Name="Branding" />
           <Directory Id="PUBLICAPPCORECOMPONENTSBREADCRUMBSFOLDER" Name="Breadcrumbs" />
           <Directory Id="PUBLICAPPCORECOMPONENTSCLOSEBUTTONFOLDER" Name="CloseButton" />
           <Directory Id="PUBLICAPPCORECOMPONENTSCOLORSCALEFOLDER" Name="ColorScale" />
           <Directory Id="PUBLICAPPCORECOMPONENTSDYNAMICIMPORTSFOLDER" Name="DynamicImports" />
           <Directory Id="PUBLICAPPCORECOMPONENTSEMPTYLISTCTAFOLDER" Name="EmptyListCTA" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSERRORPAGEFOLDER" Name="ErrorPage" />
           <Directory Id="PUBLICAPPCORECOMPONENTSFOLDERFILTERFOLDER" Name="FolderFilter" />
           <Directory Id="PUBLICAPPCORECOMPONENTSFOOTERFOLDER" Name="Footer" />
           <Directory Id="PUBLICAPPCORECOMPONENTSFORGOTTENPASSWORDFOLDER" Name="ForgottenPassword" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSFORMFOLDER" Name="Form" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSFORMPROMPTFOLDER" Name="FormPrompt" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSGRAPHNGFOLDER" Name="GraphNG">
+            <Directory Id="PUBLICAPPCORECOMPONENTSGRAPHNG_SNAPSHOTSFOLDER" Name="__snapshots__" />
+          </Directory>
           <Directory Id="PUBLICAPPCORECOMPONENTSHELPFOLDER" Name="help" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSINDENTFOLDER" Name="Indent" />
           <Directory Id="PUBLICAPPCORECOMPONENTSLAYERSFOLDER" Name="Layers" />
           <Directory Id="PUBLICAPPCORECOMPONENTSLOCALSTORAGEVALUEPROVIDERFOLDER" Name="LocalStorageValueProvider" />
           <Directory Id="PUBLICAPPCORECOMPONENTSLOGINFOLDER" Name="Login" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSMEGAMENUFOLDER" Name="MegaMenu" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSMODALSFOLDER" Name="modals" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSNAVBARFOLDER" Name="NavBar" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSNAVLANDINGPAGEFOLDER" Name="NavLandingPage" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSNESTEDFOLDERPICKERFOLDER" Name="NestedFolderPicker" />
           <Directory Id="PUBLICAPPCORECOMPONENTSOPTIONSUIFOLDER" Name="OptionsUI" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPAGEFOLDER" Name="Page" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPAGEACTIONBARFOLDER" Name="PageActionBar" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSPAGEHEADERFOLDER" Name="PageHeader" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPAGEINFOFOLDER" Name="PageInfo" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPAGELOADERFOLDER" Name="PageLoader" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSPAGENEWFOLDER" Name="PageNew" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSPAGENOTFOUNDFOLDER" Name="PageNotFound" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPANELTYPEFILTERFOLDER" Name="PanelTypeFilter" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPASSWORDFIELDFOLDER" Name="PasswordField" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSPERMISSIONLISTFOLDER" Name="PermissionList" />
           <Directory Id="PUBLICAPPCORECOMPONENTSPLUGINHELPFOLDER" Name="PluginHelp" />
           <Directory Id="PUBLICAPPCORECOMPONENTSQUERYOPERATIONROWFOLDER" Name="QueryOperationRow" />
           <Directory Id="PUBLICAPPCORECOMPONENTSROLEPICKERFOLDER" Name="RolePicker" />
@@ -124,14 +497,15 @@
           <Directory Id="PUBLICAPPCORECOMPONENTSTAGFILTERFOLDER" Name="TagFilter" />
           <Directory Id="PUBLICAPPCORECOMPONENTSTIMELINECHARTFOLDER" Name="TimelineChart" />
           <Directory Id="PUBLICAPPCORECOMPONENTSTIMEPICKERFOLDER" Name="TimePicker" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSTRACETOLOGSFOLDER" Name="TraceToLogs" />
-          <Directory Id="PUBLICAPPCORECOMPONENTSTRACETOMETRICSFOLDER" Name="TraceToMetrics" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSTIMESERIESFOLDER" Name="TimeSeries" />
           <Directory Id="PUBLICAPPCORECOMPONENTSUPGRADEFOLDER" Name="Upgrade" />
+          <Directory Id="PUBLICAPPCORECOMPONENTSVALIDATIONLABELSFOLDER" Name="ValidationLabels" />
         </Directory>
         <Directory Id="PUBLICAPPCORECONTEXTFOLDER" Name="context" />
         <Directory Id="PUBLICAPPCORECOPYFOLDER" Name="copy" />
         <Directory Id="PUBLICAPPCOREHISTORYFOLDER" Name="history" />
         <Directory Id="PUBLICAPPCOREHOOKSFOLDER" Name="hooks" />
+        <Directory Id="PUBLICAPPCOREICONSFOLDER" Name="icons" />
         <Directory Id="PUBLICAPPCOREINTERNATIONALIZATIONFOLDER" Name="internationalization" />
         <Directory Id="PUBLICAPPCORENAVIGATIONFOLDER" Name="navigation">
           <Directory Id="PUBLICAPPCORENAVIGATION_MOCKSFOLDER" Name="__mocks__" />
@@ -144,78 +518,192 @@
           <Directory Id="PUBLICAPPCORESERVICESECHOFOLDER" Name="echo">
             <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSFOLDER" Name="backends">
               <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSANALYTICSFOLDER" Name="analytics" />
-              <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSGRAFANA_JAVASCRIPT_AGENTFOLDER" Name="grafana-javascript-agent" />
-              <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSSENTRYFOLDER" Name="sentry">
-                <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSSENTRYTRANSPORTSFOLDER" Name="transports" />
-              </Directory>
+              <Directory Id="PUBLICAPPCORESERVICESECHOBACKENDSGRAFANA_D_JAVASCRIPT_D_AGENTFOLDER" Name="grafana-javascript-agent" />
             </Directory>
           </Directory>
+          <Directory Id="PUBLICAPPCORESERVICESMOUSETRAPFOLDER" Name="mousetrap" />
         </Directory>
         <Directory Id="PUBLICAPPCORESPECSFOLDER" Name="specs" />
         <Directory Id="PUBLICAPPCOREUTILSFOLDER" Name="utils" />
       </Directory>
       <Directory Id="PUBLICAPPFEATURESFOLDER" Name="features">
+        <Directory Id="PUBLICAPPFEATURESACTIONSFOLDER" Name="actions" />
         <Directory Id="PUBLICAPPFEATURESADMINFOLDER" Name="admin">
           <Directory Id="PUBLICAPPFEATURESADMINLDAPFOLDER" Name="ldap" />
           <Directory Id="PUBLICAPPFEATURESADMINPARTIALSFOLDER" Name="partials" />
           <Directory Id="PUBLICAPPFEATURESADMINSTATEFOLDER" Name="state" />
+          <Directory Id="PUBLICAPPFEATURESADMINUSERLISTPUBLICDASHBOARDPAGEFOLDER" Name="UserListPublicDashboardPage" />
+          <Directory Id="PUBLICAPPFEATURESADMINUSERSFOLDER" Name="Users" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESALERTINGFOLDER" Name="alerting">
-          <Directory Id="PUBLICAPPFEATURESALERTINGCOMPONENTSFOLDER" Name="components" />
-          <Directory Id="PUBLICAPPFEATURESALERTINGPARTIALSFOLDER" Name="partials" />
           <Directory Id="PUBLICAPPFEATURESALERTINGSTATEFOLDER" Name="state" />
           <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDFOLDER" Name="unified">
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIED_MOCKSFOLDER" Name="__mocks__" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIED_SNAPSHOTSFOLDER" Name="__snapshots__" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDAPIFOLDER" Name="api" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSADMINFOLDER" Name="admin" />
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSALERT_GROUPSFOLDER" Name="alert-groups" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSALERT_D_GROUPSFOLDER" Name="alert-groups" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSALERTMANAGER_D_ENTITIESFOLDER" Name="alertmanager-entities" />
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSBRIDGESFOLDER" Name="bridges" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCOMMONFOLDER" Name="common" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCONTACT_D_POINTSFOLDER" Name="contact-points">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCONTACT_D_POINTS_MOCKSFOLDER" Name="__mocks__" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCONTACT_D_POINT617198424FOLDER" Name="__snapshots__" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCONTACT_D_POIN3398214021FOLDER" Name="components" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSCONTACT_D_POINT534750077FOLDER" Name="templates" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSEXPORTFOLDER" Name="export" />
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSEXPRESSIONSFOLDER" Name="expressions" />
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSMUTE_TIMINGSFOLDER" Name="mute-timings" />
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSNOTIFICATION_POLICIESFOLDER" Name="notification-policies" />
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSPANEL_ALERTS_TABFOLDER" Name="panel-alerts-tab" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSEXTENSIONSFOLDER" Name="extensions" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSMUTE_D_TIMINGSFOLDER" Name="mute-timings">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSMUTE_D_TIMINGS_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSNOTIFICATION_D_POLICIESFOLDER" Name="notification-policies" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSPANEL_D_ALERTS_D_TABFOLDER" Name="panel-alerts-tab" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSPERMISSIONSFOLDER" Name="permissions" />
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFOLDER" Name="receivers">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERS_SNAPSHOTSFOLDER" Name="__snapshots__" />
                 <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSEDITORFOLDER" Name="editor" />
                 <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFORMFOLDER" Name="form">
-                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFORMFIELDSFOLDER" Name="fields" />
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFORM_SNAPSHOTSFOLDER" Name="__snapshots__" />
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFORMFIELDSFOLDER" Name="fields">
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSFORMF2539246970FOLDER" Name="__snapshots__" />
+                  </Directory>
                 </Directory>
                 <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSGRAFA1598878369FOLDER" Name="grafanaAppReceivers">
                   <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRECEIVERSGRAFA1963771234FOLDER" Name="onCall" />
                 </Directory>
               </Directory>
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_EDITORFOLDER" Name="rule-editor">
-                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_EDITOR_SNAPSHOTSFOLDER" Name="__snapshots__" />
-                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_EDITORQUE2380822258FOLDER" Name="query-and-alert-condition">
-                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_EDITORQUER788116541FOLDER" Name="__snapshots__" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORFOLDER" Name="rule-editor">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITOR_SNAPSHOTSFOLDER" Name="__snapshots__" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORA3933291207FOLDER" Name="alert-rule-form">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORA1128376876FOLDER" Name="simplifiedRouting">
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORA3023217051FOLDER" Name="__snapshots__" />
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORA2603616557FOLDER" Name="contactPoint" />
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORA3587966964FOLDER" Name="route-settings" />
+                  </Directory>
                 </Directory>
-                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_EDITORRULE_TYPESFOLDER" Name="rule-types" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORLABELSFOLDER" Name="labels" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORN2470887699FOLDER" Name="notificaton-preview" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORQ2462739468FOLDER" Name="query-and-alert-condition">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORQU861358580FOLDER" Name="__snapshots__" />
+                </Directory>
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_EDITORR2902532844FOLDER" Name="rule-types" />
               </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_LISTFOLDER" Name="rule-list" />
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESFOLDER" Name="rules">
                 <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULES_SNAPSHOTSFOLDER" Name="__snapshots__" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESCENTRAL_D_617044215FOLDER" Name="central-state-history">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESCENTRAL_D2477391953FOLDER" Name="__fixtures__" />
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESCENTRAL_D1887879183FOLDER" Name="__snapshots__" />
+                </Directory>
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESFILTERFOLDER" Name="Filter" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESSTATE_D_HISTORYFOLDER" Name="state-history">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULESSTATE_D_HI648015901FOLDER" Name="__snapshots__" />
+                </Directory>
               </Directory>
-              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_VIEWERFOLDER" Name="rule-viewer" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_VIEWERFOLDER" Name="rule-viewer">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_VIEWERTABSFOLDER" Name="tabs">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSRULE_D_VIEWERTABSQUERYFOLDER" Name="Query" />
+                </Directory>
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGSFOLDER" Name="settings">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKSFOLDER" Name="__mocks__">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS_APIFOLDER" Name="api">
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS3762082516FOLDER" Name="alertmanager">
+                      <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS_360894400FOLDER" Name="grafana">
+                        <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS4086977001FOLDER" Name="config">
+                          <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS3091998108FOLDER" Name="api">
+                            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS4287784360FOLDER" Name="v1" />
+                          </Directory>
+                        </Directory>
+                      </Directory>
+                      <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS1437133451FOLDER" Name="provisioned">
+                        <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS_540133800FOLDER" Name="config">
+                          <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS_831043786FOLDER" Name="api">
+                            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS2647521607FOLDER" Name="v1" />
+                          </Directory>
+                        </Directory>
+                      </Directory>
+                    </Directory>
+                    <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS_APIV1FOLDER" Name="v1">
+                      <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSETTINGS_MOCKS2421279652FOLDER" Name="ngalert" />
+                    </Directory>
+                  </Directory>
+                </Directory>
+              </Directory>
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDCOMPONENTSSILENCESFOLDER" Name="silences" />
             </Directory>
-            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSFOLDER" Name="hooks" />
-            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSFOLDER" Name="mocks" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOMEFOLDER" Name="home" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSFOLDER" Name="hooks">
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKS_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSALERT_D_DETAILSFOLDER" Name="alert-details" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSRULEGROUPFOLDER" Name="ruleGroup">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSRULEGROUP_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDHOOKSRULESFOLDER" Name="rules" />
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSFOLDER" Name="insights">
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSGRAFANAFOLDER" Name="grafana">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSGRAFANAALERTMANAGERFOLDER" Name="alertmanager" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSMIMIRFOLDER" Name="mimir">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSMIMIRPERGROUPFOLDER" Name="perGroup" />
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINSIGHTSMIMIRRULESFOLDER" Name="rules" />
+              </Directory>
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDINTEGRATIONFOLDER" Name="integration" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSFOLDER" Name="mocks">
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSSERVERFOLDER" Name="server">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSSERVERHANDLERSFOLDER" Name="handlers">
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSSERVERHANDLERSK8SFOLDER" Name="k8s" />
+                  <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDMOCKSSERVERHANDLERSPLUGINSFOLDER" Name="plugins" />
+                </Directory>
+              </Directory>
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDOPENAPIFOLDER" Name="openapi" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDPLUGINSFOLDER" Name="plugins" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDREDUCERSFOLDER" Name="reducers">
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDREDUCERSALERTMANAGERFOLDER" Name="alertmanager">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDREDUCERSALERTMANAGER_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDREDUCERSRULERFOLDER" Name="ruler">
+                <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDREDUCERSRULER_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              </Directory>
+            </Directory>
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDSEARCHFOLDER" Name="search" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDSTATEFOLDER" Name="state" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDSTYLESFOLDER" Name="styles" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDTESTFOLDER" Name="test" />
+            <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDTESTSETUPFOLDER" Name="testSetup" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDTYPESFOLDER" Name="types" />
             <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDUTILSFOLDER" Name="utils">
               <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDUTILS_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              <Directory Id="PUBLICAPPFEATURESALERTINGUNIFIEDUTILSK8SFOLDER" Name="k8s" />
             </Directory>
           </Directory>
-          <Directory Id="PUBLICAPPFEATURESALERTINGUTILSFOLDER" Name="utils" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESANNOTATIONSFOLDER" Name="annotations">
           <Directory Id="PUBLICAPPFEATURESANNOTATIONSCOMPONENTSFOLDER" Name="components" />
           <Directory Id="PUBLICAPPFEATURESANNOTATIONSPARTIALSFOLDER" Name="partials" />
         </Directory>
-        <Directory Id="PUBLICAPPFEATURESAPI_KEYSFOLDER" Name="api-keys">
-          <Directory Id="PUBLICAPPFEATURESAPI_KEYS_MOCKSFOLDER" Name="__mocks__" />
-          <Directory Id="PUBLICAPPFEATURESAPI_KEYSSTATEFOLDER" Name="state" />
+        <Directory Id="PUBLICAPPFEATURESAPI_D_KEYSFOLDER" Name="api-keys">
+          <Directory Id="PUBLICAPPFEATURESAPI_D_KEYS_MOCKSFOLDER" Name="__mocks__" />
+          <Directory Id="PUBLICAPPFEATURESAPI_D_KEYSSTATEFOLDER" Name="state" />
+        </Directory>
+        <Directory Id="PUBLICAPPFEATURESAPISERVERFOLDER" Name="apiserver" />
+        <Directory Id="PUBLICAPPFEATURESAUTH_D_CONFIGFOLDER" Name="auth-config">
+          <Directory Id="PUBLICAPPFEATURESAUTH_D_CONFIGCOMPONENTSFOLDER" Name="components" />
+          <Directory Id="PUBLICAPPFEATURESAUTH_D_CONFIGSTATEFOLDER" Name="state" />
+          <Directory Id="PUBLICAPPFEATURESAUTH_D_CONFIGUTILSFOLDER" Name="utils" />
+        </Directory>
+        <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSFOLDER" Name="browse-dashboards">
+          <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSAPIFOLDER" Name="api" />
+          <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSCOMPONENTSFOLDER" Name="components">
+            <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSCOMPONENTSBROWSEACTIONSFOLDER" Name="BrowseActions" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSFIXTURESFOLDER" Name="fixtures" />
+          <Directory Id="PUBLICAPPFEATURESBROWSE_D_DASHBOARDSSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESCANVASFOLDER" Name="canvas">
           <Directory Id="PUBLICAPPFEATURESCANVASELEMENTSFOLDER" Name="elements">
@@ -240,12 +728,12 @@
               <Directory Id="PUBLICAPPFEATURESCONNECTIONSTABSCONNECTDATACARDGRIDFOLDER" Name="CardGrid" />
               <Directory Id="PUBLICAPPFEATURESCONNECTIONSTABSCONNECTDATACATEGORYHEADERFOLDER" Name="CategoryHeader" />
               <Directory Id="PUBLICAPPFEATURESCONNECTIONSTABSCONNECTDATANOACCESSMODALFOLDER" Name="NoAccessModal" />
-              <Directory Id="PUBLICAPPFEATURESCONNECTIONSTABSCONNECTDATANORESULTSFOLDER" Name="NoResults" />
               <Directory Id="PUBLICAPPFEATURESCONNECTIONSTABSCONNECTDATASEARCHFOLDER" Name="Search" />
             </Directory>
           </Directory>
         </Directory>
         <Directory Id="PUBLICAPPFEATURESCORRELATIONSFOLDER" Name="correlations">
+          <Directory Id="PUBLICAPPFEATURESCORRELATIONS_MOCKSFOLDER" Name="__mocks__" />
           <Directory Id="PUBLICAPPFEATURESCORRELATIONSCOMPONENTSFOLDER" Name="components">
             <Directory Id="PUBLICAPPFEATURESCORRELATIONSCOMPONENTSWIZARDFOLDER" Name="Wizard" />
           </Directory>
@@ -256,7 +744,7 @@
           <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSFOLDER" Name="components">
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDLIBRARYPANELWIDGETFOLDER" Name="AddLibraryPanelWidget" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDPANELBUTTONFOLDER" Name="AddPanelButton" />
-            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDPANELWIDGETFOLDER" Name="AddPanelWidget" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSADDWIDGETMODALFOLDER" Name="AddWidgetModal" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSANNOTATIONSETTINGSFOLDER" Name="AnnotationSettings" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSDASHBOARDLOADINGFOLDER" Name="DashboardLoading" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSDASHBOARDPERMISSIONSFOLDER" Name="DashboardPermissions" />
@@ -268,13 +756,14 @@
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSDASHEXPORTMODALFOLDER" Name="DashExportModal" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSDASHNAVFOLDER" Name="DashNav" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSDELETEDASHBOARDFOLDER" Name="DeleteDashboard" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSGENAIFOLDER" Name="GenAI" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSHELPWIZARDFOLDER" Name="HelpWizard" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSINSPECTORFOLDER" Name="Inspector" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSLINKSSETTINGSFOLDER" Name="LinksSettings" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSPANELEDITORFOLDER" Name="PanelEditor">
               <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSPANELEDITORSTATEFOLDER" Name="state" />
             </Directory>
-            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSPUBLICDASHBOARDFOOTERFOLDER" Name="PublicDashboardFooter" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSPUBLICDASHBOARDFOLDER" Name="PublicDashboard" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSPUBLICDASHBOARDNOTAVAILABLEFOLDER" Name="PublicDashboardNotAvailable" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSREPEATROWSELECTFOLDER" Name="RepeatRowSelect" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSROWOPTIONSFOLDER" Name="RowOptions" />
@@ -290,9 +779,7 @@
             </Directory>
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSSUBMENUFOLDER" Name="SubMenu" />
             <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSTRANSFORMATIONSEDITORFOLDER" Name="TransformationsEditor" />
-            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSVERSIONHISTORYFOLDER" Name="VersionHistory">
-              <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSVERSIONHISTORY_MOCKSFOLDER" Name="__mocks__" />
-            </Directory>
+            <Directory Id="PUBLICAPPFEATURESDASHBOARDCOMPONENTSVERSIONHISTORYFOLDER" Name="VersionHistory" />
           </Directory>
           <Directory Id="PUBLICAPPFEATURESDASHBOARDCONTAINERSFOLDER" Name="containers" />
           <Directory Id="PUBLICAPPFEATURESDASHBOARDDASHGRIDFOLDER" Name="dashgrid">
@@ -304,14 +791,69 @@
           </Directory>
           <Directory Id="PUBLICAPPFEATURESDASHBOARDUTILSFOLDER" Name="utils" />
         </Directory>
-        <Directory Id="PUBLICAPPFEATURESDATAFRAME_IMPORTFOLDER" Name="dataframe-import" />
-        <Directory Id="PUBLICAPPFEATURESDATASOURCE_DRAWERFOLDER" Name="datasource-drawer">
-          <Directory Id="PUBLICAPPFEATURESDATASOURCE_DRAWERCOMPONENTSFOLDER" Name="components" />
+        <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEFOLDER" Name="dashboard-scene">
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEEMBEDDINGFOLDER" Name="embedding" />
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEINSPECTFOLDER" Name="inspect">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEINSPECTHELPWIZARDFOLDER" Name="HelpWizard" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPAGESFOLDER" Name="pages" />
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPANEL_D_EDITFOLDER" Name="panel-edit">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPANEL_D_EDITPANELDATAPANEFOLDER" Name="PanelDataPane">
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPANEL_D_EDITPANELDATAP3345756546FOLDER" Name="__snapshots__" />
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPANEL_D_EDITSPLITTERFOLDER" Name="splitter" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEPANEL_D_EDITTESTFILESFOLDER" Name="testfiles" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESAVINGFOLDER" Name="saving">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESAVING_MOCKSFOLDER" Name="__mocks__" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESCENEFOLDER" Name="scene">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESCENEANGULARFOLDER" Name="angular" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESCENELAYOUT_D_DEFAULTFOLDER" Name="layout-default" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESCENEROW_D_ACTIONSFOLDER" Name="row-actions" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESERIALIZATIONFOLDER" Name="serialization">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESERIALIZATION_SNAPSHOTSFOLDER" Name="__snapshots__" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESERIALIZATIONCUSTOM_D_VARIABLESFOLDER" Name="custom-variables" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESERIALIZATIONTESTFILESFOLDER" Name="testfiles" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSFOLDER" Name="settings">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSANNOTATIONSFOLDER" Name="annotations" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSLINKSFOLDER" Name="links" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSVARIABLESFOLDER" Name="variables">
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSVARIABLESCOMPONENTSFOLDER" Name="components" />
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSVARIABLESEDITORSFOLDER" Name="editors" />
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSVERSION_D_HISTORYFOLDER" Name="version-history">
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESETTINGSVERSION_D_HISTORY_MOCKSFOLDER" Name="__mocks__" />
+            </Directory>
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGFOLDER" Name="sharing">
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGEXPORTBUTTONFOLDER" Name="ExportButton" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGPANEL_D_SHAREFOLDER" Name="panel-share" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGPUBLIC_D_DASHBOARDSFOLDER" Name="public-dashboards" />
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONFOLDER" Name="ShareButton">
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHARE150020113FOLDER" Name="share-externally">
+                <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHAR3912946646FOLDER" Name="EmailShare">
+                  <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHAR3293772727FOLDER" Name="ConfigEmailSharing" />
+                </Directory>
+                <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHAR4235123700FOLDER" Name="PublicShare" />
+              </Directory>
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHAR3440900964FOLDER" Name="share-internally" />
+              <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREBUTTONSHARE_96881482FOLDER" Name="share-snapshot" />
+            </Directory>
+            <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESHARINGSHAREDRAWERFOLDER" Name="ShareDrawer" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENESOLOFOLDER" Name="solo" />
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEUTILSFOLDER" Name="utils" />
+          <Directory Id="PUBLICAPPFEATURESDASHBOARD_D_SCENEVARIABLESFOLDER" Name="variables" />
         </Directory>
+        <Directory Id="PUBLICAPPFEATURESDATAFRAME_D_IMPORTFOLDER" Name="dataframe-import" />
         <Directory Id="PUBLICAPPFEATURESDATASOURCESFOLDER" Name="datasources">
           <Directory Id="PUBLICAPPFEATURESDATASOURCES_MOCKSFOLDER" Name="__mocks__" />
-          <Directory Id="PUBLICAPPFEATURESDATASOURCESCOMPONENTSFOLDER" Name="components" />
-          <Directory Id="PUBLICAPPFEATURESDATASOURCESPAGESFOLDER" Name="pages" />
+          <Directory Id="PUBLICAPPFEATURESDATASOURCESCOMPONENTSFOLDER" Name="components">
+            <Directory Id="PUBLICAPPFEATURESDATASOURCESCOMPONENTSPICKERFOLDER" Name="picker" />
+          </Directory>
           <Directory Id="PUBLICAPPFEATURESDATASOURCESSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESDIMENSIONSFOLDER" Name="dimensions">
@@ -322,18 +864,45 @@
         </Directory>
         <Directory Id="PUBLICAPPFEATURESEXPLOREFOLDER" Name="explore">
           <Directory Id="PUBLICAPPFEATURESEXPLORE_MOCKSFOLDER" Name="__mocks__" />
-          <Directory Id="PUBLICAPPFEATURESEXPLOREADDTODASHBOARDFOLDER" Name="AddToDashboard" />
+          <Directory Id="PUBLICAPPFEATURESEXPLORECONTENTOUTLINEFOLDER" Name="ContentOutline" />
+          <Directory Id="PUBLICAPPFEATURESEXPLOREEXTENSIONSFOLDER" Name="extensions">
+            <Directory Id="PUBLICAPPFEATURESEXPLOREEXTENSIONSADDTODASHBOARDFOLDER" Name="AddToDashboard" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESEXPLOREFLAMEGRAPHFOLDER" Name="FlameGraph" />
           <Directory Id="PUBLICAPPFEATURESEXPLOREGRAPHFOLDER" Name="Graph" />
-          <Directory Id="PUBLICAPPFEATURESEXPLOREPROMETHEUSLISTVIEWFOLDER" Name="PrometheusListView" />
+          <Directory Id="PUBLICAPPFEATURESEXPLOREHOOKSFOLDER" Name="hooks">
+            <Directory Id="PUBLICAPPFEATURESEXPLOREHOOKSUSESTATESYNCFOLDER" Name="useStateSync">
+              <Directory Id="PUBLICAPPFEATURESEXPLOREHOOKSUSESTATESYNCMIGRATORSFOLDER" Name="migrators" />
+              <Directory Id="PUBLICAPPFEATURESEXPLOREHOOKSUSESTATESYNCSYNCHRONIZERFOLDER" Name="synchronizer" />
+            </Directory>
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESEXPLORELOGSFOLDER" Name="Logs">
+            <Directory Id="PUBLICAPPFEATURESEXPLORELOGSUTILSFOLDER" Name="utils" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESEXPLORENODEGRAPHFOLDER" Name="NodeGraph" />
+          <Directory Id="PUBLICAPPFEATURESEXPLOREPROMETHEUSLISTVIEWFOLDER" Name="PrometheusListView">
+            <Directory Id="PUBLICAPPFEATURESEXPLOREPROMETHEUSLISTVIEWUTILSFOLDER" Name="utils" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESEXPLOREQUERIESDRAWERFOLDER" Name="QueriesDrawer" />
+          <Directory Id="PUBLICAPPFEATURESEXPLOREQUERYLIBRARYFOLDER" Name="QueryLibrary">
+            <Directory Id="PUBLICAPPFEATURESEXPLOREQUERYLIBRARYQUERYTEMPLATESTABLEFOLDER" Name="QueryTemplatesTable" />
+            <Directory Id="PUBLICAPPFEATURESEXPLOREQUERYLIBRARYUTILSFOLDER" Name="utils" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESEXPLORERAWPROMETHEUSFOLDER" Name="RawPrometheus" />
           <Directory Id="PUBLICAPPFEATURESEXPLORERICHHISTORYFOLDER" Name="RichHistory" />
           <Directory Id="PUBLICAPPFEATURESEXPLORESPECFOLDER" Name="spec">
             <Directory Id="PUBLICAPPFEATURESEXPLORESPECHELPERFOLDER" Name="helper" />
           </Directory>
           <Directory Id="PUBLICAPPFEATURESEXPLORESTATEFOLDER" Name="state" />
+          <Directory Id="PUBLICAPPFEATURESEXPLORETABLEFOLDER" Name="Table" />
           <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWFOLDER" Name="TraceView">
             <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSFOLDER" Name="components">
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSCOMMONFOLDER" Name="common" />
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSCONSTANTSFOLDER" Name="constants" />
+              <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSCRITICALPATHFOLDER" Name="CriticalPath">
+                <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSCRITICALPATHTESTCASESFOLDER" Name="testCases" />
+                <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSCRITICALPATHUTILSFOLDER" Name="utils" />
+              </Directory>
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSDEMOFOLDER" Name="demo" />
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSMODELFOLDER" Name="model">
                 <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSMODELDDGFOLDER" Name="ddg">
@@ -344,6 +913,8 @@
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSSETTINGSFOLDER" Name="settings" />
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACEPAGEHEADERFOLDER" Name="TracePageHeader">
                 <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACEPAGEHEADERACTIONSFOLDER" Name="Actions" />
+                <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACEPAGEHEAD1249217548FOLDER" Name="SearchBar" />
+                <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACEPAGEHEAD1634913044FOLDER" Name="SpanFilters" />
                 <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACEPAGEHEAD2507107663FOLDER" Name="SpanGraph" />
               </Directory>
               <Directory Id="PUBLICAPPFEATURESEXPLORETRACEVIEWCOMPONENTSTRACETIMELINEVIEWERFOLDER" Name="TraceTimelineViewer">
@@ -366,11 +937,12 @@
           <Directory Id="PUBLICAPPFEATURESEXPLOREUTILSFOLDER" Name="utils" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESEXPRESSIONSFOLDER" Name="expressions">
-          <Directory Id="PUBLICAPPFEATURESEXPRESSIONSCOMPONENTSFOLDER" Name="components" />
+          <Directory Id="PUBLICAPPFEATURESEXPRESSIONSCOMPONENTSFOLDER" Name="components">
+            <Directory Id="PUBLICAPPFEATURESEXPRESSIONSCOMPONENTS_SNAPSHOTSFOLDER" Name="__snapshots__" />
+          </Directory>
           <Directory Id="PUBLICAPPFEATURESEXPRESSIONSUTILSFOLDER" Name="utils" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESFOLDERSFOLDER" Name="folders">
-          <Directory Id="PUBLICAPPFEATURESFOLDERSCOMPONENTSFOLDER" Name="components" />
           <Directory Id="PUBLICAPPFEATURESFOLDERSSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESGEOFOLDER" Name="geo">
@@ -379,28 +951,36 @@
           <Directory Id="PUBLICAPPFEATURESGEOGAZETTEERFOLDER" Name="gazetteer" />
           <Directory Id="PUBLICAPPFEATURESGEOUTILSFOLDER" Name="utils" />
         </Directory>
+        <Directory Id="PUBLICAPPFEATURESGOPSFOLDER" Name="gops">
+          <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERFOLDER" Name="configuration-tracker">
+            <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERALERTINGFOLDER" Name="alerting" />
+            <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERCOMPONENTSFOLDER" Name="components" />
+            <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERINCIDENTSFOLDER" Name="incidents" />
+            <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERONCALLFOLDER" Name="onCall" />
+            <Directory Id="PUBLICAPPFEATURESGOPSCONFIGURATION_D_TRACKERSLOFOLDER" Name="slo" />
+          </Directory>
+        </Directory>
         <Directory Id="PUBLICAPPFEATURESINSPECTORFOLDER" Name="inspector">
           <Directory Id="PUBLICAPPFEATURESINSPECTORUTILSFOLDER" Name="utils" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESINVITESFOLDER" Name="invites">
           <Directory Id="PUBLICAPPFEATURESINVITESSTATEFOLDER" Name="state" />
         </Directory>
-        <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSFOLDER" Name="library-panels">
-          <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSFOLDER" Name="components">
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSADDLIBRARYPANELMODALFOLDER" Name="AddLibraryPanelModal" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSCHANGELIBRARYPANELMODALFOLDER" Name="ChangeLibraryPanelModal" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSDELETELIBRARYPANELMODALFOLDER" Name="DeleteLibraryPanelModal" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSLIBRARYPANELCARDFOLDER" Name="LibraryPanelCard" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSLIBRARYPANELINFOFOLDER" Name="LibraryPanelInfo" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSLIBRARYPANELSSEARCHFOLDER" Name="LibraryPanelsSearch" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSLIBRARYPANELSVIEWFOLDER" Name="LibraryPanelsView" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSOPENLIBRARYPANELMODALFOLDER" Name="OpenLibraryPanelModal" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSPANELLIBRARYOPTIONSGROUPFOLDER" Name="PanelLibraryOptionsGroup" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSSAVELIBRARYPANELMODALFOLDER" Name="SaveLibraryPanelModal" />
-            <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSCOMPONENTSUNLINKMODALFOLDER" Name="UnlinkModal" />
+        <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSFOLDER" Name="library-panels">
+          <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSFOLDER" Name="components">
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSADDLIBRARYPANELMODALFOLDER" Name="AddLibraryPanelModal" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSCHANGELIBRARYPANELMODALFOLDER" Name="ChangeLibraryPanelModal" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSDELETELIBRARYPANELMODALFOLDER" Name="DeleteLibraryPanelModal" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSLIBRARYPANELCARDFOLDER" Name="LibraryPanelCard" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSLIBRARYPANELINFOFOLDER" Name="LibraryPanelInfo" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSLIBRARYPANELSSEARCHFOLDER" Name="LibraryPanelsSearch" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSLIBRARYPANELSVIEWFOLDER" Name="LibraryPanelsView" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSOPENLIBRARYPANELMODALFOLDER" Name="OpenLibraryPanelModal" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSPANELLIBRARYO3397247213FOLDER" Name="PanelLibraryOptionsGroup" />
+            <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSCOMPONENTSSAVELIBRARYPANELMODALFOLDER" Name="SaveLibraryPanelModal" />
           </Directory>
-          <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSSTATEFOLDER" Name="state" />
-          <Directory Id="PUBLICAPPFEATURESLIBRARY_PANELSUTILSFOLDER" Name="utils" />
+          <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSSTATEFOLDER" Name="state" />
+          <Directory Id="PUBLICAPPFEATURESLIBRARY_D_PANELSUTILSFOLDER" Name="utils" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESLIVEFOLDER" Name="live">
           <Directory Id="PUBLICAPPFEATURESLIVECENTRIFUGEFOLDER" Name="centrifuge" />
@@ -410,15 +990,30 @@
         <Directory Id="PUBLICAPPFEATURESLOGSFOLDER" Name="logs">
           <Directory Id="PUBLICAPPFEATURESLOGSCOMPONENTSFOLDER" Name="components">
             <Directory Id="PUBLICAPPFEATURESLOGSCOMPONENTS_MOCKSFOLDER" Name="__mocks__" />
+            <Directory Id="PUBLICAPPFEATURESLOGSCOMPONENTSLOG_D_CONTEXTFOLDER" Name="log-context" />
           </Directory>
         </Directory>
-        <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSFOLDER" Name="manage-dashboards">
-          <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSCOMPONENTSFOLDER" Name="components">
-            <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSCOMPONENTSPUBLICDASHBO1418519214FOLDER" Name="PublicDashboardListTable" />
+        <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSFOLDER" Name="manage-dashboards">
+          <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSCOMPONENTSFOLDER" Name="components">
+            <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSCOMPONENTSPUBLICDASH1868996193FOLDER" Name="PublicDashboardListTable" />
           </Directory>
-          <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSSERVICESFOLDER" Name="services" />
-          <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSSTATEFOLDER" Name="state" />
-          <Directory Id="PUBLICAPPFEATURESMANAGE_DASHBOARDSUTILSFOLDER" Name="utils" />
+          <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSSERVICESFOLDER" Name="services" />
+          <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSSTATEFOLDER" Name="state" />
+          <Directory Id="PUBLICAPPFEATURESMANAGE_D_DASHBOARDSUTILSFOLDER" Name="utils" />
+        </Directory>
+        <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDFOLDER" Name="migrate-to-cloud">
+          <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDAPIFOLDER" Name="api" />
+          <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDCLOUDFOLDER" Name="cloud">
+            <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDCLOUDEMPTYSTATEFOLDER" Name="EmptyState" />
+            <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDCLOUDMIGRATIONTOKENPANEFOLDER" Name="MigrationTokenPane" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDFIXTURESFOLDER" Name="fixtures" />
+          <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDONPREMFOLDER" Name="onprem">
+            <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDONPREMEMPTYSTATEFOLDER" Name="EmptyState">
+              <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDONPREMEMPTYSTATECALLTOACTIONFOLDER" Name="CallToAction" />
+            </Directory>
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESMIGRATE_D_TO_D_CLOUDSHAREDFOLDER" Name="shared" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESNOTIFICATIONSFOLDER" Name="notifications" />
         <Directory Id="PUBLICAPPFEATURESORGFOLDER" Name="org">
@@ -447,19 +1042,20 @@
             <Directory Id="PUBLICAPPFEATURESPLUGINSADMINPAGESFOLDER" Name="pages" />
             <Directory Id="PUBLICAPPFEATURESPLUGINSADMINSTATEFOLDER" Name="state" />
           </Directory>
+          <Directory Id="PUBLICAPPFEATURESPLUGINSANGULARDEPRECATIONFOLDER" Name="angularDeprecation" />
+          <Directory Id="PUBLICAPPFEATURESPLUGINSCDNFOLDER" Name="cdn" />
           <Directory Id="PUBLICAPPFEATURESPLUGINSCOMPONENTSFOLDER" Name="components" />
-          <Directory Id="PUBLICAPPFEATURESPLUGINSEXTENSIONSFOLDER" Name="extensions" />
-          <Directory Id="PUBLICAPPFEATURESPLUGINSSQLFOLDER" Name="sql">
-            <Directory Id="PUBLICAPPFEATURESPLUGINSSQLCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPFEATURESPLUGINSSQLCOMPONENTSCONFIGURATIONFOLDER" Name="configuration" />
-              <Directory Id="PUBLICAPPFEATURESPLUGINSSQLCOMPONENTSQUERY_EDITOR_RAWFOLDER" Name="query-editor-raw" />
-              <Directory Id="PUBLICAPPFEATURESPLUGINSSQLCOMPONENTSVISUAL_QUERY_BUILDERFOLDER" Name="visual-query-builder" />
-            </Directory>
-            <Directory Id="PUBLICAPPFEATURESPLUGINSSQLDATASOURCEFOLDER" Name="datasource" />
-            <Directory Id="PUBLICAPPFEATURESPLUGINSSQLUTILSFOLDER" Name="utils" />
+          <Directory Id="PUBLICAPPFEATURESPLUGINSEXTENSIONSFOLDER" Name="extensions">
+            <Directory Id="PUBLICAPPFEATURESPLUGINSEXTENSIONSREGISTRYFOLDER" Name="registry" />
           </Directory>
-          <Directory Id="PUBLICAPPFEATURESPLUGINSSYSTEMJSPLUGINSFOLDER" Name="systemjsPlugins" />
+          <Directory Id="PUBLICAPPFEATURESPLUGINSLOADERFOLDER" Name="loader" />
+          <Directory Id="PUBLICAPPFEATURESPLUGINSSANDBOXFOLDER" Name="sandbox" />
           <Directory Id="PUBLICAPPFEATURESPLUGINSTESTSFOLDER" Name="tests" />
+        </Directory>
+        <Directory Id="PUBLICAPPFEATURESPREFERENCESFOLDER" Name="preferences">
+          <Directory Id="PUBLICAPPFEATURESPREFERENCESAPIFOLDER" Name="api">
+            <Directory Id="PUBLICAPPFEATURESPREFERENCESAPIUSERFOLDER" Name="user" />
+          </Directory>
         </Directory>
         <Directory Id="PUBLICAPPFEATURESPROFILEFOLDER" Name="profile">
           <Directory Id="PUBLICAPPFEATURESPROFILESTATEFOLDER" Name="state" />
@@ -467,20 +1063,25 @@
         <Directory Id="PUBLICAPPFEATURESQUERYFOLDER" Name="query">
           <Directory Id="PUBLICAPPFEATURESQUERYCOMPONENTSFOLDER" Name="components" />
           <Directory Id="PUBLICAPPFEATURESQUERYSTATEFOLDER" Name="state">
+            <Directory Id="PUBLICAPPFEATURESQUERYSTATE_MOCKSFOLDER" Name="__mocks__" />
             <Directory Id="PUBLICAPPFEATURESQUERYSTATEDASHBOARDQUERYRUNNERFOLDER" Name="DashboardQueryRunner" />
             <Directory Id="PUBLICAPPFEATURESQUERYSTATEPROCESSINGFOLDER" Name="processing" />
           </Directory>
         </Directory>
+        <Directory Id="PUBLICAPPFEATURESQUERY_D_LIBRARYFOLDER" Name="query-library">
+          <Directory Id="PUBLICAPPFEATURESQUERY_D_LIBRARYAPIFOLDER" Name="api">
+            <Directory Id="PUBLICAPPFEATURESQUERY_D_LIBRARYAPITESTDATAFOLDER" Name="testdata" />
+          </Directory>
+        </Directory>
         <Directory Id="PUBLICAPPFEATURESRUNTIMEFOLDER" Name="runtime" />
         <Directory Id="PUBLICAPPFEATURESSANDBOXFOLDER" Name="sandbox" />
-        <Directory Id="PUBLICAPPFEATURESSCENESFOLDER" Name="scenes">
-          <Directory Id="PUBLICAPPFEATURESSCENESAPPSFOLDER" Name="apps" />
-          <Directory Id="PUBLICAPPFEATURESSCENESBUILDERSFOLDER" Name="builders" />
-          <Directory Id="PUBLICAPPFEATURESSCENESDASHBOARDFOLDER" Name="dashboard" />
-          <Directory Id="PUBLICAPPFEATURESSCENESSCENESFOLDER" Name="scenes" />
+        <Directory Id="PUBLICAPPFEATURESSCOPESFOLDER" Name="scopes">
+          <Directory Id="PUBLICAPPFEATURESSCOPESINTERNALFOLDER" Name="internal" />
+          <Directory Id="PUBLICAPPFEATURESSCOPESTESTSFOLDER" Name="tests">
+            <Directory Id="PUBLICAPPFEATURESSCOPESTESTSUTILSFOLDER" Name="utils" />
+          </Directory>
         </Directory>
         <Directory Id="PUBLICAPPFEATURESSEARCHFOLDER" Name="search">
-          <Directory Id="PUBLICAPPFEATURESSEARCHCOMPONENTSFOLDER" Name="components" />
           <Directory Id="PUBLICAPPFEATURESSEARCHHOOKSFOLDER" Name="hooks" />
           <Directory Id="PUBLICAPPFEATURESSEARCHPAGEFOLDER" Name="page">
             <Directory Id="PUBLICAPPFEATURESSEARCHPAGECOMPONENTSFOLDER" Name="components" />
@@ -493,20 +1094,42 @@
           <Directory Id="PUBLICAPPFEATURESSERVICEACCOUNTSSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESSTORAGEFOLDER" Name="storage" />
-        <Directory Id="PUBLICAPPFEATURESSUPPORT_BUNDLESFOLDER" Name="support-bundles">
-          <Directory Id="PUBLICAPPFEATURESSUPPORT_BUNDLESSTATEFOLDER" Name="state" />
+        <Directory Id="PUBLICAPPFEATURESSUPPORT_D_BUNDLESFOLDER" Name="support-bundles">
+          <Directory Id="PUBLICAPPFEATURESSUPPORT_D_BUNDLESSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESTEAMSFOLDER" Name="teams">
           <Directory Id="PUBLICAPPFEATURESTEAMS_MOCKSFOLDER" Name="__mocks__" />
           <Directory Id="PUBLICAPPFEATURESTEAMSSTATEFOLDER" Name="state" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESTEMPLATINGFOLDER" Name="templating" />
+        <Directory Id="PUBLICAPPFEATURESTRAILSFOLDER" Name="trails">
+          <Directory Id="PUBLICAPPFEATURESTRAILSACTIONTABSFOLDER" Name="ActionTabs" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSAUTOMATICMETRICQUERIESFOLDER" Name="AutomaticMetricQueries">
+            <Directory Id="PUBLICAPPFEATURESTRAILSAUTOMATICMETRICQUERIESGRAPH_D_BUILDERSFOLDER" Name="graph-builders" />
+            <Directory Id="PUBLICAPPFEATURESTRAILSAUTOMATICMETRICQUERIESQUERY_D_GENERATORSFOLDER" Name="query-generators">
+              <Directory Id="PUBLICAPPFEATURESTRAILSAUTOMATICMETRICQUERIESQUERY_D_GEN1544421274FOLDER" Name="common" />
+            </Directory>
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESTRAILSBREAKDOWNFOLDER" Name="Breakdown" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSGROOPFOLDER" Name="groop">
+            <Directory Id="PUBLICAPPFEATURESTRAILSGROOPTESTDATAFOLDER" Name="testdata" />
+          </Directory>
+          <Directory Id="PUBLICAPPFEATURESTRAILSHELPERSFOLDER" Name="helpers" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSINTEGRATIONSFOLDER" Name="Integrations" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSMETRICSELECTFOLDER" Name="MetricSelect" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSOTELFOLDER" Name="otel" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSSERVICESFOLDER" Name="services" />
+          <Directory Id="PUBLICAPPFEATURESTRAILSTRAILSTOREFOLDER" Name="TrailStore" />
+        </Directory>
         <Directory Id="PUBLICAPPFEATURESTRANSFORMERSFOLDER" Name="transformers">
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSCALCULATEHEATMAPFOLDER" Name="calculateHeatmap">
             <Directory Id="PUBLICAPPFEATURESTRANSFORMERSCALCULATEHEATMAPEDITORFOLDER" Name="editor" />
           </Directory>
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSCONFIGFROMQUERYFOLDER" Name="configFromQuery" />
-          <Directory Id="PUBLICAPPFEATURESTRANSFORMERSEDITORSFOLDER" Name="editors" />
+          <Directory Id="PUBLICAPPFEATURESTRANSFORMERSDOCSFOLDER" Name="docs" />
+          <Directory Id="PUBLICAPPFEATURESTRANSFORMERSEDITORSFOLDER" Name="editors">
+            <Directory Id="PUBLICAPPFEATURESTRANSFORMERSEDITORSCALCULATEFIELDTRANSF3362487006FOLDER" Name="CalculateFieldTransformerEditor" />
+          </Directory>
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSEXTRACTFIELDSFOLDER" Name="extractFields">
             <Directory Id="PUBLICAPPFEATURESTRANSFORMERSEXTRACTFIELDSCOMPONENTSFOLDER" Name="components" />
           </Directory>
@@ -520,8 +1143,10 @@
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSPREPARETIMESERIESFOLDER" Name="prepareTimeSeries">
             <Directory Id="PUBLICAPPFEATURESTRANSFORMERSPREPARETIMESERIES_SNAPSHOTSFOLDER" Name="__snapshots__" />
           </Directory>
+          <Directory Id="PUBLICAPPFEATURESTRANSFORMERSREGRESSIONFOLDER" Name="regression" />
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSROWSTOFIELDSFOLDER" Name="rowsToFields" />
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSSPATIALFOLDER" Name="spatial" />
+          <Directory Id="PUBLICAPPFEATURESTRANSFORMERSSUGGESTIONSINPUTFOLDER" Name="suggestionsInput" />
           <Directory Id="PUBLICAPPFEATURESTRANSFORMERSTIMESERIESTABLEFOLDER" Name="timeSeriesTable" />
         </Directory>
         <Directory Id="PUBLICAPPFEATURESUSERSFOLDER" Name="users">
@@ -552,6 +1177,9 @@
           <Directory Id="PUBLICAPPFEATURESVARIABLESSYSTEMFOLDER" Name="system" />
           <Directory Id="PUBLICAPPFEATURESVARIABLESTEXTBOXFOLDER" Name="textbox" />
         </Directory>
+        <Directory Id="PUBLICAPPFEATURESVISUALIZATIONFOLDER" Name="visualization">
+          <Directory Id="PUBLICAPPFEATURESVISUALIZATIONDATA_D_HOVERFOLDER" Name="data-hover" />
+        </Directory>
       </Directory>
       <Directory Id="PUBLICAPPPARTIALSFOLDER" Name="partials" />
       <Directory Id="PUBLICAPPPLUGINSFOLDER" Name="plugins">
@@ -569,68 +1197,99 @@
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORAZUREMETADATAFOLDER" Name="azureMetadata" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSFOLDER" Name="components">
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSARGQUERYEDITORFOLDER" Name="ArgQueryEditor" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSCONFIGEDITORFOLDER" Name="ConfigEditor" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSLOGSQUERYEDITORFOLDER" Name="LogsQueryEditor" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSMETRICSQUERYEDITORFOLDER" Name="MetricsQueryEditor" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSQUERYEDITORFOLDER" Name="QueryEditor" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSRESOURCEFIELDFOLDER" Name="ResourceField" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSRESOURCEPICKERFOLDER" Name="ResourcePicker" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSSHAREDFOLDER" Name="shared" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSTRACESQUERYEDITORFOLDER" Name="TracesQueryEditor" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORCOMPONENTSVARIABLEEDITORFOLDER" Name="VariableEditor" />
             </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORDASHBOARDSFOLDER" Name="dashboards" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORE2EFOLDER" Name="e2e" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORLOG_ANALYTICSFOLDER" Name="log_analytics" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORRESOURCEPICKERFOLDER" Name="resourcePicker" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORTYPESFOLDER" Name="types" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEAZUREMONITORUTILSFOLDER" Name="utils" />
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGFOLDER" Name="cloud-monitoring">
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORING_MOCKSFOLDER" Name="__mocks__" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGCOMPONENTS_SNAPSHOTSFOLDER" Name="__snapshots__" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGCOMPONENTSCONFIGEDITORFOLDER" Name="ConfigEditor" />
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGFOLDER" Name="cloud-monitoring">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORING_MOCKSFOLDER" Name="__mocks__" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGCOMPONENTSFOLDER" Name="components">
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGCOMPONENTS_SNAPSHOTSFOLDER" Name="__snapshots__" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGCOMPONENTSCONFIGEDITORFOLDER" Name="ConfigEditor" />
             </Directory>
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGDASHBOARDSFOLDER" Name="dashboards" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_MONITORINGSPECSFOLDER" Name="specs" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGDASHBOARDSFOLDER" Name="dashboards" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGE2EFOLDER" Name="e2e" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGIMGFOLDER" Name="img" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGSPECSFOLDER" Name="specs" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUD_D_MONITORINGTYPESFOLDER" Name="types" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHFOLDER" Name="cloudwatch">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKSFOLDER" Name="__mocks__">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_CLOUDWATCH_SQL576771742FOLDER" Name="cloudwatch-sql-test-data" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_DYNAMIC_LABEL_TEST_DATAFOLDER" Name="dynamic-label-test-data" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_METRIC_MATH_TEST_DATAFOLDER" Name="metric-math-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_CLOUDWATCH_D_1791910665FOLDER" Name="cloudwatch-logs-sql-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_CLOUDWATCH_D_2193023960FOLDER" Name="cloudwatch-logs-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_CLOUDWATCH_D_1361457816FOLDER" Name="cloudwatch-ppl-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_CLOUDWATCH_D_2899638413FOLDER" Name="cloudwatch-sql-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_DYNAMIC_D_LAB3573251315FOLDER" Name="dynamic-label-test-data" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_METRIC_D_MATH2981188516FOLDER" Name="metric-math-test-data" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCH_MOCKS_MONARCHFOLDER" Name="monarch" />
             </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSDIMENSIONSFOLDER" Name="Dimensions" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSLOGGROUPSFOLDER" Name="LogGroups" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSMETRICSQUERYEDITORFOLDER" Name="MetricsQueryEditor" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSMETRICSTATEDITORFOLDER" Name="MetricStatEditor" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSSQLBUILDEREDITORFOLDER" Name="SQLBuilderEditor" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSANNOTATION2524483753FOLDER" Name="AnnotationQueryEditor" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSCHEATSHEETFOLDER" Name="CheatSheet" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSCONFIGEDITORFOLDER" Name="ConfigEditor" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSERRORSFOLDER" Name="Errors" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSMETAINSPECTORFOLDER" Name="MetaInspector" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSQUERYEDITORFOLDER" Name="QueryEditor">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSQUERYEDITO2558438351FOLDER" Name="LogsQueryEditor">
+                  <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSQUERYEDITO2767444253FOLDER" Name="code-editors" />
+                </Directory>
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSQUERYEDITOR824172449FOLDER" Name="MetricsQueryEditor">
+                  <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSQUERYEDITO3546773220FOLDER" Name="SQLBuilderEditor" />
+                </Directory>
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSSHAREDFOLDER" Name="shared">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSSHAREDDIMENSIONSFOLDER" Name="Dimensions" />
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSSHAREDLOGGROUPSFOLDER" Name="LogGroups" />
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSSHAREDMETR2739884943FOLDER" Name="MetricStatEditor" />
+              </Directory>
               <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHCOMPONENTSVARIABLEQUERYEDITORFOLDER" Name="VariableQueryEditor" />
             </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHDASHBOARDSFOLDER" Name="dashboards" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHIMGFOLDER" Name="img" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEFOLDER" Name="language">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_LOGSFOLDER" Name="cloudwatch-logs" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_SQLFOLDER" Name="cloudwatch-sql">
-                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_S1481261997FOLDER" Name="completion" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D_LOGSFOLDER" Name="cloudwatch-logs" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D3296614500FOLDER" Name="cloudwatch-logs-sql">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D2832746528FOLDER" Name="completion" />
               </Directory>
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEDYNAMIC_LABELSFOLDER" Name="dynamic-labels" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEMETRIC_MATHFOLDER" Name="metric-math">
-                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEMETRIC_MATHCOMPLETIONFOLDER" Name="completion" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D_PPLFOLDER" Name="cloudwatch-ppl">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D3562143013FOLDER" Name="completion" />
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D_SQLFOLDER" Name="cloudwatch-sql">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGECLOUDWATCH_D4064206212FOLDER" Name="completion" />
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEDYNAMIC_D_LABELSFOLDER" Name="dynamic-labels" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGELOGSFOLDER" Name="logs">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGELOGSCOMPLETIONFOLDER" Name="completion" />
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEMETRIC_D_MATHFOLDER" Name="metric-math">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEMETRIC_D_MAT2965112601FOLDER" Name="completion" />
               </Directory>
               <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHLANGUAGEMONARCHFOLDER" Name="monarch" />
             </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHMIGRATIONSFOLDER" Name="migrations" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHQUERY_RUNNERFOLDER" Name="query-runner" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHQUERY_D_RUNNERFOLDER" Name="query-runner" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHRESOURCESFOLDER" Name="resources" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHUTILSFOLDER" Name="utils">
               <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHUTILSQUERYFOLDER" Name="query" />
               <Directory Id="PUBLICAPPPLUGINSDATASOURCECLOUDWATCHUTILSRXJSFOLDER" Name="rxjs" />
             </Directory>
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCEDASHBOARDFOLDER" Name="dashboard" />
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCEDASHBOARDFOLDER" Name="dashboard">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEDASHBOARDIMGFOLDER" Name="img" />
+          </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHFOLDER" Name="elasticsearch">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHCOMPONENTSFOLDER" Name="components">
               <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHCOMPONENTSHOOKSFOLDER" Name="hooks" />
@@ -653,13 +1312,33 @@
                 </Directory>
               </Directory>
             </Directory>
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHCONFIGURATIONFOLDER" Name="configuration" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHCONFIGURATIONFOLDER" Name="configuration">
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHCONFIGURATION_MOCKSFOLDER" Name="__mocks__" />
+            </Directory>
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHDOCSFOLDER" Name="docs" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHHOOKSFOLDER" Name="hooks" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHTEST_HELPERSFOLDER" Name="test-helpers" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEELASTICSEARCHTEST_D_HELPERSFOLDER" Name="test-helpers" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANAFOLDER" Name="grafana">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANACOMPONENTSFOLDER" Name="components" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANAIMGFOLDER" Name="img" />
+          </Directory>
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_POSTGRESQL_D_DATASOURCEFOLDER" Name="grafana-postgresql-datasource">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_POSTGRESQL_D_DATASOU2166658398FOLDER" Name="configuration" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_POSTGRESQL_D_DATASOURCEIMGFOLDER" Name="img" />
+          </Directory>
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_PYROSCOPE_D_DATASOURCEFOLDER" Name="grafana-pyroscope-datasource">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_PYROSCOPE_D_DATASOURCEIMGFOLDER" Name="img" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_PYROSCOPE_D_DATASOURCEP4194580FOLDER" Name="pyroscopeql" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_PYROSCOPE_D_DATASOUR1855971669FOLDER" Name="QueryEditor" />
+          </Directory>
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURCEFOLDER" Name="grafana-testdata-datasource">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURCE_MOCKSFOLDER" Name="__mocks__" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURC2446200741FOLDER" Name="components" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURC3618823042FOLDER" Name="dashboards" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURCEIMGFOLDER" Name="img" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAFANA_D_TESTDATA_D_DATASOURCETESTDATAFOLDER" Name="testData" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAPHITEFOLDER" Name="graphite">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAPHITECOMPONENTSFOLDER" Name="components" />
@@ -670,31 +1349,61 @@
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEGRAPHITESTATEFOLDER" Name="state" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBFOLDER" Name="influxdb">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDB_MOCKSFOLDER" Name="__mocks__" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSVISUALINFLUXQLEDITORFOLDER" Name="VisualInfluxQLEditor" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORFOLDER" Name="editor">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORANNOTATIONFOLDER" Name="annotation" />
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORCONFIGFOLDER" Name="config" />
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYFOLDER" Name="query">
+                  <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYFLUXFOLDER" Name="flux" />
+                  <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYFSQLFOLDER" Name="fsql" />
+                  <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYINFLUXQLFOLDER" Name="influxql">
+                    <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYIN270248543FOLDER" Name="code" />
+                    <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYINF97283002FOLDER" Name="hooks" />
+                    <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYI1365770850FOLDER" Name="utils" />
+                    <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORQUERYI2141770946FOLDER" Name="visual" />
+                  </Directory>
+                </Directory>
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBCOMPONENTSEDITORVARIABLEFOLDER" Name="variable" />
+              </Directory>
             </Directory>
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBFSQLFOLDER" Name="fsql" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEINFLUXDBSPECSFOLDER" Name="specs" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGERFOLDER" Name="jaeger">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESFOLDER" Name="_importedDependencies">
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESMODELFOLDER" Name="model" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESSELECTORSFOLDER" Name="selectors" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESTYPESFOLDER" Name="types" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESUTILSFOLDER" Name="utils">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGER_IMPORTEDDEPENDENCIESUTILSCONFIGFOLDER" Name="config" />
+              </Directory>
+            </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGERCOMPONENTSFOLDER" Name="components" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGERCONFIGURATIONFOLDER" Name="configuration" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGERHELPERSFOLDER" Name="helpers" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEJAEGERIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIFOLDER" Name="loki">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKI_MOCKSFOLDER" Name="__mocks__" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICOMPONENTSMONACO_QUERY_FIELDFOLDER" Name="monaco-query-field">
-                <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICOMPONENTSMONACO_QUERY_FIE3633421648FOLDER" Name="monaco-completion-provider" />
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICOMPONENTSMONACO_D_QUERY_D_FIELDFOLDER" Name="monaco-query-field">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICOMPONENTSMONACO_D_QUERY_D1938964926FOLDER" Name="monaco-completion-provider" />
               </Directory>
             </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKICONFIGURATIONFOLDER" Name="configuration" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIDOCSFOLDER" Name="docs" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIIMGFOLDER" Name="img" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIMIGRATIONSFOLDER" Name="migrations" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIQUERYBUILDERFOLDER" Name="querybuilder">
               <Directory Id="PUBLICAPPPLUGINSDATASOURCELOKIQUERYBUILDERCOMPONENTSFOLDER" Name="components" />
             </Directory>
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCEMIXEDFOLDER" Name="mixed" />
+          <Directory Id="PUBLICAPPPLUGINSDATASOURCEMIXEDFOLDER" Name="mixed">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEMIXEDIMGFOLDER" Name="img" />
+          </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLFOLDER" Name="mssql">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLAZUREAUTHFOLDER" Name="azureauth" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLCONFIGURATIONFOLDER" Name="configuration" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLIMGFOLDER" Name="img" />
           </Directory>
@@ -713,47 +1422,29 @@
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEPARCALANGFOLDER" Name="lang" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEPARCAQUERYEDITORFOLDER" Name="QueryEditor" />
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCEPHLAREFOLDER" Name="phlare">
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPHLAREIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPHLAREPHLAREQLFOLDER" Name="phlareql" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPHLAREQUERYEDITORFOLDER" Name="QueryEditor" />
-          </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCEPOSTGRESFOLDER" Name="postgres">
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPOSTGRESCONFIGURATIONFOLDER" Name="configuration" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPOSTGRESIMGFOLDER" Name="img" />
-          </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSFOLDER" Name="prometheus">
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSCOMPONENTSMONACO_QUERY_FIELDFOLDER" Name="monaco-query-field">
-                <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSCOMPONENTSMONACO_QUER955201695FOLDER" Name="monaco-completion-provider" />
-              </Directory>
-            </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSCONFIGURATIONFOLDER" Name="configuration" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSDASHBOARDSFOLDER" Name="dashboards" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSMIGRATIONSFOLDER" Name="migrations" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSQUERYBUILDERFOLDER" Name="querybuilder">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSQUERYBUILDERCOMPONENTSFOLDER" Name="components" />
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSQUERYBUILDERSHAREDFOLDER" Name="shared">
-                <Directory Id="PUBLICAPPPLUGINSDATASOURCEPROMETHEUSQUERYBUILDERSHAREDHOOKSFOLDER" Name="hooks" />
-              </Directory>
-            </Directory>
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOFOLDER" Name="tempo">
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESFOLDER" Name="_importedDependencies">
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESCOMPONENTSFOLDER" Name="components">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESCOMP3583902584FOLDER" Name="AdHocFilter" />
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESDATASOURCESFOLDER" Name="datasources">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESDATA1496681594FOLDER" Name="loki" />
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESDATA2756477542FOLDER" Name="prometheus" />
+              </Directory>
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESTESTFOLDER" Name="test">
+                <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPO_IMPORTEDDEPENDENCIESTESTHELPERSFOLDER" Name="helpers" />
+              </Directory>
+            </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOCONFIGURATIONFOLDER" Name="configuration" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOQUERYEDITORFOLDER" Name="QueryEditor">
-              <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOQUERYEDITORTAGSFIELDFOLDER" Name="TagsField" />
-            </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOSEARCHTRACEQLEDITORFOLDER" Name="SearchTraceQLEditor" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOTESTFOLDER" Name="test" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCETEMPOTRACEQLFOLDER" Name="traceql" />
-          </Directory>
-          <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATAFOLDER" Name="testdata">
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATA_MOCKSFOLDER" Name="__mocks__" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATACOMPONENTSFOLDER" Name="components" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATADASHBOARDSFOLDER" Name="dashboards" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATAIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSDATASOURCETESTDATATESTDATAFOLDER" Name="testData" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEZIPKINFOLDER" Name="zipkin">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEZIPKINIMGFOLDER" Name="img" />
@@ -761,12 +1452,9 @@
           </Directory>
         </Directory>
         <Directory Id="PUBLICAPPPLUGINSPANELFOLDER" Name="panel">
-          <Directory Id="PUBLICAPPPLUGINSPANELALERTGROUPSFOLDER" Name="alertGroups">
-            <Directory Id="PUBLICAPPPLUGINSPANELALERTGROUPSIMGFOLDER" Name="img" />
-          </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELALERTLISTFOLDER" Name="alertlist">
             <Directory Id="PUBLICAPPPLUGINSPANELALERTLISTIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSPANELALERTLISTUNIFIED_ALERTINGFOLDER" Name="unified-alerting" />
+            <Directory Id="PUBLICAPPPLUGINSPANELALERTLISTUNIFIED_D_ALERTINGFOLDER" Name="unified-alerting" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELANNOLISTFOLDER" Name="annolist">
             <Directory Id="PUBLICAPPPLUGINSPANELANNOLISTIMGFOLDER" Name="img" />
@@ -782,23 +1470,27 @@
             <Directory Id="PUBLICAPPPLUGINSPANELCANDLESTICKIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELCANVASFOLDER" Name="canvas">
-            <Directory Id="PUBLICAPPPLUGINSPANELCANVASEDITORFOLDER" Name="editor" />
+            <Directory Id="PUBLICAPPPLUGINSPANELCANVASCOMPONENTSFOLDER" Name="components">
+              <Directory Id="PUBLICAPPPLUGINSPANELCANVASCOMPONENTSCONNECTIONSFOLDER" Name="connections" />
+            </Directory>
+            <Directory Id="PUBLICAPPPLUGINSPANELCANVASEDITORFOLDER" Name="editor">
+              <Directory Id="PUBLICAPPPLUGINSPANELCANVASEDITORELEMENTFOLDER" Name="element" />
+              <Directory Id="PUBLICAPPPLUGINSPANELCANVASEDITORINLINEFOLDER" Name="inline" />
+              <Directory Id="PUBLICAPPPLUGINSPANELCANVASEDITORLAYERFOLDER" Name="layer" />
+            </Directory>
             <Directory Id="PUBLICAPPPLUGINSPANELCANVASIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELDASHLISTFOLDER" Name="dashlist">
             <Directory Id="PUBLICAPPPLUGINSPANELDASHLISTIMGFOLDER" Name="img" />
           </Directory>
+          <Directory Id="PUBLICAPPPLUGINSPANELDATAGRIDFOLDER" Name="datagrid">
+            <Directory Id="PUBLICAPPPLUGINSPANELDATAGRIDCOMPONENTSFOLDER" Name="components" />
+            <Directory Id="PUBLICAPPPLUGINSPANELDATAGRIDIMGFOLDER" Name="img" />
+          </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELDEBUGFOLDER" Name="debug">
             <Directory Id="PUBLICAPPPLUGINSPANELDEBUGIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHFOLDER" Name="flamegraph">
-            <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHCOMPONENTSFOLDER" Name="components">
-              <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHCOMPONENTSFLAMEGRAPHFOLDER" Name="FlameGraph">
-                <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHCOMPONENTSFLAMEGRAPH_SNAPSHOTSFOLDER" Name="__snapshots__" />
-                <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHCOMPONENTSFLAMEGRAPHTESTDATAFOLDER" Name="testData" />
-              </Directory>
-              <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHCOMPONENTSTOPTABLEFOLDER" Name="TopTable" />
-            </Directory>
             <Directory Id="PUBLICAPPPLUGINSPANELFLAMEGRAPHIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELGAUGEFOLDER" Name="gauge">
@@ -830,12 +1522,10 @@
           <Directory Id="PUBLICAPPPLUGINSPANELHEATMAPFOLDER" Name="heatmap">
             <Directory Id="PUBLICAPPPLUGINSPANELHEATMAPIMGFOLDER" Name="img" />
             <Directory Id="PUBLICAPPPLUGINSPANELHEATMAPPARTIALSFOLDER" Name="partials" />
+            <Directory Id="PUBLICAPPPLUGINSPANELHEATMAPTOOLTIPFOLDER" Name="tooltip" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELHISTOGRAMFOLDER" Name="histogram">
             <Directory Id="PUBLICAPPPLUGINSPANELHISTOGRAMIMGFOLDER" Name="img" />
-          </Directory>
-          <Directory Id="PUBLICAPPPLUGINSPANELICONFOLDER" Name="icon">
-            <Directory Id="PUBLICAPPPLUGINSPANELICONIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELLIVEFOLDER" Name="live">
             <Directory Id="PUBLICAPPPLUGINSPANELLIVEIMGFOLDER" Name="img" />
@@ -858,21 +1548,21 @@
           <Directory Id="PUBLICAPPPLUGINSPANELSTATFOLDER" Name="stat">
             <Directory Id="PUBLICAPPPLUGINSPANELSTATIMGFOLDER" Name="img" />
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSPANELSTATE_TIMELINEFOLDER" Name="state-timeline">
-            <Directory Id="PUBLICAPPPLUGINSPANELSTATE_TIMELINE_SNAPSHOTSFOLDER" Name="__snapshots__" />
-            <Directory Id="PUBLICAPPPLUGINSPANELSTATE_TIMELINEIMGFOLDER" Name="img" />
+          <Directory Id="PUBLICAPPPLUGINSPANELSTATE_D_TIMELINEFOLDER" Name="state-timeline">
+            <Directory Id="PUBLICAPPPLUGINSPANELSTATE_D_TIMELINE_SNAPSHOTSFOLDER" Name="__snapshots__" />
+            <Directory Id="PUBLICAPPPLUGINSPANELSTATE_D_TIMELINEIMGFOLDER" Name="img" />
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSPANELSTATUS_HISTORYFOLDER" Name="status-history">
-            <Directory Id="PUBLICAPPPLUGINSPANELSTATUS_HISTORYIMGFOLDER" Name="img" />
+          <Directory Id="PUBLICAPPPLUGINSPANELSTATUS_D_HISTORYFOLDER" Name="status-history">
+            <Directory Id="PUBLICAPPPLUGINSPANELSTATUS_D_HISTORYIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELTABLEFOLDER" Name="table">
             <Directory Id="PUBLICAPPPLUGINSPANELTABLE_SNAPSHOTSFOLDER" Name="__snapshots__" />
             <Directory Id="PUBLICAPPPLUGINSPANELTABLECELLSFOLDER" Name="cells" />
             <Directory Id="PUBLICAPPPLUGINSPANELTABLEIMGFOLDER" Name="img" />
           </Directory>
-          <Directory Id="PUBLICAPPPLUGINSPANELTABLE_OLDFOLDER" Name="table-old">
-            <Directory Id="PUBLICAPPPLUGINSPANELTABLE_OLDIMGFOLDER" Name="img" />
-            <Directory Id="PUBLICAPPPLUGINSPANELTABLE_OLDSPECSFOLDER" Name="specs" />
+          <Directory Id="PUBLICAPPPLUGINSPANELTABLE_D_OLDFOLDER" Name="table-old">
+            <Directory Id="PUBLICAPPPLUGINSPANELTABLE_D_OLDIMGFOLDER" Name="img" />
+            <Directory Id="PUBLICAPPPLUGINSPANELTABLE_D_OLDSPECSFOLDER" Name="specs" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELTEXTFOLDER" Name="text">
             <Directory Id="PUBLICAPPPLUGINSPANELTEXTIMGFOLDER" Name="img" />
@@ -882,21 +1572,24 @@
             <Directory Id="PUBLICAPPPLUGINSPANELTIMESERIESIMGFOLDER" Name="img" />
             <Directory Id="PUBLICAPPPLUGINSPANELTIMESERIESOVERRIDESFOLDER" Name="overrides" />
             <Directory Id="PUBLICAPPPLUGINSPANELTIMESERIESPLUGINSFOLDER" Name="plugins">
-              <Directory Id="PUBLICAPPPLUGINSPANELTIMESERIESPLUGINSANNOTATIONSFOLDER" Name="annotations" />
+              <Directory Id="PUBLICAPPPLUGINSPANELTIMESERIESPLUGINSANNOTATIONS2FOLDER" Name="annotations2" />
             </Directory>
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELTRACESFOLDER" Name="traces">
             <Directory Id="PUBLICAPPPLUGINSPANELTRACESIMGFOLDER" Name="img" />
+          </Directory>
+          <Directory Id="PUBLICAPPPLUGINSPANELTRENDFOLDER" Name="trend">
+            <Directory Id="PUBLICAPPPLUGINSPANELTRENDIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELWELCOMEFOLDER" Name="welcome">
             <Directory Id="PUBLICAPPPLUGINSPANELWELCOMEIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSPANELXYCHARTFOLDER" Name="xychart">
             <Directory Id="PUBLICAPPPLUGINSPANELXYCHARTIMGFOLDER" Name="img" />
+            <Directory Id="PUBLICAPPPLUGINSPANELXYCHARTV2FOLDER" Name="v2" />
           </Directory>
         </Directory>
       </Directory>
-      <Directory Id="PUBLICAPPPOLYFILLSFOLDER" Name="polyfills" />
       <Directory Id="PUBLICAPPROUTESFOLDER" Name="routes" />
       <Directory Id="PUBLICAPPSTOREFOLDER" Name="store" />
       <Directory Id="PUBLICAPPTYPESFOLDER" Name="types">
@@ -929,162 +1622,87 @@
         <Directory Id="PUBLICIMGICONSSOLIDFOLDER" Name="solid" />
         <Directory Id="PUBLICIMGICONSUNICONSFOLDER" Name="unicons" />
       </Directory>
-      <Directory Id="PUBLICIMGICONS_DARK_THEMEFOLDER" Name="icons_dark_theme" />
-      <Directory Id="PUBLICIMGICONS_LIGHT_THEMEFOLDER" Name="icons_light_theme" />
       <Directory Id="PUBLICIMGLICENSINGFOLDER" Name="licensing" />
-      <Directory Id="PUBLICIMGPANEL_TABSFOLDER" Name="panel-tabs" />
+      <Directory Id="PUBLICIMGPANEL_D_TABSFOLDER" Name="panel-tabs" />
       <Directory Id="PUBLICIMGPLUGINSFOLDER" Name="plugins" />
+      <Directory Id="PUBLICIMGTRANSFORMATIONSFOLDER" Name="transformations">
+        <Directory Id="PUBLICIMGTRANSFORMATIONSDARKFOLDER" Name="dark" />
+        <Directory Id="PUBLICIMGTRANSFORMATIONSDISABLEDFOLDER" Name="disabled" />
+        <Directory Id="PUBLICIMGTRANSFORMATIONSLIGHTFOLDER" Name="light" />
+      </Directory>
     </Directory>
     <Directory Id="PUBLICLIBFOLDER" Name="lib">
-      <Directory Id="PUBLICLIBMONACOFOLDER" Name="monaco">
-        <Directory Id="PUBLICLIBMONACOMINFOLDER" Name="min">
-          <Directory Id="PUBLICLIBMONACOMINVSFOLDER" Name="vs">
-            <Directory Id="PUBLICLIBMONACOMINVSBASEFOLDER" Name="base">
-              <Directory Id="PUBLICLIBMONACOMINVSBASEBROWSERFOLDER" Name="browser">
-                <Directory Id="PUBLICLIBMONACOMINVSBASEBROWSERUIFOLDER" Name="ui">
-                  <Directory Id="PUBLICLIBMONACOMINVSBASEBROWSERUICODICONSFOLDER" Name="codicons">
-                    <Directory Id="PUBLICLIBMONACOMINVSBASEBROWSERUICODICONSCODICONFOLDER" Name="codicon" />
-                  </Directory>
-                </Directory>
-              </Directory>
-              <Directory Id="PUBLICLIBMONACOMINVSBASECOMMONFOLDER" Name="common">
-                <Directory Id="PUBLICLIBMONACOMINVSBASECOMMONWORKERFOLDER" Name="worker" />
-              </Directory>
-              <Directory Id="PUBLICLIBMONACOMINVSBASEWORKERFOLDER" Name="worker" />
-            </Directory>
-            <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESFOLDER" Name="basic-languages">
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESABAPFOLDER" Name="abap" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESAPEXFOLDER" Name="apex" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESAZCLIFOLDER" Name="azcli" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESBATFOLDER" Name="bat" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESBICEPFOLDER" Name="bicep" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCAMELIGOFOLDER" Name="cameligo" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCLOJUREFOLDER" Name="clojure" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCOFFEEFOLDER" Name="coffee" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCPPFOLDER" Name="cpp" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCSHARPFOLDER" Name="csharp" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCSPFOLDER" Name="csp" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCSSFOLDER" Name="css" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESCYPHERFOLDER" Name="cypher" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESDARTFOLDER" Name="dart" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESDOCKERFILEFOLDER" Name="dockerfile" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESECLFOLDER" Name="ecl" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESELIXIRFOLDER" Name="elixir" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESFLOW9FOLDER" Name="flow9" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESFREEMARKER2FOLDER" Name="freemarker2" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESFSHARPFOLDER" Name="fsharp" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESGOFOLDER" Name="go" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESGRAPHQLFOLDER" Name="graphql" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESHANDLEBARSFOLDER" Name="handlebars" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESHCLFOLDER" Name="hcl" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESHTMLFOLDER" Name="html" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESINIFOLDER" Name="ini" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESJAVAFOLDER" Name="java" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESJAVASCRIPTFOLDER" Name="javascript" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESJULIAFOLDER" Name="julia" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESKOTLINFOLDER" Name="kotlin" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESLESSFOLDER" Name="less" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESLEXONFOLDER" Name="lexon" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESLIQUIDFOLDER" Name="liquid" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESLUAFOLDER" Name="lua" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESM3FOLDER" Name="m3" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESMARKDOWNFOLDER" Name="markdown" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESMIPSFOLDER" Name="mips" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESMSDAXFOLDER" Name="msdax" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESMYSQLFOLDER" Name="mysql" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESOBJECTIVE_CFOLDER" Name="objective-c" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPASCALFOLDER" Name="pascal" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPASCALIGOFOLDER" Name="pascaligo" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPERLFOLDER" Name="perl" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPGSQLFOLDER" Name="pgsql" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPHPFOLDER" Name="php" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPLAFOLDER" Name="pla" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPOSTIATSFOLDER" Name="postiats" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPOWERQUERYFOLDER" Name="powerquery" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPOWERSHELLFOLDER" Name="powershell" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPROTOBUFFOLDER" Name="protobuf" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPUGFOLDER" Name="pug" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESPYTHONFOLDER" Name="python" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESQSHARPFOLDER" Name="qsharp" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESRFOLDER" Name="r" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESRAZORFOLDER" Name="razor" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESREDISFOLDER" Name="redis" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESREDSHIFTFOLDER" Name="redshift" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESRESTRUCTUREDTEXTFOLDER" Name="restructuredtext" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESRUBYFOLDER" Name="ruby" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESRUSTFOLDER" Name="rust" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSBFOLDER" Name="sb" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSCALAFOLDER" Name="scala" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSCHEMEFOLDER" Name="scheme" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSCSSFOLDER" Name="scss" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSHELLFOLDER" Name="shell" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSOLIDITYFOLDER" Name="solidity" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSOPHIAFOLDER" Name="sophia" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSPARQLFOLDER" Name="sparql" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSQLFOLDER" Name="sql" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSTFOLDER" Name="st" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSWIFTFOLDER" Name="swift" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESSYSTEMVERILOGFOLDER" Name="systemverilog" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESTCLFOLDER" Name="tcl" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESTWIGFOLDER" Name="twig" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESTYPESCRIPTFOLDER" Name="typescript" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESVBFOLDER" Name="vb" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESXMLFOLDER" Name="xml" />
-              <Directory Id="PUBLICLIBMONACOMINVSBASIC_LANGUAGESYAMLFOLDER" Name="yaml" />
-            </Directory>
-            <Directory Id="PUBLICLIBMONACOMINVSEDITORFOLDER" Name="editor" />
-            <Directory Id="PUBLICLIBMONACOMINVSLANGUAGEFOLDER" Name="language">
-              <Directory Id="PUBLICLIBMONACOMINVSLANGUAGECSSFOLDER" Name="css" />
-              <Directory Id="PUBLICLIBMONACOMINVSLANGUAGEHTMLFOLDER" Name="html" />
-              <Directory Id="PUBLICLIBMONACOMINVSLANGUAGEJSONFOLDER" Name="json" />
-              <Directory Id="PUBLICLIBMONACOMINVSLANGUAGEKUSTOFOLDER" Name="kusto" />
-              <Directory Id="PUBLICLIBMONACOMINVSLANGUAGETYPESCRIPTFOLDER" Name="typescript" />
-            </Directory>
-          </Directory>
-        </Directory>
-      </Directory>
-      <Directory Id="PUBLICLIBMONACO_LANGUAGESFOLDER" Name="monaco-languages" />
+      <Directory Id="PUBLICLIBMONACO_D_LANGUAGESFOLDER" Name="monaco-languages" />
     </Directory>
     <Directory Id="PUBLICLOCALESFOLDER" Name="locales">
-      <Directory Id="PUBLICLOCALESDE_DEFOLDER" Name="de-DE" />
-      <Directory Id="PUBLICLOCALESEN_USFOLDER" Name="en-US" />
-      <Directory Id="PUBLICLOCALESES_ESFOLDER" Name="es-ES" />
-      <Directory Id="PUBLICLOCALESFR_FRFOLDER" Name="fr-FR" />
-      <Directory Id="PUBLICLOCALESPSEUDO_LOCALEFOLDER" Name="pseudo-LOCALE" />
-      <Directory Id="PUBLICLOCALESZH_HANSFOLDER" Name="zh-Hans" />
+      <Directory Id="PUBLICLOCALESDE_D_DEFOLDER" Name="de-DE" />
+      <Directory Id="PUBLICLOCALESEN_D_USFOLDER" Name="en-US" />
+      <Directory Id="PUBLICLOCALESES_D_ESFOLDER" Name="es-ES" />
+      <Directory Id="PUBLICLOCALESFR_D_FRFOLDER" Name="fr-FR" />
+      <Directory Id="PUBLICLOCALESPSEUDO_D_LOCALEFOLDER" Name="pseudo-LOCALE" />
+      <Directory Id="PUBLICLOCALESPT_D_BRFOLDER" Name="pt-BR" />
+      <Directory Id="PUBLICLOCALESZH_D_HANSFOLDER" Name="zh-Hans" />
     </Directory>
     <Directory Id="PUBLICMAPSFOLDER" Name="maps" />
     <Directory Id="PUBLICSASSFOLDER" Name="sass">
-      <Directory Id="PUBLICSASSBASEFOLDER" Name="base">
-        <Directory Id="PUBLICSASSBASEFONT_AWESOMEFOLDER" Name="font-awesome" />
-      </Directory>
-      <Directory Id="PUBLICSASSCOMPONENTSFOLDER" Name="components" />
-      <Directory Id="PUBLICSASSLAYOUTFOLDER" Name="layout" />
-      <Directory Id="PUBLICSASSMIXINSFOLDER" Name="mixins" />
-      <Directory Id="PUBLICSASSPAGESFOLDER" Name="pages" />
-      <Directory Id="PUBLICSASSUTILSFOLDER" Name="utils" />
+      <Directory Id="PUBLICSASSBASEFOLDER" Name="base" />
     </Directory>
+    <Directory Id="PUBLICSWAGGERFOLDER" Name="swagger" />
     <Directory Id="PUBLICTESTFOLDER" Name="test">
       <Directory Id="PUBLICTESTCOREFOLDER" Name="core">
         <Directory Id="PUBLICTESTCOREREDUXFOLDER" Name="redux" />
         <Directory Id="PUBLICTESTCORETHUNKFOLDER" Name="thunk" />
         <Directory Id="PUBLICTESTCOREUTILSFOLDER" Name="utils" />
       </Directory>
+      <Directory Id="PUBLICTESTFIXTURESFOLDER" Name="fixtures" />
       <Directory Id="PUBLICTESTHELPERSFOLDER" Name="helpers" />
-      <Directory Id="PUBLICTESTLIBFOLDER" Name="lib" />
       <Directory Id="PUBLICTESTMATCHERSFOLDER" Name="matchers" />
+      <Directory Id="PUBLICTESTMOCK_D_APIFOLDER" Name="mock-api" />
       <Directory Id="PUBLICTESTMOCKSFOLDER" Name="mocks" />
       <Directory Id="PUBLICTESTSPECSFOLDER" Name="specs" />
     </Directory>
-    <Directory Id="PUBLICTESTDATAFOLDER" Name="testdata" />
     <Directory Id="PUBLICVENDORFOLDER" Name="vendor">
       <Directory Id="PUBLICVENDORBOOTSTRAPFOLDER" Name="bootstrap" />
       <Directory Id="PUBLICVENDORCSSFOLDER" Name="css" />
       <Directory Id="PUBLICVENDORFLOTFOLDER" Name="flot" />
-      <Directory Id="PUBLICVENDORPLUGIN_TEXTFOLDER" Name="plugin-text" />
+      <Directory Id="PUBLICVENDORPLUGIN_D_TEXTFOLDER" Name="plugin-text" />
       <Directory Id="PUBLICVENDORTAGSINPUTFOLDER" Name="tagsinput" />
     </Directory>
     <Directory Id="PUBLICVIEWSFOLDER" Name="views" />
+  </Directory>
+  <Directory Id="STORYBOOKFOLDER" Name="storybook">
+    <Directory Id="STORYBOOKPUBLICFOLDER" Name="public">
+      <Directory Id="STORYBOOKPUBLICFONTSFOLDER" Name="fonts">
+        <Directory Id="STORYBOOKPUBLICFONTSINTERFOLDER" Name="inter" />
+        <Directory Id="STORYBOOKPUBLICFONTSROBOTOFOLDER" Name="roboto" />
+      </Directory>
+      <Directory Id="STORYBOOKPUBLICIMGFOLDER" Name="img">
+        <Directory Id="STORYBOOKPUBLICIMGICONSFOLDER" Name="icons">
+          <Directory Id="STORYBOOKPUBLICIMGICONSCUSTOMFOLDER" Name="custom" />
+          <Directory Id="STORYBOOKPUBLICIMGICONSMONOFOLDER" Name="mono" />
+          <Directory Id="STORYBOOKPUBLICIMGICONSUNICONSFOLDER" Name="unicons" />
+        </Directory>
+      </Directory>
+    </Directory>
+    <Directory Id="STORYBOOKSB_D_ADDONSFOLDER" Name="sb-addons">
+      <Directory Id="STORYBOOKSB_D_ADDONSA11Y_D_7FOLDER" Name="a11y-7" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_ACTIONS_D_2FOLDER" Name="essentials-actions-2" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_CONTROLS_D_1FOLDER" Name="essentials-controls-1" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_MEASURE_D_5FOLDER" Name="essentials-measure-5" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_OUTLINE_D_6FOLDER" Name="essentials-outline-6" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_TOOLBARS_D_4FOLDER" Name="essentials-toolbars-4" />
+      <Directory Id="STORYBOOKSB_D_ADDONSESSENTIALS_D_VIEWPORT_D_3FOLDER" Name="essentials-viewport-3" />
+      <Directory Id="STORYBOOKSB_D_ADDONSSTORYBOOK_D_10FOLDER" Name="storybook-10" />
+      <Directory Id="STORYBOOKSB_D_ADDONSSTORYBOOK_D_CORE_D_SERVER_D_PRESETS_D_0FOLDER" Name="storybook-core-server-presets-0" />
+      <Directory Id="STORYBOOKSB_D_ADDONSSTORYBOOK_D_DARK_D_MODE_D_ESM_D_PRESET_D_9FOLDER" Name="storybook-dark-mode-esm-preset-9" />
+      <Directory Id="STORYBOOKSB_D_ADDONSSTORYSOURCE_D_8FOLDER" Name="storysource-8" />
+    </Directory>
+    <Directory Id="STORYBOOKSB_D_COMMON_D_ASSETSFOLDER" Name="sb-common-assets" />
+    <Directory Id="STORYBOOKSB_D_MANAGERFOLDER" Name="sb-manager" />
+    <Directory Id="STORYBOOKSB_D_PREVIEWFOLDER" Name="sb-preview" />
+    <Directory Id="STORYBOOKSTATICFOLDER" Name="static">
+      <Directory Id="STORYBOOKSTATICMEDIAFOLDER" Name="media" />
+    </Directory>
   </Directory>
   <Directory Id="TOOLSFOLDER" Name="tools" />
 </Directory>

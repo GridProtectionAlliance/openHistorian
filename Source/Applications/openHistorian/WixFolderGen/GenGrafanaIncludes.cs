@@ -241,7 +241,7 @@ namespace WiXFolderGen
             if (string.IsNullOrWhiteSpace(folderName))
                 return RootFolderName + Suffix;
 
-            return Program.GetCleanID(folderName, Prefix, Suffix, MaxWixIDLength - Prefix.Length - Suffix.Length, replaceDirectorySeparatorChar: true, replaceSpaces: true);
+            return Program.GetCleanID(folderName, Prefix, Suffix, MaxWixIDLength - Prefix.Length - Suffix.Length, replaceDirectorySeparatorChar: true, replaceSpaces: true, dupClearAndTrim: false);
         }
 
         private static string GetComponentID(string fileName)
