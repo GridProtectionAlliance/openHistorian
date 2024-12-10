@@ -191,6 +191,7 @@ namespace openHistorian.Adapters
         #endif
 
             Request.Headers.Add(s_authProxyHeaderName, securityPrincipal.Identity.Name);
+            Request.Headers.ConnectionClose = true;
             Request.RequestUri = new Uri($"{s_baseUrl}/{url}{Request.RequestUri.Query}");
 
             if (Request.Method == HttpMethod.Get)
@@ -288,7 +289,11 @@ namespace openHistorian.Adapters
         static GrafanaAuthProxyController()
         {
             // Create a shared HTTP client instance
-            s_http = new HttpClient(new HttpClientHandler { UseCookies = false, MaxResponseHeadersLength = 64 });
+            s_http = new HttpClient(new HttpClientHandler { 
+                UseCookies = false, 
+                MaxResponseHeadersLength = 64,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            });
 
             // Make sure openHistorian specific default service settings exist
             CategorizedSettingsElementCollection grafanaHosting = ConfigurationFile.Current.Settings["grafanaHosting"];
@@ -590,7 +595,7 @@ namespace openHistorian.Adapters
             catch (Exception ex)
             {
                 message = ex.Message;
-                return Array.Empty<OrgUserDetail>();
+                return [];
             }
         }
 
