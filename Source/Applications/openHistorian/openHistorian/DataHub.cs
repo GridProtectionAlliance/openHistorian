@@ -1272,11 +1272,11 @@ namespace openHistorian
         /// <returns>URL to download filename.</returns>
         public string SaveJSONFile(string targetFilePath, string json)
         {
-            string localPath = FilePath.GetAbsolutePath("");
+            string localPath = FilePath.GetAbsolutePath(@"Grafana\public");
             targetFilePath = FilePath.GetAbsolutePath(targetFilePath);
 
             // Prevent file saves outside local file path
-            if (!targetFilePath.StartsWith(localPath))
+            if (!targetFilePath.StartsWith(localPath, StringComparison.OrdinalIgnoreCase))
                 throw new SecurityException("Path access error: Cannot save JSON file outside local file path.");
 
             // Prevent saving data that is not valid JSON (helps prevent possible function abuse)
