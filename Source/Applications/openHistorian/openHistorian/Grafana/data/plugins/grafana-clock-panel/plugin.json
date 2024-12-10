@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "grafanaDependency": "\u003e=8.0.0",
+    "grafanaDependency": "\u003e=8.3.0",
     "plugins": []
   },
   "id": "grafana-clock-panel",
@@ -10,11 +10,11 @@
       "url": "https://grafana.com"
     },
     "build": {
-      "time": 1657138674187,
+      "time": 1727356341031,
       "repo": "https://github.com/grafana/clock-panel",
-      "branch": "master",
-      "hash": "dfcdaf668efc3a5a5845b245313832b2eaa8df2f",
-      "build": 33
+      "branch": "main",
+      "hash": "1934c7de9c2f06cbda45bd36c09bcdbf0d0c3167",
+      "build": 256
     },
     "description": "Clock panel for grafana",
     "keywords": [
@@ -45,10 +45,9 @@
         "path": "img/screenshot-clock-options.png"
       }
     ],
-    "updated": "2022-07-06",
-    "version": "2.1.0"
+    "updated": "2024-09-26",
+    "version": "2.1.8"
   },
   "name": "Clock",
-  "skipDataQuery": true,
   "type": "panel"
 }

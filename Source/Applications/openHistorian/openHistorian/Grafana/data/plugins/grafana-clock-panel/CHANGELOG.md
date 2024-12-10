@@ -1,5 +1,26 @@
 # Change Log
 
+## 2.1.8
+
+- Improves migration handling for non-query panels to eliminate error message display
+
+## [2.1.7]
+
+- Handles migration for non-query clock panels to eliminate error message display
+- Fixes [#186](https://github.com/grafana/clock-panel/issues/186)
+- Fixes [#189](https://github.com/grafana/clock-panel/issues/189)
+- Cleans up any legacy (angular) settings in top level of panel json
+- Adds tests for migrations
+
+## [2.1.2]
+- Improving wrapping of the panel elements to be more responsive to different panel sizes https://github.com/grafana/clock-panel/pull/117
+- Fixing a placeholder for the font size field https://github.com/grafana/clock-panel/pull/116
+- 
+## [2.1.1]
+- Migrate to create-plugin instead of toolkit
+- Small typo fixes
+- Bump grafana packages / dependencies
+
 ## [2.1.0]
 - Added support to set timezone from template variable
 
