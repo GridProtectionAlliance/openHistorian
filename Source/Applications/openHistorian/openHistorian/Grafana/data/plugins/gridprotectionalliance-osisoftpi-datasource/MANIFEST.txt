@@ -8,32 +8,38 @@ Hash: SHA512
   "signedByOrg": "gridprotectionalliance",
   "signedByOrgName": "Grid Protection Alliance",
   "plugin": "gridprotectionalliance-osisoftpi-datasource",
-  "version": "3.0.0",
-  "time": 1662559021811,
+  "version": "5.1.0",
+  "time": 1731003575131,
   "keyId": "7e4d0c6a708866e7",
   "files": {
-    "module.js.LICENSE.txt": "cdf963ced7d25a0f98901a547647b4d6e2dbe0197fd78c87a059a87b0e542fe2",
-    "partials/query.options.html": "81baf9e252737a2dceced1c7b3fc5762b739a9538119d76cb76dbab08347ae79",
-    "partials/annotations.editor.html": "b91ce7c5cba4711dee4bcac1209434224885b8ab7571f01fc441039e2a576aec",
-    "partials/query.editor.html": "894b1fd186d783064c0585efba8eb382e03f1c9d0438cd3f662a04c6e4744834",
-    "img/osi-pi.png": "79111de7172578d604396b8b950165f4289d134486e9a2248b09fe88acfa538e",
+    "go_plugin_build_manifest": "080d7b2d7f6b38a8db2ea2d55fb60f97514d48d6fe700997283cc539d07a616a",
+    "gpx_osipiwebapi_darwin_amd64": "3514f14b81bcfd1d0825717401775ec6f0eeeea3f628bce4468550e98e2e03a3",
+    "LICENSE": "a68b61f3355acaeff6e51005212d5de2f291efba4f25dbc173835867c2a7b972",
+    "CHANGELOG.md": "40d0b39d7110f5c40a4660d409cae55c0b5ecf35b603fd63de63ff3647f29135",
+    "gpx_osipiwebapi_windows_amd64.exe": "865f622170b354b22741e1bc2397101ffda2ca80b0e7e1ff6e8c323b328be298",
+    "gpx_osipiwebapi_darwin_arm64": "551f7aaa796b370cf31681bf64c82f0d318fc9b8b679684198ad3a237045102f",
+    "gpx_osipiwebapi_linux_arm": "74389391bbe6a29365359dfeb40b94b9009723d5ee4442e519b8ab57e9d1775b",
+    "plugin.json": "387ccffdd7c55ae2ea008dcbdf30ca4a4755d62308469952f10eedc35bf48ebe",
+    "gpx_osipiwebapi_linux_amd64": "f95eb13f4ac2211ecc12465e955d42713a66fad644d526c140f5b7d9115b30ab",
+    "module.js.map": "d1d3f6f1d446d7ff81743080e93d1ac7f6ad6e4b6e2b70208aa98871683bb900",
+    "README.md": "3c7f12a1dc508b8e6778962cbfeb5b039528ac9f0f1ea6f5f79402e722df71a8",
+    "img/configuration.png": "666a6f83670104fa28f98e09903286420087b498bc867a8a0ea37bbea1082651",
+    "img/annotations.png": "69d05d03f0a70caf03d04987f99f49865f1fc5e49132783892868d573ebf3c35",
     "img/logo.svg": "9861578d47a319afe323668368bd710e7f9a883aead55b49ba1417dd810f49ce",
-    "module.js": "2e9ff2161c9f6ca2e5772376fea72a37ba318d7759a6e256233f712e7c8f8c1c",
-    "module.js.map": "dfb3f29d9d49664d8f18a1e2488701fb64683bc6897af3337c43865cbbba9da1",
-    "LICENSE": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
-    "README.md": "b58b9ce46d96022472b1e0fadc107d7e0ad754ede26e9edb24245f37679e9a50",
-    "plugin.json": "f2350c025fa24aa31ff9d1e1925a04cf63a9facdfd7a1bff7ec822dac86f09c6",
-    "CHANGELOG.md": "a1899de57a4712e940c1dfef1d4617aafd1ec029be22bdf51294bef7be568aa1"
+    "img/osi-pi.png": "79111de7172578d604396b8b950165f4289d134486e9a2248b09fe88acfa538e",
+    "img/configurator.png": "f9ee3ec7b2871454b0a578a98e9d3a67a00ba0740a71df49bec3d1102536fb1e",
+    "module.js": "64e5921a8c5a7d848c7994d7f5b9a98d92423d0af9f84c6a69ed00263acbcd41",
+    "gpx_osipiwebapi_linux_arm64": "89d8251aa34007b151eeacb4e87a777f9825362e9795c49495584333ba78d3f5"
   }
 }
 -----BEGIN PGP SIGNATURE-----
-Version: OpenPGP.js v4.10.10
+Version: OpenPGP.js v4.10.11
 Comment: https://openpgpjs.org
 
-wrcEARMKAAYFAmMYoy4AIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
-cIhm5w6JAgjxQ4haqeAiheldq0o4cmlBGjDSFc7ZlmOYrcBqgsB+ZQjdRM9E
-Ru2peJj5kTEdHzbIaRDojQ5sdBgxDe1Iz6W0PAIED5IXX/NbUVIfySMC5LOz
-Ih0+4dLce8MJb9h5t4FNWdRa/si3jAyvv1ZqT9SNUEh7uku5a9eYEi4oaaTc
-lZ2SqQU=
-=hF60
+wrkEARMKAAYFAmctBLcAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm57GiAgkBNJsMf0BDi5+wyHGqteZCEayEkkS/jevik5l6AEu9nd8o/hE3
+AFU7pLulNo59eG4JGQXEqYaCfQ8Z4vNC+AG2y+kCCQDIsrB+kZ27Kyo/IRhf
+1YUQlvo/NBonQclyyK1YZ15QifePcr94qMou/DP4T5ELRdL28JP5q+wh4fpn
+6hC2zCqVpg==
+=AmeM
 -----END PGP SIGNATURE-----

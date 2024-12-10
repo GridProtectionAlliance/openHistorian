@@ -11,8 +11,8 @@ Show the time in another office or show a countdown/countup to an important even
 - **Mode**:
 
   Default is time.
-  If countdown is chosen then set the Countdown Deadline to start the countdown.
-  If countup is chosen then set the Countup Startline to start the countup.
+  If countdown is chosen then set the Countdown End Time to start the countdown.
+  If countup is chosen then set the Countup Begin Time to start the countup.
 
 - **12 or 24 hour**:
 
@@ -26,7 +26,7 @@ Show the time in another office or show a countdown/countup to an important even
 
   Locales for date-formatting are supplied by the moment library. The locale can be set or left to default. Default is moment's guess.
 
-- **Countdown Deadline**:
+- **Countdown End Time**:
 
   Used in conjunction with the mode being set to countdown. Choose a date and time to count down to.
   
@@ -36,7 +36,7 @@ Show the time in another office or show a countdown/countup to an important even
 
   The text to show when the countdown ends. E.g. LIFTOFF
 
-- **Countup Startline**:
+- **Countup Begin Time**:
 
   Used in conjunction with the mode being set to countup. Choose a date and time to count up from.
 
