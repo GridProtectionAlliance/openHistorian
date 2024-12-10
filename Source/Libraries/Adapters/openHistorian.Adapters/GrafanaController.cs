@@ -107,9 +107,15 @@ namespace openHistorian.Adapters
         }
 
         // Represents a historian 2.0 data source for the Grafana adapter.
-        internal class OH2DataSource : GrafanaDataSourceBase
+        internal sealed class OH2DataSource : GrafanaDataSourceBase
         {
             private readonly ulong m_baseTicks = (ulong)UnixTimeTag.BaseTicks.Value;
+
+            public OH2DataSource()
+            {
+                MaximumSearchTargetsPerRequest = s_maximumSearchTargetsPerRequest;
+                MaximumAnnotationsPerRequest = s_maximumAnnotationsPerRequest;
+            }
 
             /// <summary>
             /// Starts a query that will read data source values, given a set of point IDs and targets, over a time range.
@@ -267,6 +273,9 @@ namespace openHistorian.Adapters
                 m_baseTicks = UnixTimeTag.BaseTicks.Value;
 
                 InstanceName = instanceName;
+
+                MaximumSearchTargetsPerRequest = s_maximumSearchTargetsPerRequest;
+                MaximumAnnotationsPerRequest = s_maximumAnnotationsPerRequest;
             }
 
             protected override async IAsyncEnumerable<DataSourceValue> QueryDataSourceValues(QueryParameters queryParameters, OrderedDictionary<ulong, (string, string)> targetMap, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -587,7 +596,38 @@ namespace openHistorian.Adapters
 
         #region [ Static ]
 
+        // Static Fields
         private static readonly Regex s_intervalExpression = new(@"(?<Value>\d+\.?\d*)(?<Unit>\w+)", RegexOptions.Compiled);
+        private static readonly int s_maximumSearchTargetsPerRequest;
+        private static readonly int s_maximumAnnotationsPerRequest;
+
+        // Static Constructor
+        static GrafanaController()
+        {
+            const int DefaultMaximumSearchTargetsPerRequest = 200;
+            const int DefaultMaximumAnnotationsPerRequest = 100;
+
+            try
+            {
+                // Make sure Grafana specific default threshold settings exist
+                CategorizedSettingsElementCollection thresholdSettings = ConfigurationFile.Current.Settings["thresholdSettings"];
+
+                // Make sure needed settings exist
+                thresholdSettings.Add("GrafanaMaximumSearchTargets", DefaultMaximumSearchTargetsPerRequest, "Defines maximum number of search targets to return during a Grafana search query.");
+                thresholdSettings.Add("GrafanaMaximumAnnotations", DefaultMaximumAnnotationsPerRequest, "Defines maximum number of annotations to return during a Grafana annotation query.");
+
+                // Get settings as currently defined in configuration file
+                s_maximumSearchTargetsPerRequest = thresholdSettings["GrafanaMaximumSearchTargets"].ValueAs(DefaultMaximumSearchTargetsPerRequest);
+                s_maximumAnnotationsPerRequest = thresholdSettings["GrafanaMaximumAnnotations"].ValueAs(DefaultMaximumAnnotationsPerRequest);
+            }
+            catch (Exception ex)
+            {
+                Logger.SwallowException(ex);
+
+                s_maximumSearchTargetsPerRequest = DefaultMaximumSearchTargetsPerRequest;
+                s_maximumAnnotationsPerRequest = DefaultMaximumAnnotationsPerRequest;
+            }
+        }
 
         // Static Methods
         private static bool TryParseInterval(string interval, out TimeSpan timeSpan)
