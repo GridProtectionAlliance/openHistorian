@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--
+/*
+ *
+ * SCADAvis.io Synoptic API © 2018-2022 Ricardo L. Olsen / DSC Systems ALL RIGHTS RESERVED.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ */
+-->
+
+    <meta charset="utf-8" />
+    <meta
+      name="copyright"
+      content="2018-2023 Ricardo Olsen / DSC Systems / SCADAvis.io - ALL RIGHTS RESERVED"
+    />
+    <meta name="application-name" content="SCADAvis.io" />
+    <meta name="description" content="SCADAvis.io" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="viewport"
+      content="width=10000,initial-scale=1.0,user-scalable=yes"
+    />
+    <title>SCADAvis.io Visualization Component</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <script>
+      function Iframe () {
+        try {
+          return window.self !== window.top
+        } catch (e) {
+          return true
+        }
+      }
+      if (!Iframe()) {
+        document.write(
+          '<br>SCADAvis.io<br>This page is designed to be embedded inside an IFRAME!'
+        )
+        window.stop()
+      }
+    </script>
+    <style>
+      /* From https://projects.lukehaas.me/css-loaders/ */
+      .loader,
+      .loader:after {
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+      }
+      .loader {
+        margin: 60px auto;
+        font-size: 10px;
+        position: relative;
+        text-indent: -9999em;
+        border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-left: 1.1em solid #ffffff;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation: load8 1.1s infinite linear;
+        animation: load8 1.1s infinite linear;
+      }
+      @-webkit-keyframes load8 {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes load8 {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    <script src="cdn/snap.svg-min.js"></script>
+    <script src="cdn/jquery-3.6.1.min.js"></script>
+    <script src="cdn/d3.v7.min.js"></script>
+    <script src="cdn/vega.min-5.22.1.js"></script>
+    <script src="cdn/vega-lite.min-5.5.0.js"></script>
+    <script src="cdn/chroma.min.js"></script>
+    <script src="config_viewers_default.js"></script>
+    <script>
+      'use strict'
+      const Version = '2.0.6'
+      const Meta = {
+        copyright:
+          '2018-2022 Ricardo Olsen / DSC Systems. All rights reserved.',
+        authors: ['Ricardo Olsen']
+      }
+
+      window.enableValueChangeAnimation = false
+
+      window.onmouseclick = function (evt, pt) {
+        // respond with a JSON API object http://jsonapi.org
+        let closestGroupId = ''
+        if (evt.target.closest('g')) closestGroupId = evt.target.closest('g').id
+
+        const resp = {
+          data: {
+            type: 'click',
+            id: '3',
+            attributes: {
+              version: Version,
+              event: {
+                target: { id: evt.target.id },
+                currentTarget: { id: evt.currentTarget.id },
+                closestGroup: { id: closestGroupId },
+                clientX: evt.clientX,
+                ClientY: evt.clientY,
+                ctrlKey: evt.ctrlKey,
+                altKey: evt.altKey,
+                shiftKey: evt.shiftKey,
+                metaKey: evt.metaKey,
+                which: evt.which,
+                timeStamp: evt.timeStamp
+              },
+              tag: TAGS[pt]
+            },
+            links: {
+              self: 'http://scadavis.io/synoptic/synoptic.html'
+            }
+          },
+          meta: Meta,
+          jsonapi: {
+            version: '1.0'
+          }
+        }
+        parent.postMessage(resp, '*')
+      }
+
+      $(document).ready(function () {
+        // respond with a JSON API object http://jsonapi.org
+        const resp = {
+          data: {
+            type: 'loaded',
+            id: '1',
+            attributes: {
+              version: Version
+            },
+            links: {
+              self: 'http://scadavis.io/synoptic/synoptic.html'
+            }
+          },
+          meta: Meta,
+          jsonapi: {
+            version: '1.0'
+          }
+        }
+        parent.postMessage(resp, '*')
+      })
+
+      window.addEventListener(
+        'message',
+        function (event) {
+          if (
+            typeof event.data == 'string' &&
+            event.data.indexOf('\<?xml') >= 0
+          ) {
+            $('#svgdiv').css('opacity', 0)
+            const svgcontainer = document.getElementById('svgdiv')
+            svgcontainer.innerHTML = event.data
+            $(svgcontainer.children[0]).css(
+              'background-color',
+              ScreenViewer_BackgroundSVG
+            )
+            svgcontainer.children[0].id = 'svgid'
+
+            $('#svgdiv').css('opacity', 1)
+            WebSAGE.init()
+            $('#loader').css('display', 'none')
+
+            // respond with a JSON API object http://jsonapi.org
+            const resp = {
+              data: {
+                type: 'ready',
+                id: '2',
+                attributes: {
+                  version: Version,
+                  tagsList: $W.lstpnt.slice(0, -1)
+                },
+                links: {
+                  self: 'http://scadavis.io/synoptic/synoptic.html'
+                }
+              },
+              meta: Meta,
+              jsonapi: {
+                version: '1.0'
+              }
+            }
+            parent.postMessage(resp, '*')
+
+            if (SVGDoc)
+              SVGDoc.addEventListener(
+                'click',
+                function (evt) {
+                  if (evt.target.id === 'svgid')
+                    // do not forward clicks on the svg container
+                    return
+
+                  let closestGroupId = ''
+                  if (evt.target.closest('g'))
+                    closestGroupId = evt.target.closest('g').id
+
+                  // respond with a JSON API object http://jsonapi.org
+                  const resp = {
+                    data: {
+                      type: 'click',
+                      id: '3',
+                      attributes: {
+                        version: Version,
+                        event: {
+                          target: { id: evt.target.id },
+                          currentTarget: { id: evt.currentTarget.id },
+                          closestGroup: { id: closestGroupId },
+                          clientX: evt.clientX,
+                          ClientY: evt.clientY,
+                          ctrlKey: evt.ctrlKey,
+                          altKey: evt.altKey,
+                          shiftKey: evt.shiftKey,
+                          metaKey: evt.metaKey,
+                          which: evt.which,
+                          timeStamp: evt.timeStamp
+                        },
+                        tag: ''
+                      },
+                      links: {
+                        self: 'http://scadavis.io/synoptic/synoptic.html'
+                      }
+                    },
+                    meta: Meta,
+                    jsonapi: {
+                      version: '1.0'
+                    }
+                  }
+                  parent.postMessage(resp, '*')
+                },
+                false
+              )
+          } else {
+            WebSAGE.getJSONData_onSuccess(event.data)
+          }
+        },
+        false
+      )
+
+      ScreenViewer_Background = 'none'
+      let xPlain = true
+      let optval = []
+      let opttxt = []
+      let optfilt = []
+      let optgroup = []
+      let optionhtml = ''
+      function lista_telas () {}
+
+      let tela = ''
+      let auxtela = ''
+      if (auxtela != '') {
+        tela = auxtela
+      }
+      let indtela = 0
+      tela = tela.replace(/%2F/g, '/')
+    </script>
+    <script src="websage.js"></script>
+    <script src="vega_websage.js"></script>
+    <script src="getjsondata.js"></script>
+    <style>
+      body {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+      }
+    </style>
+    <script>
+      WebSAGE.callServer = function () {}
+    </script>
+  </head>
+  <body bgcolor="#dddddd" style="margin:0px;overflow:hidden;">
+    <div
+      id="bardiv"
+      style="position:absolute;opacity:.3;float:left;white-space:nowrap;z-index:1;left:0px;top:0px;;height:40px;overflow:hidden;color:white;font-family:tahoma;font-size:12px;font-weight:bold;margin-left:3px;"
+    >
+      <form name="fmTELA" method="get" style="margin-top:4px">
+        <map id="immap" name="immap">
+          <area
+            shape="poly"
+            id="ZPDesce"
+            coords="12,20,20,20,32,32,0,32"
+            alt="down"
+            onclick="WebSAGE.zoomPan(7);"
+            style="cursor:pointer;"
+          />
+          <area
+            shape="poly"
+            id="ZPEsq"
+            coords="12,20,12,12,0,0,0,31"
+            alt="left"
+            onclick="WebSAGE.zoomPan(3);"
+            style="cursor:pointer;"
+          />
+          <area
+            shape="poly"
+            id="ZPSobe"
+            coords="12,12,20,12,32,0,0,0"
+            alt="up"
+            onclick="WebSAGE.zoomPan(1);"
+            style="cursor:pointer;"
+          />
+          <area
+            shape="poly"
+            id="ZPDir"
+            coords="20,12,20,20,32,32,32,0"
+            alt="right"
+            onclick="WebSAGE.zoomPan(5);"
+            style="cursor:pointer;"
+          />
+          <area
+            shape="poly"
+            id="ZPCentro"
+            coords="12,12,20,12,20,20,12,20"
+            alt="center"
+            onclick="WebSAGE.zoomPan(4);"
+            style="cursor:pointer;"
+          />
+        </map>
+        <img
+          id="ZOOMIN_ID"
+          align="middle"
+          width="32"
+          height="32"
+          onclick="WebSAGE.zoomPan(2);"
+          style="display:none;cursor:pointer;"
+          src="images/zoom-in.svg"
+        />
+        <img
+          id="ZOOMOUT_ID"
+          align="middle"
+          width="32"
+          height="32"
+          onclick="WebSAGE.zoomPan(6);"
+          style="display:none;cursor:pointer;"
+          src="images/zoom-out.svg"
+        />
+        <img
+          id="MOVE_ID"
+          align="middle"
+          width="32"
+          height="32"
+          usemap="#immap"
+          style="display:none;"
+          src="images/move.svg"
+        />
+        <input id="PLAY" name="PLAY" value="0" style="display:none;" />
+        <input id="PTELA" name="PTELA" value="" style="display:none;" />
+        <input id="ZPX" name="ZPX" value="0" style="display:none;" />
+        <input id="ZPY" name="ZPY" value="0" style="display:none;" />
+        <input id="ZPW" name="ZPW" value="" style="display:none;" />
+        <input id="ZPH" name="ZPH" value="" style="display:none;" />
+      </form>
+      <div
+        id="timemachinecontrols"
+        style="display:none;width:100%;line-height:40px;position:absolute;left:10px;top:-1px;z-index:2;display:none;"
+      >
+        <input
+          id="timesldr"
+          type="range"
+          step="1"
+          min="0"
+          max="86399"
+          value="0"
+          style="width:calc(99% - 520px);min-width:50px;height:25px;vertical-align:middle;"
+        />
+        <input
+          type="date"
+          name="dtpk"
+          id="dtpk"
+          step="1"
+          style="position:relative;vertical-align:middle;"
+        />
+        <input
+          type="time"
+          name="tmpk"
+          id="tmpk"
+          step="1"
+          style="position:relative;vertical-align:middle;"
+        />
+        <img
+          id="TIMEMACHINECLOSE_ID"
+          align="middle"
+          width="16"
+          height="16"
+          style="position:relative;left:10px;cursor:pointer;vertical-align:middle;"
+        />
+      </div>
+    </div>
+
+    <div id="loader">
+      <div
+        style="position:absolute;left:10px;top:10px;font-family:Verdana,Geneva,sans-serif;color:gray;font-size:20px;font-style:italic;"
+      >
+        SCADAvis.io™
+      </div>
+      <div class="loader"></div>
+    </div>
+
+    <div
+      id="svgdiv"
+      style="position:absolute;z-index:0;top:0px;overflow:hidden;"
+    ></div>
+
+    <div
+      id="almbox"
+      style="opacity:1;position:absolute;right:0px;top:0px;z-index:3;"
+    >
+      <div id="DIV_HORA" style="display:none;text-align:right;">
+        <span
+          id="HORA_ATU"
+          onclick="WebSAGE.reload();"
+          style="margin-right:5px;font-family:tahoma,courier;font-size:9pt;color:white;"
+          >&nbsp;</span
+        >
+      </div>
+      <div id="DIV_STATUS" style="text-align:right;">
+        <span
+          id="SP_STATUS"
+          style="font-family:tahoma,courier;font-size:10pt;font-weight:bold;color:white;"
+          >&nbsp;</span
+        >
+      </div>
+    </div>
+    <div
+      id="previewdiv"
+      style="display:none;position:absolute;left:5px;top:5px;z-index:3;opacity:.95;box-shadow: 2px 2px 2px #888888;"
+      onclick="evt.stopPropagation();evt.preventDefault();"
+    >
+      <iframe
+        id="previewframe"
+        width="700"
+        height="480"
+        frameborder="2"
+      ></iframe>
+    </div>
+    <div id="VEGACHARTS" style="display:none"></div>
+    <div
+      id="WATERMARK"
+      style="position:absolute;opacity:.5;right:3px;bottom:3px;text-align:right;font-family:Verdana,Geneva,sans-serif;color:gray;font-size:12px;font-style:italic;"
+    >
+      SCADAvis.io™
+    </div>
+    <script>
+      'use strict'
+      WebSAGE.reload = function (whattodo) {}
+
+      $('#svgdiv').css('background-color', ScreenViewer_BackgroundSVG)
+      document.getElementById('svgdiv').height = ScreenViewer_SVGMaxHeight
+      document.getElementById('svgdiv').width = ScreenViewer_SVGMaxWidth
+      document.getElementById('ZPW').ScreenViewer_SVGMaxWidth
+      document.getElementById('ZPH').ScreenViewer_SVGMaxHeight
+
+      V[99999] = 0
+      F[99999] = 0
+      V[99989] = 0
+      F[99989] = 0
+      let hvalues = []
+    </script>
+  </body>
+</html>
