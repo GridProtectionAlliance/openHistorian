@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "name": "OSIsoft-PI",
+  "type": "datasource",
+  "id": "gridprotectionalliance-osisoftpi-datasource",
+  "backend": true,
+  "executable": "gpx_osipiwebapi",
+  "metrics": true,
+  "annotations": true,
+  "alerting": true,
+  "streaming": false,
+  "info": {
+    "description": "Datasource plugin for OSIsoft PI Web API",
+    "author": {
+      "name": "Grid Protection Alliance",
+      "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"
+    },
+    "keywords": ["OSIsoft", "PI", "Historian", "GPA"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/GridProtectionAlliance/osisoftpi-grafana/blob/master/LICENSE"
+      },
+      {
+        "name": "PI System",
+        "url": "https://www.osisoft.com/pi-system"
+      }
+    ],
+    "screenshots": [
+      {"name": "Query Editor", "path": "img/configurator.png"},
+      {"name": "Datasource Configuration", "path": "img/configuration.png"},
+      {"name": "Annotations Editor", "path": "img/annotations.png"}
+    ],
+    "version": "5.1.0",
+    "updated": "2024-11-07"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.1.0",
+    "plugins": []
+  }
+}
