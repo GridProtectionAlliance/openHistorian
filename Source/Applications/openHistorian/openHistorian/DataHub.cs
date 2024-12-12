@@ -1277,7 +1277,7 @@ namespace openHistorian
 
             // Prevent file saves outside local file path
             if (!targetFilePath.StartsWith(localPath, StringComparison.OrdinalIgnoreCase))
-                throw new SecurityException("Path access error: Cannot save JSON file outside local file path.");
+                throw new SecurityException(@"Path access error: Cannot save JSON file outside Grafana\public file path.");
 
             // Prevent saving data that is not valid JSON (helps prevent possible function abuse)
             if (!IsValidJson(json))
