@@ -419,9 +419,9 @@
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1">
             <summary>
-            Returns a series of values that represent The points at which the input series exceds the given threshold.
-            The <c>threhsold</c> parameter value is a floating-point numbers that represent the threshold to be exceedd.
-            Second parameter optional, is a boolean flag that determines if the Duration of exceeding is returned as value
+            Returns a series of values which exceed the given threshold. The <c>threhsold</c> parameter value is a
+            floating-point numbers that represent the threshold to be exceeded. Second parameter optional, is a
+            boolean flag that determines if the time duration, in seconds, the value exceeds threshold.
             </summary>
             <remarks>
             Signature: <c>Exceeds(threshold, [includeDuration = false], expression)</c> -<br/>
@@ -449,6 +449,62 @@
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputePhasorValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1">
+            <summary>
+            Returns a series of values that represent the core data around the mean, excluding outliers, using Z-score. The
+            <c>confidence</c> parameter, optional, is a floating-point value, suffixed with '%' representing a percentage,
+            that must be greater than zero and less than one-hundred, that specifies the amount of data to retain around the
+            mean, representing the central portion of the dataset - defaults to 95%. Second parameter, <c>invertFilter</c>,
+            optional, is a boolean flag that determines if outliers should be rejected or retained - default is false, i.e.,
+            keep core data rejecting outliers; otherwise, true excludes core data and retains only outliers. Third parameter,
+            <c>minSamples</c>, optional, is an integer value that specifies the minimum number of samples required for outlier
+            detection - defaults to 20 for single series temporal analysis and 3 for multi-series slice analysis; if fewer
+            samples are provided, the function returns the entire dataset unfiltered to ensure improved statistical validity
+            of the Z-score calculations, or no data when <c>invertFilter</c> is true. If all values are considered identical,
+            i.e., the standard deviation is zero, function will return the entire dataset unfiltered, or no data when
+            <c>invertFilter</c> is true, since this represents a uniform distribution. The <c>confidence</c> parameter value
+            can either be a constant value or a named target available from the expression. Any target values that fall
+            between 0 and 1 will be treated as a percentage. 
+            </summary>
+            <remarks>
+            Signature: <c>FilterOutliers([confidence = 95%], [invertFilter = false], [minSamples = 20 or 3 for slice], expression)</c><br/>
+            Returns: Single value.<br/>
+            Example 1: <c>FilterOutliers(85%, BROWNS_FERRY:FREQ)</c><br/>
+            Example 2: <c>SliceFilterOutliers(0.033, FILTER ActiveMeasurements WHERE SignalType='FREQ')</c><br/>
+            Variants: FilterOutliers, ZScoreFilter, GaussianFilter<br/>
+            Execution: Immediate in-memory array load.
+            </remarks>
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.Aliases">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ReturnType">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ParameterDefinitions">
+            <inheritdoc />
+        </member>
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.IsSliceSeriesEquivalent">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ComputeSliceAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1.ComputePhasorValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.KalmanFilter`1">
@@ -547,8 +603,8 @@
             <remarks>
             Signature: <c>Reference(sliceTolerance, [adjustCoordinateMidPoint = false], [applyWrapOps = true], [units = Degrees], expression)</c><br/>
             Returns: Single value.<br/>
-            Example 1: <c>Reference(true, false, BROWNS_FERRY:BUS1.ANG; FILTER ActiveMeasurements WHERE SignalType='IPHA')</c><br/>
-            Example 2: <c>Reference(BROWNS_FERRY:BUS1; FILTER PhasorValues WHERE SignalType='IPHM')</c><br/>
+            Example 1: <c>Ref(0.033, true, false, BROWNS_FERRY:BUS1.ANG; FILTER ActiveMeasurements WHERE SignalType='IPHA')</c><br/>
+            Example 2: <c>Reference(0.25, BROWNS_FERRY:BUS1; FILTER PhasorValues WHERE SignalType='IPHM')</c><br/>
             Variants: Reference, Ref<br/>
             Execution: Immediate enumeration.
             </remarks>
@@ -1782,7 +1838,7 @@
             Returns a series of <c>N</c>, or <c>N%</c> of total, values that are a random sample of the values in the source series.
             <c>N</c> is either a positive integer value, representing a total, that is greater than zero - or - a floating point value,
             suffixed with '%' representing a percentage, that must range from greater than 0 to less than or equal to 100.
-            Third parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
+            Second parameter, optional, is a boolean flag representing if time in dataset should be normalized - defaults to true.
             <c>N</c> can either be constant value or a named target available from the expression. Any target values that fall between 0
             and 1 will be treated as a percentage.
             </summary>
@@ -2891,6 +2947,28 @@
             <summary>
             Gets or sets metadata selections for the query.
             </summary>
+        </member>
+        <member name="M:GrafanaAdapters.Functions.Common.ParseTotal(System.String,System.String,System.Int32)">
+            <summary>
+            Parses a string as a positive (> 0) integer or a percentage value of total.
+            </summary>
+            <param name="parameterName">Parameter name for error reporting.</param>
+            <param name="value">Value to parse as a specific total or a percentage of total.</param>
+            <param name="total">Total value to use for percentage calculations.</param>
+            <returns>Integer total value as parsed from <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GrafanaAdapters.Functions.Common.ParsePercentage(System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Parses a string as a percentage value. If value is suffixed with '%' it is treated as a percentage expected to be in
+            the range of 0 to 100, otherwise as a floating-point number expected to be in the range of 0 to 1. Inclusivity for
+            extremes is controlled by <paramref name="include0"/> and <paramref name="include100"/>. Return value is always in
+            the range of 0 to 100.
+            </summary>
+            <param name="parameterName">Parameter name for error reporting.</param>
+            <param name="value">Value to parse as a percentage.</param>
+            <param name="include0">Boolean flag to include 0 in range.</param>
+            <param name="include100">Boolean flag to include 100 in range.</param>
+            <returns>Parsed percentage value in the range of 0 to 100.</returns>
         </member>
         <member name="T:GrafanaAdapters.Functions.GroupOperations">
             <summary>

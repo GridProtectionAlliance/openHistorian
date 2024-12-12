@@ -755,6 +755,16 @@
             Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LeadTime"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DefaultPerformTimestampReasonabilityCheck">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerformTimestampReasonabilityCheck"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.DefaultUseLocalClockAsRealTime">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.UseLocalClockAsRealTime"/>.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1"/>.
@@ -796,6 +806,28 @@
             <para>Defines the time sensitivity to future measurement timestamps.</para>
             <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
             <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.PerformTimestampReasonabilityCheck">
+            <summary>
+            Gets or sets flag that determines if timestamp reasonability checks should be performed on incoming
+            measurements (i.e., measurement timestamps are compared to system clock for reasonability using
+            <see cref="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.LeadTime"/> tolerance).
+            </summary>
+            <remarks>
+            Setting this value to <c>false</c> will make the concentrator use the latest value received as "real-time"
+            without validation; this is not recommended in production since time reported by source devices may
+            be grossly incorrect. For non-production configurations, setting this value to false will allow
+            concentration of historical data.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.UseLocalClockAsRealTime">
+            <summary>
+            Gets or sets flag that determines whether or not to use the local clock time as real-time.
+            </summary>
+            <remarks>
+            Use your local system clock as real-time only if the time is locally GPS-synchronized,
+            or if the measurement values being sorted were not measured relative to a GPS-synchronized clock.
             </remarks>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IndependentActionAdapterManagerBase`1.ConfigurationReloadWaitTimeout">
