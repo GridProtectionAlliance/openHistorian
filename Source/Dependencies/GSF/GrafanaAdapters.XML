@@ -417,38 +417,46 @@
         <member name="T:GrafanaAdapters.Functions.BuiltIn.AddMetadata`1.ComputePhasorValue">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1">
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1">
             <summary>
-            Returns a series of values which exceed the given threshold. The <c>threhsold</c> parameter value is a
-            floating-point numbers that represent the threshold to be exceeded. Second parameter optional, is a
-            boolean flag that determines if the time duration, in seconds, the value exceeds threshold.
+            Returns a series of values at which a value exceed the given threshold. The <c>threhsold</c> parameter
+            value is a floating-point numbers that represents the threshold to be exceeded. Second parameter optional,
+            is a boolean flag that determines if the time duration, in seconds, the value exceeds threshold should be
+            returned instead.
             </summary>
             <remarks>
             Signature: <c>Exceeds(threshold, [includeDuration = false], expression)</c> -<br/>
             Returns: Series of values.<br/>
             Example: <c>Exceeds(60.05, true, FILTER ActiveMeasurements WHERE SignalType LIKE '%FREQ')</c><br/>
+            Variants: ExceedsAt, Exceeds<br/>
             Execution: Deferred enumeration.
             </remarks>
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.Name">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.Name">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.Description">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.Description">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ReturnType">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.Aliases">
             <inheritdoc />
         </member>
-        <member name="P:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ParameterDefinitions">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.AllowedGroupOperations">
             <inheritdoc />
         </member>
-        <member name="M:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.ReturnType">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputeMeasurementValue">
+        <member name="P:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.ParameterDefinitions">
             <inheritdoc />
         </member>
-        <member name="T:GrafanaAdapters.Functions.BuiltIn.Exceeds`1.ComputePhasorValue">
+        <member name="M:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.ComputeAsync(GrafanaAdapters.Functions.Parameters,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.ComputeMeasurementValue">
+            <inheritdoc />
+        </member>
+        <member name="T:GrafanaAdapters.Functions.BuiltIn.ExceedsAt`1.ComputePhasorValue">
             <inheritdoc />
         </member>
         <member name="T:GrafanaAdapters.Functions.BuiltIn.FilterOutliers`1">
