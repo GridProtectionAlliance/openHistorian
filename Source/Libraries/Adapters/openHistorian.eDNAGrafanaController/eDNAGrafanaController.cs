@@ -22,18 +22,20 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
-using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
+using GrafanaAdapters.DataSourceValueTypes;
 using GrafanaAdapters.Functions;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
+using GrafanaAdapters.Model.Functions;
+using GrafanaAdapters.Model.Metadata;
 using GSF;
 using GSF.Collections;
 using GSF.Configuration;
 using GSF.Diagnostics;
 using GSF.Security;
 using GSF.TimeSeries;
+using GSF.Web.Security;
 using InStep.eDNA.EzDNAApiNet;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -43,10 +45,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters.Model.Database;
 using eDNAMetaData = eDNAAdapters.Metadata;
+using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
+using CancellationToken = System.Threading.CancellationToken;
 
 // ReSharper disable VirtualMemberCallInConstructor
 namespace openHistorian.eDNAGrafanaController
@@ -70,11 +74,8 @@ namespace openHistorian.eDNAGrafanaController
             /// <summary>
             /// eDNADataSource constructor
             /// </summary>
-            /// <param name="site">Site search param</param>
-            /// <param name="service">Service search param</param>
-            public eDNADataSource(string site, string service)
+            public eDNADataSource()
             {
-                InstanceName = $"{site}.{service}";
                 DataTable dataTable = GetNewMetaDataTable();
                 DataSet metadata = new DataSet();
                 metadata.Tables.Add(dataTable);
@@ -148,9 +149,7 @@ namespace openHistorian.eDNAGrafanaController
                 return;
 
             using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
-            {
                 DataSources = new ConcurrentDictionary<string, eDNADataSource>(FileBackedDataSources);
-            }
 
             string eDNAMetaData = systemSettings["eDNAMetaData"]?.Value ?? "*.*";
             List<Task> tasks = new List<Task>();
@@ -161,21 +160,19 @@ namespace openHistorian.eDNAGrafanaController
                 string service = setting.Split('.')[1].ToUpper();
 
                 if (!DataSources.ContainsKey($"{site}.{service}"))
-                    DataSources.AddOrUpdate($"{site}.{service}", new eDNADataSource(site, service));
+                    DataSources.AddOrUpdate($"{site}.{service}", new eDNADataSource());
 
                 tasks.Add(Task.Factory.StartNew(() => RefreshMetaData(site, service)));
             }
 
             Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
-                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
-                {
-                    foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
-                    {
-                        FileBackedDataSources[kvp.Key] = kvp.Value;
-                    }
-                    FileBackedDataSources.Compact();
-                }
+                using FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary);
+                
+                foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources) 
+                    FileBackedDataSources[kvp.Key] = kvp.Value;
+                
+                FileBackedDataSources.Compact();
             });
         }
 
@@ -229,29 +226,22 @@ namespace openHistorian.eDNAGrafanaController
 
                     if (!string.IsNullOrEmpty(signalType) && signalType.Length == 4)
                     {
-                        switch (signalType)
+                        phasorType = signalType switch
                         {
-                            case "VPHA":
-                            case "VPHM":
-                                phasorType = "V";
-                                break;
-                            case "IPHA":
-                            case "IPHM":
-                                phasorType = "I";
-                                break;
-                        }
+                            "VPHA" => "V",
+                            "VPHM" => "V",
+                            "IPHA" => "I",
+                            "IPHM" => "I",
+                            _ => phasorType
+                        };
                     }
                     else
                     {
-                        switch (result.PointType)
+                        signalType = result.PointType switch
                         {
-                            case "DI":
-                                signalType = "DIGI";
-                                break;
-                            default:
-                                signalType = "ALOG";
-                                break;
-                        }
+                            "DI" => "DIGI",
+                            _ => "ALOG"
+                        };
                     }
 
                     dataTable.Rows.Add(
@@ -344,14 +334,12 @@ namespace openHistorian.eDNAGrafanaController
 
             Task.Factory.ContinueWhenAll(tasks.ToArray(), continuationTask =>
             {
-                using (FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary))
+                using FileBackedDictionary<string, eDNADataSource> FileBackedDataSources = new FileBackedDictionary<string, eDNADataSource>(FileBackedDictionary);
+                foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
                 {
-                    foreach (KeyValuePair<string, eDNADataSource> kvp in DataSources)
-                    {
-                        FileBackedDataSources[kvp.Key] = kvp.Value;
-                    }
-                    FileBackedDataSources.Compact();
+                    FileBackedDataSources[kvp.Key] = kvp.Value;
                 }
+                FileBackedDataSources.Compact();
             });
         }
 
@@ -362,6 +350,8 @@ namespace openHistorian.eDNAGrafanaController
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
         /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
         [HttpGet]
         public HttpResponseMessage Index(string site, string service)
         {
@@ -371,8 +361,8 @@ namespace openHistorian.eDNAGrafanaController
         /// <summary>
         /// Queries eDNA as a Grafana data source.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
         /// <param name="request">Query request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
@@ -383,128 +373,195 @@ namespace openHistorian.eDNAGrafanaController
                 return Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
 
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
             return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Query(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<TimeSeriesValues>());
         }
 
         /// <summary>
-        /// Queries eDNA as a Grafana Metadata source.
+        /// Gets the data source value types, i.e., any type that has implemented <see cref="IDataSourceValueType"/>,
+        /// that have been loaded into the application domain.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Query request.</param>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        [HttpPost]
+        public virtual IEnumerable<DataSourceValueType> GetValueTypes(string site, string service)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetValueTypes() ?? Enumerable.Empty<DataSourceValueType>();
+        }
+
+
+        /// <summary>
+        /// Gets the table names that, at a minimum, contain all the fields that the value type has defined as
+        /// required, see <see cref="IDataSourceValueType.RequiredMetadataFieldNames"/>.
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<string>> GetValueTypeTables(string site, string service, SearchRequest request, CancellationToken cancellationToken)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetValueTypeTables(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<string>());
+        }
+
+        /// <summary>
+        /// Gets the field names for a given table.
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<FieldDescription>> GetValueTypeTableFields(string site, string service, SearchRequest request, CancellationToken cancellationToken)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetValueTypeTableFields(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FieldDescription>());
+        }
+
+        /// <summary>
+        /// Gets the functions that are available for a given data source value type.
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>
+        /// <see cref="SearchRequest.expression"/> is used to filter functions by group operation, specifically a
+        /// value of "None", "Slice", or "Set" as defined in the <see cref="GroupOperations"/> enumeration. If all
+        /// function descriptions are desired, regardless of group operation, an empty string can be provided.
+        /// Combinations are also supported, e.g., "Slice,Set".
+        /// </remarks>
+        [HttpPost]
+        public virtual Task<IEnumerable<FunctionDescription>> GetValueTypeFunctions(string site, string service, SearchRequest request, CancellationToken cancellationToken)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
+        }
+
+        /// <summary>
+        /// Search openHistorian for a target.
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="request">Search target.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string> GetMetadata(string site, string service, Target request, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                if (string.IsNullOrWhiteSpace(request.target))
-                    return string.Empty;
-
-                DataTable table = new DataTable();
-                
-                if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-                    RefreshMetaData(site.ToUpper(), service.ToUpper());
-
-                DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
-                DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
-
-                if (rows.Length > 0)
-                    table = rows.CopyToDataTable();
-
-                return JsonConvert.SerializeObject(table);
-            },
-            cancellationToken);
-        }
-
-        /// <summary>
-        /// Search eDNA for a target.
-        /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Search target.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] Search(string site, string service, Target request)
+        public virtual Task<string[]> Search(string site, string service, SearchRequest request, CancellationToken cancellationToken)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
-            return metadata.Tables["ActiveMeasurements"].Select($"PointTag LIKE '%{request.target}%'").Take(DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].MaximumSearchTargetsPerRequest).Select(row => $"{row["PointTag"]}").ToArray();
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Search(request, cancellationToken) ?? Task.FromResult(Array.Empty<string>());
         }
 
         /// <summary>
-        /// Search eDNA for a field.
+        /// Reloads data source value types cache.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Search target.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchFields(string site, string service, Target request)
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <remarks>
+        /// This function is used to support dynamic data source value type loading. Function only needs to be called
+        /// when a new data source value is added to Grafana at run-time and end-user wants to use newly installed
+        /// data source value type without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [AuthorizeControllerRole("Administrator")]
+        public virtual void ReloadValueTypes(string site, string service)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
-            return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.ReloadDataSourceValueTypes();
         }
 
         /// <summary>
-        /// Search eDNA for a table.
+        /// Reloads Grafana functions cache.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Search target.</param>
-        [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchFilters(string site, string service, Target request)
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <remarks>
+        /// This function is used to support dynamic loading for Grafana functions. Function only needs to be called
+        /// when a new function is added to Grafana at run-time and end-user wants to use newly installed function
+        /// without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [AuthorizeControllerRole("Administrator")]
+        public virtual void ReloadGrafanaFunctions(string site, string service)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
-            return metadata.Tables.Cast<DataTable>().Where(table => new[] { "ID", "SignalID", "PointTag", "Adder", "Multiplier" }.All(fieldName => table.Columns.Contains(fieldName))).Select(table => table.TableName).ToArray();
+            DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.ReloadGrafanaFunctions();
         }
 
         /// <summary>
-        /// Search eDNA for a field.
+        /// Queries openHistorian for alarm state.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
-        /// <param name="request">Search target.</param>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public string[] SearchOrderBys(string site, string service, Target request)
+        public virtual Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(string site, string service, CancellationToken cancellationToken)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
 
-            DataSet metadata = DataSources[$"{site.ToUpper()}.{service.ToUpper()}"].Metadata.GetAugmentedDataSet<MeasurementValue>();
-            return metadata.Tables["ActiveMeasurements"].Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetAlarmState(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmDeviceStateView>());
         }
 
         /// <summary>
-        /// Queries eDNA for annotations in a time-range (e.g., Alarms).
+        /// Queries openHistorian for device alarms.
         /// </summary>
-        /// <param name="site">Query request.</param>
-        /// <param name="service">Query request.</param>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<AlarmState>> GetDeviceAlarms(string site, string service, CancellationToken cancellationToken)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetDeviceAlarms(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmState>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for device groups.
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<DeviceGroup>> GetDeviceGroups(string site, string service, CancellationToken cancellationToken)
+        {
+            if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
+                RefreshMetaData(site.ToUpper(), service.ToUpper());
+
+            return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.GetDeviceGroups(cancellationToken) ?? Task.FromResult(Enumerable.Empty<DeviceGroup>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
+        /// </summary>
+        /// <param name="site">eDNA site name.</param>
+        /// <param name="service">eDNA service name.</param>
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<List<AnnotationResponse>> Annotations(string site, string service, AnnotationRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<AnnotationResponse>> Annotations(string site, string service, AnnotationRequest request, CancellationToken cancellationToken)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
-            {
                 RefreshMetaData(site.ToUpper(), service.ToUpper());
-            }
 
             return DataSources[$"{site.ToUpper()}.{service.ToUpper()}"]?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }

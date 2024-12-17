@@ -22,14 +22,17 @@
 //******************************************************************************************************
 
 using GrafanaAdapters;
+using GrafanaAdapters.DataSourceValueTypes;
 using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
 using GrafanaAdapters.Functions;
 using GrafanaAdapters.Model.Annotations;
 using GrafanaAdapters.Model.Common;
+using GrafanaAdapters.Model.Functions;
+using GrafanaAdapters.Model.Metadata;
 using GSF;
 using GSF.Collections;
 using GSF.TimeSeries;
-using Newtonsoft.Json;
+using GSF.Web.Security;
 using OSIsoft.AF.Asset;
 using OSIsoft.AF.PI;
 using OSIsoft.AF.Time;
@@ -46,6 +49,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters.Model.Database;
+using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace openHistorian.OSIPIGrafanaController
 {
@@ -57,7 +63,7 @@ namespace openHistorian.OSIPIGrafanaController
     /// <para>
     /// This adapter assumes that a PIOutputAdapter is being used to synchronize metadata and send data
     /// to PI, this way the adapter does not query the PI database for its metadata - which can be slow.
-    /// Instead the adapter uses the locally accessible cached metadata, which is synchronized with PI,
+    /// Instead, the adapter uses the locally accessible cached metadata, which is synchronized with PI,
     /// for Grafana queries. Because of this, the OSIPIGrafanaController is linked to its parent
     /// PIOutputAdapter instance by the "ServerName" connection string parameter, which becomes a query
     /// parameter of the OSIPIGrafanaController URL route template.
@@ -208,6 +214,8 @@ namespace openHistorian.OSIPIGrafanaController
         /// <summary>
         /// Validates that openHistorian Grafana data source is responding as expected.
         /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
         [HttpGet]
         public HttpResponseMessage Index(string instanceName, string serverName)
         {
@@ -235,63 +243,160 @@ namespace openHistorian.OSIPIGrafanaController
         }
 
         /// <summary>
-        /// Queries OSI-PI as a Grafana Metadata source.
+        /// Gets the data source value types, i.e., any type that has implemented <see cref="IDataSourceValueType"/>,
+        /// that have been loaded into the application domain.
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
-        /// <param name="request">Query request.</param>
-        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public virtual Task<string> GetMetadata(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
+        public virtual IEnumerable<DataSourceValueType> GetValueTypes(string instanceName, string serverName)
         {
-            return Task.Factory.StartNew(() =>
-            {
-                if (string.IsNullOrWhiteSpace(request.target))
-                    return string.Empty;
-
-                DataSet metadata = DataSource(instanceName, serverName)?.Metadata.GetAugmentedDataSet<MeasurementValue>();
-                DataTable table = new();
-                DataRow[] rows = metadata?.Tables["ActiveMeasurements"].Select($"PointTag IN ({request.target})") ?? Array.Empty<DataRow>();
-
-                if (rows.Length > 0)
-                    table = rows.CopyToDataTable();
-
-                return JsonConvert.SerializeObject(table);
-            },
-            cancellationToken);
+            return DataSource(instanceName, serverName)?.GetValueTypes() ?? Enumerable.Empty<DataSourceValueType>();
         }
 
-        ///// <summary>
-        ///// Search OSI-PI for a target.
-        ///// </summary>
-        ///// <param name="instanceName">Historian instance name.</param>
-        ///// <param name="serverName">OSI-PI server name.</param>
-        ///// <param name="request">Search target.</param>
-        ///// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
-        //[HttpPost]
-        //[SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        //public Task<string[]> Search(string instanceName, string serverName, Target request, CancellationToken cancellationToken)
-        //{
-        //    return DataSource(instanceName, serverName)?.Search(request, cancellationToken) ?? Task.FromResult(new string[0]);
-        //}
 
-      
         /// <summary>
-        /// Queries OSI-PI for annotations in a time-range (e.g., Alarms).
+        /// Gets the table names that, at a minimum, contain all the fields that the value type has defined as
+        /// required, see <see cref="IDataSourceValueType.RequiredMetadataFieldNames"/>.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<string>> GetValueTypeTables(string instanceName, string serverName, SearchRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetValueTypeTables(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<string>());
+        }
+
+        /// <summary>
+        /// Gets the field names for a given table.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<FieldDescription>> GetValueTypeTableFields(string instanceName, string serverName, SearchRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetValueTypeTableFields(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FieldDescription>());
+        }
+
+        /// <summary>
+        /// Gets the functions that are available for a given data source value type.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>
+        /// <see cref="SearchRequest.expression"/> is used to filter functions by group operation, specifically a
+        /// value of "None", "Slice", or "Set" as defined in the <see cref="GroupOperations"/> enumeration. If all
+        /// function descriptions are desired, regardless of group operation, an empty string can be provided.
+        /// Combinations are also supported, e.g., "Slice,Set".
+        /// </remarks>
+        [HttpPost]
+        public virtual Task<IEnumerable<FunctionDescription>> GetValueTypeFunctions(string instanceName, string serverName, SearchRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetValueTypeFunctions(request, cancellationToken) ?? Task.FromResult(Enumerable.Empty<FunctionDescription>());
+        }
+
+        /// <summary>
+        /// Search openHistorian for a target.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="request">Search target.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<string[]> Search(string instanceName, string serverName, SearchRequest request, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.Search(request, cancellationToken) ?? Task.FromResult(Array.Empty<string>());
+        }
+
+        /// <summary>
+        /// Reloads data source value types cache.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <remarks>
+        /// This function is used to support dynamic data source value type loading. Function only needs to be called
+        /// when a new data source value is added to Grafana at run-time and end-user wants to use newly installed
+        /// data source value type without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [AuthorizeControllerRole("Administrator")]
+        public virtual void ReloadValueTypes(string instanceName, string serverName)
+        {
+            DataSource(instanceName, serverName)?.ReloadDataSourceValueTypes();
+        }
+
+        /// <summary>
+        /// Reloads Grafana functions cache.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <remarks>
+        /// This function is used to support dynamic loading for Grafana functions. Function only needs to be called
+        /// when a new function is added to Grafana at run-time and end-user wants to use newly installed function
+        /// without restarting host.
+        /// </remarks>
+        [HttpGet]
+        [AuthorizeControllerRole("Administrator")]
+        public virtual void ReloadGrafanaFunctions(string instanceName, string serverName)
+        {
+            DataSource(instanceName, serverName)?.ReloadGrafanaFunctions();
+        }
+
+        /// <summary>
+        /// Queries openHistorian for alarm state.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<AlarmDeviceStateView>> GetAlarmState(string instanceName, string serverName, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetAlarmState(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmDeviceStateView>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for device alarms.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<AlarmState>> GetDeviceAlarms(string instanceName, string serverName, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetDeviceAlarms(cancellationToken) ?? Task.FromResult(Enumerable.Empty<AlarmState>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for device groups.
+        /// </summary>
+        /// <param name="instanceName">Historian instance name.</param>
+        /// <param name="serverName">OSI-PI server name.</param>
+        /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
+        [HttpPost]
+        public virtual Task<IEnumerable<DeviceGroup>> GetDeviceGroups(string instanceName, string serverName, CancellationToken cancellationToken)
+        {
+            return DataSource(instanceName, serverName)?.GetDeviceGroups(cancellationToken) ?? Task.FromResult(Enumerable.Empty<DeviceGroup>());
+        }
+
+        /// <summary>
+        /// Queries openHistorian for annotations in a time-range (e.g., Alarms).
         /// </summary>
         /// <param name="instanceName">Historian instance name.</param>
         /// <param name="serverName">OSI-PI server name.</param>
         /// <param name="request">Annotation request.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         [HttpPost]
-        [SuppressMessage("Security", "SG0016", Justification = "Current operation dictated by Grafana. CSRF exposure limited to data access.")]
-        public Task<List<AnnotationResponse>> Annotations(string instanceName, string serverName, AnnotationRequest request, CancellationToken cancellationToken)
+        public virtual Task<List<AnnotationResponse>> Annotations(string instanceName, string serverName, AnnotationRequest request, CancellationToken cancellationToken)
         {
             return DataSource(instanceName, serverName)?.Annotations(request, cancellationToken) ?? Task.FromResult(new List<AnnotationResponse>());
         }
 
-     
         /// <summary>
         /// Gets OSI-PI data source for this Grafana adapter.
         /// </summary>
@@ -314,7 +419,7 @@ namespace openHistorian.OSIPIGrafanaController
             return dataSource;
         }
 
-        private OSIPIDataSource CreateNewDataSource(string keyName)
+        private static OSIPIDataSource CreateNewDataSource(string keyName)
         {
             string[] parts = keyName.Split('.');
             string instanceName = parts[0];
@@ -331,13 +436,15 @@ namespace openHistorian.OSIPIGrafanaController
                 Metadata = metadata,
                 KeyName = keyName,
                 PrefixRemoveCount = adapterInstance.TagNamePrefixRemoveCount,
-                Connection = new PIConnection()
+                Connection = new PIConnection
+                {
+                    ServerName = serverName,
+                    UserName = adapterInstance.UserName,
+                    Password = adapterInstance.Password,
+                    ConnectTimeout = adapterInstance.ConnectTimeout
+                }
             };
 
-            dataSource.Connection.ServerName = serverName;
-            dataSource.Connection.UserName = adapterInstance.UserName;
-            dataSource.Connection.Password = adapterInstance.Password;
-            dataSource.Connection.ConnectTimeout = adapterInstance.ConnectTimeout;
             dataSource.Connection.Open();
 
             // On successful connection, kick off a thread to start meta-data ID to OSI-PI point ID mapping
