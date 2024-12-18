@@ -158,14 +158,13 @@
             #     Tag Name-&gt;Inputs-&gt;Equation-&gt;Type-&gt;Description
             #
             # For custom action adapter types, the format can be interpreted as:
-            #     Tag Name = Adapter Instance Name
-            #     Inputs = Connection String
+            #     Tag Name = Adapter Instance Name (allows {DEVICE} template expression for device acronym)
+            #     Inputs = Connection String (allows {DEVICE} template expression for device acronym)
             #     Equation = Assembly Name (i.e., DLL file name)
             #     Type = Fully Qualified Type Name
             #     Description = Local Comments
             #
-            # Otherwise format defines dynamic signal based calculations based on input configuration:
-            #     Tag Name = Identifier [rest of string was truncated]&quot;;.
+            # Oth [rest of string was truncated]&quot;;.
              </summary>
         </member>
     </members>
