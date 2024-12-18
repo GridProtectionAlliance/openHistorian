@@ -352,6 +352,7 @@ namespace openHistorian
         public void RemoveAllDeviceCalculations()
         {
             DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator'");
+            DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'PowerCalculations.BulkSequenceCalculator' AND AdapterName <> 'BULK_SEQ'");
             DataContext.Connection.ExecuteNonQuery($"DELETE FROM Measurement WHERE SignalTypeID = {CalcSignalTypeID}");
         }
 
