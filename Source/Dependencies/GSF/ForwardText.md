@@ -58,7 +58,7 @@ The following optional special command operations can be specified as part of an
 | Command | Description |
 | ------- | ----------- |
 | `DropEmptySeries` | Ensures any empty series are hidden from display. Example: `; dropEmptySeries` |
-| `FullResolutionQuery` | Ensures query returns non-decimated, full resolution data. Example: `; fullResolutionData` |
+| `FullResolutionQuery` | Ensures query returns non-decimated, full resolution data. Example: `; FullResolutionQuery` |
 | `IncludePeaks` | Ensures decimated data includes both min/max interval peaks, note this can reduce query performance. Example: `; includePeaks` |
 | `RadialDistribution` | Updates query coordinate metadata, i.e., longitude/latitude, where values overlap in a radial distribution. Example: `; radialDistribution` |
 | `SquareDistribution` | Updates query coordinate metadata, i.e., longitude/latitude, where values overlap in a square distribution. Example: `; squareDistribution` |

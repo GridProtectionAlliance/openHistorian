@@ -426,7 +426,10 @@
             of exceeding. <c>returnDurations</c>, optional, is a boolean that determines if the duration (in seconds) from where
             value exceeded threshold should be returned instead of the original value. Forth parameter, <c>reportEndMarker</c>,
             is a boolean flag that determines if a value should be reported at the point when threshold stops being exceeding
-            the threshold.
+            the threshold.<br/>
+            See <see href=
+            "https://github.com/GridProtectionAlliance/GrafanaTemplates?tab=readme-ov-file#exceedsat-threshold-dashboard">
+            example template dashboard</see>.
             </summary>
             <remarks>
             Signature: <c>ExceedsAt(threshold, [fallsBelow = false], [returnDurations = false], [reportEndMarker = false], expression)</c><br/>
