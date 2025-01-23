@@ -554,6 +554,56 @@
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
+        <member name="T:PowerCalculations.PhasorAddition">
+            <summary>
+            Calculates sum or difference between two voltages or currents.
+            </summary>
+        </member>
+        <member name="T:PowerCalculations.PhasorAddition.Output">
+            <summary>
+            Defines the output measurements for the <see cref="T:PowerCalculations.PhasorAddition"/>.
+            </summary>
+            <remarks>
+            One output measurement should be defined for each enumeration value, in order:
+            </remarks>
+        </member>
+        <member name="F:PowerCalculations.PhasorAddition.Output.Magnitude">
+            <summary>
+            Magnitude measurement.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PhasorAddition.Output.Phase">
+            <summary>
+            Angle measurement.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PhasorAddition.Difference">
+            <summary>
+            Gets or sets flag that determines if the second phasor should be subtracted.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PhasorAddition.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PhasorAddition.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:PowerCalculations.PhasorAddition"/>.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PhasorAddition.Initialize">
+            <summary>
+            Initializes the <see cref="T:PowerCalculations.PhasorAddition"/>.
+            </summary>
+        </member>
+        <member name="M:PowerCalculations.PhasorAddition.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish frame of time-aligned collection of measurement values that arrived within the defined lag time.
+            </summary>
+            <param name="frame">Frame of measurements with the same timestamp that arrived within lag time that are ready for processing.</param>
+            <param name="index">Index of frame within a second ranging from zero to frames per second - 1.</param>
+        </member>
         <member name="T:PowerCalculations.VoltageAdjustmentStrategy">
             <summary>
             Represents the strategy used to adjust voltage values for power
