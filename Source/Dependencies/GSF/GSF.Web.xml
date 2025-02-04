@@ -1802,23 +1802,26 @@
             Handles authentication using the configured <see cref="T:GSF.Security.ISecurityProvider"/> implementation in the Owin pipeline.
             </summary>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthenticateCoreAsync">
+        <member name="M:GSF.Web.Security.AuthenticationHandler.#ctor(Microsoft.Owin.IOwinContext,GSF.Web.Security.AuthenticationOptions)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Web.Security.AuthenticationHandler"/> class.
+            </summary>
+            <param name="context">Context of the request to be authenticated</param>
+            <param name="options">Configuration options for the authentication handler</param>
+        </member>
+        <member name="M:GSF.Web.Security.AuthenticationHandler.Authenticate">
             <summary>
             The core authentication logic which must be provided by the handler. Will be invoked at most
-            once per request. Do not call directly, call the wrapping Authenticate method instead.
+            once per request.
             </summary>
-            <returns>The ticket data provided by the authentication logic</returns>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationHandler.InvokeAsync">
+        <member name="M:GSF.Web.Security.AuthenticationHandler.AuthorizeAsync">
             <summary>
-            Called once by common code after initialization. If an authentication middle-ware
-            responds directly to specifically known paths it must override this virtual,
-            compare the request path to it's known paths, provide any response information
-            as appropriate, and true to stop further processing.
+            Called once by common code after authentication to respond directly to specifically known paths.
             </summary>
             <returns>
-            Returning false will cause the common code to call the next middle-ware in line.
-            Returning true will cause the common code to begin the async completion journey
+            Returning true will cause the common code to call the next middle-ware in line.
+            Returning false will cause the common code to begin the async completion journey
             without calling the rest of the middle-ware pipeline.
             </returns>
         </member>
@@ -1857,11 +1860,8 @@
             <param name="next">The next middle-ware object in the pipeline.</param>
             <param name="options">The options for authentication.</param>
         </member>
-        <member name="M:GSF.Web.Security.AuthenticationMiddleware.CreateHandler">
-            <summary>
-            Returns the authentication handler that provides the authentication logic.
-            </summary>
-            <returns>The authentication handler to provide authentication logic.</returns>
+        <member name="M:GSF.Web.Security.AuthenticationMiddleware.Invoke(Microsoft.Owin.IOwinContext)">
+            <inheritdoc/>
         </member>
         <member name="T:GSF.Web.Security.AppBuilderExtensions">
             <summary>
