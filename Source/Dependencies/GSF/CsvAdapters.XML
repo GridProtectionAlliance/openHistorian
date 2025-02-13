@@ -29,6 +29,11 @@
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.FileNameTemplate"/> property.
             </summary>
         </member>
+        <member name="F:CsvAdapters.CsvExportAdapter.DefaultSignalNameTemplate">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.SignalNameTemplate"/> property.
+            </summary>
+        </member>
         <member name="F:CsvAdapters.CsvExportAdapter.DefaultDownsampleInterval">
             <summary>
             Default value for the <see cref="P:CsvAdapters.CsvExportAdapter.DownsampleInterval"/> property.
@@ -89,6 +94,11 @@
         <member name="P:CsvAdapters.CsvExportAdapter.FileNameTemplate">
             <summary>
             Gets or sets the CSV export filename template. String format parameter 0 is current UTC time.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvExportAdapter.SignalNameTemplate">
+            <summary>
+            Gets or sets the CSV export signalname template - accepts \"{MeasurementID}\", \"{PointTag}\" and \"{SignalReference}\".
             </summary>
         </member>
         <member name="P:CsvAdapters.CsvExportAdapter.DownsampleInterval">
