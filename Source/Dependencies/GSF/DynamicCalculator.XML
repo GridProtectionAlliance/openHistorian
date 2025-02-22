@@ -83,6 +83,31 @@
             related static functions and constants can be used in expressions, e.g., <c>">= 2 * PI"</c>.
             </remarks>
         </member>
+        <member name="T:DynamicCalculator.DatabaseOperationReportingLevel">
+            <summary>
+            Defines the reporting level for database operations.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.DatabaseOperationReportingLevel.FailuresOnly">
+            <summary>
+            Report database operation results only when operation fails.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.DatabaseOperationReportingLevel.SuccessesOnly">
+            <summary>
+            Report database operation results only when operation succeeds.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.DatabaseOperationReportingLevel.AllOperations">
+            <summary>
+            Report database operation results for all operations.
+            </summary>
+        </member>
+        <member name="F:DynamicCalculator.DatabaseOperationReportingLevel.None">
+            <summary>
+            No database operation results will be reported.
+            </summary>
+        </member>
         <member name="T:DynamicCalculator.DatabaseNotifier">
             <summary>
             The DatabaseNotifier is an action adapter which takes multiple input measurements and defines
@@ -94,7 +119,7 @@
             Gets or sets the boolean expression used to determine if the database operation should be executed.
             </summary>
         </member>
-        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseConnnectionString">
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseConnectionString">
             <summary>
             Gets or sets the connection string used for database operation. Leave blank to use local configuration database defined in "systemSettings".
             </summary>
@@ -111,12 +136,17 @@
         </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseCommandParameters">
             <summary>
-            Gets or sets the parameters for the command that includes any desired value substitutions used for database operation. Available substitutions: {Acronym} and {Timestamp}.
+            Gets or sets the parameters for the command that includes any desired value substitutions used for database operation. Available substitutions: all variable names in braces, e.g., {x}, plus {Acronym} and {Timestamp}.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseMaximumWriteInterval">
             <summary>
             Gets or sets the maximum interval, in seconds, at which the adapter can execute database operations. Set to zero for no delay.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.DatabaseOperationReportingLevel">
+            <summary>
+            Gets or sets the reporting level for database operations.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.FramesPerSecond">
@@ -129,7 +159,7 @@
         </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.LagTime">
             <summary>
-            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            Gets or sets the allowed pastime deviation tolerance, in seconds (can be sub-second).
             </summary>
             <remarks>
             <para>Defines the time sensitivity to past measurement timestamps.</para>
@@ -157,6 +187,11 @@
         <member name="P:DynamicCalculator.DatabaseNotifier.TimestampSource">
             <summary>
             Gets or sets the source of the timestamps of the calculated values.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DatabaseNotifier.ReservedVariableNames">
+            <summary>
+            Gets the list of reserved variable names.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DatabaseNotifier.ExpectsOutputMeasurement">
