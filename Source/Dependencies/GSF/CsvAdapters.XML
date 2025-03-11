@@ -184,6 +184,113 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="T:CsvAdapters.CsvFrameCollectorAdapter">
+            <summary>
+            Represents an output adapter that writes frames to a CSV file.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvFrameCollectorAdapter.DefaultTimestampFormat">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvFrameCollectorAdapter.TimestampFormat"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvFrameCollectorAdapter.DefaultFileNameTemplate">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvFrameCollectorAdapter.FileNameTemplate"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvFrameCollectorAdapter.DefaultSignalNameTemplate">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvFrameCollectorAdapter.SignalNameTemplate"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvFrameCollectorAdapter.DefaultDownsampleInterval">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvFrameCollectorAdapter.DownsampleInterval"/> property.
+            </summary>
+        </member>
+        <member name="F:CsvAdapters.CsvFrameCollectorAdapter.DefaultRolloverInterval">
+            <summary>
+            Default value for the <see cref="P:CsvAdapters.CsvFrameCollectorAdapter.RolloverInterval"/> property.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:CsvAdapters.CsvFrameCollectorAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.ExportPath">
+            <summary>
+            Gets or sets the path to the directory where CSV exports are written.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.OffloadPath">
+            <summary>
+            Gets or sets the path to the directory where
+            CSV exports are moved after a rollover.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.RolloverInterval">
+            <summary>
+            Gets or sets the interval, in seconds,
+            to determine how often to roll over CSV files.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.TimestampFormat">
+            <summary>
+            Gets or sets the format of timestamps in the CSV exports.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.FileNameTemplate">
+            <summary>
+            Gets or sets the CSV export filename template. String format parameter 0 is current UTC time.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.SignalNameTemplate">
+            <summary>
+            Gets or sets the CSV export signalname template - accepts \"{MeasurementID}\", \"{PointTag}\" and \"{SignalReference}\".
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.DownsampleInterval">
+            <summary>
+            Gets or sets the downsampling interval, in seconds, set to zero for no downsampling.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.Status">
+            <summary>
+            Gets the status of this <see cref="T:CsvAdapters.CsvFrameCollectorAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:CsvAdapters.CsvFrameCollectorAdapter.SupportsTemporalProcessing">
+            <inheritdoc/>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:CsvAdapters.CsvFrameCollectorAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.OffloadLingeringFiles">
+            <summary>
+            Offloads lingering files which were not
+            offloaded due to errors or system failures.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:CsvAdapters.CsvFrameCollectorAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.ProcessFrame(System.String,GSF.TimeSeries.IFrame)">
+            <summary>
+            Serializes frame to data output stream.
+            </summary>
+        </member>
+        <member name="M:CsvAdapters.CsvFrameCollectorAdapter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <inheritdoc/>
+        </member>
         <member name="T:CsvAdapters.CsvImportAdapter">
             <summary>
             Represents an input adapter that imports measurements in CSV format from a given directory.
