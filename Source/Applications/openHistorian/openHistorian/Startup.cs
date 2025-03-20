@@ -152,6 +152,15 @@ namespace openHistorian
             // Enable failover requests
             app.UseFailover(ServiceHost.FailOverRequestPath);
 
+            // Add Missing Content-Securtiy Policies
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
+                context.Response.Headers.Add("Strict-Transport-Security", ["max-age=31536000","includeSubDomains"]);
+                context.Response.Headers.Add("X-Content-Type-Options", ["nosniff"]);
+                await next();
+            });
+
             // Enable GSF role-based security authentication
             app.UseAuthentication(AuthenticationOptions);
 
