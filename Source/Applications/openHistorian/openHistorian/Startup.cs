@@ -63,6 +63,16 @@ namespace openHistorian
     {
         public void Configuration(IAppBuilder app)
         {
+            // Add Content-Security Headers
+            app.Use(async (context, next) =>
+            {
+                await next();
+                context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
+                if (context.Request.Scheme == "https")
+                    context.Response.Headers.Add("Strict-Transport-Security", ["max-age=31536000", "includeSubDomains"]);
+                context.Response.Headers.Add("X-Content-Type-Options", ["nosniff"]);
+            });
+
             void Register(StartupEvent startupEvent) =>
                 Configured += (sender, args) => startupEvent(app);
 
