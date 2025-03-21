@@ -162,7 +162,6 @@ namespace openHistorian
             // Enable failover requests
             app.UseFailover(ServiceHost.FailOverRequestPath);
 
-
             // Enable GSF role-based security authentication
             app.UseAuthentication(AuthenticationOptions);
 
