@@ -16684,6 +16684,13 @@
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
         </member>
+        <member name="M:GSF.Data.Model.ITableOperations.FieldExists(System.String)">
+            <summary>
+            Gets flag that determines if the specified field exists.
+            </summary>
+            <param name="fieldName">Field name to check.</param>
+            <returns><c>true</c> if field is found; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.Data.Model.ITableOperations.GetSearchRestriction(System.String)">
             <summary>
             Generates a <see cref="T:GSF.Data.Model.RecordRestriction"/> based on fields marked with <see cref="T:GSF.Data.Model.SearchableAttribute"/> and specified <paramref name="searchText"/>.
@@ -18241,6 +18248,13 @@
             </summary>
             <param name="fieldName">Field name to retrieve.</param>
             <returns>Field <see cref="T:System.Type"/> or <c>null</c> if field is not found.</returns>
+        </member>
+        <member name="M:GSF.Data.Model.TableOperations`1.FieldExists(System.String)">
+            <summary>
+            Gets flag that determines if the specified field exists.
+            </summary>
+            <param name="fieldName">Field name to check.</param>
+            <returns><c>true</c> if field is found; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.GetSearchRestriction(System.String)">
             <summary>
