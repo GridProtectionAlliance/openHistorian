@@ -420,8 +420,11 @@ public class GrafanaController : ApiController
             CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings[$"{instanceName}ArchiveFile"];
             archiveFileName = settings?["FileName"]?.Value;
 
+            // For fall-back operation, check for common instance names using their historical folder locations
             if (string.IsNullOrWhiteSpace(archiveFileName))
-                archiveFileName = instanceName.Equals("stat") ? @"Statistics\stat_archive.d" : $@"{instanceName}\{instanceName}_archive.d";
+                archiveFileName = instanceName.Equals("stat", StringComparison.OrdinalIgnoreCase) ? @"Statistics\stat_archive.d" : 
+                                  instanceName.Equals("ppa", StringComparison.OrdinalIgnoreCase) ? @"Archive\ppa_archive.d" :
+                                  $@"{instanceName}\{instanceName}_archive.d";
 
             s_archiveFileNames[instanceName] = archiveFileName;
 
