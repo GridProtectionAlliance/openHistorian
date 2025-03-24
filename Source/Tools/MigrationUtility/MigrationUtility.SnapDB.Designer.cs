@@ -334,7 +334,7 @@ namespace ComparisonUtility
                 int maxPointID = FindMaximumPointID(m_file.MetadataFile);
 
                 // Create new time-sorted data point scanner to read points in this file in sorted order
-                TimeSortedArchiveFileScanner scanner = new TimeSortedArchiveFileScanner();
+                TimeSortedArchiveFileScanner scanner = new TimeSortedArchiveFileScanner(false);
 
                 // Get start and end times from file data and validate
                 TimeTag startTime, endTime;
