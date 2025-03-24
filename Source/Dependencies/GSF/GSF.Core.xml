@@ -2476,7 +2476,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Byte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2489,7 +2489,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.SByte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2502,7 +2502,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2515,7 +2515,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2528,7 +2528,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(GSF.Int24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2541,7 +2541,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(GSF.UInt24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2554,7 +2554,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2567,7 +2567,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2580,7 +2580,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.Int64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2593,7 +2593,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotL(System.UInt64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2606,7 +2606,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Byte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2619,7 +2619,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.SByte,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2632,7 +2632,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2645,7 +2645,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt16,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2658,7 +2658,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(GSF.Int24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2671,7 +2671,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(GSF.UInt24,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2684,7 +2684,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2697,7 +2697,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt32,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2710,7 +2710,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.Int64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>
@@ -2723,7 +2723,7 @@
         </member>
         <member name="M:GSF.BitExtensions.BitRotR(System.UInt64,System.Int32)">
             <summary>
-            Performs rightwise bit-rotation for the specified number of rotations.
+            Performs right-wise bit-rotation for the specified number of rotations.
             </summary>
             <param name="value">Value used for bit-rotation.</param>
             <param name="rotations">Number of rotations to perform.</param>

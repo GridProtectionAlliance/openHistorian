@@ -139,7 +139,7 @@
         </member>
         <member name="P:GSF.Historian.DataListener.ID">
             <summary>
-            Gets or sets the alpha-numeric identifier of the <see cref="T:GSF.Historian.DataListener"/>.
+            Gets or sets the alphanumeric identifier of the <see cref="T:GSF.Historian.DataListener"/>.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
         </member>
@@ -444,7 +444,7 @@
             <summary>
             Reads a subset of metadata from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which metadata is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which metadata is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableMetadata"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.IMetadataService.ReadRangeMetadataAsXml(System.String,System.String)">
@@ -465,7 +465,7 @@
             <summary>
             Reads a subset of metadata from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which metadata is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which metadata is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableMetadata"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.IMetadataService.ReadRangeMetadataAsJson(System.String,System.String)">
@@ -528,7 +528,7 @@
             <summary>
             Reads current time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which current time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which current time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.ITimeSeriesDataService.ReadRangeCurrentTimeSeriesDataAsXml(System.String,System.String)">
@@ -543,7 +543,7 @@
             <summary>
             Reads current time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which current time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which current time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.ITimeSeriesDataService.ReadRangeCurrentTimeSeriesDataAsJson(System.String,System.String)">
@@ -558,7 +558,7 @@
             <summary>
             Reads historic time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which historic time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which historic time-series data is to be read.</param>
             <param name="startTime">Start time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <param name="endTime">End time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
@@ -577,7 +577,7 @@
             <summary>
             Reads historic time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which historic time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which historic time-series data is to be read.</param>
             <param name="startTime">Start time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <param name="endTime">End time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
@@ -632,7 +632,7 @@
             <summary>
             Reads a subset of metadata from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which metadata is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which metadata is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableMetadata"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.MetadataService.ReadRangeMetadataAsXml(System.String,System.String)">
@@ -653,7 +653,7 @@
             <summary>
             Reads a subset of metadata from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which metadata is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which metadata is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableMetadata"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.MetadataService.ReadRangeMetadataAsJson(System.String,System.String)">
@@ -1429,7 +1429,7 @@
             <summary>
             Reads current time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which current time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which current time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.TimeSeriesDataService.ReadRangeCurrentTimeSeriesDataAsXml(System.String,System.String)">
@@ -1444,7 +1444,7 @@
             <summary>
             Reads current time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which current time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which current time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
         </member>
         <member name="M:GSF.Historian.DataServices.TimeSeriesDataService.ReadRangeCurrentTimeSeriesDataAsJson(System.String,System.String)">
@@ -1459,7 +1459,7 @@
             <summary>
             Reads historic time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Xml"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which historic time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which historic time-series data is to be read.</param>
             <param name="startTime">Start time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <param name="endTime">End time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
@@ -1478,7 +1478,7 @@
             <summary>
             Reads historic time-series data from the <see cref="P:GSF.Historian.DataServices.DataService.Archive"/> and sends it in <see cref="F:System.ServiceModel.Web.WebMessageFormat.Json"/> format.
             </summary>
-            <param name="idList">A comma or semi-colon delimited list of IDs for which historic time-series data is to be read.</param>
+            <param name="idList">A comma or semicolon delimited list of IDs for which historic time-series data is to be read.</param>
             <param name="startTime">Start time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <param name="endTime">End time in <see cref="T:System.String"/> format of the timespan for which historic time-series data is to be read.</param>
             <returns>An <see cref="T:GSF.Historian.DataServices.SerializableTimeSeriesData"/> object.</returns>
@@ -2219,7 +2219,7 @@
             <summary>
             Writes <paramref name="data"/> to the specified <paramref name="files"/> in the specified <paramref name="format"/>.
             </summary>
-            <param name="files">Comma or semi-colon delimitted list of file names to which <paramref name="data"/> is to be written.</param>
+            <param name="files">Comma or semicolon delimited list of file names to which <paramref name="data"/> is to be written.</param>
             <param name="format">Format (CSV or XML) in which <paramref name="data"/> is to be written to the <paramref name="files"/>.</param>
             <param name="data"><see cref="T:System.Data.DataSet"/> containing the data to be written to the <paramref name="files"/>.</param>
         </member>
@@ -2227,7 +2227,7 @@
             <summary>
             Writes the specified <paramref name="text"/> to the specified <paramref name="files"/>.
             </summary>
-            <param name="files">Comma or semi-colon delimitted list of file names to which the <paramref name="text"/> is to be written.</param>
+            <param name="files">Comma or semicolon delimited list of file names to which the <paramref name="text"/> is to be written.</param>
             <param name="text">Text to be written to the <paramref name="files"/>.</param>
         </member>
         <member name="T:GSF.Historian.Exporters.IExporter">
@@ -3042,6 +3042,7 @@
             <param name="index">0-based index of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</param>
             <param name="historianID">Historian identifier whose <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/> is stored in the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</param>
             <param name="preRead">true to pre-read data to locate write cursor.</param>
+            <param name="reverseQuery">true to search backwards from the end of the file.</param>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveDataBlock.Index">
             <summary>
@@ -3879,6 +3880,10 @@
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String,System.Boolean)">
             <summary>
@@ -3889,6 +3894,10 @@
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,System.DateTime,System.Boolean)">
             <summary>
@@ -3917,6 +3926,10 @@
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime,System.Boolean)">
             <summary>
@@ -3927,6 +3940,10 @@
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Int32,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
@@ -3955,6 +3972,10 @@
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
@@ -3965,6 +3986,10 @@
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFile.ReadMetaData(System.Int32)">
             <summary>
@@ -4361,24 +4386,26 @@
             <param name="preRead">true to pre-read data to locate write cursor.</param>
             <returns><see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> object if a match is found; otherwise null.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,System.Boolean)">
+        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Returns all <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s in the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianID"/>.
             </summary>
             <param name="historianID">Historian identifier.</param>
             <param name="preRead">true to pre-read data to locate write cursor.</param>
+            <param name="reverseQuery">true to search backwards from the end of the file.</param>
             <returns>A collection of <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,GSF.Historian.TimeTag,System.Boolean)">
+        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,GSF.Historian.TimeTag,System.Boolean,System.Boolean)">
             <summary>
             Returns all <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s in the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianID"/> with <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/> points later than the specified <paramref name="startTime"/>.
             </summary>
             <param name="historianID">Historian identifier.</param>
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/>.</param>
             <param name="preRead">true to pre-read data to locate write cursor.</param>
+            <param name="reverseQuery">true to search backwards from the end of the file.</param>
             <returns>A collection of <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.</returns>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
+        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.FindDataBlocks(System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean,System.Boolean)">
             <summary>
             Returns all <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s in the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for the specified <paramref name="historianID"/> with <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s between the specified <paramref name="startTime"/> and <paramref name="endTime"/>.
             </summary>
@@ -4386,6 +4413,7 @@
             <param name="startTime">Start <see cref="T:GSF.Historian.TimeTag"/>.</param>
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/>.</param>
             <param name="preRead">true to pre-read data to locate write cursor.</param>
+            <param name="reverseQuery">true to search backwards from the end of the file.</param>
             <returns>A collection of <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.</returns>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.RequestDataBlock(System.Int32,GSF.Historian.TimeTag,System.Int32)">
@@ -4573,6 +4601,10 @@
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.String,System.String,System.Boolean)">
             <summary>
@@ -4583,6 +4615,10 @@
             <param name="endTime"><see cref="T:System.String"/> representation of the end time (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,System.DateTime,System.Boolean)">
             <summary>
@@ -4611,6 +4647,10 @@
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},System.DateTime,System.DateTime,System.Boolean)">
             <summary>
@@ -4621,6 +4661,10 @@
             <param name="endTime">End <see cref="T:System.DateTime"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
@@ -4649,6 +4693,10 @@
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Collections.Generic.IEnumerable{System.Int32},GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean)">
             <summary>
@@ -4659,6 +4707,10 @@
             <param name="endTime">End <see cref="T:GSF.Historian.TimeTag"/> (in UTC) for the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s to be retrieved.</param>
             <param name="timeSorted">Indicates whether the data retrieved from the archive should be time sorted.</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> object containing zero or more <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s.</returns>
+            <remarks>
+            Data is always read from <paramref name="startTime"/> to <paramref name="endTime"/>. If <paramref name="startTime"/> is
+            greater than <paramref name="endTime"/>, query data will be read from the archive in reverse time order.
+            </remarks>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.OnRolloverStart">
             <summary>
@@ -4702,6 +4754,14 @@
             Scans an archive file for data points in a given time
             range and returns them in the order that they are scanned.
             </summary>
+            <param name="reverseQuery">True to read data points in reverse order (i.e., from end time to start time); false to read in normal order.</param>
+        </member>
+        <member name="M:GSF.Historian.Files.ArchiveFileScanner.#ctor(System.Boolean)">
+            <summary>
+            Scans an archive file for data points in a given time
+            range and returns them in the order that they are scanned.
+            </summary>
+            <param name="reverseQuery">True to read data points in reverse order (i.e., from end time to start time); false to read in normal order.</param>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveFileScanner.FileAllocationTable">
             <summary>
@@ -4727,6 +4787,11 @@
             of the data points returned by the scanner.
             </summary>
         </member>
+        <member name="P:GSF.Historian.Files.ArchiveFileScanner.ReverseQuery">
+            <summary>
+            Gets flag that determines if data will be queried in reverse order.
+            </summary>
+        </member>
         <member name="P:GSF.Historian.Files.ArchiveFileScanner.ResumeFrom">
             <summary>
             Gets or sets the data point from which to resume
@@ -4750,7 +4815,7 @@
             Scans an archive file for a given signal's data points over a given time range.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.DataPointScanner.#ctor(GSF.Historian.Files.ArchiveFileAllocationTable,System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean,System.EventHandler{GSF.EventArgs{System.Exception}})">
+        <member name="M:GSF.Historian.Files.DataPointScanner.#ctor(GSF.Historian.Files.ArchiveFileAllocationTable,System.Int32,GSF.Historian.TimeTag,GSF.Historian.TimeTag,System.Boolean,System.Boolean,System.EventHandler{GSF.EventArgs{System.Exception}})">
             <summary>
             Creates a new <see cref="T:GSF.Historian.Files.DataPointScanner"/> instance.
             </summary>
@@ -4758,12 +4823,33 @@
             <param name="historianID">Historian ID to scan for.</param>
             <param name="startTime">Desired start time.</param>
             <param name="endTime">Desired end time.</param>
-            <param name="includeStartTime">True to include data points equal to the start time; false to exclude.</param>
+            <param name="includeStartTime">True to include data points equal to the start ime; false to exclude.</param>
+            <param name="reverseQuery">True to read data points in reverse order (i.e., from end time to start time); false to read in normal order.</param>
             <param name="dataReadExceptionHandler">Read exception handler.</param>
         </member>
         <member name="P:GSF.Historian.Files.DataPointScanner.HistorianID">
             <summary>
             Gets the historian ID associated with this <see cref="T:GSF.Historian.Files.DataPointScanner"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.DataPointScanner.StartTime">
+            <summary>
+            Gets the start time associated with this <see cref="T:GSF.Historian.Files.DataPointScanner"/>. The start time is inclusive if <see cref="P:GSF.Historian.Files.DataPointScanner.IncludeStartTime"/> is true.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.DataPointScanner.EndTime">
+            <summary>
+            Gets the end time associated with this <see cref="T:GSF.Historian.Files.DataPointScanner"/>. The end time is always inclusive.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.DataPointScanner.IncludeStartTime">
+            <summary>
+            Gets flag that indicates whether the start time is inclusive when reading data points from the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.DataPointScanner.ReverseQuery">
+            <summary>
+            Gets flag that indicates whether the data points should be read in reverse order (i.e., from end time to start time).
             </summary>
         </member>
         <member name="M:GSF.Historian.Files.DataPointScanner.Read">
@@ -4799,6 +4885,11 @@
             <summary>
             Gets or sets the maximum value of the timestamps
             of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.IArchiveFileScanner.ReverseQuery">
+            <summary>
+            Gets flag that determines if data will be queried in reverse order.
             </summary>
         </member>
         <member name="P:GSF.Historian.Files.IArchiveFileScanner.ResumeFrom">
@@ -4868,6 +4959,11 @@
             <param name="buffer">Binary image to be used for initializing <see cref="T:GSF.Historian.Files.IntercomRecord"/>.</param>
             <param name="startIndex">0-based starting index of initialization data in the <paramref name="buffer"/>.</param>
             <param name="length">Valid number of bytes in <paramref name="buffer"/> from <paramref name="startIndex"/>.</param>
+        </member>
+        <member name="P:GSF.Historian.Files.IntercomRecord.RecordID">
+            <summary>
+            Gets the ID of the <see cref="T:GSF.Historian.Files.IntercomRecord"/>.
+            </summary>
         </member>
         <member name="P:GSF.Historian.Files.IntercomRecord.DataBlocksUsed">
             <summary>
@@ -5932,7 +6028,7 @@
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecordGeneralFlags.Used">
             <summary>
-            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.Historian.Files.MetadataRecord"/> is being used (need to be verify).
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.Historian.Files.MetadataRecord"/> is being used.
             </summary>
         </member>
         <member name="P:GSF.Historian.Files.MetadataRecordGeneralFlags.AlarmEnabled">
@@ -6105,6 +6201,13 @@
             <summary>
             Reads a series of data points from an <see cref="T:GSF.Historian.Files.ArchiveFile"/> in sorted order.
             </summary>
+            <param name="reverseQuery">True to read data points in reverse order (i.e., from end time to start time); false to read in normal order.</param>
+        </member>
+        <member name="M:GSF.Historian.Files.TimeSortedArchiveFileScanner.#ctor(System.Boolean)">
+            <summary>
+            Reads a series of data points from an <see cref="T:GSF.Historian.Files.ArchiveFile"/> in sorted order.
+            </summary>
+            <param name="reverseQuery">True to read data points in reverse order (i.e., from end time to start time); false to read in normal order.</param>
         </member>
         <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.FileAllocationTable">
             <summary>
@@ -6128,6 +6231,11 @@
             <summary>
             Gets or sets the maximum value of the timestamps
             of the data points returned by the scanner.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.ReverseQuery">
+            <summary>
+            Gets flag that determines if data will be queried in reverse order.
             </summary>
         </member>
         <member name="P:GSF.Historian.Files.TimeSortedArchiveFileScanner.ResumeFrom">
@@ -7195,7 +7303,7 @@
             </summary>
             <remarks>
             Email address can be provided in the &lt;Email Address&gt;:sms format (Example: 123456789@provider.com:sms), 
-            to indicate that the reciepient is a mobile device and a very brief email message is to be sent.
+            to indicate that the recipient is a mobile device and a very brief email message is to be sent.
             </remarks>
         </member>
         <member name="M:GSF.Historian.Notifiers.EmailNotifier.SaveSettings">
@@ -7212,7 +7320,7 @@
             <summary>
             Processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Alarm"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7220,7 +7328,7 @@
             <summary>
             Processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Warning"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7228,7 +7336,7 @@
             <summary>
             Processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Information"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7236,7 +7344,7 @@
             <summary>
             Processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Heartbeat"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7310,7 +7418,7 @@
             <summary>
             Process a notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
             <param name="notificationType">One of the <see cref="T:GSF.Historian.Notifiers.NotificationTypes"/> values.</param>
@@ -7368,7 +7476,7 @@
             <summary>
             When overridden in a derived class, processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Alarm"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7376,7 +7484,7 @@
             <summary>
             When overridden in a derived class, processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Warning"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7384,7 +7492,7 @@
             <summary>
             When overridden in a derived class, processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Information"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7392,7 +7500,7 @@
             <summary>
             When overridden in a derived class, processes a <see cref="F:GSF.Historian.Notifiers.NotificationTypes.Heartbeat"/> notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
         </member>
@@ -7412,7 +7520,7 @@
             <summary>
             Process a notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
             <param name="notificationType">One of the <see cref="T:GSF.Historian.Notifiers.NotificationTypes"/> values.</param>
@@ -7455,7 +7563,7 @@
             <summary>
             Sends a notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="notificationType">One of the <see cref="T:GSF.Historian.Notifiers.NotificationTypes"/> values.</param>
         </member>
@@ -7463,7 +7571,7 @@
             <summary>
             Sends a notification.
             </summary>
-            <param name="subject">Subject matter for the notification.</param>
+            <param name="subject">>Subject-matter for the notification.</param>
             <param name="message">Brief message for the notification.</param>
             <param name="details">Detailed message for the notification.</param>
             <param name="notificationType">One of the <see cref="T:GSF.Historian.Notifiers.NotificationTypes"/> values.</param>
@@ -7573,7 +7681,7 @@
         </member>
         <member name="P:GSF.Historian.Packets.PacketBase.AllowQueuedPublication">
             <summary>
-            Gets flag that determines if frame image can queued for publication or should be processed immediately.
+            Gets flag that determines if frame image can be queued for publication or should be processed immediately.
             </summary>
             <remarks>
             Some frames, e.g., a configuration or key frame, may be critical to processing of other frames. In this
@@ -7774,7 +7882,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Packets.PacketType101"/> class.
             </summary>
-            <param name="measurements">A collection of mesurements.</param>
+            <param name="measurements">A collection of measurements.</param>
         </member>
         <member name="M:GSF.Historian.Packets.PacketType101.#ctor(System.Byte[],System.Int32,System.Int32)">
             <summary>
