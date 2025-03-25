@@ -736,14 +736,16 @@ public class GrafanaController : ApiController
             // Make sure needed settings exist
             thresholdSettings.Add("GrafanaMaximumSearchTargets", DefaultMaximumSearchTargetsPerRequest, "Defines maximum number of search targets to return during a Grafana search query.");
             thresholdSettings.Add("GrafanaMaximumAnnotations", DefaultMaximumAnnotationsPerRequest, "Defines maximum number of annotations to return during a Grafana annotation query.");
-            thresholdSettings.Add("ReverseAlarmSearchLimit", DefaultReverseAlarmSearchLimit, "Defines the maximum time, in floating-point days, to execute a reverse order query to find last alarm change state.");
-            thresholdSettings.Add("AlarmMeasurementBufferSize", DefaultAlarmMeasurementBufferSize, "Defines the maximum time, in floating-point seconds, to buffer latest alarm measurements relative to local clock.");
+            thresholdSettings.Add("ReverseAlarmSearchLimit", DefaultReverseAlarmSearchLimit, "Defines the maximum time range, in floating-point days, to execute a reverse order query to find last alarm change state.");
+            thresholdSettings.Add("AlarmMeasurementBufferSize", DefaultAlarmMeasurementBufferSize, "Defines the maximum time window, in floating-point seconds, to buffer latest alarm measurements relative to local clock.");
 
             // Get settings as currently defined in configuration file
             s_maximumSearchTargetsPerRequest = thresholdSettings["GrafanaMaximumSearchTargets"].ValueAs(DefaultMaximumSearchTargetsPerRequest);
             s_maximumAnnotationsPerRequest = thresholdSettings["GrafanaMaximumAnnotations"].ValueAs(DefaultMaximumAnnotationsPerRequest);
             s_reverseAlarmSearchLimit = thresholdSettings["ReverseAlarmSearchLimit"].ValueAs(DefaultReverseAlarmSearchLimit);
             s_alarmMeasurementBufferSize = thresholdSettings["AlarmMeasurementBufferSize"].ValueAs(DefaultAlarmMeasurementBufferSize);
+
+            ConfigurationFile.Current.Save();
         }
         catch (Exception ex)
         {
@@ -751,6 +753,8 @@ public class GrafanaController : ApiController
 
             s_maximumSearchTargetsPerRequest = DefaultMaximumSearchTargetsPerRequest;
             s_maximumAnnotationsPerRequest = DefaultMaximumAnnotationsPerRequest;
+            s_reverseAlarmSearchLimit = DefaultReverseAlarmSearchLimit;
+            s_alarmMeasurementBufferSize = DefaultAlarmMeasurementBufferSize;
         }
 
         s_alarmMeasurementBuffer = [];
