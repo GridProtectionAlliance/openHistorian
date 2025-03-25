@@ -70,7 +70,8 @@ namespace openHistorian
                 {
                     await next();
 
-                    context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
+                    if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
+                        context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
 
                     if (context.Request.Scheme == "https" && !context.Response.Headers.ContainsKey("Strict-Transport-Security"))
                         context.Response.Headers.Add("Strict-Transport-Security", ["max-age=31536000", "includeSubDomains"]);
