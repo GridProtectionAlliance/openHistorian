@@ -66,11 +66,22 @@ namespace openHistorian
             // Add Content-Security Headers
             app.Use(async (context, next) =>
             {
-                await next();
-                context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
-                if (context.Request.Scheme == "https")
-                    context.Response.Headers.Add("Strict-Transport-Security", ["max-age=31536000", "includeSubDomains"]);
-                context.Response.Headers.Add("X-Content-Type-Options", ["nosniff"]);
+                try
+                {
+                    await next();
+
+                    context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
+
+                    if (context.Request.Scheme == "https" && !context.Response.Headers.ContainsKey("Strict-Transport-Security"))
+                        context.Response.Headers.Add("Strict-Transport-Security", ["max-age=31536000", "includeSubDomains"]);
+
+                    if (!context.Response.Headers.ContainsKey("X-Content-Type-Options"))
+                        context.Response.Headers.Add("X-Content-Type-Options", ["nosniff"]);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Ignoring ObjectDisposedException that can occur when the response is already completed
+                }
             });
 
             void Register(StartupEvent startupEvent) =>
