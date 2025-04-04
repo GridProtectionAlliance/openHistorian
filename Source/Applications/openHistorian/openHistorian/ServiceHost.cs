@@ -135,6 +135,10 @@ namespace openHistorian
                 
                 if (string.IsNullOrWhiteSpace(systemSettings["MinifyJavascriptExclusionExpression"].Value))
                     systemSettings["MinifyJavascriptExclusionExpression"].Value = DefaultMinifyJavascriptExclusionExpression;
+
+                // Ensure setting exists that will allow for secure order by expressions
+                systemSettings.Add("EnableSecureOrderBy", true, "Enables validated security in 'ORDER BY' expressions used by table operations.");
+                ConfigurationFile.Current.Save();
             }
             catch (Exception ex)
             {
