@@ -50,7 +50,6 @@ using System.Threading.Tasks;
 using GSF.IO;
 using Measurement = openHistorian.Model.Measurement;
 using Microsoft.Ajax.Utilities;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace openHistorian
 {
@@ -208,9 +207,6 @@ namespace openHistorian
         public IEnumerable<ActiveMeasurement> QueryActiveMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<ActiveMeasurement> tableOperations = DataContext.Table<ActiveMeasurement>();
-            if (!tableOperations.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
-
             tableOperations.RootQueryRestriction[0] = $"{GetSelectedInstanceName()}:%";
             return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
@@ -241,8 +237,6 @@ namespace openHistorian
         public IEnumerable<Device> QueryDevices(Guid nodeID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<Device> deviceTable = DataContext.Table<Device>();
-            if (!deviceTable.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
 
             RecordRestriction restriction =
                 new RecordRestriction("NodeID = {0} AND NOT (ProtocolID = {1} AND AccessID = {2})", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
@@ -382,8 +376,6 @@ namespace openHistorian
         public IEnumerable<DeviceGroup> QueryDeviceGroups(Guid nodeID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<DeviceGroup> deviceGroupTable = DataContext.Table<DeviceGroup>();
-            if (!deviceGroupTable.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
 
             RecordRestriction restriction =
                 new RecordRestriction("NodeID = {0} AND ProtocolID = {1} AND AccessID = {2}", nodeID, VirtualProtocolID, DeviceGroup.DefaultAccessID) +
@@ -468,10 +460,7 @@ namespace openHistorian
         [RecordOperation(typeof(DeviceGroupClass), RecordOperation.QueryRecords)]
         public IEnumerable<DeviceGroupClass> QueryDeviceGroupClasses(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<DeviceGroupClass> tableOperations = DataContext.Table<DeviceGroupClass>();
-            if (!tableOperations.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return DataContext.Table<DeviceGroupClass>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         public DateTime QueryDeviceGroupClassLastUpdated()
@@ -519,10 +508,7 @@ namespace openHistorian
         [RecordOperation(typeof(Measurement), RecordOperation.QueryRecords)]
         public IEnumerable<Measurement> QueryMeasurements(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Measurement> tableOperations = DataContext.Table<Measurement>();
-            if (!tableOperations.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return DataContext.Table<Measurement>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         public Measurement QueryMeasurement(string signalReference)
@@ -597,8 +583,6 @@ namespace openHistorian
         public IEnumerable<PhasorDetail> QueryPhasors(int deviceID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<PhasorDetail> phasorDetailTable = DataContext.Table<PhasorDetail>();
-            if (!phasorDetailTable.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
 
             RecordRestriction restriction = (deviceID > 0 ?
                 new RecordRestriction("DeviceID = {0}", deviceID) : null) +
@@ -620,11 +604,7 @@ namespace openHistorian
         [RecordOperation(typeof(CustomActionAdapter), RecordOperation.QueryRecords)]
         public IEnumerable<CustomActionAdapter> QueryCustomActionAdapters(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<CustomActionAdapter> tableOperations = DataContext.Table<CustomActionAdapter>();
-            if (!tableOperations.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
-
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return DataContext.Table<CustomActionAdapter>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -699,8 +679,6 @@ namespace openHistorian
         public IEnumerable<OscEvents> QueryOscEvents(int parentID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<OscEvents> oscEventsTable = DataContext.Table<OscEvents>();
-            if (!oscEventsTable.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
 
             RecordRestriction restriction = (parentID > 0 ?
                 new RecordRestriction("ParentID = {0}", parentID) :
@@ -763,8 +741,6 @@ namespace openHistorian
         public IEnumerable<EventMarker> QueryEventMarker(int parentID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
             TableOperations<EventMarker> eventMarkerTable = DataContext.Table<EventMarker>();
-            if (!eventMarkerTable.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
 
             RecordRestriction restriction = (parentID > 0 ?
                 new RecordRestriction("ParentID = {0}", parentID) :
@@ -819,11 +795,7 @@ namespace openHistorian
         [RecordOperation(typeof(Historian), RecordOperation.QueryRecords)]
         public IEnumerable<Historian> QueryHistorians(string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            TableOperations<Historian> tableOperations = DataContext.Table<Historian>();
-            if (!tableOperations.FieldExists(sortField))
-                throw new InvalidOperationException($"\"{sortField}\" is not a valid field");
-
-            return tableOperations.QueryRecords(sortField, ascending, page, pageSize, filterText);
+            return DataContext.Table<Historian>().QueryRecords(sortField, ascending, page, pageSize, filterText);
         }
 
         public Historian QueryHistorian(string acronym)
