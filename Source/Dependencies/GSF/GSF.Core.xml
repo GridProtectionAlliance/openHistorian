@@ -15754,6 +15754,22 @@
             </summary>
             <param name="keyReference">Reference name used to lookup encryption key and initialization vector.</param>
         </member>
+        <member name="T:GSF.Data.Model.ExtensionAttributeBase">
+            <summary>
+            Base class for Attributes that are used to extend the functionality of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Data.Model.ExtensionAttributeBase.FieldMatch">
+            <summary>
+            The regular expression used to match field names the attribute applies to.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.ExtensionAttributeBase.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.Data.Model.ExtensionAttributeBase"/>
+            </summary>
+            <param name="fieldMatch">Field match expression for the attribute.</param>
+        </member>
         <member name="T:GSF.Data.Model.FieldDataTypeAttribute">
             <summary>
             Defines an attribute that will request use of a specific data type on a modeled table field.
@@ -15836,6 +15852,11 @@
             Defines a common interface for implementations of <see cref="T:GSF.Data.Model.TableOperations`1"/>.
             </summary>
         </member>
+        <member name="P:GSF.Data.Model.ITableOperations.Connection">
+            <summary>
+            Gets <see cref="T:GSF.Data.AdoDataConnection"/> instance associated with this <see cref="T:GSF.Data.Model.TableOperations`1"/> used for database operations.
+            </summary>
+        </member>
         <member name="P:GSF.Data.Model.ITableOperations.TableName">
             <summary>
             Gets the table name defined for the modeled table, includes any escaping as defined in model.
@@ -15866,12 +15887,12 @@
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.UseCaseSensitiveFieldNames">
             <summary>
-            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
+            Gets or sets flag that determines if field names should be treated as case-sensitive. Defaults to <c>false</c>.
             </summary>
             <remarks>
             In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
-            are case sensitive. This value is typically <c>false</c>.
+            to properly update escaped field names that may be case-sensitive. For example, escaped field names in Oracle
+            are case-sensitive. This value is typically <c>false</c>.
             </remarks>
         </member>
         <member name="P:GSF.Data.Model.ITableOperations.PrimaryKeyCache">
@@ -17248,6 +17269,18 @@
             </summary>
             <param name="settingsCategory">Config file Settings category to use for class.</param>
         </member>
+        <member name="T:GSF.Data.Model.SortExtensionAttribute">
+            <summary>
+            Defines an attribute that marks static methods on a model that are used to transform a
+            field into more complex order by expression, e.g., a subquery, for sorting.
+            </summary>
+        </member>
+        <member name="M:GSF.Data.Model.SortExtensionAttribute.#ctor(System.String)">
+            <summary>
+            Defines an attribute that marks static methods on a model that are used to transform a
+            field into more complex order by expression, e.g., a subquery, for sorting.
+            </summary>
+        </member>
         <member name="T:GSF.Data.Model.SQLSearchFilter">
             <summary>
             Defines a Filter to be applied to a Query
@@ -17397,131 +17430,34 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="connection"/> cannot be <c>null</c>.</exception>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.Connection">
-            <summary>
-            Gets <see cref="T:GSF.Data.AdoDataConnection"/> instance associated with this <see cref="T:GSF.Data.Model.TableOperations`1"/> used for database operations.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.TableName">
-            <summary>
-            Gets the table name defined for the modeled table, includes any escaping as defined in model.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.UnescapedTableName">
-            <summary>
-            Gets the table name defined for the modeled table without any escape characters.
-            </summary>
-            <remarks>
-            A table name will only be escaped if the model requested escaping with the <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.HasPrimaryKeyIdentityField">
-            <summary>
-            Gets flag that determines if modeled table has a primary key that is an identity field.
-            </summary>
+             <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ExceptionHandler">
-            <summary>
-            Gets or sets delegate used to handle table operation exceptions.
-            </summary>
-            <remarks>
-            When exception handler is provided, table operations will not throw exceptions for database calls, any
-            encountered exceptions will be passed to handler for processing. Otherwise, exceptions will be thrown
-            on the call stack.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.UseCaseSensitiveFieldNames">
-            <summary>
-            Gets or sets flag that determines if field names should be treated as case sensitive. Defaults to <c>false</c>.
-            </summary>
-            <remarks>
-            In cases where modeled table fields have applied <see cref="T:GSF.Data.Model.UseEscapedNameAttribute"/>, this flag will be used
-            to properly update escaped field names that may be case sensitive. For example, escaped field names in Oracle
-            are case sensitive. This value is typically <c>false</c>.
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.PrimaryKeyCache">
-            <summary>
-            Gets or sets primary key cache.
-            </summary>
-            <remarks>
-            <para>
-            The <see cref="M:GSF.Data.Model.TableOperations`1.QueryRecords(System.String,System.Boolean,System.Int32,System.Int32,System.String)"/> overloads that include paging parameters
-            cache the sorted and filtered primary keys of queried records between calls so that paging is fast and
-            efficient. Since the primary keys are cached, an instance of the <see cref="T:GSF.Data.Model.TableOperations`1"/> should
-            exist per user session when using query functions that support pagination. In web based implementations,
-            the primary cache should be stored with user session state data and then restored between instances of
-            the <see cref="T:GSF.Data.Model.TableOperations`1"/> that are created along with a connection that is opened per page.
-            </para>
-            <para>
-            The function <see cref="M:GSF.Data.Model.TableOperations`1.ClearPrimaryKeyCache"/> should be called to manually clear cache when table
-            contents are known to have changed. Note that calls to any <see cref="M:GSF.Data.Model.TableOperations`1.DeleteRecord(`0)"/> overloads will
-            automatically clear any existing primary key cache.
-            </para>
-            <para>
-            Primary keys values are stored in data table without interpretation, i.e., in their raw form as queried
-            from the database. Primary key data in cache will be encrypted for models with primary key fields that
-            are marked with the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/>
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction">
-            <summary>
-            Gets or sets root record restriction that applies to query table operations.
-            </summary>
-            <remarks>
-            <para>
-            Defining a root query restriction creates a base query filter that gets applied to all query operations,
-            even when another restriction is applied - in this case the root restriction will be pre-pended to the
-            specified query, e.g.:
-            <code>
-            restriction = RootQueryRestriction + restriction;
-            </code>
-            A root query restriction is useful to apply a common state to the query operations, e.g., always
-            filtering records for a specific user or context.
-            </para>
-            <para>
-            A root query restriction can be manually assigned to a <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or
-            automatically assigned by marking a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/>.
-            </para>
-            <para>
-            If any of the <see cref="F:GSF.Data.Model.RecordRestriction.Parameters"/> reference a table field that is modeled with
-            either an <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/>, then the function
-            <see cref="M:GSF.Data.Model.TableOperations`1.GetInterpretedFieldValue(System.String,System.Object)"/> will need to be called, replacing the target parameter with the
-            returned value so that the field value will be properly set prior to executing the database function.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToUpdates">
-            <summary>
-            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to update operations.
-            </summary>
-            <remarks>
-            <para>
-            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
-            to <c>false</c> since default update operations for a modeled record already work against primary key fields.
-            </para>
-            <para>
-            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
-            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
-            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToUpdates"/>.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="P:GSF.Data.Model.TableOperations`1.ApplyRootQueryRestrictionToDeletes">
-            <summary>
-            Gets or sets flag that determines if <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> should be applied to delete operations.
-            </summary>
-            <remarks>
-            <para>
-            If <see cref="P:GSF.Data.Model.TableOperations`1.RootQueryRestriction"/> only references primary key fields, then this property value should be set
-            to <c>false</c> since default delete operations for a modeled record already work against primary key fields.
-            </para>
-            <para>
-            This flag can be manually set per <see cref="T:GSF.Data.Model.TableOperations`1"/> instance or handled automatically by marking
-            a model with the <see cref="T:GSF.Data.Model.RootQueryRestrictionAttribute"/> and assigning a value to the attribute property
-            <see cref="F:GSF.Data.Model.RootQueryRestrictionAttribute.ApplyToDeletes"/>.
-            </para>
-            </remarks>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.Data.Model.TableOperations`1.NewRecord">
             <summary>
@@ -18226,7 +18162,7 @@
             filter expression where the <see cref="T:GSF.Data.Model.EncryptDataAttribute"/> or <see cref="T:GSF.Data.Model.FieldDataTypeAttribute"/> have been modeled
             on a field referenced by one of the <see cref="T:GSF.Data.Model.RecordRestriction"/> parameters. Since the record restrictions are used
             with a free-form expression, the <see cref="T:GSF.Data.Model.TableOperations`1"/> class cannot be aware of the fields accessed in the
-            expression without attempting to parse the expression which would be time consuming and error prone; as a result, users
+            expression without attempting to parse the expression which would be time-consuming and error-prone; as a result, users
             will need to be aware to call this function when using record restriction that references fields that are either marked
             for encryption or use a specific field data-type attribute.
             </para>
