@@ -50,7 +50,6 @@ namespace UpdateCOMTRADECounters
         private const string EdgePolicies = "SOFTWARE\\Policies\\Microsoft\\Edge";
         private const string FirefoxPolicies = "SOFTWARE\\Policies\\Mozilla\\Firefox";
         private const string AutoLaunchProtocolPolicy = "AutoLaunchProtocolsFromOrigins";
-        private const string ExemptFileTypeWarningPolicyOld = "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings";
         private const string ExemptFileTypeWarningPolicy = "ExemptFileTypeDownloadWarnings";
 
         private static Assembly s_currentAssembly;
@@ -121,7 +120,7 @@ namespace UpdateCOMTRADECounters
                 {
                     if (targetAllUsers)
                     {
-                        DeleteRegistration(Registry.LocalMachine, silent);
+                        DeleteRegistration(Registry.LocalMachine, silent, commandLine);
 
                         try
                         {
@@ -134,7 +133,7 @@ namespace UpdateCOMTRADECounters
                         }
                     }
 
-                    DeleteRegistration(Registry.CurrentUser, silent || !elevated);
+                    DeleteRegistration(Registry.CurrentUser, silent || !elevated, commandLine);
 
                     try
                     {
@@ -225,22 +224,7 @@ namespace UpdateCOMTRADECounters
                     }
                     else if (elevated)
                     {
-                        using RegistryKey chromeKeyAllUsers = Registry.LocalMachine.OpenSubKey(ChromePolicies);
-                        using RegistryKey edgeKeyAllUsers = Registry.LocalMachine.OpenSubKey(EdgePolicies);
-                        using RegistryKey firefoxKeyAllUsers = Registry.LocalMachine.OpenSubKey(FirefoxPolicies);
-                        using RegistryKey chromeKeyLocalUser = Registry.CurrentUser.OpenSubKey(ChromePolicies);
-                        using RegistryKey edgeKeyLocalUser = Registry.CurrentUser.OpenSubKey(EdgePolicies);
-                        using RegistryKey firefoxKeyLocalUser = Registry.CurrentUser.OpenSubKey(FirefoxPolicies);
-
-                        if ((chromeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                             edgeKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                             firefoxKeyAllUsers?.GetValue(AutoLaunchProtocolPolicy) is null) &&
-                            (chromeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                             edgeKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null ||
-                             firefoxKeyLocalUser?.GetValue(AutoLaunchProtocolPolicy) is null))
-                        {
-                            RegisterBrowserPolicies(Registry.CurrentUser, commandLine);
-                        }
+                        RegisterBrowserPolicies(Registry.CurrentUser, commandLine);
                     }
                 }
                 catch (Exception ex)
@@ -256,13 +240,39 @@ namespace UpdateCOMTRADECounters
             }
         }
 
-        private static void DeleteRegistration(RegistryKey keyRoot, bool silent)
+        private static void DeleteRegistration(RegistryKey keyRoot, bool silent, string commandLine)
         {
             try
             {
                 // Remove registration first - non-admin local user action is allowed
                 DeleteRegistryKey(keyRoot, $"SOFTWARE\\Classes\\{UriScheme}");
+            }
+            catch (Exception ex)
+            {
+                if (!silent)
+                    MessageBox.Show($"Failed to unregister URI scheme \"{UriScheme}\" for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Removal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
+            try
+            {
+                // Remove registered browser policies, i.e., only those that were registered by this application
+                UnregisterBrowserPolicies(keyRoot, commandLine);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            // Only completely remove existing browser policies if requested by command line parameter
+            if (!commandLine.Contains("-removepolicies"))
+                return;
+
+            if (!silent && MessageBox.Show($"Are you sure you want to remove all browser policies for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}?", "Browser Policy Removal Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            try
+            {
                 // Removing the following registry keys may require elevation
                 DeleteRegistryKey(keyRoot, ChromePolicies);
                 DeleteRegistryKey(keyRoot, EdgePolicies);
@@ -271,7 +281,7 @@ namespace UpdateCOMTRADECounters
             catch (Exception ex)
             {
                 if (!silent)
-                    MessageBox.Show($"Failed to unregister URI scheme \"{UriScheme}\" for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "URI Scheme Registration Removal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Failed to delete browser policies for {(keyRoot == Registry.LocalMachine ? "all users" : "current user")}: {ex.Message}", "Browser Policy Removal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -306,22 +316,13 @@ namespace UpdateCOMTRADECounters
 
             void applyFileTypeWarningExemptionPolicy(RegistryKey policyKey, string fileType, string domain)
             {
-                void applyExemptionPolicy(string keyName)
-                {
-                    string filesTypeDomainExceptions = policyKey.GetValue(keyName)?.ToString();
+                string filesTypeDomainExceptions = policyKey.GetValue(ExemptFileTypeWarningPolicy)?.ToString();
 
-                    if (string.IsNullOrEmpty(filesTypeDomainExceptions))
-                        filesTypeDomainExceptions = "[]";
+                if (string.IsNullOrEmpty(filesTypeDomainExceptions))
+                    filesTypeDomainExceptions = "[]";
 
-                    policyKey.SetValue(keyName,
-                        JsonHelpers.InjectExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, domain));
-                }
-
-                // Apply policy to old key name (deprecated)
-                applyExemptionPolicy(ExemptFileTypeWarningPolicyOld);
-
-                // Apply policy to new key name
-                applyExemptionPolicy(ExemptFileTypeWarningPolicy);
+                policyKey.SetValue(ExemptFileTypeWarningPolicy,
+                    JsonHelpers.InjectExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, domain));
             }
 
             void applyPolicies(RegistryKey policyKey)
@@ -332,26 +333,90 @@ namespace UpdateCOMTRADECounters
                 string targetUri = $"*:{GetTargetWebPort()}";
 
                 if (!commandLine.Contains("-noautolaunch"))
-                    applyAutoLaunchProtocolPolicy(policyKey, targetUri, UriScheme);
+                {
+                    applyAutoLaunchProtocolPolicy(policyKey, $"http://{targetUri}", UriScheme);
+                    applyAutoLaunchProtocolPolicy(policyKey, $"https://{targetUri}", UriScheme);
+                }
 
                 if (!commandLine.Contains("-nocfgexemption"))
                     applyFileTypeWarningExemptionPolicy(policyKey, "cfg", targetUri);
             }
 
             // Apply Chrome policy
-            applyPolicies(
-                keyRoot.CreateSubKey(ChromePolicies, true) ??
-                keyRoot.OpenSubKey(ChromePolicies, true));
+            using (RegistryKey chromeKey = keyRoot.CreateSubKey(ChromePolicies, true) ?? keyRoot.OpenSubKey(ChromePolicies, true))
+                applyPolicies(chromeKey);
 
             // Apply Edge policy
-            applyPolicies(
-                keyRoot.CreateSubKey(EdgePolicies, true) ??
-                keyRoot.OpenSubKey(EdgePolicies, true));
+            using (RegistryKey edgeKey = keyRoot.CreateSubKey(EdgePolicies, true) ?? keyRoot.OpenSubKey(EdgePolicies, true))
+                applyPolicies(edgeKey);
 
             // Apply Firefox policy
-            applyPolicies(
-                keyRoot.CreateSubKey(FirefoxPolicies, true) ??
-                keyRoot.OpenSubKey(FirefoxPolicies, true));
+            using (RegistryKey firefoxKey = keyRoot.CreateSubKey(FirefoxPolicies, true) ?? keyRoot.OpenSubKey(FirefoxPolicies, true))
+                applyPolicies(firefoxKey);
+        }
+
+        private static void UnregisterBrowserPolicies(RegistryKey keyRoot, string commandLine)
+        {
+            void removeAutoLaunchProtocolPolicy(RegistryKey policyKey, string allowedOrigin, string protocol)
+            {
+                string originPolicies = policyKey.GetValue(AutoLaunchProtocolPolicy)?.ToString();
+
+                if (string.IsNullOrEmpty(originPolicies))
+                    return; // Nothing to remove
+
+                string updatedPolicies = JsonHelpers.RemoveProtocolOrigins(originPolicies, allowedOrigin, protocol);
+
+                // If removing our entry results in an empty array, delete the key entirely
+                if (updatedPolicies == "[]")
+                    policyKey.DeleteValue(AutoLaunchProtocolPolicy, false);
+                else
+                    policyKey.SetValue(AutoLaunchProtocolPolicy, updatedPolicies);
+            }
+
+            void removeFileTypeWarningExemptionPolicy(RegistryKey policyKey, string fileType, string domain)
+            {
+                string filesTypeDomainExceptions = policyKey.GetValue(ExemptFileTypeWarningPolicy)?.ToString();
+
+                if (string.IsNullOrEmpty(filesTypeDomainExceptions))
+                    return; // Nothing to remove
+
+                string updatedExceptions = JsonHelpers.RemoveExemptDomainFilesTypes(filesTypeDomainExceptions, fileType, domain);
+
+                // If removing our entry results in an empty array, delete the key entirely
+                if (updatedExceptions == "[]")
+                    policyKey.DeleteValue(ExemptFileTypeWarningPolicy, false);
+                else
+                    policyKey.SetValue(ExemptFileTypeWarningPolicy, updatedExceptions);
+            }
+
+            void removePolicies(RegistryKey policyKey)
+            {
+                if (policyKey is null)
+                    return;
+
+                string targetUri = $"*:{GetTargetWebPort()}";
+
+                if (!commandLine.Contains("-noautolaunch"))
+                {
+                    removeAutoLaunchProtocolPolicy(policyKey, $"http://{targetUri}", UriScheme);
+                    removeAutoLaunchProtocolPolicy(policyKey, $"https://{targetUri}", UriScheme);
+                }
+
+                if (!commandLine.Contains("-nocfgexemption"))
+                    removeFileTypeWarningExemptionPolicy(policyKey, "cfg", targetUri);
+            }
+
+            // Remove Chrome policy
+            using (RegistryKey chromeKey = keyRoot.OpenSubKey(ChromePolicies, true)) 
+                removePolicies(chromeKey);
+
+            // Remove Edge policy
+            using (RegistryKey edgeKey = keyRoot.OpenSubKey(EdgePolicies, true)) 
+                removePolicies(edgeKey);
+
+            // Remove Firefox policy
+            using (RegistryKey firefoxKey = keyRoot.OpenSubKey(FirefoxPolicies, true)) 
+                removePolicies(firefoxKey);
         }
 
         private static int GetTargetWebPort()
@@ -438,7 +503,7 @@ namespace UpdateCOMTRADECounters
             if (AssemblyCache.TryGetValue(shortName, out Assembly resourceAssembly))
                 return resourceAssembly;
 
-            // Loop through all of the resources in the current assembly
+            // Loop through all the resources in the current assembly
             foreach (string name in CurrentAssembly.GetManifestResourceNames())
             {
                 // See if the embedded resource name matches the assembly it is trying to load
