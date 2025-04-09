@@ -122,5 +122,63 @@ namespace UpdateCOMTRADECounters
 
             return JsonConvert.SerializeObject(exemptDomainFilesTypes, Formatting.None);
         }
+
+        public static string RemoveProtocolOrigins(string protocolOriginsJson, string targetAllowedOrigin, string protocol)
+        {
+            List<ProtocolOrigins> protocolOrigins = JsonConvert.DeserializeObject<List<ProtocolOrigins>>(protocolOriginsJson);
+
+            for (int i = protocolOrigins!.Count - 1; i >= 0; i--)
+            {
+                ProtocolOrigins current = protocolOrigins[i];
+
+                if (!string.Equals(current.protocol, protocol, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Remove the target origin from the allowed origins list
+                for (int j = current.allowed_origins.Count - 1; j >= 0; j--)
+                {
+                    if (string.Equals(current.allowed_origins[j], targetAllowedOrigin, StringComparison.OrdinalIgnoreCase))
+                    {
+                        current.allowed_origins.RemoveAt(j);
+                        break; // Only remove one matching instance
+                    }
+                }
+
+                // If no allowed origins remain for this protocol, remove the entire protocol entry
+                if (current.allowed_origins.Count == 0) 
+                    protocolOrigins.RemoveAt(i);
+            }
+
+            return JsonConvert.SerializeObject(protocolOrigins, Formatting.None);
+        }
+
+        public static string RemoveExemptDomainFilesTypes(string exemptDomainFilesTypesJson, string fileExtension, string targetDomain)
+        {
+            List<ExemptDomainFilesTypes> exemptDomainFilesTypes = JsonConvert.DeserializeObject<List<ExemptDomainFilesTypes>>(exemptDomainFilesTypesJson);
+
+            for (int i = exemptDomainFilesTypes!.Count - 1; i >= 0; i--)
+            {
+                ExemptDomainFilesTypes current = exemptDomainFilesTypes[i];
+
+                if (!string.Equals(current.file_extension, fileExtension, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Remove the target domain from the domains list
+                for (int j = current.domains.Count - 1; j >= 0; j--)
+                {
+                    if (string.Equals(current.domains[j], targetDomain, StringComparison.OrdinalIgnoreCase))
+                    {
+                        current.domains.RemoveAt(j);
+                        break; // Only remove one matching instance
+                    }
+                }
+
+                // If no domains remain for this file extension, remove the entire file extension entry
+                if (current.domains.Count == 0) 
+                    exemptDomainFilesTypes.RemoveAt(i);
+            }
+
+            return JsonConvert.SerializeObject(exemptDomainFilesTypes, Formatting.None);
+        }
     }
 }
