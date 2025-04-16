@@ -13825,13 +13825,14 @@
             <param name="timestamp">Timestamp, in ticks, used to constrain <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> (typically set to real-time, i.e. "now").</param>
             <returns>Raw value of this measurement (i.e., value that is not offset by adder and multiplier).</returns>
         </member>
-        <member name="M:GSF.TimeSeries.TemporalMeasurement.SetValue(GSF.Ticks,System.Double,GSF.TimeSeries.MeasurementStateFlags)">
+        <member name="M:GSF.TimeSeries.TemporalMeasurement.SetValue(GSF.Ticks,GSF.Ticks,System.Double,GSF.TimeSeries.MeasurementStateFlags)">
             <summary>
             Sets numeric value and timestamp, as ticks, of this <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.
             </summary>
             <remarks>
             <para>Operation will only store a value that is newer than the cached value.</para>
             </remarks>
+            <param name="currentTime">Timestamp, in ticks, used to constrain <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> (typically set to real-time, i.e. "now").</param>
             <param name="timestamp">New timestamp, in ticks, for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.</param>
             <param name="value">New value for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>, only stored if <paramref name="timestamp"/> are newer than current <see cref="T:GSF.Ticks"/>.</param>
             <param name="flags">New flags for <see cref="T:GSF.TimeSeries.TemporalMeasurement"/>.</param>
