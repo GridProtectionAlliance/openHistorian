@@ -684,6 +684,16 @@
             Starts the <see cref="T:DynamicCalculator.DynamicCalculator"/> or restarts it if it is already running.
             </summary>
         </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.RaiseVerboseMessages">
+            <summary>
+            Begins raising verbose messages to provide insight into the values used in the calculation.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.StopVerboseMessages">
+            <summary>
+            Stop raising verbose messages.
+            </summary>
+        </member>
         <member name="M:DynamicCalculator.DynamicCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
             <summary>
             Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
