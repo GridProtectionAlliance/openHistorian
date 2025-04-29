@@ -18347,6 +18347,9 @@
   <Component Id="public_app_plugins_datasource_mssql_module_ts">
     <File Id="public_app_plugins_datasource_mssql_module.ts" Name="module.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\module.ts" />
   </Component>
+  <Component Id="public_app_plugins_datasource_mssql_MSSqlMetaQuery_test_ts">
+    <File Id="public_app_plugins_datasource_mssql_MSSqlMetaQuery.test.ts" Name="MSSqlMetaQuery.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\MSSqlMetaQuery.test.ts" />
+  </Component>
   <Component Id="public_app_plugins_datasource_mssql_MSSqlMetaQuery_ts">
     <File Id="public_app_plugins_datasource_mssql_MSSqlMetaQuery.ts" Name="MSSqlMetaQuery.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\MSSqlMetaQuery.ts" />
   </Component>
@@ -18359,11 +18362,17 @@
   <Component Id="public_app_plugins_datasource_mssql_plugin_json">
     <File Id="public_app_plugins_datasource_mssql_plugin.json" Name="plugin.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\plugin.json" />
   </Component>
+  <Component Id="public_app_plugins_datasource_mssql_project_json">
+    <File Id="public_app_plugins_datasource_mssql_project.json" Name="project.json" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\project.json" />
+  </Component>
   <Component Id="public_app_plugins_datasource_mssql_README_md">
     <File Id="public_app_plugins_datasource_mssql_README.md" Name="README.md" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\README.md" />
   </Component>
   <Component Id="public_app_plugins_datasource_mssql_sqlCompletionProvider_ts">
     <File Id="public_app_plugins_datasource_mssql_sqlCompletionProvider.ts" Name="sqlCompletionProvider.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\sqlCompletionProvider.ts" />
+  </Component>
+  <Component Id="public_app_plugins_datasource_mssql_sqlUtil_test_ts">
+    <File Id="public_app_plugins_datasource_mssql_sqlUtil.test.ts" Name="sqlUtil.test.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\sqlUtil.test.ts" />
   </Component>
   <Component Id="public_app_plugins_datasource_mssql_sqlUtil_ts">
     <File Id="public_app_plugins_datasource_mssql_sqlUtil.ts" Name="sqlUtil.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\sqlUtil.ts" />
@@ -18387,9 +18396,6 @@
   </Component>
   <Component Id="public_app_plugins_datasource_mssql_azureauth_AzureAuthSettings_tsx">
     <File Id="public_app_plugins_datasource_mssql_azureauth_AzureAuthSettings.tsx" Name="AzureAuthSettings.tsx" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\azureauth\AzureAuthSettings.tsx" />
-  </Component>
-  <Component Id="public_app_plugins_datasource_mssql_azureauth_AzureCredentials_ts">
-    <File Id="public_app_plugins_datasource_mssql_azureauth_AzureCredentials.ts" Name="AzureCredentials.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\azureauth\AzureCredentials.ts" />
   </Component>
   <Component Id="public_app_plugins_datasource_mssql_azureauth_AzureCredentialsConfig_ts">
     <File Id="public_app_plugins_datasource_mssql_azureauth_AzureCredentialsConfig.ts" Name="AzureCredentialsConfig.ts" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\Grafana\public\app\plugins\datasource\mssql\azureauth\AzureCredentialsConfig.ts" />
