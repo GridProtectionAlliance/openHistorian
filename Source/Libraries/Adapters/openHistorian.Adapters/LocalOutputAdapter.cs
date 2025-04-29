@@ -887,7 +887,7 @@ namespace openHistorian.Adapters
             try
             {
                 // Check if any target archive destination has enough disk space
-                foreach (string path in m_archiveDirectories)
+                foreach (string path in m_archiveDirectories ?? [WorkingDirectory])
                 {
                     FilePath.GetAvailableFreeSpace(path, out long freeSpace, out _);
 
