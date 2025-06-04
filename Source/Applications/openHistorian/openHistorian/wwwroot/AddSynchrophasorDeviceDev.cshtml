@@ -561,6 +561,9 @@
         var phasorSignalTypes = [];
         var freqDeviceName = "@(SystemName)SYSTEM!FREQ";
 
+        const dbOpRetryCount = 6;
+        const dbOpWaitTime = 5000;
+
         function showLoadingLabel() {
             $("#loadingDataLabel").css("visibility", "visible");
             viewModel.working(true);
@@ -2652,8 +2655,8 @@
             if (attempt === undefined)
                 attempt = 1;
 
-            if (attempt > 4) {
-                return $.Deferred().reject("Failed to find \"" + type +"\" power output measurement after waiting 12 seconds - skipping 3-phase power calculations.").promise();
+            if (attempt > dbOpRetryCount) {
+                return $.Deferred().reject("Failed to find \"" + type + "\" power output measurement after waiting " + (dbOpRetryCount * dbOpWaitTime / 1000).toString() + " seconds - skipping 3-phase power calculations.").promise();
             }
 
             if (!linePhase.voltage.hasOwnProperty("vphaMeasurement") || !linePhase.voltage.hasOwnProperty("vphmMeasurement") || !linePhase.current.hasOwnProperty("iphaMeasurement") || !linePhase.current.hasOwnProperty("iphmMeasurement"))
@@ -2669,17 +2672,17 @@
                     switch (type) {
                         case "MW":
                             if (powerCalculation.ActivePowerOutputSignalID == null || powerCalculation.ActivePowerOutputSignalID === 0)
-                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(dbOpWaitTime).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ActivePowerOutputSignalID).promise();
                         case "MVAR":
                             if (powerCalculation.ReactivePowerOutputSignalID == null || powerCalculation.ReactivePowerOutputSignalID === 0)
-                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(dbOpWaitTime).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ReactivePowerOutputSignalID).promise();
                         case "MVA":
                             if (powerCalculation.ApparentPowerOutputSignalID == null || powerCalculation.ApparentPowerOutputSignalID === 0)
-                                return delayedPromise(3000).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
+                                return delayedPromise(dbOpWaitTime).then(function () { return queryPowerOutput(type, linePhase, ++attempt); });
 
                             return $.Deferred().resolve(powerCalculation.ApparentPowerOutputSignalID).promise();
                     }
@@ -2717,7 +2720,7 @@
                 let phaseBSignalID = null;
                 let phaseCSignalID = null;
 
-                // These queries will keep looping while power calculations are initializing until power output measurements exist or timeout after 12 seconds:
+                // These queries will keep looping while power calculations are initializing until power output measurements exist or timeout after ~30 seconds:
                 queryPromises.push(queryPowerOutput(type, line.A, 1).then(function (signalID) {
                     phaseASignalID = signalID;
                 }));
@@ -3118,7 +3121,7 @@
 
                             // Inputs can be outputs of other calculations, so will wait for a moment for these to get created if needed
                             if (Object.keys(inputSet[property]).length === 0)
-                                return delayedPromise(3000).then(function () { return saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, ++attempt); });
+                                return delayedPromise(dbOpWaitTime).then(function () { return saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, ++attempt); });
                         }
                     }
                 }
@@ -3363,6 +3366,96 @@
             });
         }
 
+        function saveAliasedVoltageMagnitudes(cell, calcSignalType) {
+            return initializeDynamicCalculation().then(function () {
+                function addDynamicCalculatorAdapter(inputMeasurement, outputMeasurement) {
+                    const connectionString = new Dictionary();
+                    const variableList = new Dictionary();
+                    const equation = "value";
+
+                    variableList.set("value", inputMeasurement.SignalID);
+
+                    connectionString.set("variableList", variableList.joinKeyValuePairs());
+                    connectionString.set("expressionText", equation);
+                    connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
+                    connectionString.set("lagTime", "@DefaultCalculationLagTime");
+                    connectionString.set("leadTime", "@DefaultCalculationLeadTime");
+                    connectionString.set("outputMeasurements", outputMeasurement.SignalID);
+                    connectionString.set("useLatestValues", "false");
+
+                    return phasorHub.newCustomActionAdapter().then(function (adapter) {
+                        adapter.NodeID = nodeID;
+                        adapter.AdapterName = getCleanAcronym(outputMeasurement.PointTag) + "-CALC";
+                        adapter.AssemblyName = "DynamicCalculator.dll";
+                        adapter.TypeName = "DynamicCalculator.DynamicCalculator";
+                        adapter.ConnectionString = connectionString.joinKeyValuePairs();
+                        adapter.LoadOrder = 100;
+                        adapter.Enabled = true;
+
+                        return phasorHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
+                            return serviceHub.sendCommand("initialize " + adapter.AdapterName);
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
+                        });
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
+                    });
+                }
+
+                const promises = [];
+                let count = 0;
+
+                for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                    const phasorDefinition = cell.PhasorDefinitions[i];
+
+                    if (phasorDefinition.PhasorType.toLowerCase() === "current") {
+                        const current = phasorDefinition;
+                        const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+
+                        if (voltage && current.Label().toLowerCase() !== voltage.Label().toLowerCase() && voltage.hasOwnProperty("vphmMeasurement")) {
+                            count++;
+                            const index = count;
+                            const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), "AV", calcSignalType.Suffix, index.toString());
+                            const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), "AV", calcSignalType.Suffix, index.toString());
+
+                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
+                            promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
+                                const voltageLabel = voltage.Label().replaceAll(" ", "_").toUpperCase();
+                                const currentLabel = current.Label().replaceAll(" ", "_").toUpperCase();
+                                measurement.DeviceID = cell.ID;
+                                measurement.HistorianID = viewModel.historianID();
+                                measurement.PointTag = getCleanPointTag(String.format("{0}-{1}_{2}:CALC-AV{3}", cell.IDLabel(), voltageLabel, currentLabel, index));
+                                measurement.Description = String.format("{0} {1}-{2} Calculated Value: Aliased Voltage {3}", cell.IDLabel(), voltage.Label(), current.Label(), index);
+                                measurement.SignalReference = signalReference;
+                                measurement.SignalTypeID = calcSignalType.ID;
+                                measurement.Internal = true;
+                                measurement.Enabled = true;
+
+                                return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
+                                    return phasorHub.queryMeasurement(signalReference).then(function (updatedMeasurement) {
+                                        return addDynamicCalculatorAdapter(voltage.vphmMeasurement, updatedMeasurement);
+                                    })
+                                    .fail(function (error) {
+                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
+                                    });
+                                })
+                                .fail(function (error) {
+                                    showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
+                                });
+                            })
+                            .fail(function (error) {
+                                showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
+                            }));
+                        }
+                    }
+                }
+
+                return $(promises).whenAll();
+            });
+        }
+
         function saveCustomActionAdapter(tagTemplate) {
             return phasorHub.newCustomActionAdapter().then(function (adapter) {
                 const deviceTemplate = "{DEVICE}";
@@ -3405,85 +3498,90 @@
                 return $.Deferred().resolve().promise();
             }
 
-            return phasorHub.loadTemplate(templateType).then(function (tagTemplates) {
-                return phasorHub.validateCalculatorConfigurations(viewModel.historianID(), "@SystemName").then(function () {
-                    return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
-                        const promises = [];
+            return saveAliasedVoltageMagnitudes(cell, calcSignalType).then(function() {
+                return phasorHub.loadTemplate(templateType).then(function (tagTemplates) {
+                    return phasorHub.validateCalculatorConfigurations(viewModel.historianID(), "@SystemName").then(function () {
+                        return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
+                            const promises = [];
 
-                        let calculatePowerCount = 0;
-                        let sumPhaseCount = 0;
+                            let calculatePowerCount = 0;
+                            let sumPhaseCount = 0;
 
-                        for (let i = 0; i < tagTemplates.length; i++) {
-                            const tagTemplate = tagTemplates[i];
+                            for (let i = 0; i < tagTemplates.length; i++) {
+                                const tagTemplate = tagTemplates[i];
 
-                            switch (tagTemplate.Type.toUpperCase()) {
-                                case "CALCULATEPOWER":
-                                    calculatePowerCount++;
-                                    break;
-                                case "SUMPHASE":
-                                    sumPhaseCount++;
-                                    break;
-                            }
+                                switch (tagTemplate.Type.toUpperCase()) {
+                                    case "CALCULATEPOWER":
+                                        calculatePowerCount++;
+                                        break;
+                                    case "SUMPHASE":
+                                        sumPhaseCount++;
+                                        break;
+                                }
 
-                            if (calculatePowerCount > 0 && sumPhaseCount > 0)
-                                break;
-                        }
-
-                        if (sumPhaseCount > 0 && calculatePowerCount === 0)
-                            showErrorMessage("3-phase power calculations will be skipped because selected template \"" + templateType + "\" defines no power calculations...");
-
-                        const sumPhaseTagTemplates = [];
-
-                        for (let i = 0; i < tagTemplates.length; i++) {
-                            const tagTemplate = tagTemplates[i];
-
-                            switch (tagTemplate.Type.toUpperCase()) {
-                                case "CALCULATEPOWER":
-                                    promises.push(savePowerCalculations(cell, tagTemplate).then(function () {
-                                        return serviceHub.sendCommand("initialize PHASOR!POWERCALC");
-                                    }));
-                                    break;
-                                case "SUMPHASE":
-                                    // Hold on to sum phase tag templates for later execution
-                                    if (calculatePowerCount > 0)
-                                        sumPhaseTagTemplates.push(tagTemplate);
-                                    break;
-                                case "DYNAMICCALCULATOR":
-                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Calc", calcSignalType));
-                                    break;
-                                case "VALUEADJUSTER":
-                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Adjust", calcSignalType));
-                                    break;
-                                case "VALUEFILTER":
-                                    promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Filter", calcSignalType));
-                                    break;
-                                default:
-                                    // All other template types are assumed to be custom action adapter definitions. Since
-                                    // these adpater definitions are singletons, only execute save for first device:
-                                    if (index === 0)
-                                        promises.push(saveCustomActionAdapter(tagTemplate));
+                                if (calculatePowerCount > 0 && sumPhaseCount > 0)
                                     break;
                             }
-                        }
 
-                        return $(promises).whenAll().then(function () {
-                            const sumPhasePromises = [];
+                            if (sumPhaseCount > 0 && calculatePowerCount === 0)
+                                showErrorMessage("3-phase power calculations will be skipped because selected template \"" + templateType + "\" defines no power calculations...");
 
-                            // Sum phase templates are saved after power calculations have completed as they are dependent calculations
-                            for (let i = 0; i < sumPhaseTagTemplates.length; i++) {
-                                sumPhasePromises.push(saveSumPhase(cell, sumPhaseTagTemplates[i], calcSignalType));
+                            const sumPhaseTagTemplates = [];
+
+                            for (let i = 0; i < tagTemplates.length; i++) {
+                                const tagTemplate = tagTemplates[i];
+
+                                switch (tagTemplate.Type.toUpperCase()) {
+                                    case "CALCULATEPOWER":
+                                        promises.push(savePowerCalculations(cell, tagTemplate).then(function () {
+                                            return serviceHub.sendCommand("initialize PHASOR!POWERCALC");
+                                        }));
+                                        break;
+                                    case "SUMPHASE":
+                                        // Hold on to sum phase tag templates for later execution
+                                        if (calculatePowerCount > 0)
+                                            sumPhaseTagTemplates.push(tagTemplate);
+                                        break;
+                                    case "DYNAMICCALCULATOR":
+                                        promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Calc", calcSignalType));
+                                        break;
+                                    case "VALUEADJUSTER":
+                                        promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Adjust", calcSignalType));
+                                        break;
+                                    case "VALUEFILTER":
+                                        promises.push(saveDynamicCalculation(cell, tagTemplate, i, "Filter", calcSignalType));
+                                        break;
+                                    default:
+                                        // All other template types are assumed to be custom action adapter definitions. Since
+                                        // these adapter definitions are singletons, only execute save for first device:
+                                        if (index === 0)
+                                            promises.push(saveCustomActionAdapter(tagTemplate));
+                                        break;
+                                }
                             }
 
-                            return $(sumPhasePromises).whenAll();
+                            return $(promises).whenAll().then(function () {
+                                const sumPhasePromises = [];
+
+                                // Sum phase templates are saved after power calculations have completed as they are dependent calculations
+                                for (let i = 0; i < sumPhaseTagTemplates.length; i++) {
+                                    sumPhasePromises.push(saveSumPhase(cell, sumPhaseTagTemplates[i], calcSignalType));
+                                }
+
+                                return $(sumPhasePromises).whenAll();
+                            });
+                        })
+                        .fail(function (error) {
+                            showErrorMessage("Failed to validate calculator configurations: " + error, null, true);
                         });
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Failed to validate calculator configurations: " + error, null, true);
                     });
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to load " + templateType + " tag template: " + error, null, true);
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to load " + templateType + " tag template: " + error, null, true);
+                showErrorMessage("Failed to save aliased voltage calculations: " + error, null, true);
             });
         }
 
