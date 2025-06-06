@@ -254,8 +254,8 @@ namespace ConfigurationSetupUtility.Screens
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
                 Visibility newUserVisibility = existing && !migrate ? Visibility.Collapsed : Visibility.Visible;
-                string newDatabaseMessage = "Please enter the needed information about the\r\nOracle database you would like to create.";
-                string oldDatabaseMessage = "Please enter the needed information about\r\nyour existing Oracle database.";
+                string newDatabaseMessage = "Please enter the needed information about the\r\nPostgreSQL database you would like to create.";
+                string oldDatabaseMessage = "Please enter the needed information about\r\nyour existing PostgreSQL database.";
 
                 ConfigurationFile serviceConfig;
                 string connectionString;
