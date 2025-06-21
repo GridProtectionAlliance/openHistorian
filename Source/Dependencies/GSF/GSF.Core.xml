@@ -12325,6 +12325,21 @@
             <param name="timeout">Timeout, in milliseconds, to wait for command line operation to complete.</param>
             <returns><c>true</c> if process completed; otherwise, <c>false</c> if process timed-out.</returns>
         </member>
+        <member name="P:GSF.Console.Command.CustomProcessStartInfo">
+            <summary>
+            Customizable Command.ProcessStartInfo to set prior to Creating or Executing the CommandProcess.
+            The original Process.StartInfo defaults are used when Command.CustomProcessStartInfo is null.
+            Command.CustomProcessStartInfo is null to be consistent with earlier implementations.
+            Example to create a Command.CustomProcessStartInfo with Gemstone default StartInfo but without creating a Window:
+            GSF.Core.Console.Command.CustomProcessStartInfo = new()
+            {
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            </summary>
+        </member>
         <member name="M:GSF.Console.Command.Execute(System.String,System.String,System.Int32)">
             <summary>
             Executes a command line operation and returns its standard output and exit code or throws an exception with the standard error.
