@@ -51978,6 +51978,11 @@
             Common transmission voltage levels enumeration.
             </summary>
         </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV34">
+            <summary>
+            34 kV.
+            </summary>
+        </member>
         <member name="F:GSF.Units.EE.VoltageLevel.kV44">
             <summary>
             44 kV.
