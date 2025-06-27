@@ -352,111 +352,6 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="T:CsvAdapters.CsvInputAdapter">
-            <summary>
-            Represents an input adapter that reads measurements from a CSV file.
-            </summary>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:CsvAdapters.CsvInputAdapter"/> class.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.FileName">
-            <summary>
-            Gets or sets the name of the CSV file from which measurements will be read.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.InputInterval">
-            <summary>
-            Gets or sets the interval of time between sending frames into the concentrator.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.AutoRepeat">
-            <summary>
-            Gets or sets value that determines if the CSV input file data should be replayed repeatedly.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.SkipRows">
-            <summary>
-            Gets or sets number of lines to skip in the source file before the header line is encountered.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.UseHighResolutionInputTimer">
-            <summary>
-            Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
-            </summary>
-            <remarks>
-            Useful when input frames need be accurately time-aligned to the local clock to better simulate
-            an input device and calculate downstream latencies.<br/>
-            This is only applicable when connection is made to a file for replay purposes.
-            </remarks>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.MeasurementsPerInterval">
-            <summary>
-            Gets or sets the number of measurements that are read from the CSV file in each frame.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.TransverseMode">
-            <summary>
-            Gets or sets a value that determines whether CSV file is in transverse mode for real-time concentration.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.SimulateTimestamp">
-            <summary>
-            Gets or sets a value that determines whether timestamps are
-            simulated for the purposes of real-time concentration.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.ColumnMappings">
-            <summary>
-            Defines the column mappings must defined: e.g., 0=Timestamp; 1=PPA:12; 2=PPA13.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.UseAsyncConnect">
-            <summary>
-            Gets a flag that determines if this <see cref="T:CsvAdapters.CsvInputAdapter"/>
-            uses an asynchronous connection.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.Status">
-            <summary>
-            Returns the detailed status of this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="P:CsvAdapters.CsvInputAdapter.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
-            </summary>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:CsvAdapters.CsvInputAdapter"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.Initialize">
-            <summary>
-            Initializes this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.AttemptConnection">
-            <summary>
-            Attempts to connect to this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.AttemptDisconnection">
-            <summary>
-            Attempts to disconnect from this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
-            </summary>
-        </member>
-        <member name="M:CsvAdapters.CsvInputAdapter.GetShortStatus(System.Int32)">
-            <summary>
-            Gets a short one-line status of this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
-            </summary>
-            <param name="maxLength">Maximum length of the status message.</param>
-            <returns>Text of the status message.</returns>
-        </member>
         <member name="T:CsvAdapters.CsvOutputAdapter">
             <summary>
             Represents an output adapter that writes measurements to a CSV file.
@@ -486,7 +381,7 @@
         </member>
         <member name="P:CsvAdapters.CsvOutputAdapter.Status">
             <summary>
-            Returns the detailed status of this <see cref="T:CsvAdapters.CsvInputAdapter"/>.
+            Returns the detailed status of this <see cref="!:CsvInputAdapter"/>.
             </summary>
         </member>
         <member name="M:CsvAdapters.CsvOutputAdapter.Initialize">
@@ -513,6 +408,111 @@
         <member name="M:CsvAdapters.CsvOutputAdapter.GetShortStatus(System.Int32)">
             <summary>
             Gets a short one-line status of this <see cref="T:CsvAdapters.CsvOutputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="T:CSVAdapters.CsvInputAdapter">
+            <summary>
+            Represents an input adapter that reads measurements from a CSV file.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CSVAdapters.CsvInputAdapter"/> class.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.FileName">
+            <summary>
+            Gets or sets the name of the CSV file from which measurements will be read.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.InputInterval">
+            <summary>
+            Gets or sets the interval of time between sending frames into the concentrator.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.AutoRepeat">
+            <summary>
+            Gets or sets value that determines if the CSV input file data should be replayed repeatedly.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.SkipRows">
+            <summary>
+            Gets or sets number of lines to skip in the source file before the header line is encountered.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.UseHighResolutionInputTimer">
+            <summary>
+            Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
+            </summary>
+            <remarks>
+            Useful when input frames need be accurately time-aligned to the local clock to better simulate
+            an input device and calculate downstream latencies.<br/>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.MeasurementsPerInterval">
+            <summary>
+            Gets or sets the number of measurements that are read from the CSV file in each frame.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.TransverseMode">
+            <summary>
+            Gets or sets a value that determines whether CSV file is in transverse mode for real-time concentration.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.SimulateTimestamp">
+            <summary>
+            Gets or sets a value that determines whether timestamps are
+            simulated for the purposes of real-time concentration.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.ColumnMappings">
+            <summary>
+            Defines the column mappings, must be defined: e.g., 0=Timestamp; 1=PPA:12; 2=PPA13.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets a flag that determines if this <see cref="T:CSVAdapters.CsvInputAdapter"/>
+            uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.Status">
+            <summary>
+            Returns the detailed status of this <see cref="T:CSVAdapters.CsvInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:CSVAdapters.CsvInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:CSVAdapters.CsvInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:CSVAdapters.CsvInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:CSVAdapters.CsvInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:CSVAdapters.CsvInputAdapter"/>.
             </summary>
             <param name="maxLength">Maximum length of the status message.</param>
             <returns>Text of the status message.</returns>
