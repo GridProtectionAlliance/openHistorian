@@ -884,10 +884,24 @@ namespace openHistorian.Adapters
             // accommodate high volume data archiving in very low disk space environments.
             long neededSpace = m_archiveInfo.DesiredRemainingSpace + 3 * m_archiveInfo.TargetFileSize;
 
+            string[] archiveDirectories = m_archiveDirectories ?? [WorkingDirectory];
+
+            // Normalize archive directories: absolute, trimmed, with trailing separator
+            for (int i = 0; i < archiveDirectories.Length; i++)
+            {
+                string normalizedDirectory = Path.GetFullPath(archiveDirectories[i]).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                
+                // Add trailing separator to ensure only subdirectory, not prefix match which might be a file
+                if (!normalizedDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    normalizedDirectory += Path.DirectorySeparatorChar;
+
+                archiveDirectories[i] = normalizedDirectory;
+            }
+
             try
             {
                 // Check if any target archive destination has enough disk space
-                foreach (string path in m_archiveDirectories ?? [WorkingDirectory])
+                foreach (string path in archiveDirectories)
                 {
                     FilePath.GetAvailableFreeSpace(path, out long freeSpace, out _);
 
@@ -912,15 +926,19 @@ namespace openHistorian.Adapters
 
                 long fileSizeSum = 0;
 
-                // Find oldest archive files until we have reached target disk space. End time is preferred over start
-                // time for sorting since devices with an inaccurate GPS clock can provide bad start times when out
-                // of range timestamps are not configured to be filtered and you don't want to accidentally delete a
-                // file with otherwise in-range data.
-                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().OrderBy(file => file.EndTime).TakeWhile(item =>
-                {
-                    fileSizeSum += item.FileSize;
-                    return fileSizeSum < neededSpace;
-                }).ToArray();
+                // Find the oldest archive files until we have reached target disk space. End time is preferred over
+                // start time for sorting since devices with an inaccurate GPS clock can provide bad start times when
+                // out of range timestamps are not configured to be filtered, and you don't want to accidentally delete
+                // a file with otherwise in-range data.
+                ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles()
+                    .Where(filePathTargetsArchiveDirectories)
+                    .OrderBy(file => file.EndTime)
+                    .TakeWhile(item =>
+                    {
+                        fileSizeSum += item.FileSize;
+                        return fileSizeSum < neededSpace;
+                    })
+                    .ToArray();
 
                 database.DeleteFiles(filesToDelete.Select(file => file.Id).ToList());
 
@@ -929,6 +947,19 @@ namespace openHistorian.Adapters
             catch (Exception ex)
             {
                 OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed while attempting to delete oldest archive files in order to free disk space: {ex.Message}", ex));
+            }
+
+            return;
+
+            bool filePathTargetsArchiveDirectories(ArchiveDetails file)
+            {
+                // Normalize file path: absolute, trimmed
+                string filePath = Path.GetFullPath(file.FileName);
+
+                // Case-insensitive compare on Windows, case-sensitive on Posix environments
+                StringComparison comparison = Common.IsPosixEnvironment ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+                return archiveDirectories.Any(directory => filePath.StartsWith(directory, comparison));
             }
         }
 
