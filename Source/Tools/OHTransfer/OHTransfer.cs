@@ -1,0 +1,599 @@
+﻿//******************************************************************************************************
+//  OHTransfer.cs - Gbtc
+//
+//  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  08/12/2025 - J. Ritchie Carroll
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using GSF;
+using GSF.IO;
+using GSF.Snap;
+using GSF.Snap.Filters;
+using GSF.Snap.Services;
+using GSF.Snap.Services.Reader;
+using GSF.Snap.Storage;
+using GSF.Threading;
+using GSF.Units;
+using GSF.Units.EE;
+using openHistorian.Net;
+using openHistorian.Snap;
+using openHistorian.Snap.Definitions;
+using CancellationToken = System.Threading.CancellationToken;
+
+namespace OHTransfer
+{
+    public partial class OHTransfer : Form
+    {
+        private CancellationTokenSource m_cancellationTokenSource;
+        private bool m_formClosing;
+
+        public OHTransfer()
+        {
+            InitializeComponent();
+
+            DateTime nowFromTopOfHour = DateTime.UtcNow.BaselinedTimestamp(BaselineTimeInterval.Hour);
+            dateTimePickerFrom.Value = nowFromTopOfHour.AddDays(-30);
+            dateTimePickerTo.Value = nowFromTopOfHour;
+        }
+
+        private void OHTransfer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_formClosing = true;
+        }
+
+        private void buttonOpenSourceFilesLocation_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.Description = "Find source location for existing openHistorian 2.0 archive files";
+
+            if (Directory.Exists(textBoxSourceFiles.Text))
+                folderBrowserDialog.SelectedPath = textBoxSourceFiles.Text;
+
+            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
+                textBoxSourceFiles.Text = folderBrowserDialog.SelectedPath;
+
+            if (!textBoxSourceFiles.Text.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                textBoxSourceFiles.Text += Path.DirectorySeparatorChar;
+        }
+
+        private void buttonOpenDestinationFilesLocation_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.Description = "Find destination location for new openHistorian 2.0 archive files";
+
+            if (Directory.Exists(textBoxDestinationFiles.Text))
+                folderBrowserDialog.SelectedPath = textBoxDestinationFiles.Text;
+
+            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
+                textBoxDestinationFiles.Text = folderBrowserDialog.SelectedPath;
+
+            if (!textBoxDestinationFiles.Text.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                textBoxDestinationFiles.Text += Path.DirectorySeparatorChar;
+
+            if (!Directory.Exists(textBoxDestinationFiles.Text))
+                Directory.CreateDirectory(textBoxDestinationFiles.Text);
+        }
+
+        private void buttonOpenSourceCSVMeasurementsFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Title = "Find source openHistorian 2.0 CSV measurements export file";
+            openFileDialog.FileName = File.Exists(textBoxSourceCSVMeasurements.Text) ? textBoxSourceCSVMeasurements.Text : string.Empty;
+
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                textBoxSourceCSVMeasurements.Text = openFileDialog.FileName;
+        }
+
+        private void buttonOpenDestinationCSVMeasurementsFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Title = "Find destination openHistorian 2.0 CSV measurements export file";
+            openFileDialog.FileName = File.Exists(textBoxDestinationCSVMeasurements.Text) ? textBoxDestinationCSVMeasurements.Text : string.Empty;
+
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                textBoxDestinationCSVMeasurements.Text = openFileDialog.FileName;
+        }
+
+        private void buttonGo_Click(object sender, EventArgs e)
+        {
+            ClearUpdateMessages();
+            UpdateProgressBar(0);
+
+            if (string.IsNullOrWhiteSpace(textBoxSourceFiles.Text))
+            {
+                MessageBox.Show("Please select a source location for existing openHistorian 2.0 archive files.", "Missing Source Location", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBoxDestinationFiles.Text))
+            {
+                MessageBox.Show("Please select a destination location for new openHistorian 2.0 archive files.", "Missing Destination Location", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBoxSourceCSVMeasurements.Text))
+            {
+                MessageBox.Show("Please select a source openHistorian 2.0 CSV measurements export file.", "Missing Source File", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBoxDestinationCSVMeasurements.Text))
+            {
+                MessageBox.Show("Please select a destination openHistorian 2.0 CSV measurements export file.", "Missing Destination File", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!Directory.Exists(textBoxDestinationFiles.Text))
+            {
+                MessageBox.Show("The specified destination location does not exist.", "Invalid Destination Location", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!File.Exists(textBoxSourceCSVMeasurements.Text))
+            {
+                MessageBox.Show("The specified source openHistorian 2.0 CSV measurements export file does not exist.", "Invalid Source File", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!File.Exists(textBoxDestinationCSVMeasurements.Text))
+            {
+                MessageBox.Show("The specified destination openHistorian 2.0 CSV measurements export file does not exist.", "Invalid Destination File", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DateTime startTime = dateTimePickerFrom.Value;
+            DateTime endTime = dateTimePickerTo.Value;
+
+            if (endTime <= startTime)
+            {
+                MessageBox.Show("The end time must be greater than the start time.", "Invalid Time Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            long processStartTime = DateTime.UtcNow.Ticks;
+            string[] csvLines;
+
+            // Read CSV measurements from source file
+            ShowUpdateMessage("Reading source CSV measurements file: {0}...", textBoxSourceCSVMeasurements.Text);
+
+            try
+            {
+                csvLines = File.ReadAllLines(textBoxSourceCSVMeasurements.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateMessage("Error reading source CSV measurements file: {0}", ex.Message);
+                return;
+            }
+
+            // Parse ID and SignalReference columns from CSV lines into a dictionary using header row
+            (Dictionary<ulong, SignalReference> sourceCSVData, string deviceName) = ParseCSVMeasurements(csvLines);
+
+            if (sourceCSVData.Count == 0)
+            {
+                ShowUpdateMessage("No valid measurements found in source CSV file -- operation cancelled.");
+                return;
+            }
+
+            // Read CSV measurements from destination file
+            ShowUpdateMessage("Reading destination CSV measurements file: {0}...", textBoxDestinationCSVMeasurements.Text);
+
+            try
+            {
+                csvLines = File.ReadAllLines(textBoxDestinationCSVMeasurements.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateMessage("Error reading destination CSV measurements file: {0}", ex.Message);
+                return;
+            }
+
+            // Parse ID and SignalReference columns from CSV lines ulong a dictionary using header row
+            (Dictionary<ulong, SignalReference> destinationCSVData, _) = ParseCSVMeasurements(csvLines);
+
+            if (destinationCSVData.Count == 0)
+            {
+                ShowUpdateMessage("No valid measurements found in destination CSV file -- operation cancelled.");
+                return;
+            }
+
+            // Find measurements by SignalReference.Kind + SignalReference.Index in source CSV that also exist in destination CSV
+            // where the result is source CSV historian ID to destination CSV historian ID mapping
+            Dictionary<ulong, ulong> historianIDMapping = new();
+
+            foreach (KeyValuePair<ulong, SignalReference> sourceEntry in sourceCSVData)
+            {
+                SignalReference sourceSignal = sourceEntry.Value;
+
+                // Find matching SignalReference in destination CSV
+                foreach (KeyValuePair<ulong, SignalReference> destinationEntry in destinationCSVData)
+                {
+                    SignalReference destinationSignal = destinationEntry.Value;
+
+                    if (sourceSignal.Kind != destinationSignal.Kind || sourceSignal.Index != destinationSignal.Index)
+                        continue;
+
+                    // Also match on Acronym for Calculation signals
+                    if (sourceSignal.Kind == SignalKind.Calculation && sourceSignal.Acronym != destinationSignal.Acronym)
+                        continue;
+
+                    historianIDMapping[sourceEntry.Key] = destinationEntry.Key;
+                    break; // Found a match, no need to check further
+                }
+            }
+
+            if (historianIDMapping.Count == 0)
+            {
+                ShowUpdateMessage("No matching measurements found between source and destination CSV files -- operation cancelled.");
+                return;
+            }
+
+            ShowUpdateMessage("Found {0:N0} matching measurements between source and destination CSV files.", historianIDMapping.Count);
+
+            string sourcePath = textBoxSourceFiles.Text.Trim();
+            string destinationPath = textBoxDestinationFiles.Text.Trim();
+
+            m_cancellationTokenSource = new CancellationTokenSource();
+
+            new Thread(() =>
+            {
+                try
+                {
+                    EnableGoButton(false);
+
+                    CancellationToken cancellationToken = m_cancellationTokenSource.Token;
+                    
+                    int totalDays = (int)(endTime - startTime).TotalDays;
+                    SetProgressMaximum(totalDays);
+
+                    const string InstanceName = "PPA";
+
+                    // Establish archive information for this historian instance
+                    HistorianServerDatabaseConfig archiveInfo = new(InstanceName, sourcePath, false)
+                    {
+                        TargetFileSize = (long)(1.5D * SI.Giga),
+                        DirectoryMethod = ArchiveDirectoryMethod.YearThenMonth
+                    };
+
+                    HistorianServer server = new(archiveInfo);
+                    SnapClient client = SnapClient.Connect(server.Host);
+                    ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
+                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles().ToDictionary(file => file.Id, file => file);
+
+                    using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
+                    archiveList.LoadFiles(attachedFiles.Values.Select(file => file.FileName));
+
+                    WorkerThreadSynchronization workerThreadSynchronization = new();
+                    long lastStatusMessage = DateTime.UtcNow.Ticks;
+
+                    workerThreadSynchronization.RequestCallback(() =>
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (DateTime.UtcNow.Ticks - lastStatusMessage <= Ticks.PerSecond * 5)
+                            return;
+
+                        lastStatusMessage = DateTime.UtcNow.Ticks;
+                        ShowUpdateMessage("Processed {0:N0} points so far, scanning at {1:N3} points per second...", Stats.PointsReturned, Stats.PointsReturned / ((DateTime.UtcNow.Ticks - processStartTime) * Ticks.PerSecond));
+                    });
+
+                    SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
+                    MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(historianIDMapping.Keys);
+
+                    using SequentialReaderStream<HistorianKey, HistorianValue> reader = new(archiveList, SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter, workerThreadSynchronization);
+
+                    string completeFileName = Path.Combine(destinationPath, $"{deviceName}-Exported.d2");
+                    string pendingFileName = Path.Combine(destinationPath, $"{FilePath.GetFileNameWithoutExtension(completeFileName)}.~d2i");
+                    Guid stage3FileFlags = FileFlags.GetStage(3);
+
+                    void processNewArchive(Guid archiveID)
+                    {
+                        if (!attachedFiles.TryGetValue(archiveID, out ArchiveDetails archiveDetails))
+                            return;
+
+                        double processedDays = (archiveDetails.EndTime - archiveDetails.StartTime).TotalDays;
+
+                        UpdateProgressBar((int)processedDays);
+                        ShowUpdateMessage("Processing archive \"{0}\" from {1} to {2}, {3:0.00%) complete...", archiveDetails.FileName, archiveDetails.StartTime.ToString("yyyy-MM-dd HH:mm:ss"), archiveDetails.EndTime.ToString("yyyy-MM-dd HH:mm:ss"), processedDays / totalDays);
+                    }
+
+                    SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, processNewArchive, HistorianFileEncodingDefinition.TypeGuid, reader, stage3FileFlags);
+
+                    Ticks processDuration = DateTime.UtcNow.Ticks - processStartTime;
+                    ShowUpdateMessage("Data transfer completed in {0}", processDuration.ToElapsedTimeString(2));
+                }
+                catch (Exception ex)
+                {
+                    ShowUpdateMessage("Error during transfer: {0}", ex.Message);
+                }
+                finally
+                {
+                    EnableGoButton(true);
+                }
+            })
+            {
+                IsBackground = true
+            }
+            .Start();
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            m_cancellationTokenSource.Cancel();
+            ShowUpdateMessage("Transfer operation cancelled by user.");
+        }
+
+        private (Dictionary<ulong, SignalReference> csvData, string deviceName) ParseCSVMeasurements(string[] csvLines)
+        {
+            Dictionary<ulong, SignalReference> csvData = new();
+
+            if (csvLines is null || csvLines.Length <= 1)
+                return (csvData, "");
+
+            // Parse header to find column indices using robust CSV parser
+            string[] headers = ParseCSVLine(csvLines[0]);
+
+            int deviceIndex = Array.FindIndex(headers, h => h.Trim().Equals("Device", StringComparison.OrdinalIgnoreCase));
+
+            if (deviceIndex < 0)
+            {
+                ShowUpdateMessage("CSV header must contain 'Device' column.");
+                return (csvData, "");
+            }
+
+            // Validate that device names in all rows are the same
+            string firstDeviceName = null;
+
+            for (int i = 1; i < csvLines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(csvLines[i]))
+                    continue;
+
+                string[] columns = ParseCSVLine(csvLines[i]);
+
+                if (columns.Length <= deviceIndex)
+                    continue;
+
+                string deviceName = columns[deviceIndex].Trim();
+                    
+                if (string.IsNullOrEmpty(firstDeviceName))
+                {
+                    firstDeviceName = deviceName;
+                }
+                else if (!string.Equals(firstDeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowUpdateMessage("All rows in CSV file must have the same 'Device' name. Export is designed to transfer one device at a time.");
+                    return (csvData, "");
+                }
+            }
+
+            int idIndex = Array.FindIndex(headers, h => h.Trim().Equals("ID", StringComparison.OrdinalIgnoreCase));
+            int signalRefIndex = Array.FindIndex(headers, h => h.Trim().Equals("SignalReference", StringComparison.OrdinalIgnoreCase));
+
+            if (idIndex < 0 || signalRefIndex < 0)
+            {
+                ShowUpdateMessage("CSV header must contain 'ID' and 'SignalReference' columns.");
+                return (csvData, "");
+            }
+
+            int maxColumnIndex = Math.Max(Math.Max(deviceIndex, idIndex), signalRefIndex);
+            int calcIndex = 1;
+
+            // Parse data rows using robust CSV parser
+            for (int i = 1; i < csvLines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(csvLines[i]))
+                    continue;
+
+                string[] columns = ParseCSVLine(csvLines[i]);
+
+                if (columns.Length <= maxColumnIndex)
+                    continue;
+
+                string idValue = columns[idIndex].Trim();
+
+                if (string.IsNullOrEmpty(idValue))
+                    continue;
+
+                string[] parts = idValue.Split(':');
+
+                if (parts.Length != 2 || !ulong.TryParse(parts[1], out ulong id))
+                {
+                    ShowUpdateMessage("Invalid ID format in row {0}: {1}. Expected format is 'Source:ID'.", i + 1, idValue);
+                    continue;
+                }
+
+                string signalReferenceValue = columns[signalRefIndex].Trim();
+
+                if (string.IsNullOrEmpty(signalReferenceValue))
+                    continue;
+
+                SignalReference signalReference = new(signalReferenceValue);
+
+                if (signalReference.Kind == SignalKind.Unknown)
+                {
+                    parts = signalReferenceValue.Split('-');
+
+                    if (parts.Length > 1)
+                    {
+                        // Track matching acronyms for Calculation signals
+                        signalReference.Acronym = parts[parts.Length - 1].Trim();
+                        signalReference.Kind = SignalKind.Calculation;
+                        signalReference.Index = calcIndex++;
+                    }
+                    else
+                    {
+                        continue; // Skip invalid SignalReference
+                    }
+                }
+
+                csvData[id] = signalReference;
+            }
+
+            return (csvData, firstDeviceName ?? "");
+        }
+
+        private static string[] ParseCSVLine(string line)
+        {
+            if (string.IsNullOrEmpty(line))
+                return [];
+
+            List<string> fields = [];
+            StringBuilder current = new();
+            bool inQuotes = false;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+
+                if (inQuotes)
+                {
+                    if (c == '"')
+                    {
+                        // Check for escaped quote ("")
+                        if (i + 1 < line.Length && line[i + 1] == '"')
+                        {
+                            current.Append('"');
+                            i++; // Skip the next quote
+                        }
+                        else
+                        {
+                            inQuotes = false;
+                        }
+                    }
+                    else
+                    {
+                        current.Append(c);
+                    }
+                }
+                else
+                {
+                    switch (c)
+                    {
+                        case ',':
+                            fields.Add(current.ToString());
+                            current.Clear();
+                            break;
+                        case '"':
+                            inQuotes = true;
+                            break;
+                        default:
+                            current.Append(c);
+                            break;
+                    }
+                }
+            }
+
+            fields.Add(current.ToString());
+
+            return fields.ToArray();
+        }
+
+        private void EnableGoButton(bool enabled)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<bool>(EnableGoButton), enabled);
+            }
+            else
+            {
+                buttonGo.Enabled = enabled;
+            }
+        }
+
+        private void UpdateProgressBar(int value)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<int>(UpdateProgressBar), value);
+            }
+            else
+            {
+                if (value < progressBar.Minimum)
+                    value = progressBar.Minimum;
+
+                if (value > progressBar.Maximum)
+                    progressBar.Maximum = value;
+
+                progressBar.Value = value;
+            }
+        }
+
+        private void SetProgressMaximum(int maximum)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<int>(SetProgressMaximum), maximum);
+            }
+            else
+            {
+                progressBar.Maximum = maximum;
+            }
+        }
+
+        private void ClearUpdateMessages()
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(ClearUpdateMessages));
+            }
+            else
+            {
+                lock (textBoxMessageOutput)
+                    textBoxMessageOutput.Text = "";
+            }
+        }
+
+        private void ShowUpdateMessage(string message, params object[] args)
+        {
+            if (m_formClosing)
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<string, object[]>(ShowUpdateMessage), message, args);
+            }
+            else
+            {
+                StringBuilder outputText = new();
+
+                outputText.AppendFormat(message, args);
+                outputText.AppendLine();
+
+                lock (textBoxMessageOutput)
+                    textBoxMessageOutput.AppendText(outputText.ToString());
+            }
+        }
+    }
+}
