@@ -330,12 +330,10 @@ namespace OHTransfer
                     HistorianServer server = new(archiveInfo);
                     SnapClient client = SnapClient.Connect(server.Host);
                     ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
-                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles()
-                        .OrderBy(file => file.EndTime)
-                        .ToDictionary(file => file.Id, file => file);
+                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles().ToDictionary(file => file.Id);
 
                     using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
-                    archiveList.LoadFiles(attachedFiles.Values.Select(file => file.FileName));
+                    archiveList.LoadFiles(attachedFiles.Values.OrderBy(file => file.EndTime).Select(file => file.FileName));
 
                     SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(historianIDMapping.Keys);
