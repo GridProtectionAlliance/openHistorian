@@ -20,6 +20,8 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
+// ReSharper disable AccessToModifiedClosure
+// ReSharper disable AccessToDisposedClosure
 
 using System;
 using System.Collections.Generic;
@@ -71,7 +73,7 @@ namespace OHTransfer
             settings.Add("sourceCSVMeasurements", textBoxSourceCSVMeasurements.Text, "openHistorian 2.0 source CSV measurements export file", false, SettingScope.User);
             settings.Add("destinationCSVMeasurements", textBoxDestinationCSVMeasurements.Text, "openHistorian 2.0 destination CSV measurements export file", false, SettingScope.User);
             settings.Add("fromDate", dateTimePickerFrom.Value.ToString(dateTimePickerFrom.CustomFormat), "Start date for transfer", false, SettingScope.User);
-            settings.Add("toDate", dateTimePickerTo.Value.ToString(dateTimePickerFrom.CustomFormat), "End date for transfer", false, SettingScope.User);
+            settings.Add("toDate", dateTimePickerTo.Value.ToString(dateTimePickerTo.CustomFormat), "End date for transfer", false, SettingScope.User);
 
             textBoxSourceFiles.Text = settings["sourceFiles"].Value;
             textBoxDestinationFiles.Text = settings["destinationFiles"].Value;
@@ -96,9 +98,12 @@ namespace OHTransfer
             settings["sourceCSVMeasurements"].Value = textBoxSourceCSVMeasurements.Text;
             settings["destinationCSVMeasurements"].Value = textBoxDestinationCSVMeasurements.Text;
             settings["fromDate"].Value = dateTimePickerFrom.Value.ToString(dateTimePickerFrom.CustomFormat);
-            settings["toDate"].Value = dateTimePickerTo.Value.ToString(dateTimePickerFrom.CustomFormat);
+            settings["toDate"].Value = dateTimePickerTo.Value.ToString(dateTimePickerTo.CustomFormat);
 
             ConfigurationFile.Current.Save();
+
+            m_cancellationTokenSource?.Cancel();
+            Thread.Sleep(500);
         }
 
         private void buttonOpenSourceFilesLocation_Click(object sender, EventArgs e)
@@ -297,8 +302,10 @@ namespace OHTransfer
 
             string sourcePath = textBoxSourceFiles.Text.Trim();
             string destinationPath = textBoxDestinationFiles.Text.Trim();
+            bool processCompleted = false;
 
             m_cancellationTokenSource = new CancellationTokenSource();
+            ICancellationToken monitorCancellationToken = null;
 
             new Thread(() =>
             {
@@ -330,24 +337,49 @@ namespace OHTransfer
                     using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
                     archiveList.LoadFiles(attachedFiles.Values.Select(file => file.FileName));
 
-                    WorkerThreadSynchronization workerThreadSynchronization = new();
-                    long lastStatusMessage = DateTime.UtcNow.Ticks;
-
-                    workerThreadSynchronization.RequestCallback(() =>
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        if (DateTime.UtcNow.Ticks - lastStatusMessage <= Ticks.PerSecond * 5)
-                            return;
-
-                        lastStatusMessage = DateTime.UtcNow.Ticks;
-                        ShowUpdateMessage("Processed {0:N0} points so far, scanning at {1:N3} points per second...", Stats.PointsReturned, Stats.PointsReturned / ((DateTime.UtcNow.Ticks - processStartTime) * Ticks.PerSecond));
-                    });
-
                     SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(historianIDMapping.Keys);
 
-                    using SequentialReaderStream<HistorianKey, HistorianValue> reader = new(archiveList, SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter, workerThreadSynchronization);
+                    using WorkerThreadSynchronization workerThreadSynchronization = new();
+                    using SequentialStreamReader reader = new(archiveList, SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter, workerThreadSynchronization);
+
+                    long lastStatusMessage = DateTime.UtcNow.Ticks;
+
+                    void readingMonitor()
+                    {
+                        if (cancellationToken.IsCancellationRequested || processCompleted)
+                        {
+                            reader.CancelReader();
+                            return;
+                        }
+
+                        workerThreadSynchronization.RequestCallback(() =>
+                        {
+                            if (DateTime.UtcNow.Ticks - lastStatusMessage < Ticks.PerSecond * 4)
+                                return;
+
+                            lastStatusMessage = DateTime.UtcNow.Ticks;
+
+                            if (Stats.PointsReturned == 0L)
+                            {
+                                ShowUpdateMessage("\r\nScanned {0:N0} points so far, scanning at {1:N0} points per second...", Stats.PointsScanned, (Stats.PointsReturned + Stats.PointsScanned) / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                            }
+                            else
+                            {
+                                ShowUpdateMessage("\r\nProcessed {0:N0} points so far, scanning at {1:N0} points per second:", Stats.PointsReturned, (Stats.PointsReturned + Stats.PointsScanned) / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+
+                                double processedDays = (reader.LastKey.TimestampAsDate - startTime).TotalDays;
+
+                                UpdateProgressBar((int)processedDays);
+                                ShowUpdateMessage("        {0:0.00%} complete...", processedDays / totalDays);
+                            }
+                        });
+
+                        Application.DoEvents();
+                        monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(2000);
+                    }
+
+                    monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(2000);
 
                     string completeFileName = Path.Combine(destinationPath, $"{deviceName}-Exported.d2");
                     string pendingFileName = Path.Combine(destinationPath, $"{FilePath.GetFileNameWithoutExtension(completeFileName)}.~d2i");
@@ -358,23 +390,13 @@ namespace OHTransfer
                     if (File.Exists(completeFileName))
                         File.Delete(completeFileName);
 
-                    Guid stage3FileFlags = FileFlags.GetStage(3);
-
-                    void processNewArchive(Guid archiveID)
-                    {
-                        if (!attachedFiles.TryGetValue(archiveID, out ArchiveDetails archiveDetails))
-                            return;
-
-                        double processedDays = (archiveDetails.EndTime - startTime).TotalDays;
-
-                        UpdateProgressBar((int)processedDays);
-                        ShowUpdateMessage("Processing archive \"{0}\" from {1} to {2}, {3:0.00%) complete...", archiveDetails.FileName, archiveDetails.StartTime.ToString("yyyy-MM-dd HH:mm:ss"), archiveDetails.EndTime.ToString("yyyy-MM-dd HH:mm:ss"), processedDays / totalDays);
-                    }
-
-                    SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, processNewArchive, HistorianFileEncodingDefinition.TypeGuid, reader, stage3FileFlags);
+                    SortedTreeFileSimpleWriter<HistorianKey, HistorianValue>.Create(pendingFileName, completeFileName, 4096, null, HistorianFileEncodingDefinition.TypeGuid, reader, FileFlags.GetStage(3));
 
                     Ticks processDuration = DateTime.UtcNow.Ticks - processStartTime;
+                    processCompleted = true;
+
                     ShowUpdateMessage("Data transfer completed in {0}", processDuration.ToElapsedTimeString(2));
+                    UpdateProgressBar(totalDays);
                 }
                 catch (Exception ex)
                 {
@@ -382,6 +404,7 @@ namespace OHTransfer
                 }
                 finally
                 {
+                    monitorCancellationToken?.Cancel();
                     EnableGoButton(true);
                 }
             })
@@ -575,6 +598,7 @@ namespace OHTransfer
             else
             {
                 buttonGo.Enabled = enabled;
+                buttonGo.Visible = enabled;
             }
         }
 
