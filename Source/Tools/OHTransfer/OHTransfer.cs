@@ -324,6 +324,7 @@ namespace OHTransfer
                     
                     int totalDays = (int)(endTime - startTime).TotalDays;
                     SetProgressMaximum(totalDays);
+                    Stats.Clear();
 
                     const string InstanceName = "PPA";
 
