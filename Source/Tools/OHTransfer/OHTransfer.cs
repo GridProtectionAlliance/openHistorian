@@ -337,10 +337,17 @@ namespace OHTransfer
                     HistorianServer server = new(archiveInfo);
                     SnapClient client = SnapClient.Connect(server.Host);
                     ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
-                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles().ToDictionary(file => file.Id);
+                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles()
+                        .Where(file => file.EndTime > startTime && file.EndTime <= endTime)
+                        .ToDictionary(file => file.Id);
 
                     using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
-                    archiveList.LoadFiles(attachedFiles.Values.OrderBy(file => file.EndTime).Select(file => file.FileName));
+
+                    archiveList.LoadFiles(attachedFiles.Values
+                        .OrderBy(file => file.EndTime)
+                        .Select(file => file.FileName));
+
+                    ShowUpdateMessage("Found {0:N0} archives in source location covering specified time range.", attachedFiles.Count);
 
                     SeekFilterBase<HistorianKey> timeFilter = TimestampSeekFilter.CreateFromRange<HistorianKey>(startTime, endTime);
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(historianIDMapping.Keys);
@@ -366,7 +373,7 @@ namespace OHTransfer
 
                                 if (Stats.PointsReturned == 0L)
                                 {
-                                    ShowUpdateMessage("\r\nScanning archives for points, processing {0:N0} cache miss retries per second...", Stats.PointsScanned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                                    ShowUpdateMessage("\r\nScanning archives for points in specified time range, processing {0:N0} cache miss retries per second...", Stats.PointsScanned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
                                 }
                                 else
                                 {
