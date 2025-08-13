@@ -23,12 +23,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using GSF;
+using GSF.Configuration;
 using GSF.IO;
 using GSF.Snap;
 using GSF.Snap.Filters;
@@ -38,6 +40,7 @@ using GSF.Snap.Storage;
 using GSF.Threading;
 using GSF.Units;
 using GSF.Units.EE;
+using GSF.Windows.Forms;
 using openHistorian.Net;
 using openHistorian.Snap;
 using openHistorian.Snap.Definitions;
@@ -59,9 +62,43 @@ namespace OHTransfer
             dateTimePickerTo.Value = nowFromTopOfHour;
         }
 
+        private void OHTransfer_Load(object sender, EventArgs e)
+        {
+            CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings["systemSettings"];
+
+            settings.Add("sourceFiles", textBoxSourceFiles.Text, "openHistorian 2.0 source files location", false, SettingScope.User);
+            settings.Add("destinationFiles", textBoxDestinationFiles.Text, "openHistorian 2.0 destination files location", false, SettingScope.User);
+            settings.Add("sourceCSVMeasurements", textBoxSourceCSVMeasurements.Text, "openHistorian 2.0 source CSV measurements export file", false, SettingScope.User);
+            settings.Add("destinationCSVMeasurements", textBoxDestinationCSVMeasurements.Text, "openHistorian 2.0 destination CSV measurements export file", false, SettingScope.User);
+            settings.Add("fromDate", dateTimePickerFrom.Value.ToString(dateTimePickerFrom.CustomFormat), "Start date for transfer", false, SettingScope.User);
+            settings.Add("toDate", dateTimePickerTo.Value.ToString(dateTimePickerFrom.CustomFormat), "End date for transfer", false, SettingScope.User);
+
+            textBoxSourceFiles.Text = settings["sourceFiles"].Value;
+            textBoxDestinationFiles.Text = settings["destinationFiles"].Value;
+            textBoxSourceCSVMeasurements.Text = settings["sourceCSVMeasurements"].Value;
+            textBoxDestinationCSVMeasurements.Text = settings["destinationCSVMeasurements"].Value;
+            dateTimePickerFrom.Value = DateTime.ParseExact(settings["fromDate"].Value, dateTimePickerFrom.CustomFormat, null, DateTimeStyles.AssumeUniversal);
+            dateTimePickerTo.Value = DateTime.ParseExact(settings["toDate"].Value, dateTimePickerTo.CustomFormat, null, DateTimeStyles.AssumeUniversal);
+
+            this.RestoreLocation();
+        }
+
         private void OHTransfer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            CategorizedSettingsElementCollection settings = ConfigurationFile.Current.Settings["systemSettings"];
+
             m_formClosing = true;
+
+            this.SaveLocation();
+
+            settings["sourceFiles"].Value = textBoxSourceFiles.Text;
+            settings["destinationFiles"].Value = textBoxDestinationFiles.Text;
+            settings["sourceCSVMeasurements"].Value = textBoxSourceCSVMeasurements.Text;
+            settings["destinationCSVMeasurements"].Value = textBoxDestinationCSVMeasurements.Text;
+            settings["fromDate"].Value = dateTimePickerFrom.Value.ToString(dateTimePickerFrom.CustomFormat);
+            settings["toDate"].Value = dateTimePickerTo.Value.ToString(dateTimePickerFrom.CustomFormat);
+
+            ConfigurationFile.Current.Save();
         }
 
         private void buttonOpenSourceFilesLocation_Click(object sender, EventArgs e)
@@ -220,24 +257,33 @@ namespace OHTransfer
             // where the result is source CSV historian ID to destination CSV historian ID mapping
             Dictionary<ulong, ulong> historianIDMapping = new();
 
+            // Pre-index destination signals for O(1) lookup by match key
+            Dictionary<(SignalKind Kind, int Index), ulong> signalReferenceIDMap = [];
+            Dictionary<(SignalKind Kind, int Index, string Acronym), ulong> calculatedSignalReferenceIDMap = [];
+
+            foreach (KeyValuePair<ulong, SignalReference> destinationEntry in destinationCSVData)
+            {
+                SignalReference destinationSignal = destinationEntry.Value;
+
+                if (destinationSignal.Kind == SignalKind.Calculation)
+                    calculatedSignalReferenceIDMap[(destinationSignal.Kind, destinationSignal.Index, destinationSignal.Acronym ?? string.Empty)] = destinationEntry.Key;
+                else
+                    signalReferenceIDMap[(destinationSignal.Kind, destinationSignal.Index)] = destinationEntry.Key;
+            }
+
             foreach (KeyValuePair<ulong, SignalReference> sourceEntry in sourceCSVData)
             {
                 SignalReference sourceSignal = sourceEntry.Value;
 
-                // Find matching SignalReference in destination CSV
-                foreach (KeyValuePair<ulong, SignalReference> destinationEntry in destinationCSVData)
+                if (sourceSignal.Kind == SignalKind.Calculation)
                 {
-                    SignalReference destinationSignal = destinationEntry.Value;
-
-                    if (sourceSignal.Kind != destinationSignal.Kind || sourceSignal.Index != destinationSignal.Index)
-                        continue;
-
-                    // Also match on Acronym for Calculation signals
-                    if (sourceSignal.Kind == SignalKind.Calculation && sourceSignal.Acronym != destinationSignal.Acronym)
-                        continue;
-
-                    historianIDMapping[sourceEntry.Key] = destinationEntry.Key;
-                    break; // Found a match, no need to check further
+                    if (calculatedSignalReferenceIDMap.TryGetValue((sourceSignal.Kind, sourceSignal.Index, sourceSignal.Acronym ?? string.Empty), out ulong destID))
+                        historianIDMapping[sourceEntry.Key] = destID;
+                }
+                else
+                {
+                    if (signalReferenceIDMap.TryGetValue((sourceSignal.Kind, sourceSignal.Index), out ulong destID))
+                        historianIDMapping[sourceEntry.Key] = destID;
                 }
             }
 
@@ -277,7 +323,9 @@ namespace OHTransfer
                     HistorianServer server = new(archiveInfo);
                     SnapClient client = SnapClient.Connect(server.Host);
                     ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(InstanceName);
-                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles().ToDictionary(file => file.Id, file => file);
+                    Dictionary<Guid, ArchiveDetails> attachedFiles = database.GetAllAttachedFiles()
+                        .OrderBy(file => file.EndTime)
+                        .ToDictionary(file => file.Id, file => file);
 
                     using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
                     archiveList.LoadFiles(attachedFiles.Values.Select(file => file.FileName));
@@ -303,6 +351,13 @@ namespace OHTransfer
 
                     string completeFileName = Path.Combine(destinationPath, $"{deviceName}-Exported.d2");
                     string pendingFileName = Path.Combine(destinationPath, $"{FilePath.GetFileNameWithoutExtension(completeFileName)}.~d2i");
+
+                    if (File.Exists(pendingFileName))
+                        File.Delete(pendingFileName);
+
+                    if (File.Exists(completeFileName))
+                        File.Delete(completeFileName);
+
                     Guid stage3FileFlags = FileFlags.GetStage(3);
 
                     void processNewArchive(Guid archiveID)
@@ -310,7 +365,7 @@ namespace OHTransfer
                         if (!attachedFiles.TryGetValue(archiveID, out ArchiveDetails archiveDetails))
                             return;
 
-                        double processedDays = (archiveDetails.EndTime - archiveDetails.StartTime).TotalDays;
+                        double processedDays = (archiveDetails.EndTime - startTime).TotalDays;
 
                         UpdateProgressBar((int)processedDays);
                         ShowUpdateMessage("Processing archive \"{0}\" from {1} to {2}, {3:0.00%) complete...", archiveDetails.FileName, archiveDetails.StartTime.ToString("yyyy-MM-dd HH:mm:ss"), archiveDetails.EndTime.ToString("yyyy-MM-dd HH:mm:ss"), processedDays / totalDays);
@@ -352,7 +407,7 @@ namespace OHTransfer
             // Parse header to find column indices using robust CSV parser
             string[] headers = ParseCSVLine(csvLines[0]);
 
-            int deviceIndex = Array.FindIndex(headers, h => h.Trim().Equals("Device", StringComparison.OrdinalIgnoreCase));
+            int deviceIndex = Array.FindIndex(headers, header => header.Trim().Equals("Device", StringComparison.OrdinalIgnoreCase));
 
             if (deviceIndex < 0)
             {
@@ -386,8 +441,8 @@ namespace OHTransfer
                 }
             }
 
-            int idIndex = Array.FindIndex(headers, h => h.Trim().Equals("ID", StringComparison.OrdinalIgnoreCase));
-            int signalRefIndex = Array.FindIndex(headers, h => h.Trim().Equals("SignalReference", StringComparison.OrdinalIgnoreCase));
+            int idIndex = Array.FindIndex(headers, header => header.Trim().Equals("ID", StringComparison.OrdinalIgnoreCase));
+            int signalRefIndex = Array.FindIndex(headers, header => header.Trim().Equals("SignalReference", StringComparison.OrdinalIgnoreCase));
 
             if (idIndex < 0 || signalRefIndex < 0)
             {

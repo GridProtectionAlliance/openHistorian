@@ -33,6 +33,9 @@
             this.groupBoxMessages = new System.Windows.Forms.GroupBox();
             this.textBoxMessageOutput = new System.Windows.Forms.TextBox();
             this.groupBoxTransferConfiguration = new System.Windows.Forms.GroupBox();
+            this.textBoxSourceFiles = new System.Windows.Forms.TextBox();
+            this.labelSourceFilesLocation = new System.Windows.Forms.Label();
+            this.buttonOpenSourceFilesLocation = new System.Windows.Forms.Button();
             this.labelToUTC = new System.Windows.Forms.Label();
             this.labelFromUTC = new System.Windows.Forms.Label();
             this.labelToDate = new System.Windows.Forms.Label();
@@ -54,9 +57,6 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.buttonGo = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.textBoxSourceFiles = new System.Windows.Forms.TextBox();
-            this.labelSourceFilesLocation = new System.Windows.Forms.Label();
-            this.buttonOpenSourceFilesLocation = new System.Windows.Forms.Button();
             this.groupBoxMessages.SuspendLayout();
             this.groupBoxTransferConfiguration.SuspendLayout();
             this.SuspendLayout();
@@ -117,6 +117,38 @@
             this.groupBoxTransferConfiguration.TabIndex = 1;
             this.groupBoxTransferConfiguration.TabStop = false;
             this.groupBoxTransferConfiguration.Text = "Transfer Configuration";
+            // 
+            // textBoxSourceFiles
+            // 
+            this.textBoxSourceFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSourceFiles.Location = new System.Drawing.Point(178, 25);
+            this.textBoxSourceFiles.Name = "textBoxSourceFiles";
+            this.textBoxSourceFiles.Size = new System.Drawing.Size(547, 20);
+            this.textBoxSourceFiles.TabIndex = 1;
+            // 
+            // labelSourceFilesLocation
+            // 
+            this.labelSourceFilesLocation.AutoSize = true;
+            this.labelSourceFilesLocation.Location = new System.Drawing.Point(73, 28);
+            this.labelSourceFilesLocation.Name = "labelSourceFilesLocation";
+            this.labelSourceFilesLocation.Size = new System.Drawing.Size(105, 13);
+            this.labelSourceFilesLocation.TabIndex = 0;
+            this.labelSourceFilesLocation.Text = "&Source files location:";
+            this.labelSourceFilesLocation.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // buttonOpenSourceFilesLocation
+            // 
+            this.buttonOpenSourceFilesLocation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOpenSourceFilesLocation.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonOpenSourceFilesLocation.Location = new System.Drawing.Point(726, 22);
+            this.buttonOpenSourceFilesLocation.Name = "buttonOpenSourceFilesLocation";
+            this.buttonOpenSourceFilesLocation.Size = new System.Drawing.Size(28, 23);
+            this.buttonOpenSourceFilesLocation.TabIndex = 2;
+            this.buttonOpenSourceFilesLocation.Text = "...";
+            this.buttonOpenSourceFilesLocation.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.buttonOpenSourceFilesLocation.UseVisualStyleBackColor = true;
+            this.buttonOpenSourceFilesLocation.Click += new System.EventHandler(this.buttonOpenSourceFilesLocation_Click);
             // 
             // labelToUTC
             // 
@@ -327,38 +359,6 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // textBoxSourceFiles
-            // 
-            this.textBoxSourceFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxSourceFiles.Location = new System.Drawing.Point(178, 25);
-            this.textBoxSourceFiles.Name = "textBoxSourceFiles";
-            this.textBoxSourceFiles.Size = new System.Drawing.Size(547, 20);
-            this.textBoxSourceFiles.TabIndex = 1;
-            // 
-            // labelSourceFilesLocation
-            // 
-            this.labelSourceFilesLocation.AutoSize = true;
-            this.labelSourceFilesLocation.Location = new System.Drawing.Point(73, 28);
-            this.labelSourceFilesLocation.Name = "labelSourceFilesLocation";
-            this.labelSourceFilesLocation.Size = new System.Drawing.Size(105, 13);
-            this.labelSourceFilesLocation.TabIndex = 0;
-            this.labelSourceFilesLocation.Text = "&Source files location:";
-            this.labelSourceFilesLocation.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // buttonOpenSourceFilesLocation
-            // 
-            this.buttonOpenSourceFilesLocation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOpenSourceFilesLocation.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonOpenSourceFilesLocation.Location = new System.Drawing.Point(726, 22);
-            this.buttonOpenSourceFilesLocation.Name = "buttonOpenSourceFilesLocation";
-            this.buttonOpenSourceFilesLocation.Size = new System.Drawing.Size(28, 23);
-            this.buttonOpenSourceFilesLocation.TabIndex = 2;
-            this.buttonOpenSourceFilesLocation.Text = "...";
-            this.buttonOpenSourceFilesLocation.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.buttonOpenSourceFilesLocation.UseVisualStyleBackColor = true;
-            this.buttonOpenSourceFilesLocation.Click += new System.EventHandler(this.buttonOpenSourceFilesLocation_Click);
-            // 
             // OHTransfer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,6 +375,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "openHistorian Data Transfer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OHTransfer_FormClosing);
+            this.Load += new System.EventHandler(this.OHTransfer_Load);
             this.groupBoxMessages.ResumeLayout(false);
             this.groupBoxMessages.PerformLayout();
             this.groupBoxTransferConfiguration.ResumeLayout(false);
