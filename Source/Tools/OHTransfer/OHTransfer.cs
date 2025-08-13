@@ -408,12 +408,12 @@ namespace OHTransfer
                     Ticks processDuration = DateTime.UtcNow.Ticks - processStartTime;
                     processCompleted = true;
 
-                    ShowUpdateMessage("Data transfer completed in {0}", processDuration.ToElapsedTimeString(2));
+                    ShowUpdateMessage("\r\nData transfer completed in {0}", processDuration.ToElapsedTimeString(2));
                     UpdateProgressBar(totalDays);
                 }
                 catch (Exception ex)
                 {
-                    ShowUpdateMessage("Error during transfer: {0}", ex.Message);
+                    ShowUpdateMessage("\r\nError during transfer: {0}", ex.Message);
                 }
                 finally
                 {
