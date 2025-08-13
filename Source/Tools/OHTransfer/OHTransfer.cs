@@ -358,27 +358,27 @@ namespace OHTransfer
                             return;
                         }
 
-                        workerThreadSynchronization.RequestCallback(() =>
+                        if (DateTime.UtcNow.Ticks - lastStatusMessage < FeedbackInterval * Ticks.PerMillisecond)
                         {
-                            if (DateTime.UtcNow.Ticks - lastStatusMessage < FeedbackInterval * Ticks.PerMillisecond)
-                                return;
-
-                            lastStatusMessage = DateTime.UtcNow.Ticks;
-
-                            if (Stats.PointsReturned == 0L)
+                            workerThreadSynchronization.RequestCallback(() =>
                             {
-                                ShowUpdateMessage("\r\nScanning archives for points, processing {0:N0} cache miss retries per second...", Stats.PointsScanned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
-                            }
-                            else
-                            {
-                                ShowUpdateMessage("\r\nProcessed {0:N0} points so far, scanning at {1:N0} points per second:", Stats.PointsReturned, Stats.PointsReturned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                                lastStatusMessage = DateTime.UtcNow.Ticks;
 
-                                double processedDays = (reader.LastKey.TimestampAsDate - startTime).TotalDays;
+                                if (Stats.PointsReturned == 0L)
+                                {
+                                    ShowUpdateMessage("\r\nScanning archives for points, processing {0:N0} cache miss retries per second...", Stats.PointsScanned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                                }
+                                else
+                                {
+                                    ShowUpdateMessage("\r\nProcessed {0:N0} points so far, scanning at {1:N0} points per second:", Stats.PointsReturned, Stats.PointsReturned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
 
-                                UpdateProgressBar((int)processedDays);
-                                ShowUpdateMessage("        {0:0.00%} complete...", processedDays / totalDays);
-                            }
-                        });
+                                    double processedDays = (reader.LastKey.TimestampAsDate - startTime).TotalDays;
+
+                                    UpdateProgressBar((int)processedDays);
+                                    ShowUpdateMessage("        {0:0.00%} complete...", processedDays / totalDays);
+                                }
+                            });
+                        }
 
                         Application.DoEvents();
                         monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(MonitoringInterval);
