@@ -102,8 +102,9 @@ namespace OHTransfer
 
             ConfigurationFile.Current.Save();
 
+            Hide();
             m_cancellationTokenSource?.Cancel();
-            Thread.Sleep(500);
+            Thread.Sleep(2000);
         }
 
         private void buttonOpenSourceFilesLocation_Click(object sender, EventArgs e)
