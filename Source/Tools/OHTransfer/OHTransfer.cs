@@ -55,6 +55,9 @@ namespace OHTransfer
         private CancellationTokenSource m_cancellationTokenSource;
         private bool m_formClosing;
 
+        private const int MonitoringInterval = 2000; // 2 seconds
+        private const int FeedbackInterval = 4000; // 4 seconds
+
         public OHTransfer()
         {
             InitializeComponent();
@@ -104,7 +107,7 @@ namespace OHTransfer
 
             Hide();
             m_cancellationTokenSource?.Cancel();
-            Thread.Sleep(2000);
+            Thread.Sleep((int)(MonitoringInterval * 1.5D));
         }
 
         private void buttonOpenSourceFilesLocation_Click(object sender, EventArgs e)
@@ -354,7 +357,7 @@ namespace OHTransfer
 
                         workerThreadSynchronization.RequestCallback(() =>
                         {
-                            if (DateTime.UtcNow.Ticks - lastStatusMessage < Ticks.PerSecond * 4)
+                            if (DateTime.UtcNow.Ticks - lastStatusMessage < FeedbackInterval * Ticks.PerMillisecond)
                                 return;
 
                             lastStatusMessage = DateTime.UtcNow.Ticks;
@@ -375,10 +378,10 @@ namespace OHTransfer
                         });
 
                         Application.DoEvents();
-                        monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(2000);
+                        monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(MonitoringInterval);
                     }
 
-                    monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(2000);
+                    monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(MonitoringInterval);
 
                     string completeFileName = Path.Combine(destinationPath, $"{deviceName}-Exported.d2");
                     string pendingFileName = Path.Combine(destinationPath, $"{FilePath.GetFileNameWithoutExtension(completeFileName)}.~d2i");
