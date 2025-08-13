@@ -104,6 +104,9 @@ namespace OHTransfer
             settings["toDate"].Value = dateTimePickerTo.Value.ToString(dateTimePickerTo.CustomFormat);
 
             ConfigurationFile.Current.Save();
+            
+            if (m_cancellationTokenSource is null)
+                return;
 
             Hide();
             m_cancellationTokenSource?.Cancel();
