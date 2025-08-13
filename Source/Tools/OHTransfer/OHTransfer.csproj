@@ -67,7 +67,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SequentialStreamReader.cs" />
+    <Compile Include="TranslatingStreamReader.cs" />
     <EmbeddedResource Include="OHTransfer.resx">
       <DependentUpon>OHTransfer.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SequentialStreamReader.cs - Gbtc
+//  TranslatingStreamReader.cs - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
 using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
@@ -30,13 +31,16 @@ using openHistorian.Snap;
 namespace OHTransfer;
 
 /// <summary>
-/// Represents a sequential reader stream for reading historian data from an archive list.
+/// Represents a sequential reader stream for reading historian data from an archive list that
+/// translates source IDs to destination IDs using the <paramref name="historianIDMapping"/>.
 /// </summary>
 /// <remarks>
-/// We derive a specific implementation of this class so we can track last processed key in the stream.
+/// We derive a specific implementation of this class so we can translate source IDs to
+/// destination IDs and also track last processed key in the stream for progress reporting.
 /// </remarks>
-internal class SequentialStreamReader(
-    ArchiveList<HistorianKey, HistorianValue> archiveList, 
+internal class TranslatingStreamReader(
+    ArchiveList<HistorianKey, HistorianValue> archiveList,
+    Dictionary<ulong, ulong> historianIDMapping,
     SortedTreeEngineReaderOptions readerOptions = null, 
     SeekFilterBase<HistorianKey> keySeekFilter = null, 
     MatchFilterBase<HistorianKey, HistorianValue> keyMatchFilter = null, 
@@ -54,6 +58,9 @@ internal class SequentialStreamReader(
     protected override bool ReadNext(HistorianKey key, HistorianValue value)
     {
         bool result = base.ReadNext(key, value);
+
+        if (historianIDMapping.TryGetValue(key.PointID, out ulong destinationPointID))
+            key.PointID = destinationPointID;
 
         LastKey = key;
 

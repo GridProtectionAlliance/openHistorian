@@ -346,7 +346,7 @@ namespace OHTransfer
                     MatchFilterBase<HistorianKey, HistorianValue> pointFilter = PointIdMatchFilter.CreateFromList<HistorianKey, HistorianValue>(historianIDMapping.Keys);
 
                     using WorkerThreadSynchronization workerThreadSynchronization = new();
-                    using SequentialStreamReader reader = new(archiveList, SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter, workerThreadSynchronization);
+                    using TranslatingStreamReader reader = new(archiveList, historianIDMapping, SortedTreeEngineReaderOptions.Default, timeFilter, pointFilter, workerThreadSynchronization);
 
                     long lastStatusMessage = DateTime.UtcNow.Ticks;
 
@@ -367,11 +367,11 @@ namespace OHTransfer
 
                             if (Stats.PointsReturned == 0L)
                             {
-                                ShowUpdateMessage("\r\nScanned {0:N0} points so far, scanning at {1:N0} points per second...", Stats.PointsScanned, (Stats.PointsReturned + Stats.PointsScanned) / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                                ShowUpdateMessage("\r\nScanning archives for points, processing {0:N0} cache miss retries per second...", Stats.PointsScanned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
                             }
                             else
                             {
-                                ShowUpdateMessage("\r\nProcessed {0:N0} points so far, scanning at {1:N0} points per second:", Stats.PointsReturned, (Stats.PointsReturned + Stats.PointsScanned) / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
+                                ShowUpdateMessage("\r\nProcessed {0:N0} points so far, scanning at {1:N0} points per second:", Stats.PointsReturned, Stats.PointsReturned / ((DateTime.UtcNow.Ticks - processStartTime) / Ticks.PerSecond));
 
                                 double processedDays = (reader.LastKey.TimestampAsDate - startTime).TotalDays;
 
