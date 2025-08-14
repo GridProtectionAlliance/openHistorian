@@ -209,7 +209,7 @@ namespace GSF.Snap.Services.Reader
             {
                 retries++;
 
-                if (retries % 10000 == 0)
+                if (retries >= 10000)
                 {
                     m_workerThreadSynchronization.PulseSafeToCallback();
                     Interlocked.Add(ref Stats.PointsScanned, retries);
