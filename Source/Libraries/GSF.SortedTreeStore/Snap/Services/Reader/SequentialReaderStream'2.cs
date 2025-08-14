@@ -202,9 +202,20 @@ namespace GSF.Snap.Services.Reader
                 m_pointCount = 0;
             }
 
-            TryAgain:
+            long retries = 0;
+
+        TryAgain:
             if (!m_timedOut)
             {
+                retries++;
+
+                if (retries >= 10000)
+                {
+                    m_workerThreadSynchronization.PulseSafeToCallback();
+                    Interlocked.Add(ref Stats.PointsScanned, retries);
+                    retries = 0;
+                }
+
                 if (m_keyMatchIsUniverse)
                 {
                     if (m_firstTableScanner is null)

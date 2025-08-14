@@ -45,3 +45,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("openHistorian.Adapters")]
 [assembly: InternalsVisibleTo("openHistorian.PerformanceTests")]
 [assembly: InternalsVisibleTo("ArchiveIntegrityChecker")]
+[assembly: InternalsVisibleTo("OHTransfer")]
