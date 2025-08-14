@@ -388,7 +388,6 @@ namespace OHTransfer
                             });
                         }
 
-                        Application.DoEvents();
                         monitorCancellationToken = new Action(readingMonitor).DelayAndExecute(MonitoringInterval);
                     }
 
