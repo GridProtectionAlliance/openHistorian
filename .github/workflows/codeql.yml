@@ -1,103 +1,38 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
-#
 name: "CodeQL"
 
 on:
   push:
     branches: [ "master" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "master" ]
   schedule:
     - cron: '18 17 * * 5'
 
 jobs:
   analyze:
-    name: Analyze
     runs-on: windows-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-
     strategy:
       fail-fast: false
       matrix:
         language: [ 'csharp' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
-        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3 
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        
-        # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
- 
-    - name: Install .NET Framework 4.6
-      # Install all (latest) SDKs which are used by multi framework projects
-      run: choco install dotnet4.6
-    
-    - name: Install .NET Framework 4.6.1 Targeting Pack
-      run: |
-        # Install all (latest) SDKs which are used by multi framework projects
-        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-        $componentsToAdd = @(
-          "Microsoft.Net.Component.4.6.1.TargetingPack"
-        )
-        [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
-        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
-        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
-        if ($process.ExitCode -eq 0)
-        {
-            Write-Host "components have been successfully added"
-        }
-        else
-        {
-            Write-Host "components were not installed"
-            exit 1
-        }  
-    
-    - name: Install .NET Framework 4.6.1
-      # Install all (latest) SDKs which are used by multi framework projects
-      run: choco install dotnet4.6.1
-     
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    # - name: Autobuild
-    #  uses: github/codeql-action/autobuild@v2
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-
-    #   If the Autobuild fails above, remove it and uncomment the following three lines. 
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-    
-    - name: Setup msbuild
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
-      
-    - name: Build openHistorian
-      run: |
-       msbuild Source/openHistorian.sln -t:restore,build -p:Configuration=Debug -p:RestorePackagesConfig=true -p:UseSharedCompilation=false -p:PostBuildEvent=
+
+    - name: Build solution
+      run: msbuild Source/openHistorian.sln -t:restore,build -p:Configuration=Debug -p:UseSharedCompilation=false
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
