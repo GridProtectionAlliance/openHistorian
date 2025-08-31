@@ -1469,14 +1469,14 @@
             Gets or sets ID of the device to be configured.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DeviceIDs">
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.Devices">
             <summary>
-            Gets or sets device IDs.
+            Gets or sets list of devices.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DeviceAcronyms">
             <summary>
-            Gets or sets device acronyms.
+            Gets device acronyms.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolID">
@@ -1679,6 +1679,9 @@
             Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
             </summary>
             <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.OnPropertyChanged(System.String)">
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConnectionFile">
             <summary>
