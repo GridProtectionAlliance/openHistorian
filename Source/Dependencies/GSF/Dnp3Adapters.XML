@@ -6,14 +6,8 @@
     <members>
         <member name="T:DNP3Adapters.DNP3InputAdapter">
             <summary>
-            Input adapter that reads measurements from a remote dnp3 endpoint.
+            Input adapter that reads measurements from a remote DNP3 endpoint.
             </summary>
-        </member>
-        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(Automatak.DNP3.Interface.LogEntry)">
-            <summary>
-            Handler for log entries.
-            </summary>
-            <param name="entry"><see cref="T:Automatak.DNP3.Interface.LogEntry"/> to handle.</param>
         </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.#ctor">
             <summary>
@@ -109,6 +103,215 @@
             </summary>
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:DNP3Adapters.DNP3InputAdapter"/>.</returns>
+        </member>
+        <member name="T:DNP3Adapters.LogLevel">
+            <summary>
+            DNP3 log levels.
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.LogLevel.None">
+            <summary>
+            No logging.
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.LogLevel.All">
+            <summary>
+            All log messages.
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.LogLevel.Normal">
+            <summary>
+            Normal log messages.
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.LogLevel.AppComms">
+            <summary>
+            Application communications log messages.
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.LogLevel.Debug">
+            <summary>
+            All log messages including debug.
+            </summary>
+        </member>
+        <member name="T:DNP3Adapters.Dnp3OutputAdapter">
+            <summary>
+            Output adapter that sends measurements to a remote DNP3 endpoint.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:DNP3Adapters.Dnp3OutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.Port">
+            <summary>
+            Gets or sets the port the DNP3 adapter will listen for master connections on.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.Interface">
+            <summary>
+            Gets or sets the IP address of the interface the DNP3 adapter will bind to for listening for master connections.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.AllowUnsolicited">
+            <summary>
+            Gets or sets a flag that determines if unsolicited responses are allowed.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.IsMaster">
+            <summary>
+            Gets or sets flag that determines if the DNP3 output adapter is configured as 'master' in the link configuration.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.LocalAddress">
+            <summary>
+            Gets or sets the local address used for the link configuration.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.RemoteAddress">
+            <summary>
+            Gets or sets the remote address used for the link configuration.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.ResponseTimeout">
+            <summary>
+            Gets or sets the response timeout, in milliseconds, used for the link configuration.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.KeepAliveTimeout">
+            <summary>
+            Gets or sets the keep-alive timeout, in milliseconds, used for the link configuration.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.UnsolicitedClassMask">
+            <summary>
+            Gets or sets the unsolicited class mask. Format is four, comma separated booleans, e.g.: false, true, true, true.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.MapStateFlagsToQuality">
+            <summary>
+            Gets or sets flag that determines if GSF measurement state flags should be mapped to DNP3 quality flags.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.StaticUpdateBatchSize">
+            <summary>
+            Gets or sets the batch size for static database updates.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.MaxPublishRate">
+            <summary>
+            Gets or sets the maximum publish rate in milliseconds. This is used to throttle
+            event publishing to the master stations when many events are being generated.
+            Set to zero to publish events as fast as possible.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.LogLevel">
+            <summary>
+            Gets or sets the DNP3 log level for the server connection.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.StaticUpdatesCount">
+            <summary>
+            Gets the count of static cache updates performed.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.EventsGeneratedCount">
+            <summary>
+            Gets the count of events generated.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.StaticCacheSize">
+            <summary>
+            Gets the current size of the static cache.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.OutputIsForArchive">
+            <inheritdoc />
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.UseAsyncConnect">
+            <inheritdoc />
+        </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.Status">
+            <inheritdoc />
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:DNP3Adapters.Dnp3OutputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.Initialize">
+            <inheritdoc />
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.AttemptConnection">
+            <inheritdoc />
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.AttemptDisconnection">
+            <inheritdoc />
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.ReinitializeDatabase">
+            <summary>
+            Forces re-initialization of the DNP3 database with current cached values.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.ClearStaticCache">
+            <summary>
+            Clears the static cache and resets statistics.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.GetShortStatus(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:DNP3Adapters.Dnp3OutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <inheritdoc />
+        </member>
+        <member name="T:DNP3Adapters.IDnp3Adapter">
+            <summary>
+            Defines the interface for a DNP3 adapter that can be used to process exceptions and status messages.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.IDnp3Adapter.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.IAdapter.ProcessException"/> event.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="exception">Processing <see cref="T:System.Exception"/>.</param>
+        </member>
+        <member name="M:DNP3Adapters.IDnp3Adapter.OnStatusMessage(GSF.Diagnostics.MessageLevel,System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.IAdapter.StatusMessage"/> event and sends this data to the <see cref="T:GSF.Diagnostics.Logger"/>.
+            </summary>
+            <param name="level">The <see cref="T:GSF.Diagnostics.MessageLevel"/> to assign to this message</param>
+            <param name="status">New status message.</param>
+        </member>
+        <member name="P:DNP3Adapters.IaonProxyLogHandler`1.Adapters">
+            <summary>
+            Gets the static adapters that are currently registered with this proxy.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.IaonProxyLogHandler`1.StatusProxy">
+            <summary>
+            Gets the static status proxy that is used to process exceptions and status messages.
+            </summary>
+        </member>
+        <member name="M:DNP3Adapters.IaonProxyLogHandler`1.RegisterAdapter(`0)">
+            <summary>
+            Registers the specified adapter as an available adapter for this proxy.
+            </summary>
+            <param name="adapter">Adapter instance to register.</param>
+        </member>
+        <member name="M:DNP3Adapters.IaonProxyLogHandler`1.UnregisterAdapter(`0)">
+            <summary>
+            Unregisters the specified adapter from the list of available adapters.
+            </summary>
+            <param name="adapter">Adapter instance to unregister.</param>
+        </member>
+        <member name="M:DNP3Adapters.IaonProxyLogHandler`1.Log(Automatak.DNP3.Interface.LogEntry)">
+            <summary>
+            Handler for log entries.
+            </summary>
+            <param name="entry"><see cref="T:Automatak.DNP3.Interface.LogEntry"/> to handle.</param>
         </member>
         <member name="T:DNP3Adapters.MasterConfiguration">
             <summary>
