@@ -12733,6 +12733,11 @@
             Gets or sets default timeout for <see cref="T:GSF.Data.AdoDataConnection"/> data operations.
             </summary>
         </member>
+        <member name="P:GSF.Data.AdoDataConnection.DefaultStringType">
+            <summary>
+            Gets or sets a value to indicate whether queries should default to ANSI strings instead of Unicode strings.
+            </summary>
+        </member>
         <member name="P:GSF.Data.AdoDataConnection.UtcNow">
             <summary>
             Gets current UTC date-time in an implementation that is proper for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
@@ -13044,6 +13049,20 @@
             </summary>
             <param name="value"><see cref="T:System.Guid"/> to format per database type.</param>
             <returns>Proper <see cref="T:System.Guid"/> implementation for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.ANSI(System.String)">
+            <summary>
+            Instructs <see cref="T:GSF.Data.AdoDataConnection"/> to treat this string as an ANSI string in parameterized queries.
+            </summary>
+            <param name="value">The string to be treated as ANSI.</param>
+            <returns>The value to be used in parameterized queries.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.Unicode(System.String)">
+            <summary>
+            Instructs <see cref="T:GSF.Data.AdoDataConnection"/> to treat this string as a Unicode string in parameterized queries.
+            </summary>
+            <param name="value">The string to be treated as Unicode.</param>
+            <returns>The value to be used in parameterized queries.</returns>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.Guid(System.Data.DataRow,System.String)">
             <summary>
