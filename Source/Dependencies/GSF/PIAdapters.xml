@@ -670,6 +670,90 @@
             see <see cref="T:PIAdapters.C37118DigitalStateSets"/>.
             </summary>
         </member>
+        <member name="T:PIAdapters.PIBufferInputAdapter">
+            <summary>
+            Retrieves historical OSI-PI data using AF-SDK.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:PIAdapters.PIBufferInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.PageFactor">
+            <summary>
+            Gets or sets value paging factor to read more data per page from PI.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIPBInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:PIAdapters.PIBufferInputAdapter"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException"><b>HistorianID</b>, <b>Server</b>, <b>Port</b>, <b>Protocol</b>, or <b>InitiateConnection</b> is missing from the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.Settings"/>.</exception>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.OpenPIConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:PIAdapters.PIPBInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.ReadBuffer(System.DateTime,System.DateTime,System.String,System.Int32)">
+            <summary>
+            Commnad that reads the PI Buffer for the specified time range and tags.
+            </summary>
+            <param name="start"> The start Time of the requested data.</param>
+            <param name="end">The end time for the data requested.</param>
+            <param name="tags">The list of PI Tags of the data requested separated by ;.</param>
+            <returns>A string representing the read buffer data as comma-separated values in form tag:data1,time1;data2,time2 \newLine</returns>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.AttemptConnection">
+            <inheritdoc/>
+        </member>
+        <member name="M:PIAdapters.PIBufferInputAdapter.AttemptDisconnection">
+            <inheritdoc/>
+        </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
             <summary>
             Retrieves historical OSI-PI data using AF-SDK.
@@ -910,6 +994,15 @@
             </summary>
             <param name="pageFactor">Defines a paging factor used to load more data into a page.</param>
             <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
+        </member>
+        <member name="M:PIAdapters.TimeSortedValueScanner.ReadInterpolated(OSIsoft.AF.Time.AFTimeSpan,System.Int32)">
+            <summary>
+            Reads all <see cref="T:OSIsoft.AF.Asset.AFValue"/> instances in time sorted order as a yielding enumerable using PI InterpolatedValues API.
+            </summary>
+            <param name="pageFactor">Defines a paging factor used to load more data into a page.</param>
+            <param name="interval">Defines the interval used for interpolation.</param>
+            <returns>Each recorded <see cref="T:OSIsoft.AF.Asset.AFValue"/> in time-sorted order for the specified <see cref="P:PIAdapters.TimeSortedValueScanner.Points"/> and time-range.</returns>
+            
         </member>
     </members>
 </doc>
