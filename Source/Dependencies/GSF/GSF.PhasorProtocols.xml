@@ -8814,6 +8814,11 @@
             IEC 61850-90-5 protocol.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.PhasorProtocol.SelCWS">
+            <summary>
+            SEL CWS protocol.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.MultiProtocolFrameParser">
             <summary>
             Protocol independent frame parser.
@@ -18900,6 +18905,852 @@
         <member name="P:GSF.PhasorProtocols.Macrodyne.PhasorValue.Definition">
             <summary>
             Gets or sets the <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorValue"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.FrameType">
+            <summary>
+            SEL CWS frame types enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.FrameType.DataFrame">
+            <summary>
+            Data frame.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.FrameType.ConfigurationFrame">
+            <summary>
+            Configuration frame.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.Common">
+            <summary>
+            Common SEL CWS declarations and functions.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.Version">
+            <summary>
+            SEL CWS data supported version.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.MaximumPhasorValues">
+            <summary>
+            Absolute maximum number of possible phasor values that could fit into a data frame.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.MaximumAnalogValues">
+            <summary>
+            Absolute maximum number of possible analog values that could fit into a data frame.
+            </summary>
+            <remarks>SEL CWS doesn't support analog values.</remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.MaximumDigitalValues">
+            <summary>
+            Absolute maximum number of possible digital values that could fit into a data frame.
+            </summary>
+            <remarks>SEL CWS doesn't support digital values.</remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultFrameRate">
+            <summary>
+            Default frame rate for SEL CWS devices is 3000 frames per second.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultNominalFrequency">
+            <summary>
+            Default nominal frequency for SEL CWS devices is 60Hz.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader">
+            <summary>
+            Represents the common header for a SEL CWS frame of data.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.FixedLength">
+            <summary>
+            Total fixed length of <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.#ctor(GSF.PhasorProtocols.SelCWS.FrameType)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/> from <paramref name="frameType"/>.
+            </summary>
+            <param name="frameType">Type of the frame.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.#ctor(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/> from given <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">Buffer that contains data to parse.</param>
+            <param name="startIndex">Start index into buffer where valid data begins.</param>
+            <param name="length">Length of valid data in <paramref name="buffer"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.TypeID">
+            <summary>
+            Gets the <see cref="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.TypeID"/> of this SEL CWS frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.FrameLength">
+            <summary>
+            Gets the length of this SEL CWS frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.ChannelID">
+            <summary>
+            Gets the channel ID associated with this SEL CWS frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.PacketCount">
+            <summary>
+            Gets the packet count for this SEL CWS frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.FundamentalFrameType">
+            <summary>
+            Gets the fundamental frame type of this frame.
+            </summary>
+            <remarks>
+            Frames are generally classified as data, configuration or header frames. This returns the general frame classification.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.AppendHeaderAttributes(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Appends header specific attributes to <paramref name="attributes"/> dictionary.
+            </summary>
+            <param name="attributes">Dictionary to append header specific attributes to.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> that can be sent or received.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.#ctor(GSF.PhasorProtocols.SelCWS.ConfigurationFrame,GSF.Units.EE.LineFrequency,System.Single[],System.String,System.String[])">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> from specified parameters.
+            </summary>
+            <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="scalars">The scalar values for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="stationName">The name of the station for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="phasorNames">The names of the phasors for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.Parent">
+            <summary>
+            Gets a reference to the parent <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/> for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.IDCode">
+            <summary>
+            Gets or sets the ID code of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.PhasorDataFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.DataFormat"/> for the <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> objects in the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.PhasorDefinitions"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+            <remarks>
+            This property only supports fixed-integer phasor data; SEL CWS doesn't transport floating-point phasor values.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">SEL CWS only supports fixed-integer data.</exception>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.PhasorCoordinateFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.CoordinateFormat"/> for the <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> objects in the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.PhasorDefinitions"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+            <remarks>
+            This property only supports polar phasor data; SEL CWS doesn't transport rectangular phasor values.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">SEL CWS only supports polar phasor data.</exception>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.FrequencyDataFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.DataFormat"/> of the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+            <remarks>
+            This property only supports floating-point data; SEL CWS doesn't transport scaled values.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">SEL CWS only supports floating-point data.</exception>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.AnalogDataFormat">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.DataFormat"/> for the <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/> objects in the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.AnalogDefinitions"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+            <remarks>
+            This property only supports floating-point data; SEL CWS doesn't transport scaled values.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">SEL CWS only supports floating-point data.</exception>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCell.MaximumStationNameLength">
+            <summary>
+            Gets the maximum length of the <see cref="P:GSF.PhasorProtocols.ConfigurationCellBase.StationName"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.ParseFooterImage(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection">
+            <summary>
+            Represents a SEL CWS implementation of a collection of <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> objects.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> at specified <paramref name="index"/>.
+            </summary>
+            <param name="index">Index of value to get or set.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> that can be sent or received.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.FixedHeaderLength">
+            <summary>
+            Represents the Length of the fixed part of this header.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+            <remarks>
+            This constructor is used by <see cref="T:GSF.Parsing.FrameImageParserBase`2"/> to parse an SEL CWS configuration frame.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.Cells">
+            <summary>
+            Gets reference to the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCellCollection"/> for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.NominalFrequency">
+            <summary>
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.TypeID">
+            <summary>
+            Gets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.CommonHeader">
+            <summary>
+            Gets or sets current <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.Version">
+            <summary>
+            Gets the SEL CWS protocol version of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ChannelID">
+            <summary>
+            Gets the channel ID of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses the binary header image.
+            </summary>
+            <param name="buffer">Binary image to parse.</param>
+            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
+            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
+            <returns>The length of the data that was parsed.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ChecksumIsValid(System.Byte[],System.Int32)">
+            <summary>
+            Determines if checksum in the <paramref name="buffer"/> is valid.
+            </summary>
+            <param name="buffer">Buffer image to validate.</param>
+            <param name="startIndex">Start index into <paramref name="buffer"/> to perform checksum.</param>
+            <returns>Flag that determines if checksum over <paramref name="buffer"/> is valid.</returns>
+            <remarks>
+            SEL CWS doesn't use checksums - this always returns true.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.CalculateChecksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Method is not implemented.
+            </summary>
+            <exception cref="T:System.NotImplementedException">SEL CWS doesn't use checksums.</exception>
+            <returns>An <see cref="T:System.UInt16"/>.</returns>
+            <param name="buffer">A <see cref="T:System.Byte"/> array.</param>
+            <param name="length">An <see cref="T:System.Int32"/> for the offset.</param>
+            <param name="offset">An <see cref="T:System.Int32"/> for the length.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.ConnectionParameters">
+            <summary>
+            Represents the extra connection parameters required for a connection to a SEL CWS device.
+            </summary>
+            <remarks>
+            This class is designed to be exposed by a "PropertyGrid" so a UI can request protocol specific connection parameters.
+            As a result the <see cref="T:System.ComponentModel.CategoryAttribute"/> and <see cref="T:System.ComponentModel.DescriptionAttribute"/> elements should be defined for
+            each of the exposed properties.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.ConnectionParameters.DefaultCalculatePhaseEstimates">
+            <summary>
+            Default value for <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculatePhaseEstimates"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConnectionParameters"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConnectionParameters"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculatePhaseEstimates">
+            <summary>
+            Gets or sets flag that determines if phase estimates should be calculated for phasor measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.FrameRate">
+            <summary>
+            Gets or sets the configured frame rate for the SEL CWS device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.NominalFrequency">
+            <summary>
+            Gets or sets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of this SEL CWS device.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.DataCell">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IDataCell"/> that can be sent or received.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.#ctor(GSF.PhasorProtocols.IDataFrame,GSF.PhasorProtocols.IConfigurationCell)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/>.
+            </summary>
+            <param name="parent">The reference to parent <see cref="T:GSF.PhasorProtocols.IDataFrame"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/>.</param>
+            <param name="configurationCell">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.Parent">
+            <summary>
+            Gets or sets the reference to parent <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.ConfigurationCell">
+            <summary>
+            Gets or sets the <see cref="P:GSF.PhasorProtocols.SelCWS.DataCell.ConfigurationCell"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.DataIsValid">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.SynchronizationIsValid">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.DataSortingType">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.DeviceError">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses the binary body image.
+            </summary>
+            <param name="buffer">Binary image to parse.</param>
+            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
+            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
+            <returns>The length of the data that was parsed.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.DataCellCollection">
+            <summary>
+            Represents a SEL CWS implementation of a collection of <see cref="T:GSF.PhasorProtocols.IDataCell"/> objects.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCellCollection.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataCellCollection"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataCellCollection.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataCellCollection"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCellCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> at specified <paramref name="index"/>.
+            </summary>
+            <param name="index">Index of value to get or set.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.DataFrame">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IDataFrame"/> that can be sent or received.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
+            </summary>
+            <remarks>
+            This constructor is used by <see cref="T:GSF.Parsing.FrameImageParserBase`2"/> to parse an SEL CWS data frame.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.#ctor(System.Int64,GSF.PhasorProtocols.SelCWS.ConfigurationFrame)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> from specified parameters.
+            </summary>
+            <param name="nanosecondTimestamp">The exact timestamp, in nanoseconds, of the data represented by this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.</param>
+            <param name="configurationFrame">The <see cref="P:GSF.PhasorProtocols.SelCWS.DataFrame.ConfigurationFrame"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.</param>
+            <remarks>
+            This constructor is used by a consumer to generate a SEL CWS data frame.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.Cells">
+            <summary>
+            Gets reference to the <see cref="T:GSF.PhasorProtocols.SelCWS.DataCellCollection"/> for this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.ConfigurationFrame">
+            <summary>
+            Gets or sets <see cref="P:GSF.PhasorProtocols.SelCWS.DataFrame.ConfigurationFrame"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.NanosecondTimestamp">
+            <summary>
+            Gets or sets the nanosecond timestamp.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.TypeID">
+            <summary>
+            Gets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.CommonHeader">
+            <summary>
+            Gets or sets current <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.Attributes">
+            <summary>
+            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses the binary header image.
+            </summary>
+            <param name="buffer">Binary image to parse.</param>
+            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
+            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
+            <returns>The length of the data that was parsed.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ChecksumIsValid(System.Byte[],System.Int32)">
+            <summary>
+            Determines if checksum in the <paramref name="buffer"/> is valid.
+            </summary>
+            <param name="buffer">Buffer image to validate.</param>
+            <param name="startIndex">Start index into <paramref name="buffer"/> to perform checksum.</param>
+            <returns>Flag that determines if checksum over <paramref name="buffer"/> is valid.</returns>
+            <remarks>
+            SEL CWS doesn't use checksums - this always returns true.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.CalculateChecksum(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Method is not implemented.
+            </summary>
+            <exception cref="T:System.NotImplementedException">SEL CWS doesn't use checksums.</exception>
+            <param name="buffer">Array of <see cref="T:System.Byte"/>s.</param>
+            <param name="length">An <see cref="T:System.Int32"/> value for the bytes to read.</param>
+            <param name="offset">An <see cref="T:System.Int32"/> value for offset to read from.</param>
+            <returns>An <see cref="T:System.UInt16"/> as the checksum.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.FrameParser">
+            <summary>
+            Represents a frame parser for a SEL CWS text based data stream that returns parsed data via events.
+            </summary>
+            <remarks>
+            Frame parser is implemented as a write-only stream - this way data can come from any source.
+            </remarks>
+        </member>
+        <member name="E:GSF.PhasorProtocols.SelCWS.FrameParser.ReceivedConfigurationFrame">
+            <summary>
+            Occurs when a SEL CWS <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.ConfigurationFrame"/> has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.ConfigurationFrame"/> that was received.
+            </remarks>
+        </member>
+        <member name="E:GSF.PhasorProtocols.SelCWS.FrameParser.ReceivedDataFrame">
+            <summary>
+            Occurs when a SEL CWS <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> that was received.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.#ctor(GSF.PhasorProtocols.CheckSumValidationFrameTypes,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrameParser"/>.
+            </summary>
+            <param name="checkSumValidationFrameTypes">Frame types that should perform check-sum validation; default to <see cref="F:GSF.PhasorProtocols.CheckSumValidationFrameTypes.AllFrames"/></param>
+            <param name="trustHeaderLength">Determines if header lengths should be trusted over parsed byte count.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.ConfigurationFrame">
+            <summary>
+            Gets or sets current <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> used for parsing <see cref="T:GSF.PhasorProtocols.IDataFrame"/>'s encountered in the data stream from a device.
+            </summary>
+            <remarks>
+            If a <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> has been parsed, this will return a reference to the parsed frame.  Consumer can manually assign a
+            <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> to start parsing data if one has not been encountered in the stream.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.ProtocolUsesSyncBytes">
+            <summary>
+            Gets flag that determines if SEL CWS protocol parsing implementation uses synchronization bytes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.CalculatePhaseEstimates">
+            <summary>
+            Gets flag that determines if phase estimates should be calculated for phasor measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.NominalFrequency">
+            <summary>
+            Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the SEL CWS device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.FrameRate">
+            <summary>
+            Gets or sets the configured frame rate for the SEL CWS device.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Start">
+            <summary>
+            Start the data parser.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.ParseCommonHeader(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses a common header instance that implements <see cref="T:GSF.Parsing.ICommonHeader`1"/> for the output type represented
+            in the binary image.
+            </summary>
+            <param name="buffer">Buffer containing data to parse.</param>
+            <param name="offset">Offset index into buffer that represents where to start parsing.</param>
+            <param name="length">Maximum length of valid data from offset.</param>
+            <returns>The <see cref="T:GSF.Parsing.ICommonHeader`1"/> which includes a type ID for the <see cref="T:System.Type"/> to be parsed.</returns>
+            <remarks>
+            <para>
+            Derived classes need to provide a common header instance (i.e., class that implements <see cref="T:GSF.Parsing.ICommonHeader`1"/>)
+            for the output types; this will primarily include an ID of the <see cref="T:System.Type"/> that the data image represents.  This parsing is
+            only for common header information, actual parsing will be handled by output type via its <see cref="M:GSF.Parsing.ISupportBinaryImage.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)"/>
+            method. This header image should also be used to add needed complex state information about the output type being parsed if needed.
+            </para>
+            <para>
+            If there is not enough buffer available to parse common header (as determined by <paramref name="length"/>), return null.  Also, if
+            the protocol allows frame length to be determined at the time common header is being parsed and there is not enough buffer to parse
+            the entire frame, it will be optimal to prevent further parsing by returning null.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.ParseFrame(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnReceivedConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame)">
+            <summary>
+            Raises the <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedConfigurationFrame"/> event.
+            </summary>
+            <param name="frame"><see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> to send to <see cref="E:GSF.PhasorProtocols.FrameParserBase`1.ReceivedConfigurationFrame"/> event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnReceivedChannelFrame(GSF.PhasorProtocols.IChannelFrame)">
+            <summary>
+            Casts the parsed <see cref="T:GSF.PhasorProtocols.IChannelFrame"/> to its specific implementation (i.e., <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> or <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.ConfigurationFrame"/>).
+            </summary>
+            <param name="frame"><see cref="T:GSF.PhasorProtocols.IChannelFrame"/> that was parsed by <see cref="T:GSF.Parsing.FrameImageParserBase`2"/> that implements protocol specific common frame header interface.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.ConnectionParameters">
+            <summary>
+            Gets or sets any connection specific <see cref="T:GSF.PhasorProtocols.IConnectionParameters"/> that may be needed for parsing.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyDefinition.#ctor(GSF.PhasorProtocols.IConfigurationCell)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/>.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyDefinition.#ctor(GSF.PhasorProtocols.SelCWS.ConfigurationCell,System.String)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/>.</param>
+            <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrequencyDefinition.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.FrequencyValue">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IFrequencyValue"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyValue.#ctor(GSF.PhasorProtocols.IDataCell,GSF.PhasorProtocols.IFrequencyDefinition)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IDataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.</param>
+            <param name="frequencyDefinition">The <see cref="T:GSF.PhasorProtocols.IFrequencyDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyValue.#ctor(GSF.PhasorProtocols.SelCWS.DataCell,GSF.PhasorProtocols.SelCWS.FrequencyDefinition,System.Double,System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.</param>
+            <param name="frequencyDefinition">The <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.</param>
+            <param name="frequency">The floating point value that represents this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.</param>
+            <param name="dfdt">The floating point value that represents the change in this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/> over time.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrequencyValue.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrequencyValue.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrequencyValue.Definition">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.NamespaceDoc">
+            <summary>
+            Contains an implementation of the phasor classes used to parse or generate a stream of data in the SEL CWS device format.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorDefinition.#ctor(GSF.PhasorProtocols.IConfigurationCell)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorDefinition.#ctor(GSF.PhasorProtocols.SelCWS.ConfigurationCell,System.String,GSF.Units.EE.PhasorType)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.</param>
+            <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.Units.EE.PhasorType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorDefinition.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorDefinition.Scalar">
+            <summary>
+            Gets or set scalar for this phasor.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhasorValue">
+            <summary>
+            Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorValue.#ctor(GSF.PhasorProtocols.IDataCell,GSF.PhasorProtocols.IPhasorDefinition)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IDataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="phasorDefinition">The <see cref="T:GSF.PhasorProtocols.IPhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorValue.#ctor(GSF.PhasorProtocols.SelCWS.DataCell,GSF.PhasorProtocols.SelCWS.PhasorDefinition,System.Double,System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="phasorDefinition">The <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="real">The real value of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="imaginary">The imaginary value of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorValue.#ctor(GSF.PhasorProtocols.SelCWS.DataCell,GSF.PhasorProtocols.SelCWS.PhasorDefinition,GSF.Units.Angle,System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="phasorDefinition">The <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+            <param name="angle">The <see cref="T:GSF.Units.Angle"/> value (a.k.a., the argument) of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>, in radians.</param>
+            <param name="magnitude">The magnitude value (a.k.a., the absolute value or modulus) of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.PhasorValue.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorValue.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorValue.Definition">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator">
+            <summary>
+            Represents a rolling six-phase estimator.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.WindowSamples">
+            <summary>
+            Gets the current window length in samples.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.CurrentFrequency">
+            <summary>
+            Gets the current filtered frequency estimate in hertz.
+            </summary>
+            <remarks>
+            Returns <c>NaN</c> if window not yet full.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimate@)">
+            <summary>
+            Push one interleaved sample-group (IA,IB,IC,VA,VB,VC) with its epoch nanoseconds.
+            Returns <c>true</c> when an estimate is available, i.e., window has filled.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SelFastMessage.CommandFrame">
