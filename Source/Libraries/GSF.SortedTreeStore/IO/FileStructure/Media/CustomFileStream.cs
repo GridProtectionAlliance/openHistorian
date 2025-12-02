@@ -451,6 +451,7 @@ namespace GSF.IO.FileStructure.Media
         /// <returns></returns>
         public static CustomFileStream CreateFile(string fileName, int ioBlockSize, int fileStructureBlockSize)
         {
+            using (new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 2048, true)) { }
             return new CustomFileStream(ioBlockSize, fileStructureBlockSize, fileName, false, false);
         }
 
