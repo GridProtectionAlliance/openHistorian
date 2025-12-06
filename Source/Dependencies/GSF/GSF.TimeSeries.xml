@@ -13348,6 +13348,11 @@
             Gets the defined system <see cref="T:GSF.TimeSeries.ConfigurationType"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.ServiceHostBase.VerifyLocalCertificatePrivateKey">
+            <summary>
+            Gets or sets flag that determines if the local certificate's private key should be verified upon service start.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.ServiceStartingHandler(System.Object,GSF.EventArgs{System.String[]})">
             <summary>
             Event handler for service starting operations.
