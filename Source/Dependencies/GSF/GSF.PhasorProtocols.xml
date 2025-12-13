@@ -18907,6 +18907,81 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.Macrodyne.PhasorValue"/>.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition">
+            <summary>
+            Represents the SEL CWS implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(GSF.PhasorProtocols.IConfigurationCell)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(GSF.PhasorProtocols.SelCWS.ConfigurationCell,System.String,System.UInt32,System.Double,GSF.PhasorProtocols.AnalogType)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="label">The label of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="scale">The integer scaling value of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="offset">The offset of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+            <param name="type">The <see cref="T:GSF.PhasorProtocols.AnalogType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Scalar">
+            <summary>
+            Gets or sets the scalar for this Point-on-Wave (POW) analog.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.AnalogValue">
+            <summary>
+            Represents the SEL CWS implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogValue"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(GSF.PhasorProtocols.IDataCell,GSF.PhasorProtocols.IAnalogDefinition)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.IDataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="analogDefinition">The <see cref="T:GSF.PhasorProtocols.IAnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(GSF.PhasorProtocols.SelCWS.DataCell,GSF.PhasorProtocols.SelCWS.AnalogDefinition,System.Double)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/> from specified parameters.
+            </summary>
+            <param name="parent">The <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="analogDefinition">The <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+            <param name="value">The floating point value that represents this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogValue.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/> from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogValue.Parent">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.DataCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogValue.Definition">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.AnalogValue"/>.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.FrameType">
             <summary>
             SEL CWS frame types enumeration.
@@ -19044,7 +19119,7 @@
             <param name="nominalFrequency">The nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
             <param name="scalars">The scalar values for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
             <param name="stationName">The name of the station for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
-            <param name="phasorNames">The names of the phasors for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
+            <param name="analogNames">The names of the analog POW points for this <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/>.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationCell.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
@@ -19677,11 +19752,6 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.ConfigurationCell"/> parent of this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/>.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhasorDefinition.Scalar">
-            <summary>
-            Gets or set scalar for this phasor.
-            </summary>
-        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.PhasorValue">
             <summary>
             Represents the SEL CWS implementation of a <see cref="T:GSF.PhasorProtocols.IPhasorValue"/>.
@@ -19729,28 +19799,102 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate">
+            <summary>
+            Represents the output of the phase estimation algorithm.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Frequency">
+            <summary>Smoothed frequency estimate in hertz.</summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimate.dFdt">
+            <summary>Rate of change of frequency in Hz/s.</summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Angles">
+            <summary>Angles in radians, length 6: IA, IB, IC, VA, VB, VC.</summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Magnitudes">
+            <summary>RMS Magnitudes, length 6: IA, IB, IC, VA, VB, VC.</summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator">
             <summary>
-            Represents a rolling six-phase estimator.
+            Represents a rolling six-phase estimator using a sliding DFT algorithm.
+            </summary>
+            <remarks>
+            <para>
+            This class implements a real-time phasor measurement algorithm suitable for
+            power system applications. It uses a sliding Discrete Fourier Transform (SDFT)
+            approach to efficiently compute phasors at each sample with O(1) complexity.
+            </para>
+            <para>
+            Frequency estimation is performed by tracking the rate of change of phase angle
+            from the reference channel (VA by default). The frequency and ROCOF outputs
+            are smoothed using exponential moving average filters.
+            </para>
+            <para>
+            The algorithm is designed for nominal 50Hz or 60Hz systems sampled at 3000 Hz,
+            but can be configured for other sample rates.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.#ctor(System.Double,GSF.Units.EE.LineFrequency,System.Int32,System.Double,System.Double,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> class.
+            </summary>
+            <param name="sampleRateHz">Sample rate in Hz (e.g., 3000).</param>
+            <param name="nominalFrequency">Nominal line frequency (50 or 60 Hz).</param>
+            <param name="targetCycles">Number of cycles in the analysis window (default: 2).</param>
+            <param name="frequencySmoothingFactor">EMA alpha for frequency smoothing (0-1, default: 0.1).</param>
+            <param name="rocofSmoothingFactor">EMA alpha for ROCOF smoothing (0-1, default: 0.05).</param>
+            <param name="recalculationCycles">Number of cycles between full DFT recalculations for numerical stability (default: 10).</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.SampleRateHz">
+            <summary>
+            Gets the configured sample rate in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.NominalFrequencyHz">
+            <summary>
+            Gets the nominal frequency in Hz.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.WindowSamples">
             <summary>
-            Gets the current window length in samples.
+            Gets the number of samples in the analysis window.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.CurrentFrequency">
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.TotalSamplesProcessed">
             <summary>
-            Gets the current filtered frequency estimate in hertz.
+            Gets the total number of samples processed.
             </summary>
-            <remarks>
-            Returns <c>NaN</c> if window not yet full.
-            </remarks>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimate@)">
+        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.IsReady">
             <summary>
-            Push one interleaved sample-group (IA,IB,IC,VA,VB,VC) with its epoch nanoseconds.
-            Returns <c>true</c> when an estimate is available, i.e., window has filled.
+            Gets whether the estimator has filled its window and is producing valid estimates.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,System.Nullable{GSF.PhasorProtocols.SelCWS.PhaseEstimate}@)">
+            <summary>
+            Push one interleaved sample-group (IA, IB, IC, VA, VB, VC) with its epoch nanoseconds.
+            </summary>
+            <param name="ia">Current sample for phase A current.</param>
+            <param name="ib">Current sample for phase B current.</param>
+            <param name="ic">Current sample for phase C current.</param>
+            <param name="va">Current sample for phase A voltage.</param>
+            <param name="vb">Current sample for phase B voltage.</param>
+            <param name="vc">Current sample for phase C voltage.</param>
+            <param name="epochNanoseconds">Timestamp in nanoseconds since epoch.</param>
+            <param name="estimate">Output estimate; valid only when method returns true.</param>
+            <returns><c>true</c> when an estimate is available (window has filled); otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Reset">
+            <summary>
+            Resets the estimator to its initial state.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.NormalizeAngle(System.Double)">
+            <summary>
+            Normalizes an angle to the range [-π, π].
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SelFastMessage.CommandFrame">
