@@ -18945,6 +18945,9 @@
             Gets or sets the scalar for this Point-on-Wave (POW) analog.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.AnalogValue">
             <summary>
             Represents the SEL CWS implementation of an <see cref="T:GSF.PhasorProtocols.IAnalogValue"/>.
@@ -19024,9 +19027,14 @@
             </summary>
             <remarks>SEL CWS doesn't support digital values.</remarks>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultFrameRate">
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultFramePerSecond">
             <summary>
             Default frame rate for SEL CWS devices is 3000 frames per second.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.Common.FramesPerPacket">
+            <summary>
+            Frames per UDP packet for SEL CWS devices is 50 samples.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.SelCWS.Common.DefaultNominalFrequency">
@@ -19490,10 +19498,23 @@
             Gets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrameType"/> of this <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.AllowQueuedPublication">
+            <summary>
+            Gets flag that determines if frame image can be queued for publication or should be processed immediately.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.CommonHeader">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.SelCWS.CommonFrameHeader"/>.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.BinaryLength">
+            <summary>
+            Gets the length of the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
+            </summary>
+            <remarks>
+            This property is overridden so the length can be adjusted for lack of a checksum.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.Attributes">
             <summary>
@@ -19584,6 +19605,10 @@
             <summary>
             Gets flag that determines if SEL CWS protocol parsing implementation uses synchronization bytes.
             </summary>
+            <remarks>
+            Protocol technically uses sync-bytes, but since they vary (0x00 or 0x01) we handle stream initialization
+            manually in the <see cref="M:GSF.PhasorProtocols.SelCWS.FrameParser.Parse(GSF.PhasorProtocols.SourceChannel,System.Byte[],System.Int32,System.Int32)"/> method.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.CalculatePhaseEstimates">
             <summary>
@@ -19597,8 +19622,13 @@
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.FrameRate">
             <summary>
-            Gets or sets the configured frame rate for the SEL CWS device.
+            Gets or sets the configured frames per second for the SEL CWS device.
             </summary>
+            <remarks>
+            SEL CWS "FrameRate" is the device's data frame rate (frames/sec),
+            which is also the PoW sample-set rate (samples/sec).
+            Default value is 3000.
+            </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Start">
             <summary>
@@ -19628,7 +19658,13 @@
             </para>
             </remarks>
         </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Parse(GSF.PhasorProtocols.SourceChannel,System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.ParseFrame(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnParsingException(System.Exception)">
             <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.OnReceivedConfigurationFrame(GSF.PhasorProtocols.IConfigurationFrame)">
