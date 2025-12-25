@@ -18945,6 +18945,9 @@
             Gets or sets the scalar for this Point-on-Wave (POW) analog.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.AnalogDefinition.Attributes">
+            <inheritdoc/>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.AnalogDefinition.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc/>
         </member>
@@ -19091,6 +19094,11 @@
         <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.PacketCount">
             <summary>
             Gets the packet count for this SEL CWS frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.NominalFrequency">
+            <summary>
+            Gets the nominal <see cref="T:GSF.Units.EE.LineFrequency"/> of the SEL CWS device.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.CommonFrameHeader.FundamentalFrameType">
