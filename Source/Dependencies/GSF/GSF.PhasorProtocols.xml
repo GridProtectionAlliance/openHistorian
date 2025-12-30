@@ -19287,6 +19287,15 @@
             <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.HeaderLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.BodyLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.FooterLength">
+            <inheritdoc/>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConfigurationFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
             <summary>
             Parses the binary header image.
