@@ -9037,7 +9037,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.DisconnectAll">
             <summary>
-            Disconnects all of the connected clients.
+            Disconnects all the connected clients.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.Dispose">
@@ -9056,7 +9056,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.Multicast(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Sends data to all of the connected clients synchronously.
+            Sends data to all the connected clients synchronously.
             </summary>
             <param name="data">The buffer that contains the binary data to be sent.</param>
             <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
@@ -9074,7 +9074,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.MulticastAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Sends data to all of the connected clients asynchronously.
+            Sends data to all the connected clients asynchronously.
             </summary>
             <param name="data">The buffer that contains the binary data to be sent.</param>
             <param name="offset">The zero-based position in the <paramref name="data"/> at which to begin sending data.</param>
@@ -9677,7 +9677,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.InjectSimulatedTimestamp">
             <summary>
-            Gets or sets flag indicating whether or not to inject local system time into parsed data frames.
+            Gets or sets flag indicating whether to inject local system time into parsed data frames.
             </summary>
             <remarks>
             When connection is made to a file for replay purposes or consumer doesn't trust remote clock source, this flag
@@ -9892,9 +9892,9 @@
             </summary>
             <returns><c>true</c> if frame parser was successfully initialized; otherwise <c>false</c>.</returns>
             <remarks>
-            Starting the multi-protocol frame parser will automatically initialize the frame parsers so calling
+            Starting the multiprotocol frame parser will automatically initialize the frame parsers so calling
             this method then will be unnecessary, however, if you are using this class just to edit custom
-            connection parameters then initializing the will be necessary.
+            connection parameters then initializing them will be necessary.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.InitializeFrameParser(System.Collections.Generic.Dictionary{System.String,System.String})">
