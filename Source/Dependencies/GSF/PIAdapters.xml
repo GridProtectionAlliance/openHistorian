@@ -69,6 +69,13 @@
             <summary>
             Attempts to open <see cref="T:PIAdapters.PIConnection"/>.
             </summary>
+            <remarks>
+            Returns warning messages related to opening connection; otherwise, <c>null</c> if there are no warnings.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">
+            Connection is already open, <see cref="P:PIAdapters.PIConnection.ServerName"/> is not defined, server not found in PI servers collection,
+            or failed to connect to PI server.
+            </exception>
         </member>
         <member name="M:PIAdapters.PIConnection.Close">
             <summary>
@@ -715,6 +722,9 @@
             Returns the detailed status of the data input source.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIBufferInputAdapter.UseAsyncConnect">
+            <inheritdoc />
+        </member>
         <member name="M:PIAdapters.PIBufferInputAdapter.Dispose(System.Boolean)">
             <summary>
             Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIPBInputAdapter"/> object and optionally releases the managed resources.
@@ -741,7 +751,7 @@
         </member>
         <member name="M:PIAdapters.PIBufferInputAdapter.ReadBuffer(System.DateTime,System.DateTime,System.String,System.Int32)">
             <summary>
-            Commnad that reads the PI Buffer for the specified time range and tags.
+            Command that reads the PI Buffer for the specified time range and tags.
             </summary>
             <param name="start"> The start Time of the requested data.</param>
             <param name="end">The end time for the data requested.</param>
