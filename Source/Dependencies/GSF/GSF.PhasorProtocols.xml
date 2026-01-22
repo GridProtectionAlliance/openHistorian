@@ -19584,21 +19584,14 @@
         <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.DeviceError">
             <inheritdoc/>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataCell.BodyLength">
+            <inheritdoc />
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Parses the binary body image.
-            </summary>
-            <param name="buffer">Binary image to parse.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
-            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
-            <returns>The length of the data that was parsed.</returns>
+            <inheritdoc />
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataCell.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+            <inheritdoc />
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.DataCellCollection">
             <summary>
@@ -19684,57 +19677,34 @@
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.BinaryLength">
-            <summary>
-            Gets the length of the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/>.
-            </summary>
+            <inheritdoc />
             <remarks>
             This property is overridden so the length can be adjusted for lack of a checksum.
             </remarks>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.BodyLength">
+            <inheritdoc />
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.DataFrame.Attributes">
-            <summary>
-            <see cref="T:System.Collections.Generic.Dictionary`2"/> of string based property names and values for the <see cref="T:GSF.PhasorProtocols.SelCWS.DataFrame"/> object.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseHeaderImage(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Parses the binary header image.
-            </summary>
-            <param name="buffer">Binary image to parse.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to begin parsing.</param>
-            <param name="length">Length of valid data within <paramref name="buffer"/>.</param>
-            <returns>The length of the data that was parsed.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ParseBodyImage(System.Byte[],System.Int32,System.Int32)">
             <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.ChecksumIsValid(System.Byte[],System.Int32)">
-            <summary>
-            Determines if checksum in the <paramref name="buffer"/> is valid.
-            </summary>
-            <param name="buffer">Buffer image to validate.</param>
-            <param name="startIndex">Start index into <paramref name="buffer"/> to perform checksum.</param>
-            <returns>Flag that determines if checksum over <paramref name="buffer"/> is valid.</returns>
+            <inheritdoc/>
             <remarks>
             SEL CWS doesn't use checksums - this always returns true.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.CalculateChecksum(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Method is not implemented.
-            </summary>
-            <exception cref="T:System.NotImplementedException">SEL CWS doesn't use checksums.</exception>
-            <param name="buffer">Array of <see cref="T:System.Byte"/>s.</param>
-            <param name="length">An <see cref="T:System.Int32"/> value for the bytes to read.</param>
-            <param name="offset">An <see cref="T:System.Int32"/> value for offset to read from.</param>
-            <returns>An <see cref="T:System.UInt16"/> as the checksum.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.DataFrame.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+            <inheritdoc/>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.FrameParser">
             <summary>
