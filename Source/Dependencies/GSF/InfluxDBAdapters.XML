@@ -9,16 +9,6 @@
             Represents an output adapter that archives measurements to a local archive.
             </summary>
         </member>
-        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultUserName">
-            <summary>
-            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.UserName"/>.
-            </summary>
-        </member>
-        <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultPassword">
-            <summary>
-            Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.Password"/>.
-            </summary>
-        </member>
         <member name="F:InfluxDBAdapters.InfluxDBOutputAdapter.DefaultUseParallelPosting">
             <summary>
             Default value for <see cref="P:InfluxDBAdapters.InfluxDBOutputAdapter.UseParallelPosting"/>.
@@ -50,6 +40,11 @@
             </summary>
         </member>
         <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.Password">
+            <summary>
+            Gets or sets the password for the InfluxDB connection.
+            </summary>
+        </member>
+        <member name="P:InfluxDBAdapters.InfluxDBOutputAdapter.AuthorizationToken">
             <summary>
             Gets or sets the password for the InfluxDB connection.
             </summary>
