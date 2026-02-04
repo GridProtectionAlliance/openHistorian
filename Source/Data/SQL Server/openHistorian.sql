@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 16 AS VersionNumber
+SELECT 17 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -1901,9 +1901,17 @@ GO
 
 CREATE VIEW [dbo].[AppRoleSecurityGroupDetail] 
 AS
-SELECT ApplicationRoleSecurityGroup.ApplicationRoleID, ApplicationRoleSecurityGroup.SecurityGroupID, ApplicationRole.Name AS ApplicationRoleName, ApplicationRole.Description AS ApplicationRoleDescription, SecurityGroup.Name AS SecurityGroupName, SecurityGroup.Description AS SecurityGroupDescription
-FROM ApplicationRoleSecurityGroup WITH (NOLOCK), ApplicationRole WITH (NOLOCK), SecurityGroup WITH (NOLOCK)
-WHERE ApplicationRoleSecurityGroup.ApplicationRoleID = ApplicationRole.ID AND ApplicationRoleSecurityGroup.SecurityGroupID = SecurityGroup.ID
+SELECT
+    ApplicationRoleSecurityGroup.ApplicationRoleID,
+    ApplicationRoleSecurityGroup.SecurityGroupID,
+    ApplicationRole.Name AS ApplicationRoleName,
+    ApplicationRole.Description AS ApplicationRoleDescription,
+    SecurityGroup.Name AS SecurityGroupName,
+    SecurityGroup.Description AS SecurityGroupDescription
+FROM
+    ApplicationRoleSecurityGroup WITH (NOLOCK) JOIN
+    ApplicationRole WITH (NOLOCK) ON ApplicationRoleSecurityGroup.ApplicationRoleID = ApplicationRole.ID JOIN
+    SecurityGroup WITH (NOLOCK) ON ApplicationRoleSecurityGroup.SecurityGroupID = SecurityGroup.ID
 GO
 
 SET ANSI_NULLS ON
@@ -2200,12 +2208,26 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE VIEW [dbo].[RuntimeStatistic]
 AS
-SELECT		dbo.Node.ID AS NodeID, dbo.Statistic.ID AS ID, dbo.Statistic.Source, dbo.Statistic.SignalIndex, dbo.Statistic.Name, dbo.Statistic.Description,
-                    dbo.Statistic.AssemblyName, dbo.Statistic.TypeName, dbo.Statistic.MethodName, dbo.Statistic.Arguments, dbo.Statistic.IsConnectedState, dbo.Statistic.DataType, 
-                      dbo.Statistic.DisplayFormat, dbo.Statistic.Enabled
-FROM dbo.Statistic WITH (NOLOCK), dbo.Node WITH (NOLOCK)
-
+SELECT
+    dbo.Node.ID AS NodeID,
+    dbo.Statistic.ID AS ID,
+    dbo.Statistic.Source,
+    dbo.Statistic.SignalIndex,
+    dbo.Statistic.Name,
+    dbo.Statistic.Description,
+    dbo.Statistic.AssemblyName,
+    dbo.Statistic.TypeName,
+    dbo.Statistic.MethodName,
+    dbo.Statistic.Arguments,
+    dbo.Statistic.IsConnectedState,
+    dbo.Statistic.DataType, 
+    dbo.Statistic.DisplayFormat,
+    dbo.Statistic.Enabled
+FROM
+    dbo.Statistic WITH (NOLOCK) CROSS JOIN
+    dbo.Node WITH (NOLOCK)
 GO
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2339,14 +2361,36 @@ FROM
 
 GO
 CREATE VIEW [dbo].[CalculatedMeasurementDetail] AS
-SELECT CM.NodeID, CM.ID, CM.Acronym, ISNULL(CM.Name, '') AS Name, CM.AssemblyName, CM.TypeName, ISNULL(CM.ConnectionString, '') AS ConnectionString,
-        ISNULL(CM.ConfigSection, '') AS ConfigSection, ISNULL(CM.InputMeasurements, '') AS InputMeasurements, ISNULL(CM.OutputMeasurements, '') AS OutputMeasurements,
-        CM.MinimumMeasurementsToUse, CM.FramesPerSecond, CM.LagTime, CM.LeadTime, CM.UseLocalClockAsRealTime, CM.AllowSortsByArrival, CM.LoadOrder, CM.Enabled,
-        N.Name AS NodeName, CM.IgnoreBadTimeStamps, CM.TimeResolution, CM.AllowPreemptivePublishing, ISNULL(CM.DownsamplingMethod, '') AS DownsamplingMethod, CM.PerformTimeReasonabilityCheck
-FROM CalculatedMeasurement CM WITH (NOLOCK), Node N WITH (NOLOCK)
-WHERE CM.NodeID = N.ID
-
+SELECT
+    CM.NodeID,
+    CM.ID,
+    CM.Acronym,
+    ISNULL(CM.Name, '') AS Name,
+    CM.AssemblyName,
+    CM.TypeName,
+    ISNULL(CM.ConnectionString, '') AS ConnectionString,
+    ISNULL(CM.ConfigSection, '') AS ConfigSection,
+    ISNULL(CM.InputMeasurements, '') AS InputMeasurements,
+    ISNULL(CM.OutputMeasurements, '') AS OutputMeasurements,
+    CM.MinimumMeasurementsToUse,
+    CM.FramesPerSecond,
+    CM.LagTime,
+    CM.LeadTime,
+    CM.UseLocalClockAsRealTime,
+    CM.AllowSortsByArrival,
+    CM.LoadOrder,
+    CM.Enabled,
+    N.Name AS NodeName,
+    CM.IgnoreBadTimeStamps,
+    CM.TimeResolution,
+    CM.AllowPreemptivePublishing,
+    ISNULL(CM.DownsamplingMethod, '') AS DownsamplingMethod,
+    CM.PerformTimeReasonabilityCheck
+FROM
+    CalculatedMeasurement CM WITH (NOLOCK) JOIN
+    Node N WITH (NOLOCK) ON CM.NodeID = N.ID
 GO
+
 CREATE VIEW [dbo].[VendorDeviceDetail]
 AS
 SELECT     VD.ID, VD.VendorID, VD.Name, ISNULL(VD.Description, '') AS Description, ISNULL(VD.URL, '') AS URL, V.Name AS VendorName, 

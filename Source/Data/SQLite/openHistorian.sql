@@ -33,7 +33,7 @@ PRAGMA foreign_keys = ON;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 16 AS VersionNumber;
+SELECT 17 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -1001,10 +1001,22 @@ WHERE ImportedMeasurement.Enabled <> 0;
 
 CREATE VIEW RuntimeStatistic
 AS
-SELECT Node.ID AS NodeID, Statistic.ID AS ID, Statistic.Source, Statistic.SignalIndex, Statistic.Name, Statistic.Description,
-    Statistic.AssemblyName, Statistic.TypeName, Statistic.MethodName, Statistic.Arguments, Statistic.IsConnectedState, Statistic.DataType, 
-                      Statistic.DisplayFormat, Statistic.Enabled
-FROM Statistic, Node;
+SELECT
+    Node.ID AS NodeID,
+    Statistic.ID AS ID,
+    Statistic.Source,
+    Statistic.SignalIndex,
+    Statistic.Name,
+    Statistic.Description,
+    Statistic.AssemblyName,
+    Statistic.TypeName,
+    Statistic.MethodName,
+    Statistic.Arguments,
+    Statistic.IsConnectedState,
+    Statistic.DataType,
+    Statistic.DisplayFormat,
+    Statistic.Enabled
+FROM Statistic CROSS JOIN Node;
 
 CREATE VIEW IaonOutputAdapter
 AS
@@ -1112,12 +1124,34 @@ FROM
 
 CREATE VIEW CalculatedMeasurementDetail
 AS
-SELECT CM.NodeID, CM.ID, CM.Acronym, COALESCE(CM.Name, '') AS Name, CM.AssemblyName, CM.TypeName, COALESCE(CM.ConnectionString, '') AS ConnectionString,
-        COALESCE(CM.ConfigSection, '') AS ConfigSection, COALESCE(CM.InputMeasurements, '') AS InputMeasurements, COALESCE(CM.OutputMeasurements, '') AS OutputMeasurements,
-        CM.MinimumMeasurementsToUse, CM.FramesPerSecond, CM.LagTime, CM.LeadTime, CM.UseLocalClockAsRealTime, CM.AllowSortsByArrival, CM.LoadOrder, CM.Enabled,
-        N.Name AS NodeName, CM.IgnoreBadTimeStamps, CM.TimeResolution, CM.AllowPreemptivePublishing, COALESCE(CM.DownsamplingMethod, '') AS DownsamplingMethod, CM.PerformTimeReasonabilityCheck
-FROM CalculatedMeasurement CM, Node N
-WHERE CM.NodeID = N.ID;
+SELECT
+    CM.NodeID,
+    CM.ID,
+    CM.Acronym,
+    COALESCE(CM.Name, '') AS Name,
+    CM.AssemblyName,
+    CM.TypeName,
+    COALESCE(CM.ConnectionString, '') AS ConnectionString,
+    COALESCE(CM.ConfigSection, '') AS ConfigSection,
+    COALESCE(CM.InputMeasurements, '') AS InputMeasurements,
+    COALESCE(CM.OutputMeasurements, '') AS OutputMeasurements,
+    CM.MinimumMeasurementsToUse,
+    CM.FramesPerSecond,
+    CM.LagTime,
+    CM.LeadTime,
+    CM.UseLocalClockAsRealTime,
+    CM.AllowSortsByArrival,
+    CM.LoadOrder,
+    CM.Enabled,
+    N.Name AS NodeName,
+    CM.IgnoreBadTimeStamps,
+    CM.TimeResolution,
+    CM.AllowPreemptivePublishing,
+    COALESCE(CM.DownsamplingMethod, '') AS DownsamplingMethod,
+    CM.PerformTimeReasonabilityCheck
+FROM
+    CalculatedMeasurement CM JOIN
+    Node N ON CM.NodeID = N.ID;
 
 CREATE VIEW HistorianDetail
 AS
@@ -1256,9 +1290,17 @@ SELECT     MeasurementDetail.*
 FROM MeasurementDetail WHERE MeasurementDetail.SignalAcronym = 'STAT';
 
 CREATE VIEW AppRoleSecurityGroupDetail AS 
-SELECT ApplicationRoleSecurityGroup.ApplicationRoleID AS ApplicationRoleID,ApplicationRoleSecurityGroup.SecurityGroupID AS SecurityGroupID,ApplicationRole.Name AS ApplicationRoleName,ApplicationRole.Description AS ApplicationRoleDescription,SecurityGroup.Name AS SecurityGroupName,SecurityGroup.Description AS SecurityGroupDescription 
-FROM ((ApplicationRoleSecurityGroup JOIN ApplicationRole ON((ApplicationRoleSecurityGroup.ApplicationRoleID = ApplicationRole.ID))) 
-    JOIN SecurityGroup ON((ApplicationRoleSecurityGroup.SecurityGroupID = SecurityGroup.ID)));
+SELECT
+    ApplicationRoleSecurityGroup.ApplicationRoleID AS ApplicationRoleID,
+    ApplicationRoleSecurityGroup.SecurityGroupID AS SecurityGroupID,
+    ApplicationRole.Name AS ApplicationRoleName,
+    ApplicationRole.Description AS ApplicationRoleDescription,
+    SecurityGroup.Name AS SecurityGroupName,
+    SecurityGroup.Description AS SecurityGroupDescription 
+FROM
+    ApplicationRoleSecurityGroup JOIN
+    ApplicationRole ON ApplicationRoleSecurityGroup.ApplicationRoleID = ApplicationRole.ID JOIN
+    SecurityGroup ON ApplicationRoleSecurityGroup.SecurityGroupID = SecurityGroup.ID;
 
 CREATE VIEW AppRoleUserAccountDetail AS 
 SELECT ApplicationRoleUserAccount.ApplicationRoleID AS ApplicationRoleID,ApplicationRoleUserAccount.UserAccountID AS UserAccountID,UserAccount.Name AS UserName,UserAccount.FirstName AS FirstName,UserAccount.LastName AS LastName,UserAccount.Email AS Email,ApplicationRole.Name AS ApplicationRoleName,ApplicationRole.Description AS ApplicationRoleDescription 
