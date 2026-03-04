@@ -38467,6 +38467,20 @@
              </code>
              </remarks>
         </member>
+        <member name="M:GSF.StringExtensions.ParseAsCSV(System.String)">
+            <summary>
+            Parses the string as a CSV document.
+            </summary>
+            <param name="csv">The string to be parsed</param>
+            <returns>An array of rows parsed as CSV data.</returns>
+        </member>
+        <member name="M:GSF.StringExtensions.ReadCSVRow(System.IO.TextReader)">
+            <summary>
+            Reads characters from the text reader and returns a single row of CSV data.
+            </summary>
+            <param name="reader">The text reader providing the CSV data</param>
+            <returns>An array of fields in one row of CSV data or <c>null</c> if there is no more data available from the text reader.</returns>
+        </member>
         <member name="T:GSF.Text.Operation">
             <summary>
             The data structure representing a diff is a List of Diff objects:

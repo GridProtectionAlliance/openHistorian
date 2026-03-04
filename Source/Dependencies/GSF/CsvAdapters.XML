@@ -417,6 +417,30 @@
             Represents an input adapter that reads measurements from a CSV file.
             </summary>
         </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.PacingTimer.#ctor(System.Double)">
+            <summary>
+            Creates a new <see cref="T:CSVAdapters.CsvInputAdapter.PacingTimer"/> instance.
+            </summary>
+            <param name="interval">The defined interval in milliseconds.</param>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.PacingTimer.SetNextPeriod">
+            <summary>
+            Set the next waiting period based on current time.
+            </summary>
+        </member>
+        <member name="M:CSVAdapters.CsvInputAdapter.PacingTimer.WaitNext(System.Boolean)">
+            <summary>
+            Blocks until the next scheduled waiting period.
+            </summary>
+            <param name="setNextPeriod">
+            Flag that determines if next waiting period should be set; when <c>true</c>, the
+            deadline advances by exactly one period from the current deadline (absolute
+            cadence) to keep inter-frame intervals consistent. If the deadline has already
+            fallen behind by more than one full period, it resets to "now + period" to
+            prevent a burst of catch-up frames. When <c>false</c>, caller must manually
+            call <see cref="M:CSVAdapters.CsvInputAdapter.PacingTimer.SetNextPeriod"/> to schedule the next waiting period.
+            </param>
+        </member>
         <member name="M:CSVAdapters.CsvInputAdapter.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:CSVAdapters.CsvInputAdapter"/> class.
@@ -429,7 +453,7 @@
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.InputInterval">
             <summary>
-            Gets or sets the interval of time between sending frames into the concentrator.
+            Gets or sets the interval of time between reading rows from the CSV file.
             </summary>
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.AutoRepeat">
@@ -444,12 +468,11 @@
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.UseHighResolutionInputTimer">
             <summary>
-            Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
+            Gets or sets flag that determines if a high-resolution timer should be used for CSV file based input.
             </summary>
             <remarks>
-            Useful when input frames need be accurately time-aligned to the local clock to better simulate
-            an input device and calculate downstream latencies.<br/>
-            This is only applicable when connection is made to a file for replay purposes.
+            Useful when input needs be accurately time-aligned to a specified frame rate. Maximum interval is 1ms (1000 FPS).
+            Set to <c>false</c> if faster inputs are needed, e.g., 0.3333333ms (3000 FPS) or greater.
             </remarks>
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.MeasurementsPerInterval">
@@ -470,7 +493,40 @@
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.ColumnMappings">
             <summary>
-            Defines the column mappings, must be defined: e.g., 0=Timestamp; 1=PPA:12; 2=PPA13.
+            Manually defines the column mappings, e.g.: "0=Timestamp; 1=PPA:12; 2=PPA13". Use <see cref="P:CSVAdapters.CsvInputAdapter.AutoMapToOutputMeasurements"/>
+            instead to automatically assign column mappings to output measurements when transverse mode is enabled.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.AutoMapToOutputMeasurements">
+            <summary>
+            Gets or sets flags that determines whether to automatically assign column mappings to output measurements when transverse mode is enabled. Output measurement definition order preserved.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.TimestampColumnIndex">
+            <summary>
+            Gets or sets the column index for timestamp values when <see cref="P:CSVAdapters.CsvInputAdapter.AutoMapToOutputMeasurements"/> is enabled.
+            </summary>
+            <remarks>
+            Value is required when <see cref="P:CSVAdapters.CsvInputAdapter.AutoMapToOutputMeasurements"/> is enabled to identify which column contains timestamp values.
+            </remarks>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.AutoAssignMappingsToOutputs">
+            <summary>
+            Gets or sets a flag that determines whether to automatically assign column mappings to output measurements when transverse mode is enabled.
+            </summary>
+            <remarks>
+            Value will be set to <c>false</c> if <see cref="P:CSVAdapters.CsvInputAdapter.AutoMapToOutputMeasurements"/> is enabled. No need to reassign column mappings to output
+            measurements if they are already being used as source for column mappings.
+            </remarks>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.RoundTimestampsToFrameRate">
+            <summary>
+            Gets or sets flag that determines whether to round timestamps to the inferred <see cref="P:CSVAdapters.CsvInputAdapter.FrameRate"/>.
+            </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.FrameRate">
+            <summary>
+            Gets inferred frame rate based on the defined <see cref="P:CSVAdapters.CsvInputAdapter.InputInterval"/>.
             </summary>
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.UseAsyncConnect">
@@ -478,6 +534,15 @@
             Gets a flag that determines if this <see cref="T:CSVAdapters.CsvInputAdapter"/>
             uses an asynchronous connection.
             </summary>
+        </member>
+        <member name="P:CSVAdapters.CsvInputAdapter.SignalIDPublishOrder">
+            <summary>
+            Gets a read-only mapping of measurement signal ID to zero-based publish order index.
+            </summary>
+            <remarks>
+            This excludes the timestamp column mapping and all indexes are normalized to
+            zero-based index sequential to match publication order.
+            </remarks>
         </member>
         <member name="P:CSVAdapters.CsvInputAdapter.Status">
             <summary>

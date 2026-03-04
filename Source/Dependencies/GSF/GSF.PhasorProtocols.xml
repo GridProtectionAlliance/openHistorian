@@ -18912,9 +18912,16 @@
             Replay timer class used to pace frame publication for file-based playback.
             </summary>
             <remarks>
-            This class uses a combination of coarse sleeping, yielding, and spinning for
-            accurate wait times with minimal CPU usage. Supports common frame rates, e.g.,
-            30 or 60, and very high frame rates, e.g., 3000.
+            <para>
+            Uses absolute deadline advancement to maintain consistent inter-frame intervals.
+            For longer intervals, e.g., 30 FPS / ~33ms, a single bulk <see cref="M:System.Threading.Thread.Sleep(System.Int32)"/>
+            is used for most of the wait, followed by yield/spin for the final approach — minimizing
+            OS scheduler jitter compared to many individual <c>Thread.Sleep(1)</c> calls.
+            </para>
+            <para>
+            Also supports very high frame rates, e.g., 3000 FPS, where the yield/spin path
+            naturally dominates due to sub-millisecond intervals.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.ReplayTimer.#ctor(System.Int32)">
@@ -18932,6 +18939,12 @@
             <summary>
             Blocks until the next scheduled frame rate interval.
             </summary>
+            <remarks>
+            The deadline advances by exactly one period from the current deadline (absolute
+            cadence) to keep inter-frame intervals consistent. If the deadline has already
+            fallen behind by more than one full period, it resets to "now + period" to
+            prevent a burst of catch-up frames.
+            </remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition">
             <summary>

@@ -235,6 +235,11 @@
             Defines filter operation that changes measurement values based on expression evaluation.
             </summary>
         </member>
+        <member name="F:DynamicCalculator.FilterOperation.SetFlagsWhenTrue">
+            <summary>
+            Sets measurement state flags when expression evaluates to true.
+            </summary>
+        </member>
         <member name="T:DynamicCalculator.DynamicFilter">
             <summary>
             The DynamicFilter is a filter adapter which takes multiple input measurements
@@ -269,7 +274,8 @@
         </member>
         <member name="P:DynamicCalculator.DynamicFilter.AugmentationFlags">
             <summary>
-            Gets or sets measurement state flags that are applied when a value has been replaced when filter operation is set to <see cref="F:DynamicCalculator.FilterOperation.ValueAugmentation"/>.
+            Gets or sets measurement state flags that are applied when a value has been replaced when filter operation is set to <see cref="F:DynamicCalculator.FilterOperation.ValueAugmentation"/>
+            or when flags are set when filter operation is set to <see cref="F:DynamicCalculator.FilterOperation.SetFlagsWhenTrue"/>.
             </summary>
         </member>
         <member name="P:DynamicCalculator.DynamicFilter.Enabled">
@@ -294,7 +300,7 @@
         </member>
         <member name="P:DynamicCalculator.DynamicFilter.LagTime">
             <summary>
-            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            Gets or sets the allowed past-time deviation tolerance, in seconds (can be sub-second).
             </summary>
         </member>
         <member name="P:DynamicCalculator.DynamicFilter.LeadTime">

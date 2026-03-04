@@ -1052,9 +1052,14 @@
             Default value for the <see cref="P:DataQualityMonitoring.StateFlagsTransferAdapter.SupportsTemporalProcessing"/> property.
             </summary>
         </member>
+        <member name="F:DataQualityMonitoring.StateFlagsTransferAdapter.DefaultExecutionOrder">
+            <summary>
+            Default value for the <see cref="P:DataQualityMonitoring.StateFlagsTransferAdapter.ExecutionOrder"/> property.
+            </summary>
+        </member>
         <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.SourceMeasurements">
             <summary>
-            Gets or sets the collection of measurements from which state will be transfered.
+            Gets or sets the collection of measurements from which state will be transferred.
             </summary>
         </member>
         <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.DestinationMeasurements">
@@ -1062,11 +1067,17 @@
             Gets or sets the collection of measurements to which state will be transferred.
             </summary>
         </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.InputMeasurementKeys">
+            <inheritdoc/>
+        </member>
         <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.Flags">
             <summary>
-            Gets or sets the flags to be transfered from source
+            Gets or sets the flags to be transferred from source
             measurements to the corresponding destination measurements.
             </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.ExecutionOrder">
+            <inheritdoc/>
         </member>
         <member name="P:DataQualityMonitoring.StateFlagsTransferAdapter.SupportsTemporalProcessing">
             <summary>
