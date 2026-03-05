@@ -589,12 +589,22 @@
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ID">
             <summary>
-            Gets or sets existing device ID, if any.
+            Gets or sets ID of the existing database record, if any.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.UniqueID">
             <summary>
             Gets or sets and provided unique ID for the device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.GlobalID3">
+            <summary>
+            Gets or sets and provided global ID for the device's configuration cell.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.OldAcronym">
+            <summary>
+            Gets or sets the acronym of the existing device record.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Acronym">
@@ -615,6 +625,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.ConfigName">
             <summary>
             Gets or sets name from configuration frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.LinkAcronym">
+            <summary>
+            Gets or sets tooltip info describing the device acronym from the database.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Longitude">
@@ -667,7 +682,7 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> add analog flag.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Existing">
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.HasConflict">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> existing flag.
             </summary>
@@ -675,6 +690,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.StatusColor">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> status color based on existing flag.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.IsHighlighted">
+            <summary>
+            Gets flag to indicate whether the device is highlighted via <see cref="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.StatusColor"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.PhasorList">
@@ -705,6 +725,11 @@
         <member name="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.AnalogLabelsPreview">
             <summary>
             Gets a tool tip preview of <see cref="P:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.AnalogLabels"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Unlink">
+            <summary>
+            Detaches the input wizard device from the database record it was mapped to.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice.Load(GSF.Data.AdoDataConnection)">

@@ -1625,6 +1625,11 @@
             Gets <see cref="T:System.Windows.Input.ICommand"/> to create or update configuration manually.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.UnlinkCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to unlink <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/> from database record.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConfigurationSummary">
             <summary>
             Gets or sets summary message to be displayed on UI after parsing configuration file or frame.
