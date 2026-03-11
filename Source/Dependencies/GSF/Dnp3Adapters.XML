@@ -55,6 +55,9 @@
             Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
             </summary>
         </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.ChannelID">
+            <inheritdoc/>
+        </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
@@ -229,6 +232,9 @@
         <member name="P:DNP3Adapters.Dnp3OutputAdapter.OutputIsForArchive">
             <inheritdoc />
         </member>
+        <member name="P:DNP3Adapters.Dnp3OutputAdapter.ChannelID">
+            <inheritdoc/>
+        </member>
         <member name="P:DNP3Adapters.Dnp3OutputAdapter.UseAsyncConnect">
             <inheritdoc />
         </member>
@@ -269,6 +275,11 @@
         <member name="T:DNP3Adapters.IDnp3Adapter">
             <summary>
             Defines the interface for a DNP3 adapter that can be used to process exceptions and status messages.
+            </summary>
+        </member>
+        <member name="P:DNP3Adapters.IDnp3Adapter.ChannelID">
+            <summary>
+            Gets the ID of the channel added to the DNP3 manager.
             </summary>
         </member>
         <member name="M:DNP3Adapters.IDnp3Adapter.OnProcessException(GSF.Diagnostics.MessageLevel,System.Exception)">
