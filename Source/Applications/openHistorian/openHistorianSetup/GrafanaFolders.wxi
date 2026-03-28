@@ -1405,6 +1405,9 @@
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLFOLDER" Name="mssql">
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLAZUREAUTHFOLDER" Name="azureauth" />
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLCONFIGURATIONFOLDER" Name="configuration" />
+            <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLDISTFOLDER" Name="dist">
+              <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLDISTIMGFOLDER" Name="img" />
+            </Directory>
             <Directory Id="PUBLICAPPPLUGINSDATASOURCEMSSQLIMGFOLDER" Name="img" />
           </Directory>
           <Directory Id="PUBLICAPPPLUGINSDATASOURCEMYSQLFOLDER" Name="mysql">

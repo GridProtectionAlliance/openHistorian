@@ -5,6 +5,7 @@
   </Directory>
   <Directory Id="IMAGESFOLDER" Name="Images">
     <Directory Id="IMAGESICONSFOLDER" Name="Icons" />
+    <Directory Id="IMAGESMAPFOLDER" Name="Map" />
   </Directory>
   <Directory Id="PANELSFOLDER" Name="Panels" />
   <Directory Id="SCRIPTSFOLDER" Name="Scripts" />

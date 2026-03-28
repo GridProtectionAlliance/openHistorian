@@ -1117,6 +1117,8 @@
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql__Components" />
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql_azureauth__Components" />
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql_configuration__Components" />
+  <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql_dist__Components" />
+  <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql_dist_img__Components" />
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mssql_img__Components" />
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mysql__Components" />
   <ComponentGroupRef Id="Grafana_public_app_plugins_datasource_mysql_configuration__Components" />
