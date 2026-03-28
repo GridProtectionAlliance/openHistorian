@@ -6,7 +6,7 @@ import {
   TableDefinition,
   TableIdentifier,
   TokenType,
-} from '@grafana/plugin-ui';
+} from '@grafana/experimental';
 import { DB, SQLQuery } from '@grafana/sql';
 
 interface CompletionProviderGetterArgs {

@@ -25,11 +25,6 @@ jest.mock('@grafana/runtime', () => ({
   getBackendSrv: () => backendSrv,
 }));
 
-// mock uuidv4 to give back the same value every time
-jest.mock('uuid', () => ({
-  v4: () => '0000',
-}));
-
 const instanceSettings = {
   id: 1,
   uid: 'mssql-datasource',
@@ -178,7 +173,8 @@ describe('MSSQLDatasource', () => {
     it('should return a list of fields when fetchFields is called', async () => {
       const fetchFieldsResponse = {
         results: {
-          [`columns-0000`]: {
+          columns: {
+            refId: 'columns',
             frames: [
               dataFrameToJSON(
                 createDataFrame({
