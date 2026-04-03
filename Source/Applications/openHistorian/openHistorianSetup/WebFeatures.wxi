@@ -5,7 +5,6 @@
   <ComponentGroupRef Id="wwwroot_Content_fonts_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Icons_Components" />
-  <ComponentGroupRef Id="wwwroot_Images_Map_Components" />
   <ComponentGroupRef Id="wwwroot_Panels_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Components" />
 </Feature>

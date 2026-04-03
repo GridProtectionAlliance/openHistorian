@@ -180,11 +180,6 @@
     <File Id="Images_Icons_openHistorianWebManager.ico" Name="openHistorianWebManager.ico" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Icons\openHistorianWebManager.ico" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="wwwroot_Images_Map_Components" Directory="IMAGESMAPFOLDER">
-  <Component Id="Images_Map_CenterMap_svg">
-    <File Id="Images_Map_CenterMap.svg" Name="CenterMap.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Images\Map\CenterMap.svg" />
-  </Component>
-</ComponentGroup>
 <ComponentGroup Id="wwwroot_Panels_Components" Directory="PANELSFOLDER">
   <Component Id="Panels_donut_svg">
     <File Id="Panels_donut.svg" Name="donut.svg" Source="$(var.SolutionDir)Applications\openHistorian\openHistorian\wwwroot\Panels\donut.svg" />
