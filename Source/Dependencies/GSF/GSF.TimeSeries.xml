@@ -8009,6 +8009,15 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="M:GSF.TimeSeries.ImmediateMeasurements.HasMeasurementID(GSF.TimeSeries.MeasurementKey)">
+            <summary>
+            Determines whether the specified <see cref="T:GSF.TimeSeries.MeasurementKey"/> exists in the current collection of immediate measurements.
+            </summary>
+            <param name="key">The <see cref="T:GSF.TimeSeries.MeasurementKey"/> to locate in the collection.</param>
+            <returns>
+            <c>true</c> if the specified <see cref="T:GSF.TimeSeries.MeasurementKey"/> exists in the collection; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="M:GSF.TimeSeries.ImmediateMeasurements.TaggedMeasurementKeys(System.String)">
             <summary>
             Returns measurement list of specified tag, if it exists.
