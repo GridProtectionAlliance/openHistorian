@@ -239,6 +239,15 @@
             Measurement template to be used for apparent power output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>
             </summary>
         </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.PowerFactorOutputMeasurement">
+            <summary>
+            Measurement template to be used for power factor output values from the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerCalculation"/>.
+            </summary>
+            <remarks>
+            Power factor is an optional, dynamically created output that is not represented by a column on the
+            <c>PowerCalculation</c> configuration table. When <c>null</c>, no power factor is published for this circuit.
+            </remarks>
+        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerCalculationConfigurationValidation">
             <summary>
             Implements validations for power calculations in the power calculation adapter
@@ -358,6 +367,39 @@
             <param name="nodeIDQueryString">Node ID formatted for query</param>
             <param name="statusMessage">Delegate for communicating status updates</param>
         </member>
+        <member name="T:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention">
+            <summary>
+            Represents the sign convention used when calculating power factor.
+            </summary>
+            <remarks>
+            <para>
+            Power factor magnitude is always defined as <c>|P| / |S|</c> in the range <c>[0, 1]</c>. The sign
+            convention determines how reactive power direction (<c>Q</c>) is encoded into the published value:
+            </para>
+            <list type="bullet">
+              <item><description><see cref="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Unsigned"/> publishes the magnitude only — values are in <c>[0, 1]</c>.</description></item>
+              <item><description><see cref="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Lagging"/> publishes a positive value when reactive power is consumed (inductive, <c>Q &gt; 0</c>)
+                  and a negative value when reactive power is supplied (capacitive, <c>Q &lt; 0</c>) — values are in <c>[-1, +1]</c>.</description></item>
+              <item><description><see cref="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Leading"/> inverts the <see cref="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Lagging"/> convention: positive when capacitive (<c>Q &lt; 0</c>),
+                  negative when inductive (<c>Q &gt; 0</c>) — values are in <c>[-1, +1]</c>.</description></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Unsigned">
+            <summary>
+            Publishes power factor magnitude only, <c>|P| / |S|</c>, range <c>[0, 1]</c>.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Lagging">
+            <summary>
+            Positive sign indicates a lagging (inductive) load, <c>Q &gt; 0</c>; negative sign indicates a leading (capacitive) load.
+            </summary>
+        </member>
+        <member name="F:PowerCalculations.PowerMultiCalculator.PowerFactorSignConvention.Leading">
+            <summary>
+            Positive sign indicates a leading (capacitive) load, <c>Q &lt; 0</c>; negative sign indicates a lagging (inductive) load.
+            </summary>
+        </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.PowerMeasurement">
             <summary>
             Simple model class for measurements
@@ -435,7 +477,7 @@
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.AlwaysProduceResult">
             <summary>
-            Gets or sets flag indicating whether or not this adapter will produce a result for all calculations. If this value is true and a calculation fails,
+            Gets or sets flag indicating whether this adapter will produce a result for all calculations. If this value is true and a calculation fails,
             the adapter will produce NaN for that calculation. If this value is false and a calculation fails, the adapter will not produce any result.
             </summary>
         </member>
@@ -459,9 +501,32 @@
             Gets or sets the bad data strategy used to when inputs are marked with bad quality.
             </summary>
         </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnablePowerFactorCalculation">
+            <summary>
+            Gets or sets flag that determines if a power factor output measurement should be calculated for each circuit.
+            </summary>
+            <remarks>
+            When enabled, a power factor output measurement will be auto-created (per circuit) using the
+            <see cref="T:GSF.TimeSeries.Adapters.MetadataHelpers"/> APIs if one is not already present in active configuration. The naming
+            convention is the existing active power (MW) point tag with the trailing power suffix replaced by <c>PF</c>.
+            </remarks>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.PowerFactorSignConvention">
+            <summary>
+            Gets or sets the sign convention used for published power factor values.
+            </summary>
+            <remarks>
+            Only relevant when <see cref="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnablePowerFactorCalculation"/> is <c>true</c>.
+            </remarks>
+        </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter"/>.
             </summary>
         </member>
         <member name="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Status">
@@ -480,6 +545,30 @@
             </summary>
             <param name="frame">Input values for calculation</param>
             <param name="index">Index of frame within second.</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.CreatePowerFactorOutputs">
+            <summary>
+            Validates power factor output measurements when <see cref="P:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.EnablePowerFactorCalculation"/> is enabled,
+            auto-creating any missing per-circuit measurements via <see cref="T:GSF.TimeSeries.Adapters.MetadataHelpers"/>.
+            </summary>
+            <remarks>
+            Soft-fails: any per-circuit lookup or creation issue is logged as a warning, leaves the circuit's
+            <see cref="P:PowerCalculations.PowerMultiCalculator.PowerCalculation.PowerFactorOutputMeasurement"/> as <c>null</c>, and skips PF publication
+            for that circuit only.
+            </remarks>
+        </member>
+        <member name="M:PowerCalculations.PowerMultiCalculator.PowerMultiCalculatorAdapter.DerivePowerFactorPointTag(System.String)">
+            <summary>
+            Derives a power factor point tag from an existing MW / MVAR / MVA point tag by replacing the
+            trailing power suffix with <c>PF</c>. Falls back to appending <c>-PF</c> when no recognized suffix
+            is present.
+            </summary>
         </member>
         <member name="T:PowerCalculations.PowerMultiCalculator.RunningAverage">
             <summary>
