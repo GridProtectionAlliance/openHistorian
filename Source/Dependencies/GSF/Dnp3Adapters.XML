@@ -9,11 +9,6 @@
             Input adapter that reads measurements from a remote DNP3 endpoint.
             </summary>
         </member>
-        <member name="M:DNP3Adapters.DNP3InputAdapter.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="N:DNP3Adapters"/> class.
-            </summary>
-        </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
             <summary>
             Gets or sets the name of the XML file from which the communication parameters will be read.
@@ -50,10 +45,18 @@
             data points for a given signal that were received at the exact same time.
             </summary>
         </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.PollingInterval">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.PollingIntervals">
             <summary>
-            Gets or sets the interval, in seconds, at which the adapter will poll the DNP3 device.
+            Gets or sets the string representation of the list of intervals, in seconds, at which the
+            adapter will poll each class of data from the DNP3 device.
             </summary>
+            <remarks>
+            The string format for the polling intervals is a semicolon-separated list of intervals where
+            each interval is a comma separated list of class names followed by an equals sign and the
+            interval in seconds. For example: <c>Class0,Class1=2; Class2=10; Class3=30</c> would configure
+            the adapter to poll Class 0 and Class 1 every 2 seconds, Class 2 every 10 seconds, and Class 3
+            every 30 seconds. The class names should be one of 'Class0', 'Class1', 'Class2', or 'Class3'.
+            </remarks>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.ChannelID">
             <inheritdoc/>
