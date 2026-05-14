@@ -475,13 +475,6 @@
             This method is typically called once every five seconds.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.IaonSession.NewMeasurementsHandler(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
-            <summary>
-            Event handler for new measurement notifications from input adapters and action adapters.
-            </summary>
-            <param name="sender">Event source reference to the adapter that is reporting new measurements.</param>
-            <param name="e">Event arguments for event that contains references to the new measurements.</param>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.IaonSession.ProcessingCompleteHandler(System.Object,System.EventArgs)">
             <summary>
             Event handler for processing complete notifications from input adapters.
@@ -1642,11 +1635,12 @@
             <param name="onStatusMessage">Raise status messages on this callback</param>
             <param name="onProcessException">Raise exceptions on this callback</param>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+        <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.IFilterAdapter[],GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
             <summary>
             Patches the existing routing table with the supplied adapters.
             </summary>
             <param name="producerAdapters">all of the producers</param>
+            <param name="filterAdapters">all of the filters</param>
             <param name="consumerAdapters">all of the consumers</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IRouteMappingTables.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
@@ -1911,6 +1905,11 @@
             Instances a new <see cref="T:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.RouteCount">
+            <summary>
+            Gets the number of routes in this routing table.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.Initialize(System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Assigns the status messaging callbacks.
@@ -1918,16 +1917,12 @@
             <param name="onStatusMessage">Raise status messages on this callback</param>
             <param name="onProcessException">Raise exceptions on this callback</param>
         </member>
-        <member name="P:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.RouteCount">
-            <summary>
-            Gets the number of routes in this routing table.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.IFilterAdapter[],GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
             <summary>
             Patches the existing routing table with the supplied adapters.
             </summary>
             <param name="producerAdapters">all of the producers</param>
+            <param name="filterAdapters">all of the filters</param>
             <param name="consumerAdapters">all of the consumers</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingDoubleBufferQueue.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
@@ -1975,6 +1970,12 @@
             Represents an alternative routing table that has intentional delays to lower overall CPU utilization.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.GlobalCache.FilterAdapters">
+            <summary>
+            Contains all the adapters that get a chance at filtering
+            input measurements before passing them along to consumers.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.GlobalCache.GlobalDestinationLookup">
             <summary>
             Contains all consumers for all adapters regardless of if they are optimized or not.
@@ -2008,11 +2009,12 @@
             <param name="onStatusMessage">Raise status messages on this callback</param>
             <param name="onProcessException">Raise exceptions on this callback</param>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
+        <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.PatchRoutingTable(GSF.TimeSeries.Adapters.RoutingTablesAdaptersList,GSF.TimeSeries.Adapters.IFilterAdapter[],GSF.TimeSeries.Adapters.RoutingTablesAdaptersList)">
             <summary>
             Patches the existing routing table with the supplied adapters.
             </summary>
             <param name="producerAdapters">all of the producers</param>
+            <param name="filterAdapters">all of the filters</param>
             <param name="consumerAdapters">all of the consumers</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RouteMappingHighLatencyLowCpu.InjectMeasurements(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
@@ -2062,6 +2064,11 @@
         <member name="P:GSF.TimeSeries.Adapters.RoutingTables.InputAdapters">
             <summary>
             Gets or sets the active <see cref="T:GSF.TimeSeries.Adapters.InputAdapterCollection"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.RoutingTables.FilterAdapters">
+            <summary>
+            Gets or sets the active <see cref="T:GSF.TimeSeries.Adapters.FilterAdapterCollection"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.RoutingTables.ActionAdapters">
