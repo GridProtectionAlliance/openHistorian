@@ -19,9 +19,9 @@
             Default value for <see cref="P:FileAdapters.FileBlockReader.BlockSize"/>.
             </summary>
         </member>
-        <member name="F:FileAdapters.FileBlockReader.DefaultWatchInterval">
+        <member name="F:FileAdapters.FileBlockReader.DefaultScanInterval">
             <summary>
-            Default value for <see cref="P:FileAdapters.FileBlockReader.WatchInterval"/>.
+            Default value for <see cref="P:FileAdapters.FileBlockReader.ScanInterval"/>.
             </summary>
         </member>
         <member name="F:FileAdapters.FileBlockReader.DefaultProcessInterval">
@@ -44,6 +44,11 @@
             Default value for <see cref="P:FileAdapters.FileBlockReader.ProcessIntervalAdjustment"/>.
             </summary>
         </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultDeleteFilesWhenProcessed">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.DeleteFilesWhenProcessed"/>.
+            </summary>
+        </member>
         <member name="M:FileAdapters.FileBlockReader.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:FileAdapters.FileBlockReader"/> class.
@@ -56,7 +61,12 @@
         </member>
         <member name="P:FileAdapters.FileBlockReader.FilePattern">
             <summary>
-            Gets or sets the pattern used to match file that appear in the watch folder.
+            Gets or sets the pattern used to match files that appear in the watch folder.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.FolderExclusion">
+            <summary>
+            Gets or sets the pattern used to determine whether a folder should be excluded from enumeration.
             </summary>
         </member>
         <member name="P:FileAdapters.FileBlockReader.RetransmissionStat">
@@ -69,7 +79,7 @@
             Gets or sets the size of each block of data that is read from the file.
             </summary>
         </member>
-        <member name="P:FileAdapters.FileBlockReader.WatchInterval">
+        <member name="P:FileAdapters.FileBlockReader.ScanInterval">
             <summary>
             Gets or sets the amount of time, in seconds, between each scan of the watch folder.
             </summary>
@@ -98,9 +108,19 @@
             to the process interval when throttling buffer blocks.
             </summary>
         </member>
+        <member name="P:FileAdapters.FileBlockReader.DeleteFilesWhenProcessed">
+            <summary>
+            Gets or sets a flag that determines whether files should be deleted from the watch directory after they have been processed.
+            </summary>
+        </member>
         <member name="P:FileAdapters.FileBlockReader.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.ProcessedFiles">
+            <summary>
+            Gets the number of files processed by this adapter.
             </summary>
         </member>
         <member name="P:FileAdapters.FileBlockReader.AdjustedBlockSize">
@@ -112,6 +132,9 @@
             <summary>
             Gets the process interval after making adjustments for throttling.
             </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.Status">
+            <inheritdoc/>
         </member>
         <member name="P:FileAdapters.FileBlockReader.InputMeasurementKeys">
             <summary>
@@ -160,9 +183,24 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:FileAdapters.FileBlockReader"/>.</returns>
         </member>
-        <member name="M:FileAdapters.FileBlockReader.ClearProcessedFileList">
+        <member name="M:FileAdapters.FileBlockReader.TrimFileIndex">
             <summary>
-            Empties the processed file list.
+            Check if files have been removed from the directory and remove them from the index.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.ScanWatchDirectory">
+            <summary>
+            Scans the watch directory to check for missed files.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.ResendAllFiles">
+            <summary>
+            Rescans the folder and sends all files from scratch.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.StopWatchDirectoryScan">
+            <summary>
+            Stops the currently active scan.
             </summary>
         </member>
         <member name="M:FileAdapters.FileBlockReader.Start">
@@ -181,9 +219,34 @@
             </summary>
             <param name="measurements">Measurements to queue for processing.</param>
         </member>
+        <member name="M:FileAdapters.FileBlockReader.HasProcessedFile(System.String)">
+            <summary>
+            Determines whether the given file has already been processed.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.AddToIndex(System.String)">
+            <summary>
+            Adds the given file to the index.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.GetRelativePath(System.String)">
+            <summary>
+            Gets path relative to <see cref="P:FileAdapters.FileBlockReader.WatchDirectory"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.GetFileIndex">
+            <summary>
+            Gets the index for files that were processed.
+            </summary>
+        </member>
         <member name="M:FileAdapters.FileBlockReader.OnNewMeasurement(GSF.TimeSeries.IMeasurement)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterBase.NewMeasurements"/> event.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.FileProcessor_Error(System.Object,System.IO.ErrorEventArgs)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
             </summary>
         </member>
         <member name="M:FileAdapters.FileBlockReader.Dispose(System.Boolean)">
@@ -237,6 +300,11 @@
         <member name="M:FileAdapters.FileBlockWriter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
             <summary>
             Writes buffer blocks out to files.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.EnsureDirectory(System.String)">
+            <summary>
+            Attempt to create a directory at the given location if it does not already exist.
             </summary>
         </member>
         <member name="M:FileAdapters.FileBlockWriter.Dispose(System.Boolean)">
