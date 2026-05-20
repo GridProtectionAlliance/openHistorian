@@ -48731,7 +48731,7 @@
             </summary>
             <param name="timestamp">Timestamp to align.</param>
             <param name="samplesPerSecond">Samples per second to use for distribution.</param>
-            <param name="Baseline"> Starting Timestamp of the Distribution.</param>
+            <param name="baseline">Starting timestamp of the distribution.</param>
             <returns>The nearest distribution timestamp for given <paramref name="timestamp"/>.</returns>
         </member>
         <member name="M:GSF.Ticks.ToSecondDistribution(GSF.Ticks,System.Double,GSF.Ticks,System.Int32)">
