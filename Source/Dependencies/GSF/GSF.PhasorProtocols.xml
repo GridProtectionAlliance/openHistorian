@@ -18940,10 +18940,12 @@
             Blocks until the next scheduled frame rate interval.
             </summary>
             <remarks>
-            The deadline advances by exactly one period from the current deadline (absolute
-            cadence) to keep inter-frame intervals consistent. If the deadline has already
-            fallen behind by more than one full period, it resets to "now + period" to
-            prevent a burst of catch-up frames.
+            The deadline advances by exactly one period from the previous deadline (absolute
+            cadence) so the long-term average rate stays locked to the defined frame rate even
+            when frames arrive in bursts separated by buffer-read gaps. When the deadline is
+            already at or behind the current time, the method returns without waiting so playback
+            can catch back up; the accrued deficit is clamped (see <see cref="F:GSF.PhasorProtocols.ReplayTimer.MaxCatchUpLag"/>) so
+            a long stall cannot produce an unbounded burst of catch-up frames.
             </remarks>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.AnalogDefinition">
@@ -19047,21 +19049,6 @@
             Phase channels for SEL CWS PoW analogs.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IA">
-            <summary>
-            Phase A current (IA).
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IB">
-            <summary>
-            Phase B current (IB).
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IC">
-            <summary>
-            Phase C current (IC).
-            </summary>
-        </member>
         <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VA">
             <summary>
             Phase A voltage (VA).
@@ -19075,6 +19062,21 @@
         <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.VC">
             <summary>
             Phase C voltage (VC).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IA">
+            <summary>
+            Phase A current (IA).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IB">
+            <summary>
+            Phase B current (IB).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseChannel.IC">
+            <summary>
+            Phase C current (IC).
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.Common">
