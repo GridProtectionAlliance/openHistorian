@@ -19079,6 +19079,37 @@
             Phase C current (IC).
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm">
+            <summary>
+            Phase estimation algorithm used to derive synchrophasor, frequency and ROCOF components from
+            SEL CWS point-on-wave data.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.SlidingDft">
+            <summary>
+            Rolling sliding DFT estimator with optional EMA smoothing (see <see cref="T:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator"/>).
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.IEEEC37_118">
+            <summary>
+            IEEE C37.118-2018 Annex D filter-based estimator (see <see cref="T:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator"/>).
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.FilterClass">
+            <summary>
+            IEEE C37.118-2018 Annex D filter class for phasor estimation.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.FilterClass.P">
+            <summary>
+            P-class (Protection): fast response, triangular window filter.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.FilterClass.M">
+            <summary>
+            M-class (Measurement): better out-of-band rejection, Hamming-windowed sinc filter.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.Common">
             <summary>
             Common SEL CWS declarations and functions.
@@ -19432,6 +19463,11 @@
             Default value for <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.RepeatLastCalculatedValueWhenDownSampling"/>.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.ConnectionParameters.DefaultAlgorithm">
+            <summary>
+            Default value for <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.Algorithm"/>.
+            </summary>
+        </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.SelCWS.ConnectionParameters"/>.
@@ -19466,6 +19502,17 @@
             when <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.CalculationFrameRate"/> is less than SEL CWS frame rate (commonly 3000Hz);
             otherwise <see cref="F:System.Double.NaN"/> will be used.
             </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.Algorithm">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm"/> used to derive synchrophasor, frequency
+            and ROCOF components from SEL CWS point-on-wave data.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.SlidingDft"/> uses a rolling sliding DFT estimator with optional
+            EMA smoothing; <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.IEEEC37_118"/> uses the IEEE C37.118-2018 Annex D
+            filter-based estimator. Algorithm-specific options appear in the matching property category.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.ReferenceChannel">
             <summary>
@@ -19549,6 +19596,24 @@
             <remarks>
             Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
             re-anchors the phasor sums.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.MaxGapFillSamples">
+            <summary>
+            Gets or sets the maximum gap (in input samples) filled by phase-continued synthesis before resynchronizing.
+            </summary>
+            <remarks>
+            When dropped samples are inferred from the input timestamp cadence, gaps up to this size are coasted
+            (the last phasors are continued at the tracked frequency); larger gaps drop and refill the analysis window.
+            A negative value means "auto" (one full analysis window); <c>0</c> resynchronizes on any gap.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.FilterClass">
+            <summary>
+            Gets or sets the IEEE C37.118 filter class: P (Protection, fast response) or M (Measurement, better out-of-band rejection).
+            </summary>
+            <remarks>
+            Only applies when <see cref="P:GSF.PhasorProtocols.SelCWS.ConnectionParameters.Algorithm"/> is <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.IEEEC37_118"/>.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.ConnectionParameters.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -19793,10 +19858,19 @@
             otherwise <see cref="F:System.Double.NaN"/> will be used.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.Algorithm">
+            <summary>
+            Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm"/> used to derive synchrophasor, frequency
+            and ROCOF components from SEL CWS point-on-wave data.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.ReferenceChannel">
             <summary>
             Gets or sets the reference channel for frequency tracking.
             </summary>
+            <remarks>
+            Only applies when <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.Algorithm"/> is <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.SlidingDft"/>.
+            </remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.TargetCycles">
             <summary>
@@ -19875,6 +19949,24 @@
             <remarks>
             Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
             re-anchors the phasor sums.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.MaxGapFillSamples">
+            <summary>
+            Gets or sets the maximum gap (in input samples) filled by phase-continued synthesis before resynchronizing.
+            </summary>
+            <remarks>
+            Dropped samples (e.g., lost UDP packets) are inferred from the input timestamp cadence. Gaps up to this size
+            are coasted by continuing the last phasors at the tracked frequency; larger gaps drop and refill the analysis
+            window. A negative value means "auto" (one full analysis window); <c>0</c> resynchronizes on any gap.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.FrameParser.FilterClass">
+            <summary>
+            Gets or sets the IEEE C37.118 filter class: P (Protection, fast response) or M (Measurement, better out-of-band rejection).
+            </summary>
+            <remarks>
+            Only applies when <see cref="P:GSF.PhasorProtocols.SelCWS.FrameParser.Algorithm"/> is <see cref="F:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm.IEEEC37_118"/>.
             </remarks>
         </member>
         <member name="M:GSF.PhasorProtocols.SelCWS.FrameParser.Start">
@@ -19999,10 +20091,295 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.FrequencyValue"/>.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator">
+            <summary>
+            Represents a rolling six-phase estimator using the IEEE C37.118-2018 Annex D filter-based
+            phasor estimation algorithm with P-class and M-class support.
+            </summary>
+            <remarks>
+            <para>
+            This class implements the IEEE C37.118-2018 Annex D standard PMU phasor estimation algorithm.
+            It uses precomputed FIR filter coefficients (P-class triangular window or M-class Hamming-windowed
+            sinc) to estimate fundamental-frequency phasors from streaming samples via causal convolution.
+            </para>
+            <para>
+            Frequency estimation is performed per IEEE Annex D.4, Equations D.3 and D.4, using
+            phase-differencing on the voltage positive-sequence phasor. ROCOF is computed as the
+            second difference of the unwrapped positive-sequence phase angle.
+            </para>
+            <para>
+            The estimator operates at the full input sample rate and decimates to the configured report rate
+            by selecting every <c>fs/RR</c>-th sample (dyadic decimation), matching the standard's approach.
+            </para>
+            <para>
+            For P-class filters, an additional magnitude correction per Annex D.6, Equation D.6 is applied
+            to compensate for spectral leakage when the signal frequency deviates from nominal.
+            </para>
+            <para>
+            <b>Outputs:</b> 6 phasors (VA, VB, VC, IA, IB, IC) plus frequency and ROCOF estimates.
+            Internally computes voltage positive-sequence for IEEE Annex D.4 frequency/ROCOF estimation.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.DefaultFilterClass">
+            <summary>
+            Default filter class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.#ctor(System.Double,System.Double,GSF.Units.EE.LineFrequency,GSF.PhasorProtocols.SelCWS.FilterClass)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator"/> class implementing
+            the IEEE C37.118-2018 Annex D phasor estimation algorithm.
+            </summary>
+            <param name="sampleRateHz">
+            Input sample rate in Hz (samples per second). Must be &gt; 0 and an integer multiple of
+            both <paramref name="nominalFrequency"/> and <paramref name="outputRateHz"/>.
+            </param>
+            <param name="outputRateHz">
+            Output report rate in Hz (estimates per second). Must be &gt; 0 and &lt;= <paramref name="sampleRateHz"/>.
+            The sample rate must be an integer multiple of this value.
+            </param>
+            <param name="nominalFrequency">
+            Nominal line frequency (50Hz or 60Hz). Determines the filter parameters.
+            </param>
+            <param name="filterClass">
+            IEEE C37.118 filter class: <see cref="F:GSF.PhasorProtocols.SelCWS.FilterClass.P"/> for Protection (fast response)
+            or <see cref="F:GSF.PhasorProtocols.SelCWS.FilterClass.M"/> for Measurement (better out-of-band rejection).
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if rates are non-positive, output rate exceeds input rate, or sample rate is not
+            an integer multiple of the nominal frequency or report rate.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the <paramref name="nominalFrequency"/> and <paramref name="outputRateHz"/> combination
+            is not supported for M-class filters per IEEE C37.118-2018 Table D.1.
+            </exception>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.SampleRateHz">
+            <summary>
+            Gets the configured sample rate in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.OutputRateHz">
+            <summary>
+            Gets the configured output report rate in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.NominalFrequencyHz">
+            <summary>
+            Gets the nominal frequency in Hz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.Class">
+            <summary>
+            Gets the IEEE C37.118 filter class (P or M).
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.WindowSamples">
+            <summary>
+            Gets the number of samples required before valid output is produced (filter startup transient).
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.TotalSamplesProcessed">
+            <summary>
+            Gets the total number of samples processed.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.IsReady">
+            <summary>
+            Gets whether the estimator has filled its filter window and is producing valid estimates.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.FilterOrder">
+            <summary>
+            Gets the filter order (N), the number of FIR filter taps minus one.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)">
+            <summary>
+            Push one interleaved sample-group (VA, VB, VC, IA, IB, IC) with its epoch nanoseconds.
+            </summary>
+            <param name="va">Current sample for phase A voltage.</param>
+            <param name="vb">Current sample for phase B voltage.</param>
+            <param name="vc">Current sample for phase C voltage.</param>
+            <param name="ia">Current sample for phase A current.</param>
+            <param name="ib">Current sample for phase B current.</param>
+            <param name="ic">Current sample for phase C current.</param>
+            <param name="epochNanoseconds">Timestamp in nanoseconds since epoch.</param>
+            <param name="phaseEstimateHandler">Handler for phase estimate result.</param>
+            <returns>
+            <c>true</c> when an estimate is available (filter has filled) and it is time to
+            publish at target <see cref="P:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.OutputRateHz"/>; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            The data referenced in the span-based properties of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>
+            parameter provided to the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate is owned by the
+            <see cref="T:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator"/> instance, it is only valid during the scope of the
+            delegate call. If you need to retain the data, make a copy.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.Reset">
+            <summary>
+            Resets the estimator to its initial state.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.ComputePhasors">
+            <summary>
+            Computes FIR convolution for each input channel, producing complex phasor outputs.
+            </summary>
+            <remarks>
+            Implements IEEE C37.118-2018 Annex D.2, Equation D.1: X = Σ filter[k] * x[n-k]
+            The filter coefficients are pre-reversed (flipped) during construction so we can
+            simply dot-product with the buffer in forward order.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.ExtractMagnitudesAndAngles(System.Double)">
+            <summary>
+            Extracts magnitude and angle from complex phasors per IEEE Annex D.2/D.3.
+            </summary>
+            <param name="effectiveTime">Time in seconds with group delay compensation applied.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.ComputeVoltagePositiveSequence">
+            <summary>
+            Computes the voltage positive-sequence phasor for frequency/ROCOF estimation.
+            </summary>
+            <remarks>
+            <para>
+            Per IEEE C37.118-2018: Xp = (1/3)(Xa + α·Xb + α²·Xc)
+            where α = e^(j·2π/3) = -0.5 + j·√3/2
+            </para>
+            <para>
+            Uses the derotated phasors (with nominal frequency rotation removed), matching the Python
+            reference implementation where <c>__estimate</c> removes the <c>t*w0</c> rotation before
+            positive-sequence computation. Using the raw FIR output (which still rotates at w0) would
+            cause the frequency formula <c>F = dφ/dt/(4π·dt) + f0</c> to double-count f0.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.ComputeFrequencyAndRocof(System.Double@,System.Double@)">
+            <summary>
+            Computes frequency and ROCOF from the voltage positive-sequence phasor phase
+            per IEEE C37.118-2018 Annex D.4, Equations D.3 and D.4.
+            </summary>
+            <param name="frequency">Output frequency estimate in Hz.</param>
+            <param name="rocof">Output ROCOF estimate in Hz/s.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.ApplyPClassMagnitudeCorrection(System.Double)">
+            <summary>
+            Applies P-class magnitude correction per IEEE C37.118-2018 Annex D.6, Equation D.6.
+            </summary>
+            <param name="frequency">Current frequency estimate in Hz.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.NormalizeAngle(System.Double)">
+            <summary>
+            Normalizes angle by wrapping to the range [-π, π].
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.BuildFilter(System.Double,System.Double,System.Double,GSF.PhasorProtocols.SelCWS.FilterClass,System.Double[]@,System.Double[]@,System.Int32@)">
+            <summary>
+            Builds IEEE C37.118-2018 Annex D FIR filter coefficients.
+            </summary>
+            <param name="fs">Sample rate in Hz.</param>
+            <param name="f0">Nominal frequency in Hz.</param>
+            <param name="rr">Report rate in Hz.</param>
+            <param name="filterClass">Filter class (P or M).</param>
+            <param name="filterReal">Output: real parts of filter coefficients (pre-reversed for convolution).</param>
+            <param name="filterImag">Output: imaginary parts of filter coefficients (pre-reversed for convolution).</param>
+            <param name="filterOrder">Output: filter order N (number of taps = N+1).</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.GetMClassParameters(System.Double,System.Double)">
+            <summary>
+            Gets M-class filter parameters (Ffr, N) from IEEE C37.118-2018 Table D.1.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IEEEC37_118PhaseEstimator.BuildHammingWindow(System.Int32)">
+            <summary>
+            Builds a Hamming window of the specified length.
+            </summary>
+            <param name="length">Window length.</param>
+            <returns>Hamming window coefficients.</returns>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.IPhaseEstimator">
+            <summary>
+            Defines a SEL CWS six-phase estimator that consumes point-on-wave sample groups and produces
+            <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/> results.
+            </summary>
+            <remarks>
+            Implementations represent interchangeable phasor estimation algorithms (see
+            <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimationAlgorithm"/>) selected via the SEL CWS connection parameters.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)">
+            <summary>
+            Pushes one interleaved sample-group (VA, VB, VC, IA, IB, IC) with its epoch nanoseconds.
+            </summary>
+            <param name="va">Current sample for phase A voltage.</param>
+            <param name="vb">Current sample for phase B voltage.</param>
+            <param name="vc">Current sample for phase C voltage.</param>
+            <param name="ia">Current sample for phase A current.</param>
+            <param name="ib">Current sample for phase B current.</param>
+            <param name="ic">Current sample for phase C current.</param>
+            <param name="epochNanoseconds">Timestamp in nanoseconds since epoch.</param>
+            <param name="phaseEstimateHandler">Handler for phase estimate result.</param>
+            <returns>
+            <c>true</c> when an estimate is available, and it is time to publish at the target output rate;
+            otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.IPhaseEstimator.Reset">
+            <summary>
+            Resets the estimator to its initial state.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.NamespaceDoc">
             <summary>
             Contains an implementation of the phasor classes used to parse or generate a stream of data in the SEL CWS device format.
             </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate">
+            <summary>
+            Represents the output of a SEL CWS phase estimation algorithm.
+            </summary>
+            <remarks>
+            This is the common result type produced by every <see cref="T:GSF.PhasorProtocols.SelCWS.IPhaseEstimator"/> implementation,
+            regardless of the underlying estimation algorithm.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Frequency">
+            <summary>
+            Gets frequency estimate in hertz.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.dFdt">
+            <summary>
+            Gets rate of change of frequency (ROCOF) in Hz/s.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Angles">
+            <summary>
+            Gets angles in radians, length 6: VA, VB, VC, IA, IB, IC.
+            </summary>
+            <remarks>
+            The data this span references is owned by the phase estimator instance,
+            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
+            If you need to retain the data, make a copy.
+            </remarks>
+        </member>
+        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Magnitudes">
+            <summary>
+            Gets RMS magnitudes, length 6: VA, VB, VC, IA, IB, IC.
+            </summary>
+            <remarks>
+            The data this span references is owned by the phase estimator instance,
+            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
+            If you need to retain the data, make a copy.
+            </remarks>
+        </member>
+        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler">
+            <summary>
+            Delegate for handling a <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>.
+            </summary>
+            <param name="estimate">Phase estimate.</param>
         </member>
         <member name="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition">
             <summary>
@@ -20082,48 +20459,7 @@
             Gets or sets the <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorDefinition"/> associated with this <see cref="T:GSF.PhasorProtocols.SelCWS.PhasorValue"/>.
             </summary>
         </member>
-        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate">
-            <summary>
-            Represents the output of the phase estimation algorithm.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Frequency">
-            <summary>
-            Gets smoothed frequency estimate in hertz.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.dFdt">
-            <summary>
-            Gets rate of change of frequency (ROCOF) in Hz/s.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Angles">
-            <summary>
-            Gets angles in radians, length 6: IA, IB, IC, VA, VB, VC.
-            </summary>
-            <remarks>
-            The data this span references is owned by the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance,
-            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
-            If you need to retain the data, make a copy.
-            </remarks>
-        </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.PhaseEstimate.Magnitudes">
-            <summary>
-            Gets RMS magnitudes, length 6: IA, IB, IC, VA, VB, VC.
-            </summary>
-            <remarks>
-            The data this span references is owned by the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance,
-            it is only valid during the scope of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate call.
-            If you need to retain the data, make a copy.
-            </remarks>
-        </member>
-        <member name="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler">
-            <summary>
-            Delegate for handling a <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>.
-            </summary>
-            <param name="estimate">Phase estimate.</param>
-        </member>
-        <member name="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator">
+        <member name="T:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator">
             <summary>
             Represents a rolling six-phase estimator using a sliding DFT algorithm with optional smoothing.
             </summary>
@@ -20144,69 +20480,75 @@
             </para>
             </remarks>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultReferenceChannel">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultReferenceChannel">
             <summary>
             Default value for reference channel.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultTargetCycles">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultTargetCycles">
             <summary>
             Default value for number of target cycles.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultEnableIntervalAveraging">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultEnableIntervalAveraging">
             <summary>
             Default value for determining if interval averaging is enabled.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultEnablePublishEMA">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultEnablePublishEMA">
             <summary>
             Default value for determining if EMA publishing is enabled.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishAnglesTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultPublishAnglesTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published angles.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishMagnitudesTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultPublishMagnitudesTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published RMS magnitudes.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishFrequencyTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultPublishFrequencyTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published frequency.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultPublishRocofTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultPublishRocofTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published ROCOF.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultSampleFrequencyTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultSampleFrequencyTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published for the internal per-sample frequency smoothing.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultSampleRocofTauSeconds">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultSampleRocofTauSeconds">
             <summary>
             Default value for EMA time constant τ (seconds) published for the internal per-sample ROCOF smoothing.
             </summary>
         </member>
-        <member name="F:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.DefaultRecalculationCycles">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultRecalculationCycles">
             <summary>
             Default value for number of recalculation cycles.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.#ctor(System.Double,System.Double,GSF.Units.EE.LineFrequency,GSF.PhasorProtocols.SelCWS.PhaseChannel,System.Int32,System.Boolean,System.Boolean,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int32)">
+        <member name="F:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.DefaultMaxGapFillSamples">
             <summary>
-            Initializes a new instance of the <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> class with independent
+            Default maximum gap (in samples) filled by phase-continued synthesis before resynchronizing.
+            A negative value means "auto" (one full analysis window).
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.#ctor(System.Double,System.Double,GSF.Units.EE.LineFrequency,GSF.PhasorProtocols.SelCWS.PhaseChannel,System.Int32,System.Boolean,System.Boolean,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator"/> class with independent
             input sample rate and output publish rate, plus smoothing expressed as time constants (τ).
             </summary>
             <param name="sampleRateHz">
             Input sample rate in Hz (PoW samples per second). Must be &gt; 0.
-            This is the rate at which <see cref="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> is called with new samples.
+            This is the rate at which <see cref="M:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> is called with new samples.
             </param>
             <param name="outputRateHz">
             Output publish rate in Hz (estimates per second). Must be &gt; 0 and &lt;= <paramref name="sampleRateHz"/>.
@@ -20214,7 +20556,7 @@
             τ-to-α mapping adapts automatically to other publish rates.
             <br/>
             Behavioral note:
-            <see cref="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> may return <c>false</c> even after the estimator is ready, if the current sample does not
+            <see cref="M:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)"/> may return <c>false</c> even after the estimator is ready, if the current sample does not
             land on a publish boundary (i.e., it is not yet time to produce the next output).
             </param>
             <param name="nominalFrequency">
@@ -20293,6 +20635,13 @@
             Sliding DFT updates are O(1) per sample but can accumulate numerical drift; periodic full recomputation
             re-anchors the phasor sums.
             </param>
+            <param name="maxGapFillSamples">
+            Maximum gap (in input samples) that will be filled by phase-continued synthesis (coasting the last
+            phasors at the tracked frequency) when the input timestamp cadence indicates dropped samples. Gaps
+            larger than this trigger a resynchronization (the analysis window is dropped and refilled).
+            A negative value (default) means "auto" = one full analysis window; <c>0</c> disables coasting
+            (any gap resynchronizes). Must not exceed twice <see cref="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.WindowSamples"/>.
+            </param>
             <exception cref="T:System.ArgumentOutOfRangeException">
             Thrown if any rate is non-positive, output rate exceeds input rate, targetCycles &lt; 1, or any τ is negative.
             </exception>
@@ -20337,65 +20686,65 @@
             </para>
             </remarks>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.SampleRateHz">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.SampleRateHz">
             <summary>
             Gets the configured sample rate in Hz.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.OutputRateHz">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.OutputRateHz">
             <summary>
             Gets the configured output publish rate in Hz.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.NominalFrequencyHz">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.NominalFrequencyHz">
             <summary>
             Gets the nominal frequency in Hz.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.ReferenceChannel">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.ReferenceChannel">
             <summary>
             Gets the reference channel index used for frequency tracking (typically VA).
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.WindowSamples">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.WindowSamples">
             <summary>
             Gets the number of samples in the analysis window.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.TotalSamplesProcessed">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.TotalSamplesProcessed">
             <summary>
             Gets the total number of samples processed.
             </summary>
         </member>
-        <member name="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.IsReady">
+        <member name="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.IsReady">
             <summary>
             Gets whether the estimator has filled its window and is producing valid estimates.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)">
+        <member name="M:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.Step(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Int64,GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler)">
             <summary>
-            Push one interleaved sample-group (IA, IB, IC, VA, VB, VC) with its epoch nanoseconds.
+            Push one interleaved sample-group (VA, VB, VC, IA, IB, IC) with its epoch nanoseconds.
             </summary>
-            <param name="ia">Current sample for phase A current.</param>
-            <param name="ib">Current sample for phase B current.</param>
-            <param name="ic">Current sample for phase C current.</param>
             <param name="va">Current sample for phase A voltage.</param>
             <param name="vb">Current sample for phase B voltage.</param>
             <param name="vc">Current sample for phase C voltage.</param>
+            <param name="ia">Current sample for phase A current.</param>
+            <param name="ib">Current sample for phase B current.</param>
+            <param name="ic">Current sample for phase C current.</param>
             <param name="epochNanoseconds">Timestamp in nanoseconds since epoch.</param>
             <param name="phaseEstimateHandler">Handler for phase estimate result.</param>
             <returns>
             <c>true</c> when an estimate is available (window has filled) and it is time to 
-            publish at target <see cref="P:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.OutputRateHz"/>; otherwise, <c>false</c>.
+            publish at target <see cref="P:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.OutputRateHz"/>; otherwise, <c>false</c>.
             </returns>
             <remarks>
             The data referenced in the span-based properties of the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimate"/>
             parameter provided to the <see cref="T:GSF.PhasorProtocols.SelCWS.PhaseEstimateHandler"/> delegate is owned by the
-            <see cref="T:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator"/> instance, it is only valid during the scope of the
+            <see cref="T:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator"/> instance, it is only valid during the scope of the
             delegate call. If you need to retain the data, make a copy.
             </remarks>
         </member>
-        <member name="M:GSF.PhasorProtocols.SelCWS.RollingPhaseEstimator.Reset">
+        <member name="M:GSF.PhasorProtocols.SelCWS.SlidingDftPhaseEstimator.Reset">
             <summary>
             Resets the estimator to its initial state.
             </summary>
