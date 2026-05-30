@@ -34,6 +34,11 @@
             Gets or sets name of the user control to be loaded.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.ExternalProcessPath">
+            <summary>
+            Gets or sets path to the external process to be executed.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.UI.Commands.MenuCommand.Description">
             <summary>
             Gets or sets the description of associated <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/>.
@@ -54,6 +59,8 @@
             Handles <see cref="T:System.Windows.Input.ICommand"/> action. 
             Loads user control as defined in the <see cref="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlPath"/> property from assembly name set in the 
             <see cref="P:GSF.TimeSeries.UI.Commands.MenuCommand.UserControlAssembly"/> property.
+            - OR -
+            Executes external process as defined in the <see cref="P:GSF.TimeSeries.UI.Commands.MenuCommand.ExternalProcessPath"/> property.
             </summary>
             <param name="parameter">
             Data used by the <see cref="T:GSF.TimeSeries.UI.Commands.MenuCommand"/>. If the <see cref="T:GSF.TimeSeries.UI.Commands.MenuCommand"/> does not require
@@ -1294,6 +1301,11 @@
             <summary>
             Gets or sets path for the user control to be loaded when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
             </summary>        
+        </member>
+        <member name="P:GSF.TimeSeries.UI.MenuDataItem.ExternalProcessPath">
+            <summary>
+            Gets or sets path for the external process to be executed when <see cref="T:GSF.TimeSeries.UI.MenuDataItem"/> is clicked.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.MenuDataItem.Command">
             <summary>
